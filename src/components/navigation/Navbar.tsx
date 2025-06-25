@@ -69,7 +69,7 @@ export const Navbar = () => {
         { title: "Saved Jobs", href: "/jobs/saved", description: "Your bookmarked positions" },
         { title: "Applications", href: "/jobs/applied", description: "Track your applications" },
         { title: "Job Alerts", href: "/jobs/alerts", description: "Set up custom notifications" },
-        { title: "Company Directory", href: "/jobs/companies", description: "Explore employers" },
+        { title: "Company Directory", href: "/companies", description: "Explore employers" },
       ]
     },
     {
@@ -120,7 +120,7 @@ export const Navbar = () => {
         { title: "Cover Letter", href: "/tools/cover-letter", description: "AI-powered cover letters" },
         { title: "Interview Prep", href: "/tools/interview-prep", description: "Mock interviews & practice" },
         { title: "Salary Analyzer", href: "/tools/salary-analyzer", description: "Market salary insights" },
-        { title: "AI Assistant", href: "/tools/ai-assistant", description: "Smart career guidance" },
+        { title: "AI Assistant", href: "/ai/assistant", description: "Smart career guidance" },
       ]
     }
   ];
@@ -210,7 +210,7 @@ export const Navbar = () => {
                 </div>
 
                 {/* AI Assistant Quick Access */}
-                <Link to="/ai-assistant">
+                <Link to="/ai/assistant">
                   <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
                     <Brain className="h-4 w-4" />
                   </Button>

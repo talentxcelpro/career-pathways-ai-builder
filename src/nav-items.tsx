@@ -1,3 +1,4 @@
+
 import { HomeIcon, User, Briefcase, GraduationCap, Users, Building2, Wrench, BrainCircuit, MapPin, School, Building } from "lucide-react";
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
@@ -16,6 +17,8 @@ import Companies from "./pages/Companies";
 // Import auth pages
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 // Import network pages
 import People from "./pages/network/People";
@@ -100,16 +103,26 @@ export const navItems = [
   },
   ...profileRoutes,
   
-  // Auth routes
+  // Auth routes - updated paths to match what's used in the app
   {
     title: "Login",
-    to: "/login",
+    to: "/auth/login",
     page: <Login />,
   },
   {
     title: "Register",
-    to: "/register",
+    to: "/auth/register",
     page: <Register />,
+  },
+  {
+    title: "Forgot Password",
+    to: "/auth/forgot-password",
+    page: <ForgotPassword />,
+  },
+  {
+    title: "Reset Password",
+    to: "/auth/reset-password",
+    page: <ResetPassword />,
   },
   
   // Catch-all for 404
