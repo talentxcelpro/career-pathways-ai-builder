@@ -13,7 +13,13 @@ export const AuthLayout = ({ children, title, description }: AuthLayoutProps) =>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-blue-600 mb-2">Talenxcel</h1>
+          <div className="flex items-center justify-center mb-2">
+            <img 
+              src="/lovable-uploads/9868d726-8a25-4c3f-a63e-fd765a142896.png" 
+              alt="TalentXcel" 
+              className="h-10 w-auto"
+            />
+          </div>
           <p className="text-gray-600">AI-Powered Career Platform</p>
         </div>
         <Card className="shadow-xl border-0">

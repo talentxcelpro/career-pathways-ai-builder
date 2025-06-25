@@ -132,10 +132,11 @@ export const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">T</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">Talenxcel</span>
+              <img 
+                src="/lovable-uploads/9868d726-8a25-4c3f-a63e-fd765a142896.png" 
+                alt="TalentXcel" 
+                className="h-8 w-auto"
+              />
             </Link>
           </div>
 
