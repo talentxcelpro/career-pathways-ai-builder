@@ -6,6 +6,9 @@ import Posts from "../pages/network/Posts";
 import Groups from "../pages/network/Groups";
 import Requests from "../pages/network/Requests";
 import Events from "../pages/network/Events";
+import Messages from "../pages/network/Messages";
+import Notifications from "../pages/network/Notifications";
+import Suggestions from "../pages/network/Suggestions";
 
 export const networkRoutes = [
   {
@@ -38,5 +41,20 @@ export const networkRoutes = [
     title: "Network Events",
     to: "/network/events",
     page: <Events />,
+  },
+  {
+    title: "Network Messages",
+    to: "/network/messages",
+    page: <Messages />,
+  },
+  {
+    title: "Network Notifications",
+    to: "/network/notifications",
+    page: <Notifications />,
+  },
+  {
+    title: "Network Suggestions",
+    to: "/network/suggestions",
+    page: <Suggestions />,
   },
 ];
