@@ -30,7 +30,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('post_likes')
         .select('id')
         .eq('post_id', postId)
@@ -50,14 +50,14 @@ export const PostActions: React.FC<PostActionsProps> = ({
 
       if (userLike) {
         // Unlike
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('post_likes')
           .delete()
           .eq('id', userLike.id);
         if (error) throw error;
       } else {
         // Like
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('post_likes')
           .insert({
             post_id: postId,
@@ -82,7 +82,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('post_shares')
         .insert({
           post_id: postId,

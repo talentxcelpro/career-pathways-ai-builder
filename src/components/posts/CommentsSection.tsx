@@ -19,7 +19,7 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({ postId, isOpen
   const { data: comments, isLoading } = useQuery({
     queryKey: ['comments', postId],
     queryFn: async () => {
-      const { data: commentsData, error: commentsError } = await supabase
+      const { data: commentsData, error: commentsError } = await (supabase as any)
         .from('post_comments')
         .select('*')
         .eq('post_id', postId)
@@ -28,11 +28,13 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({ postId, isOpen
       if (commentsError) throw commentsError;
 
       // Get unique author IDs
-      const authorIds = [...new Set(commentsData.map(comment => comment.author_id).filter(Boolean))];
+      const authorIds = [...new Set(commentsData.map((comment: any) => comment.author_id).filter(Boolean))];
 
-      if (authorIds.length === 0) return [];
+      if (authorIds.length === 0) {
+        return commentsData.map((comment: any) => ({ ...comment, profiles: null }));
+      }
 
-      // Get profiles for all authors
+      // Get profiles for all comment authors
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('id, full_name, profile_picture_url')
@@ -41,10 +43,10 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({ postId, isOpen
       if (profilesError) throw profilesError;
 
       // Create a map of profiles by ID for easy lookup
-      const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]));
+      const profilesMap = new Map(profilesData.map((profile: any) => [profile.id, profile]));
 
       // Combine comments with their profiles
-      const commentsWithProfiles = commentsData.map(comment => ({
+      const commentsWithProfiles = commentsData.map((comment: any) => ({
         ...comment,
         profiles: profilesMap.get(comment.author_id) || null
       }));
@@ -54,12 +56,12 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({ postId, isOpen
     enabled: isOpen
   });
 
-  const createCommentMutation = useMutation({
+  const addCommentMutation = useMutation({
     mutationFn: async (content: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('post_comments')
         .insert({
           post_id: postId,
@@ -81,9 +83,23 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({ postId, isOpen
     }
   });
 
-  const handleSubmitComment = () => {
-    if (!newComment.trim()) return;
-    createCommentMutation.mutate(newComment);
+  const handleAddComment = () => {
+    if (!newComment.trim()) {
+      toast.error('Please write a comment before posting');
+      return;
+    }
+    addCommentMutation.mutate(newComment);
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
   const formatDisplayName = (profile: any) => {
@@ -104,23 +120,15 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({ postId, isOpen
     return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
   };
 
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    
-    if (diffInSeconds < 60) return 'Just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    return `${Math.floor(diffInSeconds / 86400)}d ago`;
-  };
-
   if (!isOpen) return null;
 
   return (
     <div className="mt-4 border-t pt-4">
-      {/* Add Comment */}
+      {/* Add Comment Form */}
       <div className="flex space-x-3 mb-4">
+        <Avatar className="h-8 w-8">
+          <AvatarFallback>You</AvatarFallback>
+        </Avatar>
         <div className="flex-1">
           <Textarea
             placeholder="Write a comment..."
@@ -130,62 +138,48 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({ postId, isOpen
           />
           <div className="flex justify-end mt-2">
             <Button 
+              onClick={handleAddComment}
+              disabled={addCommentMutation.isPending || !newComment.trim()}
               size="sm"
-              onClick={handleSubmitComment}
-              disabled={createCommentMutation.isPending || !newComment.trim()}
             >
-              {createCommentMutation.isPending ? 'Posting...' : 'Comment'}
+              {addCommentMutation.isPending ? 'Posting...' : 'Comment'}
             </Button>
           </div>
         </div>
       </div>
 
       {/* Comments List */}
-      {isLoading ? (
-        <div className="space-y-3">
-          {[...Array(2)].map((_, i) => (
-            <div key={i} className="flex space-x-3 animate-pulse">
-              <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-              <div className="flex-1 space-y-2">
-                <div className="h-3 bg-gray-300 rounded w-1/4"></div>
-                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {comments?.map((comment) => (
+      <div className="space-y-4">
+        {isLoading ? (
+          <div className="text-sm text-gray-500">Loading comments...</div>
+        ) : comments && comments.length > 0 ? (
+          comments.map((comment: any) => (
             <div key={comment.id} className="flex space-x-3">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={comment.profiles?.profile_picture_url} />
-                <AvatarFallback className="text-xs">
+                <AvatarFallback>
                   {generateInitials(comment.profiles)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="bg-gray-50 rounded-lg p-3">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <span className="font-medium text-sm text-gray-900">
-                      {formatDisplayName(comment.profiles)}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {formatTimeAgo(comment.created_at)}
-                    </span>
+                  <div className="font-medium text-sm text-gray-900">
+                    {formatDisplayName(comment.profiles)}
                   </div>
-                  <p className="text-sm text-gray-800">{comment.content}</p>
+                  <div className="text-sm text-gray-800 mt-1">
+                    {comment.content}
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  {formatTimeAgo(comment.created_at)}
                 </div>
               </div>
             </div>
-          ))}
-          
-          {comments?.length === 0 && (
-            <p className="text-gray-500 text-sm text-center py-4">
-              No comments yet. Be the first to comment!
-            </p>
-          )}
-        </div>
-      )}
+          ))
+        ) : (
+          <div className="text-sm text-gray-500">No comments yet. Be the first to comment!</div>
+        )}
+      </div>
     </div>
   );
 };
