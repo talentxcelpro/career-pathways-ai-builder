@@ -16,24 +16,37 @@ const Posts = () => {
   const { data: posts, isLoading } = useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First get posts
+      const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select(`
-          *,
-          profiles!inner(
-            id,
-            full_name,
-            profile_picture_url,
-            title
-          )
-        `)
+        .select('*')
         .eq('is_public', true)
-        .eq('profiles.id', 'posts.author_id')
         .order('created_at', { ascending: false })
         .limit(20);
 
-      if (error) throw error;
-      return data;
+      if (postsError) throw postsError;
+
+      // Get unique author IDs
+      const authorIds = [...new Set(postsData.map(post => post.author_id).filter(Boolean))];
+
+      // Get profiles for all authors
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, profile_picture_url, title')
+        .in('id', authorIds);
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of profiles by ID for easy lookup
+      const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]));
+
+      // Combine posts with their profiles
+      const postsWithProfiles = postsData.map(post => ({
+        ...post,
+        profiles: profilesMap.get(post.author_id) || null
+      }));
+
+      return postsWithProfiles;
     }
   });
 
