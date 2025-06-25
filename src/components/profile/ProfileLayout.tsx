@@ -32,15 +32,10 @@ const ProfileLayout = ({ children, title, description }: ProfileLayoutProps) => 
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
-            <Button 
-              variant="ghost" 
-              as={Link} 
-              to="/"
-              className="flex items-center mr-4"
-            >
+            <Link to="/" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 mr-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
-            </Button>
+            </Link>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
               {description && <p className="text-gray-600">{description}</p>}

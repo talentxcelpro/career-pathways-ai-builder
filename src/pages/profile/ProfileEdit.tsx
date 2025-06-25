@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, X, Camera, Save } from "lucide-react";
+import { Plus, X, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ProfileLayout from "@/components/profile/ProfileLayout";
 
@@ -88,43 +88,55 @@ const ProfileEdit = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Full Name"
-                value={profile.fullName}
-                onChange={(e) => setProfile(prev => ({ ...prev, fullName: e.target.value }))}
-                placeholder="Your full name"
-              />
-              <Input
-                label="Professional Title"
-                value={profile.title}
-                onChange={(e) => setProfile(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="e.g. Senior Software Engineer"
-              />
-              <Input
-                label="Email"
-                type="email"
-                value={profile.email}
-                onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="your.email@example.com"
-              />
-              <Input
-                label="Phone"
-                value={profile.phone}
-                onChange={(e) => setProfile(prev => ({ ...prev, phone: e.target.value }))}
-                placeholder="+1 (555) 123-4567"
-              />
-              <Input
-                label="Location"
-                value={profile.location}
-                onChange={(e) => setProfile(prev => ({ ...prev, location: e.target.value }))}
-                placeholder="City, State/Country"
-              />
-              <Input
-                label="Website/Portfolio"
-                value={profile.website}
-                onChange={(e) => setProfile(prev => ({ ...prev, website: e.target.value }))}
-                placeholder="yourwebsite.com"
-              />
+              <div>
+                <label className="text-sm font-medium mb-2 block">Full Name</label>
+                <Input
+                  value={profile.fullName}
+                  onChange={(e) => setProfile(prev => ({ ...prev, fullName: e.target.value }))}
+                  placeholder="Your full name"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Professional Title</label>
+                <Input
+                  value={profile.title}
+                  onChange={(e) => setProfile(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="e.g. Senior Software Engineer"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Email</label>
+                <Input
+                  type="email"
+                  value={profile.email}
+                  onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="your.email@example.com"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Phone</label>
+                <Input
+                  value={profile.phone}
+                  onChange={(e) => setProfile(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Location</label>
+                <Input
+                  value={profile.location}
+                  onChange={(e) => setProfile(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="City, State/Country"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Website/Portfolio</label>
+                <Input
+                  value={profile.website}
+                  onChange={(e) => setProfile(prev => ({ ...prev, website: e.target.value }))}
+                  placeholder="yourwebsite.com"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -205,20 +217,23 @@ const ProfileEdit = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <Input
-                label="Years of Experience"
-                type="number"
-                value={profile.experienceYears}
-                onChange={(e) => setProfile(prev => ({ ...prev, experienceYears: parseInt(e.target.value) }))}
-                placeholder="5"
-              />
-              <Input
-                label="Current Company"
-                value={profile.currentCompany}
-                onChange={(e) => setProfile(prev => ({ ...prev, currentCompany: e.target.value }))}
-                placeholder="Company name"
-                className="md:col-span-2"
-              />
+              <div>
+                <label className="text-sm font-medium mb-2 block">Years of Experience</label>
+                <Input
+                  type="number"
+                  value={profile.experienceYears}
+                  onChange={(e) => setProfile(prev => ({ ...prev, experienceYears: parseInt(e.target.value) }))}
+                  placeholder="5"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="text-sm font-medium mb-2 block">Current Company</label>
+                <Input
+                  value={profile.currentCompany}
+                  onChange={(e) => setProfile(prev => ({ ...prev, currentCompany: e.target.value }))}
+                  placeholder="Company name"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -231,18 +246,22 @@ const ProfileEdit = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="LinkedIn URL"
-                value={profile.linkedinUrl}
-                onChange={(e) => setProfile(prev => ({ ...prev, linkedinUrl: e.target.value }))}
-                placeholder="https://linkedin.com/in/yourprofile"
-              />
-              <Input
-                label="GitHub URL"
-                value={profile.githubUrl}
-                onChange={(e) => setProfile(prev => ({ ...prev, githubUrl: e.target.value }))}
-                placeholder="https://github.com/yourusername"
-              />
+              <div>
+                <label className="text-sm font-medium mb-2 block">LinkedIn URL</label>
+                <Input
+                  value={profile.linkedinUrl}
+                  onChange={(e) => setProfile(prev => ({ ...prev, linkedinUrl: e.target.value }))}
+                  placeholder="https://linkedin.com/in/yourprofile"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">GitHub URL</label>
+                <Input
+                  value={profile.githubUrl}
+                  onChange={(e) => setProfile(prev => ({ ...prev, githubUrl: e.target.value }))}
+                  placeholder="https://github.com/yourusername"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
