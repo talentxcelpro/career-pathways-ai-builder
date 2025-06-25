@@ -1,5 +1,3 @@
-
-
 import { HomeIcon, Users, BookOpen, TrendingUp, User, Briefcase, Settings, Calendar, MessageSquare, Bell, Heart, FileText, BarChart3, Building2, Sparkles, Plus, Search, Target, Compass } from "lucide-react";
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
@@ -47,6 +45,11 @@ import Generate from "./pages/career-map/Generate";
 import SkillsGap from "./pages/career-map/SkillsGap";
 import Recommendations from "./pages/career-map/Recommendations";
 import Comparison from "./pages/career-map/Comparison";
+
+// Tools pages
+import Tools from "./pages/Tools";
+import ResumeCheck from "./pages/tools/ResumeCheck";
+import CoverLetter from "./pages/tools/CoverLetter";
 
 export const navItems = [
   {
@@ -235,6 +238,25 @@ export const navItems = [
     page: <Comparison />,
   },
 
+  // Tools main page
+  {
+    title: "Tools",
+    to: "/tools",
+    page: <Tools />,
+  },
+
+  // Tools sub-pages
+  {
+    title: "Resume Checker",
+    to: "/tools/resume-check",
+    page: <ResumeCheck />,
+  },
+  {
+    title: "Cover Letter Generator",
+    to: "/tools/cover-letter",
+    page: <CoverLetter />,
+  },
+
   // Catch all 404
   {
     title: "Not Found",
@@ -242,4 +264,3 @@ export const navItems = [
     page: <NotFound />,
   },
 ];
-
