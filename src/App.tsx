@@ -13,6 +13,7 @@ import ResumeBuilder from "./pages/ResumeBuilder";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Jobs from "./pages/Jobs";
+import Learning from "./pages/Learning";
 
 // Import auth pages
 import Login from "./pages/auth/Login";
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/jobs" element={<Jobs />} />
+            <Route path="/learning" element={<Learning />} />
             <Route path="/tools/resume-builder" element={<ResumeBuilder />} />
             
             {/* Auth routes */}

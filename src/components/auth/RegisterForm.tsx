@@ -43,7 +43,8 @@ export const RegisterForm = () => {
         options: {
           data: {
             full_name: formData.fullName,
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/`
         }
       });
 
@@ -65,7 +66,7 @@ export const RegisterForm = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/onboarding`
+          redirectTo: `${window.location.origin}/`
         }
       });
       
@@ -131,7 +132,7 @@ export const RegisterForm = () => {
         <Checkbox 
           id="terms" 
           checked={acceptTerms}
-          onCheckedChange={setAcceptTerms}
+          onCheckedChange={(checked) => setAcceptTerms(checked === true)}
         />
         <label htmlFor="terms" className="text-sm text-gray-600">
           I agree to the{' '}
