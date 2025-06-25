@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -79,12 +78,18 @@ const Posts = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      // Determine post type based on content and media
+      let postType = 'text';
+      if (mediaUrls.length > 0) {
+        postType = 'image'; // Use 'image' instead of 'media' to match the constraint
+      }
+
       const { error } = await supabase
         .from('posts')
         .insert({
           author_id: user.id,
           content,
-          post_type: mediaUrls.length > 0 ? 'media' : 'text',
+          post_type: postType,
           media_urls: mediaUrls,
           is_public: true
         });
