@@ -1,26 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { 
-  Search, 
-  BookOpen, 
-  Clock, 
-  Users, 
-  Star, 
-  Play, 
-  Award, 
-  TrendingUp,
-  Filter,
-  ChevronRight
-} from "lucide-react";
+import { SearchAndFilters } from "@/components/learning/SearchAndFilters";
+import { CourseCard } from "@/components/learning/CourseCard";
+import { LearningPathCard } from "@/components/learning/LearningPathCard";
+import { MyLearningCard } from "@/components/learning/MyLearningCard";
+import { EmptyMyLearning } from "@/components/learning/EmptyMyLearning";
 
 const Learning = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -115,41 +103,15 @@ const Learning = () => {
         </div>
 
         {/* Search and Filters */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Search courses..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <select 
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <option value="all">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-              <select 
-                value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <option value="all">All Levels</option>
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-              </select>
-            </div>
-          </CardContent>
-        </Card>
+        <SearchAndFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedDifficulty={selectedDifficulty}
+          setSelectedDifficulty={setSelectedDifficulty}
+          categories={categories}
+        />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
@@ -169,83 +131,12 @@ const Learning = () => {
                 </div>
               ) : (
                 filteredCourses.map((course) => (
-                  <Card key={course.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div className="flex justify-between items-start mb-2">
-                        <Badge variant="secondary">{course.category}</Badge>
-                        <Badge variant={course.difficulty_level === 'beginner' ? 'default' : 
-                               course.difficulty_level === 'intermediate' ? 'secondary' : 'destructive'}>
-                          {course.difficulty_level}
-                        </Badge>
-                      </div>
-                      <CardTitle className="text-lg">{course.title}</CardTitle>
-                      <CardDescription className="line-clamp-2">
-                        {course.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between text-sm text-gray-600">
-                          <div className="flex items-center">
-                            <Clock className="h-4 w-4 mr-1" />
-                            {course.duration_hours}h
-                          </div>
-                          <div className="flex items-center">
-                            <Users className="h-4 w-4 mr-1" />
-                            {course.enrolled_count}
-                          </div>
-                          <div className="flex items-center">
-                            <Star className="h-4 w-4 mr-1 text-yellow-500" />
-                            {course.rating}
-                          </div>
-                        </div>
-                        
-                        {course.instructor_name && (
-                          <p className="text-sm text-gray-600">
-                            by {course.instructor_name}
-                          </p>
-                        )}
-
-                        {course.skills_taught && course.skills_taught.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {course.skills_taught.slice(0, 3).map((skill, index) => (
-                              <Badge key={index} variant="outline" className="text-xs">
-                                {skill}
-                              </Badge>
-                            ))}
-                            {course.skills_taught.length > 3 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{course.skills_taught.length - 3} more
-                              </Badge>
-                            )}
-                          </div>
-                        )}
-
-                        <div className="flex justify-between items-center">
-                          <span className="text-lg font-bold text-green-600">
-                            {course.is_free ? 'Free' : `$${course.price}`}
-                          </span>
-                          <Button
-                            onClick={() => enrollInCourse(course.id)}
-                            disabled={isEnrolled(course.id)}
-                            size="sm"
-                          >
-                            {isEnrolled(course.id) ? (
-                              <>
-                                <Award className="h-4 w-4 mr-1" />
-                                Enrolled
-                              </>
-                            ) : (
-                              <>
-                                <Play className="h-4 w-4 mr-1" />
-                                Enroll
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <CourseCard
+                    key={course.id}
+                    course={course}
+                    isEnrolled={isEnrolled(course.id)}
+                    onEnroll={enrollInCourse}
+                  />
                 ))
               )}
             </div>
@@ -262,48 +153,7 @@ const Learning = () => {
                 </div>
               ) : (
                 learningPaths.map((path) => (
-                  <Card key={path.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div className="flex justify-between items-start mb-2">
-                        <Badge variant="outline">
-                          <TrendingUp className="h-3 w-3 mr-1" />
-                          Learning Path
-                        </Badge>
-                        <Badge variant={path.difficulty_level === 'beginner' ? 'default' : 
-                               path.difficulty_level === 'intermediate' ? 'secondary' : 'destructive'}>
-                          {path.difficulty_level}
-                        </Badge>
-                      </div>
-                      <CardTitle className="text-xl">{path.title}</CardTitle>
-                      <CardDescription>{path.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Target Role: {path.target_role}</span>
-                          <span>{path.estimated_duration_weeks} weeks</span>
-                        </div>
-
-                        {path.skills_gained && path.skills_gained.length > 0 && (
-                          <div>
-                            <p className="text-sm font-medium mb-2">Skills you'll gain:</p>
-                            <div className="flex flex-wrap gap-1">
-                              {path.skills_gained.map((skill, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
-                                  {skill}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        <Button className="w-full">
-                          Start Learning Path
-                          <ChevronRight className="h-4 w-4 ml-1" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <LearningPathCard key={path.id} path={path} />
                 ))
               )}
             </div>
@@ -312,50 +162,11 @@ const Learning = () => {
           {/* My Learning Tab */}
           <TabsContent value="my-learning">
             {userCourses.length === 0 ? (
-              <Card>
-                <CardContent className="text-center py-12">
-                  <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No courses yet</h3>
-                  <p className="text-gray-600 mb-4">Start your learning journey by enrolling in a course</p>
-                  <Button onClick={() => setActiveTab('courses')}>
-                    Browse Courses
-                  </Button>
-                </CardContent>
-              </Card>
+              <EmptyMyLearning onBrowseCourses={() => setActiveTab('courses')} />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {userCourses.map((userCourse) => (
-                  <Card key={userCourse.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-lg">{userCourse.courses.title}</CardTitle>
-                      <CardDescription>
-                        Enrolled on {new Date(userCourse.enrolled_at).toLocaleDateString()}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div>
-                          <div className="flex justify-between text-sm mb-2">
-                            <span>Progress</span>
-                            <span>{userCourse.progress_percentage}%</span>
-                          </div>
-                          <Progress value={userCourse.progress_percentage} className="h-2" />
-                        </div>
-
-                        {userCourse.completed_at ? (
-                          <div className="flex items-center text-green-600">
-                            <Award className="h-4 w-4 mr-1" />
-                            <span className="text-sm">Completed</span>
-                          </div>
-                        ) : (
-                          <Button className="w-full">
-                            <Play className="h-4 w-4 mr-1" />
-                            Continue Learning
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <MyLearningCard key={userCourse.id} userCourse={userCourse} />
                 ))}
               </div>
             )}
