@@ -1375,7 +1375,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_job_applications: {
+        Args: { job_id: string }
+        Returns: undefined
+      }
+      increment_job_views: {
+        Args: { job_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
