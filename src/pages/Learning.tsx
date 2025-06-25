@@ -26,6 +26,7 @@ const Learning = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
+  const [activeTab, setActiveTab] = useState('courses');
 
   // Fetch courses
   const { data: courses = [], isLoading: coursesLoading } = useQuery({
@@ -150,7 +151,7 @@ const Learning = () => {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="courses" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="courses">Courses</TabsTrigger>
             <TabsTrigger value="paths">Learning Paths</TabsTrigger>
@@ -316,7 +317,7 @@ const Learning = () => {
                   <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No courses yet</h3>
                   <p className="text-gray-600 mb-4">Start your learning journey by enrolling in a course</p>
-                  <Button onClick={() => document.querySelector('[value="courses"]')?.click()}>
+                  <Button onClick={() => setActiveTab('courses')}>
                     Browse Courses
                   </Button>
                 </CardContent>
