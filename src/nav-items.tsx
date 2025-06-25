@@ -52,15 +52,15 @@ import ResumeCheck from "./pages/tools/ResumeCheck";
 import CoverLetter from "./pages/tools/CoverLetter";
 
 // Companies pages
-import Companies from "./pages/companies/Companies";
+import Companies from "./pages/Companies";
 import CompanyDetail from "./pages/companies/CompanyDetail";
 
 // Colleges pages
-import Colleges from "./pages/colleges/Colleges";
+import Colleges from "./pages/Colleges";
 import CollegeDetail from "./pages/colleges/CollegeDetail";
 
 // Marketplace pages
-import Marketplace from "./pages/marketplace/Marketplace";
+import Marketplace from "./pages/Marketplace";
 import ServiceDetail from "./pages/marketplace/ServiceDetail";
 import PostService from "./pages/marketplace/PostService";
 
