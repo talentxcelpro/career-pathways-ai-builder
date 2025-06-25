@@ -10,6 +10,7 @@ import { companiesRoutes } from "./navigation/companiesRoutes";
 import { collegesRoutes } from "./navigation/collegesRoutes";
 import { marketplaceRoutes } from "./navigation/marketplaceRoutes";
 import { coreRoutes } from "./navigation/coreRoutes";
+import { aiRoutes } from "./navigation/aiRoutes";
 
 export const navItems = [
   ...coreRoutes,
@@ -20,6 +21,7 @@ export const navItems = [
   ...profileRoutes,
   ...authRoutes,
   ...toolsRoutes,
+  ...aiRoutes,
   ...companiesRoutes,
   ...collegesRoutes,
   ...marketplaceRoutes,
