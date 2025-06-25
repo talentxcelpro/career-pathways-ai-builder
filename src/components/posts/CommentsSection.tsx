@@ -27,11 +27,11 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({ postId, isOpen
       if (commentsError) throw commentsError;
 
       // Get unique author IDs with proper typing
-      const authorIds: string[] = [...new Set(
+      const authorIds = Array.from(new Set(
         commentsData
           .map((comment: any) => comment.author_id)
-          .filter((id: any): id is string => Boolean(id))
-      )];
+          .filter((id: any): id is string => typeof id === 'string' && id !== null)
+      ));
 
       if (authorIds.length === 0) {
         return commentsData.map((comment: any) => ({ ...comment, profiles: null }));
