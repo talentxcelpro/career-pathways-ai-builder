@@ -7,7 +7,7 @@ import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMe
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from "sonner";
-import { User, Settings, LogOut, Bell, Search, Briefcase, BookOpen, Users, Target, Building, GraduationCap, Wrench, Brain, Map } from "lucide-react";
+import { User, Settings, LogOut, Bell, Search, Briefcase, BookOpen, Users, Target, Building, GraduationCap, Wrench, Brain, Map, FileText, ShoppingBag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -67,9 +67,10 @@ export const Navbar = () => {
       items: [
         { title: "Browse Jobs", href: "/jobs", description: "Search and filter job listings" },
         { title: "Saved Jobs", href: "/jobs/saved", description: "Your bookmarked positions" },
-        { title: "Applications", href: "/jobs/applied", description: "Track your applications" },
-        { title: "Job Alerts", href: "/jobs/alerts", description: "Set up custom notifications" },
-        { title: "Company Directory", href: "/companies", description: "Explore employers" },
+        { title: "Applied Jobs", href: "/jobs/applied", description: "Track your applications" },
+        { title: "Post Job", href: "/jobs/post", description: "Post a new job opening" },
+        { title: "Job Categories", href: "/jobs/categories", description: "Browse by category" },
+        { title: "Manage Jobs", href: "/jobs/manage", description: "Employer job management" },
       ]
     },
     {
@@ -83,6 +84,7 @@ export const Navbar = () => {
         { title: "Groups", href: "/network/groups", description: "Join professional communities" },
         { title: "Events", href: "/network/events", description: "Attend industry events" },
         { title: "Messages", href: "/network/messages", description: "Chat with connections" },
+        { title: "Requests", href: "/network/requests", description: "Manage connection requests" },
       ]
     },
     {
@@ -94,7 +96,6 @@ export const Navbar = () => {
         { title: "Browse Courses", href: "/learning", description: "Discover new skills" },
         { title: "My Courses", href: "/learning/my-courses", description: "Track your progress" },
         { title: "Learning Paths", href: "/learning/paths", description: "Structured skill development" },
-        { title: "Assessments", href: "/learning/assessments", description: "Test your knowledge" },
         { title: "Certificates", href: "/learning/certificates", description: "View earned credentials" },
       ]
     },
@@ -105,9 +106,10 @@ export const Navbar = () => {
       description: "Plan your career journey",
       items: [
         { title: "Career Planner", href: "/career-map", description: "Interactive 5-year planning" },
-        { title: "AI Roadmap", href: "/career-map/generate", description: "Generate personalized paths" },
-        { title: "Skills Gap", href: "/career-map/skills-gap", description: "Identify missing skills" },
-        { title: "Career Switch", href: "/career-map/switch", description: "Explore new directions" },
+        { title: "Generate Roadmap", href: "/career-map/generate", description: "AI-powered career paths" },
+        { title: "Skills Gap Analysis", href: "/career-map/skills-gap", description: "Identify missing skills" },
+        { title: "Career Recommendations", href: "/career-map/recommendations", description: "Personalized suggestions" },
+        { title: "Career Comparison", href: "/career-map/comparison", description: "Compare different paths" },
       ]
     },
     {
@@ -116,11 +118,23 @@ export const Navbar = () => {
       icon: Wrench,
       description: "AI-powered career tools",
       items: [
-        { title: "Resume Builder", href: "/tools/resume-builder", description: "Create ATS-friendly resumes" },
+        { title: "Resume Builder", href: "/resume-builder", description: "Create ATS-friendly resumes" },
+        { title: "Resume Check", href: "/tools/resume-check", description: "Optimize your resume" },
         { title: "Cover Letter", href: "/tools/cover-letter", description: "AI-powered cover letters" },
-        { title: "Interview Prep", href: "/tools/interview-prep", description: "Mock interviews & practice" },
-        { title: "Salary Analyzer", href: "/tools/salary-analyzer", description: "Market salary insights" },
-        { title: "AI Assistant", href: "/ai/assistant", description: "Smart career guidance" },
+        { title: "AI Assistant", href: "/ai-assistant", description: "Smart career guidance" },
+        { title: "AI Optimizer", href: "/ai-optimizer", description: "Profile optimization" },
+      ]
+    },
+    {
+      title: "More",
+      href: "#",
+      icon: Building,
+      description: "Additional resources",
+      items: [
+        { title: "Companies", href: "/companies", description: "Explore employers" },
+        { title: "Colleges", href: "/colleges", description: "Educational institutions" },
+        { title: "Marketplace", href: "/marketplace", description: "Professional services" },
+        { title: "Employer Dashboard", href: "/employer", description: "Employer tools" },
       ]
     }
   ];
@@ -210,7 +224,7 @@ export const Navbar = () => {
                 </div>
 
                 {/* AI Assistant Quick Access */}
-                <Link to="/ai/assistant">
+                <Link to="/ai-assistant">
                   <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
                     <Brain className="h-4 w-4" />
                   </Button>
@@ -246,6 +260,10 @@ export const Navbar = () => {
                     <DropdownMenuItem onClick={() => navigate('/profile')}>
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                      <Target className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate('/profile/settings')}>
                       <Settings className="mr-2 h-4 w-4" />

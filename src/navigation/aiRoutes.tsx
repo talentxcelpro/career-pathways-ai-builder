@@ -14,22 +14,27 @@ export const aiRoutes = [
     page: <AIAssistant />,
   },
   {
+    title: "AI Assistant Alt",
+    to: "/ai/assistant",
+    page: <AIAssistant />,
+  },
+  {
     title: "AI Optimizer",
     to: "/ai-optimizer",
     page: <AIOptimizer />,
   },
   {
-    title: "Job Match",
+    title: "AI Job Match",
     to: "/ai/job-match",
     page: <JobMatch />,
   },
   {
-    title: "Message Suggest",
+    title: "AI Message Suggest",
     to: "/ai/message-suggest",
     page: <MessageSuggest />,
   },
   {
-    title: "Pathfinder",
+    title: "AI Pathfinder",
     to: "/ai/pathfinder",
     page: <Pathfinder />,
   },

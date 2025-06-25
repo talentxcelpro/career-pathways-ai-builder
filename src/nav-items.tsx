@@ -1,4 +1,3 @@
-
 import { HomeIcon, User, Briefcase, GraduationCap, Users, Building2, Wrench, BrainCircuit, MapPin, School, Building } from "lucide-react";
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
@@ -14,30 +13,8 @@ import Marketplace from "./pages/Marketplace";
 import Colleges from "./pages/Colleges";
 import Companies from "./pages/Companies";
 
-// Import auth pages
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import ResetPassword from "./pages/auth/ResetPassword";
-
-// Import network pages
-import People from "./pages/network/People";
-import Posts from "./pages/network/Posts";
-import Groups from "./pages/network/Groups";
-import Requests from "./pages/network/Requests";
-import Events from "./pages/network/Events";
-
-// Import profile pages
-import ProfileEdit from "./pages/profile/ProfileEdit";
-import ProfileResume from "./pages/profile/ProfileResume";
-import ProfileCoverLetter from "./pages/profile/ProfileCoverLetter";
-import ProfilePreferences from "./pages/profile/ProfilePreferences";
-import ProfileSettings from "./pages/profile/ProfileSettings";
-import ProfileMedia from "./pages/profile/ProfileMedia";
-import ProfileAnalytics from "./pages/profile/ProfileAnalytics";
-import ProfileDocuments from "./pages/profile/ProfileDocuments";
-
 // Import route modules
+import { authRoutes } from "./navigation/authRoutes";
 import { profileRoutes } from "./navigation/profileRoutes";
 import { networkRoutes } from "./navigation/networkRoutes";
 import { jobRoutes } from "./navigation/jobRoutes";
@@ -64,8 +41,14 @@ export const navItems = [
     icon: <User className="h-4 w-4" />,
     page: <Dashboard />,
   },
+  {
+    title: "Resume Builder",
+    to: "/resume-builder",
+    icon: <BrainCircuit className="h-4 w-4" />,
+    page: <ResumeBuilder />,
+  },
   
-  // Main navigation
+  // Main navigation modules
   ...jobRoutes,
   ...networkRoutes,
   ...learningRoutes,
@@ -103,27 +86,8 @@ export const navItems = [
   },
   ...profileRoutes,
   
-  // Auth routes - updated paths to match what's used in the app
-  {
-    title: "Login",
-    to: "/auth/login",
-    page: <Login />,
-  },
-  {
-    title: "Register",
-    to: "/auth/register",
-    page: <Register />,
-  },
-  {
-    title: "Forgot Password",
-    to: "/auth/forgot-password",
-    page: <ForgotPassword />,
-  },
-  {
-    title: "Reset Password",
-    to: "/auth/reset-password",
-    page: <ResetPassword />,
-  },
+  // Auth routes
+  ...authRoutes,
   
   // Catch-all for 404
   {
