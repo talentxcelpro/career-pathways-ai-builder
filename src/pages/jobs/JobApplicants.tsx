@@ -38,7 +38,7 @@ interface JobApplication {
     location?: string;
     experience_years?: number;
     skills?: string[];
-  };
+  } | null;
 }
 
 const JobApplicants = () => {
@@ -72,7 +72,7 @@ const JobApplicants = () => {
         .from('job_applications')
         .select(`
           *,
-          profiles!user_id(
+          profiles(
             full_name,
             email,
             phone,
@@ -84,11 +84,6 @@ const JobApplicants = () => {
           )
         `)
         .eq('job_id', jobId);
-
-      if (searchTerm) {
-        // We'll filter on the frontend since we can't easily do text search on joined tables
-        // in this Supabase setup without more complex queries
-      }
 
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter);
@@ -287,7 +282,7 @@ const JobApplicants = () => {
                           {application.profiles?.profile_picture_url ? (
                             <img 
                               src={application.profiles.profile_picture_url} 
-                              alt={application.profiles.full_name}
+                              alt={application.profiles.full_name || 'Profile'}
                               className="w-10 h-10 rounded-full object-cover"
                             />
                           ) : (

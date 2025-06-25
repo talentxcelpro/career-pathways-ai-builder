@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +36,7 @@ const ApplicantDetail = () => {
         .from('job_applications')
         .select(`
           *,
-          profiles!user_id(
+          profiles(
             full_name,
             email,
             phone,
@@ -52,7 +51,7 @@ const ApplicantDetail = () => {
             portfolio_url,
             current_company
           ),
-          jobs!job_id(
+          jobs(
             title,
             companies(name)
           )
