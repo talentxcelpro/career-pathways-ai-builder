@@ -1,268 +1,438 @@
 
 import React, { useState, useEffect } from 'react';
+import { JobCard } from '@/components/jobs/JobCard';
+import { JobSearch } from '@/components/jobs/JobSearch';
+import { JobFilters } from '@/components/jobs/JobFilters';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Filter, TrendingUp, MapPin, DollarSign, Users, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Clock, Bookmark, Filter, Building } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
-const Jobs = () => {
+export default function Jobs() {
   const navigate = useNavigate();
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [companies, setCompanies] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const [showFilters, setShowFilters] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [locationFilter, setLocationFilter] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
+  const [location, setLocation] = useState('');
+  const [sortBy, setSortBy] = useState('posted_at');
+  const [savedJobs, setSavedJobs] = useState<string[]>([]);
+  
+  const [filters, setFilters] = useState({
+    search: '',
+    location: '',
+    employment_type: [] as string[],
+    experience_level: [] as string[],
+    salary_min: 0,
+    salary_max: 500000,
+    is_remote: false,
+    skills: [] as string[],
+    category_id: ''
+  });
 
-  useEffect(() => {
-    fetchJobs();
-    fetchCompanies();
-  }, []);
-
-  const fetchJobs = async () => {
-    try {
+  // Fetch job categories
+  const { data: categories = [] } = useQuery({
+    queryKey: ['job-categories'],
+    queryFn: async () => {
       const { data, error } = await supabase
+        .from('job_categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Fetch jobs with filters
+  const { data: jobs = [], isLoading, refetch } = useQuery({
+    queryKey: ['jobs', filters, sortBy],
+    queryFn: async () => {
+      let query = supabase
         .from('jobs')
         .select(`
           *,
           companies (
+            id,
             name,
             logo_url,
             industry,
             location
+          ),
+          job_categories (
+            name,
+            slug
           )
         `)
-        .eq('is_active', true)
-        .order('posted_at', { ascending: false });
+        .eq('is_active', true);
 
+      // Apply filters
+      if (filters.search) {
+        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+      }
+      
+      if (filters.location) {
+        query = query.ilike('location', `%${filters.location}%`);
+      }
+      
+      if (filters.employment_type.length > 0) {
+        query = query.in('employment_type', filters.employment_type);
+      }
+      
+      if (filters.experience_level.length > 0) {
+        query = query.in('experience_level', filters.experience_level);
+      }
+      
+      if (filters.salary_min > 0) {
+        query = query.gte('salary_min', filters.salary_min);
+      }
+      
+      if (filters.salary_max < 500000) {
+        query = query.lte('salary_max', filters.salary_max);
+      }
+      
+      if (filters.is_remote) {
+        query = query.eq('is_remote', true);
+      }
+      
+      if (filters.category_id) {
+        query = query.eq('category_id', filters.category_id);
+      }
+
+      if (filters.skills.length > 0) {
+        query = query.overlaps('skills_required', filters.skills);
+      }
+
+      // Apply sorting
+      switch (sortBy) {
+        case 'posted_at':
+          query = query.order('posted_at', { ascending: false });
+          break;
+        case 'salary_max':
+          query = query.order('salary_max', { ascending: false });
+          break;
+        case 'views_count':
+          query = query.order('views_count', { ascending: false });
+          break;
+        case 'applications_count':
+          query = query.order('applications_count', { ascending: true });
+          break;
+        default:
+          query = query.order('posted_at', { ascending: false });
+      }
+
+      const { data, error } = await query.limit(50);
+      
       if (error) throw error;
-      setJobs(data || []);
-    } catch (error) {
-      toast.error('Failed to fetch jobs');
-    } finally {
-      setLoading(false);
+      return data;
     }
-  };
-
-  const fetchCompanies = async () => {
-    const { data } = await supabase
-      .from('companies')
-      .select('*')
-      .order('name');
-    
-    setCompanies(data || []);
-  };
-
-  const saveJob = async (jobId: string) => {
-    try {
-      const { error } = await supabase
-        .from('saved_jobs')
-        .insert({ job_id: jobId });
-
-      if (error) throw error;
-      toast.success('Job saved successfully!');
-    } catch (error) {
-      toast.error('Failed to save job');
-    }
-  };
-
-  const filteredJobs = jobs.filter(job => {
-    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         job.companies?.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLocation = !locationFilter || job.location.toLowerCase().includes(locationFilter.toLowerCase());
-    const matchesType = !typeFilter || job.employment_type === typeFilter;
-    
-    return matchesSearch && matchesLocation && matchesType;
   });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Loading jobs...</p>
-        </div>
-      </div>
-    );
-  }
+  // Fetch saved jobs
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from('saved_jobs')
+        .select('job_id')
+        .eq('user_id', user.id);
+
+      if (data) {
+        setSavedJobs(data.map(item => item.job_id));
+      }
+    };
+
+    fetchSavedJobs();
+  }, []);
+
+  // Save/unsave job mutation
+  const saveJobMutation = useMutation({
+    mutationFn: async (jobId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const isSaved = savedJobs.includes(jobId);
+      
+      if (isSaved) {
+        const { error } = await supabase
+          .from('saved_jobs')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('job_id', jobId);
+        if (error) throw error;
+        return { action: 'removed', jobId };
+      } else {
+        const { error } = await supabase
+          .from('saved_jobs')
+          .insert({
+            user_id: user.id,
+            job_id: jobId
+          });
+        if (error) throw error;
+        return { action: 'saved', jobId };
+      }
+    },
+    onSuccess: ({ action, jobId }) => {
+      if (action === 'saved') {
+        setSavedJobs(prev => [...prev, jobId]);
+        toast.success('Job saved successfully');
+      } else {
+        setSavedJobs(prev => prev.filter(id => id !== jobId));
+        toast.success('Job removed from saved');
+      }
+    },
+    onError: (error) => {
+      toast.error('Failed to save job');
+      console.error('Save job error:', error);
+    }
+  });
+
+  const handleSearch = () => {
+    setFilters(prev => ({
+      ...prev,
+      search: searchTerm,
+      location: location
+    }));
+  };
+
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      search: '',
+      location: '',
+      employment_type: [],
+      experience_level: [],
+      salary_min: 0,
+      salary_max: 500000,
+      is_remote: false,
+      skills: [],
+      category_id: ''
+    });
+    setSearchTerm('');
+    setLocation('');
+  };
+
+  const handleSaveJob = (jobId: string) => {
+    saveJobMutation.mutate(jobId);
+  };
+
+  const featuredJobs = jobs.filter(job => job.is_featured);
+  const regularJobs = jobs.filter(job => !job.is_featured);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Find Your Dream Job</h1>
-          
-          {/* Search and Filters */}
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <Input
-                placeholder="Search jobs or companies..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold">Find Your Dream Job</h1>
+              <p className="text-gray-600 mt-2">
+                Discover {jobs.length} opportunities from top companies
+              </p>
             </div>
-            <div className="flex gap-2">
-              <Select value={locationFilter} onValueChange={setLocationFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Location" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All Locations</SelectItem>
-                  <SelectItem value="san francisco">San Francisco</SelectItem>
-                  <SelectItem value="austin">Austin</SelectItem>
-                  <SelectItem value="new york">New York</SelectItem>
-                  <SelectItem value="seattle">Seattle</SelectItem>
-                  <SelectItem value="remote">Remote</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Job Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
-                  <SelectItem value="full-time">Full-time</SelectItem>
-                  <SelectItem value="part-time">Part-time</SelectItem>
-                  <SelectItem value="contract">Contract</SelectItem>
-                  <SelectItem value="freelance">Freelance</SelectItem>
-                  <SelectItem value="internship">Internship</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Button variant="outline">
-                <Filter className="h-4 w-4 mr-2" />
-                More Filters
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Job Listings */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <p className="text-gray-600">{filteredJobs.length} jobs found</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Job Cards */}
-          <div className="lg:col-span-2 space-y-4">
-            {filteredJobs.map((job) => (
-              <Card key={job.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate(`/jobs/${job.id}`)}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                        {job.companies?.logo_url ? (
-                          <img src={job.companies.logo_url} alt={job.companies.name} className="w-8 h-8 rounded" />
-                        ) : (
-                          <Building className="w-6 h-6 text-gray-400" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <CardTitle className="text-lg">{job.title}</CardTitle>
-                        <CardDescription className="text-base font-medium text-blue-600">
-                          {job.companies?.name}
-                        </CardDescription>
-                        <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                          <div className="flex items-center">
-                            <MapPin className="w-4 h-4 mr-1" />
-                            {job.location}
-                          </div>
-                          <div className="flex items-center">
-                            <Clock className="w-4 h-4 mr-1" />
-                            {new Date(job.posted_at).toLocaleDateString()}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        saveJob(job.id);
-                      }}
-                    >
-                      <Bookmark className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4 line-clamp-3">{job.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {job.skills_required?.slice(0, 4).map((skill: string, index: number) => (
-                      <Badge key={index} variant="secondary">{skill}</Badge>
-                    ))}
-                    {job.skills_required?.length > 4 && (
-                      <Badge variant="outline">+{job.skills_required.length - 4} more</Badge>
-                    )}
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="outline">{job.employment_type}</Badge>
-                      <Badge variant="outline">{job.experience_level}</Badge>
-                      {job.is_remote && <Badge className="bg-green-100 text-green-800">Remote</Badge>}
-                    </div>
-                    {(job.salary_min || job.salary_max) && (
-                      <div className="text-sm font-medium text-green-600">
-                        ${job.salary_min?.toLocaleString()} - ${job.salary_max?.toLocaleString()}
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            <Button
+              onClick={() => navigate('/jobs/post')}
+              className="hidden md:flex"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Post a Job
+            </Button>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Quick Apply</CardTitle>
-                <CardDescription>Jobs that match your profile</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full">
-                  View Recommendations
-                </Button>
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <TrendingUp className="h-5 w-5 text-blue-500" />
+                </div>
+                <div className="text-2xl font-bold">{jobs.length}</div>
+                <div className="text-sm text-gray-500">Active Jobs</div>
               </CardContent>
             </Card>
-
             <Card>
-              <CardHeader>
-                <CardTitle>Featured Companies</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {companies.slice(0, 5).map((company) => (
-                    <div key={company.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer">
-                      <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
-                        <Building className="w-4 h-4 text-gray-400" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{company.name}</p>
-                        <p className="text-xs text-gray-500">{company.industry}</p>
-                      </div>
-                    </div>
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <MapPin className="h-5 w-5 text-green-500" />
+                </div>
+                <div className="text-2xl font-bold">{jobs.filter(j => j.is_remote).length}</div>
+                <div className="text-sm text-gray-500">Remote Jobs</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <DollarSign className="h-5 w-5 text-yellow-500" />
+                </div>
+                <div className="text-2xl font-bold">{featuredJobs.length}</div>
+                <div className="text-sm text-gray-500">Featured</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <Users className="h-5 w-5 text-purple-500" />
+                </div>
+                <div className="text-2xl font-bold">{categories.length}</div>
+                <div className="text-sm text-gray-500">Categories</div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Search */}
+        <JobSearch
+          searchTerm={searchTerm}
+          location={location}
+          onSearchChange={setSearchTerm}
+          onLocationChange={setLocation}
+          onSearch={handleSearch}
+          onToggleFilters={() => setShowFilters(!showFilters)}
+          showFilters={showFilters}
+        />
+
+        {/* Categories */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="text-lg font-semibold">Browse by Category</h2>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {categories.slice(0, 10).map((category) => (
+              <Badge
+                key={category.id}
+                variant="outline"
+                className="cursor-pointer hover:bg-blue-50 hover:border-blue-300"
+                onClick={() => navigate(`/jobs/categories?category=${category.slug}`)}
+              >
+                {category.name}
+              </Badge>
+            ))}
+            {categories.length > 10 && (
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-gray-100"
+                onClick={() => navigate('/jobs/categories')}
+              >
+                +{categories.length - 10} more
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Filters Sidebar */}
+          <div className={`lg:block ${showFilters ? 'block' : 'hidden'}`}>
+            <JobFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={clearFilters}
+              categories={categories}
+            />
+          </div>
+
+          {/* Jobs List */}
+          <div className="lg:col-span-3">
+            {/* Sort and Results */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="text-sm text-gray-600">
+                {isLoading ? 'Loading...' : `${jobs.length} jobs found`}
+              </div>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="posted_at">Newest First</SelectItem>
+                  <SelectItem value="salary_max">Highest Salary</SelectItem>
+                  <SelectItem value="views_count">Most Viewed</SelectItem>
+                  <SelectItem value="applications_count">Least Competition</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Featured Jobs */}
+            {featuredJobs.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold mb-4 flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2 text-yellow-500" />
+                  Featured Jobs
+                </h2>
+                <div className="space-y-4">
+                  {featuredJobs.map((job) => (
+                    <JobCard
+                      key={job.id}
+                      job={job}
+                      onSave={handleSaveJob}
+                      isSaved={savedJobs.includes(job.id)}
+                    />
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            )}
+
+            {/* Regular Jobs */}
+            {regularJobs.length > 0 && (
+              <div>
+                {featuredJobs.length > 0 && (
+                  <h2 className="text-xl font-semibold mb-4">All Jobs</h2>
+                )}
+                <div className="space-y-4">
+                  {regularJobs.map((job) => (
+                    <JobCard
+                      key={job.id}
+                      job={job}
+                      onSave={handleSaveJob}
+                      isSaved={savedJobs.includes(job.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!isLoading && jobs.length === 0 && (
+              <div className="text-center py-12">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
+                <p className="text-gray-500 mb-4">
+                  Try adjusting your search criteria or removing some filters.
+                </p>
+                <Button onClick={clearFilters} variant="outline">
+                  Clear Filters
+                </Button>
+              </div>
+            )}
+
+            {/* Loading State */}
+            {isLoading && (
+              <div className="space-y-4">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="bg-white rounded-lg border p-6">
+                      <div className="space-y-3">
+                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-full"></div>
+                        <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default Jobs;
+}
