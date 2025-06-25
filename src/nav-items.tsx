@@ -51,6 +51,19 @@ import Tools from "./pages/Tools";
 import ResumeCheck from "./pages/tools/ResumeCheck";
 import CoverLetter from "./pages/tools/CoverLetter";
 
+// Companies pages
+import Companies from "./pages/companies/Companies";
+import CompanyDetail from "./pages/companies/CompanyDetail";
+
+// Colleges pages
+import Colleges from "./pages/colleges/Colleges";
+import CollegeDetail from "./pages/colleges/CollegeDetail";
+
+// Marketplace pages
+import Marketplace from "./pages/marketplace/Marketplace";
+import ServiceDetail from "./pages/marketplace/ServiceDetail";
+import PostService from "./pages/marketplace/PostService";
+
 export const navItems = [
   {
     title: "Home",
@@ -255,6 +268,47 @@ export const navItems = [
     title: "Cover Letter Generator",
     to: "/tools/cover-letter",
     page: <CoverLetter />,
+  },
+
+  // Companies pages
+  {
+    title: "Companies",
+    to: "/companies",
+    page: <Companies />,
+  },
+  {
+    title: "Company Detail",
+    to: "/companies/:id",
+    page: <CompanyDetail />,
+  },
+
+  // Colleges pages
+  {
+    title: "Colleges",
+    to: "/colleges",
+    page: <Colleges />,
+  },
+  {
+    title: "College Detail",
+    to: "/colleges/:id",
+    page: <CollegeDetail />,
+  },
+
+  // Marketplace pages
+  {
+    title: "Marketplace",
+    to: "/marketplace",
+    page: <Marketplace />,
+  },
+  {
+    title: "Service Detail",
+    to: "/marketplace/:id",
+    page: <ServiceDetail />,
+  },
+  {
+    title: "Post Service",
+    to: "/marketplace/post-service",
+    page: <PostService />,
   },
 
   // Catch all 404
