@@ -63,6 +63,27 @@ const People = () => {
     }
   };
 
+  const formatDisplayName = (profile: any) => {
+    if (profile.full_name && profile.full_name.trim()) {
+      return profile.full_name;
+    }
+    if (profile.email) {
+      return profile.email.split('@')[0]; // Use email username part
+    }
+    return 'Professional User';
+  };
+
+  const generateInitials = (profile: any) => {
+    const displayName = formatDisplayName(profile);
+    if (displayName === 'Professional User') return 'PU';
+    
+    const names = displayName.split(' ');
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    }
+    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -96,7 +117,7 @@ const People = () => {
                   <SelectValue placeholder="Filter by location" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Locations</SelectItem>
+                  <SelectItem value="">All Locations</SelectItem>
                   <SelectItem value="New York">New York</SelectItem>
                   <SelectItem value="San Francisco">San Francisco</SelectItem>
                   <SelectItem value="London">London</SelectItem>
@@ -108,7 +129,7 @@ const People = () => {
                   <SelectValue placeholder="Filter by industry" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Industries</SelectItem>
+                  <SelectItem value="">All Industries</SelectItem>
                   <SelectItem value="Technology">Technology</SelectItem>
                   <SelectItem value="Finance">Finance</SelectItem>
                   <SelectItem value="Healthcare">Healthcare</SelectItem>
@@ -146,17 +167,27 @@ const People = () => {
                   <div className="text-center space-y-4">
                     {/* Profile Picture */}
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto flex items-center justify-center">
-                      <span className="text-white font-semibold text-lg">
-                        {profile.full_name?.charAt(0) || 'U'}
-                      </span>
+                      {profile.profile_picture_url ? (
+                        <img 
+                          src={profile.profile_picture_url} 
+                          alt={formatDisplayName(profile)}
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-white font-semibold text-lg">
+                          {generateInitials(profile)}
+                        </span>
+                      )}
                     </div>
 
                     {/* Basic Info */}
                     <div>
                       <h3 className="font-semibold text-lg text-gray-900">
-                        {profile.full_name || 'Anonymous User'}
+                        {formatDisplayName(profile)}
                       </h3>
-                      <p className="text-gray-600 text-sm">{profile.title}</p>
+                      <p className="text-gray-600 text-sm">
+                        {profile.title || 'Professional'}
+                      </p>
                     </div>
 
                     {/* Location and Company */}
