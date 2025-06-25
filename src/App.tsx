@@ -27,6 +27,16 @@ import Groups from "./pages/network/Groups";
 import Requests from "./pages/network/Requests";
 import Events from "./pages/network/Events";
 
+// Import profile pages
+import ProfileEdit from "./pages/profile/ProfileEdit";
+import ProfileResume from "./pages/profile/ProfileResume";
+import ProfileCoverLetter from "./pages/profile/ProfileCoverLetter";
+import ProfilePreferences from "./pages/profile/ProfilePreferences";
+import ProfileSettings from "./pages/profile/ProfileSettings";
+import ProfileMedia from "./pages/profile/ProfileMedia";
+import ProfileAnalytics from "./pages/profile/ProfileAnalytics";
+import ProfileDocuments from "./pages/profile/ProfileDocuments";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -40,6 +50,14 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/edit" element={<ProfileEdit />} />
+            <Route path="/profile/resume" element={<ProfileResume />} />
+            <Route path="/profile/cover-letter" element={<ProfileCoverLetter />} />
+            <Route path="/profile/preferences" element={<ProfilePreferences />} />
+            <Route path="/profile/settings" element={<ProfileSettings />} />
+            <Route path="/profile/media" element={<ProfileMedia />} />
+            <Route path="/profile/analytics" element={<ProfileAnalytics />} />
+            <Route path="/profile/documents" element={<ProfileDocuments />} />
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/learning" element={<Learning />} />
             <Route path="/tools/resume-builder" element={<ResumeBuilder />} />
