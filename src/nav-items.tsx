@@ -1,3 +1,4 @@
+
 import { HomeIcon, Users, BookOpen, TrendingUp, User, Briefcase, Settings, Calendar, MessageSquare, Bell, Heart, FileText, BarChart3, Building2, Sparkles, Plus, Search, Target, Compass } from "lucide-react";
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
@@ -35,7 +36,6 @@ import JobApply from "./pages/jobs/JobApply";
 import SavedJobs from "./pages/jobs/SavedJobs";
 
 // Learning pages
-import Learning from "./pages/Learning";
 import CourseDetail from "./pages/learning/CourseDetail";
 import MyCourses from "./pages/learning/MyCourses";
 import LearningPaths from "./pages/learning/LearningPaths";
