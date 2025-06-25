@@ -1,4 +1,5 @@
 
+
 import { HomeIcon, Users, BookOpen, TrendingUp, User, Briefcase, Settings, Calendar, MessageSquare, Bell, Heart, FileText, BarChart3, Building2, Sparkles, Plus, Search, Target, Compass } from "lucide-react";
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
@@ -40,6 +41,13 @@ import CourseDetail from "./pages/learning/CourseDetail";
 import MyCourses from "./pages/learning/MyCourses";
 import LearningPaths from "./pages/learning/LearningPaths";
 
+// Career Map pages
+import CareerMap from "./pages/CareerMap";
+import Generate from "./pages/career-map/Generate";
+import SkillsGap from "./pages/career-map/SkillsGap";
+import Recommendations from "./pages/career-map/Recommendations";
+import Comparison from "./pages/career-map/Comparison";
+
 export const navItems = [
   {
     title: "Home",
@@ -70,6 +78,12 @@ export const navItems = [
     to: "/learning",
     icon: <BookOpen className="h-4 w-4" />,
     page: <Learning />,
+  },
+  {
+    title: "Career Map",
+    to: "/career-map",
+    icon: <Compass className="h-4 w-4" />,
+    page: <CareerMap />,
   },
   {
     title: "Profile",
@@ -199,6 +213,28 @@ export const navItems = [
     page: <LearningPaths />,
   },
 
+  // Career Map sub-pages
+  {
+    title: "Generate Career Map",
+    to: "/career-map/generate",
+    page: <Generate />,
+  },
+  {
+    title: "Skills Gap Analysis",
+    to: "/career-map/skills-gap",
+    page: <SkillsGap />,
+  },
+  {
+    title: "Career Recommendations",
+    to: "/career-map/recommendations",
+    page: <Recommendations />,
+  },
+  {
+    title: "Career Comparison",
+    to: "/career-map/comparison",
+    page: <Comparison />,
+  },
+
   // Catch all 404
   {
     title: "Not Found",
@@ -206,3 +242,4 @@ export const navItems = [
     page: <NotFound />,
   },
 ];
+
