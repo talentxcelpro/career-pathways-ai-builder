@@ -143,7 +143,7 @@ const Profile = () => {
                         value={profile.location}
                         onChange={(e) => setProfile(prev => ({ ...prev, location: e.target.value }))}
                         placeholder="Location"
-                        size="sm"
+                        className="h-8"
                       />
                     ) : (
                       <span>{profile.location}</span>
@@ -156,7 +156,7 @@ const Profile = () => {
                         value={profile.email}
                         onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
                         placeholder="Email"
-                        size="sm"
+                        className="h-8"
                       />
                     ) : (
                       <span>{profile.email}</span>
@@ -169,7 +169,7 @@ const Profile = () => {
                         value={profile.phone}
                         onChange={(e) => setProfile(prev => ({ ...prev, phone: e.target.value }))}
                         placeholder="Phone"
-                        size="sm"
+                        className="h-8"
                       />
                     ) : (
                       <span>{profile.phone}</span>
@@ -182,7 +182,7 @@ const Profile = () => {
                         value={profile.website}
                         onChange={(e) => setProfile(prev => ({ ...prev, website: e.target.value }))}
                         placeholder="Website"
-                        size="sm"
+                        className="h-8"
                       />
                     ) : (
                       <span>{profile.website}</span>
