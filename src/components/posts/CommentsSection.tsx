@@ -27,7 +27,7 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({ postId, isOpen
       if (commentsError) throw commentsError;
 
       // Get unique author IDs with proper typing
-      const authorIds = Array.from(new Set(
+      const authorIds: string[] = Array.from(new Set(
         commentsData
           .map((comment: any) => comment.author_id)
           .filter((id: any): id is string => typeof id === 'string' && id !== null)
