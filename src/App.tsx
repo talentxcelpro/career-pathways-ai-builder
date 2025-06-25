@@ -19,6 +19,14 @@ import Learning from "./pages/Learning";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
+// Import network pages
+import Network from "./pages/Network";
+import People from "./pages/network/People";
+import Posts from "./pages/network/Posts";
+import Groups from "./pages/network/Groups";
+import Requests from "./pages/network/Requests";
+import Events from "./pages/network/Events";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,6 +43,14 @@ const App = () => (
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/learning" element={<Learning />} />
             <Route path="/tools/resume-builder" element={<ResumeBuilder />} />
+            
+            {/* Network routes */}
+            <Route path="/network" element={<Network />} />
+            <Route path="/network/people" element={<People />} />
+            <Route path="/network/requests" element={<Requests />} />
+            <Route path="/network/posts" element={<Posts />} />
+            <Route path="/network/groups" element={<Groups />} />
+            <Route path="/network/events" element={<Events />} />
             
             {/* Auth routes */}
             <Route path="/auth/login" element={<Login />} />
