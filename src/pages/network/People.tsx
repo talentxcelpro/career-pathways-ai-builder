@@ -68,7 +68,7 @@ const People = () => {
       return profile.full_name;
     }
     if (profile.email) {
-      return profile.email.split('@')[0]; // Use email username part
+      return profile.email.split('@')[0];
     }
     return 'Professional User';
   };
@@ -82,6 +82,10 @@ const People = () => {
       return names[0].charAt(0).toUpperCase();
     }
     return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
+  };
+
+  const shouldShowProfilePrompt = (profile: any) => {
+    return !profile.full_name || !profile.title || !profile.profile_picture_url;
   };
 
   return (
@@ -188,6 +192,11 @@ const People = () => {
                       <p className="text-gray-600 text-sm">
                         {profile.title || 'Professional'}
                       </p>
+                      {shouldShowProfilePrompt(profile) && (
+                        <p className="text-xs text-orange-600 mt-1">
+                          Incomplete profile
+                        </p>
+                      )}
                     </div>
 
                     {/* Location and Company */}

@@ -5,15 +5,52 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Briefcase, GraduationCap, FileText, TrendingUp, Users, Star } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 
 const Index = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // Check authentication status
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
+    };
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Fetch current user profile
+  const { data: currentUserProfile } = useQuery({
+    queryKey: ['currentUserProfile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) return null;
+      return data;
+    },
+    enabled: isLoggedIn
+  });
+
   // Mock user data - in real app this would come from Supabase
   const mockUser = {
-    name: "Alex Johnson",
-    title: "Software Engineer",
+    name: currentUserProfile?.full_name || "Professional User",
+    title: currentUserProfile?.title || "Software Engineer",
     completedCourses: 12,
     resumeViews: 156,
     appliedJobs: 8
@@ -30,6 +67,20 @@ const Index = () => {
     { id: 2, title: "AI & Machine Learning Fundamentals", instructor: "Dr. Michael Chen", rating: 4.9, students: 3890 },
     { id: 3, title: "Product Management Masterclass", instructor: "Jennifer Davis", rating: 4.7, students: 1823 }
   ];
+
+  // Check for missing profile fields
+  const getMissingFields = () => {
+    if (!currentUserProfile) return [];
+    
+    const missing = [];
+    if (!currentUserProfile.full_name) missing.push('full name');
+    if (!currentUserProfile.profile_picture_url) missing.push('profile picture');
+    if (!currentUserProfile.title) missing.push('professional title');
+    
+    return missing;
+  };
+
+  const missingFields = getMissingFields();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -50,7 +101,7 @@ const Index = () => {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-6 text-lg"
-                  onClick={() => setIsLoggedIn(true)}
+                  onClick={() => navigate('/auth/register')}
                 >
                   Start Your Journey
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -127,6 +178,14 @@ const Index = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {mockUser.name}!</h1>
             <p className="text-gray-600">Continue building your career journey</p>
           </div>
+
+          {/* Profile Completion Prompt */}
+          {missingFields.length > 0 && (
+            <ProfileCompletionPrompt 
+              missingFields={missingFields}
+              className="mb-8"
+            />
+          )}
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

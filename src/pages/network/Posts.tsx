@@ -19,10 +19,35 @@ const Posts = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select(`
+          *,
+          profiles!inner(
+            id,
+            full_name,
+            profile_picture_url,
+            title
+          )
+        `)
         .eq('is_public', true)
         .order('created_at', { ascending: false })
         .limit(20);
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: currentUserProfile } = useQuery({
+    queryKey: ['currentUserProfile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
       if (error) throw error;
       return data;
@@ -75,6 +100,24 @@ const Posts = () => {
     return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
+  const formatDisplayName = (profile: any) => {
+    if (profile?.full_name && profile.full_name.trim()) {
+      return profile.full_name;
+    }
+    return 'Professional User';
+  };
+
+  const generateInitials = (profile: any) => {
+    const displayName = formatDisplayName(profile);
+    if (displayName === 'Professional User') return 'PU';
+    
+    const names = displayName.split(' ');
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    }
+    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -87,7 +130,15 @@ const Posts = () => {
         {/* Create Post */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Share an update</CardTitle>
+            <CardTitle className="flex items-center">
+              <Avatar className="h-8 w-8 mr-3">
+                <AvatarImage src={currentUserProfile?.profile_picture_url} />
+                <AvatarFallback>
+                  {currentUserProfile ? generateInitials(currentUserProfile) : 'U'}
+                </AvatarFallback>
+              </Avatar>
+              Share an update
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -152,15 +203,18 @@ const Posts = () => {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-start space-x-3">
                       <Avatar>
+                        <AvatarImage src={post.profiles?.profile_picture_url} />
                         <AvatarFallback>
-                          U
+                          {generateInitials(post.profiles)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <h3 className="font-semibold text-gray-900">
-                          Anonymous User
+                          {formatDisplayName(post.profiles)}
                         </h3>
-                        <p className="text-sm text-gray-600">Professional</p>
+                        <p className="text-sm text-gray-600">
+                          {post.profiles?.title || 'Professional'}
+                        </p>
                         <p className="text-xs text-gray-500">{formatTimeAgo(post.created_at)}</p>
                       </div>
                     </div>
