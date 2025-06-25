@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,7 +72,7 @@ const JobApplicants = () => {
         .from('job_applications')
         .select(`
           *,
-          profiles!inner(
+          profiles!user_id(
             full_name,
             email,
             phone,
@@ -87,7 +86,8 @@ const JobApplicants = () => {
         .eq('job_id', jobId);
 
       if (searchTerm) {
-        query = query.or(`profiles.full_name.ilike.%${searchTerm}%,profiles.email.ilike.%${searchTerm}%`);
+        // We'll filter on the frontend since we can't easily do text search on joined tables
+        // in this Supabase setup without more complex queries
       }
 
       if (statusFilter !== 'all') {
@@ -97,10 +97,11 @@ const JobApplicants = () => {
       // Apply sorting
       switch (sortBy) {
         case 'match_score':
-          query = query.order('ai_match_score', { ascending: false, nullsLast: true });
+          query = query.order('ai_match_score', { ascending: false, nullsFirst: false });
           break;
         case 'experience':
-          query = query.order('profiles.experience_years', { ascending: false, nullsLast: true });
+          // We'll sort on frontend since it's a joined field
+          query = query.order('applied_at', { ascending: false });
           break;
         case 'applied_at':
         default:
@@ -109,7 +110,27 @@ const JobApplicants = () => {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as JobApplication[];
+      
+      let filteredData = data || [];
+      
+      // Frontend filtering for search terms
+      if (searchTerm) {
+        filteredData = filteredData.filter(app => 
+          app.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          app.profiles?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      
+      // Frontend sorting for experience
+      if (sortBy === 'experience') {
+        filteredData.sort((a, b) => {
+          const expA = a.profiles?.experience_years || 0;
+          const expB = b.profiles?.experience_years || 0;
+          return expB - expA;
+        });
+      }
+      
+      return filteredData as JobApplication[];
     }
   });
 
@@ -263,7 +284,7 @@ const JobApplicants = () => {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                          {application.profiles.profile_picture_url ? (
+                          {application.profiles?.profile_picture_url ? (
                             <img 
                               src={application.profiles.profile_picture_url} 
                               alt={application.profiles.full_name}
@@ -275,13 +296,13 @@ const JobApplicants = () => {
                         </div>
                         <div>
                           <div className="font-medium text-gray-900">
-                            {application.profiles.full_name}
+                            {application.profiles?.full_name || 'Unknown'}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {application.profiles.title || 'No title'}
+                            {application.profiles?.title || 'No title'}
                           </div>
                           <div className="text-sm text-gray-400">
-                            {application.profiles.location || 'Location not specified'}
+                            {application.profiles?.location || 'Location not specified'}
                           </div>
                         </div>
                       </div>
@@ -303,7 +324,7 @@ const JobApplicants = () => {
                     </TableCell>
                     <TableCell>
                       <span className="text-gray-600">
-                        {application.profiles.experience_years || 0} years
+                        {application.profiles?.experience_years || 0} years
                       </span>
                     </TableCell>
                     <TableCell>
@@ -323,11 +344,11 @@ const JobApplicants = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => window.open(`mailto:${application.profiles.email}`)}
+                          onClick={() => window.open(`mailto:${application.profiles?.email}`)}
                         >
                           <Mail className="h-4 w-4" />
                         </Button>
-                        {application.profiles.phone && (
+                        {application.profiles?.phone && (
                           <Button
                             variant="ghost"
                             size="sm"

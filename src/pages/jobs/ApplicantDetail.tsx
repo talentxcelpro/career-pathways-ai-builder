@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,7 +37,7 @@ const ApplicantDetail = () => {
         .from('job_applications')
         .select(`
           *,
-          profiles!inner(
+          profiles!user_id(
             full_name,
             email,
             phone,
@@ -51,7 +52,7 @@ const ApplicantDetail = () => {
             portfolio_url,
             current_company
           ),
-          jobs!inner(
+          jobs!job_id(
             title,
             companies(name)
           )
@@ -208,10 +209,10 @@ const ApplicantDetail = () => {
             </Button>
           </div>
           <h1 className="text-3xl font-bold text-gray-900">
-            {application.profiles.full_name}
+            {application.profiles?.full_name || 'Unknown Candidate'}
           </h1>
           <p className="text-gray-600 mt-1">
-            Applied for {application.jobs.title} at {application.jobs.companies?.name}
+            Applied for {application.jobs?.title} at {application.jobs?.companies?.name}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -243,10 +244,10 @@ const ApplicantDetail = () => {
             <CardContent className="space-y-4">
               <div className="flex items-start gap-4">
                 <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-                  {application.profiles.profile_picture_url ? (
+                  {application.profiles?.profile_picture_url ? (
                     <img 
                       src={application.profiles.profile_picture_url} 
-                      alt={application.profiles.full_name}
+                      alt={application.profiles.full_name || 'Profile'}
                       className="w-20 h-20 rounded-full object-cover"
                     />
                   ) : (
@@ -254,11 +255,11 @@ const ApplicantDetail = () => {
                   )}
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold">{application.profiles.full_name}</h3>
-                  <p className="text-gray-600">{application.profiles.title || 'No title specified'}</p>
+                  <h3 className="text-xl font-semibold">{application.profiles?.full_name || 'Unknown'}</h3>
+                  <p className="text-gray-600">{application.profiles?.title || 'No title specified'}</p>
                   
                   <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-600">
-                    {application.profiles.email && (
+                    {application.profiles?.email && (
                       <div className="flex items-center gap-1">
                         <Mail className="h-4 w-4" />
                         <a href={`mailto:${application.profiles.email}`} className="hover:text-blue-600">
@@ -266,7 +267,7 @@ const ApplicantDetail = () => {
                         </a>
                       </div>
                     )}
-                    {application.profiles.phone && (
+                    {application.profiles?.phone && (
                       <div className="flex items-center gap-1">
                         <Phone className="h-4 w-4" />
                         <a href={`tel:${application.profiles.phone}`} className="hover:text-blue-600">
@@ -274,13 +275,13 @@ const ApplicantDetail = () => {
                         </a>
                       </div>
                     )}
-                    {application.profiles.location && (
+                    {application.profiles?.location && (
                       <div className="flex items-center gap-1">
                         <MapPin className="h-4 w-4" />
                         {application.profiles.location}
                       </div>
                     )}
-                    {application.profiles.current_company && (
+                    {application.profiles?.current_company && (
                       <div className="flex items-center gap-1">
                         <Briefcase className="h-4 w-4" />
                         {application.profiles.current_company}
@@ -289,7 +290,7 @@ const ApplicantDetail = () => {
                   </div>
 
                   <div className="flex gap-3 mt-4">
-                    {application.profiles.linkedin_url && (
+                    {application.profiles?.linkedin_url && (
                       <Button variant="outline" size="sm" asChild>
                         <a href={application.profiles.linkedin_url} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="h-4 w-4 mr-1" />
@@ -297,7 +298,7 @@ const ApplicantDetail = () => {
                         </a>
                       </Button>
                     )}
-                    {application.profiles.github_url && (
+                    {application.profiles?.github_url && (
                       <Button variant="outline" size="sm" asChild>
                         <a href={application.profiles.github_url} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="h-4 w-4 mr-1" />
@@ -305,7 +306,7 @@ const ApplicantDetail = () => {
                         </a>
                       </Button>
                     )}
-                    {application.profiles.portfolio_url && (
+                    {application.profiles?.portfolio_url && (
                       <Button variant="outline" size="sm" asChild>
                         <a href={application.profiles.portfolio_url} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="h-4 w-4 mr-1" />
@@ -317,14 +318,14 @@ const ApplicantDetail = () => {
                 </div>
               </div>
 
-              {application.profiles.about && (
+              {application.profiles?.about && (
                 <div>
                   <h4 className="font-medium mb-2">About</h4>
                   <p className="text-gray-600">{application.profiles.about}</p>
                 </div>
               )}
 
-              {application.profiles.skills && application.profiles.skills.length > 0 && (
+              {application.profiles?.skills && application.profiles.skills.length > 0 && (
                 <div>
                   <h4 className="font-medium mb-2">Skills</h4>
                   <div className="flex flex-wrap gap-2">
@@ -394,7 +395,7 @@ const ApplicantDetail = () => {
                   {candidateNotes.map((note) => (
                     <div key={note.id} className="bg-gray-50 p-3 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">{note.profiles?.full_name}</span>
+                        <span className="text-sm font-medium">{note.profiles?.full_name || 'Unknown'}</span>
                         <div className="flex items-center gap-2">
                           {note.rating && (
                             <div className="flex items-center gap-1">
@@ -450,7 +451,7 @@ const ApplicantDetail = () => {
 
               <div className="text-sm text-gray-600 space-y-1">
                 <div>Applied: {formatDate(application.applied_at)}</div>
-                <div>Experience: {application.profiles.experience_years || 0} years</div>
+                <div>Experience: {application.profiles?.experience_years || 0} years</div>
                 {application.ai_match_score && (
                   <div className="flex items-center gap-1">
                     <Star className="h-4 w-4 text-yellow-500" />
