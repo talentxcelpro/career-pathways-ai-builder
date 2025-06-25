@@ -21,7 +21,7 @@ const Posts = () => {
         .from('posts')
         .select(`
           *,
-          profiles!inner(
+          profiles!posts_author_id_fkey(
             id,
             full_name,
             profile_picture_url,
