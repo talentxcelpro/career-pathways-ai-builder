@@ -4,13 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MessageCircle, Share2, MoreHorizontal, Image, Video, FileText } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { PostActions } from "@/components/posts/PostActions";
+import { CommentsSection } from "@/components/posts/CommentsSection";
+import { MediaUpload } from "@/components/posts/MediaUpload";
+import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 
 const Posts = () => {
   const [newPost, setNewPost] = useState('');
+  const [postMedia, setPostMedia] = useState<string[]>([]);
+  const [openComments, setOpenComments] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: posts, isLoading } = useQuery({
@@ -68,7 +74,7 @@ const Posts = () => {
   });
 
   const createPostMutation = useMutation({
-    mutationFn: async (content: string) => {
+    mutationFn: async ({ content, mediaUrls }: { content: string; mediaUrls: string[] }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
@@ -77,7 +83,8 @@ const Posts = () => {
         .insert({
           author_id: user.id,
           content,
-          post_type: 'text',
+          post_type: mediaUrls.length > 0 ? 'media' : 'text',
+          media_urls: mediaUrls,
           is_public: true
         });
 
@@ -86,6 +93,7 @@ const Posts = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       setNewPost('');
+      setPostMedia([]);
       toast.success('Post created successfully!');
     },
     onError: (error) => {
@@ -95,11 +103,11 @@ const Posts = () => {
   });
 
   const handleCreatePost = () => {
-    if (!newPost.trim()) {
-      toast.error('Please write something before posting');
+    if (!newPost.trim() && postMedia.length === 0) {
+      toast.error('Please write something or add media before posting');
       return;
     }
-    createPostMutation.mutate(newPost);
+    createPostMutation.mutate({ content: newPost, mediaUrls: postMedia });
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -131,6 +139,17 @@ const Posts = () => {
     return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
   };
 
+  // Check if profile needs completion
+  const getMissingProfileFields = (profile: any) => {
+    const missingFields = [];
+    if (!profile?.full_name || !profile.full_name.trim()) missingFields.push('name');
+    if (!profile?.profile_picture_url) missingFields.push('profile picture');
+    if (!profile?.title) missingFields.push('job title');
+    return missingFields;
+  };
+
+  const missingFields = currentUserProfile ? getMissingProfileFields(currentUserProfile) : [];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -139,6 +158,14 @@ const Posts = () => {
           <h1 className="text-3xl font-bold text-gray-900">Professional Feed</h1>
           <p className="text-gray-600 mt-2">Share insights, updates, and connect with your network</p>
         </div>
+
+        {/* Profile Completion Prompt */}
+        {missingFields.length > 0 && (
+          <ProfileCompletionPrompt 
+            missingFields={missingFields}
+            className="mb-6"
+          />
+        )}
 
         {/* Create Post */}
         <Card className="mb-8">
@@ -161,24 +188,16 @@ const Posts = () => {
                 onChange={(e) => setNewPost(e.target.value)}
                 className="min-h-[120px] resize-none"
               />
-              <div className="flex items-center justify-between">
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm" disabled>
-                    <Image className="h-4 w-4 mr-2" />
-                    Photo
-                  </Button>
-                  <Button variant="outline" size="sm" disabled>
-                    <Video className="h-4 w-4 mr-2" />
-                    Video
-                  </Button>
-                  <Button variant="outline" size="sm" disabled>
-                    <FileText className="h-4 w-4 mr-2" />
-                    Document
-                  </Button>
-                </div>
+              
+              <MediaUpload 
+                onMediaUploaded={setPostMedia}
+                existingMedia={postMedia}
+              />
+              
+              <div className="flex items-center justify-end">
                 <Button 
                   onClick={handleCreatePost}
-                  disabled={createPostMutation.isPending || !newPost.trim()}
+                  disabled={createPostMutation.isPending || (!newPost.trim() && postMedia.length === 0)}
                 >
                   {createPostMutation.isPending ? 'Posting...' : 'Post'}
                 </Button>
@@ -240,6 +259,44 @@ const Posts = () => {
                   <div className="mb-4">
                     <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
                     
+                    {/* Post Media */}
+                    {post.media_urls && post.media_urls.length > 0 && (
+                      <div className="mt-4 grid gap-2" style={{
+                        gridTemplateColumns: post.media_urls.length === 1 ? '1fr' : 
+                                           post.media_urls.length === 2 ? '1fr 1fr' :
+                                           post.media_urls.length === 3 ? '1fr 1fr 1fr' :
+                                           '1fr 1fr'
+                      }}>
+                        {post.media_urls.slice(0, 4).map((url: string, index: number) => {
+                          const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
+                          return (
+                            <div key={index} className="relative">
+                              {isVideo ? (
+                                <video 
+                                  src={url}
+                                  className="w-full h-64 object-cover rounded-lg"
+                                  controls
+                                />
+                              ) : (
+                                <img 
+                                  src={url}
+                                  alt={`Post media ${index + 1}`}
+                                  className="w-full h-64 object-cover rounded-lg"
+                                />
+                              )}
+                              {index === 3 && post.media_urls.length > 4 && (
+                                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                                  <span className="text-white text-xl font-semibold">
+                                    +{post.media_urls.length - 4}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                    
                     {/* Post Tags */}
                     {post.tags && post.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-3">
@@ -253,22 +310,19 @@ const Posts = () => {
                   </div>
 
                   {/* Post Actions */}
-                  <div className="flex items-center justify-between border-t pt-4">
-                    <div className="flex space-x-6">
-                      <Button variant="ghost" size="sm" className="text-gray-600 hover:text-red-600">
-                        <Heart className="h-4 w-4 mr-2" />
-                        {post.likes_count || 0}
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-600 hover:text-blue-600">
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        {post.comments_count || 0}
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-600 hover:text-green-600">
-                        <Share2 className="h-4 w-4 mr-2" />
-                        {post.shares_count || 0}
-                      </Button>
-                    </div>
-                  </div>
+                  <PostActions
+                    postId={post.id}
+                    initialLikes={post.likes_count || 0}
+                    initialComments={post.comments_count || 0}
+                    initialShares={post.shares_count || 0}
+                    onCommentClick={() => setOpenComments(openComments === post.id ? null : post.id)}
+                  />
+
+                  {/* Comments Section */}
+                  <CommentsSection
+                    postId={post.id}
+                    isOpen={openComments === post.id}
+                  />
                 </CardContent>
               </Card>
             ))
