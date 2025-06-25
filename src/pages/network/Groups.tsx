@@ -43,14 +43,14 @@ const Groups = () => {
   });
 
   const createGroupMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (groupData: typeof newGroup) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       const { data, error } = await supabase
         .from('groups')
         .insert({
-          ...newGroup,
+          ...groupData,
           created_by: user.id,
           member_count: 1
         })
@@ -97,8 +97,19 @@ const Groups = () => {
 
       if (error) throw error;
 
-      // Update member count
-      await supabase.rpc('increment_group_members', { group_id: groupId });
+      // Update member count - using a direct update for now
+      const { data: groupData } = await supabase
+        .from('groups')
+        .select('member_count')
+        .eq('id', groupId)
+        .single();
+
+      if (groupData) {
+        await supabase
+          .from('groups')
+          .update({ member_count: (groupData.member_count || 0) + 1 })
+          .eq('id', groupId);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups'] });
@@ -115,7 +126,7 @@ const Groups = () => {
       toast.error('Please enter a group name');
       return;
     }
-    createGroupMutation.mutate();
+    createGroupMutation.mutate(newGroup);
   };
 
   const categories = [
