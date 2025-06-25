@@ -21,11 +21,7 @@ const Requests = () => {
 
       const { data, error } = await supabase
         .from('connections')
-        .select(`
-          *,
-          requester:profiles!connections_requester_id_fkey(full_name, profile_picture_url, title, location),
-          recipient:profiles!connections_recipient_id_fkey(full_name, profile_picture_url, title, location)
-        `)
+        .select('*')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
         .order('created_at', { ascending: false });
 
@@ -56,10 +52,16 @@ const Requests = () => {
     }
   });
 
-  const { data: { user } } = supabase.auth.getUser();
+  const getCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
+  };
 
-  const getFilteredRequests = (type: 'received' | 'sent') => {
-    if (!requests || !user) return [];
+  const getFilteredRequests = async (type: 'received' | 'sent') => {
+    if (!requests) return [];
+    
+    const user = await getCurrentUser();
+    if (!user) return [];
     
     return requests.filter(request => {
       if (type === 'received') {
@@ -75,27 +77,22 @@ const Requests = () => {
   };
 
   const renderRequestCard = (request: any, isReceived: boolean) => {
-    const profile = isReceived ? request.requester : request.recipient;
-    
     return (
       <Card key={request.id} className="hover:shadow-md transition-shadow">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={profile?.profile_picture_url} />
                 <AvatarFallback>
-                  {profile?.full_name?.charAt(0) || 'U'}
+                  U
                 </AvatarFallback>
               </Avatar>
               <div>
                 <h3 className="font-semibold text-gray-900">
-                  {profile?.full_name || 'Anonymous User'}
+                  Anonymous User
                 </h3>
-                <p className="text-sm text-gray-600">{profile?.title}</p>
-                {profile?.location && (
-                  <p className="text-xs text-gray-500">{profile.location}</p>
-                )}
+                <p className="text-sm text-gray-600">Professional</p>
+                <p className="text-xs text-gray-500">Professional Network</p>
               </div>
             </div>
             
@@ -148,6 +145,22 @@ const Requests = () => {
     );
   };
 
+  const [receivedRequests, setReceivedRequests] = React.useState<any[]>([]);
+  const [sentRequests, setSentRequests] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const loadRequests = async () => {
+      const received = await getFilteredRequests('received');
+      const sent = await getFilteredRequests('sent');
+      setReceivedRequests(received);
+      setSentRequests(sent);
+    };
+    
+    if (requests) {
+      loadRequests();
+    }
+  }, [requests]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -161,11 +174,11 @@ const Requests = () => {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="received" className="flex items-center">
               <Clock className="h-4 w-4 mr-2" />
-              Received ({getFilteredRequests('received').length})
+              Received ({receivedRequests.length})
             </TabsTrigger>
             <TabsTrigger value="sent" className="flex items-center">
               <UserPlus className="h-4 w-4 mr-2" />
-              Sent ({getFilteredRequests('sent').length})
+              Sent ({sentRequests.length})
             </TabsTrigger>
           </TabsList>
 
@@ -188,8 +201,8 @@ const Requests = () => {
                   </CardContent>
                 </Card>
               ))
-            ) : getFilteredRequests('received').length > 0 ? (
-              getFilteredRequests('received').map(request => renderRequestCard(request, true))
+            ) : receivedRequests.length > 0 ? (
+              receivedRequests.map(request => renderRequestCard(request, true))
             ) : (
               <Card>
                 <CardContent className="p-12 text-center">
@@ -217,8 +230,8 @@ const Requests = () => {
                   </CardContent>
                 </Card>
               ))
-            ) : getFilteredRequests('sent').length > 0 ? (
-              getFilteredRequests('sent').map(request => renderRequestCard(request, false))
+            ) : sentRequests.length > 0 ? (
+              sentRequests.map(request => renderRequestCard(request, false))
             ) : (
               <Card>
                 <CardContent className="p-12 text-center">

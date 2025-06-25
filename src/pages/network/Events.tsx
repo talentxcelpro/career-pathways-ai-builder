@@ -34,11 +34,7 @@ const Events = () => {
     queryFn: async () => {
       let query = supabase
         .from('events')
-        .select(`
-          *,
-          profiles(full_name, profile_picture_url),
-          groups(name)
-        `);
+        .select('*');
 
       if (searchTerm) {
         query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,event_type.ilike.%${searchTerm}%`);
@@ -336,13 +332,6 @@ const Events = () => {
                         {event.max_attendees && ` / ${event.max_attendees}`} attendees
                       </div>
                     </div>
-
-                    {/* Organizer */}
-                    {event.profiles && (
-                      <div className="text-sm text-gray-600">
-                        Organized by {event.profiles.full_name}
-                      </div>
-                    )}
 
                     {/* Actions */}
                     <div className="flex space-x-2">

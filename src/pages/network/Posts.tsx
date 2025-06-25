@@ -19,10 +19,7 @@ const Posts = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select(`
-          *,
-          profiles(full_name, profile_picture_url, title)
-        `)
+        .select('*')
         .eq('is_public', true)
         .order('created_at', { ascending: false })
         .limit(20);
@@ -155,16 +152,15 @@ const Posts = () => {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-start space-x-3">
                       <Avatar>
-                        <AvatarImage src={post.profiles?.profile_picture_url} />
                         <AvatarFallback>
-                          {post.profiles?.full_name?.charAt(0) || 'U'}
+                          U
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <h3 className="font-semibold text-gray-900">
-                          {post.profiles?.full_name || 'Anonymous User'}
+                          Anonymous User
                         </h3>
-                        <p className="text-sm text-gray-600">{post.profiles?.title}</p>
+                        <p className="text-sm text-gray-600">Professional</p>
                         <p className="text-xs text-gray-500">{formatTimeAgo(post.created_at)}</p>
                       </div>
                     </div>
