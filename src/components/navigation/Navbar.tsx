@@ -3,11 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from "sonner";
-import { User, Settings, LogOut, Bell, Search, Briefcase, BookOpen, Users, Target } from "lucide-react";
+import { User, Settings, LogOut, Bell, Search, Briefcase, BookOpen, Users, Target, Building, GraduationCap, Wrench, Brain, Map } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -56,6 +58,73 @@ export const Navbar = () => {
     }
   };
 
+  const navigationItems = [
+    {
+      title: "Jobs",
+      href: "/jobs",
+      icon: Briefcase,
+      description: "Find and apply to opportunities",
+      items: [
+        { title: "Browse Jobs", href: "/jobs", description: "Search and filter job listings" },
+        { title: "Saved Jobs", href: "/jobs/saved", description: "Your bookmarked positions" },
+        { title: "Applications", href: "/jobs/applied", description: "Track your applications" },
+        { title: "Job Alerts", href: "/jobs/alerts", description: "Set up custom notifications" },
+        { title: "Company Directory", href: "/jobs/companies", description: "Explore employers" },
+      ]
+    },
+    {
+      title: "Network",
+      href: "/network",
+      icon: Users,
+      description: "Connect with professionals",
+      items: [
+        { title: "People", href: "/network/people", description: "Find and connect with professionals" },
+        { title: "Posts", href: "/network/posts", description: "Share and discover content" },
+        { title: "Groups", href: "/network/groups", description: "Join professional communities" },
+        { title: "Events", href: "/network/events", description: "Attend industry events" },
+        { title: "Messages", href: "/network/messages", description: "Chat with connections" },
+      ]
+    },
+    {
+      title: "Learning",
+      href: "/learning",
+      icon: BookOpen,
+      description: "Develop your skills",
+      items: [
+        { title: "Browse Courses", href: "/learning", description: "Discover new skills" },
+        { title: "My Courses", href: "/learning/my-courses", description: "Track your progress" },
+        { title: "Learning Paths", href: "/learning/paths", description: "Structured skill development" },
+        { title: "Assessments", href: "/learning/assessments", description: "Test your knowledge" },
+        { title: "Certificates", href: "/learning/certificates", description: "View earned credentials" },
+      ]
+    },
+    {
+      title: "Career Map",
+      href: "/career-map",
+      icon: Map,
+      description: "Plan your career journey",
+      items: [
+        { title: "Career Planner", href: "/career-map", description: "Interactive 5-year planning" },
+        { title: "AI Roadmap", href: "/career-map/generate", description: "Generate personalized paths" },
+        { title: "Skills Gap", href: "/career-map/skills-gap", description: "Identify missing skills" },
+        { title: "Career Switch", href: "/career-map/switch", description: "Explore new directions" },
+      ]
+    },
+    {
+      title: "Tools",
+      href: "/tools",
+      icon: Wrench,
+      description: "AI-powered career tools",
+      items: [
+        { title: "Resume Builder", href: "/tools/resume-builder", description: "Create ATS-friendly resumes" },
+        { title: "Cover Letter", href: "/tools/cover-letter", description: "AI-powered cover letters" },
+        { title: "Interview Prep", href: "/tools/interview-prep", description: "Mock interviews & practice" },
+        { title: "Salary Analyzer", href: "/tools/salary-analyzer", description: "Market salary insights" },
+        { title: "AI Assistant", href: "/tools/ai-assistant", description: "Smart career guidance" },
+      ]
+    }
+  ];
+
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,28 +154,64 @@ export const Navbar = () => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <Link to="/jobs">
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-1">
-                    <Briefcase className="h-4 w-4" />
-                    <span>Jobs</span>
-                  </Button>
-                </Link>
-                <Link to="/network">
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-1">
-                    <Users className="h-4 w-4" />
-                    <span>Network</span>
-                  </Button>
-                </Link>
-                <Link to="/learning">
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-1">
-                    <BookOpen className="h-4 w-4" />
-                    <span>Learning</span>
-                  </Button>
-                </Link>
-                <Link to="/career-map">
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-1">
-                    <Target className="h-4 w-4" />
-                    <span>Career</span>
+                {/* Navigation Menu */}
+                <NavigationMenu className="hidden lg:flex">
+                  <NavigationMenuList>
+                    {navigationItems.map((item) => (
+                      <NavigationMenuItem key={item.title}>
+                        <NavigationMenuTrigger className="text-sm font-medium text-gray-700 hover:text-gray-900">
+                          <item.icon className="h-4 w-4 mr-1" />
+                          {item.title}
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                          <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                            {item.items.map((subItem) => (
+                              <li key={subItem.title}>
+                                <NavigationMenuLink asChild>
+                                  <Link
+                                    className={cn(
+                                      "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                    )}
+                                    to={subItem.href}
+                                  >
+                                    <div className="text-sm font-medium leading-none">{subItem.title}</div>
+                                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                      {subItem.description}
+                                    </p>
+                                  </Link>
+                                </NavigationMenuLink>
+                              </li>
+                            ))}
+                          </ul>
+                        </NavigationMenuContent>
+                      </NavigationMenuItem>
+                    ))}
+                  </NavigationMenuList>
+                </NavigationMenu>
+
+                {/* Mobile Navigation - Simple Links */}
+                <div className="flex lg:hidden space-x-2">
+                  <Link to="/jobs">
+                    <Button variant="ghost" size="sm">
+                      <Briefcase className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                  <Link to="/network">
+                    <Button variant="ghost" size="sm">
+                      <Users className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                  <Link to="/learning">
+                    <Button variant="ghost" size="sm">
+                      <BookOpen className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+
+                {/* AI Assistant Quick Access */}
+                <Link to="/ai-assistant">
+                  <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
+                    <Brain className="h-4 w-4" />
                   </Button>
                 </Link>
 
