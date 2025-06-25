@@ -28,7 +28,7 @@ export default function AppliedJobs() {
         .from('job_applications')
         .select(`
           *,
-          jobs!inner (
+          jobs!fk_job_applications_job_id (
             *,
             companies (
               id,
@@ -50,18 +50,20 @@ export default function AppliedJobs() {
         query = query.eq('status', statusFilter);
       }
 
-      // Apply search filter
-      if (searchTerm) {
-        query = query.or(
-          `jobs.title.ilike.%${searchTerm}%,jobs.companies.name.ilike.%${searchTerm}%`,
-          { foreignTable: 'jobs' }
-        );
-      }
-
       const { data, error } = await query;
       
       if (error) throw error;
-      return data;
+      
+      // Frontend filtering for search term
+      let filteredData = data || [];
+      if (searchTerm) {
+        filteredData = filteredData.filter(app => 
+          app.jobs?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          app.jobs?.companies?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      
+      return filteredData;
     }
   });
 
@@ -187,12 +189,14 @@ export default function AppliedJobs() {
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between space-x-4">
                     <div className="flex-1">
-                      <JobCard
-                        job={application.jobs}
-                        onSave={() => {}}
-                        isSaved={false}
-                        showCompany={true}
-                      />
+                      {application.jobs && (
+                        <JobCard
+                          job={application.jobs}
+                          onSave={() => {}}
+                          isSaved={false}
+                          showCompany={true}
+                        />
+                      )}
                     </div>
                     
                     <div className="text-right space-y-2 min-w-[200px]">
@@ -215,7 +219,7 @@ export default function AppliedJobs() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => navigate(`/jobs/${application.jobs.id}`)}
+                        onClick={() => navigate(`/jobs/${application.jobs?.id}`)}
                       >
                         View Job
                       </Button>

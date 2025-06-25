@@ -36,7 +36,7 @@ const ApplicantDetail = () => {
         .from('job_applications')
         .select(`
           *,
-          profiles(
+          profiles!fk_job_applications_user_id(
             full_name,
             email,
             phone,
@@ -51,7 +51,7 @@ const ApplicantDetail = () => {
             portfolio_url,
             current_company
           ),
-          jobs(
+          jobs!fk_job_applications_job_id(
             title,
             companies(name)
           )
@@ -72,7 +72,7 @@ const ApplicantDetail = () => {
         .from('candidate_notes')
         .select(`
           *,
-          profiles!author_id(full_name)
+          profiles!fk_candidate_notes_author_id(full_name)
         `)
         .eq('job_id', jobId)
         .eq('candidate_id', userId)
