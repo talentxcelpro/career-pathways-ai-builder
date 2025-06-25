@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import { incrementJobViews } from "@/utils/supabaseHelpers";
 
 export default function JobDetails() {
   const { id } = useParams<{ id: string }>();
@@ -96,13 +96,17 @@ export default function JobDetails() {
       await supabase.from('job_views').insert({
         job_id: id,
         user_id: user?.id,
-        ip_address: null, // Will be handled by the backend
+        ip_address: null,
         user_agent: navigator.userAgent,
         referrer: document.referrer
       });
 
       // Update view count
-      await supabase.rpc('increment_job_views', { job_id: id });
+      try {
+        await incrementJobViews(id);
+      } catch (error) {
+        console.log('Failed to increment job views:', error);
+      }
     };
 
     trackView();
@@ -163,7 +167,6 @@ export default function JobDetails() {
         url: window.location.href
       });
     } catch (error) {
-      // Fallback to copying to clipboard
       navigator.clipboard.writeText(window.location.href);
       toast.success('Link copied to clipboard');
     }

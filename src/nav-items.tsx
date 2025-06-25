@@ -1,5 +1,5 @@
 
-import { HomeIcon, Users, BookOpen, TrendingUp, User, Briefcase, Settings, Network, Calendar, MessageSquare, Bell, Heart, FileText, BarChart3, Building2, Sparkles, Plus, Search, Target, Compass } from "lucide-react";
+import { HomeIcon, Users, BookOpen, TrendingUp, User, Briefcase, Settings, Calendar, MessageSquare, Bell, Heart, FileText, BarChart3, Building2, Sparkles, Plus, Search, Target, Compass } from "lucide-react";
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
 import ResumeBuilder from "./pages/ResumeBuilder";
@@ -13,7 +13,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
 // Network pages
-import Network from "./pages/Network";
+import NetworkMain from "./pages/Network";
 import People from "./pages/network/People";
 import Posts from "./pages/network/Posts";
 import Groups from "./pages/network/Groups";
@@ -58,7 +58,7 @@ export const navItems = [
     title: "Network",
     to: "/network",
     icon: <Users className="h-4 w-4" />,
-    page: <Network />,
+    page: <NetworkMain />,
   },
   {
     title: "Learning",

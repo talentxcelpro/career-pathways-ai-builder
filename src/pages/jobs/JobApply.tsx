@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +12,7 @@ import { Upload, FileText, ArrowLeft, Send, Briefcase } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { incrementJobApplications } from "@/utils/supabaseHelpers";
 
 export default function JobApply() {
   const { id } = useParams<{ id: string }>();
@@ -119,7 +119,13 @@ export default function JobApply() {
       if (error) throw error;
 
       // Update application count
-      await supabase.rpc('increment_job_applications', { job_id: id });
+      if (id) {
+        try {
+          await incrementJobApplications(id);
+        } catch (error) {
+          console.log('Failed to increment application count:', error);
+        }
+      }
     },
     onSuccess: () => {
       toast.success('Application submitted successfully!');
@@ -138,7 +144,7 @@ export default function JobApply() {
     const file = event.target.files?.[0];
     if (file) {
       handleInputChange('custom_resume', file);
-      handleInputChange('resume_url', ''); // Clear selected resume
+      handleInputChange('resume_url', '');
     }
   };
 
@@ -159,10 +165,6 @@ export default function JobApply() {
   };
 
   const generateCoverLetter = async () => {
-    // Simple AI-powered cover letter generation
-    const prompt = `Write a professional cover letter for the position of ${job?.title} at ${job?.companies?.name}. Keep it concise and professional.`;
-    
-    // This would ideally use a proper AI service
     const templateCoverLetter = `Dear Hiring Manager,
 
 I am writing to express my strong interest in the ${job?.title} position at ${job?.companies?.name}. With my background and passion for this field, I am confident I would be a valuable addition to your team.

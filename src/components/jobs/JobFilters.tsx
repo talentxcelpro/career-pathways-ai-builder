@@ -54,8 +54,8 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
   const hasActiveFilters = Object.entries(filters).some(([key, value]) => {
     if (key === 'search' || key === 'location') return value !== '';
     if (Array.isArray(value)) return value.length > 0;
-    if (key === 'salary_min') return value > 0;
-    if (key === 'salary_max') return value < 500000;
+    if (key === 'salary_min') return (value as number) > 0;
+    if (key === 'salary_max') return (value as number) < 500000;
     if (key === 'is_remote') return value === true;
     return false;
   });
