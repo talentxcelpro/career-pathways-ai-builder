@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,7 @@ const Posts = () => {
         .from('posts')
         .select(`
           *,
-          profiles!posts_author_id_fkey(
+          profiles!inner(
             id,
             full_name,
             profile_picture_url,
@@ -29,6 +28,7 @@ const Posts = () => {
           )
         `)
         .eq('is_public', true)
+        .eq('profiles.id', 'posts.author_id')
         .order('created_at', { ascending: false })
         .limit(20);
 
