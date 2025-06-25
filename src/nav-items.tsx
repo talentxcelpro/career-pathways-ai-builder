@@ -1,4 +1,3 @@
-
 import { HomeIcon, Users, BookOpen, TrendingUp, User, Briefcase, Settings, Calendar, MessageSquare, Bell, Heart, FileText, BarChart3, Building2, Sparkles, Plus, Search, Target, Compass } from "lucide-react";
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
@@ -34,6 +33,12 @@ import ProfileDocuments from "./pages/profile/ProfileDocuments";
 import JobDetails from "./pages/jobs/JobDetails";
 import JobApply from "./pages/jobs/JobApply";
 import SavedJobs from "./pages/jobs/SavedJobs";
+
+// Learning pages
+import Learning from "./pages/Learning";
+import CourseDetail from "./pages/learning/CourseDetail";
+import MyCourses from "./pages/learning/MyCourses";
+import LearningPaths from "./pages/learning/LearningPaths";
 
 export const navItems = [
   {
@@ -175,6 +180,23 @@ export const navItems = [
     title: "Saved Jobs",
     to: "/jobs/saved",
     page: <SavedJobs />,
+  },
+
+  // Learning sub-pages
+  {
+    title: "Course Detail",
+    to: "/learning/:id",
+    page: <CourseDetail />,
+  },
+  {
+    title: "My Courses",
+    to: "/learning/my-courses",
+    page: <MyCourses />,
+  },
+  {
+    title: "Learning Paths",
+    to: "/learning/paths",
+    page: <LearningPaths />,
   },
 
   // Catch all 404

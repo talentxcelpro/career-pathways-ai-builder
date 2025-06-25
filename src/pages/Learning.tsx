@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -9,6 +9,8 @@ import { CourseCard } from "@/components/learning/CourseCard";
 import { LearningPathCard } from "@/components/learning/LearningPathCard";
 import { MyLearningCard } from "@/components/learning/MyLearningCard";
 import { EmptyMyLearning } from "@/components/learning/EmptyMyLearning";
+import { Link } from 'react-router-dom';
+import { TrendingUp, Target, BookOpen, Award } from 'lucide-react';
 
 const Learning = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -100,6 +102,28 @@ const Learning = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Learning Hub</h1>
           <p className="text-gray-600">Advance your career with expert-led courses and learning paths</p>
+          
+          {/* Quick Navigation */}
+          <div className="flex flex-wrap gap-4 mt-6">
+            <Link to="/learning/my-courses">
+              <Button variant="outline" className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                My Courses
+              </Button>
+            </Link>
+            <Link to="/learning/paths">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Target className="h-4 w-4" />
+                Learning Paths
+              </Button>
+            </Link>
+            <Link to="/learning/certificates">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Award className="h-4 w-4" />
+                Certificates
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Search and Filters */}
