@@ -1,16 +1,11 @@
+
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { SearchAndFilters } from "@/components/learning/SearchAndFilters";
-import { CourseCard } from "@/components/learning/CourseCard";
-import { LearningPathCard } from "@/components/learning/LearningPathCard";
-import { MyLearningCard } from "@/components/learning/MyLearningCard";
-import { EmptyMyLearning } from "@/components/learning/EmptyMyLearning";
-import { Link } from 'react-router-dom';
-import { TrendingUp, Target, BookOpen, Award } from 'lucide-react';
+import { LearningHeader } from "@/components/learning/LearningHeader";
+import { LearningTabs } from "@/components/learning/LearningTabs";
 
 const Learning = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,35 +93,8 @@ const Learning = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Learning Hub</h1>
-          <p className="text-gray-600">Advance your career with expert-led courses and learning paths</p>
-          
-          {/* Quick Navigation */}
-          <div className="flex flex-wrap gap-4 mt-6">
-            <Link to="/learning/my-courses">
-              <Button variant="outline" className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                My Courses
-              </Button>
-            </Link>
-            <Link to="/learning/paths">
-              <Button variant="outline" className="flex items-center gap-2">
-                <Target className="h-4 w-4" />
-                Learning Paths
-              </Button>
-            </Link>
-            <Link to="/learning/certificates">
-              <Button variant="outline" className="flex items-center gap-2">
-                <Award className="h-4 w-4" />
-                Certificates
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
+        <LearningHeader />
+        
         <SearchAndFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -137,65 +105,17 @@ const Learning = () => {
           categories={categories}
         />
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="courses">Courses</TabsTrigger>
-            <TabsTrigger value="paths">Learning Paths</TabsTrigger>
-            <TabsTrigger value="my-learning">My Learning</TabsTrigger>
-          </TabsList>
-
-          {/* Courses Tab */}
-          <TabsContent value="courses">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {coursesLoading ? (
-                <div className="col-span-3 text-center py-8">Loading courses...</div>
-              ) : filteredCourses.length === 0 ? (
-                <div className="col-span-3 text-center py-8 text-gray-500">
-                  No courses found matching your criteria
-                </div>
-              ) : (
-                filteredCourses.map((course) => (
-                  <CourseCard
-                    key={course.id}
-                    course={course}
-                    isEnrolled={isEnrolled(course.id)}
-                    onEnroll={enrollInCourse}
-                  />
-                ))
-              )}
-            </div>
-          </TabsContent>
-
-          {/* Learning Paths Tab */}
-          <TabsContent value="paths">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {pathsLoading ? (
-                <div className="col-span-2 text-center py-8">Loading learning paths...</div>
-              ) : learningPaths.length === 0 ? (
-                <div className="col-span-2 text-center py-8 text-gray-500">
-                  No learning paths available yet
-                </div>
-              ) : (
-                learningPaths.map((path) => (
-                  <LearningPathCard key={path.id} path={path} />
-                ))
-              )}
-            </div>
-          </TabsContent>
-
-          {/* My Learning Tab */}
-          <TabsContent value="my-learning">
-            {userCourses.length === 0 ? (
-              <EmptyMyLearning onBrowseCourses={() => setActiveTab('courses')} />
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {userCourses.map((userCourse) => (
-                  <MyLearningCard key={userCourse.id} userCourse={userCourse} />
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+        <LearningTabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          filteredCourses={filteredCourses}
+          coursesLoading={coursesLoading}
+          learningPaths={learningPaths}
+          pathsLoading={pathsLoading}
+          userCourses={userCourses}
+          isEnrolled={isEnrolled}
+          enrollInCourse={enrollInCourse}
+        />
       </div>
     </div>
   );

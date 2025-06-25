@@ -4,6 +4,8 @@ import Learning from "../pages/Learning";
 import CourseDetail from "../pages/learning/CourseDetail";
 import MyCourses from "../pages/learning/MyCourses";
 import LearningPaths from "../pages/learning/LearningPaths";
+import LearningPathDetail from "../pages/learning/LearningPathDetail";
+import Certificates from "../pages/learning/Certificates";
 
 export const learningRoutes = [
   {
@@ -26,5 +28,15 @@ export const learningRoutes = [
     title: "Learning Paths",
     to: "/learning/paths",
     page: <LearningPaths />,
+  },
+  {
+    title: "Learning Path Detail",
+    to: "/learning/paths/:id",
+    page: <LearningPathDetail />,
+  },
+  {
+    title: "Certificates",
+    to: "/learning/certificates",
+    page: <Certificates />,
   },
 ];
