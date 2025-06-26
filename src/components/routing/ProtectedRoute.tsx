@@ -33,7 +33,7 @@ export const ProtectedRoute = ({
           .eq('id', session.user.id)
           .single();
         
-        setUserRole(profile?.user_role || 'user');
+        setUserRole(profile?.user_role || 'job_seeker');
       } else {
         setIsAuthenticated(false);
       }
@@ -51,7 +51,7 @@ export const ProtectedRoute = ({
           .eq('id', session.user.id)
           .single()
           .then(({ data: profile }) => {
-            setUserRole(profile?.user_role || 'user');
+            setUserRole(profile?.user_role || 'job_seeker');
           });
       } else {
         setIsAuthenticated(false);

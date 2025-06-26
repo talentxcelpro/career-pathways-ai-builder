@@ -14,4 +14,4 @@ export interface NavItem {
   children?: NavItem[];
 }
 
-export type UserRole = 'user' | 'employer' | 'admin';
+export type UserRole = 'job_seeker' | 'employer' | 'admin';
