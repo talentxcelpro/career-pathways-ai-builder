@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -139,7 +138,28 @@ const AutomatedSuggestions = () => {
         const mockSuggestions = generateMockSuggestions();
         setSuggestions(mockSuggestions);
       } else if (existingSuggestions && existingSuggestions.length > 0) {
-        setSuggestions(existingSuggestions);
+        // Transform database suggestions to match our interface
+        const transformedSuggestions: Suggestion[] = existingSuggestions.map(suggestion => ({
+          id: suggestion.id,
+          type: ['tool', 'action', 'improvement'].includes(suggestion.type) 
+            ? suggestion.type as 'tool' | 'action' | 'improvement'
+            : 'improvement',
+          title: suggestion.title,
+          description: suggestion.description,
+          tool_name: suggestion.tool_name,
+          priority: ['high', 'medium', 'low'].includes(suggestion.priority)
+            ? suggestion.priority as 'high' | 'medium' | 'low'
+            : 'medium',
+          reason: suggestion.reason || '',
+          estimated_time: suggestion.estimated_time || 0,
+          potential_impact: ['high', 'medium', 'low'].includes(suggestion.potential_impact)
+            ? suggestion.potential_impact as 'high' | 'medium' | 'low'
+            : 'medium',
+          expires_at: suggestion.expires_at,
+          is_dismissed: suggestion.is_dismissed,
+          created_at: suggestion.created_at
+        }));
+        setSuggestions(transformedSuggestions);
       } else {
         // Generate new suggestions and save them
         const newSuggestions = generateMockSuggestions();
