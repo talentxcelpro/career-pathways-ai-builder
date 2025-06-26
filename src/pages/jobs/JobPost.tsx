@@ -1,20 +1,17 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Plus, X, ArrowLeft, Briefcase } from "lucide-react";
+import { ArrowLeft, Briefcase } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import CompanySelector from "@/components/jobs/CompanySelector";
 import CompanyDetails from "@/components/jobs/CompanyDetails";
+import BasicJobInformation from "@/components/jobs/BasicJobInformation";
+import JobDetailsForm from "@/components/jobs/JobDetailsForm";
+import SkillsBenefitsForm from "@/components/jobs/SkillsBenefitsForm";
 
 export default function JobPost() {
   const navigate = useNavigate();
@@ -34,9 +31,6 @@ export default function JobPost() {
     benefits: [] as string[],
     application_deadline: ''
   });
-
-  const [newSkill, setNewSkill] = useState('');
-  const [newBenefit, setNewBenefit] = useState('');
 
   // Fetch companies with logo and details
   const { data: companies = [] } = useQuery({
@@ -113,28 +107,6 @@ export default function JobPost() {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
 
-  const addSkill = () => {
-    if (newSkill.trim() && !formData.skills_required.includes(newSkill.trim())) {
-      handleInputChange('skills_required', [...formData.skills_required, newSkill.trim()]);
-      setNewSkill('');
-    }
-  };
-
-  const removeSkill = (skill: string) => {
-    handleInputChange('skills_required', formData.skills_required.filter(s => s !== skill));
-  };
-
-  const addBenefit = () => {
-    if (newBenefit.trim() && !formData.benefits.includes(newBenefit.trim())) {
-      handleInputChange('benefits', [...formData.benefits, newBenefit.trim()]);
-      setNewBenefit('');
-    }
-  };
-
-  const removeBenefit = (benefit: string) => {
-    handleInputChange('benefits', formData.benefits.filter(b => b !== benefit));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -169,251 +141,43 @@ export default function JobPost() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Company Selection & Details */}
           <Card>
-            <CardHeader>
-              <CardTitle>Company Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="company">Company *</Label>
-                <CompanySelector
-                  companies={companies}
-                  value={formData.company_id}
-                  onValueChange={(value) => handleInputChange('company_id', value)}
-                />
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Company *
+                  </label>
+                  <CompanySelector
+                    companies={companies}
+                    value={formData.company_id}
+                    onValueChange={(value) => handleInputChange('company_id', value)}
+                  />
+                </div>
+                
+                {/* Company Details Preview */}
+                <CompanyDetails company={selectedCompany || null} />
               </div>
-              
-              {/* Company Details Preview */}
-              <CompanyDetails company={selectedCompany || null} />
             </CardContent>
           </Card>
 
           {/* Basic Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Job Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="title">Job Title *</Label>
-                <Input
-                  id="title"
-                  placeholder="e.g., Senior Frontend Developer"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <Select
-                  value={formData.category_id}
-                  onValueChange={(value) => handleInputChange('category_id', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="description">Job Description *</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Describe the role, responsibilities, and what makes this opportunity exciting..."
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  rows={6}
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="requirements">Requirements</Label>
-                <Textarea
-                  id="requirements"
-                  placeholder="List the qualifications, experience, and skills required..."
-                  value={formData.requirements}
-                  onChange={(e) => handleInputChange('requirements', e.target.value)}
-                  rows={4}
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <BasicJobInformation
+            formData={formData}
+            categories={categories}
+            onInputChange={handleInputChange}
+          />
 
           {/* Job Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Job Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="employment_type">Employment Type</Label>
-                  <Select
-                    value={formData.employment_type}
-                    onValueChange={(value) => handleInputChange('employment_type', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="full-time">Full-time</SelectItem>
-                      <SelectItem value="part-time">Part-time</SelectItem>
-                      <SelectItem value="contract">Contract</SelectItem>
-                      <SelectItem value="freelance">Freelance</SelectItem>
-                      <SelectItem value="internship">Internship</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="experience_level">Experience Level</Label>
-                  <Select
-                    value={formData.experience_level}
-                    onValueChange={(value) => handleInputChange('experience_level', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="entry-level">Entry Level</SelectItem>
-                      <SelectItem value="mid-level">Mid Level</SelectItem>
-                      <SelectItem value="senior-level">Senior Level</SelectItem>
-                      <SelectItem value="executive">Executive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="deadline">Application Deadline</Label>
-                  <Input
-                    id="deadline"
-                    type="date"
-                    value={formData.application_deadline}
-                    onChange={(e) => handleInputChange('application_deadline', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  placeholder="e.g., San Francisco, CA"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="remote"
-                  checked={formData.is_remote}
-                  onCheckedChange={(checked) => handleInputChange('is_remote', checked)}
-                />
-                <Label htmlFor="remote">This is a remote position</Label>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="salary_min">Minimum Salary</Label>
-                  <Input
-                    id="salary_min"
-                    type="number"
-                    placeholder="50000"
-                    value={formData.salary_min}
-                    onChange={(e) => handleInputChange('salary_min', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="salary_max">Maximum Salary</Label>
-                  <Input
-                    id="salary_max"
-                    type="number"
-                    placeholder="80000"
-                    value={formData.salary_max}
-                    onChange={(e) => handleInputChange('salary_max', e.target.value)}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <JobDetailsForm
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
 
           {/* Skills and Benefits */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Skills & Benefits</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Skills */}
-              <div>
-                <Label>Required Skills</Label>
-                <div className="flex space-x-2 mt-2">
-                  <Input
-                    placeholder="Add a skill..."
-                    value={newSkill}
-                    onChange={(e) => setNewSkill(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
-                  />
-                  <Button type="button" onClick={addSkill} size="sm">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {formData.skills_required.map((skill) => (
-                    <Badge key={skill} variant="secondary">
-                      {skill}
-                      <button
-                        type="button"
-                        onClick={() => removeSkill(skill)}
-                        className="ml-2 hover:text-red-500"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              {/* Benefits */}
-              <div>
-                <Label>Benefits</Label>
-                <div className="flex space-x-2 mt-2">
-                  <Input
-                    placeholder="Add a benefit..."
-                    value={newBenefit}
-                    onChange={(e) => setNewBenefit(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addBenefit())}
-                  />
-                  <Button type="button" onClick={addBenefit} size="sm">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {formData.benefits.map((benefit) => (
-                    <Badge key={benefit} variant="outline">
-                      {benefit}
-                      <button
-                        type="button"
-                        onClick={() => removeBenefit(benefit)}
-                        className="ml-2 hover:text-red-500"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <SkillsBenefitsForm
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
 
           {/* Submit */}
           <Card>
