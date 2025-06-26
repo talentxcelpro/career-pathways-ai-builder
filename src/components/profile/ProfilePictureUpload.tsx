@@ -19,15 +19,23 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
   onImageChange
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { uploadFile, isUploading } = useFileUpload();
+  const { uploadFile, uploading } = useFileUpload({
+    bucket: 'avatars',
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/png', 'image/webp']
+  });
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const url = await uploadFile(file, userId, 'avatar');
-    if (url) {
-      onImageChange(url);
+    try {
+      const url = await uploadFile(file, userId, 'avatar');
+      if (url) {
+        onImageChange(url);
+      }
+    } catch (error) {
+      console.error('Upload failed:', error);
     }
 
     // Reset input
@@ -71,10 +79,10 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
       <Button 
         onClick={triggerFileSelect} 
         variant="outline" 
-        disabled={isUploading}
+        disabled={uploading}
       >
         <Upload className="h-4 w-4 mr-2" />
-        {isUploading ? 'Uploading...' : 'Change Photo'}
+        {uploading ? 'Uploading...' : 'Change Photo'}
       </Button>
     </div>
   );

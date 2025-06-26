@@ -22,7 +22,11 @@ const ProfileEdit = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { uploadFile, isUploading } = useFileUpload();
+  const { uploadFile, uploading } = useFileUpload({
+    bucket: 'resumes',
+    maxSize: 50 * 1024 * 1024, // 50MB for resumes
+    allowedTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+  });
   
   // Get current user
   const { data: currentUser } = useQuery({
@@ -156,9 +160,13 @@ const ProfileEdit = () => {
     const file = event.target.files?.[0];
     if (!file || !currentUser?.id) return;
 
-    const url = await uploadFile(file, currentUser.id, 'resume');
-    if (url) {
-      setFormData(prev => ({ ...prev, resume_url: url }));
+    try {
+      const url = await uploadFile(file, currentUser.id, 'resume');
+      if (url) {
+        setFormData(prev => ({ ...prev, resume_url: url }));
+      }
+    } catch (error) {
+      console.error('Resume upload failed:', error);
     }
   };
 
@@ -300,9 +308,9 @@ const ProfileEdit = () => {
                   id="resume-upload"
                 />
                 <label htmlFor="resume-upload">
-                  <Button variant="outline" className="cursor-pointer" disabled={isUploading}>
+                  <Button variant="outline" className="cursor-pointer" disabled={uploading}>
                     <Upload className="h-4 w-4 mr-2" />
-                    {isUploading ? 'Uploading...' : 'Upload Resume'}
+                    {uploading ? 'Uploading...' : 'Upload Resume'}
                   </Button>
                 </label>
                 <p className="text-xs text-gray-500 mt-1">

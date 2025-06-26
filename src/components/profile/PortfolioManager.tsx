@@ -42,7 +42,11 @@ export const PortfolioManager: React.FC<PortfolioManagerProps> = ({ userId }) =>
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { uploadFile, isUploading } = useFileUpload();
+  const { uploadFile, uploading } = useFileUpload({
+    bucket: 'portfolio',
+    maxSize: 10 * 1024 * 1024, // 10MB for portfolio images
+    allowedTypes: ['image/jpeg', 'image/png', 'image/webp']
+  });
 
   // Fetch portfolio items
   const { data: portfolioItems = [], isLoading } = useQuery({

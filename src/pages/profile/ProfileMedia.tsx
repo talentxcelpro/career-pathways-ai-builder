@@ -14,7 +14,11 @@ import { Upload, Video } from "lucide-react";
 const ProfileMedia = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { uploadFile, isUploading } = useFileUpload();
+  const { uploadFile, uploading } = useFileUpload({
+    bucket: 'portfolio',
+    maxSize: 50 * 1024 * 1024, // 50MB for videos
+    allowedTypes: ['video/mp4', 'video/webm', 'video/quicktime']
+  });
 
   // Get current user
   const { data: currentUser } = useQuery({
@@ -78,13 +82,17 @@ const ProfileMedia = () => {
       return;
     }
 
-    const url = await uploadFile(file, currentUser.id, 'portfolio');
-    if (url) {
-      // You might want to store this in a separate field or as a portfolio item
-      toast({
-        title: "Video uploaded",
-        description: "Your video resume has been uploaded successfully."
-      });
+    try {
+      const url = await uploadFile(file, currentUser.id, 'portfolio');
+      if (url) {
+        // You might want to store this in a separate field or as a portfolio item
+        toast({
+          title: "Video uploaded",
+          description: "Your video resume has been uploaded successfully."
+        });
+      }
+    } catch (error) {
+      console.error('Video upload failed:', error);
     }
   };
 
@@ -140,9 +148,9 @@ const ProfileMedia = () => {
                   id="video-upload"
                 />
                 <label htmlFor="video-upload">
-                  <Button variant="outline" className="cursor-pointer" disabled={isUploading}>
+                  <Button variant="outline" className="cursor-pointer" disabled={uploading}>
                     <Upload className="h-4 w-4 mr-2" />
-                    {isUploading ? 'Uploading...' : 'Upload Video'}
+                    {uploading ? 'Uploading...' : 'Upload Video'}
                   </Button>
                 </label>
                 <p className="text-sm text-gray-600 mt-2">

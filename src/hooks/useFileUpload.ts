@@ -9,21 +9,31 @@ interface UseFileUploadOptions {
   allowedTypes?: string[];
 }
 
-export function useFileUpload({ bucket, maxSize = 5 * 1024 * 1024, allowedTypes }: UseFileUploadOptions) {
+export function useFileUpload(options?: UseFileUploadOptions) {
+  const defaultOptions: UseFileUploadOptions = {
+    bucket: 'company-logos',
+    maxSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']
+  };
+  
+  const config = { ...defaultOptions, ...options };
+  
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const uploadFile = async (file: File, path?: string): Promise<string> => {
+  const uploadFile = async (file: File, pathOrUserId?: string, bucketOverride?: string): Promise<string> => {
     if (!file) throw new Error('No file provided');
 
+    const bucket = bucketOverride || config.bucket;
+
     // Validate file size
-    if (maxSize && file.size > maxSize) {
-      throw new Error(`File size must be less than ${maxSize / 1024 / 1024}MB`);
+    if (config.maxSize && file.size > config.maxSize) {
+      throw new Error(`File size must be less than ${config.maxSize / 1024 / 1024}MB`);
     }
 
     // Validate file type
-    if (allowedTypes && !allowedTypes.includes(file.type)) {
-      throw new Error(`File type not allowed. Allowed types: ${allowedTypes.join(', ')}`);
+    if (config.allowedTypes && !config.allowedTypes.includes(file.type)) {
+      throw new Error(`File type not allowed. Allowed types: ${config.allowedTypes.join(', ')}`);
     }
 
     setUploading(true);
@@ -34,7 +44,18 @@ export function useFileUpload({ bucket, maxSize = 5 * 1024 * 1024, allowedTypes 
       if (!user) throw new Error('User not authenticated');
 
       const fileExt = file.name.split('.').pop();
-      const fileName = path || `${user.id}/${Date.now()}.${fileExt}`;
+      let fileName: string;
+      
+      // Handle different path patterns for different buckets
+      if (bucketOverride === 'avatar' || bucket === 'avatars') {
+        fileName = pathOrUserId ? `${pathOrUserId}/avatar.${fileExt}` : `${user.id}/avatar.${fileExt}`;
+      } else if (bucketOverride === 'resume' || bucket === 'resumes') {
+        fileName = pathOrUserId ? `${pathOrUserId}/resume.${fileExt}` : `${user.id}/resume.${fileExt}`;
+      } else if (bucketOverride === 'portfolio' || bucket === 'portfolio') {
+        fileName = pathOrUserId ? `${pathOrUserId}/${Date.now()}.${fileExt}` : `${user.id}/${Date.now()}.${fileExt}`;
+      } else {
+        fileName = pathOrUserId || `${user.id}/${Date.now()}.${fileExt}`;
+      }
 
       const { error: uploadError } = await supabase.storage
         .from(bucket)
@@ -62,7 +83,7 @@ export function useFileUpload({ bucket, maxSize = 5 * 1024 * 1024, allowedTypes 
   const deleteFile = async (path: string): Promise<void> => {
     try {
       const { error } = await supabase.storage
-        .from(bucket)
+        .from(config.bucket)
         .remove([path]);
 
       if (error) throw error;
@@ -77,6 +98,7 @@ export function useFileUpload({ bucket, maxSize = 5 * 1024 * 1024, allowedTypes 
     uploadFile,
     deleteFile,
     uploading,
+    isUploading: uploading, // Add alias for backward compatibility
     progress
   };
 }
