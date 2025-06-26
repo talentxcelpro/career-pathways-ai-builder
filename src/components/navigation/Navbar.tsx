@@ -47,7 +47,7 @@ export const Navbar = () => {
     queryFn: async () => {
       if (!currentUser?.id) return null;
       
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error } = await supabase.auth.getUser();
       if (error) return null;
       
       const { data: profileData } = await supabase
