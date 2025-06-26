@@ -1,16 +1,12 @@
 
 import React from 'react';
-import { AuthLayout } from '@/components/auth/AuthLayout';
-import { LoginForm } from '@/components/auth/LoginForm';
+import { AuthForm } from '@/components/auth/AuthForm';
 
 const Login = () => {
   return (
-    <AuthLayout
-      title="Welcome Back"
-      description="Sign in to your TalentXcel account"
-    >
-      <LoginForm />
-    </AuthLayout>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <AuthForm type="login" />
+    </div>
   );
 };
 

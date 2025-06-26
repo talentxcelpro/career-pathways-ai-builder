@@ -1,10 +1,9 @@
-
 import { createBrowserRouter } from 'react-router-dom';
 import { RootLayout } from '@/components/layouts/RootLayout';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { AuthLayout } from '@/components/layouts/AuthLayout';
-import { ProtectedRoute } from '@/components/routing/ProtectedRoute';
-import { PublicRoute } from '@/components/routing/PublicRoute';
+import { AuthGuard } from '@/components/auth/AuthGuard';
+import { PublicOnlyGuard } from '@/components/auth/PublicOnlyGuard';
 
 // Lazy load components for better performance
 import { lazy } from 'react';
@@ -134,33 +133,33 @@ export const router = createBrowserRouter([
           {
             path: 'login',
             element: (
-              <PublicRoute>
+              <PublicOnlyGuard>
                 <Login />
-              </PublicRoute>
+              </PublicOnlyGuard>
             )
           },
           {
             path: 'register',
             element: (
-              <PublicRoute>
+              <PublicOnlyGuard>
                 <Register />
-              </PublicRoute>
+              </PublicOnlyGuard>
             )
           },
           {
             path: 'forgot-password',
             element: (
-              <PublicRoute>
+              <PublicOnlyGuard>
                 <ForgotPassword />
-              </PublicRoute>
+              </PublicOnlyGuard>
             )
           },
           {
             path: 'reset-password',
             element: (
-              <PublicRoute>
+              <PublicOnlyGuard>
                 <ResetPassword />
-              </PublicRoute>
+              </PublicOnlyGuard>
             )
           }
         ]
@@ -168,19 +167,19 @@ export const router = createBrowserRouter([
       {
         path: 'dashboard',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout>
               <Dashboard />
             </DashboardLayout>
-          </ProtectedRoute>
+          </AuthGuard>
         )
       },
       {
         path: 'profile',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         ),
         children: [
           {
@@ -224,19 +223,19 @@ export const router = createBrowserRouter([
       {
         path: 'resume-builder',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout>
               <ResumeBuilder />
             </DashboardLayout>
-          </ProtectedRoute>
+          </AuthGuard>
         )
       },
       {
         path: 'jobs',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         ),
         children: [
           {
@@ -304,9 +303,9 @@ export const router = createBrowserRouter([
       {
         path: 'network',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         ),
         children: [
           {
@@ -395,9 +394,9 @@ export const router = createBrowserRouter([
       {
         path: 'learning',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         ),
         children: [
           {
@@ -434,9 +433,9 @@ export const router = createBrowserRouter([
       {
         path: 'tools',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         ),
         children: [
           {
@@ -480,29 +479,29 @@ export const router = createBrowserRouter([
       {
         path: 'ai-assistant',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout>
               <AIAssistant />
             </DashboardLayout>
-          </ProtectedRoute>
+          </AuthGuard>
         )
       },
       {
         path: 'ai-optimizer',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout>
               <AIOptimizer />
             </DashboardLayout>
-          </ProtectedRoute>
+          </AuthGuard>
         )
       },
       {
         path: 'ai',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         ),
         children: [
           {
@@ -522,9 +521,9 @@ export const router = createBrowserRouter([
       {
         path: 'career-map',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         ),
         children: [
           {
@@ -568,9 +567,9 @@ export const router = createBrowserRouter([
       {
         path: 'marketplace',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         ),
         children: [
           {
@@ -590,9 +589,9 @@ export const router = createBrowserRouter([
       {
         path: 'employer',
         element: (
-          <ProtectedRoute requiredRoles={['employer', 'admin']}>
+          <AuthGuard requiredRoles={['employer', 'admin']}>
             <DashboardLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         ),
         children: [
           {
@@ -608,9 +607,9 @@ export const router = createBrowserRouter([
       {
         path: 'companies',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         ),
         children: [
           {
@@ -626,9 +625,9 @@ export const router = createBrowserRouter([
       {
         path: 'colleges',
         element: (
-          <ProtectedRoute>
+          <AuthGuard>
             <DashboardLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         ),
         children: [
           {
