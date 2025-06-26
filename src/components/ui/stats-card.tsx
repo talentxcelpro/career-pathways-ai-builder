@@ -27,8 +27,8 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
-          <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm transition-transform duration-300 group-hover:scale-105">
-            <Icon className="h-5 w-5 text-white" strokeWidth={1.5} />
+          <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-105">
+            <Icon className="h-4 w-4 text-white" strokeWidth={1.5} />
           </div>
           {trend && (
             <div className={`flex items-center text-xs font-medium ${

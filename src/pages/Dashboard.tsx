@@ -231,21 +231,19 @@ const Dashboard = () => {
             {jobCategories.map((category) => (
               <Card key={category.key} className="group bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] overflow-hidden cursor-pointer">
                 <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
-                <CardContent className="relative z-10 p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className={`p-3 rounded-xl bg-gradient-to-br ${category.gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                      <JobPlatformIcon 
-                        iconKey={category.key} 
-                        size="md"
-                        variant="neutral"
-                        className="bg-white/20 backdrop-blur-sm border-0"
-                        animated={true}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-base font-semibold text-gray-900 mb-1">{category.title}</h3>
-                      <p className="text-2xl font-bold text-gray-800 mb-1">{category.count}</p>
-                      <p className="text-xs text-gray-600">{category.description}</p>
+                <CardContent className="relative z-10 p-4">
+                  <div className="flex items-center space-x-3">
+                    <JobPlatformIcon 
+                      iconKey={category.key} 
+                      size="xs"
+                      variant="neutral"
+                      className="bg-white/30 backdrop-blur-sm border-0 flex-shrink-0"
+                      animated={true}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-1 truncate">{category.title}</h3>
+                      <p className="text-lg font-bold text-gray-800 mb-1">{category.count}</p>
+                      <p className="text-xs text-gray-600 truncate">{category.description}</p>
                     </div>
                   </div>
                 </CardContent>
