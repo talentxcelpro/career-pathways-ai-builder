@@ -4,55 +4,198 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { FileText, Download, Edit, Eye, Plus, Trash2, Star } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { FileText, Download, Edit, Eye, Plus, Trash2, Star, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useFileUpload } from '@/hooks/useFileUpload';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import ProfileLayout from "@/components/profile/ProfileLayout";
 import { Link } from 'react-router-dom';
 
 const ProfileResume = () => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [uploadingFile, setUploadingFile] = useState<File | null>(null);
   
-  const [resumes] = useState([
-    {
-      id: 1,
-      title: "Software Engineer Resume",
-      template: "Modern",
-      isPrimary: true,
-      lastUpdated: "2024-01-15",
-      fileUrl: "/resumes/software-engineer.pdf",
-      status: "active"
-    },
-    {
-      id: 2,
-      title: "Full Stack Developer Resume",
-      template: "Professional",
-      isPrimary: false,
-      lastUpdated: "2024-01-10",
-      fileUrl: "/resumes/fullstack-dev.pdf",
-      status: "draft"
+  const { uploadFile, uploading } = useFileUpload({
+    bucket: 'resumes',
+    maxSize: 10 * 1024 * 1024, // 10MB
+    allowedTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+  });
+
+  // Get current user
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
     }
-  ]);
+  });
 
-  const handleDownload = (resumeId: number) => {
-    toast({
-      title: "Download Started",
-      description: "Your resume is being downloaded.",
-    });
+  // Get resumes from database
+  const { data: resumes = [], isLoading } = useQuery({
+    queryKey: ['resumes', currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('resumes')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentUser?.id
+  });
+
+  // Create resume mutation
+  const createResumeMutation = useMutation({
+    mutationFn: async ({ file, title }: { file: File; title: string }) => {
+      if (!currentUser?.id) throw new Error('User not authenticated');
+
+      // Upload file
+      const fileUrl = await uploadFile(file, currentUser.id, 'resumes');
+      
+      // Save to database
+      const { data, error } = await supabase
+        .from('resumes')
+        .insert({
+          user_id: currentUser.id,
+          title,
+          file_url: fileUrl,
+          content: {},
+          file_size: file.size,
+          mime_type: file.type,
+          is_primary: resumes.length === 0 // First resume becomes primary
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['resumes', currentUser?.id] });
+      setUploadingFile(null);
+      toast({
+        title: "Resume uploaded",
+        description: "Your resume has been uploaded successfully."
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Upload failed",
+        description: error.message || "Failed to upload resume.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Delete resume mutation
+  const deleteResumeMutation = useMutation({
+    mutationFn: async (resumeId: string) => {
+      const { error } = await supabase
+        .from('resumes')
+        .update({ is_active: false })
+        .eq('id', resumeId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['resumes', currentUser?.id] });
+      toast({
+        title: "Resume deleted",
+        description: "The resume has been removed from your profile."
+      });
+    }
+  });
+
+  // Set primary resume mutation
+  const setPrimaryMutation = useMutation({
+    mutationFn: async (resumeId: string) => {
+      if (!currentUser?.id) throw new Error('User not authenticated');
+
+      // First, unset all primary flags
+      await supabase
+        .from('resumes')
+        .update({ is_primary: false })
+        .eq('user_id', currentUser.id);
+
+      // Then set the selected resume as primary
+      const { error } = await supabase
+        .from('resumes')
+        .update({ is_primary: true })
+        .eq('id', resumeId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['resumes', currentUser?.id] });
+      toast({
+        title: "Primary resume updated",
+        description: "This resume is now set as your primary resume."
+      });
+    }
+  });
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingFile(file);
+    const title = file.name.replace(/\.(pdf|doc|docx)$/i, '');
+    createResumeMutation.mutate({ file, title });
   };
 
-  const handleSetPrimary = (resumeId: number) => {
-    toast({
-      title: "Primary Resume Updated",
-      description: "This resume is now set as your primary resume.",
-    });
+  const handleDownload = async (resumeId: string, fileUrl: string, title: string) => {
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${title}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Download started",
+        description: "Your resume is being downloaded."
+      });
+    } catch (error) {
+      toast({
+        title: "Download failed",
+        description: "Failed to download the resume.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleDelete = (resumeId: number) => {
-    toast({
-      title: "Resume Deleted",
-      description: "The resume has been removed from your profile.",
-    });
-  };
+  if (!currentUser) {
+    return (
+      <ProfileLayout title="Resume Management" description="Please log in to manage your resumes">
+        <div className="text-center py-8">
+          <p className="text-gray-600">Please log in to access your resume management.</p>
+        </div>
+      </ProfileLayout>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <ProfileLayout title="Resume Management" description="Loading your resumes...">
+        <div className="text-center py-8">
+          <p className="text-gray-600">Loading resumes...</p>
+        </div>
+      </ProfileLayout>
+    );
+  }
 
   return (
     <ProfileLayout 
@@ -69,10 +212,22 @@ const ProfileResume = () => {
             <Plus className="h-4 w-4 mr-2" />
             Create New Resume
           </Link>
-          <Button variant="outline">
-            <FileText className="h-4 w-4 mr-2" />
-            Upload Resume
-          </Button>
+          <div>
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={handleFileUpload}
+              className="hidden"
+              id="resume-upload"
+              disabled={uploading}
+            />
+            <label htmlFor="resume-upload">
+              <Button variant="outline" className="cursor-pointer" disabled={uploading}>
+                <Upload className="h-4 w-4 mr-2" />
+                {uploading ? 'Uploading...' : 'Upload Resume'}
+              </Button>
+            </label>
+          </div>
         </div>
 
         {/* Resume Analytics */}
@@ -88,8 +243,8 @@ const ProfileResume = () => {
                 <div className="text-sm text-gray-600">Profile Views</div>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">23</div>
-                <div className="text-sm text-gray-600">Resume Downloads</div>
+                <div className="text-2xl font-bold text-green-600">{resumes.length}</div>
+                <div className="text-sm text-gray-600">Total Resumes</div>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
                 <div className="text-2xl font-bold text-purple-600">12</div>
@@ -110,57 +265,85 @@ const ProfileResume = () => {
             <CardDescription>Manage and organize your professional resumes</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {resumes.map((resume, index) => (
-                <div key={resume.id}>
-                  <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-4">
-                      <div className="h-12 w-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded flex items-center justify-center">
-                        <FileText className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <h3 className="font-semibold text-gray-900">{resume.title}</h3>
-                          {resume.isPrimary && (
-                            <Badge variant="default" className="bg-yellow-100 text-yellow-800">
-                              <Star className="h-3 w-3 mr-1" />
-                              Primary
-                            </Badge>
-                          )}
-                          <Badge variant={resume.status === 'active' ? 'default' : 'secondary'}>
-                            {resume.status}
-                          </Badge>
+            {resumes.length > 0 ? (
+              <div className="space-y-4">
+                {resumes.map((resume, index) => (
+                  <div key={resume.id}>
+                    <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center space-x-4">
+                        <div className="h-12 w-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded flex items-center justify-center">
+                          <FileText className="h-6 w-6 text-white" />
                         </div>
-                        <p className="text-sm text-gray-600">
-                          {resume.template} template • Last updated {resume.lastUpdated}
-                        </p>
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <h3 className="font-semibold text-gray-900">{resume.title}</h3>
+                            {resume.is_primary && (
+                              <Badge variant="default" className="bg-yellow-100 text-yellow-800">
+                                <Star className="h-3 w-3 mr-1" />
+                                Primary
+                              </Badge>
+                            )}
+                            <Badge variant="default">
+                              Active
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            Uploaded {new Date(resume.created_at).toLocaleDateString()} • {Math.round(resume.file_size / 1024)}KB
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Button variant="ghost" size="sm" onClick={() => window.open(resume.file_url, '_blank')}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleDownload(resume.id, resume.file_url, resume.title)}
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        {!resume.is_primary && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => setPrimaryMutation.mutate(resume.id)}
+                          >
+                            <Star className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => deleteResumeMutation.mutate(resume.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm" onClick={() => handleDownload(resume.id)}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDownload(resume.id)}>
-                        <Download className="h-4 w-4" />
-                      </Button>
-                      {!resume.isPrimary && (
-                        <Button variant="ghost" size="sm" onClick={() => handleSetPrimary(resume.id)}>
-                          <Star className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(resume.id)}>
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
+                    {index < resumes.length - 1 && <Separator className="my-4" />}
                   </div>
-                  {index < resumes.length - 1 && <Separator className="my-4" />}
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <p className="text-lg font-medium mb-2">No resumes yet</p>
+                <p className="mb-4">Upload your first resume or create one using our resume builder.</p>
+                <div className="space-x-2">
+                  <Link to="/tools/resume-builder">
+                    <Button>Create Resume</Button>
+                  </Link>
+                  <label htmlFor="resume-upload">
+                    <Button variant="outline" className="cursor-pointer">Upload Resume</Button>
+                  </label>
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

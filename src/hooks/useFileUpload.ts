@@ -50,7 +50,7 @@ export function useFileUpload(options?: UseFileUploadOptions) {
       if (bucketOverride === 'avatar' || bucket === 'avatars') {
         fileName = pathOrUserId ? `${pathOrUserId}/avatar.${fileExt}` : `${user.id}/avatar.${fileExt}`;
       } else if (bucketOverride === 'resume' || bucket === 'resumes') {
-        fileName = pathOrUserId ? `${pathOrUserId}/resume.${fileExt}` : `${user.id}/resume.${fileExt}`;
+        fileName = pathOrUserId ? `${pathOrUserId}/${Date.now()}.${fileExt}` : `${user.id}/${Date.now()}.${fileExt}`;
       } else if (bucketOverride === 'portfolio' || bucket === 'portfolio') {
         fileName = pathOrUserId ? `${pathOrUserId}/${Date.now()}.${fileExt}` : `${user.id}/${Date.now()}.${fileExt}`;
       } else {
@@ -80,10 +80,11 @@ export function useFileUpload(options?: UseFileUploadOptions) {
     }
   };
 
-  const deleteFile = async (path: string): Promise<void> => {
+  const deleteFile = async (path: string, bucketName?: string): Promise<void> => {
     try {
+      const bucket = bucketName || config.bucket;
       const { error } = await supabase.storage
-        .from(config.bucket)
+        .from(bucket)
         .remove([path]);
 
       if (error) throw error;
