@@ -47,7 +47,7 @@ export const Navbar = () => {
     queryFn: async () => {
       if (!currentUser?.id) return null;
       
-      const { data, error } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (error) return null;
       
       const { data: profileData } = await supabase
@@ -91,10 +91,12 @@ export const Navbar = () => {
         <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TX</span>
-              </div>
+            <Link to="/" className="flex items-center space-x-3">
+              <img 
+                src="/lovable-uploads/5a3d4a06-3cd5-45aa-b2bd-897e40811280.png" 
+                alt="TalentXcel Logo" 
+                className="h-8 w-auto"
+              />
               <span className="font-bold text-xl text-gray-900 hidden sm:block">TalentXcel</span>
             </Link>
           </div>

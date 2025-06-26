@@ -1,148 +1,88 @@
 
-import React, { useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, CheckCircle, Shield, Globe, Menu, X } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
+import { ArrowRight, Sparkles, Target, TrendingUp } from "lucide-react";
 
 export const HeroSection = () => {
-  const navigate = useNavigate();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   return (
     <div className="relative overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
-      <div className="absolute top-0 right-0 -z-10 transform-gpu overflow-hidden blur-3xl">
-        <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20"></div>
-      </div>
-
-      {/* Hero Section with integrated navigation */}
-      <section className="relative pt-8 pb-20 sm:pt-12 sm:pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Brand and Auth Section */}
-          <div className="flex justify-between items-center mb-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-xl">TX</span>
-              </div>
-              <div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                  TalentXcel
-                </span>
-                <p className="text-sm text-gray-600 mt-1">Your Career. One Platform. Endless Possibilities.</p>
-              </div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50" />
+      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" />
+      <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000" />
+      <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000" />
+      
+      {/* Content */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+        <div className="text-center">
+          {/* Main Heading */}
+          <div className="flex justify-center mb-8">
+            <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg border border-blue-100">
+              <Sparkles className="h-5 w-5 text-blue-600" />
+              <span className="text-sm font-medium text-blue-700">AI-Powered Career Platform</span>
             </div>
-            
-            {/* Desktop Auth Buttons */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate('/auth/login')}
-                className="text-gray-600 hover:text-gray-900 px-6"
-              >
+          </div>
+          
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            Your Career.{' '}
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              One Platform.
+            </span>
+            <br />
+            <span className="text-3xl md:text-5xl lg:text-6xl">
+              Endless Possibilities.
+            </span>
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Transform your career journey with AI-powered tools, personalized learning paths, 
+            and intelligent job matching. Join thousands of professionals advancing their careers.
+          </p>
+          
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <Link to="/auth/register">
+              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                Get Started Free
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Link to="/auth/login">
+              <Button variant="outline" size="lg" className="border-2 border-gray-300 hover:border-blue-400 px-8 py-6 text-lg font-semibold bg-white/80 backdrop-blur-sm">
                 Sign In
               </Button>
-              <Button 
-                onClick={() => navigate('/auth/register')}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg px-6"
-              >
-                Get Started
-              </Button>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+            </Link>
           </div>
-
-          {/* Mobile Menu */}
-          {isMobileMenuOpen && (
-            <div className="md:hidden mb-8 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50">
-              <div className="flex flex-col space-y-3">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => {
-                    navigate('/auth/login');
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full justify-start"
-                >
-                  Sign In
-                </Button>
-                <Button 
-                  onClick={() => {
-                    navigate('/auth/register');
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                >
-                  Get Started
-                </Button>
-              </div>
-            </div>
-          )}
           
-          {/* Hero Content */}
-          <div className="text-center">
-            <div className="inline-flex items-center px-6 py-3 rounded-full bg-blue-50 border border-blue-200 mb-8 shadow-sm">
-              <Zap className="w-5 h-5 text-blue-600 mr-3" />
-              <span className="text-sm font-medium text-blue-800">AI-Powered Career Platform</span>
+          {/* Feature Highlights */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all duration-300">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                <Target className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Smart Job Matching</h3>
+              <p className="text-gray-600">AI analyzes your skills and preferences to find perfect job opportunities.</p>
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-8 leading-tight">
-              Transform Your
-              <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                Career Journey
-              </span>
-              <span className="block text-4xl md:text-5xl text-gray-700 mt-2">
-                with AI Excellence
-              </span>
-            </h1>
-            
-            <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Build your professional profile, discover opportunities, learn new skills, and let AI guide your career growth - all in one comprehensive platform.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-16">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-10 py-7 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 rounded-xl"
-                onClick={() => navigate('/auth/register')}
-              >
-                Start Your Journey
-                <ArrowRight className="ml-3 h-5 w-5" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="px-10 py-7 text-lg border-2 hover:bg-gray-50 rounded-xl shadow-lg"
-              >
-                Watch Demo
-              </Button>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-purple-100 hover:shadow-xl transition-all duration-300">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                <TrendingUp className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Career Roadmaps</h3>
+              <p className="text-gray-600">Personalized learning paths to reach your career goals faster.</p>
             </div>
-
-            {/* Enhanced Social Proof */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
-              {[
-                { icon: CheckCircle, text: "10,000+ Professionals", color: "text-green-500" },
-                { icon: Shield, text: "500+ Companies", color: "text-blue-500" },
-                { icon: Globe, text: "98% Success Rate", color: "text-purple-500" }
-              ].map((item, index) => (
-                <div key={index} className="flex items-center justify-center space-x-3 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm">
-                  <item.icon className={`w-5 h-5 ${item.color}`} />
-                  <span className="text-gray-700 font-medium">{item.text}</span>
-                </div>
-              ))}
+            
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-indigo-100 hover:shadow-xl transition-all duration-300">
+              <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                <Sparkles className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">AI-Powered Tools</h3>
+              <p className="text-gray-600">Resume optimization, interview prep, and career insights powered by AI.</p>
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
