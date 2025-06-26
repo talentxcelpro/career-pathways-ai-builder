@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,9 +30,9 @@ const Dashboard = () => {
       if (!user) return null;
 
       const { data, error } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('id', user.id)
         .maybeSingle();
 
       if (error) throw error;
@@ -46,18 +45,18 @@ const Dashboard = () => {
   }, [profile]);
 
   const mockUser = {
-    name: profile?.display_name || 'Professional',
-    title: profile?.current_role || 'Career Builder',
+    name: profile?.full_name || 'Professional',
+    title: profile?.title || 'Career Builder',
     completedCourses: 12,
     resumeViews: 84,
     appliedJobs: 23,
   };
 
   const missingFields = [];
-  if (!profile?.display_name) missingFields.push('display_name');
-  if (!profile?.current_role) missingFields.push('current_role');
+  if (!profile?.full_name) missingFields.push('full_name');
+  if (!profile?.title) missingFields.push('title');
   if (!profile?.location) missingFields.push('location');
-  if (!profile?.bio) missingFields.push('bio');
+  if (!profile?.about) missingFields.push('about');
 
   const stats = [
     { 
