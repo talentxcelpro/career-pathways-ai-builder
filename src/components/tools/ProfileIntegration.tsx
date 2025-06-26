@@ -10,221 +10,263 @@ import {
   User, 
   Briefcase, 
   FileText, 
-  Target, 
-  TrendingUp,
+  TrendingUp, 
+  MapPin,
+  Calendar,
+  DollarSign,
+  Target,
   CheckCircle,
   AlertCircle,
-  Lightbulb,
-  Link,
-  ExternalLink
+  Star,
+  ArrowRight
 } from 'lucide-react';
 
 interface ProfileData {
   id: string;
   full_name: string;
-  title: string;
-  skills: string[];
-  experience_years: number;
-  looking_for_job: boolean;
-  resume_url?: string;
-  linkedin_url?: string;
-  github_url?: string;
-  portfolio_url?: string;
+  title?: string;
+  skills?: string[];
+  location?: string;
+  looking_for_job?: boolean;
+  experience_years?: number;
+  preferred_salary_min?: number;
+  preferred_salary_max?: number;
+  industry?: string;
+  profile_picture_url?: string;
 }
 
 interface JobApplicationData {
   id: string;
-  job_title: string;
-  company_name: string;
+  job_id: string;
   status: string;
   applied_at: string;
   ai_match_score?: number;
+  jobs?: {
+    title: string;
+    company_id: string;
+  };
 }
 
-interface IntegrationInsight {
-  type: 'resume' | 'profile' | 'application' | 'skill_gap';
-  title: string;
-  description: string;
-  action: string;
-  priority: 'high' | 'medium' | 'low';
-  tool_suggestion?: string;
+interface ToolUsageData {
+  tool_name: string;
+  usage_count: number;
+  last_used: string;
+  avg_score?: number;
 }
 
 const ProfileIntegration = () => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [jobApplications, setJobApplications] = useState<JobApplicationData[]>([]);
-  const [insights, setInsights] = useState<IntegrationInsight[]>([]);
+  const [toolUsage, setToolUsage] = useState<ToolUsageData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchProfileData();
-    fetchJobApplications();
+    fetchIntegratedData();
   }, []);
 
-  useEffect(() => {
-    if (profileData && jobApplications.length > 0) {
-      generateInsights();
-    }
-  }, [profileData, jobApplications]);
-
-  const fetchProfileData = async () => {
+  const fetchIntegratedData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      // Fetch profile data
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
 
-      if (error) throw error;
-      setProfileData(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+      } else {
+        setProfileData(profile);
+      }
 
-  const fetchJobApplications = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { data, error } = await supabase
+      // Fetch job applications with basic job info
+      const { data: applications, error: appsError } = await supabase
         .from('job_applications')
         .select(`
-          *,
-          jobs (
-            title,
-            companies (name)
-          )
+          id,
+          job_id,
+          status,
+          applied_at,
+          ai_match_score
         `)
         .eq('user_id', user.id)
         .order('applied_at', { ascending: false })
         .limit(10);
 
-      if (error) throw error;
-      
-      const formattedData = data?.map(app => ({
-        id: app.id,
-        job_title: app.jobs?.title || 'Unknown',
-        company_name: app.jobs?.companies?.name || 'Unknown',
-        status: app.status,
-        applied_at: app.applied_at,
-        ai_match_score: app.ai_match_score
-      })) || [];
+      if (appsError) {
+        console.error('Error fetching applications:', appsError);
+      } else {
+        // For each application, fetch job details separately to avoid complex joins
+        const enrichedApplications = await Promise.all(
+          (applications || []).map(async (app) => {
+            const { data: job } = await supabase
+              .from('jobs')
+              .select('title, company_id')
+              .eq('id', app.job_id)
+              .single();
+            
+            return {
+              ...app,
+              jobs: job
+            };
+          })
+        );
+        setJobApplications(enrichedApplications);
+      }
 
-      setJobApplications(formattedData);
+      // Fetch tool usage analytics
+      const { data: usage, error: usageError } = await supabase
+        .from('tool_usage')
+        .select('tool_name, created_at, results')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (usageError) {
+        console.error('Error fetching tool usage:', usageError);
+      } else {
+        // Process tool usage data
+        const toolStats = (usage || []).reduce((acc: any, item) => {
+          if (!acc[item.tool_name]) {
+            acc[item.tool_name] = {
+              tool_name: item.tool_name,
+              usage_count: 0,
+              last_used: item.created_at,
+              scores: []
+            };
+          }
+          acc[item.tool_name].usage_count += 1;
+          if (new Date(item.created_at) > new Date(acc[item.tool_name].last_used)) {
+            acc[item.tool_name].last_used = item.created_at;
+          }
+          // Extract score from results if available
+          if (item.results && typeof item.results === 'object' && 'score' in item.results) {
+            acc[item.tool_name].scores.push(item.results.score);
+          }
+          return acc;
+        }, {});
+
+        const processedUsage = Object.values(toolStats).map((tool: any) => ({
+          tool_name: tool.tool_name,
+          usage_count: tool.usage_count,
+          last_used: tool.last_used,
+          avg_score: tool.scores.length > 0 
+            ? tool.scores.reduce((a: number, b: number) => a + b, 0) / tool.scores.length 
+            : undefined
+        }));
+
+        setToolUsage(processedUsage);
+      }
     } catch (error) {
-      console.error('Error fetching job applications:', error);
+      console.error('Error fetching integrated data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load profile integration data.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const generateInsights = () => {
-    const newInsights: IntegrationInsight[] = [];
+  const syncProfileWithTools = async () => {
+    setSyncing(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
-    // Profile completeness insights
-    if (!profileData?.resume_url) {
-      newInsights.push({
-        type: 'resume',
-        title: 'Missing Resume',
-        description: 'Upload your resume to improve job matching accuracy',
-        action: 'Upload Resume',
-        priority: 'high',
-        tool_suggestion: 'resume-check'
+      // Create tool usage entries based on profile data
+      if (profileData) {
+        const suggestions = [];
+        
+        // Suggest resume update if profile is incomplete
+        if (!profileData.title || !profileData.skills || profileData.skills.length === 0) {
+          suggestions.push({
+            user_id: user.id,
+            type: 'improvement',
+            title: 'Complete Your Profile',
+            description: 'Add your job title and skills to get better tool recommendations.',
+            tool_name: 'profile-score',
+            priority: 'high',
+            reason: 'Incomplete profile reduces the effectiveness of AI tools.',
+            estimated_time: 10,
+            potential_impact: 'high'
+          });
+        }
+
+        // Suggest salary analysis if no salary preferences
+        if (!profileData.preferred_salary_min || !profileData.preferred_salary_max) {
+          suggestions.push({
+            user_id: user.id,
+            type: 'tool',
+            title: 'Set Salary Expectations',
+            description: 'Use the Salary Analyzer to set realistic salary expectations.',
+            tool_name: 'salary-analyzer',
+            priority: 'medium',
+            reason: 'Salary expectations help in job matching and negotiations.',
+            estimated_time: 15,
+            potential_impact: 'medium'
+          });
+        }
+
+        // Insert suggestions
+        for (const suggestion of suggestions) {
+          await supabase
+            .from('user_suggestions')
+            .upsert(suggestion, {
+              onConflict: 'user_id,title'
+            });
+        }
+      }
+
+      toast({
+        title: "Success",
+        description: "Profile data synchronized with tools successfully!",
       });
-    }
-
-    if (!profileData?.title || !profileData?.skills?.length) {
-      newInsights.push({
-        type: 'profile',
-        title: 'Incomplete Profile',
-        description: 'Complete your profile to get better job recommendations',
-        action: 'Complete Profile',
-        priority: 'high'
+      
+      // Refresh data
+      fetchIntegratedData();
+    } catch (error) {
+      console.error('Error syncing profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to sync profile data.",
+        variant: "destructive",
       });
-    }
-
-    // Application insights
-    const recentApplications = jobApplications.filter(app => {
-      const daysSince = (Date.now() - new Date(app.applied_at).getTime()) / (1000 * 60 * 60 * 24);
-      return daysSince <= 30;
-    });
-
-    if (recentApplications.length === 0 && profileData?.looking_for_job) {
-      newInsights.push({
-        type: 'application',
-        title: 'No Recent Applications',
-        description: 'You haven\'t applied to any jobs recently. Consider increasing your application rate.',
-        action: 'Find Jobs',
-        priority: 'medium'
-      });
-    }
-
-    // Low match score insight
-    const lowMatchApps = jobApplications.filter(app => 
-      app.ai_match_score && app.ai_match_score < 70
-    );
-
-    if (lowMatchApps.length > 0) {
-      newInsights.push({
-        type: 'skill_gap',
-        title: 'Low Match Scores',
-        description: `${lowMatchApps.length} applications have low match scores. Consider improving relevant skills.`,
-        action: 'Analyze Skills',
-        priority: 'medium',
-        tool_suggestion: 'profile-score'
-      });
-    }
-
-    // Cover letter suggestion
-    const appsWithoutCoverLetter = jobApplications.filter(app => !app.cover_letter);
-    if (appsWithoutCoverLetter.length > 0) {
-      newInsights.push({
-        type: 'application',
-        title: 'Missing Cover Letters',
-        description: 'Some applications are missing personalized cover letters',
-        action: 'Generate Cover Letter',
-        priority: 'medium',
-        tool_suggestion: 'cover-letter'
-      });
-    }
-
-    setInsights(newInsights);
-  };
-
-  const handleToolSuggestion = (toolName: string) => {
-    const routes: { [key: string]: string } = {
-      'resume-check': '/tools/resume-check',
-      'cover-letter': '/tools/cover-letter',
-      'profile-score': '/tools/profile-score',
-      'salary-analyzer': '/tools/salary-analyzer'
-    };
-
-    if (routes[toolName]) {
-      window.location.href = routes[toolName];
+    } finally {
+      setSyncing(false);
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
+  const getApplicationStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'applied': return 'bg-blue-100 text-blue-800';
+      case 'reviewing': return 'bg-yellow-100 text-yellow-800';
+      case 'interview': return 'bg-purple-100 text-purple-800';
+      case 'offer': return 'bg-green-100 text-green-800';
+      case 'rejected': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case 'high': return AlertCircle;
-      case 'medium': return Lightbulb;
-      case 'low': return CheckCircle;
-      default: return CheckCircle;
-    }
+  const getProfileCompleteness = () => {
+    if (!profileData) return 0;
+    
+    const fields = [
+      profileData.full_name,
+      profileData.title,
+      profileData.skills && profileData.skills.length > 0,
+      profileData.location,
+      profileData.industry,
+      profileData.experience_years !== undefined && profileData.experience_years > 0
+    ];
+    
+    const completed = fields.filter(Boolean).length;
+    return Math.round((completed / fields.length) * 100);
   };
 
   if (loading) {
@@ -241,239 +283,205 @@ const ProfileIntegration = () => {
   return (
     <div className="space-y-6">
       {/* Profile Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <User className="h-5 w-5" />
-              <span>Profile Overview</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {profileData ? (
-              <div className="space-y-4">
-                <div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <User className="h-5 w-5" />
+            <span>Profile Integration</span>
+          </CardTitle>
+          <CardDescription>Sync your profile data with AI career tools</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {profileData ? (
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <div className="flex-1">
                   <h3 className="font-semibold text-lg">{profileData.full_name}</h3>
                   <p className="text-gray-600">{profileData.title || 'No title set'}</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Experience</p>
-                    <p className="text-lg">{profileData.experience_years || 0} years</p>
+                  <div className="flex items-center space-x-2 mt-2">
+                    {profileData.location && (
+                      <div className="flex items-center space-x-1 text-sm text-gray-500">
+                        <MapPin className="h-3 w-3" />
+                        <span>{profileData.location}</span>
+                      </div>
+                    )}
+                    {profileData.experience_years && (
+                      <div className="flex items-center space-x-1 text-sm text-gray-500">
+                        <Briefcase className="h-3 w-3" />
+                        <span>{profileData.experience_years} years experience</span>
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Job Seeking</p>
-                    <Badge variant={profileData.looking_for_job ? "default" : "secondary"}>
-                      {profileData.looking_for_job ? 'Active' : 'Passive'}
-                    </Badge>
-                  </div>
                 </div>
+                <Button onClick={syncProfileWithTools} disabled={syncing}>
+                  {syncing ? 'Syncing...' : 'Sync with Tools'}
+                </Button>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Profile Completeness</span>
+                  <span className="text-sm text-gray-600">{getProfileCompleteness()}%</span>
+                </div>
+                <Progress value={getProfileCompleteness()} className="h-2" />
+              </div>
 
+              {profileData.skills && profileData.skills.length > 0 && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-2">Skills ({profileData.skills?.length || 0})</p>
+                  <h4 className="text-sm font-medium mb-2">Skills</h4>
                   <div className="flex flex-wrap gap-1">
-                    {profileData.skills?.slice(0, 5).map((skill, index) => (
+                    {profileData.skills.slice(0, 8).map((skill, index) => (
                       <Badge key={index} variant="secondary" className="text-xs">
                         {skill}
                       </Badge>
                     ))}
-                    {(profileData.skills?.length || 0) > 5 && (
-                      <Badge variant="secondary" className="text-xs">
-                        +{(profileData.skills?.length || 0) - 5} more
+                    {profileData.skills.length > 8 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{profileData.skills.length - 8} more
                       </Badge>
                     )}
                   </div>
                 </div>
-
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-500">Profile Links</p>
-                  <div className="flex space-x-2">
-                    {profileData.resume_url && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={profileData.resume_url} target="_blank" rel="noopener noreferrer">
-                          <FileText className="h-3 w-3 mr-1" />
-                          Resume
-                        </a>
-                      </Button>
-                    )}
-                    {profileData.linkedin_url && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={profileData.linkedin_url} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          LinkedIn
-                        </a>
-                      </Button>
-                    )}
-                    {profileData.github_url && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={profileData.github_url} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          GitHub
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <p className="text-gray-500">No profile data available</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Briefcase className="h-5 w-5" />
-              <span>Recent Applications</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {jobApplications.length > 0 ? (
-              <div className="space-y-3">
-                {jobApplications.slice(0, 5).map((app) => (
-                  <div key={app.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{app.job_title}</h4>
-                      <p className="text-xs text-gray-600">{app.company_name}</p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(app.applied_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant="secondary" className="text-xs">
-                        {app.status}
-                      </Badge>
-                      {app.ai_match_score && (
-                        <p className="text-xs text-gray-600 mt-1">
-                          Match: {app.ai_match_score}%
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">No recent applications</p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Insights and Recommendations */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Target className="h-5 w-5" />
-            <span>Personalized Insights</span>
-          </CardTitle>
-          <CardDescription>
-            AI-powered recommendations based on your profile and activity
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {insights.length > 0 ? (
-            <div className="space-y-4">
-              {insights.map((insight, index) => {
-                const PriorityIcon = getPriorityIcon(insight.priority);
-                return (
-                  <div key={index} className="flex items-start space-x-3 p-4 border rounded-lg">
-                    <PriorityIcon className={`h-5 w-5 mt-0.5 ${
-                      insight.priority === 'high' ? 'text-red-600' :
-                      insight.priority === 'medium' ? 'text-yellow-600' : 'text-green-600'
-                    }`} />
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <h4 className="font-medium">{insight.title}</h4>
-                        <Badge className={`text-xs ${getPriorityColor(insight.priority)}`}>
-                          {insight.priority}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-2">{insight.description}</p>
-                      <div className="flex space-x-2">
-                        <Button size="sm" variant="outline">
-                          {insight.action}
-                        </Button>
-                        {insight.tool_suggestion && (
-                          <Button 
-                            size="sm" 
-                            onClick={() => handleToolSuggestion(insight.tool_suggestion!)}
-                          >
-                            <TrendingUp className="h-3 w-3 mr-1" />
-                            Use Tool
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              )}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">All Good!</h3>
-              <p className="text-gray-600">Your profile looks great. Keep using our tools to maintain your competitive edge.</p>
+            <div className="text-center py-4">
+              <User className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+              <p className="text-gray-600">No profile data found. Please complete your profile first.</p>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Profile Completion Progress */}
+      {/* Job Applications Integration */}
       <Card>
         <CardHeader>
-          <CardTitle>Profile Completion</CardTitle>
-          <CardDescription>Complete your profile to unlock all features</CardDescription>
+          <CardTitle className="flex items-center space-x-2">
+            <Briefcase className="h-5 w-5" />
+            <span>Job Applications</span>
+          </CardTitle>
+          <CardDescription>Your recent job applications and their status</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Overall Progress</span>
-              <span className="text-sm text-gray-600">75%</span>
+          {jobApplications.length > 0 ? (
+            <div className="space-y-3">
+              {jobApplications.map((application) => (
+                <div key={application.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex-1">
+                    <h4 className="font-medium">
+                      {application.jobs?.title || 'Unknown Position'}
+                    </h4>
+                    <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-3 w-3" />
+                        <span>Applied {new Date(application.applied_at).toLocaleDateString()}</span>
+                      </div>
+                      {application.ai_match_score && (
+                        <div className="flex items-center space-x-1">
+                          <Star className="h-3 w-3" />
+                          <span>{Math.round(application.ai_match_score)}% match</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <Badge className={`text-xs ${getApplicationStatusColor(application.status)}`}>
+                    {application.status}
+                  </Badge>
+                </div>
+              ))}
             </div>
-            <Progress value={75} className="w-full" />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Basic Info</span>
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+          ) : (
+            <div className="text-center py-4">
+              <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+              <p className="text-gray-600">No job applications found.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Tool Usage Analytics */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <TrendingUp className="h-5 w-5" />
+            <span>Tool Usage Analytics</span>
+          </CardTitle>
+          <CardDescription>How you've been using our AI career tools</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {toolUsage.length > 0 ? (
+            <div className="space-y-3">
+              {toolUsage.map((tool, index) => (
+                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex-1">
+                    <h4 className="font-medium capitalize">{tool.tool_name.replace('-', ' ')}</h4>
+                    <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
+                      <div className="flex items-center space-x-1">
+                        <Target className="h-3 w-3" />
+                        <span>{tool.usage_count} uses</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Clock className="h-3 w-3" />
+                        <span>Last used {new Date(tool.last_used).toLocaleDateString()}</span>
+                      </div>
+                      {tool.avg_score && (
+                        <div className="flex items-center space-x-1">
+                          <Star className="h-3 w-3" />
+                          <span>Avg. score: {Math.round(tool.avg_score)}%</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <ArrowRight className="h-3 w-3 mr-1" />
+                    Use Tool
+                  </Button>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Skills</span>
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Experience</span>
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+              <p className="text-gray-600">No tool usage data available.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Integration Recommendations */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <CheckCircle className="h-5 w-5" />
+            <span>Integration Recommendations</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
+              <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="font-medium text-sm">Profile Data Synced</h4>
+                <p className="text-xs text-gray-600 mt-1">Your profile information is being used to personalize tool recommendations.</p>
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Resume</span>
-                  {profileData?.resume_url ? (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <AlertCircle className="h-4 w-4 text-red-600" />
-                  )}
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Portfolio</span>
-                  {profileData?.portfolio_url ? (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <AlertCircle className="h-4 w-4 text-red-600" />
-                  )}
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Social Links</span>
-                  {profileData?.linkedin_url ? (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <AlertCircle className="h-4 w-4 text-red-600" />
-                  )}
-                </div>
+            </div>
+            
+            <div className="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg">
+              <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="font-medium text-sm">Complete Profile for Better Results</h4>
+                <p className="text-xs text-gray-600 mt-1">Add more details to your profile to get more accurate AI recommendations.</p>
+              </div>
+              <Button variant="outline" size="sm">
+                Update Profile
+              </Button>
+            </div>
+            
+            <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
+              <Star className="h-5 w-5 text-green-600 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="font-medium text-sm">Job Match Optimization</h4>
+                <p className="text-xs text-gray-600 mt-1">Your application history is helping improve job matching accuracy.</p>
               </div>
             </div>
           </div>

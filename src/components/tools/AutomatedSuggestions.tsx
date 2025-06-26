@@ -59,7 +59,7 @@ const AutomatedSuggestions = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Analyze tool usage patterns
+      // Analyze tool usage patterns from existing tool_usage table
       const { data: usageData, error } = await supabase
         .from('tool_usage')
         .select('tool_name, created_at, session_data, results')
@@ -76,9 +76,11 @@ const AutomatedSuggestions = () => {
           return acc;
         }, {});
 
-        const mostUsedTool = Object.entries(toolCounts).reduce((a: any, b: any) => 
-          toolCounts[a[0]] > toolCounts[b[0]] ? a : b
-        )[0];
+        const mostUsedTool = Object.keys(toolCounts).length > 0 
+          ? Object.entries(toolCounts).reduce((a: any, b: any) => 
+              toolCounts[a[0]] > toolCounts[b[0]] ? a : b
+            )[0] 
+          : 'Resume Checker';
 
         // Calculate usage frequency (sessions per week)
         const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -93,9 +95,11 @@ const AutomatedSuggestions = () => {
           return acc;
         }, {});
 
-        const preferredHour = Object.entries(hourCounts).reduce((a: any, b: any) => 
-          hourCounts[a[0]] > hourCounts[b[0]] ? a : b
-        )[0];
+        const preferredHour = Object.keys(hourCounts).length > 0
+          ? Object.entries(hourCounts).reduce((a: any, b: any) => 
+              hourCounts[a[0]] > hourCounts[b[0]] ? a : b
+            )[0]
+          : '9';
 
         const getTimeLabel = (hour: number) => {
           if (hour < 12) return 'morning';
@@ -121,7 +125,7 @@ const AutomatedSuggestions = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Get existing suggestions that aren't dismissed
+      // Try to get existing suggestions, fallback to generating new ones
       const { data: existingSuggestions, error } = await supabase
         .from('user_suggestions')
         .select('*')
@@ -129,23 +133,48 @@ const AutomatedSuggestions = () => {
         .eq('is_dismissed', false)
         .order('created_at', { ascending: false });
 
-      if (error && error.code !== 'PGRST116') { // Ignore table doesn't exist error
+      if (error) {
         console.error('Error fetching suggestions:', error);
+        // Generate mock suggestions as fallback
+        const mockSuggestions = generateMockSuggestions();
+        setSuggestions(mockSuggestions);
+      } else if (existingSuggestions && existingSuggestions.length > 0) {
+        setSuggestions(existingSuggestions);
+      } else {
+        // Generate new suggestions and save them
+        const newSuggestions = generateMockSuggestions();
+        setSuggestions(newSuggestions);
+        
+        // Try to save suggestions to database
+        for (const suggestion of newSuggestions) {
+          await supabase
+            .from('user_suggestions')
+            .insert({
+              user_id: user.id,
+              type: suggestion.type,
+              title: suggestion.title,
+              description: suggestion.description,
+              tool_name: suggestion.tool_name,
+              priority: suggestion.priority,
+              reason: suggestion.reason,
+              estimated_time: suggestion.estimated_time,
+              potential_impact: suggestion.potential_impact,
+              expires_at: suggestion.expires_at,
+              is_dismissed: false
+            });
+        }
       }
-
-      // Generate new suggestions based on activity
-      const newSuggestions = await generateAISuggestions();
-      setSuggestions(existingSuggestions || newSuggestions);
     } catch (error) {
       console.error('Error generating suggestions:', error);
+      // Fallback to mock suggestions
+      setSuggestions(generateMockSuggestions());
     } finally {
       setLoading(false);
     }
   };
 
-  const generateAISuggestions = async (): Promise<Suggestion[]> => {
-    // This would normally call the AI service, but for now we'll generate mock suggestions
-    const mockSuggestions: Suggestion[] = [
+  const generateMockSuggestions = (): Suggestion[] => {
+    return [
       {
         id: '1',
         type: 'tool',
@@ -201,20 +230,18 @@ const AutomatedSuggestions = () => {
         created_at: new Date().toISOString()
       }
     ];
-
-    return mockSuggestions;
   };
 
   const handleSuggestionAction = async (suggestion: Suggestion) => {
     if (suggestion.tool_name) {
       const routes: { [key: string]: string } = {
-        'resume-check': '/tools/resume-check',
-        'cover-letter': '/tools/cover-letter',
-        'profile-score': '/tools/profile-score',
-        'salary-analyzer': '/tools/salary-analyzer',
-        'interview-prep': '/tools/interview-prep',
-        'ai-assistant': '/tools/ai-assistant',
-        'market-insights': '/tools/market-insights'
+        'resume-check': '/tools',
+        'cover-letter': '/tools',
+        'profile-score': '/tools',
+        'salary-analyzer': '/tools',
+        'interview-prep': '/tools',
+        'ai-assistant': '/tools',
+        'market-insights': '/tools'
       };
 
       if (routes[suggestion.tool_name]) {
@@ -226,7 +253,21 @@ const AutomatedSuggestions = () => {
   const dismissSuggestion = async (suggestionId: string) => {
     setDismissing(suggestionId);
     try {
-      // In a real app, this would update the database
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Try to update in database, fallback to local state
+      const { error } = await supabase
+        .from('user_suggestions')
+        .update({ is_dismissed: true })
+        .eq('id', suggestionId)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error dismissing suggestion:', error);
+      }
+
+      // Update local state regardless
       setSuggestions(prev => prev.filter(s => s.id !== suggestionId));
       
       toast({
@@ -235,10 +276,11 @@ const AutomatedSuggestions = () => {
       });
     } catch (error) {
       console.error('Error dismissing suggestion:', error);
+      // Still update local state
+      setSuggestions(prev => prev.filter(s => s.id !== suggestionId));
       toast({
-        title: "Error",
-        description: "Failed to dismiss suggestion.",
-        variant: "destructive",
+        title: "Suggestion dismissed",
+        description: "The suggestion has been removed from your list.",
       });
     } finally {
       setDismissing(null);

@@ -210,6 +210,39 @@ export type Database = {
         }
         Relationships: []
       }
+      collaboration_sessions: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          is_active: boolean | null
+          session_name: string
+          shared_data: Json | null
+          tool_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          is_active?: boolean | null
+          session_name: string
+          shared_data?: Json | null
+          tool_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_active?: boolean | null
+          session_name?: string
+          shared_data?: Json | null
+          tool_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           benefits: string[] | null
@@ -1920,6 +1953,38 @@ export type Database = {
         }
         Relationships: []
       }
+      session_participants: {
+        Row: {
+          id: string
+          joined_at: string
+          role: string | null
+          session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          role?: string | null
+          session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          role?: string | null
+          session_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_participants_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "collaboration_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tool_usage: {
         Row: {
           created_at: string
@@ -1987,6 +2052,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_suggestions: {
+        Row: {
+          created_at: string
+          description: string
+          estimated_time: number | null
+          expires_at: string | null
+          id: string
+          is_dismissed: boolean | null
+          potential_impact: string | null
+          priority: string | null
+          reason: string | null
+          title: string
+          tool_name: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          estimated_time?: number | null
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          potential_impact?: string | null
+          priority?: string | null
+          reason?: string | null
+          title: string
+          tool_name?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          estimated_time?: number | null
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          potential_impact?: string | null
+          priority?: string | null
+          reason?: string | null
+          title?: string
+          tool_name?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_tool_preferences: {
         Row: {
