@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,14 +6,16 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, MapPin, Users, Plus, Search, Video } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, Plus, Search, Video, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { AIEventAssistant } from "@/components/network/AIEventAssistant";
 
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [newEvent, setNewEvent] = useState({
     title: '',
     description: '',
@@ -113,6 +114,20 @@ const Events = () => {
     }
   });
 
+  const handleAIEventDataApply = (aiData: {
+    title: string;
+    description: string;
+    event_type: string;
+  }) => {
+    setNewEvent(prev => ({
+      ...prev,
+      title: aiData.title,
+      description: aiData.description,
+      event_type: aiData.event_type
+    }));
+    toast.success("AI event template applied!");
+  };
+
   const handleCreateEvent = () => {
     if (!newEvent.title.trim() || !newEvent.start_time) {
       toast.error('Please fill in required fields');
@@ -146,11 +161,27 @@ const Events = () => {
                 Create Event
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Create New Event</DialogTitle>
+                <DialogTitle className="flex items-center justify-between">
+                  Create New Event
+                  <Button
+                    variant={showAIAssistant ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setShowAIAssistant(!showAIAssistant)}
+                  >
+                    <Sparkles className="h-4 w-4 mr-1" />
+                    AI Assistant
+                  </Button>
+                </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
+              
+              {/* AI Event Assistant */}
+              {showAIAssistant && (
+                <AIEventAssistant onEventDataApply={handleAIEventDataApply} />
+              )}
+              
+              <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
                     <label className="text-sm font-medium">Event Title *</label>
@@ -166,6 +197,7 @@ const Events = () => {
                       placeholder="Describe your event"
                       value={newEvent.description}
                       onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                      className="min-h-[120px]"
                     />
                   </div>
                   <div>

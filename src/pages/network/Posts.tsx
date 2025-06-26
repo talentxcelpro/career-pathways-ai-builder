@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, MessageCircle } from "lucide-react";
+import { MoreHorizontal, MessageCircle, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -12,11 +12,13 @@ import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
 import { MediaUpload } from "@/components/posts/MediaUpload";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
+import { AIPostAssistant } from "@/components/network/AIPostAssistant";
 
 const Posts = () => {
   const [newPost, setNewPost] = useState('');
   const [postMedia, setPostMedia] = useState<string[]>([]);
   const [openComments, setOpenComments] = useState<string | null>(null);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: posts, isLoading } = useQuery({
@@ -116,6 +118,11 @@ const Posts = () => {
     createPostMutation.mutate({ content: newPost, mediaUrls: postMedia });
   };
 
+  const handleAISuggestionApply = (suggestion: string) => {
+    setNewPost(suggestion);
+    toast.success("AI suggestion applied!");
+  };
+
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -170,6 +177,26 @@ const Posts = () => {
           <ProfileCompletionPrompt 
             missingFields={missingFields}
             className="mb-6"
+          />
+        )}
+
+        {/* AI Assistant Toggle */}
+        <div className="mb-4">
+          <Button
+            variant={showAIAssistant ? "default" : "outline"}
+            onClick={() => setShowAIAssistant(!showAIAssistant)}
+            className="flex items-center"
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            {showAIAssistant ? "Hide AI Assistant" : "Show AI Assistant"}
+          </Button>
+        </div>
+
+        {/* AI Post Assistant */}
+        {showAIAssistant && (
+          <AIPostAssistant
+            onSuggestionApply={handleAISuggestionApply}
+            currentContent={newPost}
           />
         )}
 
