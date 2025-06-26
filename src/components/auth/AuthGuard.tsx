@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuthGuard } from '@/hooks/useAuthGuard';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { ROUTES } from '@/constants/routes';
 
 interface AuthGuardProps {
@@ -15,14 +16,17 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   requiredRoles = [], 
   fallback 
 }) => {
-  const { user, loading } = useAuth();
   const location = useLocation();
+  const { user, loading, canAccess } = useAuthGuard({
+    requireAuth: true,
+    allowedRoles: requiredRoles
+  });
 
   if (loading) {
     return (
       fallback || (
         <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+          <LoadingSpinner size="lg" text="Loading..." />
         </div>
       )
     );
@@ -32,10 +36,9 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
   }
 
-  // TODO: Implement role checking when user roles are added to the database
-  // if (requiredRoles.length > 0 && !requiredRoles.includes(user.role)) {
-  //   return <Navigate to={ROUTES.DASHBOARD} replace />;
-  // }
+  if (!canAccess) {
+    return <Navigate to={ROUTES.DASHBOARD} replace />;
+  }
 
   return <>{children}</>;
 };
