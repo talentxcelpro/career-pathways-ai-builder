@@ -1370,6 +1370,51 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_items: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          tags: string[] | null
+          title: string
+          type: string | null
+          updated_at: string | null
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          tags?: string[] | null
+          title: string
+          type?: string | null
+          updated_at?: string | null
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          tags?: string[] | null
+          title?: string
+          type?: string | null
+          updated_at?: string | null
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           author_id: string | null
@@ -1553,12 +1598,49 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_views: {
+        Row: {
+          id: string
+          ip_address: unknown | null
+          profile_id: string
+          user_agent: string | null
+          viewed_at: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          id?: string
+          ip_address?: unknown | null
+          profile_id: string
+          user_agent?: string | null
+          viewed_at?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          id?: string
+          ip_address?: unknown | null
+          profile_id?: string
+          user_agent?: string | null
+          viewed_at?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_views_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           about: string | null
+          allow_profile_sharing: boolean | null
           cover_image_url: string | null
           created_at: string | null
           current_company: string | null
+          custom_profile_url: string | null
           email: string | null
           experience_years: number | null
           full_name: string | null
@@ -1566,6 +1648,7 @@ export type Database = {
           id: string
           industry: string | null
           is_profile_public: boolean | null
+          last_profile_view: string | null
           linkedin_url: string | null
           location: string | null
           looking_for_job: boolean | null
@@ -1576,8 +1659,11 @@ export type Database = {
           preferred_salary_max: number | null
           preferred_salary_min: number | null
           profile_picture_url: string | null
+          profile_views_count: number | null
+          profile_visibility: string | null
           resume_url: string | null
           skills: string[] | null
+          social_links: Json | null
           title: string | null
           updated_at: string | null
           user_role: Database["public"]["Enums"]["user_role"] | null
@@ -1585,9 +1671,11 @@ export type Database = {
         }
         Insert: {
           about?: string | null
+          allow_profile_sharing?: boolean | null
           cover_image_url?: string | null
           created_at?: string | null
           current_company?: string | null
+          custom_profile_url?: string | null
           email?: string | null
           experience_years?: number | null
           full_name?: string | null
@@ -1595,6 +1683,7 @@ export type Database = {
           id: string
           industry?: string | null
           is_profile_public?: boolean | null
+          last_profile_view?: string | null
           linkedin_url?: string | null
           location?: string | null
           looking_for_job?: boolean | null
@@ -1605,8 +1694,11 @@ export type Database = {
           preferred_salary_max?: number | null
           preferred_salary_min?: number | null
           profile_picture_url?: string | null
+          profile_views_count?: number | null
+          profile_visibility?: string | null
           resume_url?: string | null
           skills?: string[] | null
+          social_links?: Json | null
           title?: string | null
           updated_at?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
@@ -1614,9 +1706,11 @@ export type Database = {
         }
         Update: {
           about?: string | null
+          allow_profile_sharing?: boolean | null
           cover_image_url?: string | null
           created_at?: string | null
           current_company?: string | null
+          custom_profile_url?: string | null
           email?: string | null
           experience_years?: number | null
           full_name?: string | null
@@ -1624,6 +1718,7 @@ export type Database = {
           id?: string
           industry?: string | null
           is_profile_public?: boolean | null
+          last_profile_view?: string | null
           linkedin_url?: string | null
           location?: string | null
           looking_for_job?: boolean | null
@@ -1634,8 +1729,11 @@ export type Database = {
           preferred_salary_max?: number | null
           preferred_salary_min?: number | null
           profile_picture_url?: string | null
+          profile_views_count?: number | null
+          profile_visibility?: string | null
           resume_url?: string | null
           skills?: string[] | null
+          social_links?: Json | null
           title?: string | null
           updated_at?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
@@ -1757,6 +1855,14 @@ export type Database = {
       }
       increment_job_views: {
         Args: { job_id: string }
+        Returns: undefined
+      }
+      increment_profile_views: {
+        Args: {
+          profile_user_id: string
+          viewer_ip?: unknown
+          viewer_agent?: string
+        }
         Returns: undefined
       }
     }

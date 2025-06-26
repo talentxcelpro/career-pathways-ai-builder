@@ -2,75 +2,101 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus, Upload, Edit, Trash2, Camera, Video, FileText, ExternalLink } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import ProfileLayout from "@/components/profile/ProfileLayout";
+import { ProfilePictureUpload } from '@/components/profile/ProfilePictureUpload';
+import { PortfolioManager } from '@/components/profile/PortfolioManager';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from "@/hooks/use-toast";
+import { useFileUpload } from '@/hooks/useFileUpload';
+import { Upload, Video } from "lucide-react";
 
 const ProfileMedia = () => {
   const { toast } = useToast();
-  const [showAddPortfolio, setShowAddPortfolio] = useState(false);
-  
-  const [portfolioItems] = useState([
-    {
-      id: 1,
-      title: "E-commerce Platform",
-      type: "project",
-      description: "Full-stack web application built with React and Node.js",
-      imageUrl: "/placeholder.svg",
-      projectUrl: "https://github.com/user/ecommerce-platform",
-      tags: ["React", "Node.js", "MongoDB"]
-    },
-    {
-      id: 2,
-      title: "Mobile Banking App",
-      type: "project",
-      description: "React Native mobile application for banking services",
-      imageUrl: "/placeholder.svg",
-      projectUrl: "https://github.com/user/banking-app",
-      tags: ["React Native", "TypeScript", "Firebase"]
-    }
-  ]);
+  const queryClient = useQueryClient();
+  const { uploadFile, isUploading } = useFileUpload();
 
-  const [newPortfolioItem, setNewPortfolioItem] = useState({
-    title: "",
-    description: "",
-    projectUrl: "",
-    type: "project"
+  // Get current user
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    }
   });
 
-  const handlePhotoUpload = () => {
-    toast({
-      title: "Photo Uploaded",
-      description: "Your profile photo has been updated successfully.",
-    });
+  // Get profile data
+  const { data: profile } = useQuery({
+    queryKey: ['profile', currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentUser?.id
+  });
+
+  // Update profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: async (updates: any) => {
+      if (!currentUser?.id) throw new Error('No user ID');
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', currentUser.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile', currentUser?.id] });
+    }
+  });
+
+  const handleProfilePictureChange = (url: string) => {
+    updateProfileMutation.mutate({ profile_picture_url: url });
   };
 
-  const handleVideoUpload = () => {
-    toast({
-      title: "Video Uploaded",
-      description: "Your video resume has been uploaded successfully.",
-    });
-  };
+  const handleVideoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !currentUser?.id) return;
 
-  const handleAddPortfolio = () => {
-    if (!newPortfolioItem.title.trim()) {
+    // Check if it's a video file
+    if (!file.type.startsWith('video/')) {
       toast({
-        title: "Error",
-        description: "Please provide a title for your portfolio item.",
-        variant: "destructive",
+        title: "Invalid file type",
+        description: "Please select a video file.",
+        variant: "destructive"
       });
       return;
     }
-    
-    toast({
-      title: "Portfolio Item Added",
-      description: "Your portfolio item has been added successfully.",
-    });
-    setShowAddPortfolio(false);
-    setNewPortfolioItem({ title: "", description: "", projectUrl: "", type: "project" });
+
+    const url = await uploadFile(file, currentUser.id, 'portfolio');
+    if (url) {
+      // You might want to store this in a separate field or as a portfolio item
+      toast({
+        title: "Video uploaded",
+        description: "Your video resume has been uploaded successfully."
+      });
+    }
   };
+
+  if (!currentUser) {
+    return (
+      <ProfileLayout title="Media & Portfolio" description="Please log in to manage your media">
+        <div className="text-center py-8">
+          <p className="text-gray-600">Please log in to access your media and portfolio.</p>
+        </div>
+      </ProfileLayout>
+    );
+  }
 
   return (
     <ProfileLayout 
@@ -79,126 +105,59 @@ const ProfileMedia = () => {
     >
       <div className="space-y-6">
         {/* Profile Photo & Video */}
-        <Card className="border-0 shadow-lg">
+        <Card>
           <CardHeader>
             <CardTitle>Profile Media</CardTitle>
             <CardDescription>Update your profile photo and video resume</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Profile Photo */}
               <div className="text-center">
-                <div className="w-32 h-32 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4">
-                  AJ
-                </div>
-                <h3 className="font-medium mb-2">Profile Photo</h3>
-                <p className="text-sm text-gray-600 mb-4">Upload a professional headshot. JPG or PNG format, max 5MB.</p>
-                <Button onClick={handlePhotoUpload} variant="outline">
-                  <Camera className="h-4 w-4 mr-2" />
-                  Upload Photo
-                </Button>
+                <h3 className="font-medium mb-4">Profile Photo</h3>
+                <ProfilePictureUpload
+                  currentImageUrl={profile?.profile_picture_url}
+                  userName={profile?.full_name}
+                  userId={currentUser.id}
+                  onImageChange={handleProfilePictureChange}
+                />
+                <p className="text-sm text-gray-600 mt-2">
+                  Upload a professional headshot. JPG or PNG format, max 50MB.
+                </p>
               </div>
 
               {/* Video Resume */}
               <div className="text-center">
+                <h3 className="font-medium mb-4">Video Resume</h3>
                 <div className="w-32 h-24 bg-gray-200 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <Video className="h-8 w-8 text-gray-400" />
                 </div>
-                <h3 className="font-medium mb-2">Video Resume</h3>
-                <p className="text-sm text-gray-600 mb-4">Record a 60-90 second video introduction. MP4 format, max 50MB.</p>
-                <Button onClick={handleVideoUpload} variant="outline">
-                  <Video className="h-4 w-4 mr-2" />
-                  Upload Video
-                </Button>
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={handleVideoUpload}
+                  className="hidden"
+                  id="video-upload"
+                />
+                <label htmlFor="video-upload">
+                  <Button variant="outline" className="cursor-pointer" disabled={isUploading}>
+                    <Upload className="h-4 w-4 mr-2" />
+                    {isUploading ? 'Uploading...' : 'Upload Video'}
+                  </Button>
+                </label>
+                <p className="text-sm text-gray-600 mt-2">
+                  Record a 60-90 second video introduction. MP4 format, max 50MB.
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Portfolio Section */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Portfolio & Projects</CardTitle>
-                <CardDescription>Showcase your best work and projects</CardDescription>
-              </div>
-              <Button onClick={() => setShowAddPortfolio(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Project
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {/* Add Portfolio Form */}
-            {showAddPortfolio && (
-              <div className="mb-6 p-4 border rounded-lg bg-gray-50">
-                <h4 className="font-medium mb-4">Add New Portfolio Item</h4>
-                <div className="space-y-4">
-                  <Input
-                    placeholder="Project title"
-                    value={newPortfolioItem.title}
-                    onChange={(e) => setNewPortfolioItem(prev => ({ ...prev, title: e.target.value }))}
-                  />
-                  <Textarea
-                    placeholder="Project description"
-                    value={newPortfolioItem.description}
-                    onChange={(e) => setNewPortfolioItem(prev => ({ ...prev, description: e.target.value }))}
-                    className="min-h-[100px]"
-                  />
-                  <Input
-                    placeholder="Project URL (GitHub, live demo, etc.)"
-                    value={newPortfolioItem.projectUrl}
-                    onChange={(e) => setNewPortfolioItem(prev => ({ ...prev, projectUrl: e.target.value }))}
-                  />
-                  <div className="flex gap-2">
-                    <Button onClick={handleAddPortfolio}>Add Project</Button>
-                    <Button variant="outline" onClick={() => setShowAddPortfolio(false)}>Cancel</Button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Portfolio Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {portfolioItems.map((item) => (
-                <div key={item.id} className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <FileText className="h-12 w-12 text-gray-400" />
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900">{item.title}</h3>
-                      <div className="flex space-x-1">
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-3">{item.description}</p>
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {item.tags.map((tag, index) => (
-                        <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <Button variant="outline" size="sm" className="w-full">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      View Project
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <PortfolioManager userId={currentUser.id} />
 
         {/* Media Guidelines */}
-        <Card className="border-0 shadow-lg">
+        <Card>
           <CardHeader>
             <CardTitle>Media Guidelines</CardTitle>
             <CardDescription>Best practices for your profile media</CardDescription>
