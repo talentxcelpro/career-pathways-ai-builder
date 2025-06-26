@@ -23,12 +23,12 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   gradient
 }) => {
   return (
-    <div className={`relative overflow-hidden rounded-xl bg-gradient-to-br ${gradient} p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]`}>
+    <div className={`group relative overflow-hidden rounded-xl bg-gradient-to-br ${gradient} p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]`}>
       <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
-          <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
-            <Icon className="h-6 w-6 text-white" />
+          <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm transition-transform duration-300 group-hover:scale-105">
+            <Icon className="h-5 w-5 text-white" strokeWidth={1.5} />
           </div>
           {trend && (
             <div className={`flex items-center text-xs font-medium ${

@@ -1,411 +1,267 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
+
+import React, { useEffect, useState } from 'react';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { UserDashboard } from "@/components/dashboard/UserDashboard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from 'react-router-dom';
-import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { JobPlatformIcon, JobPlatformIconKey } from "@/components/ui/job-platform-icons";
 import { StatsCard } from "@/components/ui/stats-card";
 import { ActionCard } from "@/components/ui/action-card";
 import { 
-  TrendingUp, Users, Star, Bell, Target, Map, Brain, Zap, 
-  Briefcase, GraduationCap, FileText, Calendar, MessageSquare,
-  BarChart3, Award, Clock, ArrowRight, Sparkles, Eye, Heart,
-  Building, Search, PlusCircle
-} from "lucide-react";
+  TrendingUp, 
+  Users, 
+  BookOpen, 
+  Briefcase,
+  Target,
+  Zap,
+  Activity,
+  Rocket
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const [currentUserProfile, setCurrentUserProfile] = useState(null);
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
-  }, []);
-
-  // Fetch dashboard stats
-  const { data: dashboardStats } = useQuery({
-    queryKey: ['dashboard-stats'],
+  const { data: profile } = useQuery({
+    queryKey: ['profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const [
-        { count: appliedJobs },
-        { count: savedJobs },
-        { count: courseProgress },
-        { count: networkConnections },
-        { data: recentApplications }
-      ] = await Promise.all([
-        supabase.from('job_applications').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-        supabase.from('saved_jobs').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-        supabase.from('user_courses').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-        supabase.from('connections').select('*', { count: 'exact', head: true }).or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`).eq('status', 'accepted'),
-        supabase.from('job_applications').select(`
-          *,
-          jobs (title, companies (name))
-        `).eq('user_id', user.id).order('applied_at', { ascending: false }).limit(5)
-      ]);
-
-      return {
-        appliedJobs: appliedJobs || 0,
-        savedJobs: savedJobs || 0,
-        courseProgress: courseProgress || 0,
-        networkConnections: networkConnections || 0,
-        recentApplications: recentApplications || []
-      };
-    },
-    enabled: !!user
-  });
-
-  // Fetch featured content
-  const { data: featuredJobs = [] } = useQuery({
-    queryKey: ['featured-jobs-dashboard'],
-    queryFn: async () => {
       const { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          *,
-          companies (name, logo_url)
-        `)
-        .eq('is_featured', true)
-        .eq('is_active', true)
-        .limit(4);
-      
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  const { data: recommendedCourses = [] } = useQuery({
-    queryKey: ['recommended-courses-dashboard'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('courses')
+        .from('user_profiles')
         .select('*')
-        .eq('is_active', true)
-        .order('rating', { ascending: false })
-        .limit(3);
-      
+        .eq('user_id', user.id)
+        .maybeSingle();
+
       if (error) throw error;
       return data;
     }
   });
 
-  const statsData = [
-    {
-      title: "Job Applications",
-      value: dashboardStats?.appliedJobs || 0,
-      subtitle: "This month",
-      icon: Briefcase,
-      trend: { value: "+12%", isPositive: true },
+  useEffect(() => {
+    setCurrentUserProfile(profile);
+  }, [profile]);
+
+  const mockUser = {
+    name: profile?.display_name || 'Professional',
+    title: profile?.current_role || 'Career Builder',
+    completedCourses: 12,
+    resumeViews: 84,
+    appliedJobs: 23,
+  };
+
+  const missingFields = [];
+  if (!profile?.display_name) missingFields.push('display_name');
+  if (!profile?.current_role) missingFields.push('current_role');
+  if (!profile?.location) missingFields.push('location');
+  if (!profile?.bio) missingFields.push('bio');
+
+  const stats = [
+    { 
+      title: "Active Applications", 
+      value: "23", 
+      subtitle: "In progress",
+      icon: TrendingUp, 
+      trend: { value: "+5 this week", isPositive: true },
       gradient: "from-blue-500 to-blue-600"
     },
-    {
-      title: "Profile Views",
-      value: "156",
-      subtitle: "Last 30 days",
-      icon: Eye,
-      trend: { value: "+8%", isPositive: true },
-      gradient: "from-green-500 to-green-600"
+    { 
+      title: "Profile Views", 
+      value: "84", 
+      subtitle: "This month",
+      icon: Users, 
+      trend: { value: "+24%", isPositive: true },
+      gradient: "from-green-500 to-emerald-600"
     },
-    {
-      title: "Saved Jobs",
-      value: dashboardStats?.savedJobs || 0,
-      subtitle: "In watchlist",
-      icon: Heart,
-      trend: { value: "+5", isPositive: true },
-      gradient: "from-purple-500 to-purple-600"
+    { 
+      title: "Skills Learned", 
+      value: "12", 
+      subtitle: "Courses completed",
+      icon: BookOpen, 
+      trend: { value: "+3 new", isPositive: true },
+      gradient: "from-purple-500 to-indigo-600"
     },
-    {
-      title: "Network",
-      value: dashboardStats?.networkConnections || 0,
+    { 
+      title: "Network Size", 
+      value: "248", 
       subtitle: "Connections",
-      icon: Users,
-      trend: { value: "+3", isPositive: true },
-      gradient: "from-orange-500 to-orange-600"
-    }
+      icon: Users, 
+      trend: { value: "+12", isPositive: true },
+      gradient: "from-orange-500 to-red-500"
+    },
   ];
 
   const quickActions = [
     {
-      title: "AI Job Matcher",
-      description: "Get personalized job recommendations",
-      icon: Brain,
-      path: "/jobs/recommendations",
+      title: "Smart Job Search",
+      description: "AI-powered job recommendations",
+      icon: Target,
+      path: "/jobs",
       gradient: "from-blue-500 to-purple-500",
       featured: true,
-      badge: "AI Powered"
+      badge: "AI Enhanced"
     },
     {
-      title: "Resume Builder",
-      description: "Create or optimize your resume",
-      icon: FileText,
-      path: "/tools/resume-check",
+      title: "Career Tools",
+      description: "Resume checker, interview prep & more",
+      icon: Zap,
+      path: "/tools",
       gradient: "from-green-500 to-teal-500"
     },
     {
-      title: "Career Roadmap",
-      description: "Plan your career journey",
-      icon: Map,
-      path: "/career-map",
-      gradient: "from-orange-500 to-red-500"
-    },
-    {
-      title: "Skill Assessment",
-      description: "Evaluate your current skills",
-      icon: Award,
-      path: "/tools/profile-score",
+      title: "Learning Hub",
+      description: "Skill development and certifications",
+      icon: BookOpen,
+      path: "/learning",
       gradient: "from-purple-500 to-pink-500"
     },
     {
-      title: "Network Builder",
-      description: "Expand your professional network",
+      title: "Professional Network",
+      description: "Connect with industry professionals",
       icon: Users,
-      path: "/network/people",
-      gradient: "from-indigo-500 to-blue-500"
-    },
-    {
-      title: "Interview Prep",
-      description: "Practice with AI mock interviews",
-      icon: MessageSquare,
-      path: "/tools/interview-prep",
-      gradient: "from-yellow-500 to-orange-500"
+      path: "/network",
+      gradient: "from-orange-500 to-yellow-500"
     }
   ];
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Please sign in to access your dashboard</h2>
-          <Button onClick={() => navigate('/auth/login')}>Sign In</Button>
-        </div>
-      </div>
-    );
-  }
+  const jobCategories = [
+    { 
+      key: 'activeJobs' as JobPlatformIconKey, 
+      title: 'Active Jobs', 
+      count: '2.4k+', 
+      description: 'Currently hiring',
+      gradient: 'from-blue-500 to-blue-600'
+    },
+    { 
+      key: 'remoteJobs' as JobPlatformIconKey, 
+      title: 'Remote Work', 
+      count: '1.8k+', 
+      description: 'Work from anywhere',
+      gradient: 'from-green-500 to-emerald-600'
+    },
+    { 
+      key: 'featuredJobs' as JobPlatformIconKey, 
+      title: 'Featured Jobs', 
+      count: '340+', 
+      description: 'Premium opportunities',
+      gradient: 'from-yellow-500 to-orange-500'
+    },
+    { 
+      key: 'companies' as JobPlatformIconKey, 
+      title: 'Top Companies', 
+      count: '150+', 
+      description: 'Industry leaders',
+      gradient: 'from-purple-500 to-indigo-600'
+    },
+  ];
 
   return (
-    <div className="space-y-6">
-      {/* Enhanced Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 p-8 shadow-xl">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative z-10 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white mb-2">
-              Welcome back, {user.user_metadata?.full_name || user.email?.split('@')[0]}!
-            </h1>
-            <p className="text-blue-100 text-sm">Ready to accelerate your career today?</p>
-          </div>
-          <div className="flex gap-3">
-            <Button 
-              variant="secondary" 
-              size="sm"
-              onClick={() => navigate('/career-map')}
-              className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-            >
-              <Map className="h-4 w-4 mr-2" />
-              Career Map
-            </Button>
-            <Button 
-              variant="secondary" 
-              size="sm"
-              onClick={() => navigate('/tools/ai-assistant')}
-              className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              AI Assistant
-            </Button>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Enhanced Header */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 p-8 mb-8 shadow-xl">
+          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+          <div className="relative z-10 text-center">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                <Rocket className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <h1 className="text-3xl font-bold text-white mb-3">Career Command Center</h1>
+            <p className="text-lg text-blue-100 max-w-2xl mx-auto mb-6">
+              Your personalized dashboard for career advancement and professional growth
+            </p>
+            <div className="flex justify-center gap-3">
+              <Button size="lg" variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+                <Target className="h-4 w-4 mr-2" />
+                Find Jobs
+              </Button>
+              <Button size="lg" variant="outline" className="text-white border-white/30 hover:bg-white/10">
+                <Activity className="h-4 w-4 mr-2" />
+                View Analytics
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Enhanced Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {statsData.map((stat, index) => (
-          <StatsCard key={index} {...stat} />
-        ))}
-      </div>
+        {/* Enhanced Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {stats.map((stat, index) => (
+            <StatsCard key={index} {...stat} />
+          ))}
+        </div>
 
-      {/* Quick Actions */}
-      <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
+        {/* Quick Actions */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <CardTitle className="flex items-center text-lg">
-                <Zap className="h-5 w-5 mr-2 text-yellow-500" />
-                Quick Actions
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Fast-track your career growth with AI-powered tools
-              </CardDescription>
+              <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
+              <p className="text-sm text-gray-600">Fast-track your career progress</p>
             </div>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700 text-xs">
-              6 Tools Available
-            </Badge>
+            <Badge className="bg-blue-100 text-blue-700 text-xs">4 Tools</Badge>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {quickActions.map((action, index) => (
               <ActionCard
                 key={index}
                 {...action}
-                onClick={() => navigate(action.path)}
+                onClick={() => window.location.href = action.path}
               />
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Featured Jobs */}
-        <Card className="lg:col-span-2 shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center text-lg">
-                  <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                  Featured Opportunities
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Hand-picked jobs matching your profile
-                </CardDescription>
-              </div>
-              <Button variant="outline" size="sm" onClick={() => navigate('/jobs')}>
-                <Search className="h-3 w-3 mr-1" />
-                Browse All
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {featuredJobs.slice(0, 3).map((job: any) => (
-                <div 
-                  key={job.id} 
-                  className="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-all duration-200 cursor-pointer bg-white/60 backdrop-blur-sm" 
-                  onClick={() => navigate(`/jobs/${job.id}`)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-sm font-semibold mb-1">{job.title}</h3>
-                      <p className="text-xs text-gray-600">{job.companies?.name}</p>
-                      <p className="text-xs text-gray-500">{job.location}</p>
-                      {job.salary_min && job.salary_max && (
-                        <p className="text-xs text-green-600 font-medium mt-1">
-                          ${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Badge variant="secondary" className="text-xs">{job.employment_type}</Badge>
-                      <Button 
-                        size="sm" 
-                        className="text-xs h-7"
-                        onClick={(e) => { 
-                          e.stopPropagation(); 
-                          navigate(`/jobs/${job.id}/smart-apply`); 
-                        }}
-                      >
-                        <Sparkles className="h-3 w-3 mr-1" />
-                        Apply
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Activity Feed */}
-        <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center text-lg">
-              <Bell className="h-5 w-5 mr-2 text-blue-500" />
-              Recent Activity
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Your latest career updates
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {[
-                { action: "Applied to Senior Developer", company: "TechCorp", time: "2h ago", type: "application" },
-                { action: "Completed React Course", company: "Learning Hub", time: "1d ago", type: "learning" },
-                { action: "Profile viewed by", company: "Microsoft", time: "2d ago", type: "view" },
-                { action: "New connection", company: "Sarah Johnson", time: "3d ago", type: "network" }
-              ].map((activity, index) => (
-                <div key={index} className="flex items-start space-x-3 p-3 rounded-lg bg-gray-50/80 backdrop-blur-sm">
-                  <div className={`w-2 h-2 rounded-full mt-2 ${
-                    activity.type === 'application' ? 'bg-green-500' :
-                    activity.type === 'learning' ? 'bg-purple-500' :
-                    activity.type === 'view' ? 'bg-blue-500' : 'bg-orange-500'
-                  }`}></div>
-                  <div className="flex-1">
-                    <p className="text-xs font-medium">{activity.action}</p>
-                    <p className="text-xs text-gray-600">{activity.company}</p>
-                    <p className="text-xs text-gray-500">{activity.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <Button variant="ghost" size="sm" className="w-full mt-4 text-xs">
-              View All Activity
-              <ArrowRight className="ml-2 h-3 w-3" />
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Learning Progress */}
-      <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
+        {/* Job Categories with New Icons */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <CardTitle className="flex items-center text-lg">
-                <GraduationCap className="h-5 w-5 mr-2 text-purple-500" />
-                Continue Learning
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Recommended courses to advance your skills
-              </CardDescription>
+              <h2 className="text-xl font-semibold text-gray-900">Job Market Overview</h2>
+              <p className="text-sm text-gray-600">Explore opportunities by category</p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => navigate('/learning')}>
-              <PlusCircle className="h-3 w-3 mr-1" />
-              Explore Courses
-            </Button>
+            <Link to="/jobs">
+              <Button variant="outline" size="sm" className="text-xs">
+                <Briefcase className="h-3 w-3 mr-2" />
+                Browse All Jobs
+              </Button>
+            </Link>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {recommendedCourses.slice(0, 3).map((course: any) => (
-              <div 
-                key={course.id} 
-                className="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-all duration-200 cursor-pointer bg-white/60 backdrop-blur-sm"
-                onClick={() => navigate(`/learning/${course.id}`)}
-              >
-                <h4 className="text-sm font-semibold mb-2">{course.title}</h4>
-                <p className="text-xs text-gray-600 mb-2">{course.instructor_name}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <Star className="h-3 w-3 text-yellow-400" />
-                    <span className="text-xs">{course.rating || 'New'}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {jobCategories.map((category) => (
+              <Card key={category.key} className="group bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] overflow-hidden cursor-pointer">
+                <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                <CardContent className="relative z-10 p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className={`p-3 rounded-xl bg-gradient-to-br ${category.gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                      <JobPlatformIcon 
+                        iconKey={category.key} 
+                        size="md"
+                        variant="neutral"
+                        className="bg-white/20 backdrop-blur-sm border-0"
+                        animated={true}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-base font-semibold text-gray-900 mb-1">{category.title}</h3>
+                      <p className="text-2xl font-bold text-gray-800 mb-1">{category.count}</p>
+                      <p className="text-xs text-gray-600">{category.description}</p>
+                    </div>
                   </div>
-                  <Badge variant="outline" className="text-xs">
-                    {course.difficulty_level}
-                  </Badge>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* User Dashboard Component */}
+        <UserDashboard 
+          currentUserProfile={currentUserProfile}
+          mockUser={mockUser}
+          missingFields={missingFields}
+        />
+      </div>
     </div>
   );
 };
