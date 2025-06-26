@@ -45,7 +45,7 @@ export const getNavigationItems = (userRole?: string): NavItem[] => {
         { title: "Companies", path: ROUTES.JOBS_COMPANIES },
         { title: "Recommendations", path: ROUTES.JOBS_RECOMMENDATIONS },
         { title: "Job Alerts", path: ROUTES.JOBS_ALERTS },
-        { title: "Analytics", path: ROUTES.JOB_ANALYTICS }
+        { title: "Analytics", path: ROUTES.JOBS_ANALYTICS }
       ]
     },
     {

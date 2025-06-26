@@ -26,14 +26,14 @@ export const ProtectedRoute = ({
       
       if (session?.user) {
         setIsAuthenticated(true);
-        // Get user role from profile or metadata
+        // Get user role from profile or metadata - using user_role from profiles table
         const { data: profile } = await supabase
           .from('profiles')
-          .select('role')
+          .select('user_role')
           .eq('id', session.user.id)
           .single();
         
-        setUserRole(profile?.role || 'user');
+        setUserRole(profile?.user_role || 'user');
       } else {
         setIsAuthenticated(false);
       }
@@ -47,11 +47,11 @@ export const ProtectedRoute = ({
         // Get user role from profile or metadata
         supabase
           .from('profiles')
-          .select('role')
+          .select('user_role')
           .eq('id', session.user.id)
           .single()
           .then(({ data: profile }) => {
-            setUserRole(profile?.role || 'user');
+            setUserRole(profile?.user_role || 'user');
           });
       } else {
         setIsAuthenticated(false);

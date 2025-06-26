@@ -46,7 +46,7 @@ export const Breadcrumb = () => {
     certificates: 'Certificates',
     tools: 'Tools',
     'resume-check': 'Resume Checker',
-    'cover-letter': 'Cover Letter Generator',
+    'cover-letter-generator': 'Cover Letter Generator',
     'salary-analyzer': 'Salary Analyzer',
     'interview-prep': 'Interview Prep',
     'ai-assistant': 'AI Assistant',
