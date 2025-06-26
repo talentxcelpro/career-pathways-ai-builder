@@ -81,7 +81,14 @@ const RoadmapDetail = () => {
         .single();
 
       if (roadmapError) throw roadmapError;
-      setRoadmap(roadmapData);
+      
+      // Transform the data to match our interface
+      const transformedRoadmap: Roadmap = {
+        ...roadmapData,
+        skills_current: Array.isArray(roadmapData.skills_current) ? roadmapData.skills_current : [],
+        skills_target: Array.isArray(roadmapData.skills_target) ? roadmapData.skills_target : [],
+      };
+      setRoadmap(transformedRoadmap);
 
       // Fetch milestones
       const { data: milestonesData, error: milestonesError } = await supabase
@@ -91,7 +98,13 @@ const RoadmapDetail = () => {
         .order('priority', { ascending: true });
 
       if (milestonesError) throw milestonesError;
-      setMilestones(milestonesData || []);
+      
+      // Transform milestones data
+      const transformedMilestones: Milestone[] = (milestonesData || []).map(milestone => ({
+        ...milestone,
+        resources: Array.isArray(milestone.resources) ? milestone.resources : [],
+      }));
+      setMilestones(transformedMilestones);
     } catch (error) {
       console.error('Error fetching roadmap details:', error);
       toast({
@@ -122,7 +135,7 @@ const RoadmapDetail = () => {
 
       setMilestones(prev => prev.map(milestone => 
         milestone.id === milestoneId 
-          ? { ...milestone, status: newStatus, completion_date: completionDate }
+          ? { ...milestone, status: newStatus, completion_date: completionDate || '' }
           : milestone
       ));
 
