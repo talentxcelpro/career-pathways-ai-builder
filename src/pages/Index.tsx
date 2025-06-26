@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -86,7 +85,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {!isLoggedIn ? (
-        // Modern Landing Page without duplicate navbar
+        // Landing Page without separate navbar
         <div className="relative overflow-hidden">
           {/* Background Elements */}
           <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
@@ -94,10 +93,10 @@ const Index = () => {
             <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20"></div>
           </div>
 
-          {/* Hero Section with integrated navigation feel */}
+          {/* Hero Section with integrated navigation */}
           <section className="relative pt-8 pb-20 sm:pt-12 sm:pb-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              {/* Top Brand Area */}
+              {/* Brand and Auth Section */}
               <div className="flex justify-between items-center mb-16">
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -314,7 +313,7 @@ const Index = () => {
           </section>
         </div>
       ) : (
-        // Dashboard for logged-in users
+        // Dashboard for logged-in users (with normal navbar)
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Welcome Section */}
           <div className="mb-8">
@@ -322,7 +321,6 @@ const Index = () => {
             <p className="text-gray-600">Continue building your career journey</p>
           </div>
 
-          {/* Profile Completion Prompt */}
           {missingFields.length > 0 && (
             <ProfileCompletionPrompt 
               missingFields={missingFields}
@@ -330,7 +328,6 @@ const Index = () => {
             />
           )}
 
-          {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
               <CardContent className="p-6">
@@ -369,9 +366,7 @@ const Index = () => {
             </Card>
           </div>
 
-          {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Featured Jobs */}
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -398,7 +393,6 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Trending Courses */}
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -429,7 +423,6 @@ const Index = () => {
             </Card>
           </div>
 
-          {/* Quick Actions */}
           <div className="mt-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
