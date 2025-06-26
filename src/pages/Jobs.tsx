@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, Target, Bell, TrendingUp, Building, Star, Search, MapPin, Filter } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Sparkles, Target, Bell, TrendingUp, Building, Star, Search, MapPin, Filter, Heart, Eye, Users, Clock, DollarSign } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
 
 interface JobFilters {
   location: string;
@@ -20,6 +21,7 @@ interface JobFilters {
 }
 
 const Jobs = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<JobFilters>({
     location: '',
@@ -31,9 +33,11 @@ const Jobs = () => {
   });
   const [sortBy, setSortBy] = useState('latest');
 
-  const { data: jobs, isLoading } = useQuery({
+  const { data: jobs = [], isLoading } = useQuery({
     queryKey: ['jobs', searchTerm, filters, sortBy],
     queryFn: async () => {
+      console.log('Fetching jobs with filters:', { searchTerm, filters, sortBy });
+      
       let query = supabase
         .from('jobs')
         .select(`
@@ -47,12 +51,12 @@ const Jobs = () => {
         .eq('is_active', true);
 
       // Apply search
-      if (searchTerm) {
+      if (searchTerm.trim()) {
         query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
       }
 
       // Apply filters
-      if (filters.location) {
+      if (filters.location.trim()) {
         query = query.ilike('location', `%${filters.location}%`);
       }
       
@@ -88,12 +92,17 @@ const Jobs = () => {
 
       const { data, error } = await query.limit(50);
       
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Error fetching jobs:', error);
+        throw error;
+      }
+      
+      console.log('Fetched jobs:', data?.length || 0);
+      return data || [];
     }
   });
 
-  const { data: featuredJobs } = useQuery({
+  const { data: featuredJobs = [] } = useQuery({
     queryKey: ['featured-jobs'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -106,37 +115,52 @@ const Jobs = () => {
         .eq('is_active', true)
         .limit(3);
       
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Error fetching featured jobs:', error);
+        return [];
+      }
+      return data || [];
     }
   });
 
   const { data: stats } = useQuery({
     queryKey: ['job-stats'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      const [
-        { count: totalJobs },
-        { count: remoteJobs },
-        { count: featuredJobsCount },
-        { count: savedJobs },
-        { count: appliedJobs },
-        { count: recommendations }
-      ] = await Promise.all([
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true).eq('is_remote', true),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_featured', true).eq('is_active', true),
-        user ? supabase.from('saved_jobs').select('*', { count: 'exact', head: true }).eq('user_id', user.id) : { count: 0 },
-        user ? supabase.from('job_applications').select('*', { count: 'exact', head: true }).eq('user_id', user.id) : { count: 0 },
-        user ? supabase.from('job_recommendations').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('is_viewed', false) : { count: 0 }
-      ]);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        const [
+          { count: totalJobs },
+          { count: remoteJobs },
+          { count: featuredJobsCount },
+          { count: savedJobs },
+          { count: appliedJobs },
+          { count: recommendations }
+        ] = await Promise.all([
+          supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true),
+          supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true).eq('is_remote', true),
+          supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_featured', true).eq('is_active', true),
+          user ? supabase.from('saved_jobs').select('*', { count: 'exact', head: true }).eq('user_id', user.id) : { count: 0 },
+          user ? supabase.from('job_applications').select('*', { count: 'exact', head: true }).eq('user_id', user.id) : { count: 0 },
+          user ? supabase.from('job_recommendations').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('is_viewed', false) : { count: 0 }
+        ]);
 
-      return { totalJobs, remoteJobs, featuredJobsCount, savedJobs, appliedJobs, recommendations };
+        return { 
+          totalJobs: totalJobs || 0, 
+          remoteJobs: remoteJobs || 0, 
+          featuredJobsCount: featuredJobsCount || 0, 
+          savedJobs: savedJobs || 0, 
+          appliedJobs: appliedJobs || 0, 
+          recommendations: recommendations || 0 
+        };
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        return { totalJobs: 0, remoteJobs: 0, featuredJobsCount: 0, savedJobs: 0, appliedJobs: 0, recommendations: 0 };
+      }
     }
   });
 
-  const { data: categories } = useQuery({
+  const { data: categories = [] } = useQuery({
     queryKey: ['job-categories'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -145,7 +169,10 @@ const Jobs = () => {
         .eq('is_active', true)
         .limit(10);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching categories:', error);
+        return [];
+      }
       return data || [];
     }
   });
@@ -161,6 +188,22 @@ const Jobs = () => {
       category: ''
     });
   };
+
+  const handleJobClick = (jobId: string) => {
+    navigate(`/jobs/${jobId}`);
+  };
+
+  const formatSalary = (job: any) => {
+    if (job.salary_min && job.salary_max) {
+      return `$${job.salary_min.toLocaleString()} - $${job.salary_max.toLocaleString()}`;
+    }
+    if (job.salary_min) {
+      return `$${job.salary_min.toLocaleString()}+`;
+    }
+    return null;
+  };
+
+  console.log('Jobs page render:', { jobsCount: jobs.length, isLoading, featuredCount: featuredJobs.length });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -216,7 +259,7 @@ const Jobs = () => {
                 <div className="flex items-center justify-center mb-2">
                   <Building className="h-5 w-5 text-purple-500" />
                 </div>
-                <div className="text-2xl font-bold">{categories?.length || 0}</div>
+                <div className="text-2xl font-bold">{categories.length}</div>
                 <div className="text-sm text-gray-500">Categories</div>
               </CardContent>
             </Card>
@@ -307,7 +350,7 @@ const Jobs = () => {
         </div>
 
         {/* Featured Jobs */}
-        {featuredJobs && featuredJobs.length > 0 && (
+        {featuredJobs.length > 0 && (
           <Card className="mb-8">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -365,7 +408,7 @@ const Jobs = () => {
         )}
 
         {/* Categories */}
-        {categories && categories.length > 0 && (
+        {categories.length > 0 && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
               <h2 className="text-lg font-semibold">Browse by Category</h2>
@@ -376,7 +419,7 @@ const Jobs = () => {
                   key={category.id}
                   variant="outline"
                   className="cursor-pointer hover:bg-blue-50 hover:border-blue-300"
-                  onClick={() => window.location.href = `/jobs/categories?category=${category.slug}`}
+                  onClick={() => navigate(`/jobs/categories?category=${category.slug}`)}
                 >
                   {category.name}
                 </Badge>
@@ -385,7 +428,7 @@ const Jobs = () => {
                 <Badge
                   variant="outline"
                   className="cursor-pointer hover:bg-gray-100"
-                  onClick={() => window.location.href = '/jobs/categories'}
+                  onClick={() => navigate('/jobs/categories')}
                 >
                   +{categories.length - 10} more
                 </Badge>
@@ -418,12 +461,12 @@ const Jobs = () => {
                 />
               </div>
               
-              <Select value={filters.jobType} onValueChange={(value) => setFilters({ ...filters, jobType: value })}>
+              <Select value={filters.jobType || 'all'} onValueChange={(value) => setFilters({ ...filters, jobType: value === 'all' ? '' : value })}>
                 <SelectTrigger className="w-full md:w-48">
                   <SelectValue placeholder="Job Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="Full-time">Full-time</SelectItem>
                   <SelectItem value="Part-time">Part-time</SelectItem>
                   <SelectItem value="Contract">Contract</SelectItem>
@@ -465,7 +508,7 @@ const Jobs = () => {
         <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg border">
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">
-              {jobs?.length || 0} jobs found
+              {jobs.length} jobs found
             </span>
             {searchTerm && (
               <Badge variant="secondary">
@@ -524,9 +567,9 @@ const Jobs = () => {
                 </div>
               ))}
             </div>
-          ) : jobs && jobs.length > 0 ? (
+          ) : jobs.length > 0 ? (
             jobs.map((job: any) => (
-              <Card key={job.id} className="hover:shadow-lg transition-shadow">
+              <Card key={job.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleJobClick(job.id)}>
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-4 flex-1">
@@ -554,16 +597,16 @@ const Jobs = () => {
                             {job.location}
                           </span>
                           <span>{job.employment_type}</span>
-                          {job.salary_min && job.salary_max && (
+                          {formatSalary(job) && (
                             <span className="text-green-600 font-medium">
-                              ${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()}
+                              {formatSalary(job)}
                             </span>
                           )}
                         </div>
 
                         <p className="text-gray-700 line-clamp-2 mb-4">{job.description}</p>
 
-                        {job.skills_required && job.skills_required.length > 0 && (
+                        {job.skills_required && Array.isArray(job.skills_required) && job.skills_required.length > 0 && (
                           <div className="flex flex-wrap gap-2 mb-4">
                             {job.skills_required.slice(0, 5).map((skill: string, index: number) => (
                               <Badge key={index} variant="secondary" className="text-xs">
@@ -580,12 +623,21 @@ const Jobs = () => {
 
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4 text-xs text-gray-500">
-                            <span>{job.views_count || 0} views</span>
-                            <span>{job.applications_count || 0} applications</span>
-                            <span>Posted {new Date(job.posted_at).toLocaleDateString()}</span>
+                            <span className="flex items-center gap-1">
+                              <Eye className="h-3 w-3" />
+                              {job.views_count || 0} views
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Users className="h-3 w-3" />
+                              {job.applications_count || 0} applications
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              Posted {job.posted_at ? formatDistanceToNow(new Date(job.posted_at)) + ' ago' : 'recently'}
+                            </span>
                           </div>
                           
-                          <div className="flex gap-2">
+                          <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                             <Button asChild variant="outline" size="sm">
                               <Link to={`/jobs/${job.id}`}>View Details</Link>
                             </Button>
