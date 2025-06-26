@@ -210,6 +210,63 @@ export type Database = {
         }
         Relationships: []
       }
+      career_switches: {
+        Row: {
+          created_at: string
+          difficulty_score: number | null
+          from_industry: string | null
+          from_role: string
+          id: string
+          market_demand_score: number | null
+          opportunities: Json | null
+          recommended_steps: Json | null
+          required_skills: Json | null
+          risk_factors: Json | null
+          salary_change_percentage: number | null
+          time_estimate_months: number | null
+          to_industry: string | null
+          to_role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          difficulty_score?: number | null
+          from_industry?: string | null
+          from_role: string
+          id?: string
+          market_demand_score?: number | null
+          opportunities?: Json | null
+          recommended_steps?: Json | null
+          required_skills?: Json | null
+          risk_factors?: Json | null
+          salary_change_percentage?: number | null
+          time_estimate_months?: number | null
+          to_industry?: string | null
+          to_role: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          difficulty_score?: number | null
+          from_industry?: string | null
+          from_role?: string
+          id?: string
+          market_demand_score?: number | null
+          opportunities?: Json | null
+          recommended_steps?: Json | null
+          required_skills?: Json | null
+          risk_factors?: Json | null
+          salary_change_percentage?: number | null
+          time_estimate_months?: number | null
+          to_industry?: string | null
+          to_role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       collaboration_sessions: {
         Row: {
           created_at: string
@@ -1846,6 +1903,119 @@ export type Database = {
           title?: string
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      roadmap_milestones: {
+        Row: {
+          completion_date: string | null
+          created_at: string
+          description: string | null
+          id: string
+          milestone_type: string | null
+          priority: number | null
+          resources: Json | null
+          roadmap_id: string | null
+          status: string | null
+          target_date: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          completion_date?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          milestone_type?: string | null
+          priority?: number | null
+          resources?: Json | null
+          roadmap_id?: string | null
+          status?: string | null
+          target_date?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          completion_date?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          milestone_type?: string | null
+          priority?: number | null
+          resources?: Json | null
+          roadmap_id?: string | null
+          status?: string | null
+          target_date?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roadmap_milestones_roadmap_id_fkey"
+            columns: ["roadmap_id"]
+            isOneToOne: false
+            referencedRelation: "roadmaps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roadmaps: {
+        Row: {
+          ai_generated: boolean | null
+          created_at: string
+          current_position: string | null
+          description: string | null
+          id: string
+          milestones: Json | null
+          progress_percentage: number | null
+          roadmap_data: Json | null
+          skills_current: Json | null
+          skills_target: Json | null
+          status: string | null
+          target_company: string | null
+          target_role: string
+          timeline_months: number | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          created_at?: string
+          current_position?: string | null
+          description?: string | null
+          id?: string
+          milestones?: Json | null
+          progress_percentage?: number | null
+          roadmap_data?: Json | null
+          skills_current?: Json | null
+          skills_target?: Json | null
+          status?: string | null
+          target_company?: string | null
+          target_role: string
+          timeline_months?: number | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_generated?: boolean | null
+          created_at?: string
+          current_position?: string | null
+          description?: string | null
+          id?: string
+          milestones?: Json | null
+          progress_percentage?: number | null
+          roadmap_data?: Json | null
+          skills_current?: Json | null
+          skills_target?: Json | null
+          status?: string | null
+          target_company?: string | null
+          target_role?: string
+          timeline_months?: number | null
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
