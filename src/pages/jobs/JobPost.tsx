@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,8 @@ import { Plus, X, ArrowLeft, Briefcase } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import CompanySelector from "@/components/jobs/CompanySelector";
+import CompanyDetails from "@/components/jobs/CompanyDetails";
 
 export default function JobPost() {
   const navigate = useNavigate();
@@ -35,13 +38,13 @@ export default function JobPost() {
   const [newSkill, setNewSkill] = useState('');
   const [newBenefit, setNewBenefit] = useState('');
 
-  // Fetch companies
+  // Fetch companies with logo and details
   const { data: companies = [] } = useQuery({
     queryKey: ['companies'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('companies')
-        .select('id, name')
+        .select('id, name, logo_url, description, location, industry, size_range, website, founded_year, employee_count_range')
         .order('name');
       
       if (error) throw error;
@@ -64,6 +67,9 @@ export default function JobPost() {
     }
   });
 
+  // Get selected company details
+  const selectedCompany = companies.find(company => company.id === formData.company_id);
+
   // Post job mutation
   const postJobMutation = useMutation({
     mutationFn: async (jobData: any) => {
@@ -72,15 +78,21 @@ export default function JobPost() {
 
       console.log('Posting job with data:', jobData);
 
+      // Prepare data with proper null handling
+      const insertData = {
+        ...jobData,
+        posted_by: user.id,
+        salary_min: jobData.salary_min ? parseInt(jobData.salary_min) : null,
+        salary_max: jobData.salary_max ? parseInt(jobData.salary_max) : null,
+        application_deadline: jobData.application_deadline || null,
+        employment_type: jobData.employment_type || null,
+        experience_level: jobData.experience_level || null,
+        category_id: jobData.category_id || null
+      };
+
       const { error } = await supabase
         .from('jobs')
-        .insert({
-          ...jobData,
-          posted_by: user.id,
-          salary_min: jobData.salary_min ? parseInt(jobData.salary_min) : null,
-          salary_max: jobData.salary_max ? parseInt(jobData.salary_max) : null,
-          application_deadline: jobData.application_deadline || null
-        });
+        .insert(insertData);
 
       if (error) {
         console.error('Job posting error:', error);
@@ -127,7 +139,7 @@ export default function JobPost() {
     e.preventDefault();
     
     if (!formData.title.trim() || !formData.description.trim() || !formData.company_id) {
-      toast.error('Please fill in all required fields');
+      toast.error('Please fill in all required fields (title, description, and company)');
       return;
     }
 
@@ -155,10 +167,30 @@ export default function JobPost() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Company Selection & Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Company Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="company">Company *</Label>
+                <CompanySelector
+                  companies={companies}
+                  value={formData.company_id}
+                  onValueChange={(value) => handleInputChange('company_id', value)}
+                />
+              </div>
+              
+              {/* Company Details Preview */}
+              <CompanyDetails company={selectedCompany || null} />
+            </CardContent>
+          </Card>
+
           {/* Basic Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle>Job Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -172,44 +204,23 @@ export default function JobPost() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="company">Company *</Label>
-                  <Select
-                    value={formData.company_id}
-                    onValueChange={(value) => handleInputChange('company_id', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select company" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {companies.map((company) => (
-                        <SelectItem key={company.id} value={company.id}>
-                          {company.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Select
-                    value={formData.category_id}
-                    onValueChange={(value) => handleInputChange('category_id', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Select
+                  value={formData.category_id}
+                  onValueChange={(value) => handleInputChange('category_id', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
