@@ -1,66 +1,82 @@
 
 import { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { uploadProfileAsset, deleteProfileAsset } from '@/utils/profileHelpers';
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-export const useFileUpload = () => {
-  const [isUploading, setIsUploading] = useState(false);
-  const { toast } = useToast();
+interface UseFileUploadOptions {
+  bucket: string;
+  maxSize?: number; // in bytes
+  allowedTypes?: string[];
+}
 
-  const uploadFile = async (
-    file: File, 
-    userId: string, 
-    type: 'avatar' | 'resume' | 'portfolio'
-  ): Promise<string | null> => {
-    if (!file) return null;
+export function useFileUpload({ bucket, maxSize = 5 * 1024 * 1024, allowedTypes }: UseFileUploadOptions) {
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
-    // Validate file size (50MB max)
-    if (file.size > 50 * 1024 * 1024) {
-      toast({
-        title: "File too large",
-        description: "Please select a file smaller than 50MB.",
-        variant: "destructive",
-      });
-      return null;
+  const uploadFile = async (file: File, path?: string): Promise<string> => {
+    if (!file) throw new Error('No file provided');
+
+    // Validate file size
+    if (maxSize && file.size > maxSize) {
+      throw new Error(`File size must be less than ${maxSize / 1024 / 1024}MB`);
     }
 
-    setIsUploading(true);
+    // Validate file type
+    if (allowedTypes && !allowedTypes.includes(file.type)) {
+      throw new Error(`File type not allowed. Allowed types: ${allowedTypes.join(', ')}`);
+    }
+
+    setUploading(true);
+    setProgress(0);
+
     try {
-      const url = await uploadProfileAsset(file, userId, type);
-      toast({
-        title: "Upload successful",
-        description: `${type === 'avatar' ? 'Profile picture' : type} uploaded successfully.`,
-      });
-      return url;
-    } catch (error) {
-      console.error('Upload error:', error);
-      toast({
-        title: "Upload failed",
-        description: "There was an error uploading your file. Please try again.",
-        variant: "destructive",
-      });
-      return null;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = path || `${user.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, file, {
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(fileName);
+
+      setProgress(100);
+      toast.success('File uploaded successfully');
+      return publicUrl;
+    } catch (error: any) {
+      toast.error(error.message || 'Upload failed');
+      throw error;
     } finally {
-      setIsUploading(false);
+      setUploading(false);
     }
   };
 
-  const deleteFile = async (url: string) => {
+  const deleteFile = async (path: string): Promise<void> => {
     try {
-      await deleteProfileAsset(url);
-      toast({
-        title: "File deleted",
-        description: "File has been removed successfully.",
-      });
-    } catch (error) {
-      console.error('Delete error:', error);
-      toast({
-        title: "Delete failed",
-        description: "There was an error deleting the file.",
-        variant: "destructive",
-      });
+      const { error } = await supabase.storage
+        .from(bucket)
+        .remove([path]);
+
+      if (error) throw error;
+      toast.success('File deleted successfully');
+    } catch (error: any) {
+      toast.error(error.message || 'Delete failed');
+      throw error;
     }
   };
 
-  return { uploadFile, deleteFile, isUploading };
-};
+  return {
+    uploadFile,
+    deleteFile,
+    uploading,
+    progress
+  };
+}

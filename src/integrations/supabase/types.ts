@@ -305,6 +305,7 @@ export type Database = {
           benefits: string[] | null
           cover_image_url: string | null
           created_at: string | null
+          created_by: string | null
           culture_description: string | null
           description: string | null
           employee_count_range: string | null
@@ -325,6 +326,7 @@ export type Database = {
           benefits?: string[] | null
           cover_image_url?: string | null
           created_at?: string | null
+          created_by?: string | null
           culture_description?: string | null
           description?: string | null
           employee_count_range?: string | null
@@ -345,6 +347,7 @@ export type Database = {
           benefits?: string[] | null
           cover_image_url?: string | null
           created_at?: string | null
+          created_by?: string | null
           culture_description?: string | null
           description?: string | null
           employee_count_range?: string | null
@@ -362,6 +365,38 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      company_admins: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_admins_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       company_follows: {
         Row: {

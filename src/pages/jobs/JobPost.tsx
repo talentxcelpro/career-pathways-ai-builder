@@ -7,8 +7,7 @@ import { ArrowLeft, Briefcase } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import CompanySelector from "@/components/jobs/CompanySelector";
-import CompanyDetails from "@/components/jobs/CompanyDetails";
+import EnhancedCompanyForm from "@/components/jobs/EnhancedCompanyForm";
 import BasicJobInformation from "@/components/jobs/BasicJobInformation";
 import JobDetailsForm from "@/components/jobs/JobDetailsForm";
 import SkillsBenefitsForm from "@/components/jobs/SkillsBenefitsForm";
@@ -32,20 +31,6 @@ export default function JobPost() {
     application_deadline: ''
   });
 
-  // Fetch companies with logo and details
-  const { data: companies = [] } = useQuery({
-    queryKey: ['companies'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('companies')
-        .select('id, name, logo_url, description, location, industry, size_range, website, founded_year, employee_count_range')
-        .order('name');
-      
-      if (error) throw error;
-      return data;
-    }
-  });
-
   // Fetch job categories
   const { data: categories = [] } = useQuery({
     queryKey: ['job-categories'],
@@ -60,9 +45,6 @@ export default function JobPost() {
       return data;
     }
   });
-
-  // Get selected company details
-  const selectedCompany = companies.find(company => company.id === formData.company_id);
 
   // Post job mutation
   const postJobMutation = useMutation({
@@ -139,26 +121,15 @@ export default function JobPost() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Company Selection & Details */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Company *
-                  </label>
-                  <CompanySelector
-                    companies={companies}
-                    value={formData.company_id}
-                    onValueChange={(value) => handleInputChange('company_id', value)}
-                  />
-                </div>
-                
-                {/* Company Details Preview */}
-                <CompanyDetails company={selectedCompany || null} />
-              </div>
-            </CardContent>
-          </Card>
+          {/* Enhanced Company Form */}
+          <EnhancedCompanyForm
+            value={formData.company_id}
+            onValueChange={(value) => handleInputChange('company_id', value)}
+            onCompanyCreate={(company) => {
+              console.log('New company created:', company);
+              toast.success(`Company "${company.name}" created successfully!`);
+            }}
+          />
 
           {/* Basic Information */}
           <BasicJobInformation
