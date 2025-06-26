@@ -1,3 +1,4 @@
+
 import { NavItem } from '@/types/routes';
 import { ROUTES } from '@/constants/routes';
 import { 
@@ -12,7 +13,8 @@ import {
   Compass, 
   Building, 
   School,
-  User
+  User,
+  ShoppingBag
 } from "lucide-react";
 
 export const getNavigationItems = (userRole?: string): NavItem[] => {
@@ -104,6 +106,11 @@ export const getNavigationItems = (userRole?: string): NavItem[] => {
         { title: "Recommendations", path: ROUTES.CAREER_MAP_RECOMMENDATIONS },
         { title: "Comparison", path: ROUTES.CAREER_MAP_COMPARISON }
       ]
+    },
+    {
+      title: "Marketplace",
+      path: ROUTES.MARKETPLACE,
+      icon: <ShoppingBag className="h-4 w-4" />
     },
     {
       title: "Companies",
