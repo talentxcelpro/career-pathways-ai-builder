@@ -31,7 +31,7 @@ export type JobPlatformIconKey = keyof typeof jobPlatformIcons;
 
 interface JobPlatformIconProps {
   iconKey: JobPlatformIconKey;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   variant?: 'primary' | 'secondary' | 'accent' | 'neutral';
   className?: string;
   animated?: boolean;
