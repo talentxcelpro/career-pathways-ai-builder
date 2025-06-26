@@ -89,8 +89,12 @@ const ProfileEdit = () => {
         current_company: profile.current_company || '',
         experience_years: profile.experience_years || 0,
         profile_picture_url: profile.profile_picture_url || '',
-        social_links: profile.social_links || {},
-        profile_visibility: profile.profile_visibility || 'public',
+        social_links: (profile.social_links && typeof profile.social_links === 'object' && !Array.isArray(profile.social_links)) 
+          ? profile.social_links as Record<string, string> 
+          : {},
+        profile_visibility: (profile.profile_visibility === 'public' || profile.profile_visibility === 'private' || profile.profile_visibility === 'connections_only') 
+          ? profile.profile_visibility 
+          : 'public',
         allow_profile_sharing: profile.allow_profile_sharing ?? true,
         custom_profile_url: profile.custom_profile_url || generateCustomProfileUrl(profile.full_name || ''),
         resume_url: profile.resume_url || ''

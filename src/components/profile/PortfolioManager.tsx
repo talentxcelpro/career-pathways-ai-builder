@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, ExternalLink, Star, Upload } from "lucide-react";
+import { Plus, Edit, Trash2, ExternalLink, Star, Upload, X } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -33,7 +33,7 @@ export const PortfolioManager: React.FC<PortfolioManagerProps> = ({ userId }) =>
   const [newItem, setNewItem] = useState({
     title: '',
     description: '',
-    type: 'project' as const,
+    type: 'project' as 'project' | 'certification' | 'award' | 'publication',
     url: '',
     tags: [] as string[],
     is_featured: false
@@ -74,7 +74,11 @@ export const PortfolioManager: React.FC<PortfolioManagerProps> = ({ userId }) =>
       } else {
         const { data, error } = await supabase
           .from('portfolio_items')
-          .insert([{ ...item, user_id: userId }])
+          .insert({
+            ...item,
+            user_id: userId,
+            title: item.title || '', // Ensure title is never undefined
+          })
           .select()
           .single();
         if (error) throw error;
@@ -216,7 +220,7 @@ export const PortfolioManager: React.FC<PortfolioManagerProps> = ({ userId }) =>
               />
               <select
                 value={newItem.type}
-                onChange={(e) => setNewItem(prev => ({ ...prev, type: e.target.value as any }))}
+                onChange={(e) => setNewItem(prev => ({ ...prev, type: e.target.value as typeof newItem.type }))}
                 className="px-3 py-2 border rounded-md"
               >
                 <option value="project">Project</option>
