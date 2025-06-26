@@ -5,39 +5,33 @@ import { Button } from "@/components/ui/button";
 import { Star, Clock, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export const TrendingCourses = () => {
-  const courses = [
-    {
-      id: "1",
-      title: "Advanced React & TypeScript",
-      instructor: "Sarah Johnson",
-      rating: 4.8,
-      students: 1234,
-      duration: "8 hours",
-      level: "Intermediate",
-      price: "Free"
-    },
-    {
-      id: "2",
-      title: "Product Management Fundamentals",
-      instructor: "Mike Chen",
-      rating: 4.9,
-      students: 856,
-      duration: "12 hours",
-      level: "Beginner",
-      price: "$49"
-    },
-    {
-      id: "3",
-      title: "UX Design Principles",
-      instructor: "Lisa Rodriguez",
-      rating: 4.7,
-      students: 2341,
-      duration: "6 hours",
-      level: "Intermediate",
-      price: "$29"
-    }
-  ];
+interface Course {
+  id: string;
+  title: string;
+  description?: string;
+  instructor_name?: string;
+  rating?: number;
+  enrolled_count?: number;
+  duration_hours?: number;
+  difficulty_level?: string;
+  price?: number;
+  is_free?: boolean;
+}
+
+interface TrendingCoursesProps {
+  courses: Course[];
+}
+
+export const TrendingCourses = ({ courses }: TrendingCoursesProps) => {
+  const formatPrice = (course: Course) => {
+    if (course.is_free || course.price === 0) return "Free";
+    return `$${course.price}`;
+  };
+
+  const formatDuration = (hours?: number) => {
+    if (!hours) return "Duration not specified";
+    return `${hours} hours`;
+  };
 
   return (
     <Card>
@@ -56,46 +50,58 @@ export const TrendingCourses = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {courses.map((course) => (
-            <div key={course.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex-1">
-                  <h3 className="font-semibold">{course.title}</h3>
-                  <p className="text-sm text-gray-600">by {course.instructor}</p>
+          {courses.length === 0 ? (
+            <p className="text-center text-gray-500 py-8">No trending courses available at the moment.</p>
+          ) : (
+            courses.slice(0, 3).map((course) => (
+              <div key={course.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{course.title}</h3>
+                    {course.instructor_name && (
+                      <p className="text-sm text-gray-600">by {course.instructor_name}</p>
+                    )}
+                  </div>
+                  <Badge variant={course.is_free || course.price === 0 ? "secondary" : "outline"}>
+                    {formatPrice(course)}
+                  </Badge>
                 </div>
-                <Badge variant={course.price === "Free" ? "secondary" : "outline"}>
-                  {course.price}
-                </Badge>
+                
+                <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                  {course.rating && (
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span>{course.rating.toFixed(1)}</span>
+                    </div>
+                  )}
+                  {course.enrolled_count && (
+                    <div className="flex items-center space-x-1">
+                      <Users className="h-4 w-4" />
+                      <span>{course.enrolled_count.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center space-x-1">
+                    <Clock className="h-4 w-4" />
+                    <span>{formatDuration(course.duration_hours)}</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  {course.difficulty_level && (
+                    <Badge variant="outline" className="text-xs">
+                      {course.difficulty_level}
+                    </Badge>
+                  )}
+                  <div className="space-x-2">
+                    <Button size="sm" variant="outline">Preview</Button>
+                    <Button size="sm" asChild>
+                      <Link to={`/learning/courses/${course.id}`}>Enroll</Link>
+                    </Button>
+                  </div>
+                </div>
               </div>
-              
-              <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                <div className="flex items-center space-x-1">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span>{course.rating}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Users className="h-4 w-4" />
-                  <span>{course.students.toLocaleString()}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Clock className="h-4 w-4" />
-                  <span>{course.duration}</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <Badge variant="outline" className="text-xs">
-                  {course.level}
-                </Badge>
-                <div className="space-x-2">
-                  <Button size="sm" variant="outline">Preview</Button>
-                  <Button size="sm" asChild>
-                    <Link to={`/learning/courses/${course.id}`}>Enroll</Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </CardContent>
     </Card>

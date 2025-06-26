@@ -5,39 +5,45 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Clock, Building } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export const FeaturedJobs = () => {
-  const featuredJobs = [
-    {
-      id: "1",
-      title: "Senior Frontend Developer",
-      company: "TechCorp Inc.",
-      location: "San Francisco, CA",
-      type: "Full-time",
-      posted: "2 days ago",
-      salary: "$120k - $160k",
-      skills: ["React", "TypeScript", "Node.js"]
-    },
-    {
-      id: "2",
-      title: "Product Manager",
-      company: "StartupXYZ",
-      location: "Remote",
-      type: "Full-time",
-      posted: "1 week ago",
-      salary: "$100k - $140k",
-      skills: ["Product Strategy", "Analytics", "Agile"]
-    },
-    {
-      id: "3",
-      title: "UX Designer",
-      company: "Design Studio",
-      location: "New York, NY",
-      type: "Contract",
-      posted: "3 days ago",
-      salary: "$80k - $110k",
-      skills: ["Figma", "User Research", "Prototyping"]
-    }
-  ];
+interface Job {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  employment_type: string;
+  created_at: string;
+  salary_min?: number;
+  salary_max?: number;
+  skills_required?: string[];
+  companies?: {
+    name: string;
+    logo_url?: string;
+  };
+}
+
+interface FeaturedJobsProps {
+  jobs: Job[];
+}
+
+export const FeaturedJobs = ({ jobs }: FeaturedJobsProps) => {
+  const formatSalary = (min?: number, max?: number) => {
+    if (!min && !max) return "Salary not specified";
+    if (min && max) return `$${(min/1000).toFixed(0)}k - $${(max/1000).toFixed(0)}k`;
+    if (min) return `$${(min/1000).toFixed(0)}k+`;
+    return `Up to $${(max!/1000).toFixed(0)}k`;
+  };
+
+  const getTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) return "1 day ago";
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 14) return "1 week ago";
+    return `${Math.floor(diffDays / 7)} weeks ago`;
+  };
 
   return (
     <Card>
@@ -56,49 +62,57 @@ export const FeaturedJobs = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {featuredJobs.map((job) => (
-            <div key={job.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h3 className="font-semibold text-lg">{job.title}</h3>
-                  <div className="flex items-center space-x-4 text-sm text-gray-600">
-                    <div className="flex items-center space-x-1">
-                      <Building className="h-4 w-4" />
-                      <span>{job.company}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <MapPin className="h-4 w-4" />
-                      <span>{job.location}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{job.posted}</span>
+          {jobs.length === 0 ? (
+            <p className="text-center text-gray-500 py-8">No featured jobs available at the moment.</p>
+          ) : (
+            jobs.slice(0, 3).map((job) => (
+              <div key={job.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h3 className="font-semibold text-lg">{job.title}</h3>
+                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                      <div className="flex items-center space-x-1">
+                        <Building className="h-4 w-4" />
+                        <span>{job.companies?.name || "Company"}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <MapPin className="h-4 w-4" />
+                        <span>{job.location || "Remote"}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{getTimeAgo(job.created_at)}</span>
+                      </div>
                     </div>
                   </div>
+                  <Badge variant="secondary">{job.employment_type || "Full-time"}</Badge>
                 </div>
-                <Badge variant="secondary">{job.type}</Badge>
+                
+                <div className="mb-3">
+                  <span className="font-medium text-green-600">
+                    {formatSalary(job.salary_min, job.salary_max)}
+                  </span>
+                </div>
+                
+                {job.skills_required && job.skills_required.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {job.skills_required.slice(0, 3).map((skill, index) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="flex space-x-2">
+                  <Button size="sm" asChild>
+                    <Link to={`/jobs/${job.id}`}>View Details</Link>
+                  </Button>
+                  <Button size="sm" variant="outline">Save</Button>
+                </div>
               </div>
-              
-              <div className="mb-3">
-                <span className="font-medium text-green-600">{job.salary}</span>
-              </div>
-              
-              <div className="flex flex-wrap gap-2 mb-3">
-                {job.skills.map((skill, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-              
-              <div className="flex space-x-2">
-                <Button size="sm" asChild>
-                  <Link to={`/jobs/${job.id}`}>View Details</Link>
-                </Button>
-                <Button size="sm" variant="outline">Save</Button>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </CardContent>
     </Card>
