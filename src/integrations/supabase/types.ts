@@ -2316,6 +2316,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      is_company_admin_or_owner: {
+        Args: { company_uuid: string }
+        Returns: boolean
+      }
     }
     Enums: {
       application_status:
