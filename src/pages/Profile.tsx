@@ -47,7 +47,7 @@ const Profile = () => {
   }
 
   return (
-    <ProfileLayout>
+    <ProfileLayout title="Profile" description="View and manage your professional profile">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Profile Completion Banner */}
         <ProfileCompletionBanner profile={profile} />
