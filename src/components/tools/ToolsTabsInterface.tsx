@@ -13,7 +13,10 @@ import {
   TrendingUp, 
   MessageSquare, 
   Brain, 
-  Award 
+  Award,
+  Users,
+  Target,
+  Lightbulb
 } from 'lucide-react';
 
 // Import existing tool components
@@ -28,6 +31,10 @@ import ProfileScore from '@/pages/tools/ProfileScore';
 // Import new components
 import ToolResultsHistory from './ToolResultsHistory';
 import ToolsAnalyticsDashboard from './ToolsAnalyticsDashboard';
+import RealTimeCollaboration from './RealTimeCollaboration';
+import AdvancedAnalytics from './AdvancedAnalytics';
+import ProfileIntegration from './ProfileIntegration';
+import AutomatedSuggestions from './AutomatedSuggestions';
 
 interface Tool {
   id: string;
@@ -98,7 +105,7 @@ const ToolsTabsInterface = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-8 mb-8">
             <TabsTrigger value="tools" className="flex items-center space-x-2">
               <Wrench className="h-4 w-4" />
               <span>Tools</span>
@@ -114,6 +121,22 @@ const ToolsTabsInterface = () => {
             <TabsTrigger value="favorites" className="flex items-center space-x-2">
               <Star className="h-4 w-4" />
               <span>Favorites</span>
+            </TabsTrigger>
+            <TabsTrigger value="collaboration" className="flex items-center space-x-2">
+              <Users className="h-4 w-4" />
+              <span>Collaborate</span>
+            </TabsTrigger>
+            <TabsTrigger value="advanced" className="flex items-center space-x-2">
+              <Target className="h-4 w-4" />
+              <span>Advanced</span>
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="flex items-center space-x-2">
+              <Award className="h-4 w-4" />
+              <span>Profile</span>
+            </TabsTrigger>
+            <TabsTrigger value="suggestions" className="flex items-center space-x-2">
+              <Lightbulb className="h-4 w-4" />
+              <span>Suggestions</span>
             </TabsTrigger>
           </TabsList>
 
@@ -185,6 +208,25 @@ const ToolsTabsInterface = () => {
               <p className="text-gray-600">Your starred tools and saved results will appear here.</p>
               {/* This would filter and display favorite items from ToolResultsHistory */}
             </div>
+          </TabsContent>
+
+          <TabsContent value="collaboration">
+            <RealTimeCollaboration 
+              toolName={activeTool} 
+              toolData={{ currentTool: activeTool, timestamp: new Date().toISOString() }} 
+            />
+          </TabsContent>
+
+          <TabsContent value="advanced">
+            <AdvancedAnalytics />
+          </TabsContent>
+
+          <TabsContent value="profile">
+            <ProfileIntegration />
+          </TabsContent>
+
+          <TabsContent value="suggestions">
+            <AutomatedSuggestions />
           </TabsContent>
         </Tabs>
       </div>
