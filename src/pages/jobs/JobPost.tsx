@@ -71,6 +71,8 @@ export default function JobPost() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      console.log('Posting job with data:', jobData);
+
       const { error } = await supabase
         .from('jobs')
         .insert({
@@ -81,13 +83,17 @@ export default function JobPost() {
           application_deadline: jobData.application_deadline || null
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Job posting error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       toast.success('Job posted successfully!');
       navigate('/jobs');
     },
     onError: (error: any) => {
+      console.error('Job posting failed:', error);
       toast.error(error.message || 'Failed to post job');
     }
   });
@@ -249,11 +255,11 @@ export default function JobPost() {
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Full-time">Full-time</SelectItem>
-                      <SelectItem value="Part-time">Part-time</SelectItem>
-                      <SelectItem value="Contract">Contract</SelectItem>
-                      <SelectItem value="Freelance">Freelance</SelectItem>
-                      <SelectItem value="Internship">Internship</SelectItem>
+                      <SelectItem value="full_time">Full-time</SelectItem>
+                      <SelectItem value="part_time">Part-time</SelectItem>
+                      <SelectItem value="contract">Contract</SelectItem>
+                      <SelectItem value="freelance">Freelance</SelectItem>
+                      <SelectItem value="internship">Internship</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -268,10 +274,10 @@ export default function JobPost() {
                       <SelectValue placeholder="Select level" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Entry Level">Entry Level</SelectItem>
-                      <SelectItem value="Mid Level">Mid Level</SelectItem>
-                      <SelectItem value="Senior Level">Senior Level</SelectItem>
-                      <SelectItem value="Executive">Executive</SelectItem>
+                      <SelectItem value="entry_level">Entry Level</SelectItem>
+                      <SelectItem value="mid_level">Mid Level</SelectItem>
+                      <SelectItem value="senior_level">Senior Level</SelectItem>
+                      <SelectItem value="executive">Executive</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

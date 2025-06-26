@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -201,6 +200,27 @@ const Jobs = () => {
       return `$${job.salary_min.toLocaleString()}+`;
     }
     return null;
+  };
+
+  const formatEmploymentType = (type: string) => {
+    const typeMap: { [key: string]: string } = {
+      'full_time': 'Full-time',
+      'part_time': 'Part-time', 
+      'contract': 'Contract',
+      'freelance': 'Freelance',
+      'internship': 'Internship'
+    };
+    return typeMap[type] || type;
+  };
+
+  const formatExperienceLevel = (level: string) => {
+    const levelMap: { [key: string]: string } = {
+      'entry_level': 'Entry Level',
+      'mid_level': 'Mid Level',
+      'senior_level': 'Senior Level',
+      'executive': 'Executive'
+    };
+    return levelMap[level] || level;
   };
 
   console.log('Jobs page render:', { jobsCount: jobs.length, isLoading, featuredCount: featuredJobs.length });
@@ -467,10 +487,10 @@ const Jobs = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="Full-time">Full-time</SelectItem>
-                  <SelectItem value="Part-time">Part-time</SelectItem>
-                  <SelectItem value="Contract">Contract</SelectItem>
-                  <SelectItem value="Internship">Internship</SelectItem>
+                  <SelectItem value="full_time">Full-time</SelectItem>
+                  <SelectItem value="part_time">Part-time</SelectItem>
+                  <SelectItem value="contract">Contract</SelectItem>
+                  <SelectItem value="internship">Internship</SelectItem>
                 </SelectContent>
               </Select>
               
@@ -490,10 +510,20 @@ const Jobs = () => {
                 >
                   Remote
                 </Button>
-                <Button variant="outline" size="sm" className="h-7 text-xs">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-7 text-xs"
+                  onClick={() => setFilters({ ...filters, jobType: 'full_time' })}
+                >
                   Full-time
                 </Button>
-                <Button variant="outline" size="sm" className="h-7 text-xs">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-7 text-xs"
+                  onClick={() => setFilters({ ...filters, experience: 'entry_level' })}
+                >
                   Entry Level
                 </Button>
                 <Button variant="outline" size="sm" className="h-7 text-xs">
@@ -596,7 +626,7 @@ const Jobs = () => {
                             <MapPin className="h-4 w-4" />
                             {job.location}
                           </span>
-                          <span>{job.employment_type}</span>
+                          <span>{formatEmploymentType(job.employment_type)}</span>
                           {formatSalary(job) && (
                             <span className="text-green-600 font-medium">
                               {formatSalary(job)}
