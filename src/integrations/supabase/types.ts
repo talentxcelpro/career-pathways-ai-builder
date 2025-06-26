@@ -825,6 +825,45 @@ export type Database = {
           },
         ]
       }
+      interview_sessions: {
+        Row: {
+          ai_feedback: Json | null
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          job_role: string | null
+          questions: Json | null
+          responses: Json | null
+          score: number | null
+          session_type: string
+          user_id: string
+        }
+        Insert: {
+          ai_feedback?: Json | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          job_role?: string | null
+          questions?: Json | null
+          responses?: Json | null
+          score?: number | null
+          session_type: string
+          user_id: string
+        }
+        Update: {
+          ai_feedback?: Json | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          job_role?: string | null
+          questions?: Json | null
+          responses?: Json | null
+          score?: number | null
+          session_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       interviews: {
         Row: {
           application_id: string | null
@@ -1777,6 +1816,48 @@ export type Database = {
         }
         Relationships: []
       }
+      salary_data: {
+        Row: {
+          created_at: string
+          currency: string | null
+          data_source: string | null
+          experience_level: string | null
+          id: string
+          industry: string | null
+          job_title: string
+          last_updated: string | null
+          location: string
+          salary_range_max: number | null
+          salary_range_min: number | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          data_source?: string | null
+          experience_level?: string | null
+          id?: string
+          industry?: string | null
+          job_title: string
+          last_updated?: string | null
+          location: string
+          salary_range_max?: number | null
+          salary_range_min?: number | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          data_source?: string | null
+          experience_level?: string | null
+          id?: string
+          industry?: string | null
+          job_title?: string
+          last_updated?: string | null
+          location?: string
+          salary_range_max?: number | null
+          salary_range_min?: number | null
+        }
+        Relationships: []
+      }
       saved_jobs: {
         Row: {
           id: string
@@ -1805,6 +1886,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      saved_tool_results: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          is_favorite: boolean | null
+          title: string
+          tool_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          id?: string
+          is_favorite?: boolean | null
+          title: string
+          tool_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          is_favorite?: boolean | null
+          title?: string
+          tool_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tool_usage: {
+        Row: {
+          created_at: string
+          id: string
+          results: Json | null
+          session_data: Json | null
+          tool_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          results?: Json | null
+          session_data?: Json | null
+          tool_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          results?: Json | null
+          session_data?: Json | null
+          tool_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_courses: {
         Row: {
@@ -1843,6 +1987,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_tool_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          preferences: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          preferences?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          preferences?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {

@@ -16,6 +16,7 @@ import {
   Clock,
   Users
 } from 'lucide-react';
+import ToolsNavigation from '@/components/tools/ToolsNavigation';
 
 const Tools = () => {
   const tools = [
@@ -100,6 +101,8 @@ const Tools = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ToolsNavigation />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
