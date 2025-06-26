@@ -5,6 +5,7 @@ import { CourseCard } from "./CourseCard";
 import { LearningPathCard } from "./LearningPathCard";
 import { MyLearningCard } from "./MyLearningCard";
 import { EmptyMyLearning } from "./EmptyMyLearning";
+import { BookOpen, Target, GraduationCap } from "lucide-react";
 
 interface LearningTabsProps {
   activeTab: string;
@@ -31,20 +32,50 @@ export const LearningTabs: React.FC<LearningTabsProps> = ({
 }) => {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="courses">Courses</TabsTrigger>
-        <TabsTrigger value="paths">Learning Paths</TabsTrigger>
-        <TabsTrigger value="my-learning">My Learning</TabsTrigger>
+      <TabsList className="grid w-full grid-cols-3 bg-gray-100/80 backdrop-blur-sm p-1 rounded-xl">
+        <TabsTrigger 
+          value="courses" 
+          className="flex items-center space-x-2 text-xs data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm"
+        >
+          <BookOpen className="h-3 w-3" />
+          <span>Courses</span>
+        </TabsTrigger>
+        <TabsTrigger 
+          value="paths" 
+          className="flex items-center space-x-2 text-xs data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm"
+        >
+          <Target className="h-3 w-3" />
+          <span>Learning Paths</span>
+        </TabsTrigger>
+        <TabsTrigger 
+          value="my-learning" 
+          className="flex items-center space-x-2 text-xs data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm"
+        >
+          <GraduationCap className="h-3 w-3" />
+          <span>My Learning</span>
+        </TabsTrigger>
       </TabsList>
 
       {/* Courses Tab */}
       <TabsContent value="courses">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {coursesLoading ? (
-            <div className="col-span-3 text-center py-8">Loading courses...</div>
+            Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="animate-pulse">
+                <div className="bg-gray-200 rounded-xl h-48"></div>
+              </div>
+            ))
           ) : filteredCourses.length === 0 ? (
-            <div className="col-span-3 text-center py-8 text-gray-500">
-              No courses found matching your criteria
+            <div className="col-span-3 text-center py-12">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 bg-gray-100 rounded-xl">
+                  <BookOpen className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No courses found</h3>
+              <p className="text-sm text-gray-500">
+                Try adjusting your search criteria or browse our featured courses
+              </p>
             </div>
           ) : (
             filteredCourses.map((course) => (
@@ -63,10 +94,22 @@ export const LearningTabs: React.FC<LearningTabsProps> = ({
       <TabsContent value="paths">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {pathsLoading ? (
-            <div className="col-span-2 text-center py-8">Loading learning paths...</div>
+            Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="animate-pulse">
+                <div className="bg-gray-200 rounded-xl h-32"></div>
+              </div>
+            ))
           ) : learningPaths.length === 0 ? (
-            <div className="col-span-2 text-center py-8 text-gray-500">
-              No learning paths available yet
+            <div className="col-span-2 text-center py-12">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 bg-gray-100 rounded-xl">
+                  <Target className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No learning paths available</h3>
+              <p className="text-sm text-gray-500">
+                We're working on creating structured learning paths for you
+              </p>
             </div>
           ) : (
             learningPaths.map((path) => (
