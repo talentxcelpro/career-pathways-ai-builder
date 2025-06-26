@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ProfileLayout } from '@/components/profile/ProfileLayout';
+import ProfileLayout from '@/components/profile/ProfileLayout';
 import { ProfileCompletionBanner } from '@/components/profile/ProfileCompletionBanner';
 
 const Profile = () => {
