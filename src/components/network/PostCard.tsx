@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal } from "lucide-react";
+import { Link } from 'react-router-dom';
 import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
 
@@ -89,8 +90,8 @@ export const PostCard: React.FC<PostCardProps> = ({
           </Button>
         </div>
 
-        {/* Post Content */}
-        <div className="mb-4">
+        {/* Post Content - Make clickable to navigate to detail page */}
+        <Link to={`/network/posts/${post.id}`} className="block mb-4 hover:bg-gray-50 -mx-2 px-2 py-2 rounded transition-colors">
           <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
           
           {/* Post Media */}
@@ -141,7 +142,7 @@ export const PostCard: React.FC<PostCardProps> = ({
               ))}
             </div>
           )}
-        </div>
+        </Link>
 
         {/* Post Actions */}
         <PostActions
