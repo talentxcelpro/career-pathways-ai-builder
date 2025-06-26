@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -255,8 +254,8 @@ export default function JobPost() {
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="full_time">Full-time</SelectItem>
-                      <SelectItem value="part_time">Part-time</SelectItem>
+                      <SelectItem value="full-time">Full-time</SelectItem>
+                      <SelectItem value="part-time">Part-time</SelectItem>
                       <SelectItem value="contract">Contract</SelectItem>
                       <SelectItem value="freelance">Freelance</SelectItem>
                       <SelectItem value="internship">Internship</SelectItem>
@@ -274,9 +273,9 @@ export default function JobPost() {
                       <SelectValue placeholder="Select level" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="entry_level">Entry Level</SelectItem>
-                      <SelectItem value="mid_level">Mid Level</SelectItem>
-                      <SelectItem value="senior_level">Senior Level</SelectItem>
+                      <SelectItem value="entry-level">Entry Level</SelectItem>
+                      <SelectItem value="mid-level">Mid Level</SelectItem>
+                      <SelectItem value="senior-level">Senior Level</SelectItem>
                       <SelectItem value="executive">Executive</SelectItem>
                     </SelectContent>
                   </Select>
