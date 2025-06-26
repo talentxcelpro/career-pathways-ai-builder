@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, AlertCircle, User, Camera } from "lucide-react";
+import { CheckCircle, AlertCircle, User, Camera, MapPin, Briefcase, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface ProfileData {
@@ -15,6 +15,7 @@ interface ProfileData {
   skills?: string[];
   location?: string;
   current_company?: string;
+  email?: string;
 }
 
 interface ProfileCompletionBannerProps {
@@ -40,15 +41,15 @@ export const ProfileCompletionBanner: React.FC<ProfileCompletionBannerProps> = (
       key: 'title',
       label: 'Job Title',
       completed: !!profile?.title,
-      icon: User,
+      icon: Briefcase,
       description: 'Share your current role or expertise'
     },
     {
       key: 'about',
       label: 'About Section',
       completed: !!profile?.about && profile.about.length > 50,
-      icon: User,
-      description: 'Tell your professional story'
+      icon: FileText,
+      description: 'Tell your professional story (50+ characters)'
     },
     {
       key: 'skills',
@@ -61,16 +62,18 @@ export const ProfileCompletionBanner: React.FC<ProfileCompletionBannerProps> = (
       key: 'location',
       label: 'Location',
       completed: !!profile?.location,
-      icon: User,
+      icon: MapPin,
       description: 'Show where you are based'
     }
   ];
 
   const completedCount = completionItems.filter(item => item.completed).length;
-  const completionPercentage = Math.round((completedCount / completionItems.length) * 100);
+  const totalItems = completionItems.length;
+  const completionPercentage = Math.round((completedCount / totalItems) * 100);
   
   const isFullyComplete = completionPercentage === 100;
 
+  // Don't show banner if fully complete and showFullPrompt is false
   if (isFullyComplete && !showFullPrompt) return null;
 
   return (
@@ -96,7 +99,7 @@ export const ProfileCompletionBanner: React.FC<ProfileCompletionBannerProps> = (
               <p className="text-gray-600 mt-1">
                 {isFullyComplete
                   ? 'Your profile is fully optimized for networking and professional opportunities.'
-                  : 'Add your profile picture, job title so others can recognize you in the network and posts. This makes your profile more engaging and trustworthy.'
+                  : 'Add your profile picture, job title, and other details so others can recognize you in the network and posts. This makes your profile more engaging and trustworthy.'
                 }
               </p>
             </div>
@@ -105,7 +108,7 @@ export const ProfileCompletionBanner: React.FC<ProfileCompletionBannerProps> = (
               <div className="flex items-center gap-3 mb-2">
                 <Progress value={completionPercentage} className="flex-1" />
                 <Badge variant={isFullyComplete ? "default" : "secondary"}>
-                  {completionPercentage}% Complete
+                  {completedCount}/{totalItems} Complete ({completionPercentage}%)
                 </Badge>
               </div>
             </div>
@@ -143,7 +146,7 @@ export const ProfileCompletionBanner: React.FC<ProfileCompletionBannerProps> = (
               onClick={() => navigate('/profile/edit')}
               className={isFullyComplete ? 'bg-green-600 hover:bg-green-700' : ''}
             >
-              {isFullyComplete ? 'View Profile' : 'Complete Profile'}
+              {isFullyComplete ? 'Edit Profile' : 'Complete Profile'}
             </Button>
           </div>
         </div>
