@@ -2,6 +2,7 @@
 import { useSupabaseQuery, useSupabaseMutation } from './useSupabaseQuery';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/hooks/use-toast';
 
 export const useJobs = (filters?: {
   search?: string;
@@ -11,7 +12,7 @@ export const useJobs = (filters?: {
   isRemote?: boolean;
 }) => {
   const jobsQuery = useSupabaseQuery(
-    ['jobs', filters],
+    ['jobs', JSON.stringify(filters || {})],
     async () => {
       let query = supabase
         .from('jobs')
@@ -145,7 +146,7 @@ export const useJobApplication = () => {
   );
 
   const getUserApplications = () => useSupabaseQuery(
-    ['user-applications', user?.id],
+    ['user-applications', user?.id || ''],
     async () => {
       if (!user?.id) throw new Error('User not authenticated');
 
@@ -184,7 +185,7 @@ export const useSavedJobs = () => {
   const { user } = useAuth();
 
   const savedJobsQuery = useSupabaseQuery(
-    ['saved-jobs', user?.id],
+    ['saved-jobs', user?.id || ''],
     async () => {
       if (!user?.id) throw new Error('User not authenticated');
 
@@ -226,7 +227,7 @@ export const useSavedJobs = () => {
       return data;
     },
     {
-      invalidateQueries: [['saved-jobs', user?.id]],
+      invalidateQueries: [['saved-jobs', user?.id || '']],
     }
   );
 
@@ -243,7 +244,7 @@ export const useSavedJobs = () => {
       if (error) throw error;
     },
     {
-      invalidateQueries: [['saved-jobs', user?.id]],
+      invalidateQueries: [['saved-jobs', user?.id || '']],
     }
   );
 

@@ -2,7 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 // Generic hook for Supabase queries with authentication
 export const useSupabaseQuery = <T>(
@@ -15,7 +15,6 @@ export const useSupabaseQuery = <T>(
   } = {}
 ) => {
   const { user } = useAuth();
-  const { toast } = useToast();
 
   const { requireAuth = true, onError, ...queryOptions } = options;
 
@@ -23,10 +22,10 @@ export const useSupabaseQuery = <T>(
     queryKey,
     queryFn,
     enabled: requireAuth ? !!user && (options.enabled ?? true) : (options.enabled ?? true),
-    onError: (error: Error) => {
+    throwOnError: (error) => {
       console.error(`Query failed for ${queryKey.join('.')}:`, error);
       if (onError) {
-        onError(error);
+        onError(error as Error);
       } else {
         toast({
           title: "Error",
@@ -34,6 +33,7 @@ export const useSupabaseQuery = <T>(
           variant: "destructive",
         });
       }
+      return false;
     },
     ...queryOptions,
   });
@@ -50,7 +50,6 @@ export const useSupabaseMutation = <TData, TVariables>(
   } = {}
 ) => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { requireAuth = true, invalidateQueries = [], onSuccess, onError } = options;
@@ -92,7 +91,7 @@ export const useProfile = () => {
   const { user } = useAuth();
 
   const profileQuery = useSupabaseQuery(
-    ['profile', user?.id],
+    ['profile', user?.id || ''],
     async () => {
       if (!user?.id) throw new Error('No user ID');
       
@@ -129,7 +128,7 @@ export const useProfile = () => {
           description: "Profile updated successfully!",
         });
       },
-      invalidateQueries: [['profile', user?.id]],
+      invalidateQueries: [['profile', user?.id || '']],
     }
   );
 
