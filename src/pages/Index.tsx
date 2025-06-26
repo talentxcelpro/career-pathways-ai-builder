@@ -7,17 +7,27 @@ import { UserDashboard } from "@/components/dashboard/UserDashboard";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Check authentication status
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsLoggedIn(!!user);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        setIsLoggedIn(!!user);
+      } catch (error) {
+        console.error('Auth check error:', error);
+        setIsLoggedIn(false);
+      } finally {
+        setLoading(false);
+      }
     };
+    
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -36,7 +46,10 @@ const Index = () => {
         .eq('id', user.id)
         .single();
 
-      if (error) return null;
+      if (error) {
+        console.error('Profile fetch error:', error);
+        return null;
+      }
       return data;
     },
     enabled: isLoggedIn
@@ -64,6 +77,14 @@ const Index = () => {
   };
 
   const missingFields = getMissingFields();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
