@@ -7,12 +7,18 @@ import InterviewPrep from "../pages/tools/InterviewPrep";
 import AICareerAssistant from "../pages/tools/AICareerAssistant";
 import ProfileScore from "../pages/tools/ProfileScore";
 import MarketInsights from "../pages/tools/MarketInsights";
+import ToolsDashboard from "../pages/tools/ToolsDashboard";
 
 export const toolsRoutes = [
   {
     title: "Tools",
     to: "/tools",
     page: <Tools />,
+  },
+  {
+    title: "Tools Dashboard",
+    to: "/tools/dashboard",
+    page: <ToolsDashboard />,
   },
   {
     title: "Resume Checker",

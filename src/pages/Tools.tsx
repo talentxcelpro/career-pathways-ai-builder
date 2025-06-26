@@ -14,7 +14,10 @@ import {
   Award,
   Sparkles,
   Clock,
-  Users
+  Users,
+  BarChart3,
+  History,
+  Star
 } from 'lucide-react';
 import ToolsNavigation from '@/components/tools/ToolsNavigation';
 
@@ -99,6 +102,37 @@ const Tools = () => {
     { label: 'Users Helped', value: '10K+', icon: Users }
   ];
 
+  const quickActions = [
+    {
+      title: 'Tools Dashboard',
+      description: 'Access all tools with enhanced interface',
+      icon: BarChart3,
+      path: '/tools/dashboard',
+      color: 'text-blue-600'
+    },
+    {
+      title: 'Results History',
+      description: 'View and manage your saved results',
+      icon: History,
+      path: '/tools/dashboard',
+      color: 'text-green-600'
+    },
+    {
+      title: 'Analytics',
+      description: 'Track your tool usage and progress',
+      icon: BarChart3,
+      path: '/tools/dashboard',
+      color: 'text-purple-600'
+    },
+    {
+      title: 'Favorites',
+      description: 'Quick access to your favorite tools',
+      icon: Star,
+      path: '/tools/dashboard',
+      color: 'text-yellow-600'
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <ToolsNavigation />
@@ -111,6 +145,28 @@ const Tools = () => {
             Supercharge your career with our suite of AI-powered tools designed to optimize 
             your job search and accelerate your professional growth.
           </p>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Quick Access</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {quickActions.map((action, index) => (
+              <Link key={index} to={action.path}>
+                <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-3">
+                      <action.icon className={`h-6 w-6 ${action.color}`} />
+                      <div>
+                        <h3 className="font-medium text-gray-900">{action.title}</h3>
+                        <p className="text-sm text-gray-600">{action.description}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
         </div>
 
         {/* Stats */}
@@ -168,7 +224,7 @@ const Tools = () => {
           ))}
         </div>
 
-        {/* CTA Section */}
+        {/* Enhanced CTA Section */}
         <div className="mt-16 text-center">
           <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
             <CardContent className="p-12">
@@ -176,11 +232,18 @@ const Tools = () => {
               <p className="text-xl mb-6 opacity-90">
                 Join thousands of professionals who've transformed their careers with our AI tools.
               </p>
-              <Link to="/tools/ai-assistant">
-                <Button size="lg" variant="secondary">
-                  Start with AI Assistant
-                </Button>
-              </Link>
+              <div className="space-x-4">
+                <Link to="/tools/dashboard">
+                  <Button size="lg" variant="secondary">
+                    Open Dashboard
+                  </Button>
+                </Link>
+                <Link to="/tools/ai-assistant">
+                  <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-blue-600">
+                    Start with AI Assistant
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>
