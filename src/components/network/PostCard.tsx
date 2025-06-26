@@ -19,6 +19,7 @@ interface PostCardProps {
     likes_count?: number;
     comments_count?: number;
     shares_count?: number;
+    author_id?: string;
     profiles?: {
       full_name?: string;
       title?: string;
@@ -69,16 +70,23 @@ export const PostCard: React.FC<PostCardProps> = ({
         {/* Post Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start space-x-3">
-            <Avatar>
-              <AvatarImage src={post.profiles?.profile_picture_url} />
-              <AvatarFallback>
-                {generateInitials(post.profiles)}
-              </AvatarFallback>
-            </Avatar>
+            <Link to={`/network/people/${post.author_id}`} className="block">
+              <Avatar className="hover:scale-105 transition-transform">
+                <AvatarImage src={post.profiles?.profile_picture_url} />
+                <AvatarFallback>
+                  {generateInitials(post.profiles)}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
             <div>
-              <h3 className="font-semibold text-gray-900">
-                {formatDisplayName(post.profiles)}
-              </h3>
+              <Link 
+                to={`/network/people/${post.author_id}`} 
+                className="hover:text-blue-600 transition-colors"
+              >
+                <h3 className="font-semibold text-gray-900">
+                  {formatDisplayName(post.profiles)}
+                </h3>
+              </Link>
               <p className="text-sm text-gray-600">
                 {post.profiles?.title || 'Professional'}
               </p>

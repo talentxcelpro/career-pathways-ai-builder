@@ -13,6 +13,7 @@ import Messages from "../pages/network/Messages";
 import MessageConversation from "../pages/network/MessageConversation";
 import Notifications from "../pages/network/Notifications";
 import Suggestions from "../pages/network/Suggestions";
+import UserProfile from "../pages/network/UserProfile";
 
 export const networkRoutes = [
   {
@@ -25,6 +26,11 @@ export const networkRoutes = [
     title: "Network People",
     to: "/network/people",
     page: <People />,
+  },
+  {
+    title: "User Profile",
+    to: "/network/people/:id",
+    page: <UserProfile />,
   },
   {
     title: "Network Posts",

@@ -6,8 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Camera, Plus, X, MapPin, Mail, Phone, Globe } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Camera, Plus, X, MapPin, Mail, Phone, Globe, Eye, Share2 } from "lucide-react";
+import { useNavigate, Link } from 'react-router-dom';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -86,12 +86,24 @@ const Profile = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Dashboard
           </Button>
-          <Button 
-            onClick={() => setIsEditing(!isEditing)}
-            className={isEditing ? "bg-green-600 hover:bg-green-700" : ""}
-          >
-            {isEditing ? "Save Changes" : "Edit Profile"}
-          </Button>
+          <div className="flex space-x-2">
+            <Link to="/network/people">
+              <Button variant="outline">
+                <Eye className="h-4 w-4 mr-2" />
+                View Public Profile
+              </Button>
+            </Link>
+            <Button variant="outline">
+              <Share2 className="h-4 w-4 mr-2" />
+              Share Profile
+            </Button>
+            <Button 
+              onClick={() => setIsEditing(!isEditing)}
+              className={isEditing ? "bg-green-600 hover:bg-green-700" : ""}
+            >
+              {isEditing ? "Save Changes" : "Edit Profile"}
+            </Button>
+          </div>
         </div>
 
         {/* Profile Header */}

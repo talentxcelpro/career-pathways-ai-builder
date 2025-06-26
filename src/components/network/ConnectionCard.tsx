@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, MessageCircle, MapPin, Building } from "lucide-react";
+import { UserPlus, MessageCircle, MapPin, Building, Eye } from "lucide-react";
+import { Link } from 'react-router-dom';
 
 interface ConnectionCardProps {
   profile: {
@@ -53,30 +54,34 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
     <Card className="hover:shadow-lg transition-shadow">
       <CardContent className="p-6">
         <div className="text-center space-y-4">
-          {/* Profile Picture */}
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto flex items-center justify-center">
-            {profile.profile_picture_url ? (
-              <img 
-                src={profile.profile_picture_url} 
-                alt={formatDisplayName(profile)}
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              <span className="text-white font-semibold text-lg">
-                {generateInitials(profile)}
-              </span>
-            )}
-          </div>
+          {/* Profile Picture - Clickable to view profile */}
+          <Link to={`/network/people/${profile.id}`} className="block">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto flex items-center justify-center hover:scale-105 transition-transform">
+              {profile.profile_picture_url ? (
+                <img 
+                  src={profile.profile_picture_url} 
+                  alt={formatDisplayName(profile)}
+                  className="w-full h-full rounded-full object-cover"
+                />
+              ) : (
+                <span className="text-white font-semibold text-lg">
+                  {generateInitials(profile)}
+                </span>
+              )}
+            </div>
+          </Link>
 
-          {/* Basic Info */}
-          <div>
-            <h3 className="font-semibold text-lg text-gray-900">
-              {formatDisplayName(profile)}
-            </h3>
-            <p className="text-gray-600 text-sm">
-              {profile.title || 'Professional'}
-            </p>
-          </div>
+          {/* Basic Info - Clickable to view profile */}
+          <Link to={`/network/people/${profile.id}`} className="block hover:text-blue-600 transition-colors">
+            <div>
+              <h3 className="font-semibold text-lg text-gray-900">
+                {formatDisplayName(profile)}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                {profile.title || 'Professional'}
+              </p>
+            </div>
+          </Link>
 
           {/* Location and Company */}
           <div className="space-y-1">
@@ -129,6 +134,12 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
                 <MessageCircle className="h-4 w-4 mr-1" />
                 Message
               </Button>
+              <Link to={`/network/people/${profile.id}`}>
+                <Button size="sm" variant="outline">
+                  <Eye className="h-4 w-4 mr-1" />
+                  View
+                </Button>
+              </Link>
             </div>
           )}
         </div>
