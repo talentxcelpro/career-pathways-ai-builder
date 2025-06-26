@@ -6,8 +6,8 @@ import { RegisterForm } from '@/components/auth/RegisterForm';
 const Register = () => {
   return (
     <AuthLayout
-      title="Create Account"
-      description="Join thousands of professionals advancing their careers"
+      title="Join TalentXcel"
+      description="Create your account to get started"
     >
       <RegisterForm />
     </AuthLayout>

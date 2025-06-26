@@ -8,23 +8,18 @@ interface AuthLayoutProps {
   description: string;
 }
 
-export const AuthLayout = ({ children, title, description }: AuthLayoutProps) => {
+export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, description }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-2">
-            <img 
-              src="/lovable-uploads/9868d726-8a25-4c3f-a63e-fd765a142896.png" 
-              alt="TalentXcel" 
-              className="h-10 w-auto"
-            />
-          </div>
-          <p className="text-gray-600">AI-Powered Career Platform</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">TalentXcel</h1>
+          <p className="text-gray-600">Your Career. One Platform. Endless Possibilities.</p>
         </div>
-        <Card className="shadow-xl border-0">
+        
+        <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">{title}</CardTitle>
+            <CardTitle>{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </CardHeader>
           <CardContent>

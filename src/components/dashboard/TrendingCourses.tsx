@@ -1,61 +1,102 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Star, ArrowRight } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
+import { Star, Clock, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
-interface Course {
-  id: string;
-  title: string;
-  instructor_name: string;
-  rating: number;
-  enrolled_count?: number;
-}
-
-interface TrendingCoursesProps {
-  courses: Course[];
-}
-
-export const TrendingCourses = ({ courses }: TrendingCoursesProps) => {
-  const navigate = useNavigate();
+export const TrendingCourses = () => {
+  const courses = [
+    {
+      id: "1",
+      title: "Advanced React & TypeScript",
+      instructor: "Sarah Johnson",
+      rating: 4.8,
+      students: 1234,
+      duration: "8 hours",
+      level: "Intermediate",
+      price: "Free"
+    },
+    {
+      id: "2",
+      title: "Product Management Fundamentals",
+      instructor: "Mike Chen",
+      rating: 4.9,
+      students: 856,
+      duration: "12 hours",
+      level: "Beginner",
+      price: "$49"
+    },
+    {
+      id: "3",
+      title: "UX Design Principles",
+      instructor: "Lisa Rodriguez",
+      rating: 4.7,
+      students: 2341,
+      duration: "6 hours",
+      level: "Intermediate",
+      price: "$29"
+    }
+  ];
 
   return (
-    <Card className="border-0 shadow-lg">
+    <Card>
       <CardHeader>
-        <CardTitle className="flex items-center">
-          <GraduationCap className="h-5 w-5 mr-2" />
-          Trending Courses
-        </CardTitle>
-        <CardDescription>Popular learning paths in your field</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Trending Courses</CardTitle>
+            <CardDescription>
+              Popular courses to boost your skills
+            </CardDescription>
+          </div>
+          <Link to="/learning">
+            <Button variant="outline" size="sm">Browse All</Button>
+          </Link>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {courses.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">No courses available at the moment</p>
-        ) : (
-          courses.map((course) => (
-            <div key={course.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-              <h3 className="font-semibold text-gray-900 mb-1">{course.title}</h3>
-              <p className="text-gray-600 mb-2">by {course.instructor_name}</p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                  <span className="text-sm text-gray-600 ml-1">{course.rating}</span>
+      <CardContent>
+        <div className="space-y-4">
+          {courses.map((course) => (
+            <div key={course.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <h3 className="font-semibold">{course.title}</h3>
+                  <p className="text-sm text-gray-600">by {course.instructor}</p>
                 </div>
-                <span className="text-sm text-gray-500">
-                  {course.enrolled_count?.toLocaleString()} students
-                </span>
+                <Badge variant={course.price === "Free" ? "secondary" : "outline"}>
+                  {course.price}
+                </Badge>
+              </div>
+              
+              <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                <div className="flex items-center space-x-1">
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <span>{course.rating}</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Users className="h-4 w-4" />
+                  <span>{course.students.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Clock className="h-4 w-4" />
+                  <span>{course.duration}</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Badge variant="outline" className="text-xs">
+                  {course.level}
+                </Badge>
+                <div className="space-x-2">
+                  <Button size="sm" variant="outline">Preview</Button>
+                  <Button size="sm" asChild>
+                    <Link to={`/learning/courses/${course.id}`}>Enroll</Link>
+                  </Button>
+                </div>
               </div>
             </div>
-          ))
-        )}
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={() => navigate('/learning')}
-        >
-          Explore Learning
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

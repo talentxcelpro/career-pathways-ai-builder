@@ -1,68 +1,105 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, ArrowRight } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { MapPin, Clock, Building } from "lucide-react";
+import { Link } from "react-router-dom";
 
-interface Job {
-  id: string;
-  title: string;
-  employment_type: string;
-  location?: string;
-  salary_min?: number;
-  salary_max?: number;
-  companies?: {
-    name: string;
-    logo_url?: string;
-  };
-}
-
-interface FeaturedJobsProps {
-  jobs: Job[];
-}
-
-export const FeaturedJobs = ({ jobs }: FeaturedJobsProps) => {
-  const navigate = useNavigate();
+export const FeaturedJobs = () => {
+  const featuredJobs = [
+    {
+      id: "1",
+      title: "Senior Frontend Developer",
+      company: "TechCorp Inc.",
+      location: "San Francisco, CA",
+      type: "Full-time",
+      posted: "2 days ago",
+      salary: "$120k - $160k",
+      skills: ["React", "TypeScript", "Node.js"]
+    },
+    {
+      id: "2",
+      title: "Product Manager",
+      company: "StartupXYZ",
+      location: "Remote",
+      type: "Full-time",
+      posted: "1 week ago",
+      salary: "$100k - $140k",
+      skills: ["Product Strategy", "Analytics", "Agile"]
+    },
+    {
+      id: "3",
+      title: "UX Designer",
+      company: "Design Studio",
+      location: "New York, NY",
+      type: "Contract",
+      posted: "3 days ago",
+      salary: "$80k - $110k",
+      skills: ["Figma", "User Research", "Prototyping"]
+    }
+  ];
 
   return (
-    <Card className="border-0 shadow-lg">
+    <Card>
       <CardHeader>
-        <CardTitle className="flex items-center">
-          <Briefcase className="h-5 w-5 mr-2" />
-          Featured Jobs
-        </CardTitle>
-        <CardDescription>Opportunities matching your profile</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Featured Jobs</CardTitle>
+            <CardDescription>
+              Recommended opportunities for you
+            </CardDescription>
+          </div>
+          <Link to="/jobs">
+            <Button variant="outline" size="sm">View All</Button>
+          </Link>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {jobs.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">No jobs available at the moment</p>
-        ) : (
-          jobs.map((job) => (
-            <div key={job.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-semibold text-gray-900">{job.title}</h3>
-                <Badge variant="secondary">{job.employment_type}</Badge>
+      <CardContent>
+        <div className="space-y-4">
+          {featuredJobs.map((job) => (
+            <div key={job.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <h3 className="font-semibold text-lg">{job.title}</h3>
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center space-x-1">
+                      <Building className="h-4 w-4" />
+                      <span>{job.company}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <MapPin className="h-4 w-4" />
+                      <span>{job.location}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Clock className="h-4 w-4" />
+                      <span>{job.posted}</span>
+                    </div>
+                  </div>
+                </div>
+                <Badge variant="secondary">{job.type}</Badge>
               </div>
-              <p className="text-gray-600 mb-1">
-                {job.companies?.name} • {job.location || 'Remote'}
-              </p>
-              {job.salary_min && job.salary_max && (
-                <p className="text-green-600 font-medium">
-                  ${job.salary_min}k - ${job.salary_max}k
-                </p>
-              )}
+              
+              <div className="mb-3">
+                <span className="font-medium text-green-600">{job.salary}</span>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mb-3">
+                {job.skills.map((skill, index) => (
+                  <Badge key={index} variant="outline" className="text-xs">
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="flex space-x-2">
+                <Button size="sm" asChild>
+                  <Link to={`/jobs/${job.id}`}>View Details</Link>
+                </Button>
+                <Button size="sm" variant="outline">Save</Button>
+              </div>
             </div>
-          ))
-        )}
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={() => navigate('/jobs')}
-        >
-          View All Jobs
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

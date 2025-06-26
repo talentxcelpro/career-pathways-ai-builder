@@ -7,7 +7,7 @@ const Login = () => {
   return (
     <AuthLayout
       title="Welcome Back"
-      description="Sign in to your Talenxcel account"
+      description="Sign in to your TalentXcel account"
     >
       <LoginForm />
     </AuthLayout>

@@ -1,64 +1,48 @@
 
-import { Card, CardContent } from "@/components/ui/card";
-import { GraduationCap, FileText, Briefcase, Users } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Briefcase, Eye, Users, TrendingUp } from "lucide-react";
 
-interface UserStats {
-  coursesCompleted: number;
-  resumeViews: number;
-  appliedJobs: number;
-  profileViews: number;
-}
-
-interface StatsCardsProps {
-  userStats: UserStats;
-}
-
-export const StatsCards = ({ userStats }: StatsCardsProps) => {
+export const StatsCards = () => {
   const stats = [
     {
-      label: "Courses Completed",
-      value: userStats.coursesCompleted,
-      icon: GraduationCap,
-      gradient: "from-blue-500 to-blue-600",
-      textColor: "text-blue-100"
-    },
-    {
-      label: "Resume Views",
-      value: userStats.resumeViews,
-      icon: FileText,
-      gradient: "from-green-500 to-green-600",
-      textColor: "text-green-100"
-    },
-    {
-      label: "Jobs Applied",
-      value: userStats.appliedJobs,
+      title: "Job Applications",
+      value: "12",
       icon: Briefcase,
-      gradient: "from-purple-500 to-purple-600",
-      textColor: "text-purple-100"
+      trend: "+2 this week"
     },
     {
-      label: "Profile Views",
-      value: userStats.profileViews,
+      title: "Profile Views",
+      value: "134",
+      icon: Eye,
+      trend: "+12% from last month"
+    },
+    {
+      title: "Network Connections",
+      value: "48",
       icon: Users,
-      gradient: "from-orange-500 to-orange-600",
-      textColor: "text-orange-100"
+      trend: "+5 new connections"
+    },
+    {
+      title: "Skill Progress",
+      value: "78%",
+      icon: TrendingUp,
+      trend: "+15% this month"
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         return (
-          <Card key={index} className={`bg-gradient-to-r ${stat.gradient} text-white border-0`}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className={stat.textColor}>{stat.label}</p>
-                  <p className="text-3xl font-bold">{stat.value}</p>
-                </div>
-                <Icon className={`h-8 w-8 ${stat.textColor.replace('100', '200')}`} />
-              </div>
+          <Card key={index}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              <Icon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stat.value}</div>
+              <p className="text-xs text-muted-foreground">{stat.trend}</p>
             </CardContent>
           </Card>
         );

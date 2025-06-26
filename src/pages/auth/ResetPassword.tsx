@@ -1,42 +1,47 @@
 
 import React, { useState, useEffect } from 'react';
+import { AuthLayout } from '@/components/auth/AuthLayout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AuthLayout } from '@/components/auth/AuthLayout';
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 const ResetPassword = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if we have the required tokens from the URL
-    const accessToken = searchParams.get('access_token');
-    const refreshToken = searchParams.get('refresh_token');
-    
-    if (!accessToken || !refreshToken) {
-      toast.error('Invalid reset link');
-      navigate('/auth/login');
-    }
-  }, [searchParams, navigate]);
+    // Check if user has access token from password reset
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        // User is authorized to reset password
+      }
+    });
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match. Please try again.",
+        variant: "destructive",
+      });
       return;
     }
 
     if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -48,13 +53,24 @@ const ResetPassword = () => {
       });
 
       if (error) {
-        toast.error(error.message);
+        toast({
+          title: "Update Failed",
+          description: error.message,
+          variant: "destructive",
+        });
       } else {
-        toast.success('Password updated successfully');
+        toast({
+          title: "Password Updated",
+          description: "Your password has been successfully updated.",
+        });
         navigate('/auth/login');
       }
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast({
+        title: "Update Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -62,10 +78,10 @@ const ResetPassword = () => {
 
   return (
     <AuthLayout
-      title="Set New Password"
-      description="Enter your new password below"
+      title="Update Password"
+      description="Enter your new password"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleUpdatePassword} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="password">New Password</Label>
           <Input
@@ -75,7 +91,6 @@ const ResetPassword = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            minLength={6}
           />
         </div>
 
@@ -88,13 +103,11 @@ const ResetPassword = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            minLength={6}
           />
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Update Password
+          {isLoading ? 'Updating...' : 'Update Password'}
         </Button>
       </form>
     </AuthLayout>

@@ -1,20 +1,20 @@
 
 import React, { useState } from 'react';
+import { AuthLayout } from '@/components/auth/AuthLayout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AuthLayout } from '@/components/auth/AuthLayout';
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -24,13 +24,24 @@ const ForgotPassword = () => {
       });
 
       if (error) {
-        toast.error(error.message);
+        toast({
+          title: "Reset Failed",
+          description: error.message,
+          variant: "destructive",
+        });
       } else {
-        toast.success('Password reset link sent to your email');
         setIsSubmitted(true);
+        toast({
+          title: "Reset Email Sent",
+          description: "Check your email for password reset instructions.",
+        });
       }
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast({
+        title: "Reset Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -40,17 +51,14 @@ const ForgotPassword = () => {
     return (
       <AuthLayout
         title="Check Your Email"
-        description="We've sent a password reset link to your email address"
+        description="We've sent password reset instructions to your email"
       >
         <div className="text-center space-y-4">
           <p className="text-gray-600">
-            If you don't see the email in your inbox, please check your spam folder.
+            If an account with that email exists, you'll receive a password reset link shortly.
           </p>
-          <Link to="/auth/login">
-            <Button variant="outline" className="w-full">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Login
-            </Button>
+          <Link to="/auth/login" className="text-blue-600 hover:underline">
+            Back to Sign In
           </Link>
         </div>
       </AuthLayout>
@@ -60,9 +68,9 @@ const ForgotPassword = () => {
   return (
     <AuthLayout
       title="Reset Password"
-      description="Enter your email address to receive a password reset link"
+      description="Enter your email to receive reset instructions"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleResetPassword} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -76,16 +84,15 @@ const ForgotPassword = () => {
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Send Reset Link
+          {isLoading ? 'Sending...' : 'Send Reset Link'}
         </Button>
 
-        <div className="text-center">
-          <Link to="/auth/login" className="text-sm text-blue-600 hover:underline">
-            <ArrowLeft className="inline mr-1 h-3 w-3" />
-            Back to Login
+        <p className="text-center text-sm text-gray-600">
+          Remember your password?{' '}
+          <Link to="/auth/login" className="text-blue-600 hover:underline">
+            Sign in
           </Link>
-        </div>
+        </p>
       </form>
     </AuthLayout>
   );

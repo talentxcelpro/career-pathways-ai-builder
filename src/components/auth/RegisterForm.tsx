@@ -3,34 +3,46 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Checkbox } from "@/components/ui/checkbox";
-import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 import { useNavigate, Link } from 'react-router-dom';
-import { toast } from "sonner";
-import { Loader2, Mail, Github } from "lucide-react";
 
-export const RegisterForm = () => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
+export const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
     confirmPassword: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match. Please try again.",
+        variant: "destructive",
+      });
       return;
     }
 
-    if (!acceptTerms) {
-      toast.error('Please accept the terms and conditions');
+    if (formData.password.length < 6) {
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -41,53 +53,48 @@ export const RegisterForm = () => {
         email: formData.email,
         password: formData.password,
         options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
           data: {
             full_name: formData.fullName,
-          },
-          emailRedirectTo: `${window.location.origin}/`
+          }
         }
       });
 
       if (error) {
-        toast.error(error.message);
+        toast({
+          title: "Registration Failed",
+          description: error.message,
+          variant: "destructive",
+        });
       } else {
-        toast.success('Check your email to confirm your account!');
+        toast({
+          title: "Registration Successful!",
+          description: "Please check your email to verify your account.",
+        });
         navigate('/auth/login');
       }
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast({
+        title: "Registration Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'github') => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/`
-        }
-      });
-      
-      if (error) {
-        toast.error(error.message);
-      }
-    } catch (error) {
-      toast.error('Failed to sign up with ' + provider);
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleRegister} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="fullName">Full Name</Label>
         <Input
           id="fullName"
+          name="fullName"
           type="text"
           placeholder="Enter your full name"
           value={formData.fullName}
-          onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+          onChange={handleChange}
           required
         />
       </div>
@@ -96,10 +103,11 @@ export const RegisterForm = () => {
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
+          name="email"
           type="email"
           placeholder="Enter your email"
           value={formData.email}
-          onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+          onChange={handleChange}
           required
         />
       </div>
@@ -108,10 +116,11 @@ export const RegisterForm = () => {
         <Label htmlFor="password">Password</Label>
         <Input
           id="password"
+          name="password"
           type="password"
           placeholder="Create a password"
           value={formData.password}
-          onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+          onChange={handleChange}
           required
         />
       </div>
@@ -120,73 +129,25 @@ export const RegisterForm = () => {
         <Label htmlFor="confirmPassword">Confirm Password</Label>
         <Input
           id="confirmPassword"
+          name="confirmPassword"
           type="password"
           placeholder="Confirm your password"
           value={formData.confirmPassword}
-          onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+          onChange={handleChange}
           required
         />
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Checkbox 
-          id="terms" 
-          checked={acceptTerms}
-          onCheckedChange={(checked) => setAcceptTerms(checked === true)}
-        />
-        <label htmlFor="terms" className="text-sm text-gray-600">
-          I agree to the{' '}
-          <Link to="/terms" className="text-blue-600 hover:underline">
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link to="/privacy" className="text-blue-600 hover:underline">
-            Privacy Policy
-          </Link>
-        </label>
-      </div>
-
-      <Button type="submit" className="w-full" disabled={isLoading || !acceptTerms}>
-        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Create Account
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? 'Creating account...' : 'Create Account'}
       </Button>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <Separator className="w-full" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-gray-500">Or continue with</span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => handleSocialLogin('google')}
-          className="w-full"
-        >
-          <Mail className="mr-2 h-4 w-4" />
-          Google
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => handleSocialLogin('github')}
-          className="w-full"
-        >
-          <Github className="mr-2 h-4 w-4" />
-          GitHub
-        </Button>
-      </div>
-
-      <div className="text-center text-sm">
+      <p className="text-center text-sm text-gray-600">
         Already have an account?{' '}
-        <Link to="/auth/login" className="text-blue-600 hover:underline font-medium">
+        <Link to="/auth/login" className="text-blue-600 hover:underline">
           Sign in
         </Link>
-      </div>
+      </p>
     </form>
   );
 };

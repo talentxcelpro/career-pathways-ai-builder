@@ -1,58 +1,69 @@
 
 import { Button } from "@/components/ui/button";
-import { FileText, Users, BookOpen, Target } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileText, Search, Users, BookOpen } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const QuickActions = () => {
-  const navigate = useNavigate();
-
   const actions = [
     {
+      title: "Build Resume",
+      description: "Create or update your professional resume",
       icon: FileText,
-      label: "Build Resume",
-      onClick: () => navigate('/tools/resume-builder'),
-      primary: true
+      href: "/resume-builder",
+      color: "bg-blue-500"
     },
     {
+      title: "Find Jobs",
+      description: "Search for your next opportunity",
+      icon: Search,
+      href: "/jobs",
+      color: "bg-green-500"
+    },
+    {
+      title: "Connect",
+      description: "Expand your professional network",
       icon: Users,
-      label: "Edit Profile",
-      onClick: () => navigate('/profile')
+      href: "/network",
+      color: "bg-purple-500"
     },
     {
+      title: "Learn Skills",
+      description: "Enhance your expertise with courses",
       icon: BookOpen,
-      label: "Learning Hub",
-      onClick: () => navigate('/learning')
-    },
-    {
-      icon: Target,
-      label: "Career Map",
-      onClick: () => {}
+      href: "/learning",
+      color: "bg-orange-500"
     }
   ];
 
   return (
-    <div className="mb-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {actions.map((action, index) => {
-          const Icon = action.icon;
-          return (
-            <Button 
-              key={index}
-              className={`h-24 ${action.primary 
-                ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700' 
-                : ''}`}
-              variant={action.primary ? 'default' : 'outline'}
-              onClick={action.onClick}
-            >
-              <div className="text-center">
-                <Icon className="h-6 w-6 mx-auto mb-2" />
-                <span>{action.label}</span>
-              </div>
-            </Button>
-          );
-        })}
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Quick Actions</CardTitle>
+        <CardDescription>
+          Common tasks to boost your career
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-4">
+          {actions.map((action, index) => {
+            const Icon = action.icon;
+            return (
+              <Link key={index} to={action.href}>
+                <Button variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2 w-full">
+                  <div className={`p-2 rounded-full ${action.color} text-white`}>
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div className="text-center">
+                    <div className="font-medium text-sm">{action.title}</div>
+                    <div className="text-xs text-muted-foreground">{action.description}</div>
+                  </div>
+                </Button>
+              </Link>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
   );
 };

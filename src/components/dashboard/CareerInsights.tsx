@@ -1,50 +1,56 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, BookOpen, Briefcase, Users } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { TrendingUp, Target, BookOpen } from "lucide-react";
 
 export const CareerInsights = () => {
   const insights = [
     {
+      title: "Profile Completeness",
+      value: 75,
+      description: "Add more skills to reach 100%",
+      icon: Target,
+      color: "text-blue-600"
+    },
+    {
+      title: "Skill Development",
+      value: 60,
+      description: "Complete 2 more courses",
       icon: BookOpen,
-      title: "Skill Gaps",
-      description: "Complete 2 more courses to match your target role",
-      bgColor: "bg-blue-50",
-      iconColor: "text-blue-600"
+      color: "text-green-600"
     },
     {
-      icon: Briefcase,
-      title: "Job Matches",
-      description: "5 new jobs match your profile this week",
-      bgColor: "bg-green-50",
-      iconColor: "text-green-600"
-    },
-    {
-      icon: Users,
-      title: "Network Growth",
-      description: "Connect with 3 professionals in your field",
-      bgColor: "bg-purple-50",
-      iconColor: "text-purple-600"
+      title: "Market Demand",
+      value: 85,
+      description: "Your skills are in high demand",
+      icon: TrendingUp,
+      color: "text-purple-600"
     }
   ];
 
   return (
-    <Card className="border-0 shadow-lg">
+    <Card>
       <CardHeader>
-        <CardTitle className="flex items-center">
-          <TrendingUp className="h-5 w-5 mr-2" />
-          Career Insights
-        </CardTitle>
-        <CardDescription>Personalized recommendations for your career growth</CardDescription>
+        <CardTitle>Career Insights</CardTitle>
+        <CardDescription>
+          Track your professional growth
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="space-y-6">
           {insights.map((insight, index) => {
             const Icon = insight.icon;
             return (
-              <div key={index} className={`text-center p-4 ${insight.bgColor} rounded-lg`}>
-                <Icon className={`h-8 w-8 ${insight.iconColor} mx-auto mb-2`} />
-                <h3 className="font-semibold text-gray-900 mb-1">{insight.title}</h3>
-                <p className="text-sm text-gray-600">{insight.description}</p>
+              <div key={index} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Icon className={`h-4 w-4 ${insight.color}`} />
+                    <span className="font-medium">{insight.title}</span>
+                  </div>
+                  <span className="text-sm font-semibold">{insight.value}%</span>
+                </div>
+                <Progress value={insight.value} className="w-full" />
+                <p className="text-xs text-muted-foreground">{insight.description}</p>
               </div>
             );
           })}
