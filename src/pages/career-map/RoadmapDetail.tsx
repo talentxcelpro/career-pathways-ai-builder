@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -85,8 +84,12 @@ const RoadmapDetail = () => {
       // Transform the data to match our interface
       const transformedRoadmap: Roadmap = {
         ...roadmapData,
-        skills_current: Array.isArray(roadmapData.skills_current) ? roadmapData.skills_current : [],
-        skills_target: Array.isArray(roadmapData.skills_target) ? roadmapData.skills_target : [],
+        skills_current: Array.isArray(roadmapData.skills_current) 
+          ? roadmapData.skills_current.map((skill: any) => String(skill))
+          : [],
+        skills_target: Array.isArray(roadmapData.skills_target) 
+          ? roadmapData.skills_target.map((skill: any) => String(skill))
+          : [],
       };
       setRoadmap(transformedRoadmap);
 
@@ -102,7 +105,14 @@ const RoadmapDetail = () => {
       // Transform milestones data
       const transformedMilestones: Milestone[] = (milestonesData || []).map(milestone => ({
         ...milestone,
-        resources: Array.isArray(milestone.resources) ? milestone.resources : [],
+        resources: Array.isArray(milestone.resources) 
+          ? milestone.resources.map((resource: any) => String(resource))
+          : [],
+        description: milestone.description || '',
+        target_date: milestone.target_date || '',
+        completion_date: milestone.completion_date || '',
+        milestone_type: milestone.milestone_type || 'skill',
+        priority: milestone.priority || 1,
       }));
       setMilestones(transformedMilestones);
     } catch (error) {
