@@ -1,14 +1,20 @@
 
 import { Briefcase } from "lucide-react";
 import Jobs from "../pages/Jobs";
+import SavedJobs from "../pages/jobs/SavedJobs";
+import AppliedJobs from "../pages/jobs/AppliedJobs";
 import JobDetails from "../pages/jobs/JobDetails";
 import JobApply from "../pages/jobs/JobApply";
-import SavedJobs from "../pages/jobs/SavedJobs";
 import JobPost from "../pages/jobs/JobPost";
-import AppliedJobs from "../pages/jobs/AppliedJobs";
 import JobCategories from "../pages/jobs/JobCategories";
+import Manage from "../pages/jobs/Manage";
 import JobApplicants from "../pages/jobs/JobApplicants";
 import ApplicantDetail from "../pages/jobs/ApplicantDetail";
+import SmartApply from "../pages/jobs/SmartApply";
+import Recommendations from "../pages/jobs/Recommendations";
+import Alerts from "../pages/jobs/Alerts";
+import Analytics from "../pages/jobs/Analytics";
+import Companies from "../pages/jobs/Companies";
 
 export const jobRoutes = [
   {
@@ -18,24 +24,9 @@ export const jobRoutes = [
     page: <Jobs />,
   },
   {
-    title: "Job Details",
-    to: "/jobs/:id",
-    page: <JobDetails />,
-  },
-  {
-    title: "Job Apply",
-    to: "/jobs/:id/apply",
-    page: <JobApply />,
-  },
-  {
     title: "Saved Jobs",
     to: "/jobs/saved",
     page: <SavedJobs />,
-  },
-  {
-    title: "Post Job",
-    to: "/jobs/post",
-    page: <JobPost />,
   },
   {
     title: "Applied Jobs",
@@ -48,13 +39,58 @@ export const jobRoutes = [
     page: <JobCategories />,
   },
   {
+    title: "Job Companies",
+    to: "/jobs/companies",
+    page: <Companies />,
+  },
+  {
+    title: "Job Recommendations",
+    to: "/jobs/recommendations",
+    page: <Recommendations />,
+  },
+  {
+    title: "Job Alerts",
+    to: "/jobs/alerts",
+    page: <Alerts />,
+  },
+  {
+    title: "Job Analytics",
+    to: "/jobs/analytics",
+    page: <Analytics />,
+  },
+  {
+    title: "Post Job",
+    to: "/jobs/post",
+    page: <JobPost />,
+  },
+  {
+    title: "Manage Jobs",
+    to: "/jobs/manage",
+    page: <Manage />,
+  },
+  {
+    title: "Job Details",
+    to: "/jobs/:id",
+    page: <JobDetails />,
+  },
+  {
+    title: "Job Apply",
+    to: "/jobs/:id/apply",
+    page: <JobApply />,
+  },
+  {
+    title: "Smart Apply",
+    to: "/jobs/:id/smart-apply",
+    page: <SmartApply />,
+  },
+  {
     title: "Job Applicants",
-    to: "/jobs/manage/:id/applicants",
+    to: "/jobs/:id/applicants",
     page: <JobApplicants />,
   },
   {
     title: "Applicant Detail",
-    to: "/jobs/manage/:id/applicants/:userId",
+    to: "/jobs/:jobId/applicants/:applicantId",
     page: <ApplicantDetail />,
   },
 ];
