@@ -23,21 +23,45 @@ const MessageConversation = () => {
     queryFn: async () => {
       if (!id) throw new Error('Conversation ID is required');
 
-      // This would typically fetch conversation details
-      // For now, returning mock data
-      return {
-        id,
-        participant: {
-          id: 'user-123',
-          name: 'John Doe',
-          title: 'Software Engineer',
-          avatar: null,
-          isOnline: true,
-          lastSeen: new Date().toISOString()
-        }
-      };
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     enabled: !!id
+  });
+
+  const { data: otherUser } = useQuery({
+    queryKey: ['otherUser', conversation?.participants],
+    queryFn: async () => {
+      if (!conversation?.participants) return null;
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const otherUserId = conversation.participants.find((p: string) => p !== user.id);
+      if (!otherUserId) return null;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', otherUserId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching other user:', error);
+        return null;
+      }
+      return data;
+    },
+    enabled: !!conversation?.participants
   });
 
   const { data: messages, isLoading } = useQuery({
@@ -45,13 +69,10 @@ const MessageConversation = () => {
     queryFn: async () => {
       if (!id) return [];
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
       const { data, error } = await supabase
         .from('messages')
         .select('*')
-        .or(`and(sender_id.eq.${user.id},recipient_id.eq.${id}),and(sender_id.eq.${id},recipient_id.eq.${user.id})`)
+        .eq('conversation_id', id)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -68,8 +89,8 @@ const MessageConversation = () => {
       const { error } = await supabase
         .from('messages')
         .insert({
+          conversation_id: id,
           sender_id: user.id,
-          recipient_id: id,
           content,
           message_type: 'text'
         });
@@ -82,7 +103,8 @@ const MessageConversation = () => {
       setNewMessage('');
       scrollToBottom();
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Send message error:', error);
       toast.error('Failed to send message');
     }
   });
@@ -114,23 +136,22 @@ const MessageConversation = () => {
     });
   };
 
-  const formatMessageDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    if (date.toDateString() === today.toDateString()) {
-      return 'Today';
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
-    } else {
-      return date.toLocaleDateString();
+  const formatDisplayName = (profile: any) => {
+    if (profile?.full_name && profile.full_name.trim()) {
+      return profile.full_name;
     }
+    return 'Professional User';
   };
 
-  const generateInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  const generateInitials = (profile: any) => {
+    const displayName = formatDisplayName(profile);
+    if (displayName === 'Professional User') return 'PU';
+    
+    const names = displayName.split(' ');
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    }
+    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
   };
 
   if (!conversation) {
@@ -169,25 +190,28 @@ const MessageConversation = () => {
           <CardHeader className="border-b">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Avatar>
-                  <AvatarImage src={conversation.participant.avatar} />
-                  <AvatarFallback>
-                    {generateInitials(conversation.participant.name)}
-                  </AvatarFallback>
-                </Avatar>
+                <Link to={`/network/people/${otherUser?.id}`} className="hover:scale-105 transition-transform">
+                  <Avatar>
+                    <AvatarImage src={otherUser?.profile_picture_url} />
+                    <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                      {generateInitials(otherUser)}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
                 <div>
-                  <h3 className="font-semibold text-gray-900">
-                    {conversation.participant.name}
-                  </h3>
+                  <Link 
+                    to={`/network/people/${otherUser?.id}`}
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    <h3 className="font-semibold text-gray-900 cursor-pointer">
+                      {formatDisplayName(otherUser)}
+                    </h3>
+                  </Link>
                   <p className="text-sm text-gray-500">
-                    {conversation.participant.title}
+                    {otherUser?.title || 'Professional'}
                   </p>
                   <p className="text-xs text-gray-400">
-                    {conversation.participant.isOnline ? (
-                      <span className="text-green-600">● Online</span>
-                    ) : (
-                      `Last seen ${formatTime(conversation.participant.lastSeen)}`
-                    )}
+                    <span className="text-green-600">● Online</span>
                   </p>
                 </div>
               </div>
@@ -215,7 +239,8 @@ const MessageConversation = () => {
               ) : (
                 <div className="space-y-4">
                   {messages?.map((message: any) => {
-                    const isOwn = message.sender_id !== id;
+                    const { data: { user } } = supabase.auth.getUser();
+                    const isOwn = message.sender_id === user?.id;
                     return (
                       <div
                         key={message.id}
