@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, X, Minus } from "lucide-react";
+import { MessageCircle, X, Minus, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -179,61 +179,81 @@ const FloatingMessenger: React.FC = () => {
     return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
   };
 
+  const handleBackToConversations = () => {
+    setSelectedConversationId(null);
+  };
+
   if (!isOpen) {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 z-50 h-12 w-12 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg"
+        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110"
       >
-        <MessageCircle className="h-6 w-6 text-white" />
+        <MessageCircle className="h-7 w-7 text-white" />
       </Button>
     );
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      <Card className="w-80 h-96 flex flex-col shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+    <div className="fixed bottom-6 right-6 z-50 transition-all duration-300 ease-in-out">
+      <Card className={`w-96 bg-white/95 backdrop-blur-sm border-0 shadow-2xl transition-all duration-300 ease-in-out ${
+        isMinimized ? 'h-14' : 'h-[500px]'
+      }`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
-          <h3 className="font-semibold text-sm">Messages</h3>
+        <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
+          <div className="flex items-center space-x-2">
+            {selectedConversationId && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleBackToConversations}
+                className="text-white hover:bg-white/20 h-8 w-8 p-0 transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
+            <h3 className="font-semibold text-sm">
+              {selectedConversationId ? 'Chat' : 'Messages'}
+            </h3>
+          </div>
           <div className="flex space-x-1">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsMinimized(!isMinimized)}
-              className="text-white hover:bg-white/20 h-6 w-6 p-0"
+              className="text-white hover:bg-white/20 h-8 w-8 p-0 transition-colors"
             >
-              <Minus className="h-3 w-3" />
+              <Minus className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(false)}
-              className="text-white hover:bg-white/20 h-6 w-6 p-0"
+              className="text-white hover:bg-white/20 h-8 w-8 p-0 transition-colors"
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
         {/* Content */}
         {!isMinimized && (
-          <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex flex-col h-[456px]">
             {!selectedConversationId ? (
               // Conversations List
-              <div className="flex-1 p-2">
-                <div className="space-y-1 max-h-full overflow-y-auto">
+              <div className="flex-1 p-3">
+                <div className="space-y-2 h-full overflow-y-auto custom-scrollbar">
                   {conversations?.map((conv) => {
                     const otherUserId = conv.participants.find((p: string) => p !== currentUserId);
                     return (
                       <div
                         key={conv.id}
                         onClick={() => setSelectedConversationId(conv.id)}
-                        className="p-2 hover:bg-gray-100 rounded cursor-pointer"
+                        className="p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-sm border border-transparent hover:border-gray-200"
                       >
-                        <div className="flex items-center space-x-2">
-                          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-xs font-semibold">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-md">
+                            <span className="text-white text-sm font-semibold">
                               {otherUserId?.charAt(0).toUpperCase() || 'U'}
                             </span>
                           </div>
@@ -245,14 +265,16 @@ const FloatingMessenger: React.FC = () => {
                               {formatTime(conv.last_updated)}
                             </p>
                           </div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full opacity-0"></div>
                         </div>
                       </div>
                     );
                   })}
                   {(!conversations || conversations.length === 0) && (
-                    <div className="text-center py-8">
-                      <MessageCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                    <div className="text-center py-12">
+                      <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-3" />
                       <p className="text-sm text-gray-500">No conversations yet</p>
+                      <p className="text-xs text-gray-400 mt-1">Start a conversation with someone!</p>
                     </div>
                   )}
                 </div>
@@ -288,23 +310,29 @@ const FloatingMessenger: React.FC = () => {
                   handleKeyPress={handleKeyPress}
                   sendMessageMutation={sendMessageMutation}
                 />
-
-                {/* Back button */}
-                <div className="p-1 border-t">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedConversationId(null)}
-                    className="w-full text-xs"
-                  >
-                    ← Back to conversations
-                  </Button>
-                </div>
               </>
             )}
           </div>
         )}
       </Card>
+
+      {/* Custom Scrollbar Styles */}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 2px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #c1c1c1;
+          border-radius: 2px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #a8a8a8;
+        }
+      `}</style>
     </div>
   );
 };
