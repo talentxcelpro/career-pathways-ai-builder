@@ -280,7 +280,26 @@ export const useAuth = () => {
 
     try {
       // Map frontend roles to database roles
-      const databaseRole = selectedRole === 'job_seeker' ? 'candidate' : selectedRole;
+      let databaseRole: string;
+      switch (selectedRole) {
+        case 'job_seeker':
+          databaseRole = 'candidate';
+          break;
+        case 'employer':
+          databaseRole = 'employer';
+          break;
+        case 'institute':
+          databaseRole = 'institute';
+          break;
+        case 'mentor':
+          databaseRole = 'mentor';
+          break;
+        case 'admin':
+          databaseRole = 'admin';
+          break;
+        default:
+          databaseRole = 'candidate';
+      }
       
       const { error } = await supabase.rpc('complete_onboarding', {
         user_uuid: user.id,
