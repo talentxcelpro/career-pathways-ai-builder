@@ -91,13 +91,13 @@ const Jobs = () => {
   const regularJobs = sortedJobs.filter(job => !job.is_featured);
   const remoteJobs = sortedJobs.filter(job => job.is_remote);
 
-  // Mock categories for now
+  // Categories with proper structure including slug
   const categories = [
-    { id: '1', name: 'Technology', count: Math.floor(allJobs.length * 0.3) },
-    { id: '2', name: 'Marketing', count: Math.floor(allJobs.length * 0.2) },
-    { id: '3', name: 'Design', count: Math.floor(allJobs.length * 0.15) },
-    { id: '4', name: 'Sales', count: Math.floor(allJobs.length * 0.2) },
-    { id: '5', name: 'Finance', count: Math.floor(allJobs.length * 0.15) },
+    { id: '1', name: 'Technology', slug: 'technology' },
+    { id: '2', name: 'Marketing', slug: 'marketing' },
+    { id: '3', name: 'Design', slug: 'design' },
+    { id: '4', name: 'Sales', slug: 'sales' },
+    { id: '5', name: 'Finance', slug: 'finance' },
   ];
 
   const handleSaveJob = async (jobId: string) => {
@@ -175,6 +175,7 @@ const Jobs = () => {
               filters={filters}
               onFiltersChange={setFilters}
               onClearFilters={handleClearFilters}
+              categories={categories}
             />
           </div>
           
