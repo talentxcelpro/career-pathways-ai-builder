@@ -57,6 +57,10 @@ export function useFileUpload(options?: UseFileUploadOptions) {
         fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
       } else if (bucket === 'preferences') {
         fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
+      } else if (bucket === 'cover-letters') {
+        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
+      } else if (bucket === 'media') {
+        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
       } else {
         fileName = pathOrUserId || `${user.id}/${Date.now()}.${fileExt}`;
       }
