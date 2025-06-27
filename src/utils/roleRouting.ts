@@ -1,8 +1,8 @@
 
-export type UserRole = 'candidate' | 'employer' | 'institute' | 'mentor' | 'admin';
+export type UserRole = 'job_seeker' | 'employer' | 'institute' | 'mentor' | 'admin';
 
 export const ROLE_ROUTES: Record<UserRole, string> = {
-  candidate: '/dashboard',
+  job_seeker: '/dashboard',
   employer: '/employer/dashboard',
   institute: '/colleges',
   mentor: '/mentor/dashboard',
@@ -17,6 +17,6 @@ export const getRedirectPathForRole = (role: UserRole, isFirstLogin: boolean = f
 };
 
 export const getUserRoleFromString = (roleStr: string): UserRole => {
-  const validRoles: UserRole[] = ['candidate', 'employer', 'institute', 'mentor', 'admin'];
-  return validRoles.includes(roleStr as UserRole) ? (roleStr as UserRole) : 'candidate';
+  const validRoles: UserRole[] = ['job_seeker', 'employer', 'institute', 'mentor', 'admin'];
+  return validRoles.includes(roleStr as UserRole) ? (roleStr as UserRole) : 'job_seeker';
 };

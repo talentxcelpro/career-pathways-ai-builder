@@ -9,7 +9,7 @@ const OnboardingPreferences = () => {
   const navigate = useNavigate();
   const { completeOnboarding, profile } = useAuth();
   const selectedRole = getUserRoleFromString(
-    sessionStorage.getItem('selectedRole') || profile?.user_role || 'candidate'
+    sessionStorage.getItem('selectedRole') || profile?.user_role || 'job_seeker'
   );
 
   const handleComplete = async (preferences: any) => {

@@ -95,7 +95,7 @@ export const useAuth = () => {
           emailRedirectTo: redirectUrl,
           data: {
             full_name: fullName || '',
-            user_role: userRole || 'candidate',
+            user_role: userRole || 'job_seeker',
             provider: 'email'
           }
         }

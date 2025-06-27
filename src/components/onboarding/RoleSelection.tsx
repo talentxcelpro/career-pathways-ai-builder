@@ -18,7 +18,7 @@ interface RoleSelectionProps {
 
 const roleOptions = [
   {
-    value: 'candidate' as UserRole,
+    value: 'job_seeker' as UserRole,
     title: 'Job Seeker',
     description: 'Looking for career opportunities and professional growth',
     icon: Briefcase,
