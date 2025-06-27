@@ -24,7 +24,9 @@ import {
   LogOut,
   Bell,
   Menu,
-  X
+  X,
+  Building2,
+  Compass
 } from "lucide-react";
 
 export const Navbar = () => {
@@ -72,6 +74,8 @@ export const Navbar = () => {
     { name: 'Network', href: '/network', icon: Users },
     { name: 'Learning', href: '/learning', icon: GraduationCap },
     { name: 'Tools', href: '/tools', icon: Wrench },
+    { name: 'Employer', href: '/employer', icon: Building2 },
+    { name: 'Career Map', href: '/career-map', icon: Compass },
   ];
 
   const isCurrentPath = (path: string) => {
