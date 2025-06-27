@@ -17,20 +17,23 @@ const Index = () => {
     if (isAuthenticated && user) {
       console.log('User authenticated:', user.email, 'Profile:', profile);
       
-      // If user has no profile yet, wait a bit longer for it to load
-      if (!profile) {
-        console.log('Profile not loaded yet, waiting...');
-        return;
-      }
-      
-      if (needsOnboarding) {
-        console.log('User needs onboarding, redirecting...');
-        navigate('/onboarding/role', { replace: true });
-      } else {
-        console.log('User onboarding complete, redirecting to dashboard...');
-        const redirectPath = getRedirectPathForRole(profile.user_role, false);
-        navigate(redirectPath, { replace: true });
-      }
+      // Set a timeout to prevent infinite loading
+      const timeoutId = setTimeout(() => {
+        if (needsOnboarding) {
+          console.log('User needs onboarding, redirecting...');
+          navigate('/onboarding/role', { replace: true });
+        } else if (profile) {
+          console.log('User onboarding complete, redirecting to dashboard...');
+          const redirectPath = getRedirectPathForRole(profile.user_role, false);
+          navigate(redirectPath, { replace: true });
+        } else {
+          // Fallback: redirect to dashboard if profile is null but user is authenticated
+          console.log('Profile not found, redirecting to dashboard as fallback...');
+          navigate('/dashboard', { replace: true });
+        }
+      }, 100); // Small delay to ensure state is settled
+
+      return () => clearTimeout(timeoutId);
     }
   }, [user, profile, loading, isAuthenticated, needsOnboarding, navigate]);
 
@@ -48,7 +51,7 @@ const Index = () => {
     return <LandingPage />;
   }
 
-  // Show loading while waiting for profile data or during redirect
+  // Show brief loading while redirecting authenticated users
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <LoadingSpinner size="lg" text="Redirecting..." />

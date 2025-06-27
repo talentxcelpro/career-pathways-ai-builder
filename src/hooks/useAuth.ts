@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,9 +29,11 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  // Function to fetch user profile
-  const fetchUserProfile = async (userId: string) => {
+  // Function to fetch user profile with better error handling
+  const fetchUserProfile = async (userId: string, retryCount = 0): Promise<UserProfile | null> => {
     try {
+      console.log(`Fetching profile for user ${userId}, attempt ${retryCount + 1}`);
+      
       const { data: profileData, error } = await supabase
         .from('profiles')
         .select('*')
@@ -41,14 +42,42 @@ export const useAuth = () => {
       
       if (error) {
         console.error('Error fetching profile:', error);
+        
+        // If profile doesn't exist, create a basic one
+        if (error.code === 'PGRST116' && retryCount === 0) {
+          console.log('Profile not found, creating basic profile...');
+          const { error: insertError } = await supabase
+            .from('profiles')
+            .insert({
+              id: userId,
+              full_name: '',
+              email: session?.user?.email || '',
+              user_role: 'job_seeker',
+              first_login: true,
+              profile_completed: false,
+              onboarding_completed: false,
+              provider: 'email'
+            });
+          
+          if (insertError) {
+            console.error('Error creating profile:', insertError);
+            return null;
+          }
+          
+          // Retry fetching after creating
+          return fetchUserProfile(userId, retryCount + 1);
+        }
+        
         return null;
       }
 
       if (profileData) {
-        return {
+        const profile = {
           ...profileData,
-          user_role: getUserRoleFromString(profileData.user_role)
+          user_role: getUserRoleFromString(profileData.user_role || 'job_seeker')
         };
+        console.log('Profile fetched successfully:', profile);
+        return profile;
       }
       
       return null;
@@ -79,8 +108,17 @@ export const useAuth = () => {
             console.error('Error updating login:', error);
           }
           
-          // Fetch user profile
-          const profileData = await fetchUserProfile(session.user.id);
+          // Fetch user profile with timeout
+          const profilePromise = fetchUserProfile(session.user.id);
+          const timeoutPromise = new Promise<null>((resolve) => {
+            setTimeout(() => {
+              console.log('Profile fetch timeout, proceeding without profile');
+              resolve(null);
+            }, 5000); // 5 second timeout
+          });
+          
+          const profileData = await Promise.race([profilePromise, timeoutPromise]);
+          
           if (mounted) {
             setProfile(profileData);
           }
