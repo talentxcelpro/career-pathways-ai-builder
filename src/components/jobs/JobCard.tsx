@@ -7,6 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, DollarSign, Clock, Users, Heart, Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { formatSalaryRange } from "@/utils/currencyUtils";
 
 interface JobCardProps {
   job: {
@@ -51,16 +52,6 @@ export const JobCard: React.FC<JobCardProps> = ({
   const handleSaveClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onSave?.(job.id);
-  };
-
-  const formatSalary = () => {
-    if (job.salary_min && job.salary_max) {
-      return `$${job.salary_min.toLocaleString()} - $${job.salary_max.toLocaleString()}`;
-    }
-    if (job.salary_min) {
-      return `$${job.salary_min.toLocaleString()}+`;
-    }
-    return null;
   };
 
   return (
@@ -127,10 +118,10 @@ export const JobCard: React.FC<JobCardProps> = ({
               <MapPin className="h-4 w-4" />
               <span>{job.location}</span>
             </div>
-            {formatSalary() && (
+            {(job.salary_min || job.salary_max) && (
               <div className="flex items-center gap-1">
                 <DollarSign className="h-4 w-4" />
-                <span>{formatSalary()}</span>
+                <span>{formatSalaryRange(job.salary_min, job.salary_max)}</span>
               </div>
             )}
           </div>

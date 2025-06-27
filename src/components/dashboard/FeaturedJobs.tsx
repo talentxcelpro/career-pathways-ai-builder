@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Clock, Building } from "lucide-react";
 import { Link } from "react-router-dom";
+import { formatSalaryRange } from "@/utils/currencyUtils";
 
 interface Job {
   id: string;
@@ -26,13 +27,6 @@ interface FeaturedJobsProps {
 }
 
 export const FeaturedJobs = ({ jobs }: FeaturedJobsProps) => {
-  const formatSalary = (min?: number, max?: number) => {
-    if (!min && !max) return "Salary not specified";
-    if (min && max) return `$${(min/1000).toFixed(0)}k - $${(max/1000).toFixed(0)}k`;
-    if (min) return `$${(min/1000).toFixed(0)}k+`;
-    return `Up to $${(max!/1000).toFixed(0)}k`;
-  };
-
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -90,7 +84,7 @@ export const FeaturedJobs = ({ jobs }: FeaturedJobsProps) => {
                 
                 <div className="mb-3">
                   <span className="font-medium text-green-600">
-                    {formatSalary(job.salary_min, job.salary_max)}
+                    {formatSalaryRange(job.salary_min, job.salary_max)}
                   </span>
                 </div>
                 

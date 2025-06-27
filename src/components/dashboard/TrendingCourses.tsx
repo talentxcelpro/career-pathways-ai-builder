@@ -25,7 +25,7 @@ interface TrendingCoursesProps {
 export const TrendingCourses = ({ courses }: TrendingCoursesProps) => {
   const formatPrice = (course: Course) => {
     if (course.is_free || course.price === 0) return "Free";
-    return `$${course.price}`;
+    return `₹${course.price?.toLocaleString('en-IN')}`;
   };
 
   const formatDuration = (hours?: number) => {

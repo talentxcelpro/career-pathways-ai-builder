@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TrendingUp, BarChart3, Users, MapPin, Lightbulb, Target } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { formatCurrency } from '@/utils/currencyUtils';
 
 const MarketInsights = () => {
   const [formData, setFormData] = useState({
@@ -72,7 +72,7 @@ const MarketInsights = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Market Insights</h1>
           <p className="text-gray-600">
-            Get comprehensive market analysis, industry trends, and job market insights
+            Get comprehensive market analysis, industry trends, and job market insights for India
           </p>
         </div>
 
@@ -105,7 +105,7 @@ const MarketInsights = () => {
                   id="location"
                   value={formData.location}
                   onChange={(e) => handleInputChange('location', e.target.value)}
-                  placeholder="e.g., San Francisco, CA"
+                  placeholder="e.g., Bangalore, Mumbai, Delhi"
                 />
               </div>
 

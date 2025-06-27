@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { DollarSign, TrendingUp, MapPin, Users, BarChart3 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { formatCurrency } from '@/utils/currencyUtils';
 
 const SalaryAnalyzer = () => {
   const [formData, setFormData] = useState({
@@ -81,7 +82,7 @@ const SalaryAnalyzer = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Salary Analyzer</h1>
           <p className="text-gray-600">
-            Get accurate salary insights and market data for your role and location
+            Get accurate salary insights and market data for your role and location in India
           </p>
         </div>
 
@@ -94,7 +95,7 @@ const SalaryAnalyzer = () => {
                 Job Details
               </CardTitle>
               <CardDescription>
-                Enter your job information to get salary insights
+                Enter your job information to get salary insights in INR
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -114,7 +115,7 @@ const SalaryAnalyzer = () => {
                   id="location"
                   value={formData.location}
                   onChange={(e) => handleInputChange('location', e.target.value)}
-                  placeholder="e.g., San Francisco, CA"
+                  placeholder="e.g., Bangalore, Mumbai, Delhi"
                 />
               </div>
 
@@ -140,7 +141,7 @@ const SalaryAnalyzer = () => {
                   id="industry"
                   value={formData.industry}
                   onChange={(e) => handleInputChange('industry', e.target.value)}
-                  placeholder="e.g., Technology"
+                  placeholder="e.g., Technology, Healthcare"
                 />
               </div>
 
@@ -180,7 +181,7 @@ const SalaryAnalyzer = () => {
                   {/* Average Salary */}
                   <div className="text-center">
                     <div className="text-3xl font-bold text-green-600 mb-2">
-                      ${results.averageSalary?.toLocaleString()}
+                      {formatCurrency(results.averageSalary)}
                     </div>
                     <p className="text-gray-600">Average Annual Salary</p>
                   </div>
@@ -188,8 +189,8 @@ const SalaryAnalyzer = () => {
                   {/* Salary Range */}
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>${results.salaryRange?.min?.toLocaleString()}</span>
-                      <span>${results.salaryRange?.max?.toLocaleString()}</span>
+                      <span>{formatCurrency(results.salaryRange?.min)}</span>
+                      <span>{formatCurrency(results.salaryRange?.max)}</span>
                     </div>
                     <Progress 
                       value={((results.averageSalary - results.salaryRange?.min) / (results.salaryRange?.max - results.salaryRange?.min)) * 100} 
@@ -223,7 +224,7 @@ const SalaryAnalyzer = () => {
                               <span className="text-sm">{data.location}</span>
                             </div>
                             <Badge variant="outline">
-                              ${data.salary_range_min?.toLocaleString()} - ${data.salary_range_max?.toLocaleString()}
+                              {formatCurrency(data.salary_range_min)} - {formatCurrency(data.salary_range_max)}
                             </Badge>
                           </div>
                         ))}

@@ -27,6 +27,11 @@ interface CourseCardProps {
 }
 
 export const CourseCard: React.FC<CourseCardProps> = ({ course, isEnrolled, onEnroll }) => {
+  const formatPrice = (price: number, isFree: boolean) => {
+    if (isFree || price === 0) return "Free";
+    return `₹${price.toLocaleString('en-IN')}`;
+  };
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
@@ -82,7 +87,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, isEnrolled, onEn
 
           <div className="flex justify-between items-center">
             <span className="text-lg font-bold text-green-600">
-              {course.is_free ? 'Free' : `$${course.price}`}
+              {formatPrice(course.price, course.is_free)}
             </span>
             <Button
               onClick={() => onEnroll(course.id)}
