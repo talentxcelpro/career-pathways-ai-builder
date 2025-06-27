@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card } from "@/components/ui/card";
@@ -204,11 +203,11 @@ const MessageConversation = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="max-w-3xl mx-auto px-2 py-2">
+      <div className="max-w-xl mx-auto px-1 py-1">
         {/* Header */}
-        <div className="flex items-center justify-between mb-2">
-          <Link to="/network/messages" className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors group text-sm">
-            <ArrowLeft className="h-3 w-3 mr-1 group-hover:-translate-x-0.5 transition-transform" />
+        <div className="flex items-center justify-between mb-1">
+          <Link to="/network/messages" className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors group text-xs">
+            <ArrowLeft className="h-2.5 w-2.5 mr-1 group-hover:-translate-x-0.5 transition-transform" />
             Back to Messages
           </Link>
           <div className="flex items-center space-x-1">
@@ -220,7 +219,7 @@ const MessageConversation = () => {
         </div>
 
         {/* Chat Container */}
-        <Card className="h-[calc(100vh-100px)] flex flex-col shadow-lg border-0 bg-white/90 backdrop-blur-sm">
+        <Card className="h-[calc(100vh-60px)] flex flex-col shadow-lg border-0 bg-white/90 backdrop-blur-sm">
           <MessageConversationHeader
             otherUser={otherUser}
             formatDisplayName={formatDisplayName}
