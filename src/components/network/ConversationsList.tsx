@@ -17,6 +17,15 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
   conversations,
   searchTerm = ''
 }) => {
+  // Get current user ID
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user?.id;
+    }
+  });
+
   // Get user profiles for conversation participants
   const { data: userProfiles } = useQuery({
     queryKey: ['conversationProfiles', conversations],
@@ -46,13 +55,8 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
     enabled: conversations && conversations.length > 0
   });
 
-  const getCurrentUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    return user?.id;
-  };
-
   const getConversationDisplay = (conversation: any) => {
-    const currentUserId = getCurrentUser();
+    if (!currentUser) return { name: 'Loading...', avatar: null, isGroup: false };
     
     if (conversation.is_group) {
       return {
@@ -63,7 +67,7 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
     }
 
     // For 1:1 conversations, show the other participant
-    const otherParticipant = conversation.participants?.find((id: string) => id !== currentUserId);
+    const otherParticipant = conversation.participants?.find((id: string) => id !== currentUser);
     const profile = userProfiles?.[otherParticipant];
     
     return {
@@ -108,6 +112,15 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
       lastMessage?.content?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
+
+  if (!currentUser) {
+    return (
+      <div className="p-8 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="text-gray-600 mt-4">Loading conversations...</p>
+      </div>
+    );
+  }
 
   return (
     <ScrollArea className="h-[600px]">
