@@ -71,7 +71,8 @@ const Blog = () => {
       author: "James Liu",
       date: "June 18, 2025",
       readTime: "6 min read",
-      category: "Job Trends"
+      category: "Job Trends",
+      featured: false
     },
     {
       id: 5,
@@ -80,7 +81,8 @@ const Blog = () => {
       author: "Emily Johnson",
       date: "June 15, 2025",
       readTime: "4 min read",
-      category: "Career Tips"
+      category: "Career Tips",
+      featured: false
     },
     {
       id: 6,
@@ -89,7 +91,8 @@ const Blog = () => {
       author: "Alex Kumar",
       date: "June 12, 2025",
       readTime: "9 min read",
-      category: "Resume Help"
+      category: "Resume Help",
+      featured: false
     }
   ];
 
@@ -98,11 +101,15 @@ const Blog = () => {
     "Networking", "Skills Development", "Remote Work", "Leadership", "Productivity"
   ];
 
-  const filteredPosts = [...featuredPosts, ...recentPosts].filter(post =>
+  const allPosts = [...featuredPosts, ...recentPosts];
+  const filteredPosts = allPosts.filter(post =>
     post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
     post.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const filteredFeaturedPosts = filteredPosts.filter(post => post.featured);
+  const filteredRecentPosts = filteredPosts.filter(post => !post.featured);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
@@ -159,7 +166,7 @@ const Blog = () => {
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Posts</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredPosts.filter(post => post.featured).map((post) => (
+                {filteredFeaturedPosts.map((post) => (
                   <Card key={post.id} className="bg-white/60 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105">
                     <div className="aspect-video bg-gradient-to-r from-blue-100 to-purple-100 rounded-t-lg"></div>
                     <CardHeader>
@@ -196,7 +203,7 @@ const Blog = () => {
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Posts</h2>
               <div className="space-y-6">
-                {filteredPosts.filter(post => !post.featured).map((post) => (
+                {filteredRecentPosts.map((post) => (
                   <Card key={post.id} className="bg-white/60 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
                     <CardContent className="p-6">
                       <div className="flex flex-col sm:flex-row gap-4">
