@@ -9,6 +9,7 @@ import ProfileSettings from "../pages/profile/ProfileSettings";
 import ProfileMedia from "../pages/profile/ProfileMedia";
 import ProfileAnalytics from "../pages/profile/ProfileAnalytics";
 import ProfileDocuments from "../pages/profile/ProfileDocuments";
+import PublicUserProfile from "../pages/network/PublicUserProfile";
 
 export const profileRoutes = [
   {
@@ -16,6 +17,11 @@ export const profileRoutes = [
     to: "/profile",
     icon: <User className="h-4 w-4" />,
     page: <Profile />,
+  },
+  {
+    title: "Public Profile",
+    to: "/profile/:id",
+    page: <PublicUserProfile />,
   },
   {
     title: "Profile Edit",

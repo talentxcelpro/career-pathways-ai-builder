@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,8 +10,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { PostCard } from "@/components/network/PostCard";
 
-const UserProfile = () => {
-  const { id } = useParams<{ id: string }>();
+interface UserProfileProps {
+  profileIdOverride?: string;
+}
+
+const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride }) => {
+  const { id: paramId } = useParams<{ id: string }>();
+  const id = profileIdOverride || paramId;
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ['user-profile', id],
