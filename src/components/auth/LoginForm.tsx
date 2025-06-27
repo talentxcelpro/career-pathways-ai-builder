@@ -35,7 +35,7 @@ const LoginForm = () => {
 
       if (data.user) {
         toast.success('Welcome back!');
-        navigate('/dashboard');
+        // AuthContext will handle navigation
       }
     } catch (error: any) {
       toast.error('An unexpected error occurred');
@@ -54,8 +54,12 @@ const LoginForm = () => {
           redirectTo: `${window.location.origin}/dashboard`,
           queryParams: {
             access_type: 'offline',
-            prompt: 'consent',
+            prompt: 'select_account',
+            ...(provider === 'google' && {
+              include_granted_scopes: 'true'
+            })
           },
+          skipBrowserRedirect: false
         },
       });
 

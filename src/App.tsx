@@ -8,6 +8,8 @@ import { navItems, NavItem } from "./nav-items";
 import { Navbar } from "./components/navigation/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { OfflineIndicator } from "./components/shared/OfflineIndicator";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 // Create query client with better default configurations
 const queryClient = new QueryClient({
@@ -28,28 +30,43 @@ const queryClient = new QueryClient({
   },
 });
 
+// Routes that don't require authentication
+const publicRoutes = ['/', '/auth/login', '/auth/register', '/auth/forgot-password', '/auth/reset-password'];
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
-          <OfflineIndicator />
-          <Navbar />
-          <main className="flex-1">
-            <Routes>
-              {navItems.map((item: NavItem) => (
-                <Route 
-                  key={item.to} 
-                  path={item.to} 
-                  element={item.page} 
-                  {...(item.exact && { index: item.to === "/" })}
-                />
-              ))}
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <AuthProvider>
+          <div className="min-h-screen flex flex-col">
+            <OfflineIndicator />
+            <Navbar />
+            <main className="flex-1">
+              <Routes>
+                {navItems.map((item: NavItem) => {
+                  const isPublicRoute = publicRoutes.includes(item.to);
+                  
+                  return (
+                    <Route 
+                      key={item.to} 
+                      path={item.to} 
+                      element={
+                        isPublicRoute ? (
+                          item.page
+                        ) : (
+                          <ProtectedRoute>{item.page}</ProtectedRoute>
+                        )
+                      }
+                      {...(item.exact && { index: item.to === "/" })}
+                    />
+                  );
+                })}
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </AuthProvider>
         <Analytics />
       </BrowserRouter>
     </TooltipProvider>

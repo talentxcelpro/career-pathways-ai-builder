@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,8 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import {
   HomeIcon,
   Briefcase,
@@ -31,41 +32,28 @@ import {
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
-
-  // Get current user
-  const { data: currentUser } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      return user;
-    }
-  });
+  const { user, signOut } = useAuth();
 
   // Get profile data
   const { data: profile } = useQuery({
-    queryKey: ['profile', currentUser?.id],
+    queryKey: ['profile', user?.id],
     queryFn: async () => {
-      if (!currentUser?.id) return null;
-      
-      const { data, error } = await supabase.auth.getUser();
-      if (error) return null;
+      if (!user?.id) return null;
       
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', currentUser.id)
+        .eq('id', user.id)
         .maybeSingle();
       
       return profileData;
     },
-    enabled: !!currentUser?.id
+    enabled: !!user?.id
   });
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
+    await signOut();
   };
 
   const navigation = [
@@ -86,7 +74,7 @@ export const Navbar = () => {
     if (profile?.full_name) {
       return profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     }
-    return currentUser?.email?.[0]?.toUpperCase() || 'U';
+    return user?.email?.[0]?.toUpperCase() || 'U';
   };
 
   return (
@@ -103,7 +91,7 @@ export const Navbar = () => {
             </Link>
           </div>
 
-          {currentUser ? (
+          {user ? (
             <>
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-1">
@@ -152,7 +140,7 @@ export const Navbar = () => {
                       <div className="flex flex-col space-y-1 leading-none">
                         <p className="font-medium">{profile?.full_name || 'User'}</p>
                         <p className="w-[200px] truncate text-sm text-muted-foreground">
-                          {currentUser.email}
+                          {user.email}
                         </p>
                       </div>
                     </div>
@@ -202,7 +190,7 @@ export const Navbar = () => {
         </div>
 
         {/* Mobile Navigation */}
-        {currentUser && isMobileMenuOpen && (
+        {user && isMobileMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t">
               {navigation.map((item) => {
