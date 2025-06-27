@@ -524,6 +524,7 @@ export type Database = {
           recipient_id: string | null
           requester_id: string | null
           status: string | null
+          updated_at: string | null
         }
         Insert: {
           connected_at?: string | null
@@ -533,6 +534,7 @@ export type Database = {
           recipient_id?: string | null
           requester_id?: string | null
           status?: string | null
+          updated_at?: string | null
         }
         Update: {
           connected_at?: string | null
@@ -542,6 +544,7 @@ export type Database = {
           recipient_id?: string | null
           requester_id?: string | null
           status?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }

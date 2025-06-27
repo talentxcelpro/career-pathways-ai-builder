@@ -13,6 +13,8 @@ import { CommentsSection } from "@/components/posts/CommentsSection";
 import { MediaUpload } from "@/components/posts/MediaUpload";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 import { AIPostAssistant } from "@/components/network/AIPostAssistant";
+import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
+import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
 import { Link } from 'react-router-dom';
 
 const Posts = () => {
@@ -22,47 +24,11 @@ const Posts = () => {
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const queryClient = useQueryClient();
 
-  // Network stats data
-  const stats = [
-    { label: "Connections", value: "248", icon: Users },
-    { label: "Messages", value: "12", icon: MessageCircle },
-    { label: "Events", value: "5", icon: Calendar },
-    { label: "Profile Views", value: "89", icon: Eye },
-  ];
+  // Use real-time hooks
+  const { connections, stats, isLoading: connectionsLoading } = useRealtimeConnections();
+  const { recentActivity, isLoading: activityLoading } = useRealtimeActivity();
 
-  // Quick actions for networking
-  const quickActions = [
-    {
-      title: "Find People",
-      description: "Discover and connect with professionals",
-      icon: Users,
-      href: "/network/people",
-      color: "bg-blue-500"
-    },
-    {
-      title: "Browse Posts",
-      description: "See what your network is sharing",
-      icon: MessageCircle,
-      href: "/network/posts",
-      color: "bg-green-500"
-    },
-    {
-      title: "Upcoming Events",
-      description: "Join webinars and networking events",
-      icon: Calendar,
-      href: "/network/events",
-      color: "bg-purple-500"
-    },
-    {
-      title: "AI Suggestions",
-      description: "Get personalized networking recommendations",
-      icon: Sparkles,
-      href: "/network/suggestions",
-      color: "bg-orange-500"
-    }
-  ];
-
-  const { data: posts, isLoading } = useQuery({
+  const { data: posts, isLoading: postsLoading } = useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
       // First get posts
@@ -251,11 +217,11 @@ const Posts = () => {
 
                   <div className="flex items-center space-x-4 mb-4">
                     <div className="text-center">
-                      <div className="text-sm font-semibold text-gray-900">248</div>
+                      <div className="text-sm font-semibold text-gray-900">{stats?.connections || 0}</div>
                       <div className="text-xs text-gray-500">Connections</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-sm font-semibold text-gray-900">89</div>
+                      <div className="text-sm font-semibold text-gray-900">{stats?.profileViews || 0}</div>
                       <div className="text-xs text-gray-500">Profile Views</div>
                     </div>
                   </div>
@@ -364,7 +330,7 @@ const Posts = () => {
 
             {/* Posts Feed */}
             <div className="space-y-6">
-              {isLoading ? (
+              {postsLoading ? (
                 // Loading skeleton
                 [...Array(3)].map((_, i) => (
                   <Card key={i} className="animate-pulse">
@@ -485,7 +451,7 @@ const Posts = () => {
               )}
             </div>
 
-            {posts && posts.length === 0 && !isLoading && (
+            {posts && posts.length === 0 && !postsLoading && (
               <Card>
                 <CardContent className="p-12 text-center">
                   <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -505,20 +471,45 @@ const Posts = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {stats.map((stat, index) => {
-                    const IconComponent = stat.icon;
-                    return (
-                      <div key={index} className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <IconComponent className="h-4 w-4 text-blue-600" />
-                          </div>
-                          <span className="text-sm font-medium text-gray-700">{stat.label}</span>
-                        </div>
-                        <span className="text-lg font-bold text-gray-900">{stat.value}</span>
+                  <Link to="/network/people" className="flex items-center justify-between hover:bg-gray-50 p-2 rounded transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Users className="h-4 w-4 text-blue-600" />
                       </div>
-                    );
-                  })}
+                      <span className="text-sm font-medium text-gray-700">Connections</span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">{stats?.connections || 0}</span>
+                  </Link>
+                  
+                  <Link to="/network/messages" className="flex items-center justify-between hover:bg-gray-50 p-2 rounded transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-8 w-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <MessageCircle className="h-4 w-4 text-green-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Messages</span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">{stats?.messages || 0}</span>
+                  </Link>
+                  
+                  <Link to="/network/events" className="flex items-center justify-between hover:bg-gray-50 p-2 rounded transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-8 w-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <Calendar className="h-4 w-4 text-purple-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Events</span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">{stats?.events || 0}</span>
+                  </Link>
+                  
+                  <div className="flex items-center justify-between p-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-8 w-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <Eye className="h-4 w-4 text-orange-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Profile Views</span>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">{stats?.profileViews || 0}</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -533,20 +524,43 @@ const Posts = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[1, 2, 3].map((_, index) => (
-                    <div key={index} className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                        <Users className="h-5 w-5 text-gray-600" />
+                  {connectionsLoading ? (
+                    [...Array(3)].map((_, index) => (
+                      <div key={index} className="flex items-center space-x-3 animate-pulse">
+                        <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                        <div className="flex-1">
+                          <div className="h-4 bg-gray-300 rounded w-3/4 mb-1"></div>
+                          <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900 text-sm">Professional User {index + 1}</p>
-                        <p className="text-xs text-gray-500">Software Engineer at TechCorp</p>
+                    ))
+                  ) : connections && connections.length > 0 ? (
+                    connections.slice(0, 3).map((connection, index) => (
+                      <div key={connection.id} className="flex items-center space-x-3">
+                        <Avatar className="w-10 h-10">
+                          <AvatarImage src={connection.otherUser?.profile_picture_url} />
+                          <AvatarFallback>
+                            {generateInitials(connection.otherUser)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900 text-sm">
+                            {formatDisplayName(connection.otherUser)}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {connection.otherUser?.title || 'Professional'}
+                          </p>
+                        </div>
+                        <Link to={`/network/messages/${connection.otherUser?.id}`}>
+                          <Button variant="outline" size="sm">
+                            Message
+                          </Button>
+                        </Link>
                       </div>
-                      <Button variant="outline" size="sm">
-                        Message
-                      </Button>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500 text-center py-4">No connections yet</p>
+                  )}
                 </div>
                 <div className="mt-4 pt-4 border-t">
                   <Link to="/network/people">
@@ -568,23 +582,36 @@ const Posts = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[
-                    { action: "liked your post", user: "Sarah Johnson", time: "2 hours ago" },
-                    { action: "commented on your article", user: "Mike Chen", time: "4 hours ago" },
-                    { action: "connected with you", user: "Emily Davis", time: "1 day ago" }
-                  ].map((activity, index) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Users className="h-4 w-4 text-blue-600" />
+                  {activityLoading ? (
+                    [...Array(3)].map((_, index) => (
+                      <div key={index} className="flex items-start space-x-3 animate-pulse">
+                        <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                        <div className="flex-1">
+                          <div className="h-3 bg-gray-300 rounded w-full mb-1"></div>
+                          <div className="h-2 bg-gray-300 rounded w-1/2"></div>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm">
-                          <span className="font-medium">{activity.user}</span> {activity.action}
-                        </p>
-                        <p className="text-xs text-gray-500">{activity.time}</p>
+                    ))
+                  ) : recentActivity && recentActivity.length > 0 ? (
+                    recentActivity.slice(0, 5).map((activity) => (
+                      <div key={activity.id} className="flex items-start space-x-3">
+                        <Avatar className="w-8 h-8">
+                          <AvatarImage src={activity.avatar} />
+                          <AvatarFallback className="text-xs">
+                            {activity.user.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <p className="text-sm">
+                            <span className="font-medium">{activity.user}</span> {activity.action}
+                          </p>
+                          <p className="text-xs text-gray-500">{formatTimeAgo(activity.time)}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500 text-center py-4">No recent activity</p>
+                  )}
                 </div>
                 <div className="mt-4 pt-4 border-t">
                   <Link to="/network/notifications">
