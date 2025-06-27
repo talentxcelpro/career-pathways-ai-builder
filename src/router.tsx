@@ -79,7 +79,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "onboarding",
-        element: <AuthGuard />,
+        element: (
+          <AuthGuard>
+            <div />
+          </AuthGuard>
+        ),
         children: [
           {
             path: "role",

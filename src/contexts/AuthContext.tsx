@@ -13,6 +13,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error: any }>;
+  updatePassword: (password: string) => Promise<{ error: any }>;
   completeOnboarding: (fullName?: string, selectedRole?: UserRole, preferences?: any) => Promise<{ error: any }>;
   isAuthenticated: boolean;
   needsOnboarding: boolean;
