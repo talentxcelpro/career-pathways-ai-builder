@@ -20,8 +20,8 @@ export interface UserProfile {
   login_count: number;
 }
 
-// Define the database role type
-type DatabaseRole = 'candidate' | 'employer' | 'institute' | 'mentor' | 'admin';
+// Define the database role type - must match the actual database enum
+type DatabaseRole = 'job_seeker' | 'employer' | 'admin';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -286,22 +286,24 @@ export const useAuth = () => {
       let databaseRole: DatabaseRole;
       switch (selectedRole) {
         case 'job_seeker':
-          databaseRole = 'candidate';
+          databaseRole = 'job_seeker';
           break;
         case 'employer':
           databaseRole = 'employer';
           break;
         case 'institute':
-          databaseRole = 'institute';
+          // Map institute to employer since database doesn't have institute role
+          databaseRole = 'employer';
           break;
         case 'mentor':
-          databaseRole = 'mentor';
+          // Map mentor to employer since database doesn't have mentor role
+          databaseRole = 'employer';
           break;
         case 'admin':
           databaseRole = 'admin';
           break;
         default:
-          databaseRole = 'candidate';
+          databaseRole = 'job_seeker';
       }
       
       const { error } = await supabase.rpc('complete_onboarding', {
