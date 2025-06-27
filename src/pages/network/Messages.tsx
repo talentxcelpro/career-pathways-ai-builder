@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -18,18 +17,20 @@ const Messages = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      // Get all messages for the current user
       let query = supabase
         .from('messages')
-        .select('*, sender_id, recipient_id')
+        .select('*')
         .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
         .order('created_at', { ascending: false });
 
-      const { data, error } = await query.limit(50);
+      const { data, error } = await query.limit(100);
       if (error) throw error;
 
-      // Group messages by conversation
+      // Group messages by conversation partner
       const grouped = data.reduce((acc: any, message: any) => {
         const otherUserId = message.sender_id === user.id ? message.recipient_id : message.sender_id;
+        
         if (!acc[otherUserId]) {
           acc[otherUserId] = {
             userId: otherUserId,
@@ -37,11 +38,26 @@ const Messages = () => {
             messages: []
           };
         }
+        
+        // Keep only the most recent message as lastMessage
+        if (new Date(message.created_at) > new Date(acc[otherUserId].lastMessage.created_at)) {
+          acc[otherUserId].lastMessage = message;
+        }
+        
         acc[otherUserId].messages.push(message);
         return acc;
       }, {});
 
-      return Object.values(grouped);
+      // Filter by search term if provided
+      let result = Object.values(grouped);
+      if (searchTerm) {
+        // This would be enhanced with actual user name searching
+        result = result.filter((conv: any) => 
+          conv.lastMessage.content.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+
+      return result;
     }
   });
 
@@ -96,6 +112,29 @@ const Messages = () => {
     sendMessageMutation.mutate(newMessage);
   };
 
+  // Set up real-time subscriptions for messages
+  useEffect(() => {
+    const channel = supabase
+      .channel('messages-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['messages'] });
+          queryClient.invalidateQueries({ queryKey: ['conversations'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -106,7 +145,7 @@ const Messages = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
           <ConversationsList
-            conversations={conversations}
+            conversations={conversations || []}
             selectedConversation={selectedConversation}
             onSelectConversation={setSelectedConversation}
             searchTerm={searchTerm}
@@ -116,7 +155,7 @@ const Messages = () => {
 
           <ChatArea
             selectedConversation={selectedConversation}
-            messages={messages}
+            messages={messages || []}
             newMessage={newMessage}
             setNewMessage={setNewMessage}
             onSendMessage={handleSendMessage}
