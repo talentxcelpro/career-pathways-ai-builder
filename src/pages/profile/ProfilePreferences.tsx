@@ -1,15 +1,15 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, DollarSign, Briefcase, Building, Clock, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ProfileLayout from "@/components/profile/ProfileLayout";
 import { JobPreferencesUpload } from "@/components/profile/documents/JobPreferencesUpload";
+import { PreferredRolesSection } from "@/components/profile/preferences/PreferredRolesSection";
+import { PreferredLocationsSection } from "@/components/profile/preferences/PreferredLocationsSection";
+import { SalaryExpectationsSection } from "@/components/profile/preferences/SalaryExpectationsSection";
+import { PreferredIndustriesSection } from "@/components/profile/preferences/PreferredIndustriesSection";
+import { DesiredBenefitsSection } from "@/components/profile/preferences/DesiredBenefitsSection";
+import { AdditionalNotesSection } from "@/components/profile/preferences/AdditionalNotesSection";
 
 const ProfilePreferences = () => {
   const { toast } = useToast();
@@ -25,36 +25,6 @@ const ProfilePreferences = () => {
     benefits: ["Health Insurance", "401k", "Flexible Hours"] as string[],
     additionalNotes: "Looking for a role with growth opportunities and modern tech stack."
   });
-
-  const [newRole, setNewRole] = useState("");
-  const [newLocation, setNewLocation] = useState("");
-  const [newIndustry, setNewIndustry] = useState("");
-  const [newBenefit, setNewBenefit] = useState("");
-
-  const addItem = (field: keyof typeof preferences, value: string, setter: (val: string) => void) => {
-    if (value.trim()) {
-      const currentValue = preferences[field];
-      // Type guard to ensure we're working with arrays
-      if (Array.isArray(currentValue) && !currentValue.includes(value.trim())) {
-        setPreferences(prev => ({
-          ...prev,
-          [field]: [...currentValue, value.trim()]
-        }));
-        setter("");
-      }
-    }
-  };
-
-  const removeItem = (field: keyof typeof preferences, item: string) => {
-    const currentValue = preferences[field];
-    // Type guard to ensure we're working with arrays
-    if (Array.isArray(currentValue)) {
-      setPreferences(prev => ({
-        ...prev,
-        [field]: currentValue.filter(i => i !== item)
-      }));
-    }
-  };
 
   const handleSave = () => {
     toast({
@@ -73,217 +43,42 @@ const ProfilePreferences = () => {
         <JobPreferencesUpload />
 
         {/* Preferred Roles */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Briefcase className="h-5 w-5 mr-2" />
-              Preferred Roles
-            </CardTitle>
-            <CardDescription>What job titles are you interested in?</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {preferences.preferredRoles.map((role, index) => (
-                  <Badge key={index} variant="secondary" className="pr-2">
-                    {role}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-4 w-4 p-0 ml-2"
-                      onClick={() => removeItem('preferredRoles', role)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add preferred role"
-                  value={newRole}
-                  onChange={(e) => setNewRole(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addItem('preferredRoles', newRole, setNewRole)}
-                />
-                <Button onClick={() => addItem('preferredRoles', newRole, setNewRole)}>
-                  Add
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <PreferredRolesSection
+          roles={preferences.preferredRoles}
+          onRolesChange={(roles) => setPreferences(prev => ({ ...prev, preferredRoles: roles }))}
+        />
 
         {/* Locations */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <MapPin className="h-5 w-5 mr-2" />
-              Preferred Locations
-            </CardTitle>
-            <CardDescription>Where would you like to work?</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {preferences.locations.map((location, index) => (
-                  <Badge key={index} variant="secondary" className="pr-2">
-                    {location}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-4 w-4 p-0 ml-2"
-                      onClick={() => removeItem('locations', location)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add preferred location"
-                  value={newLocation}
-                  onChange={(e) => setNewLocation(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addItem('locations', newLocation, setNewLocation)}
-                />
-                <Button onClick={() => addItem('locations', newLocation, setNewLocation)}>
-                  Add
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <PreferredLocationsSection
+          locations={preferences.locations}
+          onLocationsChange={(locations) => setPreferences(prev => ({ ...prev, locations }))}
+        />
 
         {/* Salary Range */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <DollarSign className="h-5 w-5 mr-2" />
-              Salary Expectations
-            </CardTitle>
-            <CardDescription>What's your expected salary range?</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="salaryMin">Minimum Salary</Label>
-                <Input
-                  id="salaryMin"
-                  type="number"
-                  value={preferences.salaryMin}
-                  onChange={(e) => setPreferences(prev => ({ ...prev, salaryMin: parseInt(e.target.value) || 0 }))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="salaryMax">Maximum Salary</Label>
-                <Input
-                  id="salaryMax"
-                  type="number"
-                  value={preferences.salaryMax}
-                  onChange={(e) => setPreferences(prev => ({ ...prev, salaryMax: parseInt(e.target.value) || 0 }))}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <SalaryExpectationsSection
+          salaryMin={preferences.salaryMin}
+          salaryMax={preferences.salaryMax}
+          onSalaryMinChange={(salaryMin) => setPreferences(prev => ({ ...prev, salaryMin }))}
+          onSalaryMaxChange={(salaryMax) => setPreferences(prev => ({ ...prev, salaryMax }))}
+        />
 
         {/* Industries */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Building className="h-5 w-5 mr-2" />
-              Preferred Industries
-            </CardTitle>
-            <CardDescription>Which industries interest you?</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {preferences.industries.map((industry, index) => (
-                  <Badge key={index} variant="secondary" className="pr-2">
-                    {industry}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-4 w-4 p-0 ml-2"
-                      onClick={() => removeItem('industries', industry)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add preferred industry"
-                  value={newIndustry}
-                  onChange={(e) => setNewIndustry(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addItem('industries', newIndustry, setNewIndustry)}
-                />
-                <Button onClick={() => addItem('industries', newIndustry, setNewIndustry)}>
-                  Add
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <PreferredIndustriesSection
+          industries={preferences.industries}
+          onIndustriesChange={(industries) => setPreferences(prev => ({ ...prev, industries }))}
+        />
 
         {/* Benefits */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Clock className="h-5 w-5 mr-2" />
-              Desired Benefits
-            </CardTitle>
-            <CardDescription>What benefits are important to you?</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {preferences.benefits.map((benefit, index) => (
-                  <Badge key={index} variant="secondary" className="pr-2">
-                    {benefit}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-4 w-4 p-0 ml-2"
-                      onClick={() => removeItem('benefits', benefit)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add desired benefit"
-                  value={newBenefit}
-                  onChange={(e) => setNewBenefit(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addItem('benefits', newBenefit, setNewBenefit)}
-                />
-                <Button onClick={() => addItem('benefits', newBenefit, setNewBenefit)}>
-                  Add
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <DesiredBenefitsSection
+          benefits={preferences.benefits}
+          onBenefitsChange={(benefits) => setPreferences(prev => ({ ...prev, benefits }))}
+        />
 
         {/* Additional Notes */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle>Additional Notes</CardTitle>
-            <CardDescription>Any other preferences or requirements?</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              placeholder="Share any additional preferences, requirements, or notes about your job search..."
-              value={preferences.additionalNotes}
-              onChange={(e) => setPreferences(prev => ({ ...prev, additionalNotes: e.target.value }))}
-              className="min-h-[100px]"
-            />
-          </CardContent>
-        </Card>
+        <AdditionalNotesSection
+          notes={preferences.additionalNotes}
+          onNotesChange={(additionalNotes) => setPreferences(prev => ({ ...prev, additionalNotes }))}
+        />
 
         {/* Save Button */}
         <div className="flex justify-end">
