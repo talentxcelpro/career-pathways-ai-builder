@@ -320,7 +320,7 @@ export const useAuth = () => {
       if (profileData) {
         setProfile({
           ...profileData,
-          user_role: getUserRoleFromString(profileData.user_role)
+          user_role: getUserRoleFromString(profileData.user_role || 'job_seeker')
         });
       }
 
