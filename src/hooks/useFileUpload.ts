@@ -11,7 +11,7 @@ interface UseFileUploadOptions {
 
 export function useFileUpload(options?: UseFileUploadOptions) {
   const defaultOptions: UseFileUploadOptions = {
-    bucket: 'company-logos',
+    bucket: 'avatars',
     maxSize: 5 * 1024 * 1024, // 5MB
     allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']
   };
@@ -47,12 +47,16 @@ export function useFileUpload(options?: UseFileUploadOptions) {
       let fileName: string;
       
       // Handle different path patterns for different buckets
-      if (bucketOverride === 'avatar' || bucket === 'avatars') {
+      if (bucket === 'avatars') {
         fileName = pathOrUserId ? `${pathOrUserId}/avatar.${fileExt}` : `${user.id}/avatar.${fileExt}`;
-      } else if (bucketOverride === 'resume' || bucket === 'resumes') {
-        fileName = pathOrUserId ? `${pathOrUserId}/resume.${fileExt}` : `${user.id}/resume.${fileExt}`;
-      } else if (bucketOverride === 'portfolio' || bucket === 'portfolio') {
-        fileName = pathOrUserId ? `${pathOrUserId}/${Date.now()}.${fileExt}` : `${user.id}/${Date.now()}.${fileExt}`;
+      } else if (bucket === 'resumes') {
+        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
+      } else if (bucket === 'portfolio') {
+        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
+      } else if (bucket === 'documents') {
+        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
+      } else if (bucket === 'preferences') {
+        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
       } else {
         fileName = pathOrUserId || `${user.id}/${Date.now()}.${fileExt}`;
       }
