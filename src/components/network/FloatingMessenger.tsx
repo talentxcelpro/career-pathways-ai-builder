@@ -38,7 +38,7 @@ const FloatingMessenger: React.FC = () => {
         .from('conversations')
         .select('*')
         .contains('participants', [user.id])
-        .order('updated_at', { ascending: false });
+        .order('last_updated', { ascending: false });
 
       if (error) throw error;
       return data;
@@ -242,7 +242,7 @@ const FloatingMessenger: React.FC = () => {
                               Conversation
                             </p>
                             <p className="text-xs text-gray-500 truncate">
-                              {formatTime(conv.updated_at)}
+                              {formatTime(conv.last_updated)}
                             </p>
                           </div>
                         </div>
