@@ -1,40 +1,20 @@
-import { useState, useEffect } from 'react';
+
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Download, Wand2, Plus, X, Loader2, FileText, Save } from "lucide-react";
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useToast } from "@/hooks/use-toast";
-import { useFileUpload } from '@/hooks/useFileUpload';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { ResumeTemplates } from '@/components/profile/resume/ResumeTemplates';
-import { ATSScoreCalculator } from '@/components/profile/resume/ATSScoreCalculator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, Download, Wand2, Plus, X, Loader2, FileText } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 const ResumeBuilder = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [searchParams] = useSearchParams();
-  const templateId = searchParams.get('template');
-  
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [generatedResume, setGeneratedResume] = useState<string>("");
-  const [activeTemplate, setActiveTemplate] = useState(templateId || "modern");
-  const [resumeTitle, setResumeTitle] = useState("My Resume");
-
-  // Get current user
-  const { data: currentUser } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      return user;
-    }
-  });
+  const [activeTemplate, setActiveTemplate] = useState("modern");
 
   const [resumeData, setResumeData] = useState({
     personalInfo: {
@@ -238,49 +218,6 @@ const ResumeBuilder = () => {
     document.body.removeChild(element);
   };
 
-  // Save resume mutation
-  const saveResumeMutation = useMutation({
-    mutationFn: async () => {
-      if (!currentUser?.id) throw new Error('User not authenticated');
-      if (!generatedResume) throw new Error('No resume content to save');
-
-      const { data, error } = await supabase
-        .from('resumes')
-        .insert({
-          user_id: currentUser.id,
-          title: resumeTitle,
-          content: resumeData,
-          template_id: activeTemplate,
-          is_primary: false
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['resumes', currentUser?.id] });
-      toast({
-        title: "Resume saved",
-        description: "Your resume has been saved to your profile."
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Save failed",
-        description: error.message || "Failed to save resume.",
-        variant: "destructive"
-      });
-    }
-  });
-
-  const handleSaveToProfile = () => {
-    setIsSaving(true);
-    saveResumeMutation.mutate();
-    setIsSaving(false);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -289,7 +226,7 @@ const ResumeBuilder = () => {
           <div className="flex items-center">
             <Button 
               variant="ghost" 
-              onClick={() => navigate(-1)}
+              onClick={() => navigate('/')}
               className="flex items-center mr-4"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -319,20 +256,10 @@ const ResumeBuilder = () => {
               )}
             </Button>
             {generatedResume && (
-              <>
-                <Button onClick={downloadResume} variant="outline">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
-                </Button>
-                <Button 
-                  onClick={handleSaveToProfile} 
-                  disabled={isSaving}
-                  variant="outline"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {isSaving ? 'Saving...' : 'Save to Profile'}
-                </Button>
-              </>
+              <Button onClick={downloadResume} variant="outline">
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </Button>
             )}
           </div>
         </div>
@@ -340,20 +267,6 @@ const ResumeBuilder = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Form Section */}
           <div className="space-y-6">
-            {/* Resume Title */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>Resume Title</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Input
-                  placeholder="Enter resume title"
-                  value={resumeTitle}
-                  onChange={(e) => setResumeTitle(e.target.value)}
-                />
-              </CardContent>
-            </Card>
-
             {/* Template Selection */}
             <Card className="border-0 shadow-lg">
               <CardHeader>
@@ -361,10 +274,25 @@ const ResumeBuilder = () => {
                 <CardDescription>Select a resume template that fits your style</CardDescription>
               </CardHeader>
               <CardContent>
-                <ResumeTemplates 
-                  onSelectTemplate={(template) => setActiveTemplate(template.id)}
-                  selectedTemplate={activeTemplate}
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {templates.map((template) => (
+                    <div
+                      key={template.id}
+                      onClick={() => setActiveTemplate(template.id)}
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                        activeTemplate === template.id 
+                          ? 'border-blue-500 bg-blue-50' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="text-center">
+                        <div className="h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded mb-3"></div>
+                        <h3 className="font-medium">{template.name}</h3>
+                        <p className="text-sm text-gray-600">{template.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
 
@@ -603,7 +531,7 @@ const ResumeBuilder = () => {
           </div>
 
           {/* Preview Section */}
-          <div className="lg:sticky lg:top-8 space-y-6">
+          <div className="lg:sticky lg:top-8">
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <CardTitle>Resume Preview</CardTitle>
@@ -623,13 +551,7 @@ const ResumeBuilder = () => {
                         <Download className="h-4 w-4 mr-2" />
                         Download HTML
                       </Button>
-                      <Button 
-                        onClick={handleSaveToProfile} 
-                        variant="outline" 
-                        className="flex-1"
-                        disabled={isSaving}
-                      >
-                        <Save className="h-4 w-4 mr-2" />
+                      <Button variant="outline" className="flex-1">
                         Save to Profile
                       </Button>
                     </div>
@@ -643,11 +565,6 @@ const ResumeBuilder = () => {
                 )}
               </CardContent>
             </Card>
-
-            {/* ATS Score */}
-            {generatedResume && (
-              <ATSScoreCalculator resumeContent={resumeData} />
-            )}
           </div>
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -38,32 +37,47 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
+
     --sidebar-foreground: 240 5.3% 26.1%;
+
     --sidebar-primary: 240 5.9% 10%;
+
     --sidebar-primary-foreground: 0 0% 98%;
+
     --sidebar-accent: 240 4.8% 95.9%;
+
     --sidebar-accent-foreground: 240 5.9% 10%;
+
     --sidebar-border: 220 13% 91%;
+
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
+
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
+
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
+
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
+
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
+
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
+
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
@@ -84,62 +98,6 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
-    font-size: 14px; /* Smaller base font size */
-    line-height: 1.5;
-  }
-
-  /* Bright, smaller typography system */
-  h1 { @apply text-2xl font-bold text-gray-900 leading-tight; }
-  h2 { @apply text-xl font-semibold text-gray-800 leading-tight; }
-  h3 { @apply text-lg font-medium text-gray-800 leading-tight; }
-  h4 { @apply text-base font-medium text-gray-700 leading-tight; }
-  h5 { @apply text-sm font-medium text-gray-700 leading-tight; }
-  h6 { @apply text-xs font-medium text-gray-600 leading-tight; }
-  
-  p { @apply text-sm text-gray-600 leading-relaxed; }
-  small { @apply text-xs text-gray-500; }
-}
-
-@layer components {
-  /* Glass morphism effects */
-  .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20;
-  }
-  
-  .glass-dark {
-    @apply bg-gray-900/70 backdrop-blur-md border border-gray-700/20;
-  }
-
-  /* Gradient backgrounds */
-  .gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
-  
-  .gradient-secondary {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  }
-  
-  .gradient-accent {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  }
-
-  /* Hover animations */
-  .hover-lift {
-    @apply transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-lg;
-  }
-  
-  .hover-glow {
-    @apply transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/25;
-  }
-
-  /* Card improvements */
-  .modern-card {
-    @apply bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-xl shadow-sm hover:shadow-md transition-all duration-300;
-  }
-
-  /* Button improvements */
-  .btn-modern {
-    @apply px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 hover:transform hover:scale-105;
+    @apply bg-background text-foreground;
   }
 }

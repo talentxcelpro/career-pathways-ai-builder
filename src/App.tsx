@@ -1,35 +1,29 @@
 
-import React from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { RouterProvider } from '@/components/routing/RouterProvider';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { CurrencyProvider } from '@/contexts/CurrencyContext';
-import { Toaster } from '@/components/ui/toaster';
-import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
+import { navItems } from "./nav-items";
+import { Navbar } from "./components/navigation/Navbar";
 
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 3,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
-function App() {
-  return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <CurrencyProvider>
-            <RouterProvider />
-            <Toaster />
-          </CurrencyProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
-  );
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          {navItems.map(({ to, page }) => (
+            <Route key={to} path={to} element={page} />
+          ))}
+        </Routes>
+        <Analytics />
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;

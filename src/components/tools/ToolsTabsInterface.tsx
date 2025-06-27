@@ -16,9 +16,7 @@ import {
   Award,
   Users,
   Target,
-  Lightbulb,
-  Activity,
-  Zap
+  Lightbulb
 } from 'lucide-react';
 
 // Import existing tool components
@@ -44,8 +42,6 @@ interface Tool {
   icon: React.ComponentType<any>;
   component: React.ComponentType;
   popular?: boolean;
-  gradient: string;
-  usage: string;
 }
 
 const tools: Tool[] = [
@@ -54,59 +50,45 @@ const tools: Tool[] = [
     title: 'Resume Checker',
     icon: FileCheck,
     component: ResumeCheck,
-    popular: true,
-    gradient: 'from-blue-500 to-blue-600',
-    usage: '2.3k'
+    popular: true
   },
   {
     id: 'cover-letter',
-    title: 'Cover Letter AI',
+    title: 'Cover Letter',
     icon: FileText,
     component: CoverLetter,
-    popular: true,
-    gradient: 'from-green-500 to-emerald-600',
-    usage: '1.8k'
+    popular: true
   },
   {
     id: 'salary-analyzer',
-    title: 'Salary Intelligence',
+    title: 'Salary Analyzer',
     icon: DollarSign,
-    component: SalaryAnalyzer,
-    gradient: 'from-yellow-500 to-orange-500',
-    usage: '956'
+    component: SalaryAnalyzer
   },
   {
     id: 'market-insights',
-    title: 'Market Pulse',
+    title: 'Market Insights',
     icon: TrendingUp,
-    component: MarketInsights,
-    gradient: 'from-purple-500 to-indigo-600',
-    usage: '743'
+    component: MarketInsights
   },
   {
     id: 'interview-prep',
-    title: 'Interview Simulator',
+    title: 'Interview Prep',
     icon: MessageSquare,
     component: InterviewPrep,
-    popular: true,
-    gradient: 'from-orange-500 to-red-500',
-    usage: '1.2k'
+    popular: true
   },
   {
     id: 'ai-assistant',
-    title: 'Career Copilot',
+    title: 'AI Assistant',
     icon: Brain,
-    component: AICareerAssistant,
-    gradient: 'from-indigo-500 to-purple-500',
-    usage: '891'
+    component: AICareerAssistant
   },
   {
     id: 'profile-score',
-    title: 'Profile Optimizer',
+    title: 'Profile Score',
     icon: Award,
-    component: ProfileScore,
-    gradient: 'from-red-500 to-pink-500',
-    usage: '654'
+    component: ProfileScore
   }
 ];
 
@@ -115,106 +97,81 @@ const ToolsTabsInterface = () => {
   const [activeTool, setActiveTool] = useState('resume-check');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Enhanced Header */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 p-6 mb-6 shadow-xl">
-          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
-          <div className="relative z-10">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-white mb-2">AI Career Tools Dashboard</h1>
-                <p className="text-sm text-blue-100">Advanced toolkit for career development and optimization</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge className="bg-white/20 text-white text-xs">Pro Suite</Badge>
-                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                  <Activity className="h-5 w-5 text-white" />
-                </div>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Career Tools</h1>
+          <p className="text-gray-600">Comprehensive toolkit for your career development</p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-8 mb-6 bg-white/80 backdrop-blur-sm p-1 rounded-xl shadow-sm">
-            <TabsTrigger value="tools" className="flex items-center space-x-2 text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-              <Wrench className="h-3 w-3" />
+          <TabsList className="grid w-full grid-cols-8 mb-8">
+            <TabsTrigger value="tools" className="flex items-center space-x-2">
+              <Wrench className="h-4 w-4" />
               <span>Tools</span>
             </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center space-x-2 text-xs data-[state=active]:bg-green-600 data-[state=active]:text-white">
-              <History className="h-3 w-3" />
+            <TabsTrigger value="history" className="flex items-center space-x-2">
+              <History className="h-4 w-4" />
               <span>History</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center space-x-2 text-xs data-[state=active]:bg-purple-600 data-[state=active]:text-white">
-              <BarChart3 className="h-3 w-3" />
+            <TabsTrigger value="analytics" className="flex items-center space-x-2">
+              <BarChart3 className="h-4 w-4" />
               <span>Analytics</span>
             </TabsTrigger>
-            <TabsTrigger value="favorites" className="flex items-center space-x-2 text-xs data-[state=active]:bg-yellow-600 data-[state=active]:text-white">
-              <Star className="h-3 w-3" />
+            <TabsTrigger value="favorites" className="flex items-center space-x-2">
+              <Star className="h-4 w-4" />
               <span>Favorites</span>
             </TabsTrigger>
-            <TabsTrigger value="collaboration" className="flex items-center space-x-2 text-xs data-[state=active]:bg-orange-600 data-[state=active]:text-white">
-              <Users className="h-3 w-3" />
+            <TabsTrigger value="collaboration" className="flex items-center space-x-2">
+              <Users className="h-4 w-4" />
               <span>Collaborate</span>
             </TabsTrigger>
-            <TabsTrigger value="advanced" className="flex items-center space-x-2 text-xs data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
-              <Target className="h-3 w-3" />
+            <TabsTrigger value="advanced" className="flex items-center space-x-2">
+              <Target className="h-4 w-4" />
               <span>Advanced</span>
             </TabsTrigger>
-            <TabsTrigger value="profile" className="flex items-center space-x-2 text-xs data-[state=active]:bg-pink-600 data-[state=active]:text-white">
-              <Award className="h-3 w-3" />
+            <TabsTrigger value="profile" className="flex items-center space-x-2">
+              <Award className="h-4 w-4" />
               <span>Profile</span>
             </TabsTrigger>
-            <TabsTrigger value="suggestions" className="flex items-center space-x-2 text-xs data-[state=active]:bg-teal-600 data-[state=active]:text-white">
-              <Lightbulb className="h-3 w-3" />
-              <span>AI Insights</span>
+            <TabsTrigger value="suggestions" className="flex items-center space-x-2">
+              <Lightbulb className="h-4 w-4" />
+              <span>Suggestions</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="tools" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {/* Enhanced Tool Selection Sidebar */}
+              {/* Tool Selection Sidebar */}
               <div className="lg:col-span-1">
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-white/20 p-4 sticky top-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-semibold text-gray-900">Available Tools</h3>
-                    <Badge variant="secondary" className="text-xs">{tools.length}</Badge>
-                  </div>
+                <div className="bg-white rounded-lg shadow-sm border p-4 sticky top-4">
+                  <h3 className="font-semibold text-gray-900 mb-4">Available Tools</h3>
                   <div className="space-y-2">
                     {tools.map((tool) => (
                       <button
                         key={tool.id}
                         onClick={() => setActiveTool(tool.id)}
-                        className={`w-full flex items-center space-x-3 p-3 rounded-lg text-left transition-all duration-300 ${
+                        className={`w-full flex items-center space-x-3 p-3 rounded-lg text-left transition-colors ${
                           activeTool === tool.id
-                            ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 border shadow-sm transform scale-[1.02]'
-                            : 'hover:bg-gray-50/80 hover:transform hover:scale-[1.01]'
+                            ? 'bg-blue-50 border-blue-200 border'
+                            : 'hover:bg-gray-50'
                         }`}
                       >
-                        <div className={`p-2 rounded-lg bg-gradient-to-br ${tool.gradient} shadow-sm`}>
-                          <tool.icon className="h-4 w-4 text-white" />
+                        <tool.icon className={`h-5 w-5 ${
+                          activeTool === tool.id ? 'text-blue-600' : 'text-gray-600'
+                        }`} />
+                        <div className="flex-1">
+                          <span className={`text-sm font-medium ${
+                            activeTool === tool.id ? 'text-blue-900' : 'text-gray-900'
+                          }`}>
+                            {tool.title}
+                          </span>
+                          {tool.popular && (
+                            <Badge variant="secondary" className="ml-2 text-xs">
+                              Popular
+                            </Badge>
+                          )}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className={`text-xs font-medium truncate ${
-                              activeTool === tool.id ? 'text-blue-900' : 'text-gray-900'
-                            }`}>
-                              {tool.title}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            {tool.popular && (
-                              <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700">
-                                Popular
-                              </Badge>
-                            )}
-                            <Badge variant="outline" className="text-xs">{tool.usage}</Badge>
-                          </div>
-                        </div>
-                        {activeTool === tool.id && (
-                          <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                        )}
                       </button>
                     ))}
                   </div>
@@ -223,7 +180,7 @@ const ToolsTabsInterface = () => {
 
               {/* Active Tool Content */}
               <div className="lg:col-span-3">
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-white/20 overflow-hidden">
+                <div className="bg-white rounded-lg shadow-sm border">
                   {(() => {
                     const activeTool_obj = tools.find(t => t.id === activeTool);
                     if (activeTool_obj) {
@@ -238,57 +195,38 @@ const ToolsTabsInterface = () => {
           </TabsContent>
 
           <TabsContent value="history">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-white/20">
-              <ToolResultsHistory />
-            </div>
+            <ToolResultsHistory />
           </TabsContent>
 
           <TabsContent value="analytics">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-white/20">
-              <ToolsAnalyticsDashboard />
-            </div>
+            <ToolsAnalyticsDashboard />
           </TabsContent>
 
           <TabsContent value="favorites">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-white/20">
-              <div className="text-center py-8">
-                <div className="flex justify-center mb-4">
-                  <div className="p-3 bg-yellow-100 rounded-xl">
-                    <Star className="h-6 w-6 text-yellow-600" />
-                  </div>
-                </div>
-                <h2 className="text-lg font-semibold mb-2 text-gray-900">Favorite Tools & Results</h2>
-                <p className="text-sm text-gray-600 mb-4">Your starred tools and saved results will appear here.</p>
-                <Badge variant="secondary" className="text-xs">Coming Soon</Badge>
-              </div>
+            <div className="bg-white rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">Favorite Tools & Results</h2>
+              <p className="text-gray-600">Your starred tools and saved results will appear here.</p>
+              {/* This would filter and display favorite items from ToolResultsHistory */}
             </div>
           </TabsContent>
 
           <TabsContent value="collaboration">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-white/20">
-              <RealTimeCollaboration 
-                toolName={activeTool} 
-                toolData={{ currentTool: activeTool, timestamp: new Date().toISOString() }} 
-              />
-            </div>
+            <RealTimeCollaboration 
+              toolName={activeTool} 
+              toolData={{ currentTool: activeTool, timestamp: new Date().toISOString() }} 
+            />
           </TabsContent>
 
           <TabsContent value="advanced">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-white/20">
-              <AdvancedAnalytics />
-            </div>
+            <AdvancedAnalytics />
           </TabsContent>
 
           <TabsContent value="profile">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-white/20">
-              <ProfileIntegration />
-            </div>
+            <ProfileIntegration />
           </TabsContent>
 
           <TabsContent value="suggestions">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-white/20">
-              <AutomatedSuggestions />
-            </div>
+            <AutomatedSuggestions />
           </TabsContent>
         </Tabs>
       </div>

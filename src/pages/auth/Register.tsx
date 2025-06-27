@@ -1,12 +1,16 @@
 
 import React from 'react';
-import { AuthForm } from '@/components/auth/AuthForm';
+import { AuthLayout } from '@/components/auth/AuthLayout';
+import { RegisterForm } from '@/components/auth/RegisterForm';
 
 const Register = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <AuthForm type="signup" />
-    </div>
+    <AuthLayout
+      title="Join TalentXcel"
+      description="Create your account to get started"
+    >
+      <RegisterForm />
+    </AuthLayout>
   );
 };
 

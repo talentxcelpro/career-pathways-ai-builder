@@ -652,33 +652,6 @@ export type Database = {
           },
         ]
       }
-      currency_rates: {
-        Row: {
-          base_currency: string
-          created_at: string | null
-          id: string
-          last_updated: string | null
-          rate: number
-          target_currency: string
-        }
-        Insert: {
-          base_currency: string
-          created_at?: string | null
-          id?: string
-          last_updated?: string | null
-          rate: number
-          target_currency: string
-        }
-        Update: {
-          base_currency?: string
-          created_at?: string | null
-          id?: string
-          last_updated?: string | null
-          rate?: number
-          target_currency?: string
-        }
-        Relationships: []
-      }
       email_templates: {
         Row: {
           company_id: string | null
@@ -1375,7 +1348,6 @@ export type Database = {
           posted_at: string | null
           posted_by: string | null
           requirements: string | null
-          salary_currency: string | null
           salary_max: number | null
           salary_min: number | null
           skills_required: string[] | null
@@ -1403,7 +1375,6 @@ export type Database = {
           posted_at?: string | null
           posted_by?: string | null
           requirements?: string | null
-          salary_currency?: string | null
           salary_max?: number | null
           salary_min?: number | null
           skills_required?: string[] | null
@@ -1431,7 +1402,6 @@ export type Database = {
           posted_at?: string | null
           posted_by?: string | null
           requirements?: string | null
-          salary_currency?: string | null
           salary_max?: number | null
           salary_min?: number | null
           skills_required?: string[] | null
@@ -1837,32 +1807,24 @@ export type Database = {
           custom_profile_url: string | null
           email: string | null
           experience_years: number | null
-          first_login: boolean | null
           full_name: string | null
           github_url: string | null
           id: string
           industry: string | null
           is_profile_public: boolean | null
-          last_login_at: string | null
           last_profile_view: string | null
           linkedin_url: string | null
           location: string | null
-          login_count: number | null
           looking_for_job: boolean | null
-          onboarding_completed: boolean | null
           open_to_remote: boolean | null
           phone: string | null
           portfolio_url: string | null
-          preferences: Json | null
-          preferred_currency: string | null
           preferred_locations: string[] | null
           preferred_salary_max: number | null
           preferred_salary_min: number | null
-          profile_completed: boolean | null
           profile_picture_url: string | null
           profile_views_count: number | null
           profile_visibility: string | null
-          provider: string | null
           resume_url: string | null
           skills: string[] | null
           social_links: Json | null
@@ -1880,32 +1842,24 @@ export type Database = {
           custom_profile_url?: string | null
           email?: string | null
           experience_years?: number | null
-          first_login?: boolean | null
           full_name?: string | null
           github_url?: string | null
           id: string
           industry?: string | null
           is_profile_public?: boolean | null
-          last_login_at?: string | null
           last_profile_view?: string | null
           linkedin_url?: string | null
           location?: string | null
-          login_count?: number | null
           looking_for_job?: boolean | null
-          onboarding_completed?: boolean | null
           open_to_remote?: boolean | null
           phone?: string | null
           portfolio_url?: string | null
-          preferences?: Json | null
-          preferred_currency?: string | null
           preferred_locations?: string[] | null
           preferred_salary_max?: number | null
           preferred_salary_min?: number | null
-          profile_completed?: boolean | null
           profile_picture_url?: string | null
           profile_views_count?: number | null
           profile_visibility?: string | null
-          provider?: string | null
           resume_url?: string | null
           skills?: string[] | null
           social_links?: Json | null
@@ -1923,32 +1877,24 @@ export type Database = {
           custom_profile_url?: string | null
           email?: string | null
           experience_years?: number | null
-          first_login?: boolean | null
           full_name?: string | null
           github_url?: string | null
           id?: string
           industry?: string | null
           is_profile_public?: boolean | null
-          last_login_at?: string | null
           last_profile_view?: string | null
           linkedin_url?: string | null
           location?: string | null
-          login_count?: number | null
           looking_for_job?: boolean | null
-          onboarding_completed?: boolean | null
           open_to_remote?: boolean | null
           phone?: string | null
           portfolio_url?: string | null
-          preferences?: Json | null
-          preferred_currency?: string | null
           preferred_locations?: string[] | null
           preferred_salary_max?: number | null
           preferred_salary_min?: number | null
-          profile_completed?: boolean | null
           profile_picture_url?: string | null
           profile_views_count?: number | null
           profile_visibility?: string | null
-          provider?: string | null
           resume_url?: string | null
           skills?: string[] | null
           social_links?: Json | null
@@ -1963,12 +1909,9 @@ export type Database = {
         Row: {
           content: Json
           created_at: string | null
-          file_size: number | null
           file_url: string | null
           id: string
-          is_active: boolean | null
           is_primary: boolean | null
-          mime_type: string | null
           template_id: string | null
           title: string
           updated_at: string | null
@@ -1977,12 +1920,9 @@ export type Database = {
         Insert: {
           content: Json
           created_at?: string | null
-          file_size?: number | null
           file_url?: string | null
           id?: string
-          is_active?: boolean | null
           is_primary?: boolean | null
-          mime_type?: string | null
           template_id?: string | null
           title: string
           updated_at?: string | null
@@ -1991,12 +1931,9 @@ export type Database = {
         Update: {
           content?: Json
           created_at?: string | null
-          file_size?: number | null
           file_url?: string | null
           id?: string
-          is_active?: boolean | null
           is_primary?: boolean | null
-          mime_type?: string | null
           template_id?: string | null
           title?: string
           updated_at?: string | null
@@ -2128,7 +2065,6 @@ export type Database = {
           job_title: string
           last_updated: string | null
           location: string
-          salary_currency: string | null
           salary_range_max: number | null
           salary_range_min: number | null
         }
@@ -2142,7 +2078,6 @@ export type Database = {
           job_title: string
           last_updated?: string | null
           location: string
-          salary_currency?: string | null
           salary_range_max?: number | null
           salary_range_min?: number | null
         }
@@ -2156,7 +2091,6 @@ export type Database = {
           job_title?: string
           last_updated?: string | null
           location?: string
-          salary_currency?: string | null
           salary_range_max?: number | null
           salary_range_min?: number | null
         }
@@ -2401,26 +2335,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      complete_onboarding: {
-        Args: {
-          user_uuid: string
-          user_full_name?: string
-          selected_role?: Database["public"]["Enums"]["user_role"]
-          user_preferences?: Json
-        }
-        Returns: undefined
-      }
-      get_user_role: {
-        Args: { user_uuid: string }
-        Returns: Database["public"]["Enums"]["user_role"]
-      }
-      has_role: {
-        Args: {
-          user_uuid: string
-          required_role: Database["public"]["Enums"]["user_role"]
-        }
-        Returns: boolean
-      }
       increment_job_applications: {
         Args: { job_id: string }
         Returns: undefined
@@ -2440,10 +2354,6 @@ export type Database = {
       is_company_admin_or_owner: {
         Args: { company_uuid: string }
         Returns: boolean
-      }
-      update_user_login: {
-        Args: { user_uuid: string }
-        Returns: undefined
       }
     }
     Enums: {

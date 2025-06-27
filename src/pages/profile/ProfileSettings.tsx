@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,13 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Save, Shield, Bell, Eye, Trash2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { CurrencySelector } from "@/components/ui/currency-selector";
-import { useCurrency } from '@/contexts/CurrencyContext';
 import ProfileLayout from "@/components/profile/ProfileLayout";
 
 const ProfileSettings = () => {
   const { toast } = useToast();
-  const { currency } = useCurrency();
   const [isLoading, setIsLoading] = useState(false);
   
   const [settings, setSettings] = useState({
@@ -37,7 +35,7 @@ const ProfileSettings = () => {
     // Account Settings
     language: "en",
     timezone: "America/Los_Angeles",
-    currency: currency
+    currency: "USD"
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -294,8 +292,10 @@ const ProfileSettings = () => {
 
         {/* Account Preferences */}
         <Card className="border-0 shadow-lg">
-          <CardTitle>Account Preferences</CardTitle>
-          <CardDescription>Customize your account settings</CardDescription>
+          <CardHeader>
+            <CardTitle>Account Preferences</CardTitle>
+            <CardDescription>Customize your account settings</CardDescription>
+          </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -335,8 +335,21 @@ const ProfileSettings = () => {
               </div>
               
               <div>
-                <label className="text-sm font-medium mb-2 block">Preferred Currency</label>
-                <CurrencySelector />
+                <label className="text-sm font-medium mb-2 block">Currency</label>
+                <Select 
+                  value={settings.currency} 
+                  onValueChange={(value) => setSettings(prev => ({ ...prev, currency: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USD">US Dollar</SelectItem>
+                    <SelectItem value="EUR">Euro</SelectItem>
+                    <SelectItem value="GBP">British Pound</SelectItem>
+                    <SelectItem value="CAD">Canadian Dollar</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </CardContent>

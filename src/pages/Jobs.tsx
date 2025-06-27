@@ -6,9 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { StatsCard } from '@/components/ui/stats-card';
-import { ActionCard } from '@/components/ui/action-card';
-import { Sparkles, Target, Bell, TrendingUp, Building, Star, Search, MapPin, Filter, Heart, Eye, Users, Clock, DollarSign, Zap, BarChart3 } from 'lucide-react';
+import { Sparkles, Target, Bell, TrendingUp, Building, Star, Search, MapPin, Filter, Heart, Eye, Users, Clock, DollarSign } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -190,69 +188,6 @@ const Jobs = () => {
     });
   };
 
-  const statsData = [
-    {
-      title: "Active Jobs",
-      value: stats?.totalJobs || 0,
-      subtitle: "Available positions",
-      icon: TrendingUp,
-      gradient: "from-blue-500 to-blue-600"
-    },
-    {
-      title: "Remote Jobs",
-      value: stats?.remoteJobs || 0,
-      subtitle: "Work from anywhere",
-      icon: MapPin,
-      gradient: "from-green-500 to-green-600"
-    },
-    {
-      title: "Featured",
-      value: stats?.featuredJobsCount || 0,
-      subtitle: "Premium listings",
-      icon: Star,
-      gradient: "from-yellow-500 to-yellow-600"
-    },
-    {
-      title: "Companies",
-      value: categories.length,
-      subtitle: "Hiring actively",
-      icon: Building,
-      gradient: "from-purple-500 to-purple-600"
-    }
-  ];
-
-  const quickActions = [
-    {
-      title: "AI Job Matching",
-      description: "Get personalized recommendations",
-      icon: Sparkles,
-      path: "/jobs/recommendations",
-      gradient: "from-blue-500 to-purple-500",
-      featured: true
-    },
-    {
-      title: "Job Alerts",
-      description: "Never miss an opportunity",
-      icon: Bell,
-      path: "/jobs/alerts",
-      gradient: "from-green-500 to-teal-500"
-    },
-    {
-      title: "Analytics",
-      description: "Track your job search",
-      icon: BarChart3,
-      path: "/jobs/analytics",
-      gradient: "from-purple-500 to-pink-500"
-    },
-    {
-      title: "Companies",
-      description: "Explore top employers",
-      icon: Building,
-      path: "/jobs/companies",
-      gradient: "from-orange-500 to-red-500"
-    }
-  ];
-
   const handleJobClick = (jobId: string) => {
     navigate(`/jobs/${jobId}`);
   };
@@ -267,290 +202,505 @@ const Jobs = () => {
     return null;
   };
 
+  const formatEmploymentType = (type: string) => {
+    const typeMap: { [key: string]: string } = {
+      'full_time': 'Full-time',
+      'part_time': 'Part-time', 
+      'contract': 'Contract',
+      'freelance': 'Freelance',
+      'internship': 'Internship'
+    };
+    return typeMap[type] || type;
+  };
+
+  const formatExperienceLevel = (level: string) => {
+    const levelMap: { [key: string]: string } = {
+      'entry_level': 'Entry Level',
+      'mid_level': 'Mid Level',
+      'senior_level': 'Senior Level',
+      'executive': 'Executive'
+    };
+    return levelMap[level] || level;
+  };
+
+  console.log('Jobs page render:', { jobsCount: jobs.length, isLoading, featuredCount: featuredJobs.length });
+
   return (
-    <div className="space-y-6">
-      {/* Enhanced Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 shadow-xl">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative z-10 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white mb-2">Find Your Dream Job</h1>
-            <p className="text-blue-100 text-sm">
-              Discover {stats?.totalJobs || 0} opportunities from top companies
-            </p>
-          </div>
-          <Button asChild variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-            <Link to="/jobs/post">
-              <Building className="h-4 w-4 mr-2" />
-              Post a Job
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {statsData.map((stat, index) => (
-          <StatsCard key={index} {...stat} />
-        ))}
-      </div>
-
-      {/* Quick Actions */}
-      <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center text-lg">
-            <Zap className="h-5 w-5 mr-2 text-yellow-500" />
-            Job Search Tools
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Powerful tools to accelerate your job search
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {quickActions.map((action, index) => (
-              <ActionCard
-                key={index}
-                {...action}
-                onClick={() => navigate(action.path)}
-              />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Featured Jobs */}
-      {featuredJobs.length > 0 && (
-        <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center text-lg">
-                  <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                  Featured Opportunities
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Hand-picked jobs from top companies
-                </CardDescription>
-              </div>
-              <Button asChild variant="outline" size="sm">
-                <Link to="/jobs?featured=true">View All</Link>
-              </Button>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold">Find Your Dream Job</h1>
+              <p className="text-gray-600 mt-2">
+                Discover {stats?.totalJobs || 0} opportunities from top companies
+              </p>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {featuredJobs.map((job: any) => (
-                <Card key={job.id} className="hover:shadow-md transition-all duration-200 border-0 bg-white/80 backdrop-blur-sm">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      {job.companies?.logo_url && (
-                        <img
-                          src={job.companies.logo_url}
-                          alt={job.companies.name}
-                          className="w-10 h-10 rounded-lg object-cover"
-                        />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-semibold line-clamp-2 mb-1">{job.title}</h3>
-                        <p className="text-xs text-gray-600">{job.companies?.name}</p>
-                        <p className="text-xs text-gray-500">{job.location}</p>
-                        
-                        <div className="flex gap-2 mt-3">
-                          <Button asChild size="sm" className="flex-1 text-xs">
-                            <Link to={`/jobs/${job.id}/smart-apply`}>
-                              <Sparkles className="h-3 w-3 mr-1" />
-                              Smart Apply
-                            </Link>
-                          </Button>
-                          <Button asChild variant="outline" size="sm" className="flex-1 text-xs">
-                            <Link to={`/jobs/${job.id}`}>View</Link>
-                          </Button>
+            <Button asChild>
+              <Link to="/jobs/post">
+                <Building className="h-4 w-4 mr-2" />
+                Post a Job
+              </Link>
+            </Button>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <TrendingUp className="h-5 w-5 text-blue-500" />
+                </div>
+                <div className="text-2xl font-bold">{stats?.totalJobs || 0}</div>
+                <div className="text-sm text-gray-500">Active Jobs</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <MapPin className="h-5 w-5 text-green-500" />
+                </div>
+                <div className="text-2xl font-bold">{stats?.remoteJobs || 0}</div>
+                <div className="text-sm text-gray-500">Remote Jobs</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <Star className="h-5 w-5 text-yellow-500" />
+                </div>
+                <div className="text-2xl font-bold">{stats?.featuredJobsCount || 0}</div>
+                <div className="text-sm text-gray-500">Featured</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <Building className="h-5 w-5 text-purple-500" />
+                </div>
+                <div className="text-2xl font-bold">{categories.length}</div>
+                <div className="text-sm text-gray-500">Categories</div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Quick Access Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">AI Recommendations</CardTitle>
+              <Sparkles className="h-4 w-4 text-blue-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">
+                {stats?.recommendations || 0}
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Jobs matched for you
+              </p>
+              <Button asChild size="sm" className="w-full">
+                <Link to="/jobs/recommendations">
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  View Matches
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Job Alerts</CardTitle>
+              <Bell className="h-4 w-4 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">Active</div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Get notified instantly
+              </p>
+              <Button asChild variant="outline" size="sm" className="w-full">
+                <Link to="/jobs/alerts">
+                  <Bell className="h-3 w-3 mr-1" />
+                  Manage Alerts
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Analytics</CardTitle>
+              <TrendingUp className="h-4 w-4 text-purple-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-600">
+                {stats?.appliedJobs || 0}
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Applications sent
+              </p>
+              <Button asChild variant="outline" size="sm" className="w-full">
+                <Link to="/jobs/analytics">
+                  <TrendingUp className="h-3 w-3 mr-1" />
+                  View Insights
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Companies</CardTitle>
+              <Building className="h-4 w-4 text-orange-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">Explore</div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Top hiring companies
+              </p>
+              <Button asChild variant="outline" size="sm" className="w-full">
+                <Link to="/jobs/companies">
+                  <Building className="h-3 w-3 mr-1" />
+                  Browse All
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Featured Jobs */}
+        {featuredJobs.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="h-5 w-5 text-yellow-500" />
+                    Featured Jobs
+                  </CardTitle>
+                  <CardDescription>
+                    Hand-picked opportunities from top companies
+                  </CardDescription>
+                </div>
+                <Button asChild variant="outline">
+                  <Link to="/jobs?featured=true">View All Featured</Link>
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {featuredJobs.map((job: any) => (
+                  <Card key={job.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        {job.companies?.logo_url && (
+                          <img
+                            src={job.companies.logo_url}
+                            alt={job.companies.name}
+                            className="w-12 h-12 rounded-lg object-cover"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold line-clamp-2">{job.title}</h3>
+                          <p className="text-sm text-gray-600">{job.companies?.name}</p>
+                          <p className="text-sm text-gray-500">{job.location}</p>
+                          
+                          <div className="flex gap-2 mt-3">
+                            <Button asChild size="sm" className="flex-1">
+                              <Link to={`/jobs/${job.id}/smart-apply`}>
+                                <Sparkles className="h-3 w-3 mr-1" />
+                                Smart Apply
+                              </Link>
+                            </Button>
+                            <Button asChild variant="outline" size="sm" className="flex-1">
+                              <Link to={`/jobs/${job.id}`}>View</Link>
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-      {/* Search and Filters */}
-      <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Job title, company, or keywords"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 text-sm"
-              />
+        {/* Categories */}
+        {categories.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <h2 className="text-lg font-semibold">Browse by Category</h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {categories.slice(0, 10).map((category: any) => (
+                <Badge
+                  key={category.id}
+                  variant="outline"
+                  className="cursor-pointer hover:bg-blue-50 hover:border-blue-300"
+                  onClick={() => navigate(`/jobs/categories?category=${category.slug}`)}
+                >
+                  {category.name}
+                </Badge>
+              ))}
+              {categories.length > 10 && (
+                <Badge
+                  variant="outline"
+                  className="cursor-pointer hover:bg-gray-100"
+                  onClick={() => navigate('/jobs/categories')}
+                >
+                  +{categories.length - 10} more
+                </Badge>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Search and Filters */}
+        <div className="mb-8">
+          <div className="bg-white p-6 rounded-lg shadow-sm border mb-6">
+            <div className="flex flex-col md:flex-row gap-4 mb-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Job title, company, or keywords"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              
+              <div className="relative flex-1 md:max-w-xs">
+                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Location"
+                  value={filters.location}
+                  onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+                  className="pl-10"
+                />
+              </div>
+              
+              <Select value={filters.jobType || 'all'} onValueChange={(value) => setFilters({ ...filters, jobType: value === 'all' ? '' : value })}>
+                <SelectTrigger className="w-full md:w-48">
+                  <SelectValue placeholder="Job Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="full_time">Full-time</SelectItem>
+                  <SelectItem value="part_time">Part-time</SelectItem>
+                  <SelectItem value="contract">Contract</SelectItem>
+                  <SelectItem value="internship">Internship</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Button onClick={clearFilters} variant="outline">
+                Clear
+              </Button>
             </div>
             
-            <div className="relative flex-1 md:max-w-xs">
-              <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Location"
-                value={filters.location}
-                onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                className="pl-10 text-sm"
-              />
+            <div className="flex items-center gap-4 text-sm text-gray-600">
+              <span>Quick filters:</span>
+              <div className="flex gap-2 flex-wrap">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-7 text-xs"
+                  onClick={() => setFilters({ ...filters, remote: !filters.remote })}
+                >
+                  Remote
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-7 text-xs"
+                  onClick={() => setFilters({ ...filters, jobType: 'full_time' })}
+                >
+                  Full-time
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-7 text-xs"
+                  onClick={() => setFilters({ ...filters, experience: 'entry_level' })}
+                >
+                  Entry Level
+                </Button>
+                <Button variant="outline" size="sm" className="h-7 text-xs">
+                  Tech
+                </Button>
+              </div>
             </div>
-            
-            <Select value={filters.jobType || 'all'} onValueChange={(value) => setFilters({ ...filters, jobType: value === 'all' ? '' : value })}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Job Type" />
+          </div>
+        </div>
+
+        {/* Sort and Results */}
+        <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg border">
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-600">
+              {jobs.length} jobs found
+            </span>
+            {searchTerm && (
+              <Badge variant="secondary">
+                Searching: "{searchTerm}"
+              </Badge>
+            )}
+            {Object.values(filters).some(v => v) && (
+              <Badge variant="outline">
+                Filters applied
+              </Badge>
+            )}
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="full_time">Full-time</SelectItem>
-                <SelectItem value="part_time">Part-time</SelectItem>
-                <SelectItem value="contract">Contract</SelectItem>
-                <SelectItem value="internship">Internship</SelectItem>
+                <SelectItem value="latest">Newest First</SelectItem>
+                <SelectItem value="salary">Highest Salary</SelectItem>
+                <SelectItem value="views">Most Viewed</SelectItem>
+                <SelectItem value="applications">Least Competition</SelectItem>
               </SelectContent>
             </Select>
             
-            <Button onClick={clearFilters} variant="outline" size="sm">
-              Clear
-            </Button>
-          </div>
-          
-          <div className="flex items-center gap-4 text-xs text-gray-600">
-            <span>Quick filters:</span>
-            <div className="flex gap-2 flex-wrap">
-              <Button 
-                variant={filters.remote ? "default" : "outline"}
-                size="sm" 
-                className="h-7 text-xs"
-                onClick={() => setFilters({ ...filters, remote: !filters.remote })}
-              >
-                Remote
-              </Button>
-              <Button 
-                variant={filters.jobType === 'full_time' ? "default" : "outline"}
-                size="sm" 
-                className="h-7 text-xs"
-                onClick={() => setFilters({ ...filters, jobType: filters.jobType === 'full_time' ? '' : 'full_time' })}
-              >
-                Full-time
-              </Button>
-              <Button 
-                variant="outline"
-                size="sm" 
-                className="h-7 text-xs"
-                onClick={() => setFilters({ ...filters, experience: 'entry_level' })}
-              >
-                Entry Level
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Job Listings */}
-      <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Job Listings</CardTitle>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-600">Sort by:</span>
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-32 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="latest">Latest</SelectItem>
-                  <SelectItem value="salary">Salary</SelectItem>
-                  <SelectItem value="views">Most Viewed</SelectItem>
-                </SelectContent>
-              </Select>
+              <Button asChild variant="outline" size="sm">
+                <Link to="/jobs/saved">
+                  Saved ({stats?.savedJobs || 0})
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link to="/jobs/applied">
+                  Applied ({stats?.appliedJobs || 0})
+                </Link>
+              </Button>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+
+        {/* Jobs List */}
+        <div className="space-y-4">
           {isLoading ? (
             <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="p-4 border border-gray-100 rounded-xl animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/3 mb-1"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/4"></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {jobs.map((job: any) => (
-                <div 
-                  key={job.id}
-                  className="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-all duration-200 cursor-pointer bg-white/60 backdrop-blur-sm"
-                  onClick={() => handleJobClick(job.id)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-sm font-semibold">{job.title}</h3>
-                        {job.is_featured && (
-                          <Badge className="bg-yellow-100 text-yellow-700 text-xs">Featured</Badge>
-                        )}
-                        {job.is_remote && (
-                          <Badge variant="outline" className="text-xs">Remote</Badge>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-600">{job.companies?.name}</p>
-                      <p className="text-xs text-gray-500 mb-2">{job.location}</p>
-                      
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
-                        {formatSalary(job) && (
-                          <span className="text-green-600 font-medium">{formatSalary(job)}</span>
-                        )}
-                        <span className="flex items-center gap-1">
-                          <Eye className="h-3 w-3" />
-                          {job.views_count || 0}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          {job.applications_count || 0} applied
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {formatDistanceToNow(new Date(job.posted_at), { addSuffix: true })}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-col gap-2">
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="text-xs">
-                          <Heart className="h-3 w-3" />
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          className="text-xs"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/jobs/${job.id}/smart-apply`);
-                          }}
-                        >
-                          <Sparkles className="h-3 w-3 mr-1" />
-                          Apply
-                        </Button>
-                      </div>
-                      <Badge variant="secondary" className="text-xs text-center">
-                        {job.employment_type?.replace('_', '-')}
-                      </Badge>
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-white rounded-lg border p-6">
+                    <div className="space-y-3">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-full"></div>
+                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+          ) : jobs.length > 0 ? (
+            jobs.map((job: any) => (
+              <Card key={job.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleJobClick(job.id)}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-4 flex-1">
+                      {job.companies?.logo_url && (
+                        <img
+                          src={job.companies.logo_url}
+                          alt={job.companies.name}
+                          className="w-12 h-12 rounded-lg object-cover"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h3 className="text-lg font-semibold line-clamp-2">{job.title}</h3>
+                            <p className="text-gray-600">{job.companies?.name}</p>
+                          </div>
+                          {job.is_featured && (
+                            <Badge className="bg-yellow-100 text-yellow-800">Featured</Badge>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                          <span className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {job.location}
+                          </span>
+                          <span>{formatEmploymentType(job.employment_type)}</span>
+                          {formatSalary(job) && (
+                            <span className="text-green-600 font-medium">
+                              {formatSalary(job)}
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="text-gray-700 line-clamp-2 mb-4">{job.description}</p>
+
+                        {job.skills_required && Array.isArray(job.skills_required) && job.skills_required.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {job.skills_required.slice(0, 5).map((skill: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {skill}
+                              </Badge>
+                            ))}
+                            {job.skills_required.length > 5 && (
+                              <Badge variant="secondary" className="text-xs">
+                                +{job.skills_required.length - 5} more
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <Eye className="h-3 w-3" />
+                              {job.views_count || 0} views
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Users className="h-3 w-3" />
+                              {job.applications_count || 0} applications
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              Posted {job.posted_at ? formatDistanceToNow(new Date(job.posted_at)) + ' ago' : 'recently'}
+                            </span>
+                          </div>
+                          
+                          <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                            <Button asChild variant="outline" size="sm">
+                              <Link to={`/jobs/${job.id}`}>View Details</Link>
+                            </Button>
+                            <Button asChild size="sm">
+                              <Link to={`/jobs/${job.id}/smart-apply`}>
+                                <Sparkles className="h-3 w-3 mr-1" />
+                                Smart Apply
+                              </Link>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No jobs found</h3>
+                <p className="text-gray-600 mb-4">
+                  Try adjusting your search criteria or removing some filters.
+                </p>
+                <Button onClick={clearFilters} variant="outline">
+                  Clear Filters
+                </Button>
+              </CardContent>
+            </Card>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
