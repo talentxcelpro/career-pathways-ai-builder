@@ -42,11 +42,11 @@ export const realDataService = {
     if (filters?.location) {
       query = query.ilike('location', `%${filters.location}%`);
     }
-    if (filters?.title) {
-      query = query.ilike('title', `%${filters.title}%`);
+    if (filters?.search) {
+      query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
     }
-    if (filters?.employment_type) {
-      query = query.eq('employment_type', filters.employment_type);
+    if (filters?.employment_type?.length > 0) {
+      query = query.in('employment_type', filters.employment_type);
     }
     if (filters?.is_remote !== undefined) {
       query = query.eq('is_remote', filters.is_remote);
@@ -124,11 +124,12 @@ export const realDataService = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
 
-    const [jobsCount, applicationsCount, savedJobsCount, profileViews] = await Promise.all([
+    const [jobsCount, applicationsCount, savedJobsCount, profileViews, coursesCount] = await Promise.all([
       supabase.from('jobs').select('*', { count: 'exact', head: true }),
       supabase.from('job_applications').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
       supabase.from('saved_jobs').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
       supabase.from('profile_views').select('*', { count: 'exact', head: true }).eq('profile_id', user.id),
+      supabase.from('user_courses').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
     ]);
 
     return {
@@ -136,6 +137,8 @@ export const realDataService = {
       appliedJobs: applicationsCount.count || 0,
       savedJobs: savedJobsCount.count || 0,
       profileViews: profileViews.count || 0,
+      coursesCompleted: coursesCount.count || 0,
+      resumeViews: profileViews.count || 0, // Using same as profile views for now
     };
   },
 

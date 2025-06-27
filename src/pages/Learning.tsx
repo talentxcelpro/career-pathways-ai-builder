@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { LearningHeader } from '@/components/learning/LearningHeader';
 import { LearningTabs } from '@/components/learning/LearningTabs';
@@ -8,8 +8,17 @@ import { DataFreshness } from '@/components/shared/DataFreshness';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
 import { realDataService } from '@/utils/realDataService';
 import { updateMetaTags } from '@/utils/metaTags';
+import { supabase } from '@/integrations/supabase/client';
 
 const Learning = () => {
+  const [activeTab, setActiveTab] = useState('courses');
+  const [filters, setFilters] = useState({
+    search: '',
+    category: '',
+    difficulty: '',
+    duration: '',
+  });
+
   // Auto-refresh for learning content
   const { manualRefresh } = useAutoRefresh({
     queryKeys: ['courses', 'learning_paths', 'popular_courses'],
@@ -38,7 +47,60 @@ const Learning = () => {
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 
+  // Get user's enrolled courses
+  const { data: userCourses = [] } = useQuery({
+    queryKey: ['user_courses'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('user_courses')
+        .select(`
+          *,
+          courses (*)
+        `)
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   const isLoading = coursesLoading || pathsLoading;
+
+  // Filter courses based on search and filters
+  const filteredCourses = courses.filter(course => {
+    const matchesSearch = !filters.search || 
+      course.title?.toLowerCase().includes(filters.search.toLowerCase()) ||
+      course.description?.toLowerCase().includes(filters.search.toLowerCase());
+    
+    const matchesCategory = !filters.category || course.category === filters.category;
+    const matchesDifficulty = !filters.difficulty || course.difficulty_level === filters.difficulty;
+    
+    return matchesSearch && matchesCategory && matchesDifficulty;
+  });
+
+  const isEnrolled = (courseId: string) => {
+    return userCourses.some(uc => uc.course_id === courseId);
+  };
+
+  const enrollInCourse = async (courseId: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    try {
+      await supabase
+        .from('user_courses')
+        .insert({
+          user_id: user.id,
+          course_id: courseId,
+          enrolled_at: new Date().toISOString(),
+        });
+    } catch (error) {
+      console.error('Error enrolling in course:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -52,16 +114,22 @@ const Learning = () => {
             <p className="text-gray-600 mt-1">Discover courses and learning paths to advance your career</p>
           </div>
           <DataFreshness 
-            lastUpdated={new Date(dataUpdatedAt)}
+            lastUpdated={new Date(dataUpdatedAt || Date.now())}
             onRefresh={manualRefresh}
             isRefreshing={isLoading}
           />
         </div>
 
         <LearningTabs 
-          courses={courses} 
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          filteredCourses={filteredCourses}
+          coursesLoading={coursesLoading}
           learningPaths={learningPaths}
-          isLoading={isLoading}
+          pathsLoading={pathsLoading}
+          userCourses={userCourses}
+          isEnrolled={isEnrolled}
+          enrollInCourse={enrollInCourse}
         />
       </div>
     </div>

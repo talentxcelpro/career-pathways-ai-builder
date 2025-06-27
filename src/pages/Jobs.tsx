@@ -16,12 +16,14 @@ import { toast } from 'sonner';
 
 const Jobs = () => {
   const [filters, setFilters] = useState({
-    title: '',
+    search: '',
     location: '',
-    employment_type: '',
-    is_remote: undefined as boolean | undefined,
+    employment_type: [] as string[],
+    experience_level: [] as string[],
     salary_min: 0,
     salary_max: 0,
+    is_remote: false,
+    skills: [] as string[],
   });
   const [sortBy, setSortBy] = useState('posted_at');
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
@@ -87,6 +89,16 @@ const Jobs = () => {
 
   const featuredJobs = sortedJobs.filter(job => job.is_featured);
   const regularJobs = sortedJobs.filter(job => !job.is_featured);
+  const remoteJobs = sortedJobs.filter(job => job.is_remote);
+
+  // Mock categories for now
+  const categories = [
+    { id: '1', name: 'Technology', count: Math.floor(allJobs.length * 0.3) },
+    { id: '2', name: 'Marketing', count: Math.floor(allJobs.length * 0.2) },
+    { id: '3', name: 'Design', count: Math.floor(allJobs.length * 0.15) },
+    { id: '4', name: 'Sales', count: Math.floor(allJobs.length * 0.2) },
+    { id: '5', name: 'Finance', count: Math.floor(allJobs.length * 0.15) },
+  ];
 
   const handleSaveJob = async (jobId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -122,26 +134,33 @@ const Jobs = () => {
 
   const handleClearFilters = () => {
     setFilters({
-      title: '',
+      search: '',
       location: '',
-      employment_type: '',
-      is_remote: undefined,
+      employment_type: [],
+      experience_level: [],
       salary_min: 0,
       salary_max: 0,
+      is_remote: false,
+      skills: [],
     });
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <OfflineIndicator />
-      <JobsHeader />
-      <JobsCategories />
+      <JobsHeader 
+        jobsCount={allJobs.length}
+        remoteJobsCount={remoteJobs.length}
+        featuredJobsCount={featuredJobs.length}
+        categoriesCount={categories.length}
+      />
+      <JobsCategories categories={categories} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Job Opportunities</h1>
           <DataFreshness 
-            lastUpdated={new Date(dataUpdatedAt)}
+            lastUpdated={new Date(dataUpdatedAt || Date.now())}
             onRefresh={() => {
               manualRefresh();
               refetch();

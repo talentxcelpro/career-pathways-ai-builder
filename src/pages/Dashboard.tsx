@@ -80,6 +80,14 @@ const Dashboard = () => {
     );
   }
 
+  // Transform stats to match StatsCards interface
+  const userStats = {
+    coursesCompleted: dashboardStats?.coursesCompleted || 0,
+    resumeViews: dashboardStats?.resumeViews || 0,
+    appliedJobs: dashboardStats?.appliedJobs || 0,
+    profileViews: dashboardStats?.profileViews || 0,
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <OfflineIndicator />
@@ -92,14 +100,14 @@ const Dashboard = () => {
             <p className="text-gray-600 mt-1">Here's what's happening with your career journey</p>
           </div>
           <DataFreshness 
-            lastUpdated={new Date(statsUpdatedAt)}
+            lastUpdated={new Date(statsUpdatedAt || Date.now())}
             onRefresh={handleRefreshAll}
             isRefreshing={statsLoading}
           />
         </div>
 
         <div className="space-y-8">
-          <StatsCards stats={dashboardStats} />
+          <StatsCards userStats={userStats} />
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <FeaturedJobs jobs={featuredJobs} />
