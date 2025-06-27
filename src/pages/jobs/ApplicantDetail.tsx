@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +36,7 @@ const ApplicantDetail = () => {
         .from('job_applications')
         .select(`
           *,
-          jobs (
+          jobs!job_applications_job_id_fkey (
             id,
             title,
             company_id,
