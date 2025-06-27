@@ -1,29 +1,21 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, MessageCircle } from "lucide-react";
+import { MessageCircle, Users, Clock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ConversationsListProps {
   conversations: any[];
-  selectedConversation: string | null;
-  onSelectConversation: (conversationId: string) => void;
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
-  isLoading: boolean;
+  searchTerm?: string;
 }
 
 export const ConversationsList: React.FC<ConversationsListProps> = ({
   conversations,
-  selectedConversation,
-  onSelectConversation,
-  searchTerm,
-  setSearchTerm,
-  isLoading
+  searchTerm = ''
 }) => {
   // Get user profiles for conversation participants
   const { data: userProfiles } = useQuery({
@@ -31,13 +23,15 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
     queryFn: async () => {
       if (!conversations || conversations.length === 0) return {};
 
-      const userIds = conversations.map(conv => conv.userId).filter(Boolean);
-      if (userIds.length === 0) return {};
+      const allParticipantIds = conversations.flatMap(conv => conv.participants || []);
+      const uniqueIds = [...new Set(allParticipantIds)];
+      
+      if (uniqueIds.length === 0) return {};
 
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('id, full_name, profile_picture_url, title')
-        .in('id', userIds);
+        .in('id', uniqueIds);
 
       if (error) {
         console.error('Error fetching conversation profiles:', error);
@@ -52,18 +46,37 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
     enabled: conversations && conversations.length > 0
   });
 
-  const formatDisplayName = (profile: any) => {
-    if (profile?.full_name && profile.full_name.trim()) {
-      return profile.full_name;
-    }
-    return 'Professional User';
+  const getCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user?.id;
   };
 
-  const generateInitials = (profile: any) => {
-    const displayName = formatDisplayName(profile);
-    if (displayName === 'Professional User') return 'PU';
+  const getConversationDisplay = (conversation: any) => {
+    const currentUserId = getCurrentUser();
     
-    const names = displayName.split(' ');
+    if (conversation.is_group) {
+      return {
+        name: conversation.name || 'Group Chat',
+        avatar: null,
+        isGroup: true
+      };
+    }
+
+    // For 1:1 conversations, show the other participant
+    const otherParticipant = conversation.participants?.find((id: string) => id !== currentUserId);
+    const profile = userProfiles?.[otherParticipant];
+    
+    return {
+      name: profile?.full_name || 'Professional User',
+      avatar: profile?.profile_picture_url,
+      title: profile?.title,
+      isGroup: false
+    };
+  };
+
+  const generateInitials = (name: string) => {
+    if (!name || name === 'Professional User') return 'PU';
+    const names = name.split(' ');
     if (names.length === 1) {
       return names[0].charAt(0).toUpperCase();
     }
@@ -71,103 +84,105 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
   };
 
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.abs(now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    
+    if (diffInHours < 24) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else if (diffInHours < 168) { // Less than a week
+      return date.toLocaleDateString([], { weekday: 'short' });
+    } else {
+      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
   };
 
+  const filteredConversations = conversations.filter(conv => {
+    if (!searchTerm) return true;
+    
+    const display = getConversationDisplay(conv);
+    const lastMessage = conv.messages?.[0];
+    
+    return (
+      display.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lastMessage?.content?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <MessageCircle className="h-5 w-5 mr-2" />
-          Messages
-        </CardTitle>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search conversations..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-      </CardHeader>
-      
-      <CardContent className="p-0">
-        <ScrollArea className="h-[500px]">
-          {isLoading ? (
-            <div className="p-4 space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center space-x-3 animate-pulse">
-                  <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
-                  <div className="flex-1">
-                    <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-300 rounded w-1/2"></div>
-                  </div>
+    <ScrollArea className="h-[600px]">
+      <div className="divide-y">
+        {filteredConversations.map((conversation) => {
+          const display = getConversationDisplay(conversation);
+          const lastMessage = conversation.messages?.[0];
+          const hasUnread = false; // This would need proper unread logic
+          
+          return (
+            <Link
+              key={conversation.id}
+              to={`/network/messages/${conversation.id}`}
+              className="block p-4 hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-start space-x-3">
+                <div className="relative">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={display.avatar} />
+                    <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                      {display.isGroup ? <Users className="h-6 w-6" /> : generateInitials(display.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  {hasUnread && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 border-2 border-white rounded-full"></div>
+                  )}
                 </div>
-              ))}
-            </div>
-          ) : conversations && conversations.length > 0 ? (
-            <div className="divide-y">
-              {conversations.map((conversation) => {
-                const profile = userProfiles?.[conversation.userId];
-                const isSelected = selectedConversation === conversation.userId;
                 
-                return (
-                  <div
-                    key={conversation.userId}
-                    onClick={() => onSelectConversation(conversation.userId)}
-                    className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                      isSelected ? 'bg-blue-50 border-r-2 border-blue-500' : ''
-                    }`}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className="relative">
-                        <Avatar className="w-12 h-12">
-                          <AvatarImage src={profile?.profile_picture_url} />
-                          <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                            {generateInitials(profile)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <h3 className="font-medium text-gray-900 truncate">
-                            {formatDisplayName(profile)}
-                          </h3>
-                          <span className="text-xs text-gray-500">
-                            {conversation.lastMessage && formatTime(conversation.lastMessage.created_at)}
-                          </span>
-                        </div>
-                        
-                        <p className="text-sm text-gray-600 mb-1 truncate">
-                          {profile?.title || 'Professional'}
-                        </p>
-                        
-                        {conversation.lastMessage && (
-                          <p className="text-sm text-gray-500 truncate">
-                            {conversation.lastMessage.content}
-                          </p>
-                        )}
-                      </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-medium text-gray-900 truncate">
+                        {display.name}
+                      </h3>
+                      {display.isGroup && (
+                        <Badge variant="secondary" className="text-xs">
+                          {conversation.participants?.length || 0}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-1 text-xs text-gray-500">
+                      <Clock className="h-3 w-3" />
+                      <span>
+                        {lastMessage ? formatTime(lastMessage.created_at) : formatTime(conversation.created_at)}
+                      </span>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="p-8 text-center">
-              <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No conversations yet</h3>
-              <p className="text-gray-600">Start connecting with your network to begin messaging</p>
-            </div>
-          )}
-        </ScrollArea>
-      </CardContent>
-    </Card>
+                  
+                  {!display.isGroup && display.title && (
+                    <p className="text-sm text-gray-600 mb-1 truncate">
+                      {display.title}
+                    </p>
+                  )}
+                  
+                  {lastMessage && (
+                    <div className="flex items-center space-x-2">
+                      <p className="text-sm text-gray-500 truncate flex-1">
+                        {lastMessage.message_type === 'text' 
+                          ? lastMessage.content 
+                          : `📎 ${lastMessage.message_type}`
+                        }
+                      </p>
+                      {hasUnread && (
+                        <Badge variant="default" className="text-xs h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                          3
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </ScrollArea>
   );
 };

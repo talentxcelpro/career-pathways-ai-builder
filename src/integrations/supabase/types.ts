@@ -548,6 +548,39 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_group: boolean | null
+          last_message_id: string | null
+          last_updated: string | null
+          name: string | null
+          participants: string[]
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_group?: boolean | null
+          last_message_id?: string | null
+          last_updated?: string | null
+          name?: string | null
+          participants: string[]
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_group?: boolean | null
+          last_message_id?: string | null
+          last_updated?: string | null
+          name?: string | null
+          participants?: string[]
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           category: string | null
@@ -1501,38 +1534,86 @@ export type Database = {
         }
         Relationships: []
       }
+      message_reads: {
+        Row: {
+          id: string
+          message_id: string
+          read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          message_id: string
+          read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          message_id?: string
+          read_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
+          attachments: Json | null
           content: string
+          conversation_id: string | null
           created_at: string | null
           id: string
           is_read: boolean | null
           message_type: string | null
           recipient_id: string | null
+          reply_to_id: string | null
           sender_id: string | null
+          status: string | null
           updated_at: string | null
         }
         Insert: {
+          attachments?: Json | null
           content: string
+          conversation_id?: string | null
           created_at?: string | null
           id?: string
           is_read?: boolean | null
           message_type?: string | null
           recipient_id?: string | null
+          reply_to_id?: string | null
           sender_id?: string | null
+          status?: string | null
           updated_at?: string | null
         }
         Update: {
+          attachments?: Json | null
           content?: string
+          conversation_id?: string | null
           created_at?: string | null
           id?: string
           is_read?: boolean | null
           message_type?: string | null
           recipient_id?: string | null
+          reply_to_id?: string | null
           sender_id?: string | null
+          status?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_to_id_fkey"
+            columns: ["reply_to_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {

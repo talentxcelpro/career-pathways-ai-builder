@@ -10,7 +10,12 @@ import Requests from "../pages/network/Requests";
 import Events from "../pages/network/Events";
 import EventDetail from "../pages/network/EventDetail";
 import Messages from "../pages/network/Messages";
+import NewMessage from "../pages/network/NewMessage";
 import MessageConversation from "../pages/network/MessageConversation";
+import MessageRequests from "../pages/network/MessageRequests";
+import ArchivedMessages from "../pages/network/ArchivedMessages";
+import MessageSettings from "../pages/network/MessageSettings";
+import AIAssistant from "../pages/network/AIAssistant";
 import Notifications from "../pages/network/Notifications";
 import Suggestions from "../pages/network/Suggestions";
 import UserProfile from "../pages/network/UserProfile";
@@ -73,9 +78,34 @@ export const networkRoutes = [
     page: <Messages />,
   },
   {
+    title: "New Message",
+    to: "/network/messages/new",
+    page: <NewMessage />,
+  },
+  {
     title: "Message Conversation",
     to: "/network/messages/:id",
     page: <MessageConversation />,
+  },
+  {
+    title: "Message Requests",
+    to: "/network/messages/requests",
+    page: <MessageRequests />,
+  },
+  {
+    title: "Archived Messages",
+    to: "/network/messages/archived",
+    page: <ArchivedMessages />,
+  },
+  {
+    title: "Message Settings",
+    to: "/network/messages/settings",
+    page: <MessageSettings />,
+  },
+  {
+    title: "AI Assistant",
+    to: "/network/messages/ai",
+    page: <AIAssistant />,
   },
   {
     title: "Network Notifications",
