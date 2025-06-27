@@ -11,20 +11,30 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && isAuthenticated && user && profile) {
+    // Only proceed if auth is not loading
+    if (loading) return;
+
+    if (isAuthenticated && user) {
       console.log('User authenticated:', user.email, 'Profile:', profile);
+      
+      // If user has no profile yet, wait a bit longer for it to load
+      if (!profile) {
+        console.log('Profile not loaded yet, waiting...');
+        return;
+      }
       
       if (needsOnboarding) {
         console.log('User needs onboarding, redirecting...');
-        navigate('/onboarding/role');
+        navigate('/onboarding/role', { replace: true });
       } else {
         console.log('User onboarding complete, redirecting to dashboard...');
         const redirectPath = getRedirectPathForRole(profile.user_role, false);
-        navigate(redirectPath);
+        navigate(redirectPath, { replace: true });
       }
     }
   }, [user, profile, loading, isAuthenticated, needsOnboarding, navigate]);
 
+  // Show loading spinner while auth is loading
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
@@ -33,11 +43,12 @@ const Index = () => {
     );
   }
 
+  // Show landing page for unauthenticated users
   if (!isAuthenticated) {
     return <LandingPage />;
   }
 
-  // Show loading while redirecting authenticated users
+  // Show loading while waiting for profile data or during redirect
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <LoadingSpinner size="lg" text="Redirecting..." />
