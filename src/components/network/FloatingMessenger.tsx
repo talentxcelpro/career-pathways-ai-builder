@@ -242,7 +242,7 @@ const FloatingMessenger: React.FC = () => {
             {!selectedConversationId ? (
               // Conversations List
               <div className="flex-1 p-3">
-                <div className="space-y-2 h-full overflow-y-auto custom-scrollbar">
+                <div className="space-y-2 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
                   {conversations?.map((conv) => {
                     const otherUserId = conv.participants.find((p: string) => p !== currentUserId);
                     return (
@@ -315,24 +315,6 @@ const FloatingMessenger: React.FC = () => {
           </div>
         )}
       </Card>
-
-      {/* Custom Scrollbar Styles */}
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 2px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #c1c1c1;
-          border-radius: 2px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #a8a8a8;
-        }
-      `}</style>
     </div>
   );
 };
