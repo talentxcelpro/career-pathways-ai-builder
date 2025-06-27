@@ -1,176 +1,111 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
-import { Plus, X, Save, MapPin, Briefcase, DollarSign } from "lucide-react";
+import { MapPin, DollarSign, Briefcase, Building, Clock, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ProfileLayout from "@/components/profile/ProfileLayout";
+import { JobPreferencesUpload } from "@/components/profile/documents/JobPreferencesUpload";
 
 const ProfilePreferences = () => {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
   
   const [preferences, setPreferences] = useState({
-    jobAlerts: true,
-    openToWork: true,
-    remoteWork: true,
     preferredRoles: ["Software Engineer", "Full Stack Developer"],
-    preferredLocations: ["San Francisco, CA", "Remote"],
-    salaryRange: [120000, 180000],
-    experienceLevel: "senior",
-    jobTypes: ["full-time"],
-    industries: ["Technology", "Software"],
-    companySize: ["startup", "mid-size"],
-    benefits: ["health-insurance", "401k", "flexible-hours"]
+    locations: ["Remote", "San Francisco", "New York"],
+    salaryMin: 80000,
+    salaryMax: 150000,
+    workType: "Remote",
+    industries: ["Technology", "Fintech"],
+    companySize: ["Startup", "Medium"],
+    benefits: ["Health Insurance", "401k", "Flexible Hours"],
+    additionalNotes: "Looking for a role with growth opportunities and modern tech stack."
   });
 
   const [newRole, setNewRole] = useState("");
   const [newLocation, setNewLocation] = useState("");
+  const [newIndustry, setNewIndustry] = useState("");
+  const [newBenefit, setNewBenefit] = useState("");
 
-  const addRole = () => {
-    if (newRole.trim() && !preferences.preferredRoles.includes(newRole.trim())) {
+  const addItem = (field: keyof typeof preferences, value: string, setter: (val: string) => void) => {
+    if (value.trim() && !preferences[field].includes(value.trim())) {
       setPreferences(prev => ({
         ...prev,
-        preferredRoles: [...prev.preferredRoles, newRole.trim()]
+        [field]: [...prev[field], value.trim()]
       }));
-      setNewRole("");
+      setter("");
     }
   };
 
-  const removeRole = (role: string) => {
+  const removeItem = (field: keyof typeof preferences, item: string) => {
     setPreferences(prev => ({
       ...prev,
-      preferredRoles: prev.preferredRoles.filter(r => r !== role)
+      [field]: prev[field].filter(i => i !== item)
     }));
   };
 
-  const addLocation = () => {
-    if (newLocation.trim() && !preferences.preferredLocations.includes(newLocation.trim())) {
-      setPreferences(prev => ({
-        ...prev,
-        preferredLocations: [...prev.preferredLocations, newLocation.trim()]
-      }));
-      setNewLocation("");
-    }
-  };
-
-  const removeLocation = (location: string) => {
-    setPreferences(prev => ({
-      ...prev,
-      preferredLocations: prev.preferredLocations.filter(l => l !== location)
-    }));
-  };
-
-  const handleSave = async () => {
-    setIsLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast({
-        title: "Preferences Saved",
-        description: "Your job preferences have been updated successfully.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save preferences. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSave = () => {
+    toast({
+      title: "Preferences Saved",
+      description: "Your job preferences have been updated successfully.",
+    });
   };
 
   return (
     <ProfileLayout 
       title="Job Preferences" 
-      description="Set your job search preferences and receive personalized recommendations"
+      description="Set your job search preferences and upload preference files"
     >
       <div className="space-y-6">
-        {/* Job Search Status */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle>Job Search Status</CardTitle>
-            <CardDescription>Control your visibility to recruiters and job opportunities</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Open to Work</h4>
-                <p className="text-sm text-gray-600">Let recruiters know you're actively seeking opportunities</p>
-              </div>
-              <Switch
-                checked={preferences.openToWork}
-                onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, openToWork: checked }))}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Job Alerts</h4>
-                <p className="text-sm text-gray-600">Receive email notifications for matching job opportunities</p>
-              </div>
-              <Switch
-                checked={preferences.jobAlerts}
-                onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, jobAlerts: checked }))}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Remote Work</h4>
-                <p className="text-sm text-gray-600">Include remote job opportunities in your matches</p>
-              </div>
-              <Switch
-                checked={preferences.remoteWork}
-                onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, remoteWork: checked }))}
-              />
-            </div>
-          </CardContent>
-        </Card>
+        {/* Import/Export Section */}
+        <JobPreferencesUpload />
 
         {/* Preferred Roles */}
         <Card className="border-0 shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Briefcase className="h-5 w-5 mr-2" />
-              Preferred Job Roles
+              Preferred Roles
             </CardTitle>
-            <CardDescription>Specify the types of positions you're interested in</CardDescription>
+            <CardDescription>What job titles are you interested in?</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
                 {preferences.preferredRoles.map((role, index) => (
-                  <Badge key={index} variant="secondary" className="relative group">
+                  <Badge key={index} variant="secondary" className="pr-2">
                     {role}
-                    <button
-                      onClick={() => removeRole(role)}
-                      className="ml-2 text-red-500 hover:text-red-700"
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-4 w-4 p-0 ml-2"
+                      onClick={() => removeItem('preferredRoles', role)}
                     >
                       <X className="h-3 w-3" />
-                    </button>
+                    </Button>
                   </Badge>
                 ))}
               </div>
               <div className="flex gap-2">
                 <Input
+                  placeholder="Add preferred role"
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value)}
-                  placeholder="Add a job role"
-                  onKeyPress={(e) => e.key === 'Enter' && addRole()}
+                  onKeyPress={(e) => e.key === 'Enter' && addItem('preferredRoles', newRole, setNewRole)}
                 />
-                <Button onClick={addRole} size="sm">
-                  <Plus className="h-4 w-4" />
+                <Button onClick={() => addItem('preferredRoles', newRole, setNewRole)}>
+                  Add
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Preferred Locations */}
+        {/* Locations */}
         <Card className="border-0 shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -182,122 +117,170 @@ const ProfilePreferences = () => {
           <CardContent>
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
-                {preferences.preferredLocations.map((location, index) => (
-                  <Badge key={index} variant="secondary" className="relative group">
+                {preferences.locations.map((location, index) => (
+                  <Badge key={index} variant="secondary" className="pr-2">
                     {location}
-                    <button
-                      onClick={() => removeLocation(location)}
-                      className="ml-2 text-red-500 hover:text-red-700"
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-4 w-4 p-0 ml-2"
+                      onClick={() => removeItem('locations', location)}
                     >
                       <X className="h-3 w-3" />
-                    </button>
+                    </Button>
                   </Badge>
                 ))}
               </div>
               <div className="flex gap-2">
                 <Input
+                  placeholder="Add preferred location"
                   value={newLocation}
                   onChange={(e) => setNewLocation(e.target.value)}
-                  placeholder="Add a location"
-                  onKeyPress={(e) => e.key === 'Enter' && addLocation()}
+                  onKeyPress={(e) => e.key === 'Enter' && addItem('locations', newLocation, setNewLocation)}
                 />
-                <Button onClick={addLocation} size="sm">
-                  <Plus className="h-4 w-4" />
+                <Button onClick={() => addItem('locations', newLocation, setNewLocation)}>
+                  Add
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Salary Expectations */}
+        {/* Salary Range */}
         <Card className="border-0 shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
               <DollarSign className="h-5 w-5 mr-2" />
               Salary Expectations
             </CardTitle>
-            <CardDescription>Set your expected salary range (USD)</CardDescription>
+            <CardDescription>What's your expected salary range?</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="px-4">
-                <Slider
-                  value={preferences.salaryRange}
-                  onValueChange={(value) => setPreferences(prev => ({ ...prev, salaryRange: value }))}
-                  max={300000}
-                  min={40000}
-                  step={5000}
-                  className="w-full"
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="salaryMin">Minimum Salary</Label>
+                <Input
+                  id="salaryMin"
+                  type="number"
+                  value={preferences.salaryMin}
+                  onChange={(e) => setPreferences(prev => ({ ...prev, salaryMin: parseInt(e.target.value) || 0 }))}
                 />
               </div>
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>${preferences.salaryRange[0].toLocaleString()}</span>
-                <span>${preferences.salaryRange[1].toLocaleString()}</span>
+              <div>
+                <Label htmlFor="salaryMax">Maximum Salary</Label>
+                <Input
+                  id="salaryMax"
+                  type="number"
+                  value={preferences.salaryMax}
+                  onChange={(e) => setPreferences(prev => ({ ...prev, salaryMax: parseInt(e.target.value) || 0 }))}
+                />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Additional Preferences */}
+        {/* Industries */}
         <Card className="border-0 shadow-lg">
           <CardHeader>
-            <CardTitle>Additional Preferences</CardTitle>
-            <CardDescription>Fine-tune your job search criteria</CardDescription>
+            <CardTitle className="flex items-center">
+              <Building className="h-5 w-5 mr-2" />
+              Preferred Industries
+            </CardTitle>
+            <CardDescription>Which industries interest you?</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">Experience Level</label>
-                <Select 
-                  value={preferences.experienceLevel} 
-                  onValueChange={(value) => setPreferences(prev => ({ ...prev, experienceLevel: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="entry">Entry Level</SelectItem>
-                    <SelectItem value="mid">Mid Level</SelectItem>
-                    <SelectItem value="senior">Senior Level</SelectItem>
-                    <SelectItem value="lead">Lead/Principal</SelectItem>
-                    <SelectItem value="executive">Executive</SelectItem>
-                  </SelectContent>
-                </Select>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {preferences.industries.map((industry, index) => (
+                  <Badge key={index} variant="secondary" className="pr-2">
+                    {industry}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-4 w-4 p-0 ml-2"
+                      onClick={() => removeItem('industries', industry)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
               </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Job Type</label>
-                <Select 
-                  value={preferences.jobTypes[0]} 
-                  onValueChange={(value) => setPreferences(prev => ({ ...prev, jobTypes: [value] }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="full-time">Full Time</SelectItem>
-                    <SelectItem value="part-time">Part Time</SelectItem>
-                    <SelectItem value="contract">Contract</SelectItem>
-                    <SelectItem value="freelance">Freelance</SelectItem>
-                    <SelectItem value="internship">Internship</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add preferred industry"
+                  value={newIndustry}
+                  onChange={(e) => setNewIndustry(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && addItem('industries', newIndustry, setNewIndustry)}
+                />
+                <Button onClick={() => addItem('industries', newIndustry, setNewIndustry)}>
+                  Add
+                </Button>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Benefits */}
+        <Card className="border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Clock className="h-5 w-5 mr-2" />
+              Desired Benefits
+            </CardTitle>
+            <CardDescription>What benefits are important to you?</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {preferences.benefits.map((benefit, index) => (
+                  <Badge key={index} variant="secondary" className="pr-2">
+                    {benefit}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-4 w-4 p-0 ml-2"
+                      onClick={() => removeItem('benefits', benefit)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add desired benefit"
+                  value={newBenefit}
+                  onChange={(e) => setNewBenefit(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && addItem('benefits', newBenefit, setNewBenefit)}
+                />
+                <Button onClick={() => addItem('benefits', newBenefit, setNewBenefit)}>
+                  Add
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Additional Notes */}
+        <Card className="border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Additional Notes</CardTitle>
+            <CardDescription>Any other preferences or requirements?</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Textarea
+              placeholder="Share any additional preferences, requirements, or notes about your job search..."
+              value={preferences.additionalNotes}
+              onChange={(e) => setPreferences(prev => ({ ...prev, additionalNotes: e.target.value }))}
+              className="min-h-[100px]"
+            />
           </CardContent>
         </Card>
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={isLoading} className="px-8">
-            {isLoading ? (
-              <>Saving...</>
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                Save Preferences
-              </>
-            )}
+          <Button onClick={handleSave} className="bg-gradient-to-r from-purple-600 to-blue-600">
+            Save Preferences
           </Button>
         </div>
       </div>

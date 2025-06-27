@@ -4,13 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { FileText, Download, Edit, Eye, Plus, Trash2, Star } from "lucide-react";
+import { FileText, Download, Edit, Eye, Plus, Trash2, Star, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ProfileLayout from "@/components/profile/ProfileLayout";
 import { Link } from 'react-router-dom';
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { Input } from "@/components/ui/input";
 
 const ProfileResume = () => {
   const { toast } = useToast();
+  const { uploadFile, uploading } = useFileUpload({
+    bucket: 'resumes',
+    maxSize: 10 * 1024 * 1024, // 10MB
+    allowedTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+  });
+  
+  const [showUploadForm, setShowUploadForm] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadTitle, setUploadTitle] = useState('');
   
   const [resumes] = useState([
     {
@@ -32,6 +43,62 @@ const ProfileResume = () => {
       status: "draft"
     }
   ]);
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      if (!uploadTitle) {
+        // Auto-generate title from filename
+        const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+        setUploadTitle(nameWithoutExt);
+      }
+    }
+  };
+
+  const handleUploadResume = async () => {
+    if (!selectedFile) {
+      toast({
+        title: "Error",
+        description: "Please select a resume file to upload.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!uploadTitle.trim()) {
+      toast({
+        title: "Error",
+        description: "Please provide a title for your resume.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const fileUrl = await uploadFile(selectedFile, `${Date.now()}-${selectedFile.name}`);
+      
+      toast({
+        title: "Resume Uploaded",
+        description: "Your resume has been uploaded successfully.",
+      });
+      
+      // Reset form
+      setSelectedFile(null);
+      setUploadTitle('');
+      setShowUploadForm(false);
+      
+      // Reset file input
+      const fileInput = document.getElementById('resume-file') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload resume. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleDownload = (resumeId: number) => {
     toast({
@@ -57,7 +124,7 @@ const ProfileResume = () => {
   return (
     <ProfileLayout 
       title="Resume Management" 
-      description="Create, edit, and manage your professional resumes"
+      description="Create, edit, upload and manage your professional resumes"
     >
       <div className="space-y-6">
         {/* Quick Actions */}
@@ -69,11 +136,70 @@ const ProfileResume = () => {
             <Plus className="h-4 w-4 mr-2" />
             Create New Resume
           </Link>
-          <Button variant="outline">
-            <FileText className="h-4 w-4 mr-2" />
+          <Button 
+            variant="outline" 
+            onClick={() => setShowUploadForm(!showUploadForm)}
+          >
+            <Upload className="h-4 w-4 mr-2" />
             Upload Resume
           </Button>
         </div>
+
+        {/* Upload Form */}
+        {showUploadForm && (
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Upload Resume</CardTitle>
+              <CardDescription>Upload an existing resume file</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Resume Title</label>
+                <Input
+                  placeholder="e.g., Software Engineer Resume"
+                  value={uploadTitle}
+                  onChange={(e) => setUploadTitle(e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium mb-2 block">Choose File</label>
+                <Input
+                  id="resume-file"
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileSelect}
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Supported formats: PDF, DOC, DOCX (Max 10MB)
+                </p>
+              </div>
+              
+              {selectedFile && (
+                <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
+                  <FileText className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium">{selectedFile.name}</span>
+                  <span className="text-xs text-gray-500">
+                    ({(selectedFile.size / 1024 / 1024).toFixed(1)} MB)
+                  </span>
+                </div>
+              )}
+              
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleUploadResume} 
+                  disabled={!selectedFile || uploading}
+                >
+                  {uploading ? 'Uploading...' : 'Upload Resume'}
+                </Button>
+                <Button variant="outline" onClick={() => setShowUploadForm(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Resume Analytics */}
         <Card className="border-0 shadow-lg">
