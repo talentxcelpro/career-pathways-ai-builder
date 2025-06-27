@@ -61,12 +61,12 @@ export const NotificationsList: React.FC<NotificationsListProps> = ({
     );
   }
 
-  if (notifications.length === 0) {
+  if (!notifications || notifications.length === 0) {
     return (
       <div className="text-center py-8">
         <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications</h3>
-        <p className="text-gray-600">No notifications to show.</p>
+        <p className="text-gray-600">You're all caught up! No new notifications to show.</p>
       </div>
     );
   }
@@ -85,7 +85,9 @@ export const NotificationsList: React.FC<NotificationsListProps> = ({
             {getNotificationIcon(notification.type)}
           </div>
           <Avatar className="w-10 h-10">
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarFallback>
+              {notification.type === 'system' ? 'S' : 'N'}
+            </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between">

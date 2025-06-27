@@ -13,11 +13,14 @@ import { NotificationsList } from "@/components/network/NotificationsList";
 const Notifications = () => {
   const queryClient = useQueryClient();
 
-  const { data: notifications, isLoading } = useQuery({
+  const { data: notifications = [], isLoading, error } = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      if (!user) {
+        console.log('No user found for notifications');
+        return [];
+      }
 
       const { data, error } = await supabase
         .from('notifications')
@@ -26,9 +29,14 @@ const Notifications = () => {
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (error) throw error;
-      return data;
-    }
+      if (error) {
+        console.error('Error fetching notifications:', error);
+        throw error;
+      }
+      
+      return data || [];
+    },
+    retry: 1
   });
 
   const markAsReadMutation = useMutation({
@@ -42,6 +50,10 @@ const Notifications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+    onError: (error) => {
+      console.error('Error marking notification as read:', error);
+      toast.error('Failed to mark notification as read');
     }
   });
 
@@ -61,10 +73,14 @@ const Notifications = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       toast.success('All notifications marked as read');
+    },
+    onError: (error) => {
+      console.error('Error marking all notifications as read:', error);
+      toast.error('Failed to mark all notifications as read');
     }
   });
 
-  const unreadCount = notifications?.filter(n => !n.is_read).length || 0;
+  const unreadCount = notifications.filter(n => !n.is_read).length;
 
   const filterNotifications = (filter: string) => {
     if (!notifications) return [];
@@ -76,10 +92,34 @@ const Notifications = () => {
         return notifications.filter(n => ['connection', 'follow'].includes(n.type));
       case 'interactions':
         return notifications.filter(n => ['like', 'comment', 'reaction', 'share'].includes(n.type));
+      case 'all':
       default:
         return notifications;
     }
   };
+
+  // Calculate week stats
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  const thisWeekCount = notifications.filter(n => 
+    new Date(n.created_at) > weekAgo
+  ).length;
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Card>
+            <CardContent className="p-12 text-center">
+              <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Error loading notifications</h3>
+              <p className="text-gray-600">Please try refreshing the page.</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -120,13 +160,7 @@ const Notifications = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">This Week</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {notifications?.filter(n => {
-                      const weekAgo = new Date();
-                      weekAgo.setDate(weekAgo.getDate() - 7);
-                      return new Date(n.created_at) > weekAgo;
-                    }).length || 0}
-                  </p>
+                  <p className="text-2xl font-bold text-green-600">{thisWeekCount}</p>
                 </div>
                 <Calendar className="h-8 w-8 text-green-600" />
               </div>
@@ -137,7 +171,7 @@ const Notifications = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-gray-900">{notifications?.length || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{notifications.length}</p>
                 </div>
                 <UserPlus className="h-8 w-8 text-gray-600" />
               </div>
