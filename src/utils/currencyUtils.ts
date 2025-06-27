@@ -3,11 +3,11 @@
 export const formatCurrency = (amount: number | null | undefined): string => {
   if (!amount) return "Not specified";
   
-  // Format for Indian currency system
-  if (amount >= 10000000) {
-    return `₹${(amount / 10000000).toFixed(1)} Cr`;
-  } else if (amount >= 100000) {
-    return `₹${(amount / 100000).toFixed(1)} L`;
+  // Format for Indian currency system using Thousand & Lacs
+  if (amount >= 100000) {
+    return `₹${(amount / 100000).toFixed(1)} Lacs`;
+  } else if (amount >= 1000) {
+    return `₹${(amount / 1000).toFixed(1)} Thousand`;
   } else {
     return `₹${amount.toLocaleString('en-IN')}`;
   }
@@ -21,11 +21,11 @@ export const formatSalaryRange = (min?: number, max?: number): string => {
 };
 
 export const formatCompactCurrency = (amount: number): string => {
-  if (amount >= 10000000) {
-    return `₹${(amount / 10000000).toFixed(1)}Cr`;
-  } else if (amount >= 100000) {
+  if (amount >= 100000) {
     return `₹${(amount / 100000).toFixed(0)}L`;
-  } else {
+  } else if (amount >= 1000) {
     return `₹${(amount / 1000).toFixed(0)}k`;
+  } else {
+    return `₹${amount}`;
   }
 };

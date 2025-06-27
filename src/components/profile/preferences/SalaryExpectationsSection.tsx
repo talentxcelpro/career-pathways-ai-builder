@@ -50,7 +50,7 @@ export const SalaryExpectationsSection = ({
           </div>
         </div>
         <div className="mt-2 text-xs text-gray-500">
-          <p>Typical ranges: Entry Level (₹3-8L), Mid Level (₹8-15L), Senior Level (₹15-30L+)</p>
+          <p>Typical ranges: Entry Level (₹3-8 Lacs), Mid Level (₹8-15 Lacs), Senior Level (₹15-30 Lacs+)</p>
         </div>
       </CardContent>
     </Card>
