@@ -19,8 +19,13 @@ const App = () => (
           <Navbar />
           <main className="flex-1">
             <Routes>
-              {navItems.map(({ to, page }) => (
-                <Route key={to} path={to} element={page} />
+              {navItems.map(({ to, page, exact }) => (
+                <Route 
+                  key={to} 
+                  path={to} 
+                  element={page} 
+                  {...(exact && { index: to === "/" })}
+                />
               ))}
             </Routes>
           </main>

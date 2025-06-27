@@ -37,13 +37,16 @@ import { companiesRoutes } from "./navigation/companiesRoutes";
 import { employerRoutes } from "./navigation/employerRoutes";
 
 export const navItems = [
-  // Core routes
+  // Home route - must be first and exact
   {
     title: "Home",
     to: "/",
     icon: <HomeIcon className="h-4 w-4" />,
     page: <Index />,
+    exact: true
   },
+  
+  // Core routes
   {
     title: "Dashboard",
     to: "/dashboard",
@@ -130,7 +133,7 @@ export const navItems = [
   // Auth routes
   ...authRoutes,
   
-  // Catch-all for 404
+  // Catch-all for 404 - MUST BE LAST
   {
     title: "Not Found",
     to: "*",
