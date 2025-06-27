@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,11 +8,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { PeopleSearch } from "@/components/network/PeopleSearch";
+import { useConversations } from "@/hooks/useConversations";
+import { useNavigate } from 'react-router-dom';
 
 const People = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState('all');
   const [industryFilter, setIndustryFilter] = useState('all');
+  const navigate = useNavigate();
+  const { findOrCreateConversation } = useConversations();
 
   const { data: profiles, isLoading } = useQuery({
     queryKey: ['profiles', searchTerm, locationFilter, industryFilter],
@@ -58,6 +63,22 @@ const People = () => {
     } catch (error) {
       toast.error('Failed to send connection request');
       console.error('Connection error:', error);
+    }
+  };
+
+  const handleMessage = async (profileId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please sign in to send messages');
+        return;
+      }
+
+      const conversation = await findOrCreateConversation([profileId]);
+      navigate(`/network/messages/${conversation.id}`);
+    } catch (error) {
+      toast.error('Failed to start conversation');
+      console.error('Message error:', error);
     }
   };
 
@@ -130,8 +151,11 @@ const People = () => {
               <Card key={profile.id} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="text-center space-y-4">
-                    {/* Profile Picture */}
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto flex items-center justify-center">
+                    {/* Profile Picture - Clickable */}
+                    <Link 
+                      to={`/network/people/${profile.id}`}
+                      className="block w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto flex items-center justify-center hover:scale-105 transition-transform"
+                    >
                       {profile.profile_picture_url ? (
                         <img 
                           src={profile.profile_picture_url} 
@@ -143,13 +167,18 @@ const People = () => {
                           {generateInitials(profile)}
                         </span>
                       )}
-                    </div>
+                    </Link>
 
-                    {/* Basic Info */}
+                    {/* Basic Info - Clickable */}
                     <div>
-                      <h3 className="font-semibold text-lg text-gray-900">
-                        {formatDisplayName(profile)}
-                      </h3>
+                      <Link 
+                        to={`/network/people/${profile.id}`}
+                        className="block hover:text-blue-600 transition-colors"
+                      >
+                        <h3 className="font-semibold text-lg text-gray-900">
+                          {formatDisplayName(profile)}
+                        </h3>
+                      </Link>
                       <p className="text-gray-600 text-sm">
                         {profile.title || 'Professional'}
                       </p>
@@ -202,7 +231,11 @@ const People = () => {
                         <UserPlus className="h-4 w-4 mr-1" />
                         Connect
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleMessage(profile.id)}
+                      >
                         <MessageCircle className="h-4 w-4 mr-1" />
                         Message
                       </Button>

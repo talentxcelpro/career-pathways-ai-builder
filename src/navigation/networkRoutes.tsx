@@ -19,6 +19,7 @@ import AIAssistant from "../pages/network/AIAssistant";
 import Notifications from "../pages/network/Notifications";
 import Suggestions from "../pages/network/Suggestions";
 import UserProfile from "../pages/network/UserProfile";
+import PublicUserProfile from "../pages/network/PublicUserProfile";
 
 export const networkRoutes = [
   {
@@ -36,6 +37,11 @@ export const networkRoutes = [
     title: "User Profile",
     to: "/network/people/:id",
     page: <UserProfile />,
+  },
+  {
+    title: "Public User Profile",
+    to: "/p/:id",
+    page: <PublicUserProfile />,
   },
   {
     title: "Network Posts",

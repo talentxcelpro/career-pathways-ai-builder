@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,6 +9,8 @@ import { ArrowLeft, MapPin, Building, Mail, Phone, Globe, UserPlus, MessageCircl
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { PostCard } from "@/components/network/PostCard";
+import { useConversations } from "@/hooks/useConversations";
+import { toast } from "sonner";
 
 interface UserProfileProps {
   profileIdOverride?: string;
@@ -17,6 +19,8 @@ interface UserProfileProps {
 const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride }) => {
   const { id: paramId } = useParams<{ id: string }>();
   const id = profileIdOverride || paramId;
+  const navigate = useNavigate();
+  const { findOrCreateConversation } = useConversations();
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ['user-profile', id],
@@ -59,6 +63,50 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride }) => {
     },
     enabled: !!id
   });
+
+  const handleConnect = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please sign in to connect with people');
+        return;
+      }
+
+      if (!id) return;
+
+      const { error } = await supabase
+        .from('connections')
+        .insert({
+          requester_id: user.id,
+          recipient_id: id,
+          status: 'pending'
+        });
+
+      if (error) throw error;
+      toast.success('Connection request sent!');
+    } catch (error) {
+      toast.error('Failed to send connection request');
+      console.error('Connection error:', error);
+    }
+  };
+
+  const handleMessage = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please sign in to send messages');
+        return;
+      }
+
+      if (!id) return;
+
+      const conversation = await findOrCreateConversation([id]);
+      navigate(`/network/messages/${conversation.id}`);
+    } catch (error) {
+      toast.error('Failed to start conversation');
+      console.error('Message error:', error);
+    }
+  };
 
   const formatDisplayName = (profile: any) => {
     if (profile?.full_name && profile.full_name.trim()) {
@@ -130,11 +178,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride }) => {
             Back to People
           </Link>
           <div className="flex space-x-3">
-            <Button>
+            <Button onClick={handleConnect}>
               <UserPlus className="h-4 w-4 mr-2" />
               Connect
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleMessage}>
               <MessageCircle className="h-4 w-4 mr-2" />
               Message
             </Button>
