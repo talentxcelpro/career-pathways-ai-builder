@@ -12,14 +12,10 @@ export const useRealtimeConnections = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      // Get accepted connections with profile data
+      // Get accepted connections
       const { data: connectionsData, error } = await supabase
         .from('connections')
-        .select(`
-          *,
-          requester:requester_id(id, full_name, title, profile_picture_url),
-          recipient:recipient_id(id, full_name, title, profile_picture_url)
-        `)
+        .select('*')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
         .eq('status', 'accepted')
         .order('connected_at', { ascending: false })
@@ -27,11 +23,36 @@ export const useRealtimeConnections = () => {
 
       if (error) throw error;
 
-      // Transform data to show the other person in the connection
-      return connectionsData?.map(conn => ({
-        ...conn,
-        otherUser: conn.requester_id === user.id ? conn.recipient : conn.requester
-      })) || [];
+      if (!connectionsData || connectionsData.length === 0) return [];
+
+      // Get the other user IDs from connections
+      const otherUserIds = connectionsData.map(conn => 
+        conn.requester_id === user.id ? conn.recipient_id : conn.requester_id
+      ).filter(Boolean);
+
+      // Get profiles for these users
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, title, profile_picture_url')
+        .in('id', otherUserIds);
+
+      const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+      // Transform data to include the other user's profile
+      return connectionsData.map(conn => {
+        const otherUserId = conn.requester_id === user.id ? conn.recipient_id : conn.requester_id;
+        const otherUser = profilesMap.get(otherUserId);
+        
+        return {
+          ...conn,
+          otherUser: otherUser || {
+            id: otherUserId,
+            full_name: 'Unknown User',
+            title: 'Professional',
+            profile_picture_url: null
+          }
+        };
+      });
     }
   });
 
