@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -141,10 +140,6 @@ const Tools = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">AI Career Tools</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Supercharge your career with our suite of AI-powered tools designed to optimize 
-            your job search and accelerate your professional growth.
-          </p>
         </div>
 
         {/* Quick Actions */}
