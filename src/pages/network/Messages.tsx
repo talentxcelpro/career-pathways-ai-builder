@@ -99,48 +99,85 @@ const Messages = () => {
         {/* Main Content */}
         <Card>
           <CardHeader>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList>
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="unread">
-                  Unread
-                  <Badge variant="secondary" className="ml-2">3</Badge>
-                </TabsTrigger>
-                <TabsTrigger value="groups">Groups</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <CardTitle>Conversations</CardTitle>
           </CardHeader>
           
           <CardContent className="p-0">
-            <TabsContent value={activeTab} className="mt-0">
-              {isLoading ? (
-                <div className="p-8 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="text-gray-600 mt-4">Loading conversations...</p>
-                </div>
-              ) : filteredConversations && filteredConversations.length > 0 ? (
-                <ConversationsList
-                  conversations={filteredConversations}
-                  searchTerm={searchTerm}
-                />
-              ) : (
-                <div className="p-12 text-center">
-                  <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    No conversations yet
-                  </h3>
-                  <p className="text-gray-600 mb-6">
-                    Start connecting with your professional network
-                  </p>
-                  <Link to="/network/messages/new">
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Start a Conversation
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </TabsContent>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <div className="px-6 pt-4">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="all">All</TabsTrigger>
+                  <TabsTrigger value="unread">
+                    Unread
+                    <Badge variant="secondary" className="ml-2">3</Badge>
+                  </TabsTrigger>
+                  <TabsTrigger value="groups">Groups</TabsTrigger>
+                </TabsList>
+              </div>
+              
+              <TabsContent value="all" className="mt-0">
+                {isLoading ? (
+                  <div className="p-8 text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="text-gray-600 mt-4">Loading conversations...</p>
+                  </div>
+                ) : filteredConversations && filteredConversations.length > 0 ? (
+                  <ConversationsList
+                    conversations={filteredConversations}
+                    searchTerm={searchTerm}
+                  />
+                ) : (
+                  <div className="p-12 text-center">
+                    <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      No conversations yet
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      Start connecting with your professional network
+                    </p>
+                    <Link to="/network/messages/new">
+                      <Button>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Start a Conversation
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="unread" className="mt-0">
+                {isLoading ? (
+                  <div className="p-8 text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="text-gray-600 mt-4">Loading conversations...</p>
+                  </div>
+                ) : (
+                  <div className="p-12 text-center">
+                    <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      No unread messages
+                    </h3>
+                    <p className="text-gray-600">
+                      You're all caught up!
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="groups" className="mt-0">
+                {isLoading ? (
+                  <div className="p-8 text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="text-gray-600 mt-4">Loading conversations...</p>
+                  </div>
+                ) : (
+                  <ConversationsList
+                    conversations={filteredConversations?.filter(conv => conv.is_group) || []}
+                    searchTerm={searchTerm}
+                  />
+                )}
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
 
