@@ -30,7 +30,9 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     if (!file) return;
 
     try {
-      const url = await uploadFile(file, userId, 'avatar');
+      // Fix: Remove the incorrect bucket override parameter
+      // The hook is already configured for 'avatars' bucket
+      const url = await uploadFile(file, `${userId}/avatar.${file.name.split('.').pop()}`);
       if (url) {
         onImageChange(url);
       }
@@ -63,7 +65,7 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
           </AvatarFallback>
         </Avatar>
         
-        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={triggerFileSelect}>
           <Camera className="h-8 w-8 text-white" />
         </div>
       </div>
