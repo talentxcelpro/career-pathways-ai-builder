@@ -46,7 +46,7 @@ export const PeopleSearch: React.FC<PeopleSearchProps> = ({
               <SelectValue placeholder="Filter by location" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Locations</SelectItem>
+              <SelectItem value="all">All Locations</SelectItem>
               <SelectItem value="New York">New York</SelectItem>
               <SelectItem value="San Francisco">San Francisco</SelectItem>
               <SelectItem value="London">London</SelectItem>
@@ -58,7 +58,7 @@ export const PeopleSearch: React.FC<PeopleSearchProps> = ({
               <SelectValue placeholder="Filter by industry" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Industries</SelectItem>
+              <SelectItem value="all">All Industries</SelectItem>
               <SelectItem value="Technology">Technology</SelectItem>
               <SelectItem value="Finance">Finance</SelectItem>
               <SelectItem value="Healthcare">Healthcare</SelectItem>

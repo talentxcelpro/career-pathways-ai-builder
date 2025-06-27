@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,8 +10,8 @@ import { PeopleSearch } from "@/components/network/PeopleSearch";
 
 const People = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [locationFilter, setLocationFilter] = useState('');
-  const [industryFilter, setIndustryFilter] = useState('');
+  const [locationFilter, setLocationFilter] = useState('all');
+  const [industryFilter, setIndustryFilter] = useState('all');
 
   const { data: profiles, isLoading } = useQuery({
     queryKey: ['profiles', searchTerm, locationFilter, industryFilter],
@@ -25,10 +24,10 @@ const People = () => {
       if (searchTerm) {
         query = query.or(`full_name.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%,skills.cs.{${searchTerm}}`);
       }
-      if (locationFilter) {
+      if (locationFilter && locationFilter !== 'all') {
         query = query.ilike('location', `%${locationFilter}%`);
       }
-      if (industryFilter) {
+      if (industryFilter && industryFilter !== 'all') {
         query = query.eq('industry', industryFilter);
       }
 
