@@ -66,7 +66,7 @@ export const navItems = [
   ...careerMapRoutes,
   ...marketplaceRoutes,
   
-  // Employer routes
+  // Employer routes - comprehensive implementation
   ...employerRoutes,
   
   // Other main routes
