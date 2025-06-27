@@ -13,6 +13,7 @@ import { CommentsSection } from "@/components/posts/CommentsSection";
 import { MediaUpload } from "@/components/posts/MediaUpload";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 import { AIPostAssistant } from "@/components/network/AIPostAssistant";
+import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
 import { Link } from 'react-router-dom';
@@ -28,13 +29,19 @@ const Posts = () => {
   const { connections, stats, isLoading: connectionsLoading } = useRealtimeConnections();
   const { recentActivity, isLoading: activityLoading } = useRealtimeActivity();
 
+  // Fetch posts with real-time counts
   const { data: posts, isLoading: postsLoading } = useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
-      // First get posts
+      // First get posts with fresh counts
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select('*')
+        .select(`
+          *,
+          post_likes!left(id),
+          post_comments!left(id),
+          post_shares!left(id)
+        `)
         .eq('is_public', true)
         .order('created_at', { ascending: false })
         .limit(20);
@@ -55,10 +62,14 @@ const Posts = () => {
       // Create a map of profiles by ID for easy lookup
       const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]));
 
-      // Combine posts with their profiles
+      // Combine posts with their profiles and accurate counts
       const postsWithProfiles = postsData.map(post => ({
         ...post,
-        profiles: profilesMap.get(post.author_id) || null
+        profiles: profilesMap.get(post.author_id) || null,
+        // Use actual counts from related tables
+        likes_count: post.post_likes?.length || 0,
+        comments_count: post.post_comments?.length || 0,
+        shares_count: post.post_shares?.length || 0
       }));
 
       return postsWithProfiles;
@@ -353,19 +364,26 @@ const Posts = () => {
                 posts?.map((post) => (
                   <Card key={post.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-6">
-                      {/* Post Header */}
+                      {/* Post Header - Make user info clickable */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-start space-x-3">
-                          <Avatar>
-                            <AvatarImage src={post.profiles?.profile_picture_url} />
-                            <AvatarFallback>
-                              {generateInitials(post.profiles)}
-                            </AvatarFallback>
-                          </Avatar>
+                          <Link to={`/network/people/${post.author_id}`} className="block hover:scale-105 transition-transform">
+                            <Avatar className="cursor-pointer">
+                              <AvatarImage src={post.profiles?.profile_picture_url} />
+                              <AvatarFallback>
+                                {generateInitials(post.profiles)}
+                              </AvatarFallback>
+                            </Avatar>
+                          </Link>
                           <div>
-                            <h3 className="font-semibold text-gray-900">
-                              {formatDisplayName(post.profiles)}
-                            </h3>
+                            <Link 
+                              to={`/network/people/${post.author_id}`} 
+                              className="hover:text-blue-600 transition-colors cursor-pointer"
+                            >
+                              <h3 className="font-semibold text-gray-900">
+                                {formatDisplayName(post.profiles)}
+                              </h3>
+                            </Link>
                             <p className="text-sm text-gray-600">
                               {post.profiles?.title || 'Professional'}
                             </p>
@@ -464,6 +482,9 @@ const Posts = () => {
 
           {/* Right Sidebar - Network Activity */}
           <div className="lg:col-span-3 space-y-6">
+            {/* Connection Requests */}
+            <ConnectionRequests />
+
             {/* Network Stats */}
             <Card>
               <CardHeader>
@@ -537,16 +558,23 @@ const Posts = () => {
                   ) : connections && connections.length > 0 ? (
                     connections.slice(0, 3).map((connection, index) => (
                       <div key={connection.id} className="flex items-center space-x-3">
-                        <Avatar className="w-10 h-10">
-                          <AvatarImage src={connection.otherUser?.profile_picture_url} />
-                          <AvatarFallback>
-                            {generateInitials(connection.otherUser)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <Link to={`/network/people/${connection.otherUser?.id}`} className="block hover:scale-105 transition-transform">
+                          <Avatar className="w-10 h-10 cursor-pointer">
+                            <AvatarImage src={connection.otherUser?.profile_picture_url} />
+                            <AvatarFallback>
+                              {generateInitials(connection.otherUser)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </Link>
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900 text-sm">
-                            {formatDisplayName(connection.otherUser)}
-                          </p>
+                          <Link 
+                            to={`/network/people/${connection.otherUser?.id}`}
+                            className="hover:text-blue-600 transition-colors"
+                          >
+                            <p className="font-medium text-gray-900 text-sm cursor-pointer">
+                              {formatDisplayName(connection.otherUser)}
+                            </p>
+                          </Link>
                           <p className="text-xs text-gray-500">
                             {connection.otherUser?.title || 'Professional'}
                           </p>

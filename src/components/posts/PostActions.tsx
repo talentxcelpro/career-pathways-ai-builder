@@ -23,6 +23,38 @@ export const PostActions: React.FC<PostActionsProps> = ({
 }) => {
   const queryClient = useQueryClient();
 
+  // Get real-time counts
+  const { data: postCounts } = useQuery({
+    queryKey: ['postCounts', postId],
+    queryFn: async () => {
+      const [likesResponse, commentsResponse, sharesResponse] = await Promise.all([
+        supabase
+          .from('post_likes')
+          .select('id', { count: 'exact', head: true })
+          .eq('post_id', postId),
+        supabase
+          .from('post_comments')
+          .select('id', { count: 'exact', head: true })
+          .eq('post_id', postId),
+        supabase
+          .from('post_shares')
+          .select('id', { count: 'exact', head: true })
+          .eq('post_id', postId)
+      ]);
+
+      return {
+        likes: likesResponse.count || 0,
+        comments: commentsResponse.count || 0,
+        shares: sharesResponse.count || 0
+      };
+    },
+    initialData: {
+      likes: initialLikes,
+      comments: initialComments,
+      shares: initialShares
+    }
+  });
+
   // Check if user has liked this post
   const { data: userLike } = useQuery({
     queryKey: ['postLike', postId],
@@ -30,7 +62,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('post_likes')
         .select('id')
         .eq('post_id', postId)
@@ -50,14 +82,14 @@ export const PostActions: React.FC<PostActionsProps> = ({
 
       if (userLike) {
         // Unlike
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('post_likes')
           .delete()
           .eq('id', userLike.id);
         if (error) throw error;
       } else {
         // Like
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('post_likes')
           .insert({
             post_id: postId,
@@ -68,6 +100,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['postLike', postId] });
+      queryClient.invalidateQueries({ queryKey: ['postCounts', postId] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
     },
     onError: (error) => {
@@ -82,7 +115,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('post_shares')
         .insert({
           post_id: postId,
@@ -92,6 +125,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['postCounts', postId] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       toast.success('Post shared!');
     },
@@ -120,7 +154,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
           disabled={likeMutation.isPending}
         >
           <Heart className={`h-4 w-4 mr-2 ${userLike ? 'fill-current' : ''}`} />
-          {initialLikes}
+          {postCounts?.likes || 0}
         </Button>
         <Button 
           variant="ghost" 
@@ -129,7 +163,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
           onClick={onCommentClick}
         >
           <MessageCircle className="h-4 w-4 mr-2" />
-          {initialComments}
+          {postCounts?.comments || 0}
         </Button>
         <Button 
           variant="ghost" 
@@ -139,7 +173,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
           disabled={shareMutation.isPending}
         >
           <Share2 className="h-4 w-4 mr-2" />
-          {initialShares}
+          {postCounts?.shares || 0}
         </Button>
       </div>
     </div>
