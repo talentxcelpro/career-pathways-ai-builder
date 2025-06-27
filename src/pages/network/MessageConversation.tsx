@@ -15,8 +15,18 @@ const MessageConversation = () => {
   const { id } = useParams<{ id: string }>();
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+
+  // Get current user ID
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    };
+    getCurrentUser();
+  }, []);
 
   const { data: conversation } = useQuery({
     queryKey: ['conversation', id],
@@ -239,8 +249,7 @@ const MessageConversation = () => {
               ) : (
                 <div className="space-y-4">
                   {messages?.map((message: any) => {
-                    const { data: { user } } = supabase.auth.getUser();
-                    const isOwn = message.sender_id === user?.id;
+                    const isOwn = message.sender_id === currentUserId;
                     return (
                       <div
                         key={message.id}
