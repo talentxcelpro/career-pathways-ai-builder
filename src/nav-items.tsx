@@ -1,3 +1,4 @@
+
 import { HomeIcon, User, Briefcase, GraduationCap, Users, Building2, Wrench, BrainCircuit, MapPin, School, Building } from "lucide-react";
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
@@ -12,6 +13,14 @@ import CareerMap from "./pages/CareerMap";
 import Marketplace from "./pages/Marketplace";
 import Colleges from "./pages/Colleges";
 import Companies from "./pages/Companies";
+
+// Import new pages
+import About from "./pages/About";
+import Blog from "./pages/Blog";
+import Help from "./pages/Help";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
+import Contact from "./pages/Contact";
 
 // Import route modules
 import { authRoutes } from "./navigation/authRoutes";
@@ -85,6 +94,38 @@ export const navItems = [
     page: <Profile />,
   },
   ...profileRoutes,
+  
+  // Footer pages
+  {
+    title: "About",
+    to: "/about",
+    page: <About />,
+  },
+  {
+    title: "Blog",
+    to: "/blog",
+    page: <Blog />,
+  },
+  {
+    title: "Help",
+    to: "/help",
+    page: <Help />,
+  },
+  {
+    title: "Privacy Policy",
+    to: "/privacy-policy",
+    page: <PrivacyPolicy />,
+  },
+  {
+    title: "Terms",
+    to: "/terms",
+    page: <Terms />,
+  },
+  {
+    title: "Contact",
+    to: "/contact",
+    page: <Contact />,
+  },
   
   // Auth routes
   ...authRoutes,
