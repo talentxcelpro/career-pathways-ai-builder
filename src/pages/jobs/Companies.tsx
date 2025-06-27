@@ -1,19 +1,20 @@
-
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Building, MapPin, Users, Briefcase, Star, Search } from 'lucide-react';
+import { Loader2, Building, MapPin, Users, Briefcase, Star, Search, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const Companies = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [industryFilter, setIndustryFilter] = useState('all');
   const [sizeFilter, setSizeFilter] = useState('all');
+  const queryClient = useQueryClient();
 
   const { data: companies, isLoading } = useQuery({
     queryKey: ['companies', searchTerm, industryFilter, sizeFilter],
@@ -22,7 +23,11 @@ const Companies = () => {
         .from('companies')
         .select(`
           *,
-          jobs (count)
+          jobs (count),
+          company_follows!left (
+            id,
+            user_id
+          )
         `);
 
       if (searchTerm) {
@@ -60,6 +65,48 @@ const Companies = () => {
       return uniqueIndustries.filter(Boolean);
     }
   });
+
+  const followMutation = useMutation({
+    mutationFn: async ({ companyId, isFollowing }: { companyId: string; isFollowing: boolean }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('You must be logged in to follow companies');
+      }
+
+      if (isFollowing) {
+        // Unfollow
+        const { error } = await supabase
+          .from('company_follows')
+          .delete()
+          .eq('company_id', companyId)
+          .eq('user_id', user.id);
+        
+        if (error) throw error;
+      } else {
+        // Follow
+        const { error } = await supabase
+          .from('company_follows')
+          .insert({
+            company_id: companyId,
+            user_id: user.id
+          });
+        
+        if (error) throw error;
+      }
+    },
+    onSuccess: (_, { isFollowing }) => {
+      queryClient.invalidateQueries({ queryKey: ['companies'] });
+      toast.success(isFollowing ? 'Unfollowed company' : 'Following company');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to update follow status');
+    }
+  });
+
+  const handleFollowToggle = (companyId: string, isFollowing: boolean) => {
+    followMutation.mutate({ companyId, isFollowing });
+  };
 
   if (isLoading) {
     return (
@@ -152,108 +199,124 @@ const Companies = () => {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {companies.map((company: any) => (
-            <Card key={company.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-4">
-                <div className="flex items-start gap-4">
-                  {company.logo_url ? (
-                    <img
-                      src={company.logo_url}
-                      alt={company.name}
-                      className="w-16 h-16 rounded-lg object-cover"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <Building className="h-8 w-8 text-gray-400" />
-                    </div>
-                  )}
-                  
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg line-clamp-2">
-                      {company.name}
-                    </CardTitle>
-                    <CardDescription className="flex items-center gap-1 mt-1">
-                      {company.industry && (
-                        <>
-                          <Badge variant="secondary" className="text-xs">
-                            {company.industry}
+          {companies.map((company: any) => {
+            const isFollowing = company.company_follows && company.company_follows.length > 0;
+            
+            return (
+              <Card key={company.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-4">
+                  <div className="flex items-start gap-4">
+                    {company.logo_url ? (
+                      <img
+                        src={company.logo_url}
+                        alt={company.name}
+                        className="w-16 h-16 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <Building className="h-8 w-8 text-gray-400" />
+                      </div>
+                    )}
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between">
+                        <CardTitle className="text-lg line-clamp-2">
+                          {company.name}
+                        </CardTitle>
+                        <Button
+                          variant={isFollowing ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleFollowToggle(company.id, isFollowing)}
+                          disabled={followMutation.isPending}
+                          className="ml-2 flex items-center gap-1"
+                        >
+                          <Heart className={`h-4 w-4 ${isFollowing ? 'fill-current' : ''}`} />
+                          {isFollowing ? 'Following' : 'Follow'}
+                        </Button>
+                      </div>
+                      <CardDescription className="flex items-center gap-1 mt-1">
+                        {company.industry && (
+                          <>
+                            <Badge variant="secondary" className="text-xs">
+                              {company.industry}
+                            </Badge>
+                          </>
+                        )}
+                        {company.is_verified && (
+                          <Badge variant="default" className="text-xs">
+                            Verified
                           </Badge>
-                        </>
-                      )}
-                      {company.is_verified && (
-                        <Badge variant="default" className="text-xs">
-                          Verified
-                        </Badge>
-                      )}
-                    </CardDescription>
+                        )}
+                      </CardDescription>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
+                </CardHeader>
 
-              <CardContent className="space-y-4">
-                {company.description && (
-                  <p className="text-sm text-gray-600 line-clamp-3">
-                    {company.description}
-                  </p>
-                )}
+                <CardContent className="space-y-4">
+                  {company.description && (
+                    <p className="text-sm text-gray-600 line-clamp-3">
+                      {company.description}
+                    </p>
+                  )}
 
-                <div className="space-y-2">
-                  {company.location && (
+                  <div className="space-y-2">
+                    {company.location && (
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <MapPin className="h-4 w-4" />
+                        {company.location}
+                      </div>
+                    )}
+                    
+                    {company.employee_count_range && (
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Users className="h-4 w-4" />
+                        {company.employee_count_range} employees
+                      </div>
+                    )}
+
                     <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <MapPin className="h-4 w-4" />
-                      {company.location}
+                      <Briefcase className="h-4 w-4" />
+                      {company.jobs?.[0]?.count || 0} open positions
                     </div>
-                  )}
-                  
-                  {company.employee_count_range && (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Users className="h-4 w-4" />
-                      {company.employee_count_range} employees
-                    </div>
-                  )}
 
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Briefcase className="h-4 w-4" />
-                    {company.jobs?.[0]?.count || 0} open positions
+                    {company.founded_year && (
+                      <div className="text-sm text-gray-600">
+                        Founded in {company.founded_year}
+                      </div>
+                    )}
                   </div>
 
-                  {company.founded_year && (
-                    <div className="text-sm text-gray-600">
-                      Founded in {company.founded_year}
+                  {company.tech_stack && company.tech_stack.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium mb-2">Tech Stack:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {company.tech_stack.slice(0, 4).map((tech: string, index: number) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {tech}
+                          </Badge>
+                        ))}
+                        {company.tech_stack.length > 4 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{company.tech_stack.length - 4} more
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   )}
-                </div>
 
-                {company.tech_stack && company.tech_stack.length > 0 && (
-                  <div>
-                    <p className="text-sm font-medium mb-2">Tech Stack:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {company.tech_stack.slice(0, 4).map((tech: string, index: number) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {tech}
-                        </Badge>
-                      ))}
-                      {company.tech_stack.length > 4 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{company.tech_stack.length - 4} more
-                        </Badge>
-                      )}
-                    </div>
+                  <div className="flex gap-2 pt-2">
+                    <Button asChild variant="outline" size="sm" className="flex-1">
+                      <Link to={`/companies/${company.id}`}>View Company</Link>
+                    </Button>
+                    
+                    <Button asChild size="sm" className="flex-1">
+                      <Link to={`/jobs?company=${company.id}`}>View Jobs</Link>
+                    </Button>
                   </div>
-                )}
-
-                <div className="flex gap-2 pt-2">
-                  <Button asChild variant="outline" size="sm" className="flex-1">
-                    <Link to={`/companies/${company.id}`}>View Company</Link>
-                  </Button>
-                  
-                  <Button asChild size="sm" className="flex-1">
-                    <Link to={`/jobs?company=${company.id}`}>View Jobs</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
