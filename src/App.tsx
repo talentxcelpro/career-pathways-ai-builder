@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
-import { navItems } from "./nav-items";
+import { navItems, NavItem } from "./nav-items";
 import { Navbar } from "./components/navigation/Navbar";
 import { Footer } from "./components/layout/Footer";
 
@@ -19,12 +19,12 @@ const App = () => (
           <Navbar />
           <main className="flex-1">
             <Routes>
-              {navItems.map(({ to, page, exact }) => (
+              {navItems.map((item: NavItem) => (
                 <Route 
-                  key={to} 
-                  path={to} 
-                  element={page} 
-                  {...(exact && { index: to === "/" })}
+                  key={item.to} 
+                  path={item.to} 
+                  element={item.page} 
+                  {...(item.exact && { index: item.to === "/" })}
                 />
               ))}
             </Routes>

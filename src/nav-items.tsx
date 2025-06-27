@@ -36,7 +36,16 @@ import { collegesRoutes } from "./navigation/collegesRoutes";
 import { companiesRoutes } from "./navigation/companiesRoutes";
 import { employerRoutes } from "./navigation/employerRoutes";
 
-export const navItems = [
+// Define the interface for navigation items
+export interface NavItem {
+  title: string;
+  to: string;
+  icon?: React.ReactElement;
+  page: React.ReactElement;
+  exact?: boolean;
+}
+
+export const navItems: NavItem[] = [
   // Home route - must be first and exact
   {
     title: "Home",
