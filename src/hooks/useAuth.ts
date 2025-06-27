@@ -279,10 +279,13 @@ export const useAuth = () => {
     if (!user) return { error: new Error('No user found') };
 
     try {
+      // Map frontend roles to database roles
+      const databaseRole = selectedRole === 'job_seeker' ? 'candidate' : selectedRole;
+      
       const { error } = await supabase.rpc('complete_onboarding', {
         user_uuid: user.id,
         user_full_name: fullName,
-        selected_role: selectedRole,
+        selected_role: databaseRole,
         user_preferences: preferences || {}
       });
 

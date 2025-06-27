@@ -135,7 +135,7 @@ export const PreferencesSetup: React.FC<PreferencesSetupProps> = ({
 
   const getPreferencesContent = () => {
     switch (userRole) {
-      case 'candidate':
+      case 'job_seeker':
         return getCandidatePreferences();
       case 'employer':
         return getEmployerPreferences();
