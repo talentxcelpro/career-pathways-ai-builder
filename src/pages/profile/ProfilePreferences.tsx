@@ -15,14 +15,14 @@ const ProfilePreferences = () => {
   const { toast } = useToast();
   
   const [preferences, setPreferences] = useState({
-    preferredRoles: ["Software Engineer", "Full Stack Developer"],
-    locations: ["Remote", "San Francisco", "New York"],
+    preferredRoles: ["Software Engineer", "Full Stack Developer"] as string[],
+    locations: ["Remote", "San Francisco", "New York"] as string[],
     salaryMin: 80000,
     salaryMax: 150000,
     workType: "Remote",
-    industries: ["Technology", "Fintech"],
-    companySize: ["Startup", "Medium"],
-    benefits: ["Health Insurance", "401k", "Flexible Hours"],
+    industries: ["Technology", "Fintech"] as string[],
+    companySize: ["Startup", "Medium"] as string[],
+    benefits: ["Health Insurance", "401k", "Flexible Hours"] as string[],
     additionalNotes: "Looking for a role with growth opportunities and modern tech stack."
   });
 
@@ -32,20 +32,28 @@ const ProfilePreferences = () => {
   const [newBenefit, setNewBenefit] = useState("");
 
   const addItem = (field: keyof typeof preferences, value: string, setter: (val: string) => void) => {
-    if (value.trim() && !preferences[field].includes(value.trim())) {
-      setPreferences(prev => ({
-        ...prev,
-        [field]: [...prev[field], value.trim()]
-      }));
-      setter("");
+    if (value.trim()) {
+      const currentValue = preferences[field];
+      // Type guard to ensure we're working with arrays
+      if (Array.isArray(currentValue) && !currentValue.includes(value.trim())) {
+        setPreferences(prev => ({
+          ...prev,
+          [field]: [...currentValue, value.trim()]
+        }));
+        setter("");
+      }
     }
   };
 
   const removeItem = (field: keyof typeof preferences, item: string) => {
-    setPreferences(prev => ({
-      ...prev,
-      [field]: prev[field].filter(i => i !== item)
-    }));
+    const currentValue = preferences[field];
+    // Type guard to ensure we're working with arrays
+    if (Array.isArray(currentValue)) {
+      setPreferences(prev => ({
+        ...prev,
+        [field]: currentValue.filter(i => i !== item)
+      }));
+    }
   };
 
   const handleSave = () => {
