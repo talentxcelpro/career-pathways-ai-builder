@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { AIPostAssistant } from "@/components/network/AIPostAssistant";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
+import FloatingMessenger from "@/components/network/FloatingMessenger";
 import { Link } from 'react-router-dom';
 
 const Posts = () => {
@@ -653,6 +655,9 @@ const Posts = () => {
           </div>
         </div>
       </div>
+      
+      {/* Floating Messenger */}
+      <FloatingMessenger />
     </div>
   );
 };
