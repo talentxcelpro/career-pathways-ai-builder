@@ -35,7 +35,7 @@ export const CoverLetterFileUpload = () => {
     }
 
     try {
-      const fileUrl = await uploadFile(selectedFile, `${Date.now()}-${selectedFile.name}`);
+      const fileUrl = await uploadFile(selectedFile);
       
       toast({
         title: "Cover Letter Uploaded",
@@ -47,6 +47,7 @@ export const CoverLetterFileUpload = () => {
       const fileInput = document.getElementById('cover-letter-file') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
     } catch (error) {
+      console.error('Cover letter upload failed:', error);
       toast({
         title: "Upload Failed",
         description: "Failed to upload cover letter. Please try again.",

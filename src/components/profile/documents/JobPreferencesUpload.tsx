@@ -35,7 +35,7 @@ export const JobPreferencesUpload = () => {
     }
 
     try {
-      const fileUrl = await uploadFile(selectedFile, `job-preferences/${Date.now()}`);
+      const fileUrl = await uploadFile(selectedFile);
       
       toast({
         title: "Preferences Uploaded",
@@ -47,6 +47,7 @@ export const JobPreferencesUpload = () => {
       const fileInput = document.getElementById('preferences-file') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
     } catch (error) {
+      console.error('Preferences upload failed:', error);
       toast({
         title: "Upload Failed",
         description: "Failed to upload preferences file. Please try again.",
@@ -119,7 +120,7 @@ export const JobPreferencesUpload = () => {
               className="flex-1"
             >
               <Upload className="h-4 w-4 mr-2" />
-              {uploading ? 'Uploading...' : 'Upload Preferences'}
+              {uploading ? 'Uploading..' : 'Upload Preferences'}
             </Button>
             <Button 
               variant="outline" 

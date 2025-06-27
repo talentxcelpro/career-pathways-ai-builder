@@ -21,7 +21,7 @@ export function useFileUpload(options?: UseFileUploadOptions) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const uploadFile = async (file: File, pathOrUserId?: string, bucketOverride?: string): Promise<string> => {
+  const uploadFile = async (file: File, customPath?: string, bucketOverride?: string): Promise<string> => {
     if (!file) throw new Error('No file provided');
 
     const bucket = bucketOverride || config.bucket;
@@ -46,24 +46,40 @@ export function useFileUpload(options?: UseFileUploadOptions) {
       const fileExt = file.name.split('.').pop();
       let fileName: string;
       
-      // Handle different path patterns for different buckets
-      if (bucket === 'avatars') {
-        fileName = pathOrUserId ? `${pathOrUserId}/avatar.${fileExt}` : `${user.id}/avatar.${fileExt}`;
-      } else if (bucket === 'resumes') {
-        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
-      } else if (bucket === 'portfolio') {
-        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
-      } else if (bucket === 'documents') {
-        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
-      } else if (bucket === 'preferences') {
-        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
-      } else if (bucket === 'cover-letters') {
-        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
-      } else if (bucket === 'media') {
-        fileName = pathOrUserId ? `${pathOrUserId}` : `${user.id}/${Date.now()}.${fileExt}`;
+      // Generate proper file paths for each bucket type with user folder structure
+      if (customPath) {
+        // If custom path is provided, ensure it starts with user ID
+        fileName = customPath.startsWith(user.id) ? customPath : `${user.id}/${customPath}`;
       } else {
-        fileName = pathOrUserId || `${user.id}/${Date.now()}.${fileExt}`;
+        // Generate default paths based on bucket type
+        switch (bucket) {
+          case 'avatars':
+            fileName = `${user.id}/avatar.${fileExt}`;
+            break;
+          case 'resumes':
+            fileName = `${user.id}/resume-${Date.now()}.${fileExt}`;
+            break;
+          case 'cover-letters':
+            fileName = `${user.id}/cover-letter-${Date.now()}.${fileExt}`;
+            break;
+          case 'documents':
+            fileName = `${user.id}/document-${Date.now()}.${fileExt}`;
+            break;
+          case 'media':
+            fileName = `${user.id}/media-${Date.now()}.${fileExt}`;
+            break;
+          case 'portfolio':
+            fileName = `${user.id}/portfolio-${Date.now()}.${fileExt}`;
+            break;
+          case 'preferences':
+            fileName = `${user.id}/preferences-${Date.now()}.${fileExt}`;
+            break;
+          default:
+            fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        }
       }
+
+      console.log(`Uploading file to bucket: ${bucket}, path: ${fileName}`);
 
       const { error: uploadError } = await supabase.storage
         .from(bucket)
@@ -71,7 +87,10 @@ export function useFileUpload(options?: UseFileUploadOptions) {
           upsert: true
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from(bucket)
@@ -81,23 +100,42 @@ export function useFileUpload(options?: UseFileUploadOptions) {
       toast.success('File uploaded successfully');
       return publicUrl;
     } catch (error: any) {
-      toast.error(error.message || 'Upload failed');
+      console.error('Upload failed:', error);
+      const errorMessage = error.message || 'Upload failed';
+      toast.error(errorMessage);
       throw error;
     } finally {
       setUploading(false);
     }
   };
 
-  const deleteFile = async (path: string): Promise<void> => {
+  const deleteFile = async (path: string, bucketOverride?: string): Promise<void> => {
+    const bucket = bucketOverride || config.bucket;
+    
     try {
+      // Extract file path from URL if a full URL is provided
+      let filePath = path;
+      if (path.includes('/storage/v1/object/public/')) {
+        const urlParts = path.split('/storage/v1/object/public/');
+        if (urlParts.length > 1) {
+          const pathParts = urlParts[1].split('/');
+          pathParts.shift(); // Remove bucket name
+          filePath = pathParts.join('/');
+        }
+      }
+
+      console.log(`Deleting file from bucket: ${bucket}, path: ${filePath}`);
+
       const { error } = await supabase.storage
-        .from(config.bucket)
-        .remove([path]);
+        .from(bucket)
+        .remove([filePath]);
 
       if (error) throw error;
       toast.success('File deleted successfully');
     } catch (error: any) {
-      toast.error(error.message || 'Delete failed');
+      console.error('Delete failed:', error);
+      const errorMessage = error.message || 'Delete failed';
+      toast.error(errorMessage);
       throw error;
     }
   };

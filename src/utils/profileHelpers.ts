@@ -5,25 +5,51 @@ export const uploadProfileAsset = async (file: File, userId: string, type: 'avat
   const fileExt = file.name.split('.').pop();
   const fileName = `${userId}/${type}/${Date.now()}.${fileExt}`;
   
+  // Map asset types to correct bucket names
+  const bucketMap = {
+    avatar: 'avatars',
+    resume: 'resumes',
+    portfolio: 'portfolio'
+  };
+  
+  const bucketName = bucketMap[type];
+  
   const { data, error } = await supabase.storage
-    .from('profile-assets')
+    .from(bucketName)
     .upload(fileName, file);
 
   if (error) throw error;
   
   const { data: urlData } = supabase.storage
-    .from('profile-assets')
+    .from(bucketName)
     .getPublicUrl(data.path);
 
   return urlData.publicUrl;
 };
 
-export const deleteProfileAsset = async (url: string) => {
-  const path = url.split('/profile-assets/')[1];
-  if (!path) return;
+export const deleteProfileAsset = async (url: string, assetType: 'avatar' | 'resume' | 'portfolio') => {
+  // Map asset types to correct bucket names
+  const bucketMap = {
+    avatar: 'avatars',
+    resume: 'resumes',
+    portfolio: 'portfolio'
+  };
+  
+  const bucketName = bucketMap[assetType];
+  
+  // Extract file path from URL
+  let path = url;
+  if (url.includes('/storage/v1/object/public/')) {
+    const urlParts = url.split('/storage/v1/object/public/');
+    if (urlParts.length > 1) {
+      const pathParts = urlParts[1].split('/');
+      pathParts.shift(); // Remove bucket name
+      path = pathParts.join('/');
+    }
+  }
   
   const { error } = await supabase.storage
-    .from('profile-assets')
+    .from(bucketName)
     .remove([path]);
   
   if (error) throw error;
