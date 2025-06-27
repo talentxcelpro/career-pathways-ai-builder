@@ -1,78 +1,80 @@
 
-import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from 'react-router-dom';
-import { useQuery } from "@tanstack/react-query";
-import { StatsCards } from "@/components/dashboard/StatsCards";
-import { FeaturedJobs } from "@/components/dashboard/FeaturedJobs";
-import { TrendingCourses } from "@/components/dashboard/TrendingCourses";
-import { QuickActions } from "@/components/dashboard/QuickActions";
-import { CareerInsights } from "@/components/dashboard/CareerInsights";
+import React, { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { StatsCards } from '@/components/dashboard/StatsCards';
+import { FeaturedJobs } from '@/components/dashboard/FeaturedJobs';
+import { TrendingCourses } from '@/components/dashboard/TrendingCourses';
+import { QuickActions } from '@/components/dashboard/QuickActions';
+import { CareerInsights } from '@/components/dashboard/CareerInsights';
+import { useDashboardAutoRefresh } from '@/hooks/useAutoRefresh';
+import { useRealtimeMessages, useRealtimeJobs } from '@/hooks/useRealtimeData';
+import { DataFreshness } from '@/components/shared/DataFreshness';
+import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
+import { realDataService } from '@/utils/realDataService';
+import { updateMetaTags } from '@/utils/metaTags';
+import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  // Auto-refresh and real-time updates
+  const { manualRefresh } = useDashboardAutoRefresh();
+  useRealtimeMessages();
+  useRealtimeJobs();
 
+  // Meta tags
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
+    updateMetaTags({
+      title: 'Dashboard | TalentXcel - Your Career Command Center',
+      description: 'Track your job applications, discover new opportunities, and accelerate your career growth with TalentXcel.',
+      url: `${window.location.origin}/dashboard`,
+    });
   }, []);
 
-  // Fetch featured jobs
-  const { data: featuredJobs = [] } = useQuery({
-    queryKey: ['featured-jobs'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          *,
-          companies (
-            name,
-            logo_url
-          )
-        `)
-        .eq('is_active', true)
-        .limit(3);
-      
-      if (error) throw error;
-      return data;
-    }
+  // Fetch dashboard data
+  const { data: dashboardStats, isLoading: statsLoading, dataUpdatedAt: statsUpdatedAt } = useQuery({
+    queryKey: ['dashboard_stats'],
+    queryFn: realDataService.getDashboardStats,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
-  // Fetch trending courses
-  const { data: trendingCourses = [] } = useQuery({
-    queryKey: ['trending-courses'],
+  const { data: featuredJobs = [], isLoading: jobsLoading } = useQuery({
+    queryKey: ['featured_jobs'],
+    queryFn: realDataService.getFeaturedJobs,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const { data: popularCourses = [], isLoading: coursesLoading } = useQuery({
+    queryKey: ['popular_courses'],
+    queryFn: realDataService.getPopularCourses,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  const { data: userProfile } = useQuery({
+    queryKey: ['user_profile'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      
       const { data, error } = await supabase
-        .from('courses')
+        .from('profiles')
         .select('*')
-        .eq('is_active', true)
-        .order('enrolled_count', { ascending: false })
-        .limit(3);
+        .eq('id', user.id)
+        .single();
       
       if (error) throw error;
       return data;
-    }
+    },
   });
 
-  // Mock user stats - in a real app, these would come from the database
-  const userStats = {
-    coursesCompleted: 12,
-    resumeViews: 156,
-    appliedJobs: 8,
-    profileViews: 89
+  const handleRefreshAll = () => {
+    manualRefresh();
   };
 
-  if (!user) {
+  if (statsLoading && jobsLoading && coursesLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please sign in to access your dashboard</h2>
-          <Button onClick={() => navigate('/auth/login')}>Sign In</Button>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -80,29 +82,35 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <OfflineIndicator />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user.user_metadata?.full_name || user.email}!
-          </h1>
-          <p className="text-gray-600">Continue building your career journey</p>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Welcome back{userProfile?.full_name ? `, ${userProfile.full_name}` : ''}!
+            </h1>
+            <p className="text-gray-600 mt-1">Here's what's happening with your career journey</p>
+          </div>
+          <DataFreshness 
+            lastUpdated={new Date(statsUpdatedAt)}
+            onRefresh={handleRefreshAll}
+            isRefreshing={statsLoading}
+          />
         </div>
 
-        {/* Stats Cards */}
-        <StatsCards userStats={userStats} />
+        <div className="space-y-8">
+          <StatsCards stats={dashboardStats} />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <FeaturedJobs jobs={featuredJobs} />
+            <TrendingCourses courses={popularCourses} />
+          </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <FeaturedJobs jobs={featuredJobs} />
-          <TrendingCourses courses={trendingCourses} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <QuickActions />
+            <CareerInsights />
+          </div>
         </div>
-
-        {/* Quick Actions */}
-        <QuickActions />
-
-        {/* Career Insights */}
-        <CareerInsights />
       </div>
     </div>
   );

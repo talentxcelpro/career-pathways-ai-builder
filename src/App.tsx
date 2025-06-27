@@ -7,8 +7,26 @@ import { Analytics } from "@vercel/analytics/react";
 import { navItems, NavItem } from "./nav-items";
 import { Navbar } from "./components/navigation/Navbar";
 import { Footer } from "./components/layout/Footer";
+import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 
-const queryClient = new QueryClient();
+// Create query client with better default configurations
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      retry: (failureCount, error: any) => {
+        // Don't retry for 4xx errors
+        if (error?.status >= 400 && error?.status < 500) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -16,6 +34,7 @@ const App = () => (
       <Toaster />
       <BrowserRouter>
         <div className="min-h-screen flex flex-col">
+          <OfflineIndicator />
           <Navbar />
           <main className="flex-1">
             <Routes>
