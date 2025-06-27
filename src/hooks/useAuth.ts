@@ -20,6 +20,9 @@ export interface UserProfile {
   login_count: number;
 }
 
+// Define the database role type
+type DatabaseRole = 'candidate' | 'employer' | 'institute' | 'mentor' | 'admin';
+
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -279,8 +282,8 @@ export const useAuth = () => {
     if (!user) return { error: new Error('No user found') };
 
     try {
-      // Map frontend roles to database roles
-      let databaseRole: string;
+      // Map frontend roles to database roles with proper typing
+      let databaseRole: DatabaseRole;
       switch (selectedRole) {
         case 'job_seeker':
           databaseRole = 'candidate';
