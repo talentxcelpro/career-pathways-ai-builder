@@ -12,6 +12,7 @@ export const useConversations = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      // Use filter to properly check if the user is in the participants array
       const { data, error } = await supabase
         .from('conversations')
         .select(`
@@ -25,7 +26,7 @@ export const useConversations = () => {
             status
           )
         `)
-        .contains('participants', [user.id])
+        .filter('participants', 'cs', `{${user.id}}`)
         .order('last_updated', { ascending: false });
 
       if (error) throw error;
@@ -72,13 +73,19 @@ export const useConversations = () => {
 
     const allParticipants = [...new Set([user.id, ...participantIds])].sort();
 
-    // Check if conversation already exists
-    const { data: existingConversation } = await supabase
+    // Check if conversation already exists - fix the query here too
+    const { data: existingConversations } = await supabase
       .from('conversations')
       .select('*')
       .eq('is_group', false)
-      .contains('participants', allParticipants)
-      .single();
+      .filter('participants', 'cs', `{${allParticipants.join(',')}}`)
+      .filter('participants', 'cd', `{${allParticipants.join(',')}}`);
+
+    // Find exact match by checking if participants arrays are equal
+    const existingConversation = existingConversations?.find(conv => 
+      conv.participants.length === allParticipants.length &&
+      conv.participants.every((p: string) => allParticipants.includes(p))
+    );
 
     if (existingConversation) {
       return existingConversation;
