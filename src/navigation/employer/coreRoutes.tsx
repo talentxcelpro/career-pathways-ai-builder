@@ -1,11 +1,12 @@
 
-import { Building2, Users, Settings } from "lucide-react";
+import { Building2, Users, Settings, BarChart3 } from "lucide-react";
 
 // Main Employer Dashboard & Profile
 import EmployerDashboard from "../../pages/employer/Dashboard";
 import EmployerProfile from "../../pages/employer/Profile";
 import EmployerSettings from "../../pages/employer/Settings";
 import EmployerTeam from "../../pages/employer/Team";
+import EmployerAnalytics from "../../pages/employer/analytics/EmployerAnalytics";
 
 export const employerCoreRoutes = [
   // Main Employer Routes
@@ -29,5 +30,11 @@ export const employerCoreRoutes = [
     title: "Employer Team",
     to: "/employer/team",
     page: <EmployerTeam />,
+  },
+  {
+    title: "Employer Analytics",
+    to: "/employer/analytics",
+    icon: <BarChart3 className="h-4 w-4" />,
+    page: <EmployerAnalytics />,
   },
 ];

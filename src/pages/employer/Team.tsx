@@ -1,203 +1,243 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Users, Plus, Mail, MoreHorizontal, Shield, Eye, Edit } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Users, Plus, ArrowLeft, Mail, MoreHorizontal, UserPlus } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+
+interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: 'active' | 'pending' | 'inactive';
+  joinedAt: string;
+  avatar?: string;
+}
 
 const EmployerTeam = () => {
-  const teamMembers = [
+  const navigate = useNavigate();
+  const [showInviteForm, setShowInviteForm] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState('recruiter');
+
+  const teamMembers: TeamMember[] = [
     {
-      id: 1,
-      name: "Sarah Johnson",
-      email: "sarah@company.com",
-      role: "Admin",
-      avatar: "",
-      status: "Active",
-      lastActive: "2 hours ago"
+      id: '1',
+      name: 'John Smith',
+      email: 'john@company.com',
+      role: 'Admin',
+      status: 'active',
+      joinedAt: '2024-01-15'
     },
     {
-      id: 2,
-      name: "Mike Chen",
-      email: "mike@company.com",
-      role: "Recruiter",
-      avatar: "",
-      status: "Active",
-      lastActive: "1 day ago"
+      id: '2',
+      name: 'Sarah Johnson',
+      email: 'sarah@company.com',
+      role: 'Recruiter',
+      status: 'active',
+      joinedAt: '2024-02-20'
     },
     {
-      id: 3,
-      name: "Emily Davis",
-      email: "emily@company.com",
-      role: "Viewer",
-      avatar: "",
-      status: "Pending",
-      lastActive: "Never"
+      id: '3',
+      name: 'Mike Davis',
+      email: 'mike@company.com',
+      role: 'Hiring Manager',
+      status: 'pending',
+      joinedAt: '2024-03-01'
     }
   ];
 
-  const getRoleBadge = (role: string) => {
-    const colors = {
-      Admin: "bg-red-100 text-red-800",
-      Recruiter: "bg-blue-100 text-blue-800",
-      Viewer: "bg-gray-100 text-gray-800"
-    };
-    return colors[role as keyof typeof colors] || colors.Viewer;
+  const handleInvite = () => {
+    // Implement invite functionality
+    console.log('Inviting:', inviteEmail, 'as', inviteRole);
+    setShowInviteForm(false);
+    setInviteEmail('');
   };
 
-  const getStatusBadge = (status: string) => {
-    return status === "Active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800";
+  const getRoleColor = (role: string) => {
+    switch (role.toLowerCase()) {
+      case 'admin': return 'bg-red-100 text-red-800';
+      case 'recruiter': return 'bg-blue-100 text-blue-800';
+      case 'hiring manager': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'inactive': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
+          <Button variant="ghost" onClick={() => navigate('/employer')}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
           <Users className="h-8 w-8 text-blue-600" />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Team Management</h1>
-            <p className="text-gray-600">Manage your team members and their permissions</p>
+            <p className="text-gray-600">Manage your hiring team members and permissions</p>
           </div>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="h-4 w-4 mr-2" />
-          Invite Member
+        <Button onClick={() => setShowInviteForm(true)}>
+          <UserPlus className="h-4 w-4 mr-2" />
+          Invite Team Member
         </Button>
       </div>
 
-      {/* Team Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Team Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Members</p>
+                <p className="text-2xl font-bold">{teamMembers.length}</p>
+              </div>
               <Users className="h-8 w-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold">3</div>
-                <div className="text-sm text-gray-600">Total Members</div>
+                <p className="text-sm text-gray-600">Active Members</p>
+                <p className="text-2xl font-bold">{teamMembers.filter(m => m.status === 'active').length}</p>
+              </div>
+              <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                <div className="h-4 w-4 rounded-full bg-green-600"></div>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Shield className="h-8 w-8 text-green-600" />
+            <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold">2</div>
-                <div className="text-sm text-gray-600">Active Members</div>
+                <p className="text-sm text-gray-600">Pending Invites</p>
+                <p className="text-2xl font-bold">{teamMembers.filter(m => m.status === 'pending').length}</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Mail className="h-8 w-8 text-yellow-600" />
-              <div>
-                <div className="text-2xl font-bold">1</div>
-                <div className="text-sm text-gray-600">Pending Invites</div>
+              <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
+                <div className="h-4 w-4 rounded-full bg-yellow-600"></div>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Team Members List */}
+      {/* Invite Form */}
+      {showInviteForm && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Invite Team Member</CardTitle>
+            <CardDescription>Send an invitation to join your hiring team</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="colleague@company.com"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="role">Role</Label>
+                <select 
+                  id="role" 
+                  className="w-full p-2 border rounded-md"
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value)}
+                >
+                  <option value="recruiter">Recruiter</option>
+                  <option value="hiring manager">Hiring Manager</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex space-x-2">
+              <Button onClick={handleInvite}>
+                <Mail className="h-4 w-4 mr-2" />
+                Send Invitation
+              </Button>
+              <Button variant="outline" onClick={() => setShowInviteForm(false)}>
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Team Members Table */}
       <Card>
         <CardHeader>
           <CardTitle>Team Members</CardTitle>
-          <CardDescription>Manage team member roles and permissions</CardDescription>
+          <CardDescription>Manage your hiring team members and their roles</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {teamMembers.map((member) => (
-              <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage src={member.avatar} />
-                    <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="font-semibold">{member.name}</h3>
-                    <p className="text-sm text-gray-600">{member.email}</p>
-                    <p className="text-xs text-gray-500">Last active: {member.lastActive}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <Badge className={getRoleBadge(member.role)}>{member.role}</Badge>
-                  <Badge className={getStatusBadge(member.status)}>{member.status}</Badge>
-                  
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit Role
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">
-                        Remove Member
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Role Permissions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Role Permissions</CardTitle>
-          <CardDescription>Understand what each role can do</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 border rounded-lg">
-              <Badge className="bg-red-100 text-red-800 mb-2">Admin</Badge>
-              <ul className="text-sm space-y-1">
-                <li>• Full access to all features</li>
-                <li>• Manage team members</li>
-                <li>• Billing and settings</li>
-                <li>• Delete jobs and data</li>
-              </ul>
-            </div>
-            <div className="p-4 border rounded-lg">
-              <Badge className="bg-blue-100 text-blue-800 mb-2">Recruiter</Badge>
-              <ul className="text-sm space-y-1">
-                <li>• Post and manage jobs</li>
-                <li>• View and contact candidates</li>
-                <li>• Schedule interviews</li>
-                <li>• Access analytics</li>
-              </ul>
-            </div>
-            <div className="p-4 border rounded-lg">
-              <Badge className="bg-gray-100 text-gray-800 mb-2">Viewer</Badge>
-              <ul className="text-sm space-y-1">
-                <li>• View jobs and candidates</li>
-                <li>• Add notes and comments</li>
-                <li>• Limited analytics access</li>
-                <li>• No posting permissions</li>
-              </ul>
-            </div>
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Member</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Joined</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {teamMembers.map((member) => (
+                <TableRow key={member.id}>
+                  <TableCell>
+                    <div className="flex items-center space-x-3">
+                      <Avatar>
+                        <AvatarImage src={member.avatar} />
+                        <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium">{member.name}</p>
+                        <p className="text-sm text-gray-600">{member.email}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={getRoleColor(member.role)}>
+                      {member.role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={getStatusColor(member.status)}>
+                      {member.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-gray-600">
+                    {new Date(member.joinedAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="sm">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>
