@@ -4,271 +4,313 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MessageSquare, Clock, Target, Lightbulb, Play, Save } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { MessageSquare, Users, Lightbulb, CheckCircle, Loader2, Play } from 'lucide-react';
+
+interface InterviewPrep {
+  commonQuestions: string[];
+  sampleAnswers: { [key: string]: string };
+  questionsToAsk: string[];
+  tips: string[];
+  researchPoints: string[];
+}
 
 const InterviewPrep = () => {
-  const [formData, setFormData] = useState({
-    jobRole: '',
-    interviewType: 'behavioral',
-    companyName: ''
-  });
-  const [preparing, setPreparing] = useState(false);
-  const [results, setResults] = useState<any>(null);
-  const [activeQuestion, setActiveQuestion] = useState(0);
-  const [responses, setResponses] = useState<string[]>([]);
+  const [jobRole, setJobRole] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [experienceLevel, setExperienceLevel] = useState('Mid-level');
+  const [preparation, setPreparation] = useState<InterviewPrep | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [practiceMode, setPracticeMode] = useState(false);
 
-  const interviewTypes = [
-    { value: 'behavioral', label: 'Behavioral Interview' },
-    { value: 'technical', label: 'Technical Interview' },
-    { value: 'case-study', label: 'Case Study Interview' },
-    { value: 'panel', label: 'Panel Interview' }
-  ];
+  const generateInterviewPrep = async () => {
+    if (!jobRole.trim()) {
+      toast.error('Please provide a job role');
+      return;
+    }
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const prepareInterview = async () => {
-    if (!formData.jobRole || !formData.interviewType) return;
+    setIsGenerating(true);
     
-    setPreparing(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      const { data, error } = await supabase.functions.invoke('ai-tools', {
+      const { data: response, error } = await supabase.functions.invoke('ai-comprehensive', {
         body: {
-          tool: 'interview-prep',
-          data: formData,
+          type: 'interview-prep',
+          data: {
+            jobRole,
+            company: companyName,
+            experienceLevel
+          },
           userId: user?.id
         }
       });
 
       if (error) throw error;
-      setResults(data);
-      setResponses(new Array(data.questions?.length || 0).fill(''));
+
+      setPreparation(response);
+      toast.success('Interview preparation generated!');
     } catch (error) {
       console.error('Interview prep error:', error);
+      toast.error('Failed to generate interview preparation');
     } finally {
-      setPreparing(false);
+      setIsGenerating(false);
     }
   };
 
-  const saveSession = async () => {
-    if (!results) return;
-    
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  const startPractice = () => {
+    setPracticeMode(true);
+    setCurrentQuestionIndex(0);
+  };
 
-      await supabase.from('interview_sessions').insert({
-        user_id: user.id,
-        session_type: 'practice',
-        job_role: formData.jobRole,
-        questions: results.questions,
-        responses: responses.filter(r => r.trim()),
-        duration_minutes: results.duration
-      });
-      
-      alert('Session saved successfully!');
-    } catch (error) {
-      console.error('Save error:', error);
+  const nextQuestion = () => {
+    if (preparation && currentQuestionIndex < preparation.commonQuestions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      setPracticeMode(false);
+      toast.success('Practice session completed!');
     }
   };
 
-  const updateResponse = (index: number, response: string) => {
-    const newResponses = [...responses];
-    newResponses[index] = response;
-    setResponses(newResponses);
-  };
+  const experienceLevels = ['Entry', 'Mid-level', 'Senior', 'Executive'];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Interview Prep</h1>
-          <p className="text-gray-600">
-            Practice with AI-generated questions and get personalized feedback
-          </p>
-        </div>
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <MessageSquare className="h-8 w-8 text-blue-600" />
+          AI Interview Preparation
+        </h1>
+        <p className="text-gray-600 mt-2">
+          Get personalized interview questions, tips, and practice sessions
+        </p>
+      </div>
 
-        {!results ? (
+      {!practiceMode ? (
+        <div className="space-y-6">
+          {/* Setup Section */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <MessageSquare className="h-5 w-5 mr-2" />
-                Interview Setup
-              </CardTitle>
+              <CardTitle>Interview Setup</CardTitle>
               <CardDescription>
-                Configure your interview practice session
+                Tell us about the role you're interviewing for
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="jobRole">Job Role</Label>
+                  <Label htmlFor="jobRole">Job Role *</Label>
                   <Input
                     id="jobRole"
-                    value={formData.jobRole}
-                    onChange={(e) => handleInputChange('jobRole', e.target.value)}
-                    placeholder="e.g., Product Manager"
+                    placeholder="e.g., Software Engineer, Product Manager"
+                    value={jobRole}
+                    onChange={(e) => setJobRole(e.target.value)}
                   />
                 </div>
-
+                
                 <div>
                   <Label htmlFor="companyName">Company Name (Optional)</Label>
                   <Input
                     id="companyName"
-                    value={formData.companyName}
-                    onChange={(e) => handleInputChange('companyName', e.target.value)}
-                    placeholder="e.g., Google"
+                    placeholder="e.g., Google, Microsoft"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
                   />
                 </div>
               </div>
 
               <div>
-                <Label>Interview Type</Label>
-                <Select value={formData.interviewType} onValueChange={(value) => handleInputChange('interviewType', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select interview type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {interviewTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Experience Level</Label>
+                <div className="flex gap-2 mt-2">
+                  {experienceLevels.map((level) => (
+                    <Badge
+                      key={level}
+                      variant={experienceLevel === level ? "default" : "outline"}
+                      className="cursor-pointer"
+                      onClick={() => setExperienceLevel(level)}
+                    >
+                      {level}
+                    </Badge>
+                  ))}
+                </div>
               </div>
 
-              <Button 
-                onClick={prepareInterview}
-                disabled={preparing || !formData.jobRole}
+              <Button
+                onClick={generateInterviewPrep}
+                disabled={isGenerating || !jobRole.trim()}
                 className="w-full"
               >
-                {preparing ? 'Preparing Questions...' : 'Start Interview Prep'}
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Generating Interview Prep...
+                  </>
+                ) : (
+                  <>
+                    <Lightbulb className="h-4 w-4 mr-2" />
+                    Generate AI Interview Prep
+                  </>
+                )}
               </Button>
             </CardContent>
           </Card>
-        ) : (
-          <Tabs defaultValue="questions" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="questions">Practice Questions</TabsTrigger>
-              <TabsTrigger value="tips">Interview Tips</TabsTrigger>
-              <TabsTrigger value="overview">Session Overview</TabsTrigger>
-            </TabsList>
 
-            <TabsContent value="questions">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center">
-                      <Play className="h-5 w-5 mr-2" />
-                      Question {activeQuestion + 1} of {results.questions?.length}
-                    </CardTitle>
-                    <Button variant="outline" size="sm" onClick={saveSession}>
-                      <Save className="h-4 w-4 mr-1" />
-                      Save Session
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="p-4 bg-blue-50 rounded-lg">
-                      <h3 className="font-medium text-blue-900 mb-2">Question:</h3>
-                      <p className="text-blue-800">{results.questions?.[activeQuestion]}</p>
-                    </div>
+          {/* Results Section */}
+          {preparation && (
+            <Tabs defaultValue="questions" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="questions">Questions</TabsTrigger>
+                <TabsTrigger value="answers">Sample Answers</TabsTrigger>
+                <TabsTrigger value="ask">Questions to Ask</TabsTrigger>
+                <TabsTrigger value="tips">Tips & Research</TabsTrigger>
+              </TabsList>
 
-                    <div>
-                      <Label htmlFor="response">Your Response</Label>
-                      <textarea
-                        id="response"
-                        value={responses[activeQuestion] || ''}
-                        onChange={(e) => updateResponse(activeQuestion, e.target.value)}
-                        placeholder="Type your response here... Use the STAR method: Situation, Task, Action, Result"
-                        className="w-full p-3 border rounded-md h-32 resize-none"
-                      />
-                    </div>
-
-                    <div className="flex justify-between">
-                      <Button
-                        variant="outline"
-                        onClick={() => setActiveQuestion(Math.max(0, activeQuestion - 1))}
-                        disabled={activeQuestion === 0}
-                      >
-                        Previous
-                      </Button>
-                      <Button
-                        onClick={() => setActiveQuestion(Math.min(results.questions?.length - 1, activeQuestion + 1))}
-                        disabled={activeQuestion === results.questions?.length - 1}
-                      >
-                        Next
+              <TabsContent value="questions">
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle>Common Interview Questions</CardTitle>
+                      <Button onClick={startPractice}>
+                        <Play className="h-4 w-4 mr-2" />
+                        Start Practice
                       </Button>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="tips">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Lightbulb className="h-5 w-5 mr-2" />
-                    Interview Tips
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {results.tips?.map((tip: string, index: number) => (
-                      <div key={index} className="flex items-start">
-                        <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                          <span className="text-green-600 text-sm font-medium">{index + 1}</span>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {preparation.commonQuestions?.map((question, index) => (
+                        <div key={index} className="p-4 bg-gray-50 rounded-lg">
+                          <div className="flex items-start gap-3">
+                            <Badge variant="outline">{index + 1}</Badge>
+                            <p className="text-gray-900">{question}</p>
+                          </div>
                         </div>
-                        <span className="text-gray-700">{tip}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="overview">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
-                  <CardContent className="p-6 text-center">
-                    <Clock className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-gray-900">{results.duration} min</div>
-                    <div className="text-sm text-gray-600">Estimated Duration</div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6 text-center">
-                    <MessageSquare className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-gray-900">{results.questions?.length}</div>
-                    <div className="text-sm text-gray-600">Practice Questions</div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6 text-center">
-                    <Target className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-gray-900">
-                      <Badge variant="outline">{results.difficulty}</Badge>
+                      ))}
                     </div>
-                    <div className="text-sm text-gray-600">Difficulty Level</div>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              <TabsContent value="answers">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Sample Answers with STAR Method</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {Object.entries(preparation.sampleAnswers || {}).map(([question, answer], index) => (
+                        <div key={index} className="border-l-4 border-blue-500 pl-4">
+                          <h4 className="font-medium text-gray-900 mb-2">{question}</h4>
+                          <p className="text-gray-700 text-sm whitespace-pre-line">{answer}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="ask">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Questions to Ask the Interviewer</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {preparation.questionsToAsk?.map((question, index) => (
+                        <div key={index} className="flex items-start gap-3">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                          <p className="text-gray-700">{question}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="tips">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Lightbulb className="h-5 w-5 text-yellow-500" />
+                        Interview Tips
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {preparation.tips?.map((tip, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
+                            <span className="text-sm text-gray-700">{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-blue-500" />
+                        Research Points
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {preparation.researchPoints?.map((point, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0" />
+                            <span className="text-sm text-gray-700">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
+          )}
+        </div>
+      ) : (
+        /* Practice Mode */
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Practice Session</CardTitle>
+              <Badge variant="outline">
+                Question {currentQuestionIndex + 1} of {preparation?.commonQuestions.length}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="text-center">
+              <div className="text-2xl font-medium text-gray-900 mb-4">
+                {preparation?.commonQuestions[currentQuestionIndex]}
               </div>
-            </TabsContent>
-          </Tabs>
-        )}
-      </div>
+              <p className="text-gray-600">
+                Take your time to think about your answer. Use the STAR method: 
+                Situation, Task, Action, Result.
+              </p>
+            </div>
+
+            <div className="flex justify-center gap-4">
+              <Button variant="outline" onClick={() => setPracticeMode(false)}>
+                End Practice
+              </Button>
+              <Button onClick={nextQuestion}>
+                {currentQuestionIndex < (preparation?.commonQuestions.length || 0) - 1 
+                  ? 'Next Question' 
+                  : 'Finish Practice'
+                }
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

@@ -3,92 +3,86 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Brain, Target, TrendingUp, CheckCircle, Clock } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Brain, TrendingUp, Target, Clock, CheckCircle, Loader2 } from 'lucide-react';
+
+interface CareerGuidance {
+  guidance: string;
+  actionPlan: string[];
+}
 
 const AICareerAssistant = () => {
-  const [formData, setFormData] = useState({
-    currentRole: '',
-    targetRole: '',
-    skills: '',
-    experience: '',
-    industry: ''
-  });
-  const [analyzing, setAnalyzing] = useState(false);
-  const [results, setResults] = useState<any>(null);
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  const [currentRole, setCurrentRole] = useState('');
+  const [targetRole, setTargetRole] = useState('');
+  const [skills, setSkills] = useState('');
+  const [experience, setExperience] = useState('');
+  const [challenges, setChallenges] = useState('');
+  const [guidance, setGuidance] = useState<CareerGuidance | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const getCareerGuidance = async () => {
-    if (!formData.currentRole || !formData.targetRole) return;
+    if (!currentRole.trim() && !targetRole.trim()) {
+      toast.error('Please provide your current role or target role');
+      return;
+    }
+
+    setIsGenerating(true);
     
-    setAnalyzing(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      const skillsArray = formData.skills.split(',').map(s => s.trim()).filter(s => s);
+      const skillsArray = skills.split(',').map(s => s.trim()).filter(s => s);
       
-      const { data, error } = await supabase.functions.invoke('ai-tools', {
+      const { data: response, error } = await supabase.functions.invoke('ai-comprehensive', {
         body: {
-          tool: 'career-assistant',
+          type: 'career-guide',
           data: {
-            ...formData,
-            skills: skillsArray
+            currentRole: currentRole || undefined,
+            targetRole: targetRole || undefined,
+            skills: skillsArray.length > 0 ? skillsArray : undefined,
+            experience: experience ? parseInt(experience) : undefined,
+            challenges
           },
           userId: user?.id
         }
       });
 
       if (error) throw error;
-      setResults(data);
+
+      setGuidance(response);
+      toast.success('Career guidance generated!');
     } catch (error) {
       console.error('Career guidance error:', error);
+      toast.error('Failed to generate career guidance');
     } finally {
-      setAnalyzing(false);
-    }
-  };
-
-  const saveGuidance = async () => {
-    if (!results) return;
-    
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      await supabase.from('saved_tool_results').insert({
-        user_id: user.id,
-        tool_name: 'ai-career-assistant',
-        title: `Career Path: ${formData.currentRole} → ${formData.targetRole}`,
-        content: { formData, results }
-      });
-      
-      alert('Career guidance saved successfully!');
-    } catch (error) {
-      console.error('Save error:', error);
+      setIsGenerating(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Career Assistant</h1>
-          <p className="text-gray-600">
-            Get personalized career guidance and actionable steps for your professional growth
-          </p>
-        </div>
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <Brain className="h-8 w-8 text-blue-600" />
+          AI Career Assistant
+        </h1>
+        <p className="text-gray-600 mt-2">
+          Get personalized career guidance and strategic advice for your professional journey
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Input Form */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Input Section */}
+        <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Brain className="h-5 w-5 mr-2" />
-                Career Profile
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Your Career Profile
               </CardTitle>
               <CardDescription>
                 Tell us about your current situation and career goals
@@ -99,29 +93,19 @@ const AICareerAssistant = () => {
                 <Label htmlFor="currentRole">Current Role</Label>
                 <Input
                   id="currentRole"
-                  value={formData.currentRole}
-                  onChange={(e) => handleInputChange('currentRole', e.target.value)}
-                  placeholder="e.g., Junior Software Developer"
+                  placeholder="e.g., Junior Software Developer, Marketing Specialist"
+                  value={currentRole}
+                  onChange={(e) => setCurrentRole(e.target.value)}
                 />
               </div>
 
               <div>
-                <Label htmlFor="targetRole">Target Role</Label>
+                <Label htmlFor="targetRole">Target Role (Where you want to be)</Label>
                 <Input
                   id="targetRole"
-                  value={formData.targetRole}
-                  onChange={(e) => handleInputChange('targetRole', e.target.value)}
-                  placeholder="e.g., Senior Product Manager"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="skills">Current Skills (comma-separated)</Label>
-                <Input
-                  id="skills"
-                  value={formData.skills}
-                  onChange={(e) => handleInputChange('skills', e.target.value)}
-                  placeholder="e.g., JavaScript, React, Project Management"
+                  placeholder="e.g., Senior Software Engineer, Product Manager"
+                  value={targetRole}
+                  onChange={(e) => setTargetRole(e.target.value)}
                 />
               </div>
 
@@ -129,117 +113,144 @@ const AICareerAssistant = () => {
                 <Label htmlFor="experience">Years of Experience</Label>
                 <Input
                   id="experience"
-                  value={formData.experience}
-                  onChange={(e) => handleInputChange('experience', e.target.value)}
-                  placeholder="e.g., 3 years"
+                  type="number"
+                  placeholder="e.g., 3"
+                  value={experience}
+                  onChange={(e) => setExperience(e.target.value)}
                 />
               </div>
 
               <div>
-                <Label htmlFor="industry">Industry (Optional)</Label>
-                <Input
-                  id="industry"
-                  value={formData.industry}
-                  onChange={(e) => handleInputChange('industry', e.target.value)}
-                  placeholder="e.g., Technology, Healthcare"
+                <Label htmlFor="skills">Current Skills (comma-separated)</Label>
+                <Textarea
+                  id="skills"
+                  placeholder="e.g., JavaScript, React, Python, Project Management"
+                  value={skills}
+                  onChange={(e) => setSkills(e.target.value)}
+                  className="h-20"
                 />
               </div>
 
-              <Button 
+              <div>
+                <Label htmlFor="challenges">Career Challenges or Questions</Label>
+                <Textarea
+                  id="challenges"
+                  placeholder="What specific challenges are you facing in your career? What guidance do you need?"
+                  value={challenges}
+                  onChange={(e) => setChallenges(e.target.value)}
+                  className="h-24"
+                />
+              </div>
+
+              <Button
                 onClick={getCareerGuidance}
-                disabled={analyzing || !formData.currentRole || !formData.targetRole}
+                disabled={isGenerating || (!currentRole.trim() && !targetRole.trim())}
                 className="w-full"
               >
-                {analyzing ? 'Analyzing Career Path...' : 'Get Career Guidance'}
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Analyzing Your Career Path...
+                  </>
+                ) : (
+                  <>
+                    <Brain className="h-4 w-4 mr-2" />
+                    Get AI Career Guidance
+                  </>
+                )}
               </Button>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Results */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span className="flex items-center">
-                  <Target className="h-5 w-5 mr-2" />
-                  Career Guidance
-                </span>
-                {results && (
-                  <Button variant="outline" size="sm" onClick={saveGuidance}>
-                    Save Guidance
-                  </Button>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {analyzing ? (
-                <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Analyzing your career path...</p>
-                </div>
-              ) : results ? (
-                <div className="space-y-6">
-                  {/* Recommendations */}
-                  <div>
-                    <h4 className="font-medium mb-3 flex items-center">
-                      <TrendingUp className="h-4 w-4 mr-2" />
-                      AI Recommendations
-                    </h4>
-                    <div className="space-y-2">
-                      {results.recommendations?.map((rec: string, index: number) => (
-                        <div key={index} className="flex items-start">
-                          <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-gray-700">{rec}</span>
-                        </div>
-                      ))}
+        {/* Results Section */}
+        <div className="space-y-6">
+          {guidance ? (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-green-600" />
+                    Personalized Career Guidance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose prose-sm max-w-none">
+                    <div className="whitespace-pre-line text-gray-700 leading-relaxed">
+                      {guidance.guidance}
                     </div>
                   </div>
+                </CardContent>
+              </Card>
 
-                  {/* Skill Gaps */}
-                  {results.skillGaps && results.skillGaps.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-3">Skills to Develop</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {results.skillGaps.map((skill: string, index: number) => (
-                          <Badge key={index} variant="outline" className="bg-red-50 text-red-700 border-red-200">
-                            {skill}
-                          </Badge>
-                        ))}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-blue-600" />
+                    Action Plan
+                  </CardTitle>
+                  <CardDescription>
+                    Strategic steps to achieve your career goals
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {guidance.actionPlan.map((action, index) => (
+                      <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
+                        <Badge variant="outline" className="mt-0.5">
+                          {index + 1}
+                        </Badge>
+                        <p className="text-gray-700 flex-1">{action}</p>
                       </div>
-                    </div>
-                  )}
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-                  {/* Action Plan */}
-                  <div>
-                    <h4 className="font-medium mb-3">Action Plan</h4>
-                    <div className="space-y-3">
-                      {results.actionPlan?.map((action: string, index: number) => (
-                        <div key={index} className="flex items-start p-3 bg-blue-50 rounded-lg">
-                          <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                            <span className="text-blue-600 text-sm font-medium">{index + 1}</span>
-                          </div>
-                          <span className="text-sm text-blue-800">{action}</span>
-                        </div>
-                      ))}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-purple-600" />
+                    Next Steps
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="p-3 border-l-4 border-purple-500 bg-purple-50">
+                      <h4 className="font-medium text-purple-900">Immediate (Next 30 days)</h4>
+                      <p className="text-purple-700 text-sm">
+                        Start with the first 2-3 action items above
+                      </p>
+                    </div>
+                    <div className="p-3 border-l-4 border-blue-500 bg-blue-50">
+                      <h4 className="font-medium text-blue-900">Short-term (3-6 months)</h4>
+                      <p className="text-blue-700 text-sm">
+                        Focus on skill development and networking
+                      </p>
+                    </div>
+                    <div className="p-3 border-l-4 border-green-500 bg-green-50">
+                      <h4 className="font-medium text-green-900">Long-term (6-12 months)</h4>
+                      <p className="text-green-700 text-sm">
+                        Execute your career transition strategy
+                      </p>
                     </div>
                   </div>
-
-                  {/* Timeline */}
-                  <div className="p-4 bg-green-50 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <Clock className="h-4 w-4 text-green-600 mr-2" />
-                      <h4 className="font-medium text-green-800">Expected Timeline</h4>
-                    </div>
-                    <p className="text-green-700">{results.timeline}</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-12 text-gray-500">
-                  <Brain className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Fill in your career details to get personalized guidance</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            <Card>
+              <CardContent className="p-12 text-center">
+                <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Ready for Career Guidance
+                </h3>
+                <p className="text-gray-600">
+                  Fill in your career profile and get personalized AI-powered guidance for your professional journey
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
