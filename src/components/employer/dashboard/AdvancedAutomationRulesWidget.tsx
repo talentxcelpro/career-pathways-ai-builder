@@ -141,7 +141,7 @@ export const AdvancedAutomationRulesWidget = () => {
                   <Badge className={`text-xs ${getComplexityColor(rule.complexity)}`}>
                     {rule.complexity}
                   </Badge>
-                  <Switch checked={rule.isActive} size="sm" />
+                  <Switch checked={rule.isActive} />
                 </div>
               </div>
               

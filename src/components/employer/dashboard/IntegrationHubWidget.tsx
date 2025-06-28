@@ -130,7 +130,6 @@ export const IntegrationHubWidget = () => {
                   </Badge>
                   <Switch 
                     checked={integration.isEnabled} 
-                    size="sm"
                     disabled={integration.status === 'error'}
                   />
                 </div>
