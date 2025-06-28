@@ -6,6 +6,8 @@ import { LearningTabs } from '@/components/learning/LearningTabs';
 import { AIRecommendations } from '@/components/learning/AIRecommendations';
 import { EnhancedSearchFilters } from '@/components/learning/EnhancedSearchFilters';
 import { LearningProgress } from '@/components/learning/LearningProgress';
+import { LearningAnalytics } from '@/components/learning/LearningAnalytics';
+import { QuickEnrollCTA } from '@/components/learning/QuickEnrollCTA';
 import { useAutoRefresh } from '@/hooks/useAutoRefresh';
 import { DataFreshness } from '@/components/shared/DataFreshness';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
@@ -158,6 +160,11 @@ const Learning = () => {
     }
   };
 
+  // Get featured course (highest rated with most enrollments)
+  const featuredCourse = courses
+    .filter(course => !isEnrolled(course.id))
+    .sort((a, b) => (b.rating * b.enrolled_count) - (a.rating * a.enrolled_count))[0];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <OfflineIndicator />
@@ -175,6 +182,17 @@ const Learning = () => {
             isRefreshing={isLoading}
           />
         </div>
+
+        {/* Featured Course CTA */}
+        {!isLoading && featuredCourse && (
+          <div className="mb-8">
+            <QuickEnrollCTA
+              featuredCourse={featuredCourse}
+              onEnroll={enrollInCourse}
+              isEnrolled={isEnrolled}
+            />
+          </div>
+        )}
 
         {/* Learning Progress */}
         <LearningProgress userCourses={userCourses} />
@@ -204,6 +222,14 @@ const Learning = () => {
           isEnrolled={isEnrolled}
           enrollInCourse={enrollInCourse}
         />
+
+        {/* Learning Analytics */}
+        {userCourses.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Learning Analytics</h2>
+            <LearningAnalytics userCourses={userCourses} />
+          </div>
+        )}
       </div>
     </div>
   );
