@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,10 @@ import { CandidatePipelineWidget } from "@/components/employer/dashboard/Candida
 import { SmartNotificationsPanel } from "@/components/employer/dashboard/SmartNotificationsPanel";
 import { JobStatusBreakdown } from "@/components/employer/dashboard/JobStatusBreakdown";
 import { TodaysActivitySummary } from "@/components/employer/dashboard/TodaysActivitySummary";
+import { TopPerformingJobsWidget } from "@/components/employer/dashboard/TopPerformingJobsWidget";
+import { ConversionRateWidget } from "@/components/employer/dashboard/ConversionRateWidget";
+import { JobExpiryWidget } from "@/components/employer/dashboard/JobExpiryWidget";
+import { SourceAttributionWidget } from "@/components/employer/dashboard/SourceAttributionWidget";
 
 interface DashboardStats {
   activeJobs: number;
@@ -190,7 +193,7 @@ const EmployerDashboard = () => {
             })}
           </div>
 
-          {/* New Enhanced Widgets Section */}
+          {/* Phase 1 Widgets */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
             <div className="xl:col-span-2">
               <CandidatePipelineWidget />
@@ -203,40 +206,56 @@ const EmployerDashboard = () => {
             </div>
           </div>
 
-          {/* Job Status and Quick Actions Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <JobStatusBreakdown />
-            
-            {/* Enhanced Quick Actions */}
-            <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-base font-bold text-slate-900">Quick Actions</CardTitle>
-                <CardDescription className="text-sm text-slate-600">Streamline your hiring process</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-3">
-                  {quickActions.map((action, index) => {
-                    const Icon = action.icon;
-                    return (
-                      <div 
-                        key={index} 
-                        className="cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-105 p-4 rounded-lg bg-slate-50/50 hover:bg-slate-100/50" 
-                        onClick={action.action}
-                      >
-                        <div className={`mx-auto p-3 rounded-lg ${action.color || 'bg-gray-600'} w-fit mb-3`}>
-                          <Icon className="h-5 w-5 text-white" />
-                        </div>
-                        <div className="text-center">
-                          <h3 className="text-sm font-semibold text-slate-800 mb-1">{action.title}</h3>
-                          <p className="text-xs text-slate-600">{action.description}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+          {/* Phase 2: Advanced Analytics & Intelligence */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div>
+              <TopPerformingJobsWidget />
+            </div>
+            <div>
+              <ConversionRateWidget />
+            </div>
+            <div>
+              <JobExpiryWidget />
+            </div>
           </div>
+
+          {/* Source Attribution & Job Status */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <SourceAttributionWidget />
+            </div>
+            <JobStatusBreakdown />
+          </div>
+
+          {/* Quick Actions */}
+          <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-base font-bold text-slate-900">Quick Actions</CardTitle>
+              <CardDescription className="text-sm text-slate-600">Streamline your hiring process</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3">
+                {quickActions.map((action, index) => {
+                  const Icon = action.icon;
+                  return (
+                    <div 
+                      key={index} 
+                      className="cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-105 p-4 rounded-lg bg-slate-50/50 hover:bg-slate-100/50" 
+                      onClick={action.action}
+                    >
+                      <div className={`mx-auto p-3 rounded-lg ${action.color || 'bg-gray-600'} w-fit mb-3`}>
+                        <Icon className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="text-center">
+                        <h3 className="text-sm font-semibold text-slate-800 mb-1">{action.title}</h3>
+                        <p className="text-xs text-slate-600">{action.description}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Enhanced Recent Activity */}
           <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
