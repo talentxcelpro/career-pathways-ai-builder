@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,10 @@ import { TopPerformingJobsWidget } from "@/components/employer/dashboard/TopPerf
 import { ConversionRateWidget } from "@/components/employer/dashboard/ConversionRateWidget";
 import { JobExpiryWidget } from "@/components/employer/dashboard/JobExpiryWidget";
 import { SourceAttributionWidget } from "@/components/employer/dashboard/SourceAttributionWidget";
+import { CandidateInboxWidget } from "@/components/employer/dashboard/CandidateInboxWidget";
+import { TeamManagementWidget } from "@/components/employer/dashboard/TeamManagementWidget";
+import { SharedNotesWidget } from "@/components/employer/dashboard/SharedNotesWidget";
+import { InterviewSchedulingWidget } from "@/components/employer/dashboard/InterviewSchedulingWidget";
 
 interface DashboardStats {
   activeJobs: number;
@@ -216,6 +221,22 @@ const EmployerDashboard = () => {
             </div>
             <div>
               <JobExpiryWidget />
+            </div>
+          </div>
+
+          {/* Phase 3: Collaboration & Communication */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+            <div>
+              <CandidateInboxWidget />
+            </div>
+            <div>
+              <TeamManagementWidget />
+            </div>
+            <div>
+              <SharedNotesWidget />
+            </div>
+            <div>
+              <InterviewSchedulingWidget />
             </div>
           </div>
 
