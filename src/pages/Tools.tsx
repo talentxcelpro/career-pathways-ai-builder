@@ -1,244 +1,527 @@
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Link } from 'react-router-dom';
+
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { 
-  FileCheck, 
-  FileText, 
-  DollarSign, 
-  TrendingUp, 
-  MessageSquare, 
   Brain, 
-  Award,
-  Sparkles,
-  Clock,
-  Users,
+  Calculator, 
+  FileText, 
+  Users, 
+  TrendingUp, 
+  Search, 
+  Star, 
+  Clock, 
+  Zap,
+  Target,
+  BookOpen,
+  MessageSquare,
   BarChart3,
-  History,
-  Star
-} from 'lucide-react';
-import ToolsNavigation from '@/components/tools/ToolsNavigation';
+  Briefcase,
+  User,
+  Settings
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+
+interface Tool {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  category: string;
+  isPremium: boolean;
+  popularity: number;
+  estimatedTime: string;
+  path: string;
+  features: string[];
+}
 
 const Tools = () => {
-  const tools = [
-    {
-      id: 'resume-check',
-      title: 'Resume Checker',
-      description: 'Check ATS compatibility and get optimization suggestions',
-      icon: FileCheck,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      features: ['ATS Scoring', 'Keyword Analysis', 'Format Check'],
-      popular: true
-    },
-    {
-      id: 'cover-letter',
-      title: 'Cover Letter Generator',
-      description: 'AI-powered personalized cover letters for any job',
-      icon: FileText,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      features: ['AI Writing', 'Job Matching', 'Multiple Tones'],
-      popular: true
-    },
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [toolUsage, setToolUsage] = useState<Record<string, number>>({});
+
+  const tools: Tool[] = [
     {
       id: 'salary-analyzer',
-      title: 'Salary Analyzer',
-      description: 'Get salary insights and negotiation data for your role',
-      icon: DollarSign,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50',
-      features: ['Market Rates', 'Negotiation Tips', 'Trends'],
-      popular: false
-    },
-    {
-      id: 'market-insights',
-      title: 'Market Insights',
-      description: 'Industry trends, demand stats, and growth analytics',
-      icon: TrendingUp,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
-      features: ['Industry Analysis', 'Demand Trends', 'Growth Stats'],
-      popular: false
+      name: 'Salary Analyzer',
+      description: 'Analyze salary ranges and market rates for your role and location',
+      icon: <Calculator className="h-6 w-6" />,
+      category: 'career',
+      isPremium: false,
+      popularity: 95,
+      estimatedTime: '3-5 min',
+      path: '/tools/salary-analyzer',
+      features: ['Market Analysis', 'Location Comparison', 'Industry Benchmarks']
     },
     {
       id: 'interview-prep',
-      title: 'Interview Prep',
-      description: 'AI mock interviews and practice sessions',
-      icon: MessageSquare,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
-      features: ['Mock Interviews', 'Feedback', 'Common Questions'],
-      popular: true
+      name: 'AI Interview Prep',
+      description: 'Practice interviews with AI-powered questions and feedback',
+      icon: <MessageSquare className="h-6 w-6" />,
+      category: 'interview',
+      isPremium: true,
+      popularity: 88,
+      estimatedTime: '15-30 min',
+      path: '/tools/interview-prep',
+      features: ['Mock Interviews', 'AI Feedback', 'Question Bank']
     },
     {
-      id: 'ai-assistant',
-      title: 'AI Career Assistant',
-      description: 'Get personalized career guidance and advice',
-      icon: Brain,
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50',
-      features: ['Career Guidance', 'Strategy Advice', 'Skill Recommendations'],
-      popular: false
+      id: 'resume-optimizer',
+      name: 'Resume Optimizer',
+      description: 'Optimize your resume with AI-powered suggestions',
+      icon: <FileText className="h-6 w-6" />,
+      category: 'resume',
+      isPremium: false,
+      popularity: 92,
+      estimatedTime: '10-15 min',
+      path: '/tools/resume-optimizer',
+      features: ['ATS Optimization', 'Keyword Analysis', 'Format Suggestions']
     },
     {
-      id: 'profile-score',
-      title: 'Profile Score',
-      description: 'AI analysis of your profile with improvement suggestions',
-      icon: Award,
-      color: 'text-red-600',
-      bgColor: 'bg-red-50',
-      features: ['Profile Analysis', 'Completion Score', 'Optimization Tips'],
-      popular: false
+      id: 'career-pathfinder',
+      name: 'Career Pathfinder',
+      description: 'Discover career paths based on your skills and interests',
+      icon: <Target className="h-6 w-6" />,
+      category: 'career',
+      isPremium: true,
+      popularity: 84,
+      estimatedTime: '8-12 min',
+      path: '/tools/career-pathfinder',
+      features: ['Skill Assessment', 'Path Recommendations', 'Growth Projections']
+    },
+    {
+      id: 'network-builder',
+      name: 'Network Builder',
+      description: 'Build your professional network strategically',
+      icon: <Users className="h-6 w-6" />,
+      category: 'networking',
+      isPremium: false,
+      popularity: 76,
+      estimatedTime: '5-10 min',
+      path: '/tools/network-builder',
+      features: ['Connection Suggestions', 'Message Templates', 'Follow-up Reminders']
+    },
+    {
+      id: 'skill-assessor',
+      name: 'Skill Assessor',
+      description: 'Assess your skills and identify improvement areas',
+      icon: <BookOpen className="h-6 w-6" />,
+      category: 'skills',
+      isPremium: false,
+      popularity: 82,
+      estimatedTime: '12-20 min',
+      path: '/tools/skill-assessor',
+      features: ['Skill Testing', 'Gap Analysis', 'Learning Recommendations']
+    },
+    {
+      id: 'job-matcher',
+      name: 'AI Job Matcher',
+      description: 'Find jobs that match your profile with AI precision',
+      icon: <Briefcase className="h-6 w-6" />,
+      category: 'job-search',
+      isPremium: true,
+      popularity: 90,
+      estimatedTime: '2-5 min',
+      path: '/tools/job-matcher',
+      features: ['Smart Matching', 'Compatibility Score', 'Application Insights']
+    },
+    {
+      id: 'profile-scorer',
+      name: 'Profile Scorer',
+      description: 'Get a comprehensive score for your professional profile',
+      icon: <User className="h-6 w-6" />,
+      category: 'profile',
+      isPremium: false,
+      popularity: 78,
+      estimatedTime: '3-7 min',
+      path: '/tools/profile-scorer',
+      features: ['Completeness Check', 'Optimization Tips', 'Visibility Boost']
+    },
+    {
+      id: 'market-insights',
+      name: 'Market Insights',
+      description: 'Get real-time job market insights and trends',
+      icon: <TrendingUp className="h-6 w-6" />,
+      category: 'analytics',
+      isPremium: true,
+      popularity: 86,
+      estimatedTime: '5-8 min',
+      path: '/tools/market-insights',
+      features: ['Industry Trends', 'Demand Forecasting', 'Salary Trends']
     }
   ];
 
-  const stats = [
-    { label: 'Tools Available', value: '7', icon: Sparkles },
-    { label: 'AI-Powered', value: '100%', icon: Brain },
-    { label: 'Avg. Time Saved', value: '2hrs', icon: Clock },
-    { label: 'Users Helped', value: '10K+', icon: Users }
+  const categories = [
+    { id: 'all', name: 'All Tools', count: tools.length },
+    { id: 'career', name: 'Career', count: tools.filter(t => t.category === 'career').length },
+    { id: 'interview', name: 'Interview', count: tools.filter(t => t.category === 'interview').length },
+    { id: 'resume', name: 'Resume', count: tools.filter(t => t.category === 'resume').length },
+    { id: 'job-search', name: 'Job Search', count: tools.filter(t => t.category === 'job-search').length },
+    { id: 'skills', name: 'Skills', count: tools.filter(t => t.category === 'skills').length },
+    { id: 'networking', name: 'Networking', count: tools.filter(t => t.category === 'networking').length },
+    { id: 'profile', name: 'Profile', count: tools.filter(t => t.category === 'profile').length },
+    { id: 'analytics', name: 'Analytics', count: tools.filter(t => t.category === 'analytics').length }
   ];
 
-  const quickActions = [
-    {
-      title: 'Tools Dashboard',
-      description: 'Access all tools with enhanced interface',
-      icon: BarChart3,
-      path: '/tools/dashboard',
-      color: 'text-blue-600'
-    },
-    {
-      title: 'Results History',
-      description: 'View and manage your saved results',
-      icon: History,
-      path: '/tools/dashboard',
-      color: 'text-green-600'
-    },
-    {
-      title: 'Analytics',
-      description: 'Track your tool usage and progress',
-      icon: BarChart3,
-      path: '/tools/dashboard',
-      color: 'text-purple-600'
-    },
-    {
-      title: 'Favorites',
-      description: 'Quick access to your favorite tools',
-      icon: Star,
-      path: '/tools/dashboard',
-      color: 'text-yellow-600'
+  const filteredTools = tools.filter(tool => {
+    const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         tool.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         tool.features.some(feature => feature.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesCategory = selectedCategory === 'all' || tool.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const popularTools = tools.filter(tool => tool.popularity >= 85).sort((a, b) => b.popularity - a.popularity);
+  const freeTools = tools.filter(tool => !tool.isPremium);
+
+  useEffect(() => {
+    // Load tool usage statistics
+    const loadToolUsage = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('tool_usage')
+          .select('tool_name, id')
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        const usage: Record<string, number> = {};
+        data?.forEach(record => {
+          usage[record.tool_name] = (usage[record.tool_name] || 0) + 1;
+        });
+        setToolUsage(usage);
+      } catch (error) {
+        console.error('Error loading tool usage:', error);
+      }
+    };
+
+    loadToolUsage();
+  }, [user]);
+
+  const handleToolClick = async (tool: Tool) => {
+    if (tool.isPremium && !user) {
+      toast.error('Please login to access premium tools');
+      navigate('/auth/login');
+      return;
     }
-  ];
+
+    // Track tool usage
+    if (user) {
+      try {
+        await supabase.from('tool_usage').insert({
+          user_id: user.id,
+          tool_name: tool.id,
+          session_data: { clicked_at: new Date().toISOString() }
+        });
+      } catch (error) {
+        console.error('Error tracking tool usage:', error);
+      }
+    }
+
+    navigate(tool.path);
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'career': return <Target className="h-4 w-4" />;
+      case 'interview': return <MessageSquare className="h-4 w-4" />;
+      case 'resume': return <FileText className="h-4 w-4" />;
+      case 'job-search': return <Briefcase className="h-4 w-4" />;
+      case 'skills': return <BookOpen className="h-4 w-4" />;
+      case 'networking': return <Users className="h-4 w-4" />;
+      case 'profile': return <User className="h-4 w-4" />;
+      case 'analytics': return <BarChart3 className="h-4 w-4" />;
+      default: return <Settings className="h-4 w-4" />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ToolsNavigation />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">AI Career Tools</h1>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Career Tools</h1>
+          <p className="text-gray-600">
+            Supercharge your career with AI-powered tools designed to help you succeed
+          </p>
         </div>
 
-        {/* Quick Actions */}
+        {/* Search and Filters */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Quick Access</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {quickActions.map((action, index) => (
-              <Link key={index} to={action.path}>
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <action.icon className={`h-6 w-6 ${action.color}`} />
-                      <div>
-                        <h3 className="font-medium text-gray-900">{action.title}</h3>
-                        <p className="text-sm text-gray-600">{action.description}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search tools, features, or keywords..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <Button
+                key={category.id}
+                variant={selectedCategory === category.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category.id)}
+                className="flex items-center gap-2"
+              >
+                {getCategoryIcon(category.id)}
+                {category.name}
+                <Badge variant="secondary" className="ml-1 text-xs">
+                  {category.count}
+                </Badge>
+              </Button>
             ))}
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          {stats.map((stat, index) => (
-            <Card key={index} className="text-center">
-              <CardContent className="p-6">
-                <stat.icon className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                <div className="text-sm text-gray-600">{stat.label}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* Tools Content */}
+        <Tabs defaultValue="all" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="all">All Tools</TabsTrigger>
+            <TabsTrigger value="popular">Popular</TabsTrigger>
+            <TabsTrigger value="free">Free Tools</TabsTrigger>
+          </TabsList>
 
-        {/* Tools Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tools.map((tool) => (
-            <Card key={tool.id} className="hover:shadow-lg transition-shadow relative">
-              {tool.popular && (
-                <Badge className="absolute -top-2 -right-2 bg-blue-600 text-white">
-                  Popular
-                </Badge>
-              )}
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <div className={`p-3 rounded-lg ${tool.bgColor}`}>
-                    <tool.icon className={`h-6 w-6 ${tool.color}`} />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">{tool.title}</CardTitle>
-                  </div>
-                </div>
-                <CardDescription className="text-gray-600">
-                  {tool.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex flex-wrap gap-1">
-                    {tool.features.map((feature, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {feature}
-                      </Badge>
-                    ))}
-                  </div>
-                  <Link to={`/tools/${tool.id}`} className="block">
-                    <Button className="w-full">
-                      Try {tool.title}
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+          <TabsContent value="all">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredTools.map((tool) => (
+                <Card 
+                  key={tool.id} 
+                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
+                  onClick={() => handleToolClick(tool)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                          {tool.icon}
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">{tool.name}</CardTitle>
+                          {tool.isPremium && (
+                            <Badge className="mt-1 bg-gradient-to-r from-purple-500 to-pink-500">
+                              <Star className="h-3 w-3 mr-1" />
+                              Premium
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600">{tool.description}</p>
+                  </CardHeader>
 
-        {/* Enhanced CTA Section */}
-        <div className="mt-16 text-center">
-          <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-            <CardContent className="p-12">
-              <h2 className="text-3xl font-bold mb-4">Ready to Accelerate Your Career?</h2>
-              <p className="text-xl mb-6 opacity-90">
-                Join thousands of professionals who've transformed their careers with our AI tools.
-              </p>
-              <div className="space-x-4">
-                <Link to="/tools/dashboard">
-                  <Button size="lg" variant="secondary">
-                    Open Dashboard
-                  </Button>
-                </Link>
-                <Link to="/tools/ai-assistant">
-                  <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-blue-600">
-                    Start with AI Assistant
-                  </Button>
-                </Link>
-              </div>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          <span>{tool.estimatedTime}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <TrendingUp className="h-4 w-4" />
+                          <span>{tool.popularity}% popular</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span>Popularity</span>
+                          <span>{tool.popularity}%</span>
+                        </div>
+                        <Progress value={tool.popularity} className="h-2" />
+                      </div>
+
+                      <div className="space-y-2">
+                        <span className="text-sm font-medium">Features:</span>
+                        <div className="flex flex-wrap gap-1">
+                          {tool.features.map((feature, index) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {feature}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+
+                      {toolUsage[tool.id] && (
+                        <div className="pt-2 border-t">
+                          <span className="text-xs text-green-600">
+                            ✓ Used {toolUsage[tool.id]} time{toolUsage[tool.id] > 1 ? 's' : ''}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="popular">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {popularTools.map((tool) => (
+                <Card 
+                  key={tool.id} 
+                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
+                  onClick={() => handleToolClick(tool)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                          {tool.icon}
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">{tool.name}</CardTitle>
+                          <Badge className="mt-1 bg-orange-100 text-orange-800">
+                            <Zap className="h-3 w-3 mr-1" />
+                            Trending
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600">{tool.description}</p>
+                  </CardHeader>
+
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          <span>{tool.estimatedTime}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <TrendingUp className="h-4 w-4" />
+                          <span>{tool.popularity}% popular</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <span className="text-sm font-medium">Features:</span>
+                        <div className="flex flex-wrap gap-1">
+                          {tool.features.map((feature, index) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {feature}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="free">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {freeTools.map((tool) => (
+                <Card 
+                  key={tool.id} 
+                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
+                  onClick={() => handleToolClick(tool)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                          {tool.icon}
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">{tool.name}</CardTitle>
+                          <Badge className="mt-1 bg-green-100 text-green-800">
+                            Free
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600">{tool.description}</p>
+                  </CardHeader>
+
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          <span>{tool.estimatedTime}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <TrendingUp className="h-4 w-4" />
+                          <span>{tool.popularity}% popular</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <span className="text-sm font-medium">Features:</span>
+                        <div className="flex flex-wrap gap-1">
+                          {tool.features.map((feature, index) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {feature}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        {/* Empty State */}
+        {filteredTools.length === 0 && (
+          <div className="text-center py-12">
+            <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No tools found
+            </h3>
+            <p className="text-gray-500 mb-4">
+              Try adjusting your search or filters to find the tools you need.
+            </p>
+            <Button onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}>
+              Clear Filters
+            </Button>
+          </div>
+        )}
+
+        {/* Quick Stats */}
+        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="text-center">
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold text-blue-600">{tools.length}</div>
+              <p className="text-sm text-gray-600">Total Tools</p>
+            </CardContent>
+          </Card>
+          <Card className="text-center">
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold text-green-600">{freeTools.length}</div>
+              <p className="text-sm text-gray-600">Free Tools</p>
+            </CardContent>
+          </Card>
+          <Card className="text-center">
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold text-purple-600">{tools.filter(t => t.isPremium).length}</div>
+              <p className="text-sm text-gray-600">Premium Tools</p>
+            </CardContent>
+          </Card>
+          <Card className="text-center">
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold text-orange-600">{Object.values(toolUsage).reduce((a, b) => a + b, 0)}</div>
+              <p className="text-sm text-gray-600">Your Usage</p>
             </CardContent>
           </Card>
         </div>
