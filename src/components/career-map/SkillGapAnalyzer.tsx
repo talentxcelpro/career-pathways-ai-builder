@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -38,17 +37,40 @@ export const SkillGapAnalyzer: React.FC<SkillGapAnalyzerProps> = ({
     const currentLevel = current?.level || 0;
     const gap = Math.max(0, required.level - currentLevel);
     
+    // Fix the priority assignment to return proper literal types
+    const getPriority = (gap: number): 'critical' | 'high' | 'medium' | 'low' => {
+      if (gap >= 70) return 'critical';
+      if (gap >= 50) return 'high';
+      if (gap >= 30) return 'medium';
+      return 'low';
+    };
+
+    // Fix the market demand assignment to return proper literal types
+    const getMarketDemand = (): 'high' | 'medium' | 'low' => {
+      const rand = Math.random();
+      if (rand > 0.5) return 'high';
+      if (rand > 0.3) return 'medium';
+      return 'low';
+    };
+
+    // Fix the difficulty assignment to return proper literal types
+    const getDifficulty = (gap: number): 'beginner' | 'intermediate' | 'advanced' => {
+      if (gap >= 60) return 'advanced';
+      if (gap >= 30) return 'intermediate';
+      return 'beginner';
+    };
+    
     return {
       skill: required.name,
       currentLevel,
       requiredLevel: required.level,
       gap,
-      priority: gap >= 70 ? 'critical' : gap >= 50 ? 'high' : gap >= 30 ? 'medium' : 'low',
-      marketDemand: Math.random() > 0.5 ? 'high' : Math.random() > 0.3 ? 'medium' : 'low',
+      priority: getPriority(gap),
+      marketDemand: getMarketDemand(),
       salaryImpact: Math.floor(gap * 1000), // Mock salary impact
       learningPath: {
         duration: `${Math.ceil(gap / 10)} months`,
-        difficulty: gap >= 60 ? 'advanced' : gap >= 30 ? 'intermediate' : 'beginner',
+        difficulty: getDifficulty(gap),
         resources: Math.ceil(gap / 15)
       }
     };
