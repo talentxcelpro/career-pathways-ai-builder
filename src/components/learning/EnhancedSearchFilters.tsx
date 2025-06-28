@@ -78,12 +78,11 @@ export const EnhancedSearchFilters: React.FC<EnhancedSearchFiltersProps> = ({
           />
         </div>
 
-        <Select value={filters.category} onValueChange={(value) => updateFilter('category', value)}>
+        <Select value={filters.category || undefined} onValueChange={(value) => updateFilter('category', value || '')}>
           <SelectTrigger>
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Categories</SelectItem>
             <SelectItem value="programming">Programming</SelectItem>
             <SelectItem value="data-science">Data Science</SelectItem>
             <SelectItem value="design">Design</SelectItem>
@@ -92,24 +91,22 @@ export const EnhancedSearchFilters: React.FC<EnhancedSearchFiltersProps> = ({
           </SelectContent>
         </Select>
 
-        <Select value={filters.difficulty} onValueChange={(value) => updateFilter('difficulty', value)}>
+        <Select value={filters.difficulty || undefined} onValueChange={(value) => updateFilter('difficulty', value || '')}>
           <SelectTrigger>
             <SelectValue placeholder="Difficulty" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Levels</SelectItem>
             <SelectItem value="beginner">Beginner</SelectItem>
             <SelectItem value="intermediate">Intermediate</SelectItem>
             <SelectItem value="advanced">Advanced</SelectItem>
           </SelectContent>
         </Select>
 
-        <Select value={filters.duration} onValueChange={(value) => updateFilter('duration', value)}>
+        <Select value={filters.duration || undefined} onValueChange={(value) => updateFilter('duration', value || '')}>
           <SelectTrigger>
             <SelectValue placeholder="Duration" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Any Duration</SelectItem>
             <SelectItem value="short">Under 5 hours</SelectItem>
             <SelectItem value="medium">5-20 hours</SelectItem>
             <SelectItem value="long">20+ hours</SelectItem>
@@ -133,20 +130,22 @@ export const EnhancedSearchFilters: React.FC<EnhancedSearchFiltersProps> = ({
             </Badge>
           ))}
         </div>
-        <Select onValueChange={addSkillFilter}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Add skill filter" />
-          </SelectTrigger>
-          <SelectContent>
-            {availableSkills
-              .filter(skill => !filters.skills.includes(skill))
-              .map((skill) => (
-                <SelectItem key={skill} value={skill}>
-                  {skill}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
+        {availableSkills.length > 0 && (
+          <Select onValueChange={addSkillFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Add skill filter" />
+            </SelectTrigger>
+            <SelectContent>
+              {availableSkills
+                .filter(skill => !filters.skills.includes(skill))
+                .map((skill) => (
+                  <SelectItem key={skill} value={skill}>
+                    {skill}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
     </div>
   );
