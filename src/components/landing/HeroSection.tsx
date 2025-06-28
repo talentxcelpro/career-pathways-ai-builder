@@ -1,12 +1,11 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 
 export const HeroSection = () => {
   const navigate = useNavigate();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <div className="relative overflow-hidden">
@@ -15,60 +14,6 @@ export const HeroSection = () => {
       <div className="absolute top-0 right-0 -z-10 transform-gpu overflow-hidden blur-3xl">
         <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20"></div>
       </div>
-
-      {/* Top-right Simple Auth Buttons */}
-      <div className="absolute top-4 right-4 z-10 hidden md:flex gap-3">
-        <Button 
-          variant="ghost"
-          onClick={() => navigate('/auth/login')}
-          className="text-gray-700 px-6 py-2 hover:bg-white/80"
-        >
-          Sign In
-        </Button>
-        <Button 
-          onClick={() => navigate('/auth/register')}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-        >
-          Get Started
-        </Button>
-      </div>
-
-      {/* Mobile Menu Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute top-4 right-4 z-10 md:hidden"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-      >
-        {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-      </Button>
-
-      {/* Simple Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="absolute top-16 right-4 z-10 md:hidden p-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 min-w-[200px]">
-          <div className="flex flex-col space-y-3">
-            <Button 
-              variant="ghost" 
-              onClick={() => {
-                navigate('/auth/login');
-                setIsMobileMenuOpen(false);
-              }}
-              className="w-full"
-            >
-              Sign In
-            </Button>
-            <Button 
-              onClick={() => {
-                navigate('/auth/register');
-                setIsMobileMenuOpen(false);
-              }}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Get Started
-            </Button>
-          </div>
-        </div>
-      )}
 
       {/* Main Hero Section */}
       <section className="relative pt-20 pb-20 sm:pt-24 sm:pb-24">
