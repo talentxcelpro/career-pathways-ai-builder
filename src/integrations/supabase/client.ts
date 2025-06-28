@@ -21,5 +21,15 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     headers: {
       'cache-control': 'no-cache'
     }
+  },
+  // Add retry configuration for better reliability
+  db: {
+    schema: 'public'
+  },
+  // Configure realtime for better performance
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
   }
 });

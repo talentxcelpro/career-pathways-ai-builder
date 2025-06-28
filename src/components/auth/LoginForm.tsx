@@ -48,27 +48,26 @@ const LoginForm = () => {
     setSocialLoading(provider);
 
     try {
+      // Get current origin for proper redirect handling
+      const redirectTo = window.location.origin;
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'select_account',
-            ...(provider === 'google' && {
-              include_granted_scopes: 'true'
-            })
-          },
+          redirectTo,
           skipBrowserRedirect: false
         },
       });
 
       if (error) {
+        console.error(`${provider} OAuth error:`, error);
         toast.error(`Failed to login with ${provider === 'google' ? 'Google' : 'LinkedIn'}: ${error.message}`);
+        setSocialLoading(null);
       }
+      // Don't set loading to null here - let the auth state change handle it
     } catch (error: any) {
-      toast.error('Social login failed');
-    } finally {
+      console.error(`${provider} login error:`, error);
+      toast.error('Social login failed. Please try again.');
       setSocialLoading(null);
     }
   };

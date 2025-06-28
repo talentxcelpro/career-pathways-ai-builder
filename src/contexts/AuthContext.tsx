@@ -28,23 +28,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const navigate = useNavigate();
 
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+
         console.log('Auth state changed:', event, session?.user?.email);
         
         setSession(session);
         setUser(session?.user ?? null);
         
+        // Handle different auth events
         if (event === 'SIGNED_OUT') {
           // Force redirect to index page after logout
           navigate('/', { replace: true });
         } else if (event === 'SIGNED_IN' && session?.user) {
-          // Auto-redirect to dashboard on successful login
-          navigate('/dashboard', { replace: true });
+          // Only redirect to dashboard on successful login if not already there
+          if (window.location.pathname === '/' || window.location.pathname.startsWith('/auth')) {
+            navigate('/dashboard', { replace: true });
+          }
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log('Token refreshed successfully');
         }
         
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     );
 
@@ -54,11 +65,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
           console.error('Error getting session:', error);
-        } else {
+        } else if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
           
-          // Auto-redirect to dashboard if user is already logged in
+          // Auto-redirect to dashboard if user is already logged in and on index page
           if (session?.user && window.location.pathname === '/') {
             navigate('/dashboard', { replace: true });
           }
@@ -66,26 +77,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (error) {
         console.error('Auth initialization error:', error);
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     initializeAuth();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const signOut = async () => {
     try {
       setLoading(true);
-      await supabase.auth.signOut();
-      // Clear any cached data
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error signing out:', error);
+        throw error;
+      }
+      // Clear state immediately
       setUser(null);
       setSession(null);
-      // Force redirect to index page
-      navigate('/', { replace: true });
+      // Navigation will be handled by auth state change
     } catch (error) {
       console.error('Error signing out:', error);
+      throw error;
     } finally {
       setLoading(false);
     }
