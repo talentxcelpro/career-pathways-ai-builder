@@ -35,7 +35,7 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
 
       if (error) {
         console.error(`${provider} OAuth error:`, error);
-        toast.error(`Failed to sign in with ${provider}`);
+        toast.error(`Failed to sign in with ${provider}. Please try again.`);
         setLoading(null);
         return;
       }
