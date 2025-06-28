@@ -7,6 +7,10 @@ import { Briefcase, Users, TrendingUp, Calendar, Plus, BarChart3, Building2 } fr
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { CandidatePipelineWidget } from "@/components/employer/dashboard/CandidatePipelineWidget";
+import { SmartNotificationsPanel } from "@/components/employer/dashboard/SmartNotificationsPanel";
+import { JobStatusBreakdown } from "@/components/employer/dashboard/JobStatusBreakdown";
+import { TodaysActivitySummary } from "@/components/employer/dashboard/TodaysActivitySummary";
 
 interface DashboardStats {
   activeJobs: number;
@@ -22,12 +26,12 @@ const EmployerDashboard = () => {
     queryKey: ['employer-dashboard-stats'],
     queryFn: async () => {
       try {
-        // Mock data for fast loading - replace with real data when backend is ready
+        // Enhanced mock data for comprehensive dashboard
         return {
-          activeJobs: 5,
-          totalApplications: 42,
-          interviewsThisWeek: 8,
-          jobsPostedThisMonth: 3
+          activeJobs: 8,
+          totalApplications: 156,
+          interviewsThisWeek: 12,
+          jobsPostedThisMonth: 5
         } as DashboardStats;
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
@@ -40,7 +44,7 @@ const EmployerDashboard = () => {
       }
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes (renamed from cacheTime)
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
 
   const statsCards = [
@@ -50,15 +54,17 @@ const EmployerDashboard = () => {
       icon: Briefcase,
       description: "Currently open positions",
       action: () => navigate('/jobs/manage'),
-      color: "text-blue-600"
+      color: "text-blue-600",
+      change: "+2 this week"
     },
     {
       title: "Total Applications",
       value: stats?.totalApplications || 0,
       icon: Users,
       description: "Applications received",
-      action: () => navigate('/jobs/manage'),
-      color: "text-green-600"
+      action: () => navigate('/employer/crm/candidates'),
+      color: "text-green-600",
+      change: "+34 this week"
     },
     {
       title: "Interviews This Week",
@@ -66,7 +72,8 @@ const EmployerDashboard = () => {
       icon: Calendar,
       description: "Scheduled interviews",
       action: () => navigate('/employer/crm/candidates'),
-      color: "text-purple-600"
+      color: "text-purple-600",
+      change: "+5 scheduled"
     },
     {
       title: "Jobs Posted This Month",
@@ -74,7 +81,8 @@ const EmployerDashboard = () => {
       icon: TrendingUp,
       description: "New postings",
       action: () => navigate('/jobs/post'),
-      color: "text-orange-600"
+      color: "text-orange-600",
+      change: "+2 this month"
     }
   ];
 
@@ -139,92 +147,149 @@ const EmployerDashboard = () => {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Employer Dashboard</h1>
-          <p className="text-gray-600 mt-1">Manage your jobs and track hiring activity</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Enhanced Header */}
+      <div className="bg-white/70 backdrop-blur-sm border-b border-slate-200/50 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">Employer Dashboard</h1>
+              <p className="text-sm text-slate-600 font-medium">Manage your hiring pipeline and track performance</p>
+            </div>
+            <Button onClick={() => navigate('/jobs/post')} className="bg-blue-600 hover:bg-blue-700 shadow-lg">
+              <Plus className="h-4 w-4 mr-2" />
+              Post New Job
+            </Button>
+          </div>
         </div>
-        <Button onClick={() => navigate('/jobs/post')} className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="h-4 w-4 mr-2" />
-          Post New Job
-        </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {statsCards.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105" onClick={stat.action}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  {stat.title}
-                </CardTitle>
-                <Icon className={`h-5 w-5 ${stat.color}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                <p className="text-xs text-gray-500 mt-1">{stat.description}</p>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="space-y-6">
+          {/* Enhanced Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {statsCards.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-1 border-0 shadow-md bg-white/80 backdrop-blur-sm" onClick={stat.action}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
+                      {stat.title}
+                    </CardTitle>
+                    <div className={`p-2 rounded-lg bg-gradient-to-r ${stat.color.includes('blue') ? 'from-blue-500 to-cyan-500' : stat.color.includes('green') ? 'from-green-500 to-emerald-500' : stat.color.includes('purple') ? 'from-purple-500 to-violet-500' : 'from-orange-500 to-red-500'}`}>
+                      <Icon className="h-4 w-4 text-white" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-slate-900 mb-1">{stat.value}</div>
+                    <p className="text-xs text-slate-500 font-medium mb-2">{stat.description}</p>
+                    <p className="text-xs text-green-600 font-semibold">{stat.change}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {quickActions.map((action, index) => {
-          const Icon = action.icon;
-          return (
-            <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105" onClick={action.action}>
-              <CardHeader className="text-center space-y-4">
-                <div className={`mx-auto p-3 rounded-full ${action.color || 'bg-gray-600'} w-fit`}>
-                  <Icon className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">{action.title}</CardTitle>
-                  <CardDescription className="mt-2">{action.description}</CardDescription>
-                </div>
-              </CardHeader>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>Latest updates on your job postings</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg">
-              <Briefcase className="h-8 w-8 text-blue-600" />
-              <div>
-                <p className="font-medium">Senior Frontend Developer</p>
-                <p className="text-sm text-gray-600">5 new applications received</p>
-              </div>
+          {/* New Enhanced Widgets Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+            <div className="xl:col-span-2">
+              <CandidatePipelineWidget />
             </div>
-            <div className="flex items-center space-x-4 p-3 bg-green-50 rounded-lg">
-              <Users className="h-8 w-8 text-green-600" />
-              <div>
-                <p className="font-medium">Product Manager</p>
-                <p className="text-sm text-gray-600">Interview scheduled for tomorrow</p>
-              </div>
+            <div>
+              <SmartNotificationsPanel />
             </div>
-            <div className="flex items-center space-x-4 p-3 bg-purple-50 rounded-lg">
-              <TrendingUp className="h-8 w-8 text-purple-600" />
-              <div>
-                <p className="font-medium">UX Designer</p>
-                <p className="text-sm text-gray-600">Job post performance: 120% above average</p>
-              </div>
+            <div>
+              <TodaysActivitySummary />
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Job Status and Quick Actions Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <JobStatusBreakdown />
+            
+            {/* Enhanced Quick Actions */}
+            <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-base font-bold text-slate-900">Quick Actions</CardTitle>
+                <CardDescription className="text-sm text-slate-600">Streamline your hiring process</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-3">
+                  {quickActions.map((action, index) => {
+                    const Icon = action.icon;
+                    return (
+                      <div 
+                        key={index} 
+                        className="cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-105 p-4 rounded-lg bg-slate-50/50 hover:bg-slate-100/50" 
+                        onClick={action.action}
+                      >
+                        <div className={`mx-auto p-3 rounded-lg ${action.color || 'bg-gray-600'} w-fit mb-3`}>
+                          <Icon className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="text-center">
+                          <h3 className="text-sm font-semibold text-slate-800 mb-1">{action.title}</h3>
+                          <p className="text-xs text-slate-600">{action.description}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Enhanced Recent Activity */}
+          <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-base font-bold text-slate-900">Recent Hiring Activity</CardTitle>
+              <CardDescription className="text-sm text-slate-600">Latest updates across all your job postings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
+                  <div className="p-2 bg-blue-500 rounded-lg">
+                    <Briefcase className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-900">Senior Frontend Developer</p>
+                    <p className="text-sm text-slate-600">8 new applications received today</p>
+                    <p className="text-xs text-slate-500 font-medium">2 hours ago</p>
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => navigate('/jobs/manage')}>
+                    Review
+                  </Button>
+                </div>
+                <div className="flex items-center space-x-4 p-4 bg-green-50/50 rounded-lg border border-green-100">
+                  <div className="p-2 bg-green-500 rounded-lg">
+                    <Users className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-900">Product Manager Interview</p>
+                    <p className="text-sm text-slate-600">Sarah Johnson confirmed for 2:00 PM today</p>
+                    <p className="text-xs text-slate-500 font-medium">1 hour ago</p>
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => navigate('/employer/crm/candidates')}>
+                    Prepare
+                  </Button>
+                </div>
+                <div className="flex items-center space-x-4 p-4 bg-purple-50/50 rounded-lg border border-purple-100">
+                  <div className="p-2 bg-purple-500 rounded-lg">
+                    <TrendingUp className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-900">UX Designer Position</p>
+                    <p className="text-sm text-slate-600">Trending: 145% above average views this week</p>
+                    <p className="text-xs text-slate-500 font-medium">5 hours ago</p>
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => navigate('/employer/analytics')}>
+                    Analyze
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };
