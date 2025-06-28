@@ -69,7 +69,11 @@ const MyApplications = () => {
         .order('applied_at', { ascending: false });
 
       if (error) throw error;
-      return data as JobApplication[];
+      
+      // Filter out any applications where the job data failed to load
+      const validApplications = data?.filter(app => app.jobs && typeof app.jobs === 'object' && !('error' in app.jobs)) || [];
+      
+      return validApplications;
     },
   });
 
