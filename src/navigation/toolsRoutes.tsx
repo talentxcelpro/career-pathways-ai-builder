@@ -1,8 +1,12 @@
 
-import { Brain, Calculator, MessageSquare } from "lucide-react";
+import { Brain, Calculator, MessageSquare, Target, FileText, Users, BookOpen, Briefcase, User, TrendingUp } from "lucide-react";
 import Tools from "../pages/Tools";
 import SalaryAnalyzer from "../pages/tools/SalaryAnalyzer";
 import InterviewPrep from "../pages/tools/InterviewPrep";
+import CareerPathfinder from "../pages/tools/CareerPathfinder";
+import ResumeOptimizer from "../pages/tools/ResumeOptimizer";
+import NetworkBuilder from "../pages/tools/NetworkBuilder";
+import SkillAssessor from "../pages/tools/SkillAssessor";
 
 export const toolsRoutes = [
   {
@@ -23,31 +27,35 @@ export const toolsRoutes = [
     icon: <MessageSquare className="h-4 w-4" />,
     page: <InterviewPrep />,
   },
-  // Placeholder routes for other tools - can be implemented later
-  {
-    title: "Resume Optimizer",
-    to: "/tools/resume-optimizer",
-    page: <Tools />, // Fallback to main tools page for now
-  },
   {
     title: "Career Pathfinder",
     to: "/tools/career-pathfinder",
-    page: <Tools />,
+    icon: <Target className="h-4 w-4" />,
+    page: <CareerPathfinder />,
+  },
+  {
+    title: "Resume Optimizer",
+    to: "/tools/resume-optimizer",
+    icon: <FileText className="h-4 w-4" />,
+    page: <ResumeOptimizer />,
   },
   {
     title: "Network Builder",
     to: "/tools/network-builder",
-    page: <Tools />,
+    icon: <Users className="h-4 w-4" />,
+    page: <NetworkBuilder />,
   },
   {
     title: "Skill Assessor",
     to: "/tools/skill-assessor",
-    page: <Tools />,
+    icon: <BookOpen className="h-4 w-4" />,
+    page: <SkillAssessor />,
   },
+  // Placeholder routes for other tools - can be implemented later
   {
     title: "Job Matcher",
     to: "/tools/job-matcher",
-    page: <Tools />,
+    page: <Tools />, // Fallback to main tools page for now
   },
   {
     title: "Profile Scorer",

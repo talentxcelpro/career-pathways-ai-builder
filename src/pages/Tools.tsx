@@ -53,7 +53,7 @@ const Tools = () => {
     {
       id: 'salary-analyzer',
       name: 'Salary Analyzer',
-      description: 'Analyze salary ranges and market rates for your role and location',
+      description: 'Analyze salary ranges and market rates for your role and location with real data',
       icon: <Calculator className="h-6 w-6" />,
       category: 'career',
       isPremium: false,
@@ -65,7 +65,7 @@ const Tools = () => {
     {
       id: 'interview-prep',
       name: 'AI Interview Prep',
-      description: 'Practice interviews with AI-powered questions and feedback',
+      description: 'Practice interviews with AI-powered questions, tips, and performance tracking',
       icon: <MessageSquare className="h-6 w-6" />,
       category: 'interview',
       isPremium: true,
@@ -75,57 +75,57 @@ const Tools = () => {
       features: ['Mock Interviews', 'AI Feedback', 'Question Bank']
     },
     {
-      id: 'resume-optimizer',
-      name: 'Resume Optimizer',
-      description: 'Optimize your resume with AI-powered suggestions',
-      icon: <FileText className="h-6 w-6" />,
-      category: 'resume',
-      isPremium: false,
-      popularity: 92,
-      estimatedTime: '10-15 min',
-      path: '/tools/resume-optimizer',
-      features: ['ATS Optimization', 'Keyword Analysis', 'Format Suggestions']
-    },
-    {
       id: 'career-pathfinder',
       name: 'Career Pathfinder',
-      description: 'Discover career paths based on your skills and interests',
+      description: 'Discover personalized career paths with AI-powered recommendations and roadmaps',
       icon: <Target className="h-6 w-6" />,
       category: 'career',
       isPremium: true,
       popularity: 84,
       estimatedTime: '8-12 min',
       path: '/tools/career-pathfinder',
-      features: ['Skill Assessment', 'Path Recommendations', 'Growth Projections']
+      features: ['AI Recommendations', 'Career Roadmaps', 'Market Insights']
+    },
+    {
+      id: 'resume-optimizer',
+      name: 'Resume Optimizer',
+      description: 'Optimize your resume with AI-powered analysis, ATS compatibility, and keyword suggestions',
+      icon: <FileText className="h-6 w-6" />,
+      category: 'resume',
+      isPremium: false,
+      popularity: 92,
+      estimatedTime: '10-15 min',
+      path: '/tools/resume-optimizer',
+      features: ['ATS Optimization', 'Keyword Analysis', 'Section Scoring']
     },
     {
       id: 'network-builder',
       name: 'Network Builder',
-      description: 'Build your professional network strategically',
+      description: 'Build strategic professional connections with AI-powered networking recommendations',
       icon: <Users className="h-6 w-6" />,
       category: 'networking',
       isPremium: false,
       popularity: 76,
       estimatedTime: '5-10 min',
       path: '/tools/network-builder',
-      features: ['Connection Suggestions', 'Message Templates', 'Follow-up Reminders']
+      features: ['Connection Matching', 'Message Templates', 'Industry Insights']
     },
     {
       id: 'skill-assessor',
       name: 'Skill Assessor',
-      description: 'Assess your skills and identify improvement areas',
+      description: 'Assess your skills with AI-powered tests and get personalized improvement plans',
       icon: <BookOpen className="h-6 w-6" />,
       category: 'skills',
       isPremium: false,
       popularity: 82,
       estimatedTime: '12-20 min',
       path: '/tools/skill-assessor',
-      features: ['Skill Testing', 'Gap Analysis', 'Learning Recommendations']
+      features: ['Skill Testing', 'Level Assessment', 'Learning Resources']
     },
     {
       id: 'job-matcher',
       name: 'AI Job Matcher',
-      description: 'Find jobs that match your profile with AI precision',
+      description: 'Find jobs that match your profile with AI precision and compatibility scoring',
       icon: <Briefcase className="h-6 w-6" />,
       category: 'job-search',
       isPremium: true,
@@ -137,19 +137,19 @@ const Tools = () => {
     {
       id: 'profile-scorer',
       name: 'Profile Scorer',
-      description: 'Get a comprehensive score for your professional profile',
+      description: 'Get a comprehensive score for your professional profile with optimization tips',
       icon: <User className="h-6 w-6" />,
       category: 'profile',
       isPremium: false,
       popularity: 78,
       estimatedTime: '3-7 min',
       path: '/tools/profile-scorer',
-      features: ['Completeness Check', 'Optimization Tips', 'Visibility Boost']
+      features: ['Profile Analysis', 'Optimization Tips', 'Visibility Score']
     },
     {
       id: 'market-insights',
       name: 'Market Insights',
-      description: 'Get real-time job market insights and trends',
+      description: 'Get real-time job market insights, trends, and demand forecasting',
       icon: <TrendingUp className="h-6 w-6" />,
       category: 'analytics',
       isPremium: true,
@@ -251,9 +251,9 @@ const Tools = () => {
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Career Tools</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI-Powered Career Tools</h1>
           <p className="text-gray-600">
-            Supercharge your career with AI-powered tools designed to help you succeed
+            Fully functional AI tools with real results to supercharge your career growth
           </p>
         </div>
 
