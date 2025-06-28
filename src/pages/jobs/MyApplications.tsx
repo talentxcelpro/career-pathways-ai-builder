@@ -38,7 +38,7 @@ interface JobApplication {
       name: string;
       logo_url?: string;
       industry?: string;
-    };
+    } | null;
   };
 }
 
@@ -51,12 +51,30 @@ const MyApplications = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Fix the relationship ambiguity by being more specific with the select
       const { data, error } = await supabase
         .from('job_applications')
         .select(`
-          *,
-          jobs (
-            *,
+          id,
+          status,
+          applied_at,
+          last_activity_at,
+          ai_match_score,
+          cover_letter,
+          resume_url,
+          jobs!job_applications_job_id_fkey (
+            id,
+            title,
+            description,
+            location,
+            salary_min,
+            salary_max,
+            employment_type,
+            experience_level,
+            is_remote,
+            is_urgent,
+            is_hiring_fast,
+            applications_count,
             companies (
               id,
               name,
@@ -71,9 +89,15 @@ const MyApplications = () => {
       if (error) throw error;
       
       // Filter out any applications where the job data failed to load
-      const validApplications = data?.filter(app => app.jobs && typeof app.jobs === 'object' && !('error' in app.jobs)) || [];
+      const validApplications = data?.filter(app => 
+        app.jobs && 
+        typeof app.jobs === 'object' && 
+        !('error' in app.jobs) &&
+        app.jobs !== null &&
+        'id' in app.jobs
+      ) || [];
       
-      return validApplications;
+      return validApplications as JobApplication[];
     },
   });
 
@@ -170,7 +194,7 @@ const MyApplications = () => {
                         {application.jobs.companies && (
                           <Avatar className="h-10 w-10">
                             <AvatarImage 
-                              src={application.jobs.companies.logo_url} 
+                              src={application.jobs.companies.logo_url || ''} 
                               alt={application.jobs.companies.name} 
                             />
                             <AvatarFallback className="text-sm">
