@@ -38,7 +38,7 @@ export const populateCourseContent = async () => {
                 title: lessonInfo.title,
                 content: lessonInfo.content,
                 lesson_type: lessonInfo.type,
-                video_url: lessonInfo.videoUrl,
+                video_url: lessonInfo.video_url, // Fixed property name
                 duration_minutes: lessonInfo.duration,
                 lesson_order: lessonInfo.order,
                 is_free: lessonInfo.isFree
@@ -81,7 +81,7 @@ const getCourseModules = (courseTitle: string) => {
             title: 'Course Introduction',
             content: 'Welcome to Full Stack Web Development! In this comprehensive course, you will learn...',
             type: 'video',
-            videoUrl: 'https://example.com/intro-video',
+            video_url: 'https://example.com/intro-video', // Fixed property name
             duration: 15,
             order: 1,
             isFree: true
@@ -106,7 +106,7 @@ const getCourseModules = (courseTitle: string) => {
             title: 'ES6+ Features',
             content: 'Explore arrow functions, destructuring, spread operator, and more...',
             type: 'video',
-            videoUrl: 'https://example.com/js-video',
+            video_url: 'https://example.com/js-video', // Fixed property name
             duration: 45,
             order: 1,
             isFree: false

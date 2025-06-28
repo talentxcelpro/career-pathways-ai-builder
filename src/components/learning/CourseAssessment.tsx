@@ -32,18 +32,26 @@ interface Assessment {
 }
 
 interface CourseAssessmentProps {
-  assessment: Assessment;
+  assessment: any; // Use any to accept Supabase Json type
   courseId: string;
   isEnrolled: boolean;
   onComplete: (passed: boolean, score: number) => void;
 }
 
 export const CourseAssessment: React.FC<CourseAssessmentProps> = ({
-  assessment,
+  assessment: rawAssessment,
   courseId,
   isEnrolled,
   onComplete
 }) => {
+  // Transform the raw assessment to proper format
+  const assessment: Assessment = {
+    ...rawAssessment,
+    questions: Array.isArray(rawAssessment.questions) 
+      ? rawAssessment.questions as Question[]
+      : []
+  };
+
   const [isStarted, setIsStarted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
@@ -253,6 +261,17 @@ export const CourseAssessment: React.FC<CourseAssessmentProps> = ({
               </p>
             </div>
           )}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (assessment.questions.length === 0) {
+    return (
+      <Card>
+        <CardContent className="text-center p-8">
+          <AlertCircle className="h-8 w-8 text-orange-500 mx-auto mb-2" />
+          <p className="text-orange-700">No questions available for this assessment.</p>
         </CardContent>
       </Card>
     );
