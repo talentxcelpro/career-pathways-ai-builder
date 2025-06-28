@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CourseCard } from "./CourseCard";
+import { EnhancedCourseCard } from "./EnhancedCourseCard";
 import { LearningPathCard } from "./LearningPathCard";
 import { MyLearningCard } from "./MyLearningCard";
 import { EmptyMyLearning } from "./EmptyMyLearning";
@@ -29,6 +29,12 @@ export const LearningTabs: React.FC<LearningTabsProps> = ({
   isEnrolled,
   enrollInCourse
 }) => {
+  // Get user progress for enrolled courses
+  const getUserProgress = (courseId: string) => {
+    const userCourse = userCourses.find(uc => uc.course_id === courseId);
+    return userCourse?.progress_percentage || 0;
+  };
+
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
       <TabsList className="grid w-full grid-cols-3">
@@ -48,11 +54,13 @@ export const LearningTabs: React.FC<LearningTabsProps> = ({
             </div>
           ) : (
             filteredCourses.map((course) => (
-              <CourseCard
+              <EnhancedCourseCard
                 key={course.id}
                 course={course}
                 isEnrolled={isEnrolled(course.id)}
                 onEnroll={enrollInCourse}
+                userProgress={getUserProgress(course.id)}
+                showProgress={isEnrolled(course.id)}
               />
             ))
           )}
@@ -81,10 +89,12 @@ export const LearningTabs: React.FC<LearningTabsProps> = ({
         {userCourses.length === 0 ? (
           <EmptyMyLearning onBrowseCourses={() => setActiveTab('courses')} />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {userCourses.map((userCourse) => (
-              <MyLearningCard key={userCourse.id} userCourse={userCourse} />
-            ))}
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {userCourses.map((userCourse) => (
+                <MyLearningCard key={userCourse.id} userCourse={userCourse} />
+              ))}
+            </div>
           </div>
         )}
       </TabsContent>
