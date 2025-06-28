@@ -1,4 +1,3 @@
-
 import { Briefcase } from "lucide-react";
 import Jobs from "../pages/Jobs";
 import SavedJobs from "../pages/jobs/SavedJobs";
@@ -15,13 +14,18 @@ import Recommendations from "../pages/jobs/Recommendations";
 import Alerts from "../pages/jobs/Alerts";
 import Analytics from "../pages/jobs/Analytics";
 import Companies from "../pages/jobs/Companies";
+import MyApplications from "../pages/jobs/MyApplications";
 
 export const jobRoutes = [
   {
-    title: "Jobs",
+    title: "Browse Jobs",
     to: "/jobs",
-    icon: <Briefcase className="h-4 w-4" />,
     page: <Jobs />,
+  },
+  {
+    title: "My Applications",
+    to: "/jobs/my-applications",
+    page: <MyApplications />,
   },
   {
     title: "Saved Jobs",

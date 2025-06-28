@@ -1594,7 +1594,10 @@ export type Database = {
           id: string
           is_active: boolean | null
           is_featured: boolean | null
+          is_hiring_fast: boolean | null
           is_remote: boolean | null
+          is_urgent: boolean | null
+          job_status: string | null
           location: string | null
           posted_at: string | null
           posted_by: string | null
@@ -1622,7 +1625,10 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_featured?: boolean | null
+          is_hiring_fast?: boolean | null
           is_remote?: boolean | null
+          is_urgent?: boolean | null
+          job_status?: string | null
           location?: string | null
           posted_at?: string | null
           posted_by?: string | null
@@ -1650,7 +1656,10 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_featured?: boolean | null
+          is_hiring_fast?: boolean | null
           is_remote?: boolean | null
+          is_urgent?: boolean | null
+          job_status?: string | null
           location?: string | null
           posted_at?: string | null
           posted_by?: string | null
