@@ -81,7 +81,7 @@ const getCourseModules = (courseTitle: string) => {
             title: 'Course Introduction',
             content: 'Welcome to Full Stack Web Development! In this comprehensive course, you will learn...',
             type: 'video',
-            video_url: 'https://example.com/intro-video', // Fixed property name
+            video_url: 'https://example.com/intro-video',
             duration: 15,
             order: 1,
             isFree: true
@@ -90,6 +90,7 @@ const getCourseModules = (courseTitle: string) => {
             title: 'Setting Up Your Development Environment',
             content: 'Learn how to set up Node.js, VS Code, and other essential tools...',
             type: 'text',
+            video_url: null,
             duration: 30,
             order: 2,
             isFree: true
@@ -106,7 +107,7 @@ const getCourseModules = (courseTitle: string) => {
             title: 'ES6+ Features',
             content: 'Explore arrow functions, destructuring, spread operator, and more...',
             type: 'video',
-            video_url: 'https://example.com/js-video', // Fixed property name
+            video_url: 'https://example.com/js-video',
             duration: 45,
             order: 1,
             isFree: false
@@ -115,6 +116,7 @@ const getCourseModules = (courseTitle: string) => {
             title: 'Asynchronous JavaScript',
             content: 'Understanding Promises, async/await, and handling API calls...',
             type: 'video',
+            video_url: 'https://example.com/async-video',
             duration: 60,
             order: 2,
             isFree: false
@@ -133,6 +135,7 @@ const getCourseModules = (courseTitle: string) => {
             title: 'Course Overview',
             content: 'Welcome to Data Science & Machine Learning with Python...',
             type: 'video',
+            video_url: 'https://example.com/python-intro',
             duration: 20,
             order: 1,
             isFree: true
@@ -141,6 +144,7 @@ const getCourseModules = (courseTitle: string) => {
             title: 'NumPy Fundamentals',
             content: 'Learn array operations, broadcasting, and numerical computing...',
             type: 'text',
+            video_url: null,
             duration: 45,
             order: 2,
             isFree: false
@@ -161,6 +165,7 @@ const getCourseModules = (courseTitle: string) => {
           title: 'Welcome to the Course',
           content: 'Course introduction and what you will learn...',
           type: 'video',
+          video_url: 'https://example.com/welcome',
           duration: 15,
           order: 1,
           isFree: true
