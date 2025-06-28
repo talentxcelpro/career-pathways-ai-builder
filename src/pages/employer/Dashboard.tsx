@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,10 @@ import { AIScreeningWidget } from "@/components/employer/dashboard/AIScreeningWi
 import { SmartJobOptimizationWidget } from "@/components/employer/dashboard/SmartJobOptimizationWidget";
 import { AutomatedWorkflowWidget } from "@/components/employer/dashboard/AutomatedWorkflowWidget";
 import { PredictiveAnalyticsWidget } from "@/components/employer/dashboard/PredictiveAnalyticsWidget";
+import { CandidatePipelineAnalyticsWidget } from "@/components/employer/dashboard/CandidatePipelineAnalyticsWidget";
+import { SmartRecruitmentMetricsWidget } from "@/components/employer/dashboard/SmartRecruitmentMetricsWidget";
+import { IntegrationHubWidget } from "@/components/employer/dashboard/IntegrationHubWidget";
+import { AdvancedAutomationRulesWidget } from "@/components/employer/dashboard/AdvancedAutomationRulesWidget";
 
 interface DashboardStats {
   activeJobs: number;
@@ -257,6 +260,22 @@ const EmployerDashboard = () => {
             </div>
             <div>
               <PredictiveAnalyticsWidget />
+            </div>
+          </div>
+
+          {/* Phase 5: Advanced Integration & Workflow Automation */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+            <div>
+              <CandidatePipelineAnalyticsWidget />
+            </div>
+            <div>
+              <SmartRecruitmentMetricsWidget />
+            </div>
+            <div>
+              <IntegrationHubWidget />
+            </div>
+            <div>
+              <AdvancedAutomationRulesWidget />
             </div>
           </div>
 
