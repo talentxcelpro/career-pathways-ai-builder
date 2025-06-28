@@ -12,6 +12,9 @@ const OAuthCallback = () => {
       try {
         console.log('Processing OAuth callback...');
         
+        // Wait a bit for the auth state to settle
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
