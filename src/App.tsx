@@ -31,7 +31,7 @@ const queryClient = new QueryClient({
 });
 
 // Routes that don't require authentication
-const publicRoutes = ['/', '/auth/login', '/auth/register', '/auth/forgot-password', '/auth/reset-password'];
+const publicRoutes = ['/', '/auth/login', '/auth/register', '/auth/forgot-password', '/auth/reset-password', '/auth/callback'];
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

@@ -48,26 +48,31 @@ const LoginForm = () => {
     setSocialLoading(provider);
 
     try {
-      // Get current origin for proper redirect handling
-      const redirectTo = window.location.origin;
+      console.log(`Starting ${provider} OAuth flow...`);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo,
-          skipBrowserRedirect: false
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       });
 
       if (error) {
         console.error(`${provider} OAuth error:`, error);
-        toast.error(`Failed to login with ${provider === 'google' ? 'Google' : 'LinkedIn'}: ${error.message}`);
+        toast.error(`Failed to initialize ${provider} login: ${error.message}`);
         setSocialLoading(null);
+        return;
       }
-      // Don't set loading to null here - let the auth state change handle it
+
+      console.log(`${provider} OAuth initialized successfully`);
+      // Don't clear loading state here - the redirect will handle it
     } catch (error: any) {
       console.error(`${provider} login error:`, error);
-      toast.error('Social login failed. Please try again.');
+      toast.error(`${provider} login failed. Please try again.`);
       setSocialLoading(null);
     }
   };

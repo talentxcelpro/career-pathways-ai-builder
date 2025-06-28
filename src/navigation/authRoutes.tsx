@@ -3,6 +3,7 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
+import OAuthCallback from "../pages/auth/OAuthCallback";
 
 export const authRoutes = [
   {
@@ -24,5 +25,10 @@ export const authRoutes = [
     title: "Reset Password",
     to: "/auth/reset-password",
     page: <ResetPassword />,
+  },
+  {
+    title: "OAuth Callback",
+    to: "/auth/callback",
+    page: <OAuthCallback />,
   },
 ];
