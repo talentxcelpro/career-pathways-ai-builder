@@ -22,7 +22,7 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
     try {
       console.log(`Starting ${provider} OAuth flow...`);
       
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
@@ -35,16 +35,16 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
 
       if (error) {
         console.error(`${provider} OAuth error:`, error);
-        toast.error(`Failed to initialize ${provider} login`);
+        toast.error(`Failed to sign in with ${provider}`);
         setLoading(null);
         return;
       }
 
-      console.log(`${provider} OAuth initialized successfully`);
-      // Don't clear loading state here - the redirect will handle it
+      console.log(`${provider} OAuth initiated successfully`);
+      // The redirect will handle the loading state
     } catch (error: any) {
       console.error(`${provider} login error:`, error);
-      toast.error(`${provider} login failed. Please try again.`);
+      toast.error(`${provider} sign in failed. Please try again.`);
       setLoading(null);
     }
   };
@@ -68,7 +68,7 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
         )}
         {showText && (
           <span className="text-gray-700 group-hover:text-gray-900">
-            {loading === 'google' ? 'Connecting...' : 'Continue with Google'}
+            {loading === 'google' ? 'Signing in...' : 'Continue with Google'}
           </span>
         )}
       </Button>
@@ -86,7 +86,7 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
         )}
         {showText && (
           <span className="text-gray-700 group-hover:text-gray-900">
-            {loading === 'linkedin_oidc' ? 'Connecting...' : 'Continue with LinkedIn'}
+            {loading === 'linkedin_oidc' ? 'Signing in...' : 'Continue with LinkedIn'}
           </span>
         )}
       </Button>

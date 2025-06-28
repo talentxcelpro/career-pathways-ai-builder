@@ -14,31 +14,32 @@ const OAuthCallback = () => {
         console.log('Processing OAuth callback...');
         setStatus('processing');
         
+        // Handle the OAuth callback
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('OAuth callback error:', error);
           setStatus('error');
-          toast.error('Authentication failed. Please try again.');
+          toast.error('Sign in failed. Please try again.');
           setTimeout(() => navigate('/auth/login'), 2000);
           return;
         }
 
-        if (data.session) {
+        if (data.session && data.session.user) {
           console.log('OAuth authentication successful');
           setStatus('success');
           toast.success('Successfully signed in!');
-          // Faster redirect - no delay needed
           navigate('/dashboard', { replace: true });
         } else {
           console.log('No session found in callback');
           setStatus('error');
+          toast.error('Sign in failed. Please try again.');
           setTimeout(() => navigate('/auth/login'), 2000);
         }
       } catch (error) {
         console.error('OAuth callback processing error:', error);
         setStatus('error');
-        toast.error('Authentication failed. Please try again.');
+        toast.error('Sign in failed. Please try again.');
         setTimeout(() => navigate('/auth/login'), 2000);
       }
     };
@@ -53,7 +54,7 @@ const OAuthCallback = () => {
           <>
             <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-6"></div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Signing you in...</h2>
-            <p className="text-gray-600">Please wait while we complete your login</p>
+            <p className="text-gray-600">Please wait while we complete your sign in</p>
           </>
         )}
         
@@ -64,7 +65,7 @@ const OAuthCallback = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-green-800 mb-2">Welcome back!</h2>
+            <h2 className="text-xl font-semibold text-green-800 mb-2">Welcome!</h2>
             <p className="text-gray-600">Redirecting to your dashboard...</p>
           </>
         )}
@@ -76,7 +77,7 @@ const OAuthCallback = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-red-800 mb-2">Authentication Failed</h2>
+            <h2 className="text-xl font-semibold text-red-800 mb-2">Sign In Failed</h2>
             <p className="text-gray-600">Redirecting to sign in page...</p>
           </>
         )}
