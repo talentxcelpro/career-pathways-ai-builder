@@ -5,580 +5,497 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
-import { 
-  Brain, 
-  Target, 
-  TrendingUp, 
-  Clock, 
-  Sparkles, 
-  CheckCircle, 
-  ArrowRight,
-  Lightbulb,
-  Award,
-  BookOpen
-} from 'lucide-react';
-
-interface RoadmapStep {
-  step: number;
-  title: string;
-  description: string;
-  isCompleted: boolean;
-}
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Brain, Sparkles, Target, Clock, MapPin, TrendingUp, Star, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { AICareerInsights } from '@/components/career-map/AICareerInsights';
+import { InteractiveTimeline } from '@/components/career-map/InteractiveTimeline';
+import { SkillGapAnalyzer } from '@/components/career-map/SkillGapAnalyzer';
+import { NetworkingSuggestions } from '@/components/career-map/NetworkingSuggestions';
 
 const AIRoadmapBuilder = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [formData, setFormData] = useState({
-    currentPosition: '',
+  const [roadmapData, setRoadmapData] = useState({
+    currentRole: '',
     targetRole: '',
-    targetCompany: '',
-    timeline: '24',
+    timeframe: '',
+    location: '',
     currentSkills: [] as string[],
-    targetIndustry: '',
-    experienceLevel: '',
-    preferredLearningStyle: '',
-    availableTimePerWeek: '5'
+    interests: [] as string[],
+    careerGoals: '',
+    preferredLearning: ''
   });
-  const [currentSkill, setCurrentSkill] = useState('');
-  const [generatedRoadmap, setGeneratedRoadmap] = useState<any>(null);
-  const { toast } = useToast();
-  const navigate = useNavigate();
 
-  const steps: RoadmapStep[] = [
-    { step: 1, title: 'Current Position', description: 'Tell us about your current role', isCompleted: currentStep > 1 },
-    { step: 2, title: 'Target Role', description: 'Define your career goal', isCompleted: currentStep > 2 },
-    { step: 3, title: 'Skills & Preferences', description: 'Your skills and learning style', isCompleted: currentStep > 3 },
-    { step: 4, title: 'AI Generation', description: 'Generate your personalized roadmap', isCompleted: currentStep > 4 },
-    { step: 5, title: 'Review & Save', description: 'Review and customize your roadmap', isCompleted: false }
+  const [generatedRoadmap, setGeneratedRoadmap] = useState(null);
+
+  // Mock skills data
+  const availableSkills = [
+    'JavaScript', 'Python', 'React', 'Node.js', 'AWS', 'Docker', 'Kubernetes',
+    'Machine Learning', 'Data Science', 'System Design', 'Leadership', 'Project Management'
   ];
 
-  const addSkill = () => {
-    if (currentSkill.trim() && !formData.currentSkills.includes(currentSkill.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        currentSkills: [...prev.currentSkills, currentSkill.trim()]
-      }));
-      setCurrentSkill('');
+  const mockMilestones = [
+    {
+      id: '1',
+      title: 'Master Advanced JavaScript Concepts',
+      description: 'Learn ES6+, async programming, and design patterns',
+      targetDate: '2024-09-01',
+      status: 'upcoming' as const,
+      category: 'skill' as const,
+      estimatedDuration: '6 weeks',
+      resources: [
+        { type: 'course' as const, title: 'Advanced JavaScript Masterclass', provider: 'Udemy' },
+        { type: 'book' as const, title: 'You Don\'t Know JS', provider: 'O\'Reilly' }
+      ],
+      priority: 'high' as const
+    },
+    {
+      id: '2',
+      title: 'AWS Solutions Architect Certification',
+      description: 'Prepare for and pass the AWS SA Associate exam',
+      targetDate: '2024-11-15',
+      status: 'upcoming' as const,
+      category: 'certification' as const,
+      estimatedDuration: '3 months',
+      resources: [
+        { type: 'course' as const, title: 'AWS Certified Solutions Architect', provider: 'A Cloud Guru' },
+        { type: 'certification' as const, title: 'AWS SA Associate Exam', provider: 'AWS' }
+      ],
+      priority: 'high' as const
     }
+  ];
+
+  const handleInputChange = (field: string, value: string | string[]) => {
+    setRoadmapData(prev => ({ ...prev, [field]: value }));
   };
 
-  const removeSkill = (skillToRemove: string) => {
-    setFormData(prev => ({
-      ...prev,
-      currentSkills: prev.currentSkills.filter(skill => skill !== skillToRemove)
-    }));
-  };
-
-  const generateAIRoadmap = async () => {
+  const handleGenerateRoadmap = async () => {
     setIsGenerating(true);
-    try {
-      // Simulate AI generation with mock data
-      const mockRoadmap = {
-        title: `${formData.currentPosition} to ${formData.targetRole} Roadmap`,
-        description: `A personalized ${formData.timeline}-month journey from ${formData.currentPosition} to ${formData.targetRole}`,
-        milestones: [
-          {
-            title: 'Foundation Building (Months 1-3)',
-            description: 'Build core skills and knowledge base',
-            type: 'skill',
-            priority: 1,
-            resources: ['Online courses', 'Documentation', 'Practice projects']
-          },
-          {
-            title: 'Practical Experience (Months 4-8)',
-            description: 'Apply skills through projects and real-world experience',
-            type: 'project',
-            priority: 1,
-            resources: ['Side projects', 'Open source contributions', 'Internships']
-          },
-          {
-            title: 'Specialization (Months 9-12)',
-            description: 'Focus on specialized skills for target role',
-            type: 'certification',
-            priority: 2,
-            resources: ['Advanced courses', 'Certifications', 'Mentorship']
-          },
-          {
-            title: 'Job Preparation (Months 13-18)',
-            description: 'Prepare for job applications and interviews',
-            type: 'experience',
-            priority: 1,
-            resources: ['Portfolio building', 'Interview prep', 'Networking']
-          }
-        ],
-        requiredSkills: [
-          'React.js', 'Node.js', 'TypeScript', 'Database Design', 'System Architecture',
-          'Problem Solving', 'Communication', 'Team Leadership'
-        ],
-        estimatedOutcome: {
-          salaryIncrease: '30-50%',
-          marketDemand: 'High',
-          successProbability: '85%'
-        }
-      };
-
-      setGeneratedRoadmap(mockRoadmap);
-      setCurrentStep(5);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to generate roadmap. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
+    // Simulate AI generation
+    setTimeout(() => {
+      setGeneratedRoadmap(roadmapData);
       setIsGenerating(false);
-    }
+      setCurrentStep(5);
+    }, 3000);
   };
 
-  const saveRoadmap = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const roadmapData = {
-        user_id: user.id,
-        title: generatedRoadmap.title,
-        description: generatedRoadmap.description,
-        current_position: formData.currentPosition,
-        target_role: formData.targetRole,
-        target_company: formData.targetCompany || null,
-        timeline_months: parseInt(formData.timeline),
-        ai_generated: true,
-        skills_current: formData.currentSkills,
-        skills_target: generatedRoadmap.requiredSkills,
-        roadmap_data: {
-          formData,
-          generatedRoadmap,
-          createdAt: new Date().toISOString()
-        }
-      };
-
-      const { data: roadmap, error } = await supabase
-        .from('roadmaps')
-        .insert(roadmapData)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Create milestones
-      const milestones = generatedRoadmap.milestones.map((milestone: any, index: number) => ({
-        roadmap_id: roadmap.id,
-        title: milestone.title,
-        description: milestone.description,
-        milestone_type: milestone.type,
-        priority: milestone.priority,
-        resources: milestone.resources,
-        target_date: new Date(Date.now() + (index + 1) * 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 3-month intervals
-      }));
-
-      const { error: milestonesError } = await supabase
-        .from('roadmap_milestones')
-        .insert(milestones);
-
-      if (milestonesError) throw milestonesError;
-
-      toast({
-        title: "Success!",
-        description: "Your AI-generated roadmap has been saved successfully.",
-      });
-
-      navigate(`/career-map/${roadmap.id}`);
-    } catch (error) {
-      console.error('Error saving roadmap:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save roadmap. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const handleMilestoneUpdate = (milestoneId: string, status: any) => {
+    console.log(`Updating milestone ${milestoneId} to ${status}`);
   };
 
-  const nextStep = () => {
-    if (currentStep < 5) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
+  const renderStep1 = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Target className="h-5 w-5" />
+          Career Information
+        </CardTitle>
+        <CardDescription>Tell us about your current situation and goals</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="current-role">Current Role</Label>
+            <Input
+              id="current-role"
+              placeholder="e.g., Software Engineer"
+              value={roadmapData.currentRole}
+              onChange={(e) => handleInputChange('currentRole', e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="target-role">Target Role</Label>
+            <Input
+              id="target-role"
+              placeholder="e.g., Senior Software Engineer"
+              value={roadmapData.targetRole}
+              onChange={(e) => handleInputChange('targetRole', e.target.value)}
+            />
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="timeframe">Target Timeframe</Label>
+            <Select onValueChange={(value) => handleInputChange('timeframe', value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select timeframe" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="6">6 months</SelectItem>
+                <SelectItem value="12">1 year</SelectItem>
+                <SelectItem value="18">18 months</SelectItem>
+                <SelectItem value="24">2 years</SelectItem>
+                <SelectItem value="36">3+ years</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="location">Preferred Location</Label>
+            <Input
+              id="location"
+              placeholder="e.g., San Francisco, Remote"
+              value={roadmapData.location}
+              onChange={(e) => handleInputChange('location', e.target.value)}
+            />
+          </div>
+        </div>
 
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
+        <div>
+          <Label htmlFor="career-goals">Career Goals & Aspirations</Label>
+          <Textarea
+            id="career-goals"
+            placeholder="Describe your long-term career vision..."
+            value={roadmapData.careerGoals}
+            onChange={(e) => handleInputChange('careerGoals', e.target.value)}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderStep2 = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Star className="h-5 w-5" />
+          Skills Assessment
+        </CardTitle>
+        <CardDescription>Select your current skills and expertise areas</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label>Current Skills</Label>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {availableSkills.map((skill) => (
+              <Badge
+                key={skill}
+                variant={roadmapData.currentSkills.includes(skill) ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => {
+                  const newSkills = roadmapData.currentSkills.includes(skill)
+                    ? roadmapData.currentSkills.filter(s => s !== skill)
+                    : [...roadmapData.currentSkills, skill];
+                  handleInputChange('currentSkills', newSkills);
+                }}
+              >
+                {skill}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <Label>Learning Preferences</Label>
+          <Select onValueChange={(value) => handleInputChange('preferredLearning', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="How do you prefer to learn?" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="online-courses">Online Courses</SelectItem>
+              <SelectItem value="books">Books & Documentation</SelectItem>
+              <SelectItem value="hands-on">Hands-on Projects</SelectItem>
+              <SelectItem value="mentorship">Mentorship & Coaching</SelectItem>
+              <SelectItem value="mixed">Mixed Approach</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderStep3 = () => (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Brain className="h-5 w-5" />
+            AI Analysis
+          </CardTitle>
+          <CardDescription>AI-powered insights for your career path</CardDescription>
+        </CardHeader>
+      </Card>
+      
+      <Tabs defaultValue="insights" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="insights">Market Insights</TabsTrigger>
+          <TabsTrigger value="skills">Skills Gap</TabsTrigger>
+          <TabsTrigger value="networking">Networking</TabsTrigger>
+          <TabsTrigger value="timeline">Timeline</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="insights">
+          <AICareerInsights
+            targetRole={roadmapData.targetRole}
+            currentSkills={roadmapData.currentSkills}
+            location={roadmapData.location}
+          />
+        </TabsContent>
+
+        <TabsContent value="skills">
+          <SkillGapAnalyzer
+            targetRole={roadmapData.targetRole}
+            currentSkills={roadmapData.currentSkills.map(skill => ({ name: skill, level: 70 }))}
+            requiredSkills={[
+              { name: 'JavaScript', level: 90 },
+              { name: 'React', level: 85 },
+              { name: 'System Design', level: 80 }
+            ]}
+          />
+        </TabsContent>
+
+        <TabsContent value="networking">
+          <NetworkingSuggestions
+            targetRole={roadmapData.targetRole}
+            currentLocation={roadmapData.location}
+            interests={roadmapData.interests}
+          />
+        </TabsContent>
+
+        <TabsContent value="timeline">
+          <InteractiveTimeline
+            milestones={mockMilestones}
+            onMilestoneUpdate={handleMilestoneUpdate}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+
+  const renderStep4 = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Sparkles className="h-5 w-5" />
+          Generate Your Roadmap
+        </CardTitle>
+        <CardDescription>Review your inputs and generate your personalized career roadmap</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <h4 className="font-medium">Career Transition</h4>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm text-gray-600">From:</span>
+                <span className="font-medium">{roadmapData.currentRole}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">To:</span>
+                <span className="font-medium">{roadmapData.targetRole}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h4 className="font-medium">Timeline & Location</h4>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="h-4 w-4 text-gray-500" />
+                <span className="text-sm">{roadmapData.timeframe} months</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-gray-500" />
+                <span className="text-sm">{roadmapData.location}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h4 className="font-medium mb-2">Current Skills</h4>
+          <div className="flex flex-wrap gap-2">
+            {roadmapData.currentSkills.map((skill) => (
+              <Badge key={skill} variant="secondary">{skill}</Badge>
+            ))}
+          </div>
+        </div>
+
+        <Button
+          onClick={handleGenerateRoadmap}
+          disabled={isGenerating || !roadmapData.currentRole || !roadmapData.targetRole}
+          className="w-full"
+          size="lg"
+        >
+          {isGenerating ? (
+            <>
+              <Sparkles className="h-4 w-4 mr-2 animate-spin" />
+              Generating Your AI Roadmap...
+            </>
+          ) : (
+            <>
+              <Brain className="h-4 w-4 mr-2" />
+              Generate AI-Powered Roadmap
+            </>
+          )}
+        </Button>
+
+        {isGenerating && (
+          <div className="space-y-3">
+            <Progress value={33} className="h-2" />
+            <div className="text-center text-sm text-gray-600">
+              Analyzing market trends and skill requirements...
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+
+  const renderGeneratedRoadmap = () => (
+    <div className="space-y-6">
+      <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-green-600" />
+            Your AI-Generated Career Roadmap
+          </CardTitle>
+          <CardDescription>
+            Personalized path from {roadmapData.currentRole} to {roadmapData.targetRole}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-4 justify-center">
+            <Button>Save Roadmap</Button>
+            <Button variant="outline">Share Roadmap</Button>
+            <Link to="/career-map/my-roadmaps">
+              <Button variant="outline">View All Roadmaps</Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="timeline" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="timeline">Interactive Timeline</TabsTrigger>
+          <TabsTrigger value="insights">AI Insights</TabsTrigger>
+          <TabsTrigger value="skills">Skills Analysis</TabsTrigger>
+          <TabsTrigger value="network">Networking</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="timeline">
+          <InteractiveTimeline
+            milestones={mockMilestones}
+            onMilestoneUpdate={handleMilestoneUpdate}
+          />
+        </TabsContent>
+
+        <TabsContent value="insights">
+          <AICareerInsights
+            targetRole={roadmapData.targetRole}
+            currentSkills={roadmapData.currentSkills}
+            location={roadmapData.location}
+          />
+        </TabsContent>
+
+        <TabsContent value="skills">
+          <SkillGapAnalyzer
+            targetRole={roadmapData.targetRole}
+            currentSkills={roadmapData.currentSkills.map(skill => ({ name: skill, level: 70 }))}
+            requiredSkills={[
+              { name: 'JavaScript', level: 90 },
+              { name: 'React', level: 85 },
+              { name: 'System Design', level: 80 }
+            ]}
+          />
+        </TabsContent>
+
+        <TabsContent value="network">
+          <NetworkingSuggestions
+            targetRole={roadmapData.targetRole}
+            currentLocation={roadmapData.location}
+            interests={roadmapData.interests}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
-            <Brain className="h-8 w-8 text-blue-600 mr-3" />
-            AI Roadmap Builder
+          <Link to="/career-map" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
+            ← Back to Career Map
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+            <Brain className="h-8 w-8 text-blue-600" />
+            AI Career Roadmap Builder
           </h1>
-          <p className="text-gray-600">Create a personalized career roadmap with AI guidance</p>
+          <p className="text-gray-600">Create a personalized, data-driven career development plan</p>
         </div>
 
-        {/* Progress Steps */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              {steps.map((step, index) => (
-                <div key={step.step} className="flex items-center">
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
-                    step.step === currentStep 
-                      ? 'bg-blue-600 text-white' 
-                      : step.isCompleted 
-                        ? 'bg-green-600 text-white' 
-                        : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    {step.isCompleted ? <CheckCircle className="h-4 w-4" /> : step.step}
+        {/* Progress Indicator */}
+        {currentStep <= 4 && (
+          <Card className="mb-8">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-4">
+                {[1, 2, 3, 4].map((step) => (
+                  <div
+                    key={step}
+                    className={`flex items-center ${step < 4 ? 'flex-1' : ''}`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                        step <= currentStep
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-600'
+                      }`}
+                    >
+                      {step}
+                    </div>
+                    {step < 4 && (
+                      <div
+                        className={`flex-1 h-1 mx-4 ${
+                          step < currentStep ? 'bg-blue-600' : 'bg-gray-200'
+                        }`}
+                      />
+                    )}
                   </div>
-                  {index < steps.length - 1 && (
-                    <div className={`w-12 h-1 mx-2 ${
-                      step.isCompleted ? 'bg-green-600' : 'bg-gray-200'
-                    }`} />
-                  )}
-                </div>
-              ))}
-            </div>
-            <div className="text-center">
-              <h3 className="font-semibold text-lg">{steps[currentStep - 1].title}</h3>
-              <p className="text-gray-600 text-sm">{steps[currentStep - 1].description}</p>
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Career Info</span>
+                <span>Skills</span>
+                <span>AI Analysis</span>
+                <span>Generate</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Step Content */}
-        <Card>
-          <CardContent className="p-8">
-            {currentStep === 1 && (
-              <div className="space-y-6">
-                <div className="text-center mb-6">
-                  <Target className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold mb-2">Tell us about your current position</h2>
-                  <p className="text-gray-600">Help us understand where you're starting from</p>
-                </div>
-                
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="currentPosition">Current Job Title</Label>
-                    <Input
-                      id="currentPosition"
-                      value={formData.currentPosition}
-                      onChange={(e) => setFormData(prev => ({ ...prev, currentPosition: e.target.value }))}
-                      placeholder="e.g., Junior Developer, Marketing Coordinator"
-                      className="mt-1"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="experienceLevel">Experience Level</Label>
-                    <Select value={formData.experienceLevel} onValueChange={(value) => setFormData(prev => ({ ...prev, experienceLevel: value }))}>
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select your experience level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="entry">Entry Level (0-2 years)</SelectItem>
-                        <SelectItem value="mid">Mid Level (3-5 years)</SelectItem>
-                        <SelectItem value="senior">Senior Level (6-10 years)</SelectItem>
-                        <SelectItem value="lead">Lead/Principal (10+ years)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            )}
+        <div className="mb-8">
+          {currentStep === 1 && renderStep1()}
+          {currentStep === 2 && renderStep2()}
+          {currentStep === 3 && renderStep3()}
+          {currentStep === 4 && renderStep4()}
+          {currentStep === 5 && renderGeneratedRoadmap()}
+        </div>
 
-            {currentStep === 2 && (
-              <div className="space-y-6">
-                <div className="text-center mb-6">
-                  <TrendingUp className="h-12 w-12 text-green-600 mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold mb-2">Define your career goal</h2>
-                  <p className="text-gray-600">Where do you want to be in your career?</p>
-                </div>
-                
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="targetRole">Target Job Title</Label>
-                    <Input
-                      id="targetRole"
-                      value={formData.targetRole}
-                      onChange={(e) => setFormData(prev => ({ ...prev, targetRole: e.target.value }))}
-                      placeholder="e.g., Senior Developer, Product Manager"
-                      className="mt-1"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="targetCompany">Target Company (Optional)</Label>
-                    <Input
-                      id="targetCompany"
-                      value={formData.targetCompany}
-                      onChange={(e) => setFormData(prev => ({ ...prev, targetCompany: e.target.value }))}
-                      placeholder="e.g., Google, Microsoft, or leave blank"
-                      className="mt-1"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="targetIndustry">Target Industry</Label>
-                    <Select value={formData.targetIndustry} onValueChange={(value) => setFormData(prev => ({ ...prev, targetIndustry: value }))}>
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select target industry" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="technology">Technology</SelectItem>
-                        <SelectItem value="finance">Finance</SelectItem>
-                        <SelectItem value="healthcare">Healthcare</SelectItem>
-                        <SelectItem value="education">Education</SelectItem>
-                        <SelectItem value="retail">Retail</SelectItem>
-                        <SelectItem value="consulting">Consulting</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="timeline">Timeline (Months)</Label>
-                    <Select value={formData.timeline} onValueChange={(value) => setFormData(prev => ({ ...prev, timeline: value }))}>
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="How long do you want this to take?" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="12">12 months</SelectItem>
-                        <SelectItem value="18">18 months</SelectItem>
-                        <SelectItem value="24">24 months</SelectItem>
-                        <SelectItem value="36">36 months</SelectItem>
-                        <SelectItem value="48">48+ months</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {currentStep === 3 && (
-              <div className="space-y-6">
-                <div className="text-center mb-6">
-                  <BookOpen className="h-12 w-12 text-purple-600 mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold mb-2">Skills & Learning Preferences</h2>
-                  <p className="text-gray-600">Help us personalize your learning path</p>
-                </div>
-                
-                <div className="space-y-4">
-                  <div>
-                    <Label>Current Skills</Label>
-                    <div className="mt-2 space-y-2">
-                      <div className="flex gap-2">
-                        <Input
-                          value={currentSkill}
-                          onChange={(e) => setCurrentSkill(e.target.value)}
-                          placeholder="Add a skill and press Enter"
-                          onKeyPress={(e) => e.key === 'Enter' && addSkill()}
-                        />
-                        <Button onClick={addSkill} type="button">Add</Button>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {formData.currentSkills.map((skill, index) => (
-                          <Badge key={index} variant="secondary" className="cursor-pointer" onClick={() => removeSkill(skill)}>
-                            {skill} ×
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="learningStyle">Preferred Learning Style</Label>
-                    <Select value={formData.preferredLearningStyle} onValueChange={(value) => setFormData(prev => ({ ...prev, preferredLearningStyle: value }))}>
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="How do you learn best?" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="visual">Visual (videos, diagrams)</SelectItem>
-                        <SelectItem value="reading">Reading (books, articles)</SelectItem>
-                        <SelectItem value="hands-on">Hands-on (projects, practice)</SelectItem>
-                        <SelectItem value="interactive">Interactive (courses, mentoring)</SelectItem>
-                        <SelectItem value="mixed">Mixed approach</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="timePerWeek">Available Time Per Week (Hours)</Label>
-                    <Select value={formData.availableTimePerWeek} onValueChange={(value) => setFormData(prev => ({ ...prev, availableTimePerWeek: value }))}>
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="How much time can you dedicate?" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="2">2-3 hours</SelectItem>
-                        <SelectItem value="5">5-7 hours</SelectItem>
-                        <SelectItem value="10">10-15 hours</SelectItem>
-                        <SelectItem value="20">20+ hours</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {currentStep === 4 && (
-              <div className="space-y-6">
-                <div className="text-center mb-6">
-                  <Sparkles className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold mb-2">Generate Your AI Roadmap</h2>
-                  <p className="text-gray-600">Our AI will create a personalized career roadmap for you</p>
-                </div>
-                
-                <div className="bg-gray-50 rounded-lg p-6 space-y-4">
-                  <h3 className="font-semibold text-lg">Roadmap Summary</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600">From</p>
-                      <p className="font-medium">{formData.currentPosition}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">To</p>
-                      <p className="font-medium">{formData.targetRole}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Timeline</p>
-                      <p className="font-medium">{formData.timeline} months</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Skills</p>
-                      <p className="font-medium">{formData.currentSkills.length} current skills</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="text-center">
-                  <Button 
-                    onClick={generateAIRoadmap} 
-                    disabled={isGenerating}
-                    className="px-8 py-3 text-lg"
-                  >
-                    {isGenerating ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Generating Roadmap...
-                      </>
-                    ) : (
-                      <>
-                        <Lightbulb className="h-5 w-5 mr-2" />
-                        Generate AI Roadmap
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {currentStep === 5 && generatedRoadmap && (
-              <div className="space-y-6">
-                <div className="text-center mb-6">
-                  <Award className="h-12 w-12 text-green-600 mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold mb-2">Your Personalized Roadmap</h2>
-                  <p className="text-gray-600">Review and save your AI-generated career plan</p>
-                </div>
-                
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>{generatedRoadmap.title}</CardTitle>
-                      <CardDescription>{generatedRoadmap.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-3 gap-4 mb-6">
-                        <div className="text-center">
-                          <p className="text-2xl font-bold text-green-600">{generatedRoadmap.estimatedOutcome.salaryIncrease}</p>
-                          <p className="text-sm text-gray-600">Salary Increase</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-2xl font-bold text-blue-600">{generatedRoadmap.estimatedOutcome.successProbability}</p>
-                          <p className="text-sm text-gray-600">Success Rate</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-2xl font-bold text-purple-600">{generatedRoadmap.estimatedOutcome.marketDemand}</p>
-                          <p className="text-sm text-gray-600">Market Demand</p>
-                        </div>
-                      </div>
-                      
-                      <Separator className="my-6" />
-                      
-                      <div className="space-y-4">
-                        <h4 className="font-semibold">Roadmap Milestones</h4>
-                        {generatedRoadmap.milestones.map((milestone: any, index: number) => (
-                          <div key={index} className="border rounded-lg p-4">
-                            <h5 className="font-medium text-lg">{milestone.title}</h5>
-                            <p className="text-gray-600 text-sm mb-2">{milestone.description}</p>
-                            <div className="flex flex-wrap gap-1">
-                              {milestone.resources.map((resource: string, resourceIndex: number) => (
-                                <Badge key={resourceIndex} variant="outline" className="text-xs">
-                                  {resource}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      
-                      <Separator className="my-6" />
-                      
-                      <div>
-                        <h4 className="font-semibold mb-2">Required Skills</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {generatedRoadmap.requiredSkills.map((skill: string, index: number) => (
-                            <Badge key={index} variant="secondary">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <div className="text-center">
-                    <Button onClick={saveRoadmap} className="px-8 py-3 text-lg">
-                      <CheckCircle className="h-5 w-5 mr-2" />
-                      Save My Roadmap
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Navigation */}
-            <div className="flex justify-between mt-8">
-              <Button 
-                variant="outline" 
-                onClick={prevStep} 
-                disabled={currentStep === 1}
-              >
-                Previous
-              </Button>
-              
-              {currentStep < 4 && (
-                <Button 
-                  onClick={nextStep}
-                  disabled={
-                    (currentStep === 1 && (!formData.currentPosition || !formData.experienceLevel)) ||
-                    (currentStep === 2 && (!formData.targetRole || !formData.targetIndustry || !formData.timeline)) ||
-                    (currentStep === 3 && (!formData.preferredLearningStyle || !formData.availableTimePerWeek))
-                  }
-                >
-                  Next <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Navigation */}
+        {currentStep <= 4 && (
+          <div className="flex justify-between">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
+              disabled={currentStep === 1}
+            >
+              Previous
+            </Button>
+            <Button
+              onClick={() => setCurrentStep(Math.min(4, currentStep + 1))}
+              disabled={currentStep === 4}
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
