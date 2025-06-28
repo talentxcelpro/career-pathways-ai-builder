@@ -8,14 +8,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Lock, Chrome, Linkedin } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
+import { SocialLogin } from './SocialLogin';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
@@ -44,77 +44,18 @@ const LoginForm = () => {
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'linkedin_oidc') => {
-    setSocialLoading(provider);
-
-    try {
-      console.log(`Starting ${provider} OAuth flow...`);
-      
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
-      });
-
-      if (error) {
-        console.error(`${provider} OAuth error:`, error);
-        toast.error(`Failed to initialize ${provider} login: ${error.message}`);
-        setSocialLoading(null);
-        return;
-      }
-
-      console.log(`${provider} OAuth initialized successfully`);
-      // Don't clear loading state here - the redirect will handle it
-    } catch (error: any) {
-      console.error(`${provider} login error:`, error);
-      toast.error(`${provider} login failed. Please try again.`);
-      setSocialLoading(null);
-    }
-  };
-
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Welcome back</CardTitle>
-        <CardDescription className="text-center">
+    <Card className="w-full max-w-md mx-auto shadow-xl">
+      <CardHeader className="space-y-1 text-center">
+        <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+        <CardDescription>
           Sign in to your account to continue
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Social Login Buttons */}
-        <div className="space-y-2">
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => handleSocialLogin('google')}
-            disabled={!!socialLoading}
-          >
-            {socialLoading === 'google' ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
-            ) : (
-              <Chrome className="h-4 w-4 mr-2" />
-            )}
-            Continue with Google
-          </Button>
-          
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => handleSocialLogin('linkedin_oidc')}
-            disabled={!!socialLoading}
-          >
-            {socialLoading === 'linkedin_oidc' ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
-            ) : (
-              <Linkedin className="h-4 w-4 mr-2" />
-            )}
-            Continue with LinkedIn
-          </Button>
+      <CardContent className="space-y-6">
+        {/* Enhanced Social Login */}
+        <div className="space-y-4">
+          <SocialLogin variant="prominent" />
         </div>
 
         <div className="relative">
@@ -122,14 +63,16 @@ const LoginForm = () => {
             <Separator className="w-full" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
+            <span className="bg-background px-3 text-muted-foreground font-medium">
+              Or continue with email
+            </span>
           </div>
         </div>
 
         {/* Email Login Form */}
         <form onSubmit={handleEmailLogin} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-sm font-medium">Email</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -138,14 +81,14 @@ const LoginForm = () => {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-11"
                 required
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-sm font-medium">Password</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -154,18 +97,18 @@ const LoginForm = () => {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 pr-10"
+                className="pl-10 pr-12 h-11"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-gray-400" />
+                  <EyeOff className="h-4 w-4" />
                 ) : (
-                  <Eye className="h-4 w-4 text-gray-400" />
+                  <Eye className="h-4 w-4" />
                 )}
               </button>
             </div>
@@ -173,16 +116,23 @@ const LoginForm = () => {
 
           <div className="flex items-center justify-between">
             <div className="text-sm">
-              <Link to="/auth/forgot-password" className="text-blue-600 hover:text-blue-500">
+              <Link 
+                to="/auth/forgot-password" 
+                className="text-blue-600 hover:text-blue-500 font-medium hover:underline"
+              >
                 Forgot password?
               </Link>
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button 
+            type="submit" 
+            className="w-full h-11 font-semibold" 
+            disabled={loading}
+          >
             {loading ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 Signing in...
               </>
             ) : (
@@ -193,7 +143,10 @@ const LoginForm = () => {
 
         <div className="text-center text-sm">
           <span className="text-gray-600">Don't have an account? </span>
-          <Link to="/auth/register" className="text-blue-600 hover:text-blue-500 font-medium">
+          <Link 
+            to="/auth/register" 
+            className="text-blue-600 hover:text-blue-500 font-medium hover:underline"
+          >
             Sign up
           </Link>
         </div>

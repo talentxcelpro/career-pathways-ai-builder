@@ -9,6 +9,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  refreshSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +28,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const refreshSession = async () => {
+    try {
+      const { data: { session }, error } = await supabase.auth.refreshSession();
+      if (error) throw error;
+      setSession(session);
+      setUser(session?.user ?? null);
+    } catch (error) {
+      console.error('Session refresh error:', error);
+    }
+  };
+
   useEffect(() => {
     let mounted = true;
 
@@ -42,11 +54,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Handle different auth events
         if (event === 'SIGNED_OUT') {
+          // Clear any cached data
+          localStorage.removeItem('supabase.auth.token');
           // Force redirect to index page after logout
           navigate('/', { replace: true });
         } else if (event === 'SIGNED_IN' && session?.user) {
-          // Only redirect to dashboard on successful login if not already there
-          if (window.location.pathname === '/' || window.location.pathname.startsWith('/auth')) {
+          // Fast redirect for successful login
+          const currentPath = window.location.pathname;
+          if (currentPath === '/' || currentPath.startsWith('/auth')) {
             navigate('/dashboard', { replace: true });
           }
         } else if (event === 'TOKEN_REFRESHED') {
@@ -115,7 +130,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     session,
     loading,
-    signOut
+    signOut,
+    refreshSession
   };
 
   return (
