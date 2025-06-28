@@ -19,6 +19,10 @@ import { CandidateInboxWidget } from "@/components/employer/dashboard/CandidateI
 import { TeamManagementWidget } from "@/components/employer/dashboard/TeamManagementWidget";
 import { SharedNotesWidget } from "@/components/employer/dashboard/SharedNotesWidget";
 import { InterviewSchedulingWidget } from "@/components/employer/dashboard/InterviewSchedulingWidget";
+import { AIScreeningWidget } from "@/components/employer/dashboard/AIScreeningWidget";
+import { SmartJobOptimizationWidget } from "@/components/employer/dashboard/SmartJobOptimizationWidget";
+import { AutomatedWorkflowWidget } from "@/components/employer/dashboard/AutomatedWorkflowWidget";
+import { PredictiveAnalyticsWidget } from "@/components/employer/dashboard/PredictiveAnalyticsWidget";
 
 interface DashboardStats {
   activeJobs: number;
@@ -237,6 +241,22 @@ const EmployerDashboard = () => {
             </div>
             <div>
               <InterviewSchedulingWidget />
+            </div>
+          </div>
+
+          {/* Phase 4: AI-Powered Features & Automation */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+            <div>
+              <AIScreeningWidget />
+            </div>
+            <div>
+              <SmartJobOptimizationWidget />
+            </div>
+            <div>
+              <AutomatedWorkflowWidget />
+            </div>
+            <div>
+              <PredictiveAnalyticsWidget />
             </div>
           </div>
 
