@@ -22,6 +22,29 @@ export const incrementJobViews = async (jobId: string) => {
 };
 
 export const incrementJobApplications = async (jobId: string) => {
-  const { error } = await supabase.rpc('increment_job_applications' as any, { job_id: jobId });
-  if (error) throw error;
+  try {
+    // Use a safer approach to increment - get current count and update
+    const { data: currentJob } = await supabase
+      .from('jobs')
+      .select('applications_count')
+      .eq('id', jobId)
+      .single();
+
+    if (currentJob) {
+      const newCount = Math.min((currentJob.applications_count || 0) + 1, 2147483647); // Max int value
+      
+      const { error } = await supabase
+        .from('jobs')
+        .update({ 
+          applications_count: newCount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', jobId);
+
+      if (error) throw error;
+    }
+  } catch (error) {
+    console.error('Error incrementing job applications:', error);
+    throw error;
+  }
 };

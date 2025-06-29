@@ -171,15 +171,20 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
         throw new Error('Please select a resume or upload one');
       }
 
-      // Submit application with simplified data structure
+      // Ensure numeric values are within safe ranges
+      const safeMatchScore = matchScore !== null && matchScore !== undefined 
+        ? Math.min(Math.max(matchScore, 0), 100) // Clamp between 0-100
+        : null;
+
+      // Submit application with properly formatted data
       const applicationData = {
         user_id: user.id,
         job_id: job.id,
-        cover_letter: formData.cover_letter || null,
+        cover_letter: formData.cover_letter?.trim() || null,
         resume_url: resumeUrl || null,
-        status: 'applied',
+        status: 'applied' as const,
         applied_at: new Date().toISOString(),
-        ai_match_score: matchScore
+        ai_match_score: safeMatchScore
       };
 
       console.log('Submitting application data:', applicationData);
@@ -193,7 +198,7 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
         throw error;
       }
 
-      // Update job application count
+      // Update job application count safely
       try {
         await incrementJobApplications(job.id);
       } catch (error) {
@@ -219,6 +224,8 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
         toast.error('You have already applied to this job');
       } else if (error.message?.includes('not authenticated')) {
         toast.error('Please log in to apply for jobs');
+      } else if (error.message?.includes('numeric field overflow')) {
+        toast.error('There was an issue with the application data. Please try again.');
       } else {
         toast.error(error.message || 'Failed to submit application. Please try again.');
       }
