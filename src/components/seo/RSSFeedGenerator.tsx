@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +14,8 @@ export const RSSFeedGenerator = () => {
           companies (
             name,
             logo_url,
-            website
+            website,
+            industry
           )
         `)
         .eq('is_active', true)
