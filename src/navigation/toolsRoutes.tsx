@@ -5,6 +5,7 @@ import SalaryAnalyzer from "../pages/tools/SalaryAnalyzer";
 import InterviewPrep from "../pages/tools/InterviewPrep";
 import CareerPathfinder from "../pages/tools/CareerPathfinder";
 import ResumeOptimizer from "../pages/tools/ResumeOptimizer";
+import ResumeBuilder from "../pages/tools/ResumeBuilder";
 import NetworkBuilder from "../pages/tools/NetworkBuilder";
 import SkillAssessor from "../pages/tools/SkillAssessor";
 import JobMatcher from "../pages/tools/JobMatcher";
@@ -17,6 +18,12 @@ export const toolsRoutes = [
     to: "/tools",
     icon: <Brain className="h-4 w-4" />,
     page: <Tools />,
+  },
+  {
+    title: "Resume Builder",
+    to: "/tools/resume-builder",
+    icon: <FileText className="h-4 w-4" />,
+    page: <ResumeBuilder />,
   },
   {
     title: "Salary Analyzer",
