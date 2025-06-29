@@ -155,12 +155,10 @@ const Profile = () => {
               <Button variant="outline" onClick={() => navigate('/profile/edit')}>
                 Edit Profile
               </Button>
-              {profile?.allow_profile_sharing && (
-                <Button variant="outline" onClick={() => setShowShareDialog(true)}>
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
-              )}
+              <Button variant="outline" onClick={() => setShowShareDialog(true)}>
+                <Share2 className="h-4 w-4 mr-2" />
+                Share
+              </Button>
               {profile?.resume_url && (
                 <Button variant="outline" asChild>
                   <a href={profile.resume_url} target="_blank" rel="noopener noreferrer">
@@ -260,6 +258,25 @@ const Profile = () => {
               </div>
             </div>
           )}
+
+          {/* Public Profile Link */}
+          <div className="mt-4 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium text-gray-900">Public Profile</h3>
+                <p className="text-sm text-gray-600">Share your profile with others</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <code className="text-sm bg-gray-100 px-2 py-1 rounded">
+                  {profileUrl}
+                </code>
+                <Button size="sm" variant="outline" onClick={() => setShowShareDialog(true)}>
+                  <Share2 className="h-4 w-4 mr-1" />
+                  Share
+                </Button>
+              </div>
+            </div>
+          </div>
 
           {/* Empty State */}
           {!profile && (

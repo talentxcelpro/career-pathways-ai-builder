@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,33 +6,43 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, MapPin, Building, Mail, Phone, Globe, UserPlus, MessageCircle, Calendar, Users } from "lucide-react";
+import { ArrowLeft, MapPin, Building, Mail, Phone, Globe, UserPlus, MessageCircle, Calendar, Users, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { PostCard } from "@/components/network/PostCard";
 import { useConversations } from "@/hooks/useConversations";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface UserProfileProps {
   profileIdOverride?: string;
+  isPublicView?: boolean;
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride }) => {
+const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicView = false }) => {
   const { id: paramId } = useParams<{ id: string }>();
   const id = profileIdOverride || paramId;
   const navigate = useNavigate();
   const { findOrCreateConversation } = useConversations();
+  const { user: currentUser } = useAuth();
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ['user-profile', id],
     queryFn: async () => {
       if (!id) throw new Error('User ID is required');
 
-      const { data, error } = await supabase
+      // For public view, only fetch public profiles or if user is authenticated
+      let query = supabase
         .from('profiles')
         .select('*')
-        .eq('id', id)
-        .single();
+        .eq('id', id);
+
+      // If this is a public view and user is not authenticated, only show public profiles
+      if (isPublicView && !currentUser) {
+        query = query.eq('profile_visibility', 'public');
+      }
+
+      const { data, error } = await query.single();
 
       if (error) throw error;
       return data;
@@ -66,9 +77,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride }) => {
 
   const handleConnect = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      if (!currentUser) {
         toast.error('Please sign in to connect with people');
+        navigate('/auth/login');
         return;
       }
 
@@ -77,7 +88,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride }) => {
       const { error } = await supabase
         .from('connections')
         .insert({
-          requester_id: user.id,
+          requester_id: currentUser.id,
           recipient_id: id,
           status: 'pending'
         });
@@ -92,9 +103,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride }) => {
 
   const handleMessage = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      if (!currentUser) {
         toast.error('Please sign in to send messages');
+        navigate('/auth/login');
         return;
       }
 
@@ -105,6 +116,33 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride }) => {
     } catch (error) {
       toast.error('Failed to start conversation');
       console.error('Message error:', error);
+    }
+  };
+
+  const handleShare = async () => {
+    const profileUrl = `${window.location.origin}/profile/${id}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${formatDisplayName(profile)}'s Profile`,
+          url: profileUrl,
+        });
+      } catch (error) {
+        // Fall back to copying to clipboard
+        copyToClipboard(profileUrl);
+      }
+    } else {
+      copyToClipboard(profileUrl);
+    }
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Profile link copied to clipboard!');
+    } catch (error) {
+      toast.error('Failed to copy link');
     }
   };
 
@@ -153,39 +191,63 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride }) => {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Link to="/network/people" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to People
-          </Link>
-          <Card>
-            <CardContent className="p-12 text-center">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Profile not found</h3>
-              <p className="text-gray-600">This user's profile may be private or doesn't exist.</p>
-            </CardContent>
-          </Card>
+          <div className="text-center py-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
+            <h2 className="text-xl text-gray-600 mb-4">Profile Not Found</h2>
+            <p className="text-gray-500 mb-6">This user's profile may be private or doesn't exist.</p>
+            <a 
+              href="/" 
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            >
+              Go to Home
+            </a>
+          </div>
         </div>
       </div>
     );
   }
+
+  const isOwnProfile = currentUser?.id === id;
+  const showAuthenticatedActions = currentUser && !isOwnProfile;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Link to="/network/people" className="inline-flex items-center text-blue-600 hover:text-blue-700">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to People
-          </Link>
+          {currentUser ? (
+            <Link to="/network/people" className="inline-flex items-center text-blue-600 hover:text-blue-700">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to People
+            </Link>
+          ) : (
+            <a href="/" className="inline-flex items-center text-blue-600 hover:text-blue-700">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </a>
+          )}
           <div className="flex space-x-3">
-            <Button onClick={handleConnect}>
-              <UserPlus className="h-4 w-4 mr-2" />
-              Connect
+            <Button onClick={handleShare} variant="outline">
+              <Share2 className="h-4 w-4 mr-2" />
+              Share
             </Button>
-            <Button variant="outline" onClick={handleMessage}>
-              <MessageCircle className="h-4 w-4 mr-2" />
-              Message
-            </Button>
+            {showAuthenticatedActions && (
+              <>
+                <Button onClick={handleConnect}>
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Connect
+                </Button>
+                <Button variant="outline" onClick={handleMessage}>
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Message
+                </Button>
+              </>
+            )}
+            {!currentUser && (
+              <Button onClick={() => navigate('/auth/login')} variant="outline">
+                Sign In to Connect
+              </Button>
+            )}
           </div>
         </div>
 

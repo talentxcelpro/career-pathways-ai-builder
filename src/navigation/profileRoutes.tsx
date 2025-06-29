@@ -17,50 +17,60 @@ export const profileRoutes = [
     to: "/profile",
     icon: <User className="h-4 w-4" />,
     page: <Profile />,
+    requiresAuth: true,
   },
   {
     title: "Public Profile",
     to: "/profile/:id",
     page: <PublicUserProfile />,
+    requiresAuth: false, // This route should be publicly accessible
   },
   {
     title: "Profile Edit",
     to: "/profile/edit",
     page: <ProfileEdit />,
+    requiresAuth: true,
   },
   {
     title: "Profile Resume",
     to: "/profile/resume",
     page: <ProfileResume />,
+    requiresAuth: true,
   },
   {
     title: "Profile Cover Letter",
     to: "/profile/cover-letter",
     page: <ProfileCoverLetter />,
+    requiresAuth: true,
   },
   {
     title: "Profile Preferences",
     to: "/profile/preferences",
     page: <ProfilePreferences />,
+    requiresAuth: true,
   },
   {
     title: "Profile Settings",
     to: "/profile/settings",
     page: <ProfileSettings />,
+    requiresAuth: true,
   },
   {
     title: "Profile Media",
     to: "/profile/media",
     page: <ProfileMedia />,
+    requiresAuth: true,
   },
   {
     title: "Profile Analytics",
     to: "/profile/analytics",
     page: <ProfileAnalytics />,
+    requiresAuth: true,
   },
   {
     title: "Profile Documents",
     to: "/profile/documents",
     page: <ProfileDocuments />,
+    requiresAuth: true,
   },
 ];
