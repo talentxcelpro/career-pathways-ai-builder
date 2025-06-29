@@ -381,7 +381,7 @@ export const AdvancedSEOAnalytics = () => {
                   <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
                   <div>
                     <h4 className="font-medium text-yellow-800">Page Speed Warning</h4>
-                    <p className="text-sm text-yellow-700">3 pages have load times > 3 seconds</p>
+                    <p className="text-sm text-yellow-700">3 pages have load times &gt; 3 seconds</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-3 border rounded-lg border-green-200 bg-green-50">
