@@ -4,6 +4,7 @@ import { HeroSection } from './HeroSection';
 import { FeaturesSection } from './FeaturesSection';
 import { StatsSection } from './StatsSection';
 import { CTASection } from './CTASection';
+import { SEOLandingPageLinks } from '@/components/seo/SEOLandingPageLinks';
 
 export const LandingPage = () => {
   return (
@@ -11,6 +12,7 @@ export const LandingPage = () => {
       <HeroSection />
       <FeaturesSection />
       <StatsSection />
+      <SEOLandingPageLinks />
       <CTASection />
     </div>
   );
