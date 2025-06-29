@@ -1,5 +1,5 @@
 
-import { HomeIcon, Settings } from "lucide-react";
+import { HomeIcon, Settings, BarChart3 } from "lucide-react";
 import { LandingPage } from "../components/landing/LandingPage";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
@@ -8,6 +8,7 @@ import PrivacyPolicy from "../pages/PrivacyPolicy";
 import Terms from "../pages/Terms";
 import Blog from "../pages/Blog";
 import NotFound from "../pages/NotFound";
+import Dashboard from "../pages/Dashboard";
 import SEOAdmin from "../pages/admin/SEOAdmin";
 import AdvancedSEOAdmin from "../pages/admin/AdvancedSEOAdmin";
 import Phase5SEOAdmin from "../pages/admin/Phase5SEOAdmin";
@@ -19,6 +20,12 @@ export const coreRoutes = [
     icon: <HomeIcon className="h-4 w-4" />,
     page: <LandingPage />,
     exact: true,
+  },
+  {
+    title: "Dashboard",
+    to: "/dashboard",
+    icon: <BarChart3 className="h-4 w-4" />,
+    page: <Dashboard />,
   },
   {
     title: "About",
