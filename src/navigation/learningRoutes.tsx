@@ -16,7 +16,7 @@ export const learningRoutes = [
   },
   {
     title: "Course Detail",
-    to: "/learning/:id",
+    to: "/learning/courses/:id",
     page: <CourseDetail />,
   },
   {
