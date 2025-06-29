@@ -2,13 +2,34 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useSEO } from '@/hooks/useSEO';
-import { JobsList } from '@/components/jobs/JobsList';
-import { JobsHeader } from '@/components/jobs/JobsHeader';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const JobsByRole = () => {
   const { role } = useParams<{ role: string }>();
   const formattedRole = role?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) || '';
+
+  // Fetch jobs data for this role
+  const { data: jobsData = [] } = useQuery({
+    queryKey: ['jobs', role],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('jobs')
+        .select(`
+          *,
+          companies (
+            name,
+            logo_url,
+            industry
+          )
+        `)
+        .eq('is_active', true)
+        .ilike('title', `%${formattedRole}%`)
+        .order('posted_at', { ascending: false });
+      return data || [];
+    }
+  });
 
   const seoConfig = {
     title: `${formattedRole} Jobs | Latest ${formattedRole} Openings | TalentXcel`,
@@ -111,8 +132,54 @@ const JobsByRole = () => {
       {/* Jobs Listing */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <JobsHeader />
-          <JobsList defaultFilters={{ title: formattedRole }} />
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold mb-4">{formattedRole} Opportunities</h2>
+            <p className="text-gray-600">Found {jobsData.length} job openings</p>
+          </div>
+          
+          <div className="space-y-4">
+            {jobsData.map((job) => (
+              <div key={job.id} className="bg-white rounded-lg border p-6 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
+                    <p className="text-gray-600 mb-2">{job.companies?.name}</p>
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <span>{job.location}</span>
+                      {job.salary_min && job.salary_max && (
+                        <span>₹{job.salary_min/100000}L - ₹{job.salary_max/100000}L</span>
+                      )}
+                      <span>{job.employment_type}</span>
+                    </div>
+                  </div>
+                  {job.is_featured && (
+                    <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
+                      Featured
+                    </span>
+                  )}
+                </div>
+                <p className="text-gray-700 mb-4 line-clamp-2">{job.description}</p>
+                <div className="flex justify-between items-center">
+                  <div className="flex flex-wrap gap-2">
+                    {job.skills_required?.slice(0, 3).map((skill: string, index: number) => (
+                      <span key={index} className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                  <button className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                    Apply Now
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {jobsData.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No {formattedRole} jobs found. Check back later for new opportunities.</p>
+            </div>
+          )}
         </div>
       </section>
 

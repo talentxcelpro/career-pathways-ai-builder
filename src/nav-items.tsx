@@ -30,13 +30,3 @@ export const navItems: NavItem[] = [
   ...marketplaceRoutes,
   ...seoRoutes, // Add SEO routes
 ];
-
-export interface NavItem {
-  title: string;
-  to: string;
-  exact?: boolean;
-  icon?: React.ReactNode;
-  page: React.ReactNode;
-  children?: NavItem[];
-  isNew?: boolean;
-}

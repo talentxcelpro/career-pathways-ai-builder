@@ -72,6 +72,11 @@ const CoursesByCategory = () => {
 
   const currentCategory = categoryData[category as keyof typeof categoryData] || categoryData['data-science'];
 
+  const handleEnroll = (courseId: string) => {
+    console.log('Enrolling in course:', courseId);
+    // Add enrollment logic here
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <SEOHead {...seoConfig} />
@@ -132,7 +137,12 @@ const CoursesByCategory = () => {
           <h2 className="text-3xl font-bold mb-8">Featured {formattedCategory} Courses</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => (
-              <EnhancedCourseCard key={course.id} course={course} />
+              <EnhancedCourseCard 
+                key={course.id} 
+                course={course}
+                isEnrolled={false}
+                onEnroll={handleEnroll}
+              />
             ))}
           </div>
         </div>
