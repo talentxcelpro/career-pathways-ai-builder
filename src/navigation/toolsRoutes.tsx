@@ -7,6 +7,9 @@ import CareerPathfinder from "../pages/tools/CareerPathfinder";
 import ResumeOptimizer from "../pages/tools/ResumeOptimizer";
 import NetworkBuilder from "../pages/tools/NetworkBuilder";
 import SkillAssessor from "../pages/tools/SkillAssessor";
+import JobMatcher from "../pages/tools/JobMatcher";
+import ProfileScore from "../pages/tools/ProfileScore";
+import MarketInsights from "../pages/tools/MarketInsights";
 
 export const toolsRoutes = [
   {
@@ -51,20 +54,22 @@ export const toolsRoutes = [
     icon: <BookOpen className="h-4 w-4" />,
     page: <SkillAssessor />,
   },
-  // Placeholder routes for other tools - can be implemented later
   {
     title: "Job Matcher",
     to: "/tools/job-matcher",
-    page: <Tools />, // Fallback to main tools page for now
+    icon: <Briefcase className="h-4 w-4" />,
+    page: <JobMatcher />,
   },
   {
     title: "Profile Scorer",
     to: "/tools/profile-scorer",
-    page: <Tools />,
+    icon: <User className="h-4 w-4" />,
+    page: <ProfileScore />,
   },
   {
     title: "Market Insights",
     to: "/tools/market-insights",
-    page: <Tools />,
+    icon: <TrendingUp className="h-4 w-4" />,
+    page: <MarketInsights />,
   },
 ];

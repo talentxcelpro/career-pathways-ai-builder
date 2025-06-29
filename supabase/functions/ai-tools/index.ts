@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -44,11 +43,23 @@ serve(async (req) => {
       case 'market-insights':
         result = await getMarketInsights(data, supabase);
         break;
+      case 'job-matcher':
+        result = await matchJobs(data, supabase);
+        break;
+      case 'resume-optimizer':
+        result = await optimizeResume(data, supabase);
+        break;
+      case 'network-builder':
+        result = await buildNetwork(data, supabase);
+        break;
+      case 'skill-assessor':
+        result = await assessSkills(data, supabase);
+        break;
       default:
         throw new Error('Unknown tool');
     }
 
-    // Save tool usage
+    // Save tool usage in background
     if (userId) {
       await supabase.from('tool_usage').insert({
         user_id: userId,
@@ -194,6 +205,113 @@ async function getMarketInsights(data: any, supabase: any) {
       competitionLevel: "Moderate"
     },
     insights: `The ${industry} sector in ${location} shows strong growth potential with emerging opportunities in AI and digital transformation.`
+  };
+}
+
+async function matchJobs(data: any, supabase: any) {
+  const { skills, experience, location, salary } = data;
+  
+  // Simulate AI job matching
+  const matches = [
+    {
+      id: '1',
+      title: 'Senior React Developer',
+      company: 'TechCorp',
+      location: 'San Francisco, CA',
+      salaryRange: '$120,000 - $160,000',
+      matchScore: 95,
+      requirements: skills.split(',').map((s: string) => s.trim()),
+      matchReasons: ['Perfect skill match', 'Salary aligned', 'Location preference']
+    }
+  ];
+
+  return {
+    matches,
+    totalFound: matches.length,
+    avgMatchScore: 88,
+    recommendations: [
+      'Update your portfolio with recent projects',
+      'Consider adding cloud computing skills',
+      'Network with professionals in target companies'
+    ]
+  };
+}
+
+async function optimizeResume(data: any, supabase: any) {
+  const { resumeText, jobTitle } = data;
+  
+  return {
+    overallScore: 78,
+    sections: {
+      'Professional Summary': {
+        score: 85,
+        suggestions: ['Great use of action verbs', 'Strong industry terminology'],
+        improvements: ['Add more specific metrics', 'Tailor to job requirements']
+      },
+      'Work Experience': {
+        score: 72,
+        suggestions: ['Good chronological structure'],
+        improvements: ['Add quantified results', 'Include more keywords']
+      }
+    },
+    keywords: {
+      missing: ['Machine Learning', 'Python', 'SQL'],
+      present: ['JavaScript', 'React', 'Leadership'],
+      recommended: ['Cloud Computing', 'DevOps', 'API Development']
+    },
+    atsCompatibility: 85
+  };
+}
+
+async function buildNetwork(data: any, supabase: any) {
+  const { industry, role, location } = data;
+  
+  const connections = [
+    {
+      id: '1',
+      name: 'Sarah Chen',
+      title: 'Senior Product Manager',
+      company: 'Google',
+      location: 'San Francisco, CA',
+      connectionScore: 95,
+      mutualConnections: 12,
+      canConnect: true,
+      platforms: ['LinkedIn', 'Twitter']
+    }
+  ];
+
+  return {
+    connections,
+    networkScore: 75,
+    recommendations: [
+      'Join industry-specific groups',
+      'Attend virtual networking events',
+      'Share valuable content regularly'
+    ]
+  };
+}
+
+async function assessSkills(data: any, supabase: any) {
+  const { skills, experience, targetRole } = data;
+  
+  return {
+    overallScore: 82,
+    skillBreakdown: {
+      'Technical Skills': { score: 85, level: 'Advanced' },
+      'Soft Skills': { score: 78, level: 'Intermediate' },
+      'Leadership': { score: 70, level: 'Intermediate' },
+      'Communication': { score: 88, level: 'Advanced' }
+    },
+    recommendations: [
+      'Focus on developing leadership skills',
+      'Consider advanced technical certifications',
+      'Practice public speaking and presentations'
+    ],
+    learningPath: [
+      'Complete leadership fundamentals course',
+      'Get certified in cloud technologies',
+      'Join a professional speaking group'
+    ]
   };
 }
 

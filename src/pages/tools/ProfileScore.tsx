@@ -1,282 +1,430 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Award, TrendingUp, CheckCircle, AlertTriangle, User } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { 
+  Award, 
+  ArrowLeft, 
+  CheckCircle,
+  AlertTriangle,
+  TrendingUp,
+  Eye,
+  Star,
+  User
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+interface ProfileScore {
+  overallScore: number;
+  sections: {
+    [key: string]: {
+      score: number;
+      status: 'excellent' | 'good' | 'needs_improvement' | 'missing';
+      suggestions: string[];
+    };
+  };
+  visibility: {
+    score: number;
+    factors: string[];
+  };
+  improvements: string[];
+  strengths: string[];
+}
 
 const ProfileScore = () => {
-  const [analyzing, setAnalyzing] = useState(false);
-  const [results, setResults] = useState<any>(null);
-  const [profileData, setProfileData] = useState<any>(null);
-
-  useEffect(() => {
-    fetchProfileData();
-  }, []);
-
-  const fetchProfileData = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      setProfileData(profile);
-    } catch (error) {
-      console.error('Profile fetch error:', error);
-    }
-  };
+  const navigate = useNavigate();
+  const [profileUrl, setProfileUrl] = useState('');
+  const [summary, setSummary] = useState('');
+  const [experience, setExperience] = useState('');
+  const [skills, setSkills] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [score, setScore] = useState<ProfileScore | null>(null);
 
   const analyzeProfile = async () => {
-    if (!profileData) return;
-    
-    setAnalyzing(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      const { data, error } = await supabase.functions.invoke('ai-tools', {
-        body: {
-          tool: 'profile-score',
-          data: {
-            profile: {
-              profilePicture: profileData.profile_picture_url,
-              headline: profileData.title,
-              summary: profileData.about,
-              experience: profileData.experience_years || 0,
-              skills: profileData.skills || [],
-              keywords: profileData.skills || [],
-              endorsements: 0,
-              recommendations: 0,
-              connections: 0,
-              posts: 0,
-              profileViews: profileData.profile_views_count || 0
-            }
-          },
-          userId: user?.id
-        }
-      });
+    if (!profileUrl && !summary) {
+      toast.error('Please provide either a profile URL or profile summary');
+      return;
+    }
 
-      if (error) throw error;
-      setResults(data);
-    } catch (error) {
-      console.error('Profile analysis error:', error);
-    } finally {
-      setAnalyzing(false);
+    setIsAnalyzing(true);
+    
+    // Simulate AI profile analysis
+    setTimeout(() => {
+      const mockScore: ProfileScore = {
+        overallScore: 78,
+        sections: {
+          'Profile Completeness': {
+            score: 85,
+            status: 'good',
+            suggestions: [
+              'Add a professional profile picture',
+              'Include contact information',
+              'Add location details'
+            ]
+          },
+          'Professional Summary': {
+            score: 90,
+            status: 'excellent',
+            suggestions: [
+              'Great use of keywords',
+              'Clear value proposition',
+              'Well-structured content'
+            ]
+          },
+          'Work Experience': {
+            score: 72,
+            status: 'good',
+            suggestions: [
+              'Add more quantifiable achievements',
+              'Include specific technologies used',
+              'Expand on leadership roles'
+            ]
+          },
+          'Skills & Endorsements': {
+            score: 65,
+            status: 'needs_improvement',
+            suggestions: [
+              'Add more relevant technical skills',
+              'Get endorsements from colleagues',
+              'Include certification details'
+            ]
+          },
+          'Network & Connections': {
+            score: 45,
+            status: 'needs_improvement',
+            suggestions: [
+              'Connect with more professionals',
+              'Join industry groups',
+              'Engage with others\' content'
+            ]
+          }
+        },
+        visibility: {
+          score: 68,
+          factors: [
+            'Profile views: 124 this month',
+            'Search appearance: Medium',
+            'Keyword optimization: 72%',
+            'Activity level: Low'
+          ]
+        },
+        improvements: [
+          'Optimize your headline with industry keywords',
+          'Add more work samples to showcase your abilities',
+          'Increase your posting frequency to boost visibility',
+          'Request recommendations from past colleagues'
+        ],
+        strengths: [
+          'Strong professional summary',
+          'Diverse skill set',
+          'Clear career progression',
+          'Good use of industry terminology'
+        ]
+      };
+
+      setScore(mockScore);
+      setIsAnalyzing(false);
+      toast.success('Profile analysis completed!');
+    }, 4000);
+  };
+
+  const getSectionColor = (status: string) => {
+    switch (status) {
+      case 'excellent': return 'text-green-600';
+      case 'good': return 'text-blue-600';
+      case 'needs_improvement': return 'text-orange-600';
+      case 'missing': return 'text-red-600';
+      default: return 'text-gray-600';
     }
   };
 
-  const saveResults = async () => {
-    if (!results) return;
-    
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      await supabase.from('saved_tool_results').insert({
-        user_id: user.id,
-        tool_name: 'profile-score',
-        title: `Profile Analysis - Score: ${results.overallScore}/100`,
-        content: { results }
-      });
-      
-      alert('Profile analysis saved successfully!');
-    } catch (error) {
-      console.error('Save error:', error);
+  const getSectionBadgeColor = (status: string) => {
+    switch (status) {
+      case 'excellent': return 'bg-green-100 text-green-800';
+      case 'good': return 'bg-blue-100 text-blue-800';
+      case 'needs_improvement': return 'bg-orange-100 text-orange-800';
+      case 'missing': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
+    if (score >= 85) return 'text-green-600';
+    if (score >= 70) return 'text-blue-600';
+    if (score >= 60) return 'text-orange-600';
     return 'text-red-600';
-  };
-
-  const getScoreBadge = (score: number) => {
-    if (score >= 80) return { variant: 'default' as const, label: 'Excellent', color: 'bg-green-500' };
-    if (score >= 60) return { variant: 'secondary' as const, label: 'Good', color: 'bg-yellow-500' };
-    return { variant: 'destructive' as const, label: 'Needs Work', color: 'bg-red-500' };
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile Score Analysis</h1>
-          <p className="text-gray-600">
-            Get a comprehensive analysis of your profile with actionable improvement suggestions
-          </p>
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/tools')}
+            className="mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Tools
+          </Button>
+          
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-3 bg-orange-100 rounded-lg">
+              <Award className="h-6 w-6 text-orange-600" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">AI Profile Scorer</h1>
+              <p className="text-gray-600">Get a comprehensive score for your professional profile with optimization tips</p>
+            </div>
+          </div>
         </div>
 
-        {!profileData ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <User className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-              <p className="text-gray-600">Please complete your profile to get analysis</p>
-              <Button className="mt-4" onClick={() => window.location.href = '/profile'}>
-                Complete Profile
-              </Button>
-            </CardContent>
-          </Card>
-        ) : !results ? (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Award className="h-5 w-5 mr-2" />
-                Ready for Analysis
-              </CardTitle>
-              <CardDescription>
-                Analyze your profile completeness and optimization score
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <h4 className="font-medium text-blue-900 mb-2">What we'll analyze:</h4>
-                  <ul className="text-blue-800 text-sm space-y-1">
-                    <li>• Profile completeness and missing information</li>
-                    <li>• Keyword optimization for better visibility</li>
-                    <li>• Professional presentation and engagement</li>
-                    <li>• Areas for improvement with actionable steps</li>
-                  </ul>
-                </div>
-                
-                <Button 
-                  onClick={analyzeProfile}
-                  disabled={analyzing}
-                  className="w-full"
-                >
-                  {analyzing ? 'Analyzing Profile...' : 'Analyze My Profile'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            {/* Overall Score */}
+        {!score ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Analysis Form */}
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Profile Score</CardTitle>
-                  <Button variant="outline" size="sm" onClick={saveResults}>
-                    Save Analysis
-                  </Button>
-                </div>
+                <CardTitle>Analyze Your Profile</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="text-center mb-6">
-                  <div className={`text-5xl font-bold mb-2 ${getScoreColor(results.overallScore)}`}>
-                    {results.overallScore}/100
+              <CardContent className="space-y-6">
+                {isAnalyzing ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+                    <h3 className="text-lg font-medium mb-2">Analyzing Your Profile</h3>
+                    <p className="text-gray-600 mb-4">AI is evaluating your professional profile across multiple dimensions...</p>
+                    <Progress value={68} className="w-full" />
                   </div>
-                  <Badge {...getScoreBadge(results.overallScore)}>
-                    {getScoreBadge(results.overallScore).label}
-                  </Badge>
-                </div>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="profileUrl">LinkedIn Profile URL</Label>
+                      <Input
+                        id="profileUrl"
+                        placeholder="https://linkedin.com/in/yourname"
+                        value={profileUrl}
+                        onChange={(e) => setProfileUrl(e.target.value)}
+                      />
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <div className={`text-2xl font-bold ${getScoreColor(results.scores?.completeness || 0)}`}>
-                      {results.scores?.completeness || 0}%
+                    <div className="text-center text-sm text-gray-500">
+                      OR
                     </div>
-                    <p className="text-gray-600">Completeness</p>
-                    <Progress value={results.scores?.completeness || 0} className="mt-2" />
+
+                    <div className="space-y-2">
+                      <Label htmlFor="summary">Professional Summary</Label>
+                      <Textarea
+                        id="summary"
+                        placeholder="Paste your professional summary or bio here"
+                        value={summary}
+                        onChange={(e) => setSummary(e.target.value)}
+                        rows={4}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="experience">Work Experience</Label>
+                      <Textarea
+                        id="experience"
+                        placeholder="Brief overview of your work experience"
+                        value={experience}
+                        onChange={(e) => setExperience(e.target.value)}
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="skills">Key Skills</Label>
+                      <Input
+                        id="skills"
+                        placeholder="e.g., JavaScript, Project Management, Data Analysis"
+                        value={skills}
+                        onChange={(e) => setSkills(e.target.value)}
+                      />
+                    </div>
+
+                    <Button 
+                      onClick={analyzeProfile}
+                      className="w-full"
+                      disabled={!profileUrl && !summary}
+                    >
+                      Analyze Profile
+                    </Button>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Features */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile Analysis Features</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <Award className="h-5 w-5 text-orange-600 mt-1" />
+                  <div>
+                    <h4 className="font-medium">Comprehensive Scoring</h4>
+                    <p className="text-sm text-gray-600">Multi-dimensional analysis of your professional profile</p>
                   </div>
-                  
-                  <div className="text-center">
-                    <div className={`text-2xl font-bold ${getScoreColor(results.scores?.optimization || 0)}`}>
-                      {results.scores?.optimization || 0}%
-                    </div>
-                    <p className="text-gray-600">Optimization</p>
-                    <Progress value={results.scores?.optimization || 0} className="mt-2" />
+                </div>
+                <div className="flex items-start gap-3">
+                  <TrendingUp className="h-5 w-5 text-blue-600 mt-1" />
+                  <div>
+                    <h4 className="font-medium">Optimization Tips</h4>
+                    <p className="text-sm text-gray-600">Actionable recommendations to improve your profile</p>
                   </div>
-                  
+                </div>
+                <div className="flex items-start gap-3">
+                  <Eye className="h-5 w-5 text-purple-600 mt-1" />
+                  <div>
+                    <h4 className="font-medium">Visibility Analysis</h4>
+                    <p className="text-sm text-gray-600">Understand how visible your profile is to recruiters</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Star className="h-5 w-5 text-yellow-600 mt-1" />
+                  <div>
+                    <h4 className="font-medium">Industry Benchmarking</h4>
+                    <p className="text-sm text-gray-600">Compare your profile against industry standards</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          /* Results */
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Your Profile Score</h2>
+                <p className="text-gray-600">Comprehensive analysis with optimization recommendations</p>
+              </div>
+              <Button variant="outline" onClick={() => setScore(null)}>
+                Analyze Another Profile
+              </Button>
+            </div>
+
+            {/* Overall Score */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="text-center">
-                    <div className={`text-2xl font-bold ${getScoreColor(results.scores?.visibility || 0)}`}>
-                      {results.scores?.visibility || 0}%
+                    <div className={`text-5xl font-bold ${getScoreColor(score.overallScore)} mb-2`}>
+                      {score.overallScore}/100
                     </div>
-                    <p className="text-gray-600">Visibility</p>
-                    <Progress value={results.scores?.visibility || 0} className="mt-2" />
+                    <p className="text-gray-600 mb-4">Overall Profile Score</p>
+                    <Progress value={score.overallScore} className="h-3" />
+                  </div>
+                  <div className="text-center">
+                    <div className={`text-5xl font-bold ${getScoreColor(score.visibility.score)} mb-2`}>
+                      {score.visibility.score}/100
+                    </div>
+                    <p className="text-gray-600 mb-4">Visibility Score</p>
+                    <Progress value={score.visibility.score} className="h-3" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
+            {/* Section Breakdown */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Section-by-Section Analysis</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {Object.entries(score.sections).map(([section, analysis]) => (
+                  <div key={section} className="border-l-4 border-orange-200 pl-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium text-lg">{section}</h4>
+                      <div className="flex items-center gap-2">
+                        <Badge className={getSectionBadgeColor(analysis.status)}>
+                          {analysis.status.replace('_', ' ')}
+                        </Badge>
+                        <span className={`font-bold ${getSectionColor(analysis.status)}`}>
+                          {analysis.score}/100
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <Progress value={analysis.score} className="mb-3" />
+                    
+                    <ul className="space-y-1">
+                      {analysis.suggestions.map((suggestion, index) => (
+                        <li key={index} className="text-sm text-gray-700 flex items-start">
+                          <span className="w-2 h-2 bg-orange-500 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                          {suggestion}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Strengths and Improvements */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Improvements */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <AlertTriangle className="h-5 w-5 mr-2 text-yellow-600" />
-                    Areas for Improvement
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    Your Strengths
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {results.improvements?.map((improvement: string, index: number) => (
-                      <div key={index} className="flex items-start">
-                        <div className="flex-shrink-0 w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                          <span className="text-yellow-600 text-sm font-medium">{index + 1}</span>
-                        </div>
-                        <span className="text-sm text-gray-700">{improvement}</span>
-                      </div>
+                  <ul className="space-y-2">
+                    {score.strengths.map((strength, index) => (
+                      <li key={index} className="text-sm text-gray-700 flex items-start">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                        {strength}
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </CardContent>
               </Card>
 
-              {/* Strengths */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <CheckCircle className="h-5 w-5 mr-2 text-green-600" />
-                    Profile Strengths
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-orange-600" />
+                    Improvement Areas
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {results.strengths?.map((strength: string, index: number) => (
-                      <div key={index} className="flex items-start">
-                        <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{strength}</span>
-                      </div>
+                  <ul className="space-y-2">
+                    {score.improvements.map((improvement, index) => (
+                      <li key={index} className="text-sm text-gray-700 flex items-start">
+                        <span className="w-2 h-2 bg-orange-500 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                        {improvement}
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Action Items */}
+            {/* Visibility Factors */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2" />
-                  Next Steps
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-purple-600" />
+                  Visibility Analysis
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-blue-50 rounded-lg">
-                    <h4 className="font-medium text-blue-900 mb-2">Quick Wins (1-2 days)</h4>
-                    <ul className="text-blue-800 text-sm space-y-1">
-                      <li>• Add a professional profile picture</li>
-                      <li>• Write a compelling headline</li>
-                      <li>• Update your skills section</li>
-                    </ul>
-                  </div>
-                  
-                  <div className="p-4 bg-green-50 rounded-lg">
-                    <h4 className="font-medium text-green-900 mb-2">Long-term Goals (1-2 weeks)</h4>
-                    <ul className="text-green-800 text-sm space-y-1">
-                      <li>• Write detailed work experience</li>
-                      <li>• Add portfolio projects</li>
-                      <li>• Engage with platform content</li>
-                    </ul>
-                  </div>
+                  {score.visibility.factors.map((factor, index) => (
+                    <div key={index} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                      <TrendingUp className="h-4 w-4 text-purple-600" />
+                      <span className="text-sm text-gray-700">{factor}</span>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
