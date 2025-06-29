@@ -12,21 +12,23 @@ import { aiRoutes } from "./navigation/aiRoutes";
 import { employerRoutes } from "./navigation/employerRoutes";
 import { collegesRoutes } from "./navigation/collegesRoutes";
 import { marketplaceRoutes } from "./navigation/marketplaceRoutes";
-import { seoRoutes } from "./navigation/seoRoutes"; // Add SEO routes
+import { seoRoutes } from "./navigation/seoRoutes";
+import { resumeRoutes } from "./navigation/resumeRoutes";
 
-export const navItems: NavItem[] = [
+export const navItems = [
   ...coreRoutes,
   ...authRoutes,
-  ...jobRoutes,
-  ...companiesRoutes,
-  ...learningRoutes,
-  ...networkRoutes,
   ...profileRoutes,
-  ...careerMapRoutes,
+  ...jobRoutes,
+  ...learningRoutes,
   ...toolsRoutes,
-  ...aiRoutes,
-  ...employerRoutes,
+  ...resumeRoutes,
+  ...networkRoutes,
+  ...companiesRoutes,
   ...collegesRoutes,
+  ...careerMapRoutes,
+  ...employerRoutes,
   ...marketplaceRoutes,
-  ...seoRoutes, // Add SEO routes
+  ...aiRoutes,
+  ...seoRoutes,
 ];

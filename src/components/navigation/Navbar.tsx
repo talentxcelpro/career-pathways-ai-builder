@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -56,14 +55,15 @@ export const Navbar = () => {
     await signOut();
   };
 
-  const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-    { name: 'Jobs', href: '/jobs', icon: Briefcase },
-    { name: 'Network', href: '/network', icon: Users },
-    { name: 'Learning', href: '/learning', icon: GraduationCap },
-    { name: 'Tools', href: '/tools', icon: Wrench },
-    { name: 'Employer', href: '/employer', icon: Building2 },
-    { name: 'Career Map', href: '/career-map', icon: Compass },
+  const mainNavItems = [
+    { to: "/", label: "Home" },
+    { to: "/jobs", label: "Jobs" },
+    { to: "/learning", label: "Learning" },
+    { to: "/resume", label: "Resume" },
+    { to: "/tools", label: "Tools" },
+    { to: "/network", label: "Network" },
+    { to: "/companies", label: "Companies" },
+    { to: "/career-map", label: "Career Map" },
   ];
 
   const isCurrentPath = (path: string) => {
@@ -95,21 +95,19 @@ export const Navbar = () => {
             <>
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-1">
-                {navigation.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = isCurrentPath(item.href);
+                {mainNavItems.map((item) => {
+                  const isActive = isCurrentPath(item.to);
                   return (
                     <Link
-                      key={item.name}
-                      to={item.href}
+                      key={item.label}
+                      to={item.to}
                       className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors
                         ${isActive 
                           ? 'bg-blue-100 text-blue-700' 
                           : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                         }`}
                     >
-                      <Icon className="h-4 w-4" />
-                      <span>{item.name}</span>
+                      <span>{item.label}</span>
                     </Link>
                   );
                 })}
@@ -193,13 +191,12 @@ export const Navbar = () => {
         {user && isMobileMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t">
-              {navigation.map((item) => {
-                const Icon = item.icon;
-                const isActive = isCurrentPath(item.href);
+              {mainNavItems.map((item) => {
+                const isActive = isCurrentPath(item.to);
                 return (
                   <Link
-                    key={item.name}
-                    to={item.href}
+                    key={item.label}
+                    to={item.to}
                     className={`flex items-center space-x-3 px-3 py-2 rounded-md text-base font-medium transition-colors
                       ${isActive 
                         ? 'bg-blue-100 text-blue-700' 
@@ -207,8 +204,7 @@ export const Navbar = () => {
                       }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <Icon className="h-5 w-5" />
-                    <span>{item.name}</span>
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
@@ -219,3 +215,5 @@ export const Navbar = () => {
     </nav>
   );
 };
+
+export default Navbar;

@@ -9,6 +9,106 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ai_cover_letters: {
+        Row: {
+          company_name: string | null
+          content: string
+          created_at: string | null
+          id: string
+          job_title: string | null
+          resume_id: string | null
+          template_id: string | null
+          title: string
+          tone: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          company_name?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          job_title?: string | null
+          resume_id?: string | null
+          template_id?: string | null
+          title: string
+          tone?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          company_name?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          job_title?: string | null
+          resume_id?: string | null
+          template_id?: string | null
+          title?: string
+          tone?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_cover_letters_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "ai_resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_resumes: {
+        Row: {
+          ats_score: number | null
+          content: Json
+          created_at: string | null
+          id: string
+          is_primary: boolean | null
+          is_public: boolean | null
+          public_url_slug: string | null
+          template_id: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ats_score?: number | null
+          content?: Json
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          is_public?: boolean | null
+          public_url_slug?: string | null
+          template_id?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ats_score?: number | null
+          content?: Json
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          is_public?: boolean | null
+          public_url_slug?: string | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_resumes_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "resume_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_communications: {
         Row: {
           candidate_id: string | null
@@ -2239,6 +2339,115 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      resume_sections: {
+        Row: {
+          content: Json
+          created_at: string | null
+          display_order: number | null
+          id: string
+          is_visible: boolean | null
+          resume_id: string
+          section_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          content?: Json
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_visible?: boolean | null
+          resume_id: string
+          section_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_visible?: boolean | null
+          resume_id?: string
+          section_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_sections_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "ai_resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_templates: {
+        Row: {
+          category: string
+          created_at: string | null
+          css_config: Json | null
+          id: string
+          is_active: boolean | null
+          name: string
+          preview_url: string | null
+          thumbnail_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          css_config?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          preview_url?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          css_config?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          preview_url?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      resume_versions: {
+        Row: {
+          content: Json
+          created_at: string | null
+          id: string
+          resume_id: string
+          version_name: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string | null
+          id?: string
+          resume_id: string
+          version_name: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          id?: string
+          resume_id?: string
+          version_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_versions_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "ai_resumes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resumes: {
         Row: {
