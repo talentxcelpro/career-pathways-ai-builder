@@ -6,14 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowLeft, Wand2, Save } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CreateResume = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [resumeTitle, setResumeTitle] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreateResume = async () => {
-    if (!resumeTitle.trim()) return;
+    if (!resumeTitle.trim() || !user) return;
     
     setIsCreating(true);
     
@@ -21,6 +23,7 @@ const CreateResume = () => {
       const { data, error } = await supabase
         .from('ai_resumes')
         .insert({
+          user_id: user.id,
           title: resumeTitle,
           content: {
             personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
@@ -91,7 +94,7 @@ const CreateResume = () => {
                 <div className="flex space-x-3">
                   <Button 
                     onClick={handleCreateResume}
-                    disabled={!resumeTitle.trim() || isCreating}
+                    disabled={!resumeTitle.trim() || isCreating || !user}
                     className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   >
                     {isCreating ? (

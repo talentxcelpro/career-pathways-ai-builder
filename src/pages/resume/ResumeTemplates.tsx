@@ -7,9 +7,11 @@ import { ArrowLeft, Eye, Download, Palette } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const ResumeTemplates = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const { data: templates, isLoading } = useQuery({
@@ -43,11 +45,14 @@ const ResumeTemplates = () => {
   );
 
   const handleUseTemplate = async (templateId: string) => {
+    if (!user) return;
+    
     // Create a new resume with the selected template
     try {
       const { data, error } = await supabase
         .from('ai_resumes')
         .insert({
+          user_id: user.id,
           title: 'My New Resume',
           template_id: templateId,
           content: {
@@ -119,68 +124,72 @@ const ResumeTemplates = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredTemplates?.map((template) => (
-              <Card key={template.id} className="group hover:shadow-lg transition-shadow">
-                <CardContent className="p-0">
-                  {/* Template Preview */}
-                  <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-lg relative overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center space-y-2">
-                        <div 
-                          className="w-8 h-8 rounded mx-auto"
-                          style={{ backgroundColor: JSON.parse(template.css_config || '{}').primaryColor || '#3B82F6' }}
-                        ></div>
-                        <div className="text-xs text-gray-600">
-                          {JSON.parse(template.css_config || '{}').fontFamily || 'Inter'}
+            {filteredTemplates?.map((template) => {
+              const cssConfig = template.css_config as { primaryColor?: string; fontFamily?: string } || {};
+              
+              return (
+                <Card key={template.id} className="group hover:shadow-lg transition-shadow">
+                  <CardContent className="p-0">
+                    {/* Template Preview */}
+                    <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-lg relative overflow-hidden">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center space-y-2">
+                          <div 
+                            className="w-8 h-8 rounded mx-auto"
+                            style={{ backgroundColor: cssConfig.primaryColor || '#3B82F6' }}
+                          ></div>
+                          <div className="text-xs text-gray-600">
+                            {cssConfig.fontFamily || 'Inter'}
+                          </div>
                         </div>
+                      </div>
+                      
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
+                        <Button size="sm" variant="secondary">
+                          <Eye className="h-4 w-4 mr-1" />
+                          Preview
+                        </Button>
+                        <Button 
+                          size="sm"
+                          onClick={() => handleUseTemplate(template.id)}
+                        >
+                          Use Template
+                        </Button>
                       </div>
                     </div>
                     
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
-                      <Button size="sm" variant="secondary">
-                        <Eye className="h-4 w-4 mr-1" />
-                        Preview
-                      </Button>
-                      <Button 
-                        size="sm"
-                        onClick={() => handleUseTemplate(template.id)}
-                      >
-                        Use Template
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {/* Template Info */}
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900">{template.name}</h3>
-                      <Badge variant="outline" className="capitalize">
-                        {template.category}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-3">
-                      Professional template optimized for ATS systems
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-1">
-                        <Palette className="h-3 w-3 text-gray-400" />
-                        <span className="text-xs text-gray-500">
-                          {JSON.parse(template.css_config || '{}').fontFamily || 'Inter'}
-                        </span>
+                    {/* Template Info */}
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-gray-900">{template.name}</h3>
+                        <Badge variant="outline" className="capitalize">
+                          {template.category}
+                        </Badge>
                       </div>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => handleUseTemplate(template.id)}
-                      >
-                        Use Template
-                      </Button>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Professional template optimized for ATS systems
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-1">
+                          <Palette className="h-3 w-3 text-gray-400" />
+                          <span className="text-xs text-gray-500">
+                            {cssConfig.fontFamily || 'Inter'}
+                          </span>
+                        </div>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleUseTemplate(template.id)}
+                        >
+                          Use Template
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
 
