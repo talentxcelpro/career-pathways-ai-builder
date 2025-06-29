@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,9 @@ import {
   Menu,
   X,
   Building2,
-  Compass
+  Compass,
+  FileText,
+  Network
 } from "lucide-react";
 
 export const Navbar = () => {
@@ -57,13 +60,14 @@ export const Navbar = () => {
 
   const mainNavItems = [
     { to: "/", label: "Home" },
+    { to: "/network", label: "Network" },
     { to: "/jobs", label: "Jobs" },
-    { to: "/learning", label: "Learning" },
     { to: "/resume", label: "Resume" },
     { to: "/tools", label: "Tools" },
-    { to: "/network", label: "Network" },
     { to: "/companies", label: "Companies" },
+    { to: "/learning", label: "Learning" },
     { to: "/career-map", label: "Career Map" },
+    { to: "/employer", label: "Employer" },
   ];
 
   const isCurrentPath = (path: string) => {
