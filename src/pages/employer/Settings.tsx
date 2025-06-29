@@ -19,7 +19,7 @@ const EmployerSettings = () => {
   const [companyInfo, setCompanyInfo] = useState({
     name: '',
     website: '',
-    email: ''
+    description: ''
   });
 
   const [notifications, setNotifications] = useState({
@@ -39,39 +39,35 @@ const EmployerSettings = () => {
       // Get user's company
       const { data: teamMember } = await supabase
         .from('company_team_members')
-        .select('company_id, companies(*)')
+        .select('company_id')
         .eq('user_id', user.id)
         .eq('is_active', true)
         .single();
 
       if (!teamMember) throw new Error('No company found');
 
-      // Get company settings
-      const { data: companySettings } = await supabase
-        .from('company_settings')
+      // Get company details
+      const { data: company } = await supabase
+        .from('companies')
         .select('*')
-        .eq('company_id', teamMember.company_id)
+        .eq('id', teamMember.company_id)
         .single();
 
       return {
-        company: teamMember.companies,
-        settings: companySettings
+        company: company,
+        companyId: teamMember.company_id
       };
     }
   });
 
   // Update settings when data is loaded
   useEffect(() => {
-    if (settings) {
+    if (settings?.company) {
       setCompanyInfo({
-        name: settings.company?.name || '',
-        website: settings.company?.website || '',
-        email: settings.company?.email || ''
+        name: settings.company.name || '',
+        website: settings.company.website || '',
+        description: settings.company.description || ''
       });
-
-      if (settings.settings?.notification_preferences) {
-        setNotifications(settings.settings.notification_preferences);
-      }
     }
   }, [settings]);
 
@@ -81,14 +77,7 @@ const EmployerSettings = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: teamMember } = await supabase
-        .from('company_team_members')
-        .select('company_id')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .single();
-
-      if (!teamMember) throw new Error('No company found');
+      if (!settings?.companyId) throw new Error('No company found');
 
       // Update company info
       const { error: companyError } = await supabase
@@ -96,22 +85,12 @@ const EmployerSettings = () => {
         .update({
           name: companyInfo.name,
           website: companyInfo.website,
+          description: companyInfo.description,
           updated_at: new Date().toISOString()
         })
-        .eq('id', teamMember.company_id);
+        .eq('id', settings.companyId);
 
       if (companyError) throw companyError;
-
-      // Update or insert company settings
-      const { error: settingsError } = await supabase
-        .from('company_settings')
-        .upsert({
-          company_id: teamMember.company_id,
-          notification_preferences: notifications,
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'company_id' });
-
-      if (settingsError) throw settingsError;
     },
     onSuccess: () => {
       toast.success('Settings saved successfully');
@@ -179,13 +158,12 @@ const EmployerSettings = () => {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Contact Email</Label>
+            <Label htmlFor="description">Company Description</Label>
             <Input 
-              id="email" 
-              type="email" 
-              placeholder="hr@yourcompany.com"
-              value={companyInfo.email}
-              onChange={(e) => setCompanyInfo(prev => ({ ...prev, email: e.target.value }))}
+              id="description" 
+              placeholder="Brief description of your company"
+              value={companyInfo.description}
+              onChange={(e) => setCompanyInfo(prev => ({ ...prev, description: e.target.value }))}
             />
           </div>
         </CardContent>
