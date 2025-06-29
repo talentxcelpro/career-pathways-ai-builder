@@ -16,7 +16,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, Clock, Target, BookOpen, Briefcase, Users } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { TrendingUp, Clock, Target, BookOpen, Briefcase, Users, Star, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
 
 const Dashboard = () => {
   // Auto-refresh and real-time updates
@@ -37,21 +38,21 @@ const Dashboard = () => {
   const { data: dashboardStats, isLoading: statsLoading, dataUpdatedAt: statsUpdatedAt } = useQuery({
     queryKey: ['dashboard_stats'],
     queryFn: realDataService.getDashboardStats,
-    staleTime: 5 * 60 * 1000, // Increased to 5 minutes for better performance
+    staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
   const { data: featuredJobs = [], isLoading: jobsLoading } = useQuery({
     queryKey: ['featured_jobs'],
     queryFn: realDataService.getFeaturedJobs,
-    staleTime: 10 * 60 * 1000, // Increased cache time
+    staleTime: 10 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
   });
 
   const { data: popularCourses = [], isLoading: coursesLoading } = useQuery({
     queryKey: ['popular_courses'],
     queryFn: realDataService.getPopularCourses,
-    staleTime: 15 * 60 * 1000, // Increased cache time
+    staleTime: 15 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });
 
@@ -70,7 +71,7 @@ const Dashboard = () => {
       if (error) throw error;
       return data;
     },
-    staleTime: 10 * 60 * 1000, // Cache user profile longer
+    staleTime: 10 * 60 * 1000,
   });
 
   const handleRefreshAll = () => {
@@ -103,35 +104,64 @@ const Dashboard = () => {
     return 'Good evening';
   };
 
-  const getMotivationalMessage = () => {
-    const messages = [
-      "Ready to take your career to the next level?",
-      "Your next opportunity is just around the corner!",
-      "Every step forward is progress worth celebrating.",
-      "Today is a great day to invest in your future!",
-    ];
-    return messages[Math.floor(Math.random() * messages.length)];
+  // Smart recommendations based on user activity
+  const getSmartRecommendations = () => {
+    const recommendations = [];
+    
+    if (userStats.appliedJobs === 0) {
+      recommendations.push({
+        title: "Start Applying",
+        description: "Apply to your first job today",
+        action: "Browse Jobs",
+        priority: "high",
+        icon: Briefcase
+      });
+    }
+    
+    if (userStats.coursesCompleted < 3) {
+      recommendations.push({
+        title: "Skill Up",
+        description: "Complete 1 more course this week",
+        action: "View Courses",
+        priority: "medium",
+        icon: BookOpen
+      });
+    }
+    
+    if (userStats.profileViews < 10) {
+      recommendations.push({
+        title: "Boost Visibility",
+        description: "Optimize your profile to get more views",
+        action: "Edit Profile",
+        priority: "medium",
+        icon: Users
+      });
+    }
+
+    return recommendations.slice(0, 3);
   };
+
+  const smartRecommendations = getSmartRecommendations();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <OfflineIndicator />
       
-      {/* Enhanced Header Section */}
-      <div className="bg-white/70 backdrop-blur-sm border-b border-slate-200/50 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* Compact Header */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/50 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex justify-between items-center">
-            <div className="space-y-1">
-              <div className="flex items-center gap-3">
-                <h1 className="text-xl font-bold text-slate-900">
+            <div className="flex items-center gap-4">
+              <div>
+                <h1 className="text-lg font-bold text-slate-900">
                   {getCurrentGreeting()}{userProfile?.full_name ? `, ${userProfile.full_name.split(' ')[0]}` : ''}! 👋
                 </h1>
-                <Badge variant="outline" className="text-xs font-medium bg-green-50 text-green-700 border-green-200">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></div>
-                  Online
-                </Badge>
+                <p className="text-xs text-slate-600">Ready to advance your career today?</p>
               </div>
-              <p className="text-sm text-slate-600 font-medium">{getMotivationalMessage()}</p>
+              <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></div>
+                Active
+              </Badge>
             </div>
             <DataFreshness 
               lastUpdated={new Date(statsUpdatedAt || Date.now())}
@@ -142,73 +172,99 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="space-y-6">
-          {/* Enhanced Stats Cards */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="space-y-4">
+          {/* Compact Stats Grid */}
           <StatsCards userStats={userStats} />
           
-          {/* Quick Insights Banner */}
-          <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 shadow-lg">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white/20 rounded-lg">
-                    <TrendingUp className="h-5 w-5" />
+          {/* Smart Recommendations Bar */}
+          {smartRecommendations.length > 0 && (
+            <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 shadow-lg">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Zap className="h-5 w-5 text-yellow-300" />
+                    <div>
+                      <p className="font-semibold">Smart Recommendations</p>
+                      <p className="text-sm opacity-90">{smartRecommendations[0].title}: {smartRecommendations[0].description}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium opacity-90">Weekly Progress</p>
-                    <p className="text-lg font-bold">+15% improvement in profile views</p>
-                  </div>
+                  <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+                    {smartRecommendations[0].action}
+                    <ArrowRight className="ml-1 h-3 w-3" />
+                  </Button>
                 </div>
-                <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-                  View Details
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column - 2/3 width */}
-            <div className="lg:col-span-2 space-y-6">
-              <FeaturedJobs jobs={featuredJobs} />
-              <TrendingCourses courses={popularCourses} />
+          {/* Main Content - Compact Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            {/* Left Column - Jobs & Courses */}
+            <div className="lg:col-span-3 space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <FeaturedJobs jobs={featuredJobs} />
+                <TrendingCourses courses={popularCourses} />
+              </div>
             </div>
 
-            {/* Right Column - 1/3 width */}
-            <div className="space-y-6">
+            {/* Right Column - Sidebar */}
+            <div className="space-y-4">
               <QuickActions />
               <CareerInsights />
               
-              {/* Today's Focus Card */}
-              <Card className="border-0 shadow-md bg-gradient-to-br from-orange-50 to-amber-50">
+              {/* Progress Summary */}
+              <Card className="border-0 shadow-md bg-white/90 backdrop-blur-sm">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold text-slate-800 flex items-center gap-2">
-                    <Target className="h-4 w-4 text-orange-600" />
-                    Today's Focus
+                  <CardTitle className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                    <Target className="h-4 w-4 text-blue-600" />
+                    Weekly Goals
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center gap-3 p-2 bg-white/60 rounded-lg">
-                    <BookOpen className="h-4 w-4 text-blue-600" />
-                    <div>
-                      <p className="text-sm font-medium text-slate-800">Complete 1 Course</p>
-                      <p className="text-xs text-slate-600">2 lessons remaining</p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium text-slate-700">Job Applications</span>
+                      <span className="text-xs text-slate-600">{userStats.appliedJobs}/5</span>
                     </div>
+                    <Progress value={(userStats.appliedJobs / 5) * 100} className="h-2" />
                   </div>
-                  <div className="flex items-center gap-3 p-2 bg-white/60 rounded-lg">
-                    <Briefcase className="h-4 w-4 text-green-600" />
-                    <div>
-                      <p className="text-sm font-medium text-slate-800">Apply to 3 Jobs</p>
-                      <p className="text-xs text-slate-600">Based on your profile</p>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium text-slate-700">Course Progress</span>
+                      <span className="text-xs text-slate-600">{userStats.coursesCompleted}/2</span>
                     </div>
+                    <Progress value={(userStats.coursesCompleted / 2) * 100} className="h-2" />
                   </div>
-                  <div className="flex items-center gap-3 p-2 bg-white/60 rounded-lg">
-                    <Users className="h-4 w-4 text-purple-600" />
-                    <div>
-                      <p className="text-sm font-medium text-slate-800">Connect with 2 People</p>
-                      <p className="text-xs text-slate-600">Expand your network</p>
-                    </div>
+
+                  <div className="pt-2 flex items-center gap-2 text-xs text-green-700">
+                    <CheckCircle2 className="h-3 w-3" />
+                    <span>Great progress this week!</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Activity Summary */}
+              <Card className="border-0 shadow-md bg-gradient-to-br from-purple-50 to-indigo-50">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-purple-600" />
+                    This Week
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-600">Profile views</span>
+                    <span className="font-medium text-slate-800">+{userStats.profileViews}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-600">Resume downloads</span>
+                    <span className="font-medium text-slate-800">+{userStats.resumeViews}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-600">Course completions</span>
+                    <span className="font-medium text-slate-800">+{userStats.coursesCompleted}</span>
                   </div>
                 </CardContent>
               </Card>

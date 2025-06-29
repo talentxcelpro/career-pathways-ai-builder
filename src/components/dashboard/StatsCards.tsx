@@ -1,7 +1,7 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, Eye, Users, TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Briefcase, Eye, Users, TrendingUp, ArrowUpRight, ArrowDownRight, Star } from "lucide-react";
 
 interface UserStats {
   coursesCompleted: number;
@@ -17,85 +17,94 @@ interface StatsCardsProps {
 export const StatsCards = ({ userStats }: StatsCardsProps) => {
   const stats = [
     {
-      title: "Job Applications",
+      title: "Applications",
       value: userStats.appliedJobs.toString(),
       icon: Briefcase,
       trend: "+2 this week",
       trendUp: true,
       color: "blue",
-      bgGradient: "from-blue-500 to-cyan-500"
+      bgGradient: "from-blue-500 to-cyan-500",
+      description: "Jobs applied"
     },
     {
       title: "Profile Views",
       value: userStats.profileViews.toString(),
       icon: Eye,
-      trend: "+12% from last month",
+      trend: "+12%",
       trendUp: true,
       color: "green",
-      bgGradient: "from-green-500 to-emerald-500"
+      bgGradient: "from-green-500 to-emerald-500",
+      description: "This month"
     },
     {
       title: "Resume Views",
       value: userStats.resumeViews.toString(),
       icon: Users,
-      trend: "+5 new views",
+      trend: "+5 new",
       trendUp: true,
       color: "purple",
-      bgGradient: "from-purple-500 to-violet-500"
+      bgGradient: "from-purple-500 to-violet-500",
+      description: "Downloads"
     },
     {
-      title: "Courses Completed",
+      title: "Courses",
       value: userStats.coursesCompleted.toString(),
-      icon: TrendingUp,
-      trend: "+15% this month",
+      icon: Star,
+      trend: "Completed",
       trendUp: true,
       color: "orange",
-      bgGradient: "from-orange-500 to-red-500"
+      bgGradient: "from-orange-500 to-red-500",
+      description: "Skills gained"
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         return (
-          <Card key={index} className="border-0 shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-1 bg-white/80 backdrop-blur-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className={`p-2 rounded-lg bg-gradient-to-r ${stat.bgGradient}`}>
-                  <Icon className="h-4 w-4 text-white" />
+          <Card 
+            key={index} 
+            className="border-0 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 bg-white/90 backdrop-blur-sm"
+          >
+            <CardContent className="p-3">
+              {/* Header with icon and trend */}
+              <div className="flex items-center justify-between mb-2">
+                <div className={`p-1.5 rounded-md bg-gradient-to-r ${stat.bgGradient}`}>
+                  <Icon className="h-3 w-3 text-white" />
                 </div>
                 <Badge 
                   variant="outline" 
-                  className={`text-xs font-medium border-0 ${
+                  className={`text-xs font-medium border-0 px-1.5 py-0.5 ${
                     stat.trendUp 
                       ? 'bg-green-50 text-green-700' 
                       : 'bg-red-50 text-red-700'
                   }`}
                 >
                   {stat.trendUp ? (
-                    <ArrowUpRight className="h-3 w-3 mr-1" />
+                    <ArrowUpRight className="h-2 w-2 mr-0.5" />
                   ) : (
-                    <ArrowDownRight className="h-3 w-3 mr-1" />
+                    <ArrowDownRight className="h-2 w-2 mr-0.5" />
                   )}
-                  {stat.trend.includes('%') ? stat.trend.split(' ')[0] : stat.trend.split(' ')[0]}
+                  <span className="text-xs">{stat.trend.split(' ')[0]}</span>
                 </Badge>
               </div>
               
+              {/* Main content */}
               <div className="space-y-1">
-                <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                  {stat.title}
-                </h3>
-                <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
-                <p className="text-xs text-slate-500 font-medium">{stat.trend}</p>
+                <div className="flex items-baseline gap-1">
+                  <h3 className="text-lg font-bold text-slate-900">{stat.value}</h3>
+                  <span className="text-xs font-medium text-slate-600">{stat.title}</span>
+                </div>
+                <p className="text-xs text-slate-500">{stat.description}</p>
               </div>
               
-              {/* Progress bar */}
-              <div className="mt-3">
+              {/* Mini progress indicator */}
+              <div className="mt-2">
                 <div className="w-full bg-slate-100 rounded-full h-1">
                   <div 
                     className={`bg-gradient-to-r ${stat.bgGradient} h-1 rounded-full transition-all duration-300`}
-                    style={{ width: `${Math.min(parseInt(stat.value) * 10, 100)}%` }}
+                    style={{ width: `${Math.min(parseInt(stat.value) * 15, 100)}%` }}
                   ></div>
                 </div>
               </div>

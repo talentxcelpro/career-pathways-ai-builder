@@ -1,68 +1,73 @@
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Search, Users, BookOpen } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileText, Search, Users, BookOpen, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const QuickActions = () => {
   const actions = [
     {
       title: "Build Resume",
-      description: "Create or update your professional resume",
+      description: "Create professional resume",
       icon: FileText,
       href: "/resume-builder",
-      color: "bg-blue-500"
+      color: "from-blue-500 to-blue-600",
+      textColor: "text-blue-700"
     },
     {
       title: "Find Jobs",
-      description: "Search for your next opportunity",
+      description: "Browse opportunities",
       icon: Search,
       href: "/jobs",
-      color: "bg-green-500"
+      color: "from-green-500 to-green-600",
+      textColor: "text-green-700"
     },
     {
-      title: "Connect",
-      description: "Expand your professional network",
+      title: "Network",
+      description: "Connect with peers",
       icon: Users,
       href: "/network",
-      color: "bg-purple-500"
+      color: "from-purple-500 to-purple-600",
+      textColor: "text-purple-700"
     },
     {
-      title: "Learn Skills",
-      description: "Enhance your expertise with courses",
+      title: "Learn",
+      description: "Develop new skills",
       icon: BookOpen,
       href: "/learning",
-      color: "bg-orange-500"
+      color: "from-orange-500 to-orange-600",
+      textColor: "text-orange-700"
     }
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Quick Actions</CardTitle>
-        <CardDescription>
-          Common tasks to boost your career
-        </CardDescription>
+    <Card className="border-0 shadow-md bg-white/90 backdrop-blur-sm">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-semibold text-slate-800">Quick Actions</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4">
-          {actions.map((action, index) => {
-            const Icon = action.icon;
-            return (
-              <Link key={index} to={action.href}>
-                <Button variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2 w-full">
-                  <div className={`p-2 rounded-full ${action.color} text-white`}>
-                    <Icon className="h-4 w-4" />
+      <CardContent className="space-y-2">
+        {actions.map((action, index) => {
+          const Icon = action.icon;
+          return (
+            <Link key={index} to={action.href}>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-between p-2 h-auto hover:bg-slate-50 group"
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`p-1.5 rounded-md bg-gradient-to-r ${action.color}`}>
+                    <Icon className="h-3 w-3 text-white" />
                   </div>
-                  <div className="text-center">
-                    <div className="font-medium text-sm">{action.title}</div>
-                    <div className="text-xs text-muted-foreground">{action.description}</div>
+                  <div className="text-left">
+                    <div className="text-xs font-medium text-slate-800">{action.title}</div>
+                    <div className="text-xs text-slate-500">{action.description}</div>
                   </div>
-                </Button>
-              </Link>
-            );
-          })}
-        </div>
+                </div>
+                <ArrowRight className="h-3 w-3 text-slate-400 group-hover:text-slate-600 transition-colors" />
+              </Button>
+            </Link>
+          );
+        })}
       </CardContent>
     </Card>
   );
