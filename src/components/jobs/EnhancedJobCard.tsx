@@ -12,7 +12,8 @@ import {
   Users, 
   Eye,
   Bookmark,
-  Share2
+  Share2,
+  Star
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { formatSalaryRange } from "@/utils/currencyUtils";
@@ -48,10 +49,28 @@ interface Job {
 interface EnhancedJobCardProps {
   job: Job;
   onSave?: (jobId: string) => void;
+  onApply?: (jobId: string) => void;
   onShare?: (job: Job) => void;
+  isSaved?: boolean;
+  isApplied?: boolean;
+  matchScore?: number;
+  matchingSkills?: string[];
+  showMatchScore?: boolean;
+  currentUser?: any;
 }
 
-export default function EnhancedJobCard({ job, onSave, onShare }: EnhancedJobCardProps) {
+export default function EnhancedJobCard({ 
+  job, 
+  onSave, 
+  onApply,
+  onShare, 
+  isSaved = false, 
+  isApplied = false,
+  matchScore,
+  matchingSkills,
+  showMatchScore = false,
+  currentUser
+}: EnhancedJobCardProps) {
   const navigate = useNavigate();
 
   const handleSave = (e: React.MouseEvent) => {
@@ -92,6 +111,9 @@ export default function EnhancedJobCard({ job, onSave, onShare }: EnhancedJobCar
 
   const handleApplyClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (onApply) {
+      onApply(job.id);
+    }
   };
 
   return (
@@ -100,6 +122,16 @@ export default function EnhancedJobCard({ job, onSave, onShare }: EnhancedJobCar
       onClick={handleCardClick}
     >
       <CardContent className="p-6">
+        {/* Match Score Badge */}
+        {showMatchScore && matchScore && matchScore > 0 && (
+          <div className="mb-3">
+            <Badge className="bg-green-100 text-green-800">
+              <Star className="h-3 w-3 mr-1" />
+              {matchScore}% Match
+            </Badge>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start space-x-3 flex-1">
@@ -142,9 +174,9 @@ export default function EnhancedJobCard({ job, onSave, onShare }: EnhancedJobCar
               variant="ghost" 
               size="sm"
               onClick={handleSave}
-              className="h-8 w-8 p-0"
+              className={`h-8 w-8 p-0 ${isSaved ? 'text-blue-600' : ''}`}
             >
-              <Bookmark className="h-4 w-4" />
+              <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
             </Button>
           </div>
         </div>
@@ -205,11 +237,18 @@ export default function EnhancedJobCard({ job, onSave, onShare }: EnhancedJobCar
           {/* Skills */}
           {job.skills_required && job.skills_required.length > 0 && (
             <div className="flex flex-wrap gap-1">
-              {job.skills_required.slice(0, 5).map((skill, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  {skill}
-                </Badge>
-              ))}
+              {job.skills_required.slice(0, 5).map((skill, index) => {
+                const isMatching = matchingSkills?.includes(skill);
+                return (
+                  <Badge 
+                    key={index} 
+                    variant={isMatching ? "default" : "outline"} 
+                    className={`text-xs ${isMatching ? 'bg-green-100 text-green-800' : ''}`}
+                  >
+                    {skill}
+                  </Badge>
+                );
+              })}
               {job.skills_required.length > 5 && (
                 <Badge variant="outline" className="text-xs">
                   +{job.skills_required.length - 5} more
@@ -232,15 +271,19 @@ export default function EnhancedJobCard({ job, onSave, onShare }: EnhancedJobCar
             </div>
           </div>
           <div onClick={handleApplyClick}>
-            <ApplyButton 
-              job={{
-                id: job.id,
-                title: job.title,
-                companies: job.companies,
-                skills_required: job.skills_required
-              }}
-              size="sm"
-            />
+            {isApplied ? (
+              <Badge className="bg-green-100 text-green-800">Applied</Badge>
+            ) : (
+              <ApplyButton 
+                job={{
+                  id: job.id,
+                  title: job.title,
+                  companies: job.companies,
+                  skills_required: job.skills_required
+                }}
+                size="sm"
+              />
+            )}
           </div>
         </div>
       </CardContent>
