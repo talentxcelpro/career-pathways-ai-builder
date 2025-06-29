@@ -9,6 +9,9 @@ import { Navbar } from "./components/navigation/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
+import { AnalyticsProvider } from "./contexts/AnalyticsContext";
+import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
+import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 // Create query client with better default configurations
@@ -38,35 +41,39 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <BrowserRouter>
-        <AuthProvider>
-          <div className="min-h-screen flex flex-col">
-            <OfflineIndicator />
-            <Navbar />
-            <main className="flex-1">
-              <Routes>
-                {navItems.map((item: NavItem) => {
-                  const isPublicRoute = publicRoutes.includes(item.to);
-                  
-                  return (
-                    <Route 
-                      key={item.to} 
-                      path={item.to} 
-                      element={
-                        isPublicRoute ? (
-                          item.page
-                        ) : (
-                          <ProtectedRoute>{item.page}</ProtectedRoute>
-                        )
-                      }
-                      {...(item.exact && { index: item.to === "/" })}
-                    />
-                  );
-                })}
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-        </AuthProvider>
+        <AnalyticsProvider>
+          <AuthProvider>
+            <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
+            <SearchConsoleVerification verificationCode="your-search-console-verification-code" />
+            <div className="min-h-screen flex flex-col">
+              <OfflineIndicator />
+              <Navbar />
+              <main className="flex-1">
+                <Routes>
+                  {navItems.map((item: NavItem) => {
+                    const isPublicRoute = publicRoutes.includes(item.to);
+                    
+                    return (
+                      <Route 
+                        key={item.to} 
+                        path={item.to} 
+                        element={
+                          isPublicRoute ? (
+                            item.page
+                          ) : (
+                            <ProtectedRoute>{item.page}</ProtectedRoute>
+                          )
+                        }
+                        {...(item.exact && { index: item.to === "/" })}
+                      />
+                    );
+                  })}
+                </Routes>
+              </main>
+              <Footer />
+            </div>
+          </AuthProvider>
+        </AnalyticsProvider>
         <Analytics />
       </BrowserRouter>
     </TooltipProvider>
