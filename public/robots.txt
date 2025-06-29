@@ -1,14 +1,57 @@
+
+User-agent: *
+Allow: /
+
+# High-priority crawling for major search engines
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
 
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 2
 
+# Social media crawlers for rich previews
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
+User-agent: LinkedInBot
 Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+# Sitemaps - Multiple sitemaps for better organization
+Sitemap: https://talentxcel.in/sitemap.xml
+Sitemap: https://talentxcel.in/jobs-sitemap.xml
+Sitemap: https://talentxcel.in/companies-sitemap.xml
+Sitemap: https://talentxcel.in/courses-sitemap.xml
+
+# Disallow sensitive areas
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /api/
+Disallow: /employer/settings
+Disallow: /profile/edit
+Disallow: /profile/settings
+Disallow: /*.json$
+Disallow: /*?*utm_*
+Disallow: /*?*ref=*
+Disallow: /*?*fbclid=*
+Disallow: /search?*
+Disallow: /filter?*
+
+# Allow important API endpoints for structured data
+Allow: /api/sitemap
+Allow: /api/search
+
+# Crawl optimization
+User-agent: *
+Request-rate: 1/10s
+
+# Cache control hints
+User-agent: *
+Visit-time: 0600-2100
