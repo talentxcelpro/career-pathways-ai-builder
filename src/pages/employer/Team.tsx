@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -270,7 +271,7 @@ const EmployerTeam = () => {
                     <TableCell>
                       <div className="flex items-center space-x-3">
                         <Avatar>
-                          <AvatarImage src={member.user_profile?.profile_picture_url || ''} />
+                          <AvatarImage src={(member.user_profile && 'profile_picture_url' in member.user_profile) ? member.user_profile.profile_picture_url : ''} />
                           <AvatarFallback>
                             {member.user_profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
                           </AvatarFallback>
