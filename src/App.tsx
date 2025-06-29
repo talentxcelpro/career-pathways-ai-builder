@@ -63,9 +63,9 @@ const App = () => (
                 <Routes>
                   {navItems.map((item: NavItem) => {
                     const isPublicRoute = publicRoutes.some(route => {
-                      // Handle dynamic routes like /companies/:id
+                      // Handle dynamic routes like /companies/:id and /profile/:id
                       if (route.includes(':')) {
-                        const routePattern = route.replace(':id', '.*');
+                        const routePattern = route.replace(':id', '[^/]+');
                         return new RegExp(`^${routePattern}$`).test(item.to);
                       }
                       return route === item.to;
