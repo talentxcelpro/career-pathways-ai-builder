@@ -39,9 +39,9 @@ interface LearningPath {
 
 const Learning = () => {
   const [activeTab, setActiveTab] = useState('courses');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedLevel, setSelectedLevel] = useState('all');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('all');
   const [enrolledCourses, setEnrolledCourses] = useState<string[]>([]);
 
   // Update meta tags for SEO
@@ -69,18 +69,18 @@ const Learning = () => {
     if (!Array.isArray(courses)) return [];
     
     return courses.filter((course: Course) => {
-      const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           course.instructor_name?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           course.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           course.instructor_name?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesCategory = selectedCategory === 'all' || course.category === selectedCategory;
-      const matchesLevel = selectedLevel === 'all' || course.difficulty_level === selectedLevel;
+      const matchesLevel = selectedDifficulty === 'all' || course.difficulty_level === selectedDifficulty;
       
       return matchesSearch && matchesCategory && matchesLevel;
     });
-  }, [courses, searchQuery, selectedCategory, selectedLevel]);
+  }, [courses, searchTerm, selectedCategory, selectedDifficulty]);
 
-  // Get unique categories and levels for filters
+  // Get unique categories for filters
   const categories = React.useMemo(() => {
     if (!Array.isArray(courses)) return [];
     
@@ -88,32 +88,30 @@ const Learning = () => {
     return uniqueCategories as string[];
   }, [courses]);
 
-  const levels = React.useMemo(() => {
-    if (!Array.isArray(courses)) return [];
-    
-    const uniqueLevels = [...new Set(courses.map((course: Course) => course.difficulty_level).filter(Boolean))];
-    return uniqueLevels as string[];
-  }, [courses]);
-
   // Filter learning paths
   const filteredLearningPaths = React.useMemo(() => {
     if (!Array.isArray(learningPaths)) return [];
     
     return learningPaths.filter((path: LearningPath) => {
-      const matchesSearch = path.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           path.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           path.target_role?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = path.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           path.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           path.target_role?.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesLevel = selectedLevel === 'all' || path.difficulty_level === selectedLevel;
+      const matchesLevel = selectedDifficulty === 'all' || path.difficulty_level === selectedDifficulty;
       
       return matchesSearch && matchesLevel;
     });
-  }, [learningPaths, searchQuery, selectedLevel]);
+  }, [learningPaths, searchTerm, selectedDifficulty]);
 
   const handleEnroll = (courseId: string) => {
     setEnrolledCourses(prev => [...prev, courseId]);
-    // Here you would typically make an API call to enroll the user
     console.log('Enrolled in course:', courseId);
+  };
+
+  const isEnrolled = (courseId: string) => enrolledCourses.includes(courseId);
+
+  const handleBrowseCourses = () => {
+    setActiveTab('courses');
   };
 
   const isLoading = coursesLoading || pathsLoading;
@@ -135,25 +133,38 @@ const Learning = () => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <LearningTabs activeTab={activeTab} onTabChange={setActiveTab} />
+          <LearningTabs 
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            filteredCourses={filteredCourses}
+            coursesLoading={coursesLoading}
+            learningPaths={filteredLearningPaths}
+            pathsLoading={pathsLoading}
+            userCourses={[]}
+            isEnrolled={isEnrolled}
+            enrollInCourse={handleEnroll}
+          />
         </div>
 
         <div className="mb-8">
           <SearchAndFilters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
             selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            selectedLevel={selectedLevel}
-            onLevelChange={setSelectedLevel}
+            setSelectedCategory={setSelectedCategory}
+            selectedDifficulty={selectedDifficulty}
+            setSelectedDifficulty={setSelectedDifficulty}
             categories={categories}
-            levels={levels}
           />
         </div>
 
         {activeTab === 'courses' && (
           <div className="space-y-8">
-            <AIRecommendations />
+            <AIRecommendations 
+              recommendations={filteredCourses.slice(0, 3)}
+              onEnroll={handleEnroll}
+              isEnrolled={isEnrolled}
+            />
             
             <div>
               <h2 className="text-2xl font-bold text-slate-900 mb-6">
@@ -169,7 +180,11 @@ const Learning = () => {
                   {filteredCourses.map((course: Course) => (
                     <CourseCard
                       key={course.id}
-                      course={course}
+                      course={{
+                        ...course,
+                        category: course.category || 'General',
+                        skills_taught: course.skills_taught || []
+                      }}
                       isEnrolled={enrolledCourses.includes(course.id)}
                       onEnroll={handleEnroll}
                     />
@@ -193,7 +208,7 @@ const Learning = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredLearningPaths.map((path: LearningPath) => (
-                  <LearningPathCard key={path.id} learningPath={path} />
+                  <LearningPathCard key={path.id} path={path} />
                 ))}
               </div>
             )}
@@ -205,7 +220,7 @@ const Learning = () => {
             <h2 className="text-2xl font-bold text-slate-900 mb-6">My Learning</h2>
             
             {enrolledCourses.length === 0 ? (
-              <EmptyMyLearning />
+              <EmptyMyLearning onBrowseCourses={handleBrowseCourses} />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {courses
@@ -213,7 +228,11 @@ const Learning = () => {
                   .map((course: Course) => (
                     <CourseCard
                       key={course.id}
-                      course={course}
+                      course={{
+                        ...course,
+                        category: course.category || 'General',
+                        skills_taught: course.skills_taught || []
+                      }}
                       isEnrolled={true}
                       onEnroll={handleEnroll}
                     />
