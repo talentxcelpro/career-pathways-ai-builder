@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,11 +15,13 @@ import {
   CheckCircle, 
   AlertCircle,
   Download,
-  ExternalLink
+  ExternalLink,
+  Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SEODashboard = () => {
+  const [sitemapUrls, setSitemapUrls] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [seoScore, setSeoScore] = useState(85);
 
@@ -81,8 +82,16 @@ const SEODashboard = () => {
     { item: 'Core Web Vitals', status: 'warning', description: 'Monitor and improve' },
   ];
 
+  const phase4Features = [
+    { name: 'Performance Optimization', status: 'active', description: 'Lazy loading & Core Web Vitals' },
+    { name: 'RSS Feed Generation', status: 'active', description: 'Content syndication feeds' },
+    { name: 'Advanced Structured Data', status: 'active', description: 'Enhanced JSON-LD markup' },
+    { name: 'Multi-language Support', status: 'active', description: 'Hreflang implementation' },
+    { name: 'Advanced Robots.txt', status: 'active', description: 'Enhanced crawling rules' },
+  ];
+
   return (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* SEO Score Overview */}
       <Card>
         <CardHeader>
@@ -119,6 +128,32 @@ const SEODashboard = () => {
                 >
                   {metric.change}
                 </Badge>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Phase 4 Features */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Zap className="h-5 w-5" />
+            Phase 4 - Advanced Features
+          </CardTitle>
+          <CardDescription>
+            Performance optimization and advanced SEO features
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {phase4Features.map((feature, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <div>
+                  <span className="font-medium text-sm">{feature.name}</span>
+                  <p className="text-xs text-gray-600">{feature.description}</p>
+                </div>
+                <Badge variant="default">Active</Badge>
               </div>
             ))}
           </div>
