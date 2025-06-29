@@ -47,7 +47,7 @@ export default function JobDetails() {
             website,
             industry,
             size_range,
-            location as company_location
+            location
           )
         `)
         .eq('id', id)
@@ -352,10 +352,10 @@ export default function JobDetails() {
                         <span className="font-medium">{job.companies.size_range}</span>
                       </div>
                     )}
-                    {job.companies.company_location && (
+                    {job.companies.location && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">Location:</span>
-                        <span className="font-medium">{job.companies.company_location}</span>
+                        <span className="font-medium">{job.companies.location}</span>
                       </div>
                     )}
                   </div>

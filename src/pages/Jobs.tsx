@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { JobsHeader } from '@/components/jobs/JobsHeader';
 import { JobsCategories } from '@/components/jobs/JobsCategories';
 import { EnhancedJobFilters } from '@/components/jobs/EnhancedJobFilters';
-import { EnhancedJobCard } from '@/components/jobs/EnhancedJobCard';
+import EnhancedJobCard from '@/components/jobs/EnhancedJobCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useJobsAutoRefresh } from '@/hooks/useAutoRefresh';
