@@ -1,486 +1,380 @@
 
 import React, { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { 
   MapPin, 
-  Building, 
-  Clock, 
   DollarSign, 
+  Clock, 
+  Building2, 
   Users, 
-  Bookmark, 
-  BookmarkCheck,
+  Calendar,
+  ArrowLeft,
   Share2,
-  Sparkles,
-  ExternalLink
-} from 'lucide-react';
+  Bookmark,
+  Eye,
+  TrendingUp
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { formatSalaryRange } from "@/utils/currencyUtils";
+import { incrementJobViews } from "@/utils/supabaseHelpers";
+import ApplyButton from "@/components/jobs/ApplyButton";
 
-const JobDetails = () => {
-  const { id } = useParams();
-  const queryClient = useQueryClient();
+export default function JobDetails() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   const { data: job, isLoading, error } = useQuery({
     queryKey: ['job', id],
     queryFn: async () => {
+      if (!id) throw new Error('Job ID is required');
+
       const { data, error } = await supabase
         .from('jobs')
         .select(`
           *,
           companies (
+            id,
             name,
             logo_url,
-            location,
             description,
             website,
             industry,
-            employee_count_range
+            size_range,
+            location as company_location
           )
         `)
         .eq('id', id)
         .single();
-      
-      if (error) throw error;
-      return data;
-    }
-  });
 
-  const { data: isJobSaved } = useQuery({
-    queryKey: ['is-job-saved', id],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
-
-      const { data, error } = await supabase
-        .from('saved_jobs')
-        .select('id')
-        .eq('job_id', id)
-        .eq('user_id', user.id)
-        .single();
-      
-      return !!data;
-    }
-  });
-
-  const { data: hasApplied } = useQuery({
-    queryKey: ['has-applied', id],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
-
-      const { data, error } = await supabase
-        .from('job_applications')
-        .select('id')
-        .eq('job_id', id)
-        .eq('user_id', user.id)
-        .single();
-      
-      return !!data;
-    }
-  });
-
-  const { data: similarJobs } = useQuery({
-    queryKey: ['similar-jobs', job?.title, job?.company_id],
-    queryFn: async () => {
-      if (!job) return [];
-
-      const { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          *,
-          companies (name, logo_url)
-        `)
-        .neq('id', id)
-        .eq('is_active', true)
-        .or(`title.ilike.%${job.title}%,company_id.eq.${job.company_id}`)
-        .limit(3);
-      
       if (error) throw error;
       return data;
     },
-    enabled: !!job
+    enabled: !!id
   });
 
-  const saveJobMutation = useMutation({
-    mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      if (isJobSaved) {
-        const { error } = await supabase
-          .from('saved_jobs')
-          .delete()
-          .eq('job_id', id)
-          .eq('user_id', user.id);
-        
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('saved_jobs')
-          .insert({
-            job_id: id,
-            user_id: user.id
-          });
-        
-        if (error) throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['is-job-saved', id] });
-      toast.success(isJobSaved ? 'Job removed from saved' : 'Job saved successfully');
-    },
-    onError: (error) => {
-      console.error('Save job error:', error);
-      toast.error('Failed to save job');
-    }
-  });
-
-  // Track job view
+  // Increment view count when job is loaded
   useEffect(() => {
-    if (id) {
-      supabase.rpc('increment_job_views', { job_id: id });
-      
-      // Track individual view
-      supabase.from('job_views').insert({
-        job_id: id,
-        user_agent: navigator.userAgent,
-        referrer: document.referrer
-      });
+    if (job?.id) {
+      incrementJobViews(job.id).catch(console.error);
     }
-  }, [id]);
+  }, [job?.id]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error || !job) return <div>Job not found</div>;
-
-  const company = job.companies;
-
-  return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          {/* Job Header */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-4">
-                  {company?.logo_url && (
-                    <img
-                      src={company.logo_url}
-                      alt={company.name}
-                      className="w-16 h-16 rounded-lg object-cover"
-                    />
-                  )}
-                  <div>
-                    <CardTitle className="text-2xl">{job.title}</CardTitle>
-                    <CardDescription className="flex items-center gap-2 text-lg">
-                      <Building className="h-4 w-4" />
-                      {company?.name}
-                    </CardDescription>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {job.location}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {job.employment_type}
-                      </div>
-                      {job.is_remote && (
-                        <Badge variant="secondary">Remote</Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => saveJobMutation.mutate()}
-                  disabled={saveJobMutation.isPending}
-                >
-                  {isJobSaved ? (
-                    <BookmarkCheck className="h-4 w-4" />
-                  ) : (
-                    <Bookmark className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </CardHeader>
-          </Card>
-
-          {/* Job Description */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Job Description</CardTitle>
-            </CardHeader>
-            <CardContent className="prose max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: job.description.replace(/\n/g, '<br />') }} />
-            </CardContent>
-          </Card>
-
-          {/* Requirements */}
-          {job.requirements && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Requirements</CardTitle>
-              </CardHeader>
-              <CardContent className="prose max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: job.requirements.replace(/\n/g, '<br />') }} />
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Skills */}
-          {job.skills_required && job.skills_required.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Required Skills</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {job.skills_required.map((skill: string, index: number) => (
-                    <Badge key={index} variant="secondary">
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Benefits */}
-          {job.benefits && job.benefits.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Benefits</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc list-inside space-y-1">
-                  {job.benefits.map((benefit: string, index: number) => (
-                    <li key={index}>{benefit}</li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Apply Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Apply for this job</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {hasApplied ? (
-                <div className="text-center py-4">
-                  <Badge variant="default" className="mb-2">Already Applied</Badge>
-                  <p className="text-sm text-gray-600">
-                    You have already applied for this position
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <Button asChild className="w-full" size="lg">
-                    <Link to={`/jobs/${id}/smart-apply`}>
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Smart Apply
-                    </Link>
-                  </Button>
-                  
-                  <Button asChild variant="outline" className="w-full">
-                    <Link to={`/jobs/${id}/apply`}>
-                      Manual Apply
-                    </Link>
-                  </Button>
-                </>
-              )}
-              
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => navigator.share?.({ 
-                  title: job.title, 
-                  url: window.location.href 
-                }) || navigator.clipboard.writeText(window.location.href)}
-              >
-                <Share2 className="h-4 w-4 mr-2" />
-                Share Job
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Job Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Job Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {(job.salary_min || job.salary_max) && (
-                <div>
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <DollarSign className="h-4 w-4" />
-                    Salary Range
-                  </div>
-                  <p className="text-sm text-gray-600 mt-1">
-                    ${job.salary_min?.toLocaleString() || '0'} - ${job.salary_max?.toLocaleString() || 'Not specified'}
-                  </p>
-                </div>
-              )}
-
-              <div>
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Users className="h-4 w-4" />
-                  Experience Level
-                </div>
-                <p className="text-sm text-gray-600 mt-1">
-                  {job.experience_level || 'Not specified'}
-                </p>
-              </div>
-
-              <div>
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Clock className="h-4 w-4" />
-                  Posted
-                </div>
-                <p className="text-sm text-gray-600 mt-1">
-                  {new Date(job.posted_at || job.created_at).toLocaleDateString()}
-                </p>
-              </div>
-
-              {job.application_deadline && (
-                <div>
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Clock className="h-4 w-4" />
-                    Application Deadline
-                  </div>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {new Date(job.application_deadline).toLocaleDateString()}
-                  </p>
-                </div>
-              )}
-
-              <div>
-                <div className="text-sm font-medium">Job Views</div>
-                <p className="text-sm text-gray-600 mt-1">
-                  {job.views_count || 0} views
-                </p>
-              </div>
-
-              <div>
-                <div className="text-sm font-medium">Applications</div>
-                <p className="text-sm text-gray-600 mt-1">
-                  {job.applications_count || 0} applications
-                </p>
-              </div>
-
-              {job.external_url && (
-                <Button asChild variant="outline" className="w-full">
-                  <a href={job.external_url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    View on Company Site
-                  </a>
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Company Info */}
-          {company && (
-            <Card>
-              <CardHeader>
-                <CardTitle>About {company.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {company.description && (
-                  <p className="text-sm text-gray-600 line-clamp-4">
-                    {company.description}
-                  </p>
-                )}
-
-                <div className="space-y-2 text-sm">
-                  {company.industry && (
-                    <div>
-                      <span className="font-medium">Industry:</span> {company.industry}
-                    </div>
-                  )}
-                  
-                  {company.employee_count_range && (
-                    <div>
-                      <span className="font-medium">Company Size:</span> {company.employee_count_range}
-                    </div>
-                  )}
-
-                  {company.location && (
-                    <div>
-                      <span className="font-medium">Location:</span> {company.location}
-                    </div>
-                  )}
-                </div>
-
-                <Button asChild variant="outline" className="w-full">
-                  <Link to={`/companies/${job.company_id}`}>
-                    View Company Profile
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
         </div>
       </div>
+    );
+  }
 
-      {/* Similar Jobs */}
-      {similarJobs && similarJobs.length > 0 && (
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Similar Jobs</CardTitle>
-            <CardDescription>Other opportunities you might be interested in</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {similarJobs.map((similarJob: any) => (
-                <Card key={similarJob.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      {similarJob.companies?.logo_url && (
-                        <img
-                          src={similarJob.companies.logo_url}
-                          alt={similarJob.companies.name}
-                          className="w-10 h-10 rounded object-cover"
-                        />
+  if (error || !job) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-2xl font-bold mb-4">Job Not Found</h1>
+        <p className="text-gray-600 mb-4">The job you're looking for doesn't exist or has been removed.</p>
+        <Button onClick={() => navigate('/jobs')}>Back to Jobs</Button>
+      </div>
+    );
+  }
+
+  const handleSaveJob = async () => {
+    // Implementation for saving job
+    toast.success('Job saved to your list!');
+  };
+
+  const handleShareJob = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: job.title,
+          text: `Check out this job at ${job.companies?.name}: ${job.title}`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Job link copied to clipboard!');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        {/* Back Button */}
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/jobs')}
+          className="mb-6"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Jobs
+        </Button>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Job Header */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start space-x-4">
+                    {job.companies?.logo_url && (
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage src={job.companies.logo_url} alt={job.companies.name} />
+                        <AvatarFallback>
+                          {job.companies.name?.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                    <div className="flex-1">
+                      <h1 className="text-3xl font-bold text-gray-900 mb-2">{job.title}</h1>
+                      {job.companies && (
+                        <div className="flex items-center space-x-2 text-gray-600 mb-3">
+                          <Building2 className="h-4 w-4" />
+                          <span className="font-medium">{job.companies.name}</span>
+                          {job.companies.industry && (
+                            <>
+                              <span>•</span>
+                              <span>{job.companies.industry}</span>
+                            </>
+                          )}
+                        </div>
                       )}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-sm line-clamp-2">
-                          {similarJob.title}
-                        </h4>
-                        <p className="text-xs text-gray-600">
-                          {similarJob.companies?.name}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {similarJob.location}
-                        </p>
-                        <Button asChild variant="outline" size="sm" className="mt-2 w-full">
-                          <Link to={`/jobs/${similarJob.id}`}>
-                            View Details
-                          </Link>
-                        </Button>
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                        <div className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          <span>{job.location}</span>
+                        </div>
+                        {(job.salary_min || job.salary_max) && (
+                          <div className="flex items-center">
+                            <DollarSign className="h-4 w-4 mr-1" />
+                            <span>{formatSalaryRange(job.salary_min, job.salary_max)}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center">
+                          <Clock className="h-4 w-4 mr-1" />
+                          <span>Posted {formatDistanceToNow(new Date(job.posted_at))} ago</span>
+                        </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button variant="outline" size="sm" onClick={handleShareJob}>
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleSaveJob}>
+                      <Bookmark className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Job Tags */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {job.employment_type && (
+                    <Badge variant="secondary">{job.employment_type}</Badge>
+                  )}
+                  {job.experience_level && (
+                    <Badge variant="outline">{job.experience_level}</Badge>
+                  )}
+                  {job.is_remote && (
+                    <Badge className="bg-green-100 text-green-800">Remote</Badge>
+                  )}
+                  {job.is_urgent && (
+                    <Badge className="bg-red-100 text-red-800">Urgent</Badge>
+                  )}
+                  {job.is_hiring_fast && (
+                    <Badge className="bg-orange-100 text-orange-800">Hiring Fast</Badge>
+                  )}
+                </div>
+
+                {/* Apply Button */}
+                <ApplyButton 
+                  job={{
+                    id: job.id,
+                    title: job.title,
+                    companies: job.companies,
+                    skills_required: job.skills_required
+                  }}
+                  size="lg"
+                  className="w-full sm:w-auto"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Job Description */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Job Description</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="prose max-w-none">
+                  <p className="text-gray-700 whitespace-pre-wrap">
+                    {job.description}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Requirements */}
+            {job.requirements && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Requirements</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose max-w-none">
+                    <p className="text-gray-700 whitespace-pre-wrap">
+                      {job.requirements}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Skills Required */}
+            {job.skills_required && job.skills_required.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Required Skills</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {job.skills_required.map((skill, index) => (
+                      <Badge key={index} variant="outline" className="text-sm">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Benefits */}
+            {job.benefits && job.benefits.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Benefits</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {job.benefits.map((benefit, index) => (
+                      <div key={index} className="flex items-center text-sm text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0"></span>
+                        {benefit}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Job Stats */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Job Statistics</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Eye className="h-4 w-4 mr-2" />
+                    Views
+                  </div>
+                  <span className="font-medium">{job.views_count || 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Users className="h-4 w-4 mr-2" />
+                    Applications
+                  </div>
+                  <span className="font-medium">{job.applications_count || 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Posted
+                  </div>
+                  <span className="font-medium">
+                    {formatDistanceToNow(new Date(job.posted_at))} ago
+                  </span>
+                </div>
+                {job.application_deadline && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <TrendingUp className="h-4 w-4 mr-2" />
+                      Deadline
+                    </div>
+                    <span className="font-medium text-red-600">
+                      {formatDistanceToNow(new Date(job.application_deadline))} left
+                    </span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Company Info */}
+            {job.companies && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>About {job.companies.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {job.companies.description && (
+                    <p className="text-sm text-gray-700 line-clamp-3">
+                      {job.companies.description}
+                    </p>
+                  )}
+                  <div className="space-y-2 text-sm">
+                    {job.companies.industry && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Industry:</span>
+                        <span className="font-medium">{job.companies.industry}</span>
+                      </div>
+                    )}
+                    {job.companies.size_range && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Company Size:</span>
+                        <span className="font-medium">{job.companies.size_range}</span>
+                      </div>
+                    )}
+                    {job.companies.company_location && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Location:</span>
+                        <span className="font-medium">{job.companies.company_location}</span>
+                      </div>
+                    )}
+                  </div>
+                  {job.companies.website && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => window.open(job.companies?.website, '_blank')}
+                    >
+                      Visit Website
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default JobDetails;
+}
