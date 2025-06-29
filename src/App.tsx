@@ -35,7 +35,17 @@ const queryClient = new QueryClient({
 });
 
 // Routes that don't require authentication
-const publicRoutes = ['/', '/auth/login', '/auth/register', '/auth/forgot-password', '/auth/reset-password', '/auth/callback'];
+const publicRoutes = [
+  '/', 
+  '/auth/login', 
+  '/auth/register', 
+  '/auth/forgot-password', 
+  '/auth/reset-password', 
+  '/auth/callback',
+  '/companies',
+  '/companies/:id',
+  '/profile/:id'
+];
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -52,7 +62,14 @@ const App = () => (
               <main className="flex-1">
                 <Routes>
                   {navItems.map((item: NavItem) => {
-                    const isPublicRoute = publicRoutes.includes(item.to);
+                    const isPublicRoute = publicRoutes.some(route => {
+                      // Handle dynamic routes like /companies/:id
+                      if (route.includes(':')) {
+                        const routePattern = route.replace(':id', '.*');
+                        return new RegExp(`^${routePattern}$`).test(item.to);
+                      }
+                      return route === item.to;
+                    });
                     
                     return (
                       <Route 
