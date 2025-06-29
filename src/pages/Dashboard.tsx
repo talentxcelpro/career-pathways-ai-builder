@@ -1,6 +1,6 @@
-
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link, useNavigate } from 'react-router-dom';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { FeaturedJobs } from '@/components/dashboard/FeaturedJobs';
 import { TrendingCourses } from '@/components/dashboard/TrendingCourses';
@@ -17,9 +17,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { TrendingUp, Clock, Target, BookOpen, Briefcase, Users, Star, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, Clock, Target, BookOpen, Briefcase, Users, Star, ArrowRight, Zap, CheckCircle2, Award, ExternalLink } from 'lucide-react';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  
   // Auto-refresh and real-time updates
   const { manualRefresh } = useDashboardAutoRefresh();
   useRealtimeMessages();
@@ -76,6 +78,44 @@ const Dashboard = () => {
 
   const handleRefreshAll = () => {
     manualRefresh();
+  };
+
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'resume':
+        navigate('/tools/resume-builder');
+        break;
+      case 'jobs':
+        navigate('/jobs');
+        break;
+      case 'network':
+        navigate('/network');
+        break;
+      case 'learning':
+        navigate('/learning');
+        break;
+      case 'profile':
+        navigate('/profile');
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleGoalAction = (goal: string) => {
+    switch (goal) {
+      case 'applications':
+        navigate('/jobs');
+        break;
+      case 'courses':
+        navigate('/learning');
+        break;
+      case 'profile':
+        navigate('/profile');
+        break;
+      default:
+        break;
+    }
   };
 
   if (statsLoading && jobsLoading && coursesLoading) {
@@ -189,7 +229,12 @@ const Dashboard = () => {
                       <p className="text-sm opacity-90">{smartRecommendations[0].title}: {smartRecommendations[0].description}</p>
                     </div>
                   </div>
-                  <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+                  <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                    onClick={() => handleQuickAction(smartRecommendations[0].priority === 'high' ? 'jobs' : 'learning')}
+                  >
                     {smartRecommendations[0].action}
                     <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
@@ -213,7 +258,7 @@ const Dashboard = () => {
               <QuickActions />
               <CareerInsights />
               
-              {/* Progress Summary */}
+              {/* Enhanced Progress Summary */}
               <Card className="border-0 shadow-md bg-white/90 backdrop-blur-sm">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-semibold text-slate-800 flex items-center gap-2">
@@ -225,7 +270,17 @@ const Dashboard = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-medium text-slate-700">Job Applications</span>
-                      <span className="text-xs text-slate-600">{userStats.appliedJobs}/5</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-600">{userStats.appliedJobs}/5</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-5 w-5 p-0 text-xs"
+                          onClick={() => handleGoalAction('applications')}
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <Progress value={(userStats.appliedJobs / 5) * 100} className="h-2" />
                   </div>
@@ -233,7 +288,17 @@ const Dashboard = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-medium text-slate-700">Course Progress</span>
-                      <span className="text-xs text-slate-600">{userStats.coursesCompleted}/2</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-600">{userStats.coursesCompleted}/2</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-5 w-5 p-0 text-xs"
+                          onClick={() => handleGoalAction('courses')}
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <Progress value={(userStats.coursesCompleted / 2) * 100} className="h-2" />
                   </div>
@@ -245,7 +310,7 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              {/* Activity Summary */}
+              {/* Enhanced Activity Summary */}
               <Card className="border-0 shadow-md bg-gradient-to-br from-purple-50 to-indigo-50">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-semibold text-slate-800 flex items-center gap-2">
@@ -254,17 +319,29 @@ const Dashboard = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-xs cursor-pointer hover:bg-white/50 rounded px-2 py-1 transition-colors"
+                       onClick={() => handleGoalAction('profile')}>
                     <span className="text-slate-600">Profile views</span>
-                    <span className="font-medium text-slate-800">+{userStats.profileViews}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium text-slate-800">+{userStats.profileViews}</span>
+                      <TrendingUp className="h-3 w-3 text-green-600" />
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-xs cursor-pointer hover:bg-white/50 rounded px-2 py-1 transition-colors"
+                       onClick={() => navigate('/tools/resume-builder')}>
                     <span className="text-slate-600">Resume downloads</span>
-                    <span className="font-medium text-slate-800">+{userStats.resumeViews}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium text-slate-800">+{userStats.resumeViews}</span>
+                      <TrendingUp className="h-3 w-3 text-green-600" />
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-xs cursor-pointer hover:bg-white/50 rounded px-2 py-1 transition-colors"
+                       onClick={() => navigate('/learning')}>
                     <span className="text-slate-600">Course completions</span>
-                    <span className="font-medium text-slate-800">+{userStats.coursesCompleted}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium text-slate-800">+{userStats.coursesCompleted}</span>
+                      <Award className="h-3 w-3 text-purple-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>

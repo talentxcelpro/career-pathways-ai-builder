@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CourseCard } from './CourseCard';
 import { LearningPathCard } from './LearningPathCard';
@@ -6,7 +5,7 @@ import { AIRecommendations } from './AIRecommendations';
 import { EmptyMyLearning } from './EmptyMyLearning';
 import { Course, LearningPath } from './types';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Grid3X3 } from 'lucide-react';
+import { Sparkles, Grid3X3, TrendingUp, Award } from 'lucide-react';
 
 interface LearningContentProps {
   activeTab: string;

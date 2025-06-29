@@ -2,8 +2,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Clock, Users, ArrowRight, BookOpen } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Star, Clock, Users, ArrowRight, BookOpen, Play, ExternalLink } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { memo } from "react";
 
 interface Course {
@@ -24,6 +24,8 @@ interface TrendingCoursesProps {
 }
 
 export const TrendingCourses = memo(({ courses }: TrendingCoursesProps) => {
+  const navigate = useNavigate();
+
   const formatPrice = (course: Course) => {
     if (course.is_free || course.price === 0) return "Free";
     return `₹${course.price?.toLocaleString('en-IN')}`;
@@ -41,6 +43,16 @@ export const TrendingCourses = memo(({ courses }: TrendingCoursesProps) => {
       case 'advanced': return 'bg-red-50 text-red-700 border-red-200';
       default: return 'bg-slate-50 text-slate-700 border-slate-200';
     }
+  };
+
+  const handleEnroll = (courseId: string) => {
+    // Navigate to course detail page or learning section
+    navigate(`/learning/courses/${courseId}`);
+  };
+
+  const handlePreview = (courseId: string) => {
+    // Open preview modal or navigate to preview page
+    navigate(`/learning/courses/${courseId}?preview=true`);
   };
 
   return (
@@ -73,15 +85,25 @@ export const TrendingCourses = memo(({ courses }: TrendingCoursesProps) => {
             <div className="text-center py-8 bg-slate-50/50 rounded-lg">
               <BookOpen className="h-8 w-8 text-slate-400 mx-auto mb-2" />
               <p className="text-sm text-slate-500 font-medium">No trending courses available at the moment.</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-3"
+                onClick={() => navigate('/learning')}
+              >
+                Explore Courses
+              </Button>
             </div>
           ) : (
             courses.slice(0, 3).map((course) => (
               <div key={course.id} className="group border border-slate-100 rounded-lg p-4 hover:shadow-md hover:border-slate-200 transition-all duration-200 bg-white/50">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm text-slate-900 mb-1 line-clamp-2 group-hover:text-blue-700 transition-colors">
-                      {course.title}
-                    </h3>
+                    <Link to={`/learning/courses/${course.id}`}>
+                      <h3 className="font-semibold text-sm text-slate-900 mb-1 line-clamp-2 group-hover:text-blue-700 transition-colors cursor-pointer">
+                        {course.title}
+                      </h3>
+                    </Link>
                     {course.instructor_name && (
                       <p className="text-xs text-slate-600 font-medium">by {course.instructor_name}</p>
                     )}
@@ -127,15 +149,18 @@ export const TrendingCourses = memo(({ courses }: TrendingCoursesProps) => {
                       size="sm" 
                       variant="outline" 
                       className="text-xs font-semibold h-8 px-3 hover:bg-slate-50"
+                      onClick={() => handlePreview(course.id)}
                     >
+                      <Play className="h-3 w-3 mr-1" />
                       Preview
                     </Button>
                     <Button 
                       size="sm" 
-                      asChild
                       className="text-xs font-semibold h-8 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                      onClick={() => handleEnroll(course.id)}
                     >
-                      <Link to={`/learning/courses/${course.id}`}>Enroll</Link>
+                      Enroll
+                      <ExternalLink className="ml-1 h-3 w-3" />
                     </Button>
                   </div>
                 </div>

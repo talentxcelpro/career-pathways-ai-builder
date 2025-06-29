@@ -2,9 +2,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Target, BookOpen, Zap, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, Target, BookOpen, Zap, CheckCircle2, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const CareerInsights = () => {
+  const navigate = useNavigate();
+
   const insights = [
     {
       title: "Profile Strength",
@@ -13,7 +17,8 @@ export const CareerInsights = () => {
       icon: Target,
       color: "text-blue-600",
       bgColor: "bg-blue-100",
-      status: "good"
+      status: "good",
+      action: () => navigate('/profile')
     },
     {
       title: "Skill Relevance",
@@ -22,7 +27,8 @@ export const CareerInsights = () => {
       icon: TrendingUp,
       color: "text-green-600",
       bgColor: "bg-green-100",
-      status: "excellent"
+      status: "excellent",
+      action: () => navigate('/tools/skill-assessor')
     },
     {
       title: "Learning Progress",
@@ -31,7 +37,8 @@ export const CareerInsights = () => {
       icon: BookOpen,
       color: "text-purple-600",
       bgColor: "bg-purple-100",
-      status: "active"
+      status: "active",
+      action: () => navigate('/learning')
     }
   ];
 
@@ -46,6 +53,10 @@ export const CareerInsights = () => {
       default:
         return null;
     }
+  };
+
+  const handleAISuggestionClick = () => {
+    navigate('/profile/media');
   };
 
   return (
@@ -72,27 +83,46 @@ export const CareerInsights = () => {
                   <div className={`p-1 rounded ${insight.bgColor}`}>
                     <Icon className={`h-3 w-3 ${insight.color}`} />
                   </div>
-                  <span className="text-xs font-medium text-slate-800">{insight.title}</span>
+                  <button 
+                    className="text-xs font-medium text-slate-800 hover:text-blue-600 transition-colors cursor-pointer"
+                    onClick={insight.action}
+                  >
+                    {insight.title}
+                  </button>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-slate-900">{insight.value}%</span>
                   {getStatusBadge(insight.status)}
                 </div>
               </div>
-              <Progress value={insight.value} className="w-full h-1.5" />
+              <Progress value={insight.value} className="w-full h-1.5 cursor-pointer" onClick={insight.action} />
               <p className="text-xs text-slate-500">{insight.description}</p>
             </div>
           );
         })}
         
-        {/* AI Recommendation */}
-        <div className="mt-4 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-          <div className="flex items-start gap-2">
-            <Zap className="h-3 w-3 text-blue-600 mt-0.5" />
-            <div>
-              <p className="text-xs font-medium text-blue-900">AI Suggestion</p>
-              <p className="text-xs text-blue-700">Add 2 portfolio projects to boost your profile by 15%</p>
+        {/* Enhanced AI Recommendation */}
+        <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100 cursor-pointer hover:from-blue-100 hover:to-indigo-100 transition-colors"
+             onClick={handleAISuggestionClick}>
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-2">
+              <Zap className="h-3 w-3 text-blue-600 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-xs font-medium text-blue-900">AI Suggestion</p>
+                <p className="text-xs text-blue-700">Add 2 portfolio projects to boost your profile by 15%</p>
+              </div>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 text-blue-600 hover:bg-blue-200"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAISuggestionClick();
+              }}
+            >
+              <ArrowRight className="h-3 w-3" />
+            </Button>
           </div>
         </div>
       </CardContent>
