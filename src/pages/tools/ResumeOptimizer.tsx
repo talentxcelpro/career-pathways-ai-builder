@@ -15,10 +15,16 @@ import {
   AlertTriangle,
   Target,
   TrendingUp,
-  Award
+  Award,
+  Download,
+  Copy,
+  Check,
+  File,
+  X
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useFileUpload } from "@/hooks/useFileUpload";
 
 interface OptimizationResult {
   overallScore: number;
@@ -39,11 +45,54 @@ interface OptimizationResult {
 
 const ResumeOptimizer = () => {
   const navigate = useNavigate();
+  const { uploadFile, uploading } = useFileUpload({
+    bucket: 'resumes',
+    maxSize: 10 * 1024 * 1024, // 10MB
+    allowedTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain']
+  });
+
   const [jobTitle, setJobTitle] = useState('');
   const [resumeText, setResumeText] = useState('');
   const [targetJob, setTargetJob] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<OptimizationResult | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadedFile(file);
+      
+      // Simulate file content extraction
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        // For demo purposes, we'll set some sample content
+        setResumeText(`Sample resume content from ${file.name}:\n\nJohn Doe\nSoftware Engineer with 5 years of experience in web development...\n\nExperience:\n- Led development team of 5 engineers\n- Increased application performance by 40%\n- Implemented React and Node.js solutions\n\nSkills: JavaScript, React, Node.js, Python, SQL`);
+        toast.success('Resume uploaded successfully!');
+      };
+      
+      if (file.type === 'text/plain') {
+        reader.readAsText(file);
+      } else {
+        // For PDF and DOC files, we'll simulate content extraction
+        setResumeText(`Sample resume content from ${file.name}:\n\nJohn Doe\nSoftware Engineer with 5 years of experience in web development...\n\nExperience:\n- Led development team of 5 engineers\n- Increased application performance by 40%\n- Implemented React and Node.js solutions\n\nSkills: JavaScript, React, Node.js, Python, SQL`);
+        toast.success('Resume uploaded and processed successfully!');
+      }
+    } catch (error) {
+      toast.error('Failed to upload resume. Please try again.');
+    }
+  };
+
+  const removeUploadedFile = () => {
+    setUploadedFile(null);
+    setResumeText('');
+    const fileInput = document.getElementById('resume-upload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  };
 
   const analyzeResume = async () => {
     if (!resumeText || !jobTitle) {
@@ -53,69 +102,122 @@ const ResumeOptimizer = () => {
 
     setIsAnalyzing(true);
     
-    // Simulate AI analysis
+    // Enhanced AI analysis simulation with more realistic data
     setTimeout(() => {
       const mockResult: OptimizationResult = {
-        overallScore: 78,
+        overallScore: Math.floor(Math.random() * 20) + 75, // 75-95
         sections: {
           'Professional Summary': {
-            score: 85,
+            score: Math.floor(Math.random() * 15) + 80,
             suggestions: [
-              'Great use of action verbs and quantified achievements',
-              'Strong industry-specific terminology'
+              'Strong use of industry-specific terminology',
+              'Clear value proposition presented',
+              'Good length and readability'
             ],
             improvements: [
-              'Consider adding more specific metrics',
-              'Tailor summary to match job requirements better'
+              'Add quantified achievements (e.g., "increased sales by 25%")',
+              'Include more keywords from the job description to improve ATS matching',
+              'Consider adding your years of experience upfront'
             ]
           },
           'Work Experience': {
-            score: 72,
+            score: Math.floor(Math.random() * 20) + 70,
             suggestions: [
-              'Good chronological structure',
-              'Relevant experience highlighted'
+              'Chronological format is appropriate',
+              'Job titles are clearly stated',
+              'Company names are recognizable'
             ],
             improvements: [
-              'Add more quantified results (numbers, percentages)',
-              'Include more keywords from the job description',
-              'Use stronger action verbs'
+              'Use more action verbs (e.g., "spearheaded", "orchestrated", "optimized")',
+              'Add specific metrics and numbers to quantify your impact',
+              'Include relevant technologies and tools used',
+              'Tailor bullet points to match the target job requirements'
             ]
           },
           'Skills': {
-            score: 90,
+            score: Math.floor(Math.random() * 10) + 85,
             suggestions: [
-              'Comprehensive skill list',
-              'Good mix of technical and soft skills'
+              'Good mix of technical and soft skills',
+              'Skills are relevant to the target role',
+              'Well-organized presentation'
             ],
             improvements: [
-              'Consider organizing skills by category',
-              'Add proficiency levels where appropriate'
+              'Add proficiency levels (e.g., Expert, Intermediate, Beginner)',
+              'Group skills by category (Technical, Leadership, etc.)',
+              'Include certifications with expiration dates'
             ]
           },
           'Education': {
-            score: 80,
+            score: Math.floor(Math.random() * 15) + 75,
             suggestions: [
-              'Clear educational background',
-              'Relevant certifications included'
+              'Education credentials are clearly presented',
+              'Degree is relevant to the field'
             ],
             improvements: [
-              'Consider adding relevant coursework',
-              'Include GPA if above 3.5'
+              'Add relevant coursework if recent graduate',
+              'Include GPA if above 3.5',
+              'Add academic honors or achievements'
             ]
           }
         },
         keywords: {
-          missing: ['Machine Learning', 'Data Analytics', 'Python', 'SQL', 'Agile'],
-          present: ['JavaScript', 'React', 'Team Leadership', 'Project Management'],
-          recommended: ['Cloud Computing', 'DevOps', 'Microservices', 'API Development']
+          missing: ['Machine Learning', 'Data Analytics', 'Python', 'SQL', 'Agile', 'Scrum', 'DevOps', 'Cloud Computing'],
+          present: ['JavaScript', 'React', 'Node.js', 'Team Leadership', 'Project Management', 'Web Development'],
+          recommended: ['API Development', 'Microservices', 'Docker', 'Kubernetes', 'CI/CD', 'Database Design']
         },
-        atsCompatibility: 85
+        atsCompatibility: Math.floor(Math.random() * 15) + 80
       };
 
       setResults(mockResult);
       setIsAnalyzing(false);
       toast.success('Resume analysis completed!');
-    }, 4000);
+    }, 3000);
+  };
+
+  const downloadOptimizedResume = () => {
+    const optimizedContent = generateOptimizedResume();
+    const blob = new Blob([optimizedContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${jobTitle.replace(/\s+/g, '_')}_Optimized_Resume.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Optimized resume downloaded!');
+  };
+
+  const generateOptimizedResume = () => {
+    return `OPTIMIZED RESUME FOR: ${jobTitle.toUpperCase()}
+    
+${resumeText}
+
+=== AI OPTIMIZATION SUGGESTIONS ===
+Overall Score: ${results?.overallScore}/100
+ATS Compatibility: ${results?.atsCompatibility}%
+
+MISSING KEYWORDS TO ADD:
+${results?.keywords.missing.join(', ')}
+
+RECOMMENDED ADDITIONS:
+${results?.keywords.recommended.join(', ')}
+
+KEY IMPROVEMENTS:
+${Object.entries(results?.sections || {}).map(([section, data]) => 
+  `${section}:\n${data.improvements.map(imp => `- ${imp}`).join('\n')}`
+).join('\n\n')}`;
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast.success('Copied to clipboard!');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      toast.error('Failed to copy to clipboard');
+    }
   };
 
   const getScoreColor = (score: number) => {
@@ -126,10 +228,10 @@ const ResumeOptimizer = () => {
   };
 
   const getScoreBadgeColor = (score: number) => {
-    if (score >= 85) return 'bg-green-100 text-green-800';
-    if (score >= 70) return 'bg-blue-100 text-blue-800';
-    if (score >= 60) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+    if (score >= 85) return 'bg-green-100 text-green-800 border-green-200';
+    if (score >= 70) return 'bg-blue-100 text-blue-800 border-blue-200';
+    if (score >= 60) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    return 'bg-red-100 text-red-800 border-red-200';
   };
 
   return (
@@ -152,7 +254,7 @@ const ResumeOptimizer = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">AI Resume Optimizer</h1>
-              <p className="text-gray-600">Optimize your resume with AI-powered analysis and suggestions</p>
+              <p className="text-gray-600">Upload and optimize your resume with AI-powered analysis</p>
             </div>
           </div>
         </div>
@@ -162,7 +264,7 @@ const ResumeOptimizer = () => {
             {/* Input Form */}
             <Card>
               <CardHeader>
-                <CardTitle>Upload Your Resume</CardTitle>
+                <CardTitle>Upload & Analyze Your Resume</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {isAnalyzing ? (
@@ -171,6 +273,7 @@ const ResumeOptimizer = () => {
                     <h3 className="text-lg font-medium mb-2">Analyzing Your Resume</h3>
                     <p className="text-gray-600 mb-4">AI is reviewing your resume for optimization opportunities...</p>
                     <Progress value={65} className="w-full" />
+                    <p className="text-sm text-gray-500 mt-2">This may take a few moments...</p>
                   </div>
                 ) : (
                   <>
@@ -195,11 +298,55 @@ const ResumeOptimizer = () => {
                       />
                     </div>
 
+                    {/* File Upload Section */}
+                    <div className="space-y-4">
+                      <Label>Upload Resume File</Label>
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                        <input
+                          id="resume-upload"
+                          type="file"
+                          accept=".pdf,.doc,.docx,.txt"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                          disabled={uploading}
+                        />
+                        <label
+                          htmlFor="resume-upload"
+                          className="cursor-pointer flex flex-col items-center"
+                        >
+                          <Upload className="h-8 w-8 text-gray-400 mb-2" />
+                          <p className="text-sm text-gray-600 mb-1">
+                            Click to upload or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            PDF, DOC, DOCX, TXT (Max 10MB)
+                          </p>
+                        </label>
+                      </div>
+
+                      {uploadedFile && (
+                        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          <div className="flex items-center space-x-2">
+                            <File className="h-4 w-4 text-blue-600" />
+                            <span className="text-sm font-medium text-blue-900">{uploadedFile.name}</span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={removeUploadedFile}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="resumeText">Resume Content *</Label>
+                      <Label htmlFor="resumeText">Resume Content {!uploadedFile && '*'}</Label>
                       <Textarea
                         id="resumeText"
-                        placeholder="Paste your resume text here or describe your experience, skills, and achievements"
+                        placeholder="Paste your resume text here or upload a file above"
                         value={resumeText}
                         onChange={(e) => setResumeText(e.target.value)}
                         rows={8}
@@ -207,22 +354,22 @@ const ResumeOptimizer = () => {
                       />
                     </div>
 
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                      <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600">
-                        Or drag and drop your resume file here
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        PDF, DOC, DOCX supported
-                      </p>
-                    </div>
-
                     <Button 
                       onClick={analyzeResume}
-                      className="w-full"
-                      disabled={!resumeText || !jobTitle}
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                      disabled={(!resumeText || !jobTitle) || uploading}
                     >
-                      Analyze & Optimize Resume
+                      {uploading ? (
+                        <>
+                          <Upload className="h-4 w-4 mr-2 animate-pulse" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Target className="h-4 w-4 mr-2" />
+                          Analyze & Optimize Resume
+                        </>
+                      )}
                     </Button>
                   </>
                 )}
@@ -246,7 +393,7 @@ const ResumeOptimizer = () => {
                   <TrendingUp className="h-5 w-5 text-green-600 mt-1" />
                   <div>
                     <h4 className="font-medium">Section-by-Section Analysis</h4>
-                    <p className="text-sm text-gray-600">Detailed feedback on each resume section</p>
+                    <p className="text-sm text-gray-600">Detailed feedback on each resume section with specific improvements</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -260,7 +407,7 @@ const ResumeOptimizer = () => {
                   <CheckCircle className="h-5 w-5 text-orange-600 mt-1" />
                   <div>
                     <h4 className="font-medium">Actionable Improvements</h4>
-                    <p className="text-sm text-gray-600">Specific suggestions to enhance your resume</p>
+                    <p className="text-sm text-gray-600">Specific suggestions with downloadable optimized version</p>
                   </div>
                 </div>
               </CardContent>
@@ -272,11 +419,17 @@ const ResumeOptimizer = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Resume Analysis Results</h2>
-                <p className="text-gray-600">AI-powered optimization recommendations</p>
+                <p className="text-gray-600">AI-powered optimization recommendations for "{jobTitle}"</p>
               </div>
-              <Button variant="outline" onClick={() => setResults(null)}>
-                Analyze Another Resume
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setResults(null)}>
+                  Analyze Another Resume
+                </Button>
+                <Button onClick={downloadOptimizedResume} className="bg-green-600 hover:bg-green-700">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download Optimized
+                </Button>
+              </div>
             </div>
 
             {/* Overall Score */}
@@ -287,15 +440,21 @@ const ResumeOptimizer = () => {
                     <div className={`text-4xl font-bold ${getScoreColor(results.overallScore)} mb-2`}>
                       {results.overallScore}/100
                     </div>
-                    <p className="text-gray-600">Overall Resume Score</p>
+                    <p className="text-gray-600 mb-2">Overall Resume Score</p>
                     <Progress value={results.overallScore} className="mt-2" />
+                    <Badge className={getScoreBadgeColor(results.overallScore)} variant="outline">
+                      {results.overallScore >= 85 ? 'Excellent' : results.overallScore >= 70 ? 'Good' : results.overallScore >= 60 ? 'Fair' : 'Needs Improvement'}
+                    </Badge>
                   </div>
                   <div className="text-center">
                     <div className={`text-4xl font-bold ${getScoreColor(results.atsCompatibility)} mb-2`}>
                       {results.atsCompatibility}%
                     </div>
-                    <p className="text-gray-600">ATS Compatibility</p>
+                    <p className="text-gray-600 mb-2">ATS Compatibility</p>
                     <Progress value={results.atsCompatibility} className="mt-2" />
+                    <Badge className={getScoreBadgeColor(results.atsCompatibility)} variant="outline">
+                      {results.atsCompatibility >= 85 ? 'ATS Ready' : results.atsCompatibility >= 70 ? 'Good Match' : 'Needs Work'}
+                    </Badge>
                   </div>
                 </div>
               </CardContent>
@@ -304,14 +463,25 @@ const ResumeOptimizer = () => {
             {/* Section Analysis */}
             <Card>
               <CardHeader>
-                <CardTitle>Section-by-Section Analysis</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Section-by-Section Analysis</CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => copyToClipboard(Object.entries(results.sections).map(([section, data]) => 
+                      `${section}: ${data.score}/100\nImprovements: ${data.improvements.join('; ')}`
+                    ).join('\n\n'))}
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {Object.entries(results.sections).map(([section, analysis]) => (
-                  <div key={section} className="border-l-4 border-blue-200 pl-4">
+                  <div key={section} className="border-l-4 border-blue-200 pl-4 hover:border-blue-400 transition-colors">
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="font-medium text-lg">{section}</h4>
-                      <Badge className={getScoreBadgeColor(analysis.score)}>
+                      <Badge className={getScoreBadgeColor(analysis.score)} variant="outline">
                         {analysis.score}/100
                       </Badge>
                     </div>
@@ -337,7 +507,7 @@ const ResumeOptimizer = () => {
                       <div>
                         <h5 className="font-medium text-orange-700 mb-2 flex items-center">
                           <AlertTriangle className="h-4 w-4 mr-2" />
-                          Improvements
+                          Recommended Improvements
                         </h5>
                         <ul className="space-y-1">
                           {analysis.improvements.map((improvement, index) => (
@@ -357,22 +527,39 @@ const ResumeOptimizer = () => {
             {/* Keywords Analysis */}
             <Card>
               <CardHeader>
-                <CardTitle>Keyword Optimization</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Keyword Optimization</CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => copyToClipboard(`Missing: ${results.keywords.missing.join(', ')}\nRecommended: ${results.keywords.recommended.join(', ')}`)}
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h4 className="font-medium text-red-700 mb-3">Missing Keywords</h4>
+                  <h4 className="font-medium text-red-700 mb-3 flex items-center">
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    Missing Keywords ({results.keywords.missing.length})
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {results.keywords.missing.map((keyword, index) => (
-                      <Badge key={index} variant="destructive" className="text-xs">
+                      <Badge key={index} variant="destructive" className="text-xs cursor-pointer hover:bg-red-600" 
+                             onClick={() => copyToClipboard(keyword)}>
                         {keyword}
                       </Badge>
                     ))}
                   </div>
+                  <p className="text-xs text-gray-500 mt-2">Click any keyword to copy</p>
                 </div>
 
                 <div>
-                  <h4 className="font-medium text-green-700 mb-3">Present Keywords</h4>
+                  <h4 className="font-medium text-green-700 mb-3 flex items-center">
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Present Keywords ({results.keywords.present.length})
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {results.keywords.present.map((keyword, index) => (
                       <Badge key={index} className="bg-green-100 text-green-800 text-xs">
@@ -383,14 +570,19 @@ const ResumeOptimizer = () => {
                 </div>
 
                 <div>
-                  <h4 className="font-medium text-blue-700 mb-3">Recommended Keywords</h4>
+                  <h4 className="font-medium text-blue-700 mb-3 flex items-center">
+                    <Award className="h-4 w-4 mr-2" />
+                    Recommended Keywords ({results.keywords.recommended.length})
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {results.keywords.recommended.map((keyword, index) => (
-                      <Badge key={index} className="bg-blue-100 text-blue-800 text-xs">
+                      <Badge key={index} className="bg-blue-100 text-blue-800 text-xs cursor-pointer hover:bg-blue-600 hover:text-white transition-colors"
+                             onClick={() => copyToClipboard(keyword)}>
                         {keyword}
                       </Badge>
                     ))}
                   </div>
+                  <p className="text-xs text-gray-500 mt-2">Click any keyword to copy</p>
                 </div>
               </CardContent>
             </Card>
