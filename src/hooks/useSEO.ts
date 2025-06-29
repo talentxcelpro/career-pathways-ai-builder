@@ -9,13 +9,6 @@ import {
 import { updateMetaTags } from '@/utils/metaTags';
 import { injectStructuredData } from '@/utils/structuredData';
 
-// Add type declaration for gtag
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-  }
-}
-
 interface SEOConfig {
   title?: string;
   description?: string;
@@ -94,7 +87,7 @@ export const useSEO = (config: SEOConfig = {}) => {
       injectStructuredData(breadcrumbData);
     }
 
-    // Google Analytics page view tracking (fixed type error)
+    // Google Analytics page view tracking
     if (window.gtag) {
       window.gtag('config', 'GA_MEASUREMENT_ID', {
         page_path: location.pathname,
