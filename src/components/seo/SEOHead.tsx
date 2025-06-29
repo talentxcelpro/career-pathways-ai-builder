@@ -97,13 +97,13 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       injectStructuredData(structuredData);
     }
 
-    // Add hreflang for international SEO
+    // Add hreflang for international SEO (fixed property name)
     const addHrefLang = (lang: string, href: string) => {
       let hrefLangLink = document.querySelector(`link[hreflang="${lang}"]`) as HTMLLinkElement;
       if (!hrefLangLink) {
         hrefLangLink = document.createElement('link');
         hrefLangLink.rel = 'alternate';
-        hrefLangLink.hrefLang = lang;
+        hrefLangLink.hreflang = lang; // Fixed: was hrefLang, now hreflang
         document.head.appendChild(hrefLangLink);
       }
       hrefLangLink.href = href;

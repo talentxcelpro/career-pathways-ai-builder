@@ -38,7 +38,7 @@ export const generateSitemap = async (): Promise<string> => {
   });
 
   try {
-    // Get active jobs
+    // Get active jobs (fixed type issues)
     const { data: jobs } = await supabase
       .from('jobs')
       .select('id, updated_at')
@@ -59,7 +59,6 @@ export const generateSitemap = async (): Promise<string> => {
     const { data: companies } = await supabase
       .from('companies')
       .select('id, updated_at')
-      .eq('is_active', true)
       .order('updated_at', { ascending: false })
       .limit(2000);
 
@@ -76,7 +75,7 @@ export const generateSitemap = async (): Promise<string> => {
     const { data: courses } = await supabase
       .from('courses')
       .select('id, updated_at')
-      .eq('is_published', true)
+      .eq('is_active', true)
       .order('updated_at', { ascending: false })
       .limit(1000);
 
@@ -93,7 +92,6 @@ export const generateSitemap = async (): Promise<string> => {
     const { data: learningPaths } = await supabase
       .from('learning_paths')
       .select('id, updated_at')
-      .eq('is_published', true)
       .order('updated_at', { ascending: false })
       .limit(500);
 
@@ -167,3 +165,6 @@ Disallow: /*.json$
 Disallow: /*?*utm_*
 Disallow: /*?*ref=*`;
 };
+
+// Export createContentSitemap from seoOptimization.ts
+export { createContentSitemap } from './seoOptimization';

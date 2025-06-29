@@ -141,64 +141,71 @@ export const preloadCriticalResources = () => {
   heroImage.src = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png';
 };
 
-// Create XML sitemap for specific content type
+// Create XML sitemap for specific content type (fixed type issues)
 export const createContentSitemap = async (contentType: 'jobs' | 'companies' | 'courses'): Promise<string> => {
   const baseUrl = 'https://talentxcel.in';
-  let query;
   let urlPath: string;
   
-  switch (contentType) {
-    case 'jobs':
-      query = supabase
-        .from('jobs')
-        .select('id, updated_at, title, location, companies(name)')
-        .eq('is_active', true)
-        .order('updated_at', { ascending: false })
-        .limit(5000);
-      urlPath = '/jobs/';
-      break;
-      
-    case 'companies':
-      query = supabase
-        .from('companies')
-        .select('id, updated_at, name, location')
-        .eq('is_active', true)
-        .order('updated_at', { ascending: false })
-        .limit(2000);
-      urlPath = '/companies/';
-      break;
-      
-    case 'courses':
-      query = supabase
-        .from('courses')
-        .select('id, updated_at, title')
-        .eq('is_published', true)
-        .order('updated_at', { ascending: false })
-        .limit(1000);
-      urlPath = '/learning/courses/';
-      break;
-      
-    default:
-      return '';
-  }
-
-  const { data, error } = await query;
-  if (error || !data) return '';
-
-  const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">';
-  const xmlFooter = '</urlset>';
-  
-  const xmlUrls = data.map(item => {
-    const priority = contentType === 'jobs' ? '0.8' : contentType === 'companies' ? '0.6' : '0.7';
-    const changefreq = contentType === 'jobs' ? 'weekly' : contentType === 'companies' ? 'monthly' : 'weekly';
+  try {
+    let data: any[] = [];
     
-    return `  <url>
+    switch (contentType) {
+      case 'jobs':
+        const { data: jobsData } = await supabase
+          .from('jobs')
+          .select('id, updated_at')
+          .eq('is_active', true)
+          .order('updated_at', { ascending: false })
+          .limit(5000);
+        data = jobsData || [];
+        urlPath = '/jobs/';
+        break;
+        
+      case 'companies':
+        const { data: companiesData } = await supabase
+          .from('companies')
+          .select('id, updated_at')
+          .order('updated_at', { ascending: false })
+          .limit(2000);
+        data = companiesData || [];
+        urlPath = '/companies/';
+        break;
+        
+      case 'courses':
+        const { data: coursesData } = await supabase
+          .from('courses')
+          .select('id, updated_at')
+          .eq('is_active', true)
+          .order('updated_at', { ascending: false })
+          .limit(1000);
+        data = coursesData || [];
+        urlPath = '/learning/courses/';
+        break;
+        
+      default:
+        return '';
+    }
+
+    if (!data.length) return '';
+
+    const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    const xmlFooter = '</urlset>';
+    
+    const xmlUrls = data.map(item => {
+      const priority = contentType === 'jobs' ? '0.8' : contentType === 'companies' ? '0.6' : '0.7';
+      const changefreq = contentType === 'jobs' ? 'weekly' : contentType === 'companies' ? 'monthly' : 'weekly';
+      
+      return `  <url>
     <loc>${baseUrl}${urlPath}${item.id}</loc>
     <lastmod>${item.updated_at}</lastmod>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>`;
-  }).join('\n');
+    }).join('\n');
 
-  return `${xmlHeader}\n${xmlUrls}\n${xmlFooter}`;
+    return `${xmlHeader}\n${xmlUrls}\n${xmlFooter}`;
+  } catch (error) {
+    console.error(`Error generating ${contentType} sitemap:`, error);
+    return '';
+  }
 };
