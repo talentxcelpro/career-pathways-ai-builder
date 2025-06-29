@@ -19,7 +19,7 @@ interface Job {
   applications_count: number;
   views_count: number;
   created_at: string;
-  company: {
+  companies: {
     name: string;
     logo_url?: string;
   };
@@ -36,14 +36,23 @@ const JobsManage = () => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('Not authenticated');
 
+      // Get user's company
+      const { data: teamMember } = await supabase
+        .from('company_team_members')
+        .select('company_id')
+        .eq('user_id', user.user.id)
+        .eq('is_active', true)
+        .single();
+
+      if (!teamMember) return [];
+
       let query = supabase
         .from('jobs')
         .select(`
           *,
-          companies!inner(name, logo_url),
-          company_team_members!inner(user_id)
+          companies!inner(name, logo_url)
         `)
-        .eq('company_team_members.user_id', user.user.id);
+        .eq('company_id', teamMember.company_id);
 
       if (searchTerm) {
         query = query.ilike('title', `%${searchTerm}%`);
@@ -56,7 +65,7 @@ const JobsManage = () => {
       const { data, error } = await query.order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data as any[];
+      return data as Job[];
     }
   });
 
@@ -169,9 +178,9 @@ const JobsManage = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => navigate(`/jobs/manage/${job.id}/applicants`)}
+                      onClick={() => navigate(`/jobs/${job.id}`)}
                     >
-                      View Applicants
+                      View Details
                     </Button>
                     <Button
                       variant="outline"

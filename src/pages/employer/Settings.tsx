@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,9 +8,20 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Settings, Bell, Users, Shield, ArrowLeft } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const EmployerSettings = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  
+  const [companyInfo, setCompanyInfo] = useState({
+    name: '',
+    website: '',
+    email: ''
+  });
+
   const [notifications, setNotifications] = useState({
     newApplications: true,
     interviewReminders: true,
@@ -18,10 +29,114 @@ const EmployerSettings = () => {
     teamActivity: false
   });
 
+  // Fetch company settings
+  const { data: settings, isLoading } = useQuery({
+    queryKey: ['company-settings'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Get user's company
+      const { data: teamMember } = await supabase
+        .from('company_team_members')
+        .select('company_id, companies(*)')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .single();
+
+      if (!teamMember) throw new Error('No company found');
+
+      // Get company settings
+      const { data: companySettings } = await supabase
+        .from('company_settings')
+        .select('*')
+        .eq('company_id', teamMember.company_id)
+        .single();
+
+      return {
+        company: teamMember.companies,
+        settings: companySettings
+      };
+    }
+  });
+
+  // Update settings when data is loaded
+  useEffect(() => {
+    if (settings) {
+      setCompanyInfo({
+        name: settings.company?.name || '',
+        website: settings.company?.website || '',
+        email: settings.company?.email || ''
+      });
+
+      if (settings.settings?.notification_preferences) {
+        setNotifications(settings.settings.notification_preferences);
+      }
+    }
+  }, [settings]);
+
+  // Save settings mutation
+  const saveSettingsMutation = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data: teamMember } = await supabase
+        .from('company_team_members')
+        .select('company_id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .single();
+
+      if (!teamMember) throw new Error('No company found');
+
+      // Update company info
+      const { error: companyError } = await supabase
+        .from('companies')
+        .update({
+          name: companyInfo.name,
+          website: companyInfo.website,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', teamMember.company_id);
+
+      if (companyError) throw companyError;
+
+      // Update or insert company settings
+      const { error: settingsError } = await supabase
+        .from('company_settings')
+        .upsert({
+          company_id: teamMember.company_id,
+          notification_preferences: notifications,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'company_id' });
+
+      if (settingsError) throw settingsError;
+    },
+    onSuccess: () => {
+      toast.success('Settings saved successfully');
+      queryClient.invalidateQueries({ queryKey: ['company-settings'] });
+    },
+    onError: (error: any) => {
+      toast.error('Failed to save settings: ' + error.message);
+    }
+  });
+
   const handleSave = () => {
-    // Implement save functionality
-    console.log('Settings saved');
+    saveSettingsMutation.mutate();
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 max-w-4xl mx-auto space-y-6">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
@@ -46,16 +161,32 @@ const EmployerSettings = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="companyName">Company Name</Label>
-              <Input id="companyName" placeholder="Your Company Name" />
+              <Input 
+                id="companyName" 
+                placeholder="Your Company Name"
+                value={companyInfo.name}
+                onChange={(e) => setCompanyInfo(prev => ({ ...prev, name: e.target.value }))}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="website">Website</Label>
-              <Input id="website" placeholder="https://yourcompany.com" />
+              <Input 
+                id="website" 
+                placeholder="https://yourcompany.com"
+                value={companyInfo.website}
+                onChange={(e) => setCompanyInfo(prev => ({ ...prev, website: e.target.value }))}
+              />
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Contact Email</Label>
-            <Input id="email" type="email" placeholder="hr@yourcompany.com" />
+            <Input 
+              id="email" 
+              type="email" 
+              placeholder="hr@yourcompany.com"
+              value={companyInfo.email}
+              onChange={(e) => setCompanyInfo(prev => ({ ...prev, email: e.target.value }))}
+            />
           </div>
         </CardContent>
       </Card>
@@ -152,8 +283,11 @@ const EmployerSettings = () => {
         <Button variant="outline" onClick={() => navigate('/employer')}>
           Cancel
         </Button>
-        <Button onClick={handleSave}>
-          Save Changes
+        <Button 
+          onClick={handleSave}
+          disabled={saveSettingsMutation.isPending}
+        >
+          {saveSettingsMutation.isPending ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
     </div>

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,26 +7,6 @@ import { Briefcase, Users, TrendingUp, Calendar, Plus, BarChart3, Building2 } fr
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { CandidatePipelineWidget } from "@/components/employer/dashboard/CandidatePipelineWidget";
-import { SmartNotificationsPanel } from "@/components/employer/dashboard/SmartNotificationsPanel";
-import { JobStatusBreakdown } from "@/components/employer/dashboard/JobStatusBreakdown";
-import { TodaysActivitySummary } from "@/components/employer/dashboard/TodaysActivitySummary";
-import { TopPerformingJobsWidget } from "@/components/employer/dashboard/TopPerformingJobsWidget";
-import { ConversionRateWidget } from "@/components/employer/dashboard/ConversionRateWidget";
-import { JobExpiryWidget } from "@/components/employer/dashboard/JobExpiryWidget";
-import { SourceAttributionWidget } from "@/components/employer/dashboard/SourceAttributionWidget";
-import { CandidateInboxWidget } from "@/components/employer/dashboard/CandidateInboxWidget";
-import { TeamManagementWidget } from "@/components/employer/dashboard/TeamManagementWidget";
-import { SharedNotesWidget } from "@/components/employer/dashboard/SharedNotesWidget";
-import { InterviewSchedulingWidget } from "@/components/employer/dashboard/InterviewSchedulingWidget";
-import { AIScreeningWidget } from "@/components/employer/dashboard/AIScreeningWidget";
-import { SmartJobOptimizationWidget } from "@/components/employer/dashboard/SmartJobOptimizationWidget";
-import { AutomatedWorkflowWidget } from "@/components/employer/dashboard/AutomatedWorkflowWidget";
-import { PredictiveAnalyticsWidget } from "@/components/employer/dashboard/PredictiveAnalyticsWidget";
-import { CandidatePipelineAnalyticsWidget } from "@/components/employer/dashboard/CandidatePipelineAnalyticsWidget";
-import { SmartRecruitmentMetricsWidget } from "@/components/employer/dashboard/SmartRecruitmentMetricsWidget";
-import { IntegrationHubWidget } from "@/components/employer/dashboard/IntegrationHubWidget";
-import { AdvancedAutomationRulesWidget } from "@/components/employer/dashboard/AdvancedAutomationRulesWidget";
 
 interface DashboardStats {
   activeJobs: number;
@@ -41,12 +22,70 @@ const EmployerDashboard = () => {
     queryKey: ['employer-dashboard-stats'],
     queryFn: async () => {
       try {
-        // Enhanced mock data for comprehensive dashboard
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
+
+        // Get user's company
+        const { data: teamMember } = await supabase
+          .from('company_team_members')
+          .select('company_id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .single();
+
+        if (!teamMember) {
+          return {
+            activeJobs: 0,
+            totalApplications: 0,
+            interviewsThisWeek: 0,
+            jobsPostedThisMonth: 0
+          };
+        }
+
+        // Get active jobs count
+        const { count: activeJobs } = await supabase
+          .from('jobs')
+          .select('*', { count: 'exact', head: true })
+          .eq('company_id', teamMember.company_id)
+          .eq('is_active', true);
+
+        // Get total applications count
+        const { data: applications } = await supabase
+          .from('job_applications')
+          .select('id, jobs!inner(company_id)')
+          .eq('jobs.company_id', teamMember.company_id);
+
+        // Get jobs posted this month
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+
+        const { count: jobsThisMonth } = await supabase
+          .from('jobs')
+          .select('*', { count: 'exact', head: true })
+          .eq('company_id', teamMember.company_id)
+          .gte('created_at', startOfMonth.toISOString());
+
+        // Get interviews this week
+        const startOfWeek = new Date();
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(endOfWeek.getDate() + 7);
+
+        const { count: interviewsThisWeek } = await supabase
+          .from('interviews')
+          .select('*, job_applications!inner(job_id, jobs!inner(company_id))', { count: 'exact', head: true })
+          .eq('job_applications.jobs.company_id', teamMember.company_id)
+          .gte('scheduled_at', startOfWeek.toISOString())
+          .lt('scheduled_at', endOfWeek.toISOString());
+
         return {
-          activeJobs: 8,
-          totalApplications: 156,
-          interviewsThisWeek: 12,
-          jobsPostedThisMonth: 5
+          activeJobs: activeJobs || 0,
+          totalApplications: applications?.length || 0,
+          interviewsThisWeek: interviewsThisWeek || 0,
+          jobsPostedThisMonth: jobsThisMonth || 0
         } as DashboardStats;
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
@@ -70,25 +109,25 @@ const EmployerDashboard = () => {
       description: "Currently open positions",
       action: () => navigate('/jobs/manage'),
       color: "text-blue-600",
-      change: "+2 this week"
+      change: stats?.activeJobs ? `${stats.activeJobs} active` : "No active jobs"
     },
     {
       title: "Total Applications",
       value: stats?.totalApplications || 0,
       icon: Users,
       description: "Applications received",
-      action: () => navigate('/employer/crm/candidates'),
+      action: () => navigate('/jobs/manage'),
       color: "text-green-600",
-      change: "+34 this week"
+      change: stats?.totalApplications ? `${stats.totalApplications} total` : "No applications yet"
     },
     {
       title: "Interviews This Week",
       value: stats?.interviewsThisWeek || 0,
       icon: Calendar,
       description: "Scheduled interviews",
-      action: () => navigate('/employer/crm/candidates'),
+      action: () => navigate('/jobs/manage'),
       color: "text-purple-600",
-      change: "+5 scheduled"
+      change: stats?.interviewsThisWeek ? `${stats.interviewsThisWeek} scheduled` : "No interviews scheduled"
     },
     {
       title: "Jobs Posted This Month",
@@ -97,7 +136,7 @@ const EmployerDashboard = () => {
       description: "New postings",
       action: () => navigate('/jobs/post'),
       color: "text-orange-600",
-      change: "+2 this month"
+      change: stats?.jobsPostedThisMonth ? `${stats.jobsPostedThisMonth} this month` : "No jobs posted this month"
     }
   ];
 
@@ -197,173 +236,54 @@ const EmployerDashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-slate-900 mb-1">{stat.value}</div>
-                    <p className="text-xs text-slate-500 font-medium mb-2">{stat.description}</p>
-                    <p className="text-xs text-green-600 font-semibold">{stat.change}</p>
+                    <p className="text-xs text-slate-600 mb-2">{stat.description}</p>
+                    <div className="text-xs text-slate-500">{stat.change}</div>
                   </CardContent>
                 </Card>
               );
             })}
           </div>
 
-          {/* Phase 1 Widgets */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-            <div className="xl:col-span-2">
-              <CandidatePipelineWidget />
-            </div>
-            <div>
-              <SmartNotificationsPanel />
-            </div>
-            <div>
-              <TodaysActivitySummary />
-            </div>
-          </div>
-
-          {/* Phase 2: Advanced Analytics & Intelligence */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            <div>
-              <TopPerformingJobsWidget />
-            </div>
-            <div>
-              <ConversionRateWidget />
-            </div>
-            <div>
-              <JobExpiryWidget />
-            </div>
-          </div>
-
-          {/* Phase 3: Collaboration & Communication */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-            <div>
-              <CandidateInboxWidget />
-            </div>
-            <div>
-              <TeamManagementWidget />
-            </div>
-            <div>
-              <SharedNotesWidget />
-            </div>
-            <div>
-              <InterviewSchedulingWidget />
-            </div>
-          </div>
-
-          {/* Phase 4: AI-Powered Features & Automation */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-            <div>
-              <AIScreeningWidget />
-            </div>
-            <div>
-              <SmartJobOptimizationWidget />
-            </div>
-            <div>
-              <AutomatedWorkflowWidget />
-            </div>
-            <div>
-              <PredictiveAnalyticsWidget />
-            </div>
-          </div>
-
-          {/* Phase 5: Advanced Integration & Workflow Automation */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-            <div>
-              <CandidatePipelineAnalyticsWidget />
-            </div>
-            <div>
-              <SmartRecruitmentMetricsWidget />
-            </div>
-            <div>
-              <IntegrationHubWidget />
-            </div>
-            <div>
-              <AdvancedAutomationRulesWidget />
-            </div>
-          </div>
-
-          {/* Source Attribution & Job Status */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <SourceAttributionWidget />
-            </div>
-            <JobStatusBreakdown />
-          </div>
-
           {/* Quick Actions */}
-          <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
             <CardHeader>
-              <CardTitle className="text-base font-bold text-slate-900">Quick Actions</CardTitle>
-              <CardDescription className="text-sm text-slate-600">Streamline your hiring process</CardDescription>
+              <CardTitle className="text-lg font-semibold text-slate-900">Quick Actions</CardTitle>
+              <CardDescription>Get started with common employer tasks</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {quickActions.map((action, index) => {
                   const Icon = action.icon;
                   return (
-                    <div 
-                      key={index} 
-                      className="cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-105 p-4 rounded-lg bg-slate-50/50 hover:bg-slate-100/50" 
+                    <Button
+                      key={index}
                       onClick={action.action}
+                      className={`${action.color} text-white p-6 h-auto flex flex-col items-center justify-center space-y-3 transition-all duration-200 hover:scale-105 shadow-lg`}
+                      variant="default"
                     >
-                      <div className={`mx-auto p-3 rounded-lg ${action.color || 'bg-gray-600'} w-fit mb-3`}>
-                        <Icon className="h-5 w-5 text-white" />
-                      </div>
+                      <Icon className="h-8 w-8" />
                       <div className="text-center">
-                        <h3 className="text-sm font-semibold text-slate-800 mb-1">{action.title}</h3>
-                        <p className="text-xs text-slate-600">{action.description}</p>
+                        <div className="font-semibold text-sm">{action.title}</div>
+                        <div className="text-xs opacity-90 mt-1">{action.description}</div>
                       </div>
-                    </div>
+                    </Button>
                   );
                 })}
               </div>
             </CardContent>
           </Card>
 
-          {/* Enhanced Recent Activity */}
-          <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
+          {/* Recent Activity placeholder for future implementation */}
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-md">
             <CardHeader>
-              <CardTitle className="text-base font-bold text-slate-900">Recent Hiring Activity</CardTitle>
-              <CardDescription className="text-sm text-slate-600">Latest updates across all your job postings</CardDescription>
+              <CardTitle className="text-lg font-semibold text-slate-900">Recent Activity</CardTitle>
+              <CardDescription>Latest updates from your hiring pipeline</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
-                  <div className="p-2 bg-blue-500 rounded-lg">
-                    <Briefcase className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-slate-900">Senior Frontend Developer</p>
-                    <p className="text-sm text-slate-600">8 new applications received today</p>
-                    <p className="text-xs text-slate-500 font-medium">2 hours ago</p>
-                  </div>
-                  <Button size="sm" variant="outline" onClick={() => navigate('/jobs/manage')}>
-                    Review
-                  </Button>
-                </div>
-                <div className="flex items-center space-x-4 p-4 bg-green-50/50 rounded-lg border border-green-100">
-                  <div className="p-2 bg-green-500 rounded-lg">
-                    <Users className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-slate-900">Product Manager Interview</p>
-                    <p className="text-sm text-slate-600">Sarah Johnson confirmed for 2:00 PM today</p>
-                    <p className="text-xs text-slate-500 font-medium">1 hour ago</p>
-                  </div>
-                  <Button size="sm" variant="outline" onClick={() => navigate('/employer/crm/candidates')}>
-                    Prepare
-                  </Button>
-                </div>
-                <div className="flex items-center space-x-4 p-4 bg-purple-50/50 rounded-lg border border-purple-100">
-                  <div className="p-2 bg-purple-500 rounded-lg">
-                    <TrendingUp className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-slate-900">UX Designer Position</p>
-                    <p className="text-sm text-slate-600">Trending: 145% above average views this week</p>
-                    <p className="text-xs text-slate-500 font-medium">5 hours ago</p>
-                  </div>
-                  <Button size="sm" variant="outline" onClick={() => navigate('/employer/analytics')}>
-                    Analyze
-                  </Button>
-                </div>
+              <div className="text-center py-8 text-slate-500">
+                <Calendar className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                <p className="text-sm">No recent activity to display</p>
+                <p className="text-xs mt-1">Activity will appear here as you manage jobs and applications</p>
               </div>
             </CardContent>
           </Card>

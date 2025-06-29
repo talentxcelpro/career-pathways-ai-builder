@@ -2820,7 +2820,7 @@ export type Database = {
         | "hired"
         | "rejected"
       interview_status: "scheduled" | "completed" | "cancelled" | "rescheduled"
-      team_role: "admin" | "recruiter" | "hr_manager" | "viewer"
+      team_role: "admin" | "recruiter" | "hr_manager" | "viewer" | "owner"
       user_role: "job_seeker" | "employer" | "admin" | "candidate"
     }
     CompositeTypes: {
@@ -2948,7 +2948,7 @@ export const Constants = {
         "rejected",
       ],
       interview_status: ["scheduled", "completed", "cancelled", "rescheduled"],
-      team_role: ["admin", "recruiter", "hr_manager", "viewer"],
+      team_role: ["admin", "recruiter", "hr_manager", "viewer", "owner"],
       user_role: ["job_seeker", "employer", "admin", "candidate"],
     },
   },

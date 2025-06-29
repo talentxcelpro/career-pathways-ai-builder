@@ -7,76 +7,133 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Users, Plus, ArrowLeft, Mail, MoreHorizontal, UserPlus } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface TeamMember {
   id: string;
-  name: string;
-  email: string;
+  user_id: string;
   role: string;
-  status: 'active' | 'pending' | 'inactive';
-  joinedAt: string;
-  avatar?: string;
+  is_active: boolean;
+  joined_at: string;
+  profiles?: {
+    full_name: string;
+    email: string;
+    profile_picture_url?: string;
+  };
 }
 
 const EmployerTeam = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('recruiter');
 
-  const teamMembers: TeamMember[] = [
-    {
-      id: '1',
-      name: 'John Smith',
-      email: 'john@company.com',
-      role: 'Admin',
-      status: 'active',
-      joinedAt: '2024-01-15'
-    },
-    {
-      id: '2',
-      name: 'Sarah Johnson',
-      email: 'sarah@company.com',
-      role: 'Recruiter',
-      status: 'active',
-      joinedAt: '2024-02-20'
-    },
-    {
-      id: '3',
-      name: 'Mike Davis',
-      email: 'mike@company.com',
-      role: 'Hiring Manager',
-      status: 'pending',
-      joinedAt: '2024-03-01'
+  // Fetch team members
+  const { data: teamData, isLoading } = useQuery({
+    queryKey: ['company-team'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Get user's company
+      const { data: userTeamMember } = await supabase
+        .from('company_team_members')
+        .select('company_id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .single();
+
+      if (!userTeamMember) throw new Error('No company found');
+
+      // Get all team members
+      const { data: teamMembers } = await supabase
+        .from('company_team_members')
+        .select(`
+          *,
+          profiles(full_name, email, profile_picture_url)
+        `)
+        .eq('company_id', userTeamMember.company_id)
+        .order('joined_at', { ascending: false });
+
+      return {
+        companyId: userTeamMember.company_id,
+        members: teamMembers || []
+      };
     }
-  ];
+  });
+
+  // Send invitation mutation
+  const inviteMutation = useMutation({
+    mutationFn: async ({ email, role }: { email: string; role: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !teamData?.companyId) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('team_invitations')
+        .insert({
+          company_id: teamData.companyId,
+          email,
+          role: role as any,
+          invited_by: user.id
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Invitation sent successfully');
+      setShowInviteForm(false);
+      setInviteEmail('');
+      setInviteRole('recruiter');
+      queryClient.invalidateQueries({ queryKey: ['company-team'] });
+    },
+    onError: (error: any) => {
+      toast.error('Failed to send invitation: ' + error.message);
+    }
+  });
 
   const handleInvite = () => {
-    // Implement invite functionality
-    console.log('Inviting:', inviteEmail, 'as', inviteRole);
-    setShowInviteForm(false);
-    setInviteEmail('');
+    if (!inviteEmail.trim()) {
+      toast.error('Please enter an email address');
+      return;
+    }
+    inviteMutation.mutate({ email: inviteEmail, role: inviteRole });
   };
 
   const getRoleColor = (role: string) => {
     switch (role.toLowerCase()) {
+      case 'owner': return 'bg-purple-100 text-purple-800';
       case 'admin': return 'bg-red-100 text-red-800';
       case 'recruiter': return 'bg-blue-100 text-blue-800';
-      case 'hiring manager': return 'bg-green-100 text-green-800';
+      case 'hiring_manager': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const getStatusColor = (isActive: boolean) => {
+    return isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 max-w-6xl mx-auto space-y-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+          <div className="h-64 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const teamMembers = teamData?.members || [];
+  const activeMembers = teamMembers.filter(m => m.is_active);
+  const pendingInvites = teamMembers.filter(m => !m.is_active);
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -115,7 +172,7 @@ const EmployerTeam = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Active Members</p>
-                <p className="text-2xl font-bold">{teamMembers.filter(m => m.status === 'active').length}</p>
+                <p className="text-2xl font-bold">{activeMembers.length}</p>
               </div>
               <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
                 <div className="h-4 w-4 rounded-full bg-green-600"></div>
@@ -128,7 +185,7 @@ const EmployerTeam = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Pending Invites</p>
-                <p className="text-2xl font-bold">{teamMembers.filter(m => m.status === 'pending').length}</p>
+                <p className="text-2xl font-bold">{pendingInvites.length}</p>
               </div>
               <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
                 <div className="h-4 w-4 rounded-full bg-yellow-600"></div>
@@ -159,22 +216,25 @@ const EmployerTeam = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
-                <select 
-                  id="role" 
-                  className="w-full p-2 border rounded-md"
-                  value={inviteRole}
-                  onChange={(e) => setInviteRole(e.target.value)}
-                >
-                  <option value="recruiter">Recruiter</option>
-                  <option value="hiring manager">Hiring Manager</option>
-                  <option value="admin">Admin</option>
-                </select>
+                <Select value={inviteRole} onValueChange={setInviteRole}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recruiter">Recruiter</SelectItem>
+                    <SelectItem value="hiring_manager">Hiring Manager</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="flex space-x-2">
-              <Button onClick={handleInvite}>
+              <Button 
+                onClick={handleInvite}
+                disabled={inviteMutation.isPending}
+              >
                 <Mail className="h-4 w-4 mr-2" />
-                Send Invitation
+                {inviteMutation.isPending ? 'Sending...' : 'Send Invitation'}
               </Button>
               <Button variant="outline" onClick={() => setShowInviteForm(false)}>
                 Cancel
@@ -191,53 +251,63 @@ const EmployerTeam = () => {
           <CardDescription>Manage your hiring team members and their roles</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Member</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Joined</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {teamMembers.map((member) => (
-                <TableRow key={member.id}>
-                  <TableCell>
-                    <div className="flex items-center space-x-3">
-                      <Avatar>
-                        <AvatarImage src={member.avatar} />
-                        <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{member.name}</p>
-                        <p className="text-sm text-gray-600">{member.email}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getRoleColor(member.role)}>
-                      {member.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(member.status)}>
-                      {member.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-gray-600">
-                    {new Date(member.joinedAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
+          {teamMembers.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Member</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Joined</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {teamMembers.map((member) => (
+                  <TableRow key={member.id}>
+                    <TableCell>
+                      <div className="flex items-center space-x-3">
+                        <Avatar>
+                          <AvatarImage src={member.profiles?.profile_picture_url} />
+                          <AvatarFallback>
+                            {member.profiles?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{member.profiles?.full_name || 'Unknown User'}</p>
+                          <p className="text-sm text-gray-600">{member.profiles?.email || 'No email'}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getRoleColor(member.role)}>
+                        {member.role.replace('_', ' ').toUpperCase()}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getStatusColor(member.is_active)}>
+                        {member.is_active ? 'Active' : 'Pending'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-gray-600">
+                      {member.joined_at ? new Date(member.joined_at).toLocaleDateString() : 'Pending'}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="sm">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
+              <p className="text-sm">No team members found</p>
+              <p className="text-xs mt-1">Invite team members to get started</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
