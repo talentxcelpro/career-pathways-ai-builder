@@ -51,7 +51,7 @@ const EmployerTeam = () => {
 
       if (!userTeamMember) throw new Error('No company found');
 
-      // Get all team members with their profile data
+      // Get all team members
       const { data: teamMembers } = await supabase
         .from('company_team_members')
         .select('*')
@@ -271,7 +271,7 @@ const EmployerTeam = () => {
                     <TableCell>
                       <div className="flex items-center space-x-3">
                         <Avatar>
-                          <AvatarImage src={member.user_profile?.profile_picture_url} />
+                          <AvatarImage src={member.user_profile?.profile_picture_url || ''} />
                           <AvatarFallback>
                             {member.user_profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
                           </AvatarFallback>
