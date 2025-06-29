@@ -38,21 +38,8 @@ interface Resume {
 }
 
 interface ApplicationData {
-  name: string;
-  email: string;
-  phone: string;
-  location: string;
-  title: string;
-  experience_years: number;
-  linkedin: string;
-  portfolio: string;
   cover_letter: string;
-  skills: string[];
-  expected_salary: number;
-  availability_date: string;
-  employment_type: string;
-  relocate: boolean;
-  motivation: string;
+  additional_info: string;
 }
 
 export default function JobApplicationModal({ open, onOpenChange, job }: JobApplicationModalProps) {
@@ -65,21 +52,8 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
   const [matchScore, setMatchScore] = useState<number | null>(null);
 
   const [formData, setFormData] = useState<ApplicationData>({
-    name: '',
-    email: '',
-    phone: '',
-    location: '',
-    title: '',
-    experience_years: 0,
-    linkedin: '',
-    portfolio: '',
     cover_letter: '',
-    skills: [],
-    expected_salary: 0,
-    availability_date: '',
-    employment_type: '',
-    relocate: false,
-    motivation: ''
+    additional_info: ''
   });
 
   // Fetch user's resumes and profile data
@@ -107,27 +81,6 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
         const primaryResume = resumesData.find(r => r.is_primary);
         if (primaryResume) setSelectedResumeId(primaryResume.id);
       }
-
-      // Fetch user profile for auto-fill
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (profile) {
-        setFormData(prev => ({
-          ...prev,
-          name: profile.full_name || '',
-          email: profile.email || user.email || '',
-          phone: profile.phone || '',
-          location: profile.location || '',
-          title: profile.title || '',
-          linkedin: profile.linkedin_url || '',
-          portfolio: profile.portfolio_url || '',
-          skills: profile.skills || []
-        }));
-      }
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -153,48 +106,22 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
     // Simulate AI processing
     setAiProcessing(true);
     setTimeout(() => {
-      // Mock AI extraction
-      const mockExtractedData = {
-        name: formData.name || 'John Doe',
-        title: 'Software Engineer',
-        experience_years: 3,
-        skills: ['React', 'TypeScript', 'Node.js', 'Python'],
-        phone: formData.phone || '+91 9876543210',
-        location: formData.location || 'Bangalore, India'
-      };
-
-      setFormData(prev => ({
-        ...prev,
-        ...mockExtractedData
-      }));
-
       // Calculate mock match score
       const jobSkills = job.skills_required || [];
-      const matchingSkills = mockExtractedData.skills.filter(skill => 
+      const mockExtractedSkills = ['React', 'TypeScript', 'Node.js', 'Python'];
+      const matchingSkills = mockExtractedSkills.filter(skill => 
         jobSkills.some(jobSkill => jobSkill.toLowerCase().includes(skill.toLowerCase()))
       );
       const score = Math.round((matchingSkills.length / Math.max(jobSkills.length, 1)) * 100);
       setMatchScore(Math.min(score + Math.floor(Math.random() * 20), 95));
 
       setAiProcessing(false);
-      toast.success('Resume analyzed and form auto-filled!');
+      toast.success('Resume analyzed and processed!');
     }, 2000);
   };
 
   const handleExistingResumeSelect = (resumeId: string) => {
     setSelectedResumeId(resumeId);
-    const selectedResume = resumes.find(r => r.id === resumeId);
-    if (selectedResume?.content) {
-      // Auto-fill from existing resume data
-      const content = selectedResume.content;
-      setFormData(prev => ({
-        ...prev,
-        title: content.title || prev.title,
-        experience_years: content.experience_years || prev.experience_years,
-        skills: content.skills || prev.skills,
-        location: content.location || prev.location
-      }));
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -203,7 +130,21 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Check if already applied
+      const { data: existingApplication } = await supabase
+        .from('job_applications')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('job_id', job.id)
+        .single();
+
+      if (existingApplication) {
+        throw new Error('You have already applied to this job');
+      }
 
       let resumeUrl = '';
 
@@ -226,51 +167,60 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
         resumeUrl = selectedResume?.file_url || '';
       }
 
-      // Submit application
+      if (!resumeUrl && !selectedResumeId) {
+        throw new Error('Please select a resume or upload one');
+      }
+
+      // Submit application with simplified data structure
+      const applicationData = {
+        user_id: user.id,
+        job_id: job.id,
+        cover_letter: formData.cover_letter || null,
+        resume_url: resumeUrl || null,
+        status: 'applied',
+        applied_at: new Date().toISOString(),
+        ai_match_score: matchScore
+      };
+
+      console.log('Submitting application data:', applicationData);
+
       const { error } = await supabase
         .from('job_applications')
-        .insert({
-          user_id: user.id,
-          job_id: job.id,
-          resume_url: resumeUrl,
-          ai_match_score: matchScore,
-          ...formData
-        });
+        .insert(applicationData);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       // Update job application count
-      await incrementJobApplications(job.id);
+      try {
+        await incrementJobApplications(job.id);
+      } catch (error) {
+        console.log('Failed to increment application count:', error);
+        // Don't fail the entire operation for this
+      }
 
       toast.success('Application submitted successfully!');
       onOpenChange(false);
       
       // Reset form
       setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        location: '',
-        title: '',
-        experience_years: 0,
-        linkedin: '',
-        portfolio: '',
         cover_letter: '',
-        skills: [],
-        expected_salary: 0,
-        availability_date: '',
-        employment_type: '',
-        relocate: false,
-        motivation: ''
+        additional_info: ''
       });
       setUploadedFile(null);
       setMatchScore(null);
+      setSelectedResumeId('');
     } catch (error: any) {
       console.error('Application submission error:', error);
-      if (error.message?.includes('duplicate key')) {
+      
+      if (error.message?.includes('duplicate key') || error.message?.includes('already applied')) {
         toast.error('You have already applied to this job');
+      } else if (error.message?.includes('not authenticated')) {
+        toast.error('Please log in to apply for jobs');
       } else {
-        toast.error('Failed to submit application. Please try again.');
+        toast.error(error.message || 'Failed to submit application. Please try again.');
       }
     } finally {
       setIsSubmitting(false);
@@ -399,193 +349,18 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
             </CardContent>
           </Card>
 
-          {/* Application Form */}
+          {/* Cover Letter */}
           <Card>
             <CardHeader>
-              <CardTitle>Application Details</CardTitle>
+              <CardTitle>Cover Letter (Optional)</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name *</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="location"
-                      value={formData.location}
-                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="title">Current Job Title</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="experience">Experience (Years)</Label>
-                  <Input
-                    id="experience"
-                    type="number"
-                    min="0"
-                    value={formData.experience_years}
-                    onChange={(e) => setFormData(prev => ({ ...prev, experience_years: parseInt(e.target.value) || 0 }))}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="linkedin">LinkedIn Profile</Label>
-                  <Input
-                    id="linkedin"
-                    value={formData.linkedin}
-                    onChange={(e) => setFormData(prev => ({ ...prev, linkedin: e.target.value }))}
-                    placeholder="https://linkedin.com/in/yourname"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="portfolio">Portfolio/Website</Label>
-                  <Input
-                    id="portfolio"
-                    value={formData.portfolio}
-                    onChange={(e) => setFormData(prev => ({ ...prev, portfolio: e.target.value }))}
-                    placeholder="https://yourportfolio.com"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="salary">Expected Salary (₹)</Label>
-                  <Input
-                    id="salary"
-                    type="number"
-                    min="0"
-                    value={formData.expected_salary}
-                    onChange={(e) => setFormData(prev => ({ ...prev, expected_salary: parseInt(e.target.value) || 0 }))}
-                    placeholder="500000"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="availability">Available From</Label>
-                  <Input
-                    id="availability"
-                    type="date"
-                    value={formData.availability_date}
-                    onChange={(e) => setFormData(prev => ({ ...prev, availability_date: e.target.value }))}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="employment-type">Employment Type Preference</Label>
-                  <Select 
-                    value={formData.employment_type} 
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, employment_type: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select employment type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="full-time">Full-time</SelectItem>
-                      <SelectItem value="part-time">Part-time</SelectItem>
-                      <SelectItem value="contract">Contract</SelectItem>
-                      <SelectItem value="freelance">Freelance</SelectItem>
-                      <SelectItem value="internship">Internship</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="skills">Skills</Label>
-                <Input
-                  id="skills"
-                  value={formData.skills.join(', ')}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    skills: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
-                  }))}
-                  placeholder="React, TypeScript, Node.js, Python"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="cover-letter">Cover Letter / Statement of Purpose</Label>
-                <Textarea
-                  id="cover-letter"
-                  value={formData.cover_letter}
-                  onChange={(e) => setFormData(prev => ({ ...prev, cover_letter: e.target.value }))}
-                  rows={4}
-                  placeholder="Tell us why you're interested in this position..."
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="motivation">Why do you want this job?</Label>
-                <Textarea
-                  id="motivation"
-                  value={formData.motivation}
-                  onChange={(e) => setFormData(prev => ({ ...prev, motivation: e.target.value }))}
-                  rows={3}
-                  placeholder="What motivates you to apply for this role?"
-                />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="relocate"
-                  checked={formData.relocate}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, relocate: !!checked }))}
-                />
-                <Label htmlFor="relocate">I am willing to relocate for this position</Label>
-              </div>
+            <CardContent>
+              <Textarea
+                value={formData.cover_letter}
+                onChange={(e) => setFormData(prev => ({ ...prev, cover_letter: e.target.value }))}
+                rows={6}
+                placeholder="Write a cover letter to introduce yourself and explain why you're interested in this position..."
+              />
             </CardContent>
           </Card>
 
@@ -595,12 +370,13 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting || !formData.name || !formData.email}
+              disabled={isSubmitting || (!selectedResumeId && !uploadedFile)}
             >
               {isSubmitting ? 'Submitting...' : 'Submit Application'}
             </Button>
