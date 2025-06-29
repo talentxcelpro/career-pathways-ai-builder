@@ -1,233 +1,225 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { LearningHeader } from '@/components/learning/LearningHeader';
 import { LearningTabs } from '@/components/learning/LearningTabs';
+import { SearchAndFilters } from '@/components/learning/SearchAndFilters';
+import { CourseCard } from '@/components/learning/CourseCard';
+import { LearningPathCard } from '@/components/learning/LearningPathCard';
 import { AIRecommendations } from '@/components/learning/AIRecommendations';
-import { EnhancedSearchFilters } from '@/components/learning/EnhancedSearchFilters';
-import { LearningProgress } from '@/components/learning/LearningProgress';
-import { LearningAnalytics } from '@/components/learning/LearningAnalytics';
-import { QuickEnrollCTA } from '@/components/learning/QuickEnrollCTA';
-import { useAutoRefresh } from '@/hooks/useAutoRefresh';
-import { DataFreshness } from '@/components/shared/DataFreshness';
-import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
+import { EmptyMyLearning } from '@/components/learning/EmptyMyLearning';
 import { realDataService } from '@/utils/realDataService';
 import { updateMetaTags } from '@/utils/metaTags';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  instructor_name: string;
+  difficulty_level: string;
+  duration_hours: number;
+  rating: number;
+  enrolled_count: number;
+  price: number;
+  is_free: boolean;
+  skills_taught?: string[];
+  category?: string;
+}
+
+interface LearningPath {
+  id: string;
+  title: string;
+  description: string;
+  difficulty_level: string;
+  estimated_duration_weeks: number;
+  course_ids?: string[];
+  skills_gained?: string[];
+  target_role?: string;
+}
 
 const Learning = () => {
   const [activeTab, setActiveTab] = useState('courses');
-  const [filters, setFilters] = useState({
-    search: '',
-    category: '',
-    difficulty: '',
-    duration: '',
-    skills: [] as string[],
-  });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedLevel, setSelectedLevel] = useState('all');
+  const [enrolledCourses, setEnrolledCourses] = useState<string[]>([]);
 
-  // Auto-refresh for learning content
-  const { manualRefresh } = useAutoRefresh({
-    queryKeys: ['courses', 'learning_paths', 'user_courses'],
-    interval: 10 * 60 * 1000, // 10 minutes
-  });
-
-  // Meta tags
+  // Update meta tags for SEO
   useEffect(() => {
     updateMetaTags({
-      title: 'Learn & Grow | TalentXcel Learning Platform',
-      description: 'Advance your career with expert-led courses, learning paths, and skill development programs. Learn in-demand skills at your own pace.',
+      title: 'Learning Hub | TalentXcel - Advance Your Career',
+      description: 'Discover courses, learning paths, and AI-powered recommendations to boost your skills and advance your career.',
       url: `${window.location.origin}/learning`,
     });
   }, []);
 
-  // Fetch learning data
-  const { data: courses = [], isLoading: coursesLoading, dataUpdatedAt } = useQuery({
+  // Fetch courses and learning paths
+  const { data: courses = [], isLoading: coursesLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: realDataService.getAllCourses,
-    staleTime: 10 * 60 * 1000,
   });
 
   const { data: learningPaths = [], isLoading: pathsLoading } = useQuery({
     queryKey: ['learning_paths'],
     queryFn: realDataService.getAllLearningPaths,
-    staleTime: 10 * 60 * 1000,
   });
 
-  // Get user's enrolled courses
-  const { data: userCourses = [], refetch: refetchUserCourses } = useQuery({
-    queryKey: ['user_courses'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+  // Filter courses based on search and filters
+  const filteredCourses = React.useMemo(() => {
+    if (!Array.isArray(courses)) return [];
+    
+    return courses.filter((course: Course) => {
+      const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           course.instructor_name?.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const { data, error } = await supabase
-        .from('user_courses')
-        .select(`
-          *,
-          courses (*)
-        `)
-        .eq('user_id', user.id);
+      const matchesCategory = selectedCategory === 'all' || course.category === selectedCategory;
+      const matchesLevel = selectedLevel === 'all' || course.difficulty_level === selectedLevel;
       
-      if (error) throw error;
-      return data || [];
-    },
-  });
+      return matchesSearch && matchesCategory && matchesLevel;
+    });
+  }, [courses, searchQuery, selectedCategory, selectedLevel]);
 
-  // Generate AI recommendations based on user's profile and enrolled courses
-  const { data: aiRecommendations = [] } = useQuery({
-    queryKey: ['ai_recommendations', userCourses.length],
-    queryFn: async () => {
-      if (courses.length === 0) return [];
+  // Get unique categories and levels for filters
+  const categories = React.useMemo(() => {
+    if (!Array.isArray(courses)) return [];
+    
+    const uniqueCategories = [...new Set(courses.map((course: Course) => course.category).filter(Boolean))];
+    return uniqueCategories as string[];
+  }, [courses]);
+
+  const levels = React.useMemo(() => {
+    if (!Array.isArray(courses)) return [];
+    
+    const uniqueLevels = [...new Set(courses.map((course: Course) => course.difficulty_level).filter(Boolean))];
+    return uniqueLevels as string[];
+  }, [courses]);
+
+  // Filter learning paths
+  const filteredLearningPaths = React.useMemo(() => {
+    if (!Array.isArray(learningPaths)) return [];
+    
+    return learningPaths.filter((path: LearningPath) => {
+      const matchesSearch = path.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           path.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           path.target_role?.toLowerCase().includes(searchQuery.toLowerCase());
       
-      // Simple AI recommendation logic based on enrolled courses and skills
-      const enrolledCourseIds = userCourses.map(uc => uc.course_id);
-      const enrolledSkills = userCourses.flatMap(uc => uc.courses?.skills_taught || []);
+      const matchesLevel = selectedLevel === 'all' || path.difficulty_level === selectedLevel;
       
-      // Recommend courses with similar skills or complementary skills
-      const recommendations = courses
-        .filter(course => !enrolledCourseIds.includes(course.id))
-        .filter(course => {
-          const courseSkills = course.skills_taught || [];
-          return courseSkills.some(skill => enrolledSkills.includes(skill)) ||
-                 (enrolledSkills.length === 0 && course.difficulty_level === 'beginner');
-        })
-        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-        .slice(0, 6);
-        
-      return recommendations;
-    },
-    enabled: courses.length > 0,
-  });
+      return matchesSearch && matchesLevel;
+    });
+  }, [learningPaths, searchQuery, selectedLevel]);
+
+  const handleEnroll = (courseId: string) => {
+    setEnrolledCourses(prev => [...prev, courseId]);
+    // Here you would typically make an API call to enroll the user
+    console.log('Enrolled in course:', courseId);
+  };
 
   const isLoading = coursesLoading || pathsLoading;
 
-  // Get all available skills for filtering
-  const availableSkills = [...new Set(courses.flatMap(course => course.skills_taught || []))];
-
-  // Enhanced filtering logic
-  const filteredCourses = courses.filter(course => {
-    const matchesSearch = !filters.search || 
-      course.title?.toLowerCase().includes(filters.search.toLowerCase()) ||
-      course.description?.toLowerCase().includes(filters.search.toLowerCase());
-    
-    const matchesCategory = !filters.category || course.category === filters.category;
-    const matchesDifficulty = !filters.difficulty || course.difficulty_level === filters.difficulty;
-    
-    const matchesDuration = !filters.duration || (() => {
-      const hours = course.duration_hours || 0;
-      switch (filters.duration) {
-        case 'short': return hours < 5;
-        case 'medium': return hours >= 5 && hours <= 20;
-        case 'long': return hours > 20;
-        default: return true;
-      }
-    })();
-
-    const matchesSkills = filters.skills.length === 0 || 
-      filters.skills.some(skill => course.skills_taught?.includes(skill));
-    
-    return matchesSearch && matchesCategory && matchesDifficulty && matchesDuration && matchesSkills;
-  });
-
-  const isEnrolled = (courseId: string) => {
-    return userCourses.some(uc => uc.course_id === courseId);
-  };
-
-  const enrollInCourse = async (courseId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error('Please sign in to enroll in courses');
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('user_courses')
-        .insert({
-          user_id: user.id,
-          course_id: courseId,
-          enrolled_at: new Date().toISOString(),
-        });
-
-      if (error) throw error;
-      
-      toast.success('Successfully enrolled in course!');
-      refetchUserCourses();
-    } catch (error) {
-      console.error('Error enrolling in course:', error);
-      toast.error('Failed to enroll in course');
-    }
-  };
-
-  // Get featured course (highest rated with most enrollments)
-  const featuredCourse = courses
-    .filter(course => !isEnrolled(course.id))
-    .sort((a, b) => (b.rating * b.enrolled_count) - (a.rating * a.enrolled_count))[0];
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+          <p className="text-sm text-slate-600 font-medium">Loading learning content...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <OfflineIndicator />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <LearningHeader />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Learning Hub</h1>
-            <p className="text-gray-600 mt-1">Discover courses and learning paths to advance your career</p>
-          </div>
-          <DataFreshness 
-            lastUpdated={new Date(dataUpdatedAt || Date.now())}
-            onRefresh={manualRefresh}
-            isRefreshing={isLoading}
+        <div className="mb-8">
+          <LearningTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+
+        <div className="mb-8">
+          <SearchAndFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            selectedLevel={selectedLevel}
+            onLevelChange={setSelectedLevel}
+            categories={categories}
+            levels={levels}
           />
         </div>
 
-        {/* Featured Course CTA */}
-        {!isLoading && featuredCourse && (
-          <div className="mb-8">
-            <QuickEnrollCTA
-              featuredCourse={featuredCourse}
-              onEnroll={enrollInCourse}
-              isEnrolled={isEnrolled}
-            />
+        {activeTab === 'courses' && (
+          <div className="space-y-8">
+            <AIRecommendations />
+            
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-6">
+                All Courses ({filteredCourses.length})
+              </h2>
+              
+              {filteredCourses.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-slate-600">No courses found matching your criteria.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredCourses.map((course: Course) => (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      isEnrolled={enrolledCourses.includes(course.id)}
+                      onEnroll={handleEnroll}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
-        {/* Learning Progress */}
-        <LearningProgress userCourses={userCourses} />
+        {activeTab === 'paths' && (
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">
+              Learning Paths ({filteredLearningPaths.length})
+            </h2>
+            
+            {filteredLearningPaths.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-slate-600">No learning paths found matching your criteria.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredLearningPaths.map((path: LearningPath) => (
+                  <LearningPathCard key={path.id} learningPath={path} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-        {/* AI Recommendations */}
-        <AIRecommendations 
-          recommendations={aiRecommendations}
-          onEnroll={enrollInCourse}
-          isEnrolled={isEnrolled}
-        />
-
-        {/* Enhanced Search and Filters */}
-        <EnhancedSearchFilters
-          filters={filters}
-          onFiltersChange={setFilters}
-          availableSkills={availableSkills}
-        />
-
-        <LearningTabs 
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          filteredCourses={filteredCourses}
-          coursesLoading={coursesLoading}
-          learningPaths={learningPaths}
-          pathsLoading={pathsLoading}
-          userCourses={userCourses}
-          isEnrolled={isEnrolled}
-          enrollInCourse={enrollInCourse}
-        />
-
-        {/* Learning Analytics */}
-        {userCourses.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Learning Analytics</h2>
-            <LearningAnalytics userCourses={userCourses} />
+        {activeTab === 'my-learning' && (
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">My Learning</h2>
+            
+            {enrolledCourses.length === 0 ? (
+              <EmptyMyLearning />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {courses
+                  .filter((course: Course) => enrolledCourses.includes(course.id))
+                  .map((course: Course) => (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      isEnrolled={true}
+                      onEnroll={handleEnroll}
+                    />
+                  ))}
+              </div>
+            )}
           </div>
         )}
       </div>

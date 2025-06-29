@@ -81,4 +81,33 @@ export const realDataService = {
       return [];
     }
   },
+
+  getAllCourses: async () => {
+    try {
+      const { data: courses } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      return courses || [];
+    } catch (error) {
+      console.error('Error fetching all courses:', error);
+      return [];
+    }
+  },
+
+  getAllLearningPaths: async () => {
+    try {
+      const { data: learningPaths } = await supabase
+        .from('learning_paths')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      return learningPaths || [];
+    } catch (error) {
+      console.error('Error fetching learning paths:', error);
+      return [];
+    }
+  },
 };
