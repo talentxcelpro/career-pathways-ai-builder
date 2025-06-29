@@ -11,8 +11,9 @@ export interface Course {
   enrolled_count: number;
   price: number;
   is_free: boolean;
-  skills_taught?: string[];
-  category?: string;
+  skills_taught: string[];
+  category: string;
+  thumbnail_url?: string;
 }
 
 export interface LearningPath {
@@ -22,6 +23,6 @@ export interface LearningPath {
   difficulty_level: string;
   estimated_duration_weeks: number;
   course_ids?: string[];
-  skills_gained?: string[];
-  target_role?: string;
+  skills_gained: string[];
+  target_role: string;
 }

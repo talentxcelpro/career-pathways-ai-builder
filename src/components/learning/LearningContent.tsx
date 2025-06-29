@@ -31,7 +31,10 @@ export const LearningContent: React.FC<LearningContentProps> = ({
     return (
       <div className="space-y-8">
         <AIRecommendations 
-          recommendations={filteredCourses.slice(0, 3)}
+          recommendations={filteredCourses.slice(0, 3).map(course => ({
+            ...course,
+            skills_taught: course.skills_taught || []
+          }))}
           onEnroll={onEnroll}
           isEnrolled={isEnrolled}
         />
@@ -84,7 +87,8 @@ export const LearningContent: React.FC<LearningContentProps> = ({
                 key={path.id} 
                 path={{
                   ...path,
-                  target_role: path.target_role || 'General Role'
+                  target_role: path.target_role || 'General Role',
+                  skills_gained: path.skills_gained || []
                 }} 
               />
             ))}
