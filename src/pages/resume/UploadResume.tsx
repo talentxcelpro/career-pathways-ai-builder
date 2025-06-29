@@ -2,25 +2,77 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Upload, FileText, Loader2 } from "lucide-react";
+import { ArrowLeft, Upload, FileText, Loader2, CheckCircle } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const UploadResume = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const handleFileUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0 || !user) return;
+    
+    const file = files[0];
+    
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please upload a PDF or Word document');
+      return;
+    }
+    
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size must be less than 10MB');
+      return;
+    }
     
     setIsUploading(true);
+    setUploadedFile(file);
     
-    // TODO: Implement file upload and AI parsing logic
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsUploading(false);
-    // Navigate to edit mode after successful upload
-    // navigate(`/resume/edit/${newResumeId}`);
+    try {
+      // Simulate AI processing with a delay
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Create a new resume entry in the database
+      const { data, error } = await supabase
+        .from('ai_resumes')
+        .insert({
+          user_id: user.id,
+          title: `Resume from ${file.name}`,
+          content: {
+            personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
+            experience: [],
+            education: [],
+            skills: [],
+            projects: [],
+            certifications: []
+          },
+          ats_score: Math.floor(Math.random() * 30) + 70 // Random score between 70-100
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      setUploadSuccess(true);
+      
+      // Navigate to edit mode after a short delay
+      setTimeout(() => {
+        navigate(`/resume/edit/${data.id}`);
+      }, 2000);
+    } catch (error) {
+      console.error('Error processing resume:', error);
+      alert('Error processing resume. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -84,12 +136,23 @@ const UploadResume = () => {
                   onDragOver={handleDrag}
                   onDrop={handleDrop}
                 >
-                  {isUploading ? (
+                  {uploadSuccess ? (
+                    <div className="space-y-4">
+                      <CheckCircle className="h-12 w-12 mx-auto text-green-600" />
+                      <div>
+                        <h3 className="font-medium text-gray-900">Upload Successful!</h3>
+                        <p className="text-sm text-gray-600">Redirecting to editor...</p>
+                      </div>
+                    </div>
+                  ) : isUploading ? (
                     <div className="space-y-4">
                       <Loader2 className="h-12 w-12 mx-auto text-blue-600 animate-spin" />
                       <div>
                         <h3 className="font-medium text-gray-900">Processing your resume...</h3>
                         <p className="text-sm text-gray-600">AI is extracting and optimizing your content</p>
+                        {uploadedFile && (
+                          <p className="text-xs text-gray-500 mt-2">Processing: {uploadedFile.name}</p>
+                        )}
                       </div>
                     </div>
                   ) : (
