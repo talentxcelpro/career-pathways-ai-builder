@@ -1,3 +1,4 @@
+
 import { HomeIcon, Settings } from "lucide-react";
 import { LandingPage } from "../components/landing/LandingPage";
 import About from "../pages/About";
@@ -9,6 +10,7 @@ import Blog from "../pages/Blog";
 import NotFound from "../pages/NotFound";
 import SEOAdmin from "../pages/admin/SEOAdmin";
 import AdvancedSEOAdmin from "../pages/admin/AdvancedSEOAdmin";
+import Phase5SEOAdmin from "../pages/admin/Phase5SEOAdmin";
 
 export const coreRoutes = [
   {
@@ -59,6 +61,12 @@ export const coreRoutes = [
     to: "/admin/seo/advanced",
     icon: <Settings className="h-4 w-4" />,
     page: <AdvancedSEOAdmin />,
+  },
+  {
+    title: "Phase 5 SEO Admin",
+    to: "/admin/seo/phase5",
+    icon: <Settings className="h-4 w-4" />,
+    page: <Phase5SEOAdmin />,
   },
   {
     title: "Not Found",
