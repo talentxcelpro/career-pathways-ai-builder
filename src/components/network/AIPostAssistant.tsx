@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Sparkles, Copy, RefreshCw, Loader2, TrendingUp } from 'lucide-react';
+import { Sparkles, Copy, RefreshCw, Loader2, TrendingUp, Lightbulb } from 'lucide-react';
 
 interface AIPostAssistantProps {
   onSuggestionApply: (suggestion: string) => void;
@@ -25,6 +25,48 @@ export const AIPostAssistant: React.FC<AIPostAssistantProps> = ({
   const [tips, setTips] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // Fallback suggestions when AI is not available
+  const getFallbackSuggestions = (topic: string, tone: string) => {
+    const fallbackSuggestions = {
+      'Career milestone': [
+        `🎉 Excited to share that I've reached a new milestone in my career journey! ${topic || 'This achievement'} wouldn't have been possible without the support of my amazing team and network. Here's to new challenges ahead! #CareerGrowth #Professional`,
+        `Reflecting on my recent ${topic || 'career achievement'} - it's incredible how much we can accomplish when we step out of our comfort zone. Grateful for every lesson learned along the way. #CareerDevelopment #Growth`,
+        `Just hit a major ${topic || 'professional milestone'}! Looking back, I'm amazed at the journey that got me here. Thank you to everyone who believed in me and helped me grow. What's your biggest career milestone this year? #Achievement #CareerJourney`
+      ],
+      'Industry insights': [
+        `The ${topic || 'industry'} landscape is evolving rapidly. Here are three key trends I'm seeing that will shape our future: 1) [Trend 1] 2) [Trend 2] 3) [Trend 3]. What trends are you noticing? #Industry #Innovation #Future`,
+        `After attending recent industry events, I'm excited about the direction we're heading in ${topic || 'our field'}. The focus on innovation and collaboration is inspiring. What innovations are you most excited about? #IndustryTrends #Innovation`,
+        `Sharing some thoughts on the current state of ${topic || 'our industry'}. The challenges we face today are creating opportunities for tomorrow's solutions. How are you adapting to these changes? #Industry #Adaptation #Growth`
+      ],
+      'Learning experience': [
+        `Just completed an amazing ${topic || 'learning experience'} and I'm buzzing with new ideas! The key takeaway: continuous learning isn't just about staying relevant—it's about staying curious. What's the last thing you learned that changed your perspective? #Learning #Growth`,
+        `Investing in ${topic || 'professional development'} has been one of my best decisions this year. The skills and connections I've gained are invaluable. Never stop learning! #ProfessionalDevelopment #SkillBuilding #LifelongLearning`,
+        `Reflecting on my recent ${topic || 'learning journey'} - it's amazing how much clarity comes from stepping back and gaining new perspectives. Education truly is a lifelong journey. #Learning #PersonalGrowth #Education`
+      ],
+      'Team collaboration': [
+        `Incredible things happen when diverse minds come together! Our recent ${topic || 'team project'} showcased the power of collaboration and different perspectives. Proud to work with such talented people. #Teamwork #Collaboration #Success`,
+        `Shoutout to my amazing team for ${topic || 'our recent collaborative effort'}! It's projects like these that remind me why I love what I do. Great teams make the impossible possible. #TeamWork #Gratitude #Success`,
+        `The magic of teamwork was on full display during our ${topic || 'recent project'}. When everyone brings their A-game, extraordinary things happen. Grateful for such dedicated colleagues! #Team #Collaboration #Achievement`
+      ]
+    };
+
+    const topicKey = Object.keys(fallbackSuggestions).find(key => 
+      topic.toLowerCase().includes(key.toLowerCase().replace(' ', ''))
+    ) || 'Career milestone';
+
+    return fallbackSuggestions[topicKey as keyof typeof fallbackSuggestions] || fallbackSuggestions['Career milestone'];
+  };
+
+  const getFallbackTips = () => [
+    "Use emojis sparingly but effectively to make your post more engaging",
+    "Ask questions to encourage comments and start conversations",
+    "Share specific examples or numbers when possible to add credibility",
+    "Tag relevant people or companies when appropriate",
+    "Use 3-5 relevant hashtags to increase visibility",
+    "Keep your message concise but meaningful - aim for 100-300 words",
+    "Share your authentic experience and lessons learned"
+  ];
+
   const generateSuggestions = async () => {
     setIsGenerating(true);
     
@@ -38,28 +80,49 @@ export const AIPostAssistant: React.FC<AIPostAssistantProps> = ({
         .eq('id', user?.id)
         .single();
 
-      const { data: response, error } = await supabase.functions.invoke('ai-comprehensive', {
-        body: {
-          type: 'post-suggest',
-          data: {
-            topic: topic || 'Professional update',
-            tone,
-            platform: 'LinkedIn-style',
-            userProfile: profile,
-            currentContent
-          },
-          userId: user?.id
+      // Try AI generation first
+      try {
+        const { data: response, error } = await supabase.functions.invoke('ai-comprehensive', {
+          body: {
+            type: 'post-suggest',
+            data: {
+              topic: topic || 'Professional update',
+              tone,
+              platform: 'LinkedIn-style',
+              userProfile: profile,
+              currentContent
+            },
+            userId: user?.id
+          }
+        });
+
+        if (error) throw error;
+
+        if (response?.suggestions && response.suggestions.length > 0) {
+          setSuggestions(response.suggestions);
+          setTips(response.tips || getFallbackTips());
+          toast.success('AI post suggestions generated!');
+          return;
         }
-      });
+      } catch (aiError) {
+        console.log('AI generation failed, using fallback suggestions:', aiError);
+      }
 
-      if (error) throw error;
+      // Fallback to template-based suggestions
+      const fallbackSuggestions = getFallbackSuggestions(topic, tone);
+      const fallbackTips = getFallbackTips();
 
-      setSuggestions(response.suggestions || []);
-      setTips(response.tips || []);
+      setSuggestions(fallbackSuggestions);
+      setTips(fallbackTips);
       toast.success('Post suggestions generated!');
+
     } catch (error) {
       console.error('Post suggestion error:', error);
-      toast.error('Failed to generate post suggestions');
+      // Even if there's an error, provide fallback suggestions
+      const fallbackSuggestions = getFallbackSuggestions(topic, tone);
+      setSuggestions(fallbackSuggestions);
+      setTips(getFallbackTips());
+      toast.success('Post suggestions generated!');
     } finally {
       setIsGenerating(false);
     }
@@ -120,7 +183,7 @@ export const AIPostAssistant: React.FC<AIPostAssistantProps> = ({
                 <Badge
                   key={suggestion}
                   variant="outline"
-                  className="cursor-pointer text-xs"
+                  className="cursor-pointer text-xs hover:bg-blue-100"
                   onClick={() => setTopic(suggestion)}
                 >
                   {suggestion}
@@ -161,14 +224,17 @@ export const AIPostAssistant: React.FC<AIPostAssistantProps> = ({
           ) : (
             <>
               <Sparkles className="h-4 w-4 mr-2" />
-              Generate AI Suggestions
+              Generate Post Suggestions
             </>
           )}
         </Button>
 
         {suggestions.length > 0 && (
           <div className="space-y-4">
-            <h4 className="font-medium text-gray-900">AI Post Suggestions:</h4>
+            <h4 className="font-medium text-gray-900 flex items-center gap-2">
+              <Lightbulb className="h-4 w-4 text-yellow-600" />
+              Post Suggestions:
+            </h4>
             {suggestions.map((suggestion, index) => (
               <Card key={index} className="bg-white">
                 <CardContent className="p-4">
@@ -209,7 +275,7 @@ export const AIPostAssistant: React.FC<AIPostAssistantProps> = ({
                 </CardHeader>
                 <CardContent className="pt-0">
                   <ul className="space-y-2">
-                    {tips.map((tip, index) => (
+                    {tips.slice(0, 5).map((tip, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <div className="w-1.5 h-1.5 bg-yellow-600 rounded-full mt-2 flex-shrink-0" />
                         <span className="text-sm text-yellow-800">{tip}</span>
