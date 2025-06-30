@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Index from './pages/Index';
@@ -32,7 +31,7 @@ function App() {
               key={route.to}
               path={route.to}
               element={
-                'requiresAuth' in route && route.requiresAuth === false ? (
+                route.requiresAuth === false ? (
                   route.page
                 ) : (
                   <ProtectedRoute>{route.page}</ProtectedRoute>
