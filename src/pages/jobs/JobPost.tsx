@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,8 +10,9 @@ import EnhancedCompanyForm from "@/components/jobs/EnhancedCompanyForm";
 import BasicJobInformation from "@/components/jobs/BasicJobInformation";
 import JobDetailsForm from "@/components/jobs/JobDetailsForm";
 import SkillsBenefitsForm from "@/components/jobs/SkillsBenefitsForm";
+import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
 
-export default function JobPost() {
+function JobPostContent() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
@@ -166,5 +166,13 @@ export default function JobPost() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function JobPost() {
+  return (
+    <EmployerAccessGuard>
+      <JobPostContent />
+    </EmployerAccessGuard>
   );
 }

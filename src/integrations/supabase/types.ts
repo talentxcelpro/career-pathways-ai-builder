@@ -1050,6 +1050,72 @@ export type Database = {
           },
         ]
       }
+      employer_requests: {
+        Row: {
+          admin_notes: string | null
+          approved_by: string | null
+          company_description: string | null
+          company_logo_url: string | null
+          company_name: string
+          company_website: string | null
+          created_at: string | null
+          email: string
+          full_name: string
+          gst_number: string | null
+          hiring_reason: string | null
+          id: string
+          linkedin_profile: string | null
+          phone_number: string | null
+          rejection_reason: string | null
+          status: string | null
+          submitted_at: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          approved_by?: string | null
+          company_description?: string | null
+          company_logo_url?: string | null
+          company_name: string
+          company_website?: string | null
+          created_at?: string | null
+          email: string
+          full_name: string
+          gst_number?: string | null
+          hiring_reason?: string | null
+          id?: string
+          linkedin_profile?: string | null
+          phone_number?: string | null
+          rejection_reason?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          approved_by?: string | null
+          company_description?: string | null
+          company_logo_url?: string | null
+          company_name?: string
+          company_website?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          gst_number?: string | null
+          hiring_reason?: string | null
+          id?: string
+          linkedin_profile?: string | null
+          phone_number?: string | null
+          rejection_reason?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       event_rsvps: {
         Row: {
           event_id: string | null
@@ -2217,12 +2283,14 @@ export type Database = {
           current_company: string | null
           custom_profile_url: string | null
           email: string | null
+          employer_status: string | null
           experience_years: number | null
           first_login: boolean | null
           full_name: string | null
           github_url: string | null
           id: string
           industry: string | null
+          is_employer: boolean | null
           is_profile_public: boolean | null
           last_login_at: string | null
           last_profile_view: string | null
@@ -2260,12 +2328,14 @@ export type Database = {
           current_company?: string | null
           custom_profile_url?: string | null
           email?: string | null
+          employer_status?: string | null
           experience_years?: number | null
           first_login?: boolean | null
           full_name?: string | null
           github_url?: string | null
           id: string
           industry?: string | null
+          is_employer?: boolean | null
           is_profile_public?: boolean | null
           last_login_at?: string | null
           last_profile_view?: string | null
@@ -2303,12 +2373,14 @@ export type Database = {
           current_company?: string | null
           custom_profile_url?: string | null
           email?: string | null
+          employer_status?: string | null
           experience_years?: number | null
           first_login?: boolean | null
           full_name?: string | null
           github_url?: string | null
           id?: string
           industry?: string | null
+          is_employer?: boolean | null
           is_profile_public?: boolean | null
           last_login_at?: string | null
           last_profile_view?: string | null
@@ -2973,6 +3045,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_employer_request: {
+        Args: { request_id: string }
+        Returns: undefined
+      }
       complete_onboarding: {
         Args: {
           user_uuid: string
@@ -3012,6 +3088,10 @@ export type Database = {
       is_company_admin_or_owner: {
         Args: { company_uuid: string }
         Returns: boolean
+      }
+      reject_employer_request: {
+        Args: { request_id: string; reason?: string }
+        Returns: undefined
       }
       update_user_login: {
         Args: { user_uuid: string }

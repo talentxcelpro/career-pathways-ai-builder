@@ -44,7 +44,8 @@ const publicRoutes = [
   '/auth/callback',
   '/companies',
   '/companies/:id',
-  '/profile/:id'
+  '/profile/:id',
+  '/employer/request-access'
 ];
 
 const App = () => (
