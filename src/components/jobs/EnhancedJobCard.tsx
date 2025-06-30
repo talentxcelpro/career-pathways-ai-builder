@@ -19,7 +19,6 @@ import { formatDistanceToNow } from "date-fns";
 import { formatSalaryRange } from "@/utils/currencyUtils";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import ApplyButton from "./ApplyButton";
 
 interface Job {
   id: string;
@@ -49,10 +48,8 @@ interface Job {
 interface EnhancedJobCardProps {
   job: Job;
   onSave?: (jobId: string) => void;
-  onApply?: (jobId: string) => void;
   onShare?: (job: Job) => void;
   isSaved?: boolean;
-  isApplied?: boolean;
   matchScore?: number;
   matchingSkills?: string[];
   showMatchScore?: boolean;
@@ -62,10 +59,8 @@ interface EnhancedJobCardProps {
 export default function EnhancedJobCard({ 
   job, 
   onSave, 
-  onApply,
   onShare, 
   isSaved = false, 
-  isApplied = false,
   matchScore,
   matchingSkills,
   showMatchScore = false,
@@ -107,13 +102,6 @@ export default function EnhancedJobCard({
 
   const handleCardClick = () => {
     navigate(`/jobs/${job.id}`);
-  };
-
-  const handleApplyClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onApply) {
-      onApply(job.id);
-    }
   };
 
   return (
@@ -258,32 +246,15 @@ export default function EnhancedJobCard({
           )}
         </div>
 
-        {/* Stats and Action */}
-        <div className="flex items-center justify-between pt-4 border-t">
-          <div className="flex items-center space-x-4 text-xs text-gray-500">
-            <div className="flex items-center">
-              <Eye className="h-3 w-3 mr-1" />
-              <span>{job.views_count || 0}</span>
-            </div>
-            <div className="flex items-center">
-              <Users className="h-3 w-3 mr-1" />
-              <span>{job.applications_count || 0} applied</span>
-            </div>
+        {/* Stats */}
+        <div className="flex items-center space-x-4 text-xs text-gray-500 pt-4 border-t">
+          <div className="flex items-center">
+            <Eye className="h-3 w-3 mr-1" />
+            <span>{job.views_count || 0} views</span>
           </div>
-          <div onClick={handleApplyClick}>
-            {isApplied ? (
-              <Badge className="bg-green-100 text-green-800">Applied</Badge>
-            ) : (
-              <ApplyButton 
-                job={{
-                  id: job.id,
-                  title: job.title,
-                  companies: job.companies,
-                  skills_required: job.skills_required
-                }}
-                size="sm"
-              />
-            )}
+          <div className="flex items-center">
+            <Users className="h-3 w-3 mr-1" />
+            <span>{job.applications_count || 0} applied</span>
           </div>
         </div>
       </CardContent>
