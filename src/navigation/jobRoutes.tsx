@@ -1,4 +1,3 @@
-
 import { Briefcase, FileText, Heart, Bell, BarChart3, Building2, FolderOpen, Zap } from "lucide-react";
 import Jobs from "../pages/Jobs";
 import JobDetails from "../pages/jobs/JobDetails";
@@ -16,6 +15,7 @@ import JobManage from "../pages/jobs/Manage";
 import AppliedJobs from "../pages/jobs/AppliedJobs";
 import JobApplicants from "../pages/jobs/JobApplicants";
 import ApplicantDetail from "../pages/jobs/ApplicantDetail";
+import ComprehensiveJobs from "../pages/ComprehensiveJobs";
 
 export const jobRoutes = [
   {
@@ -107,5 +107,10 @@ export const jobRoutes = [
     title: "Applicant Detail",
     to: "/jobs/:jobId/applicants/:applicantId",
     page: <ApplicantDetail />,
+  },
+  {
+    title: "Comprehensive Jobs",
+    to: "/jobs/comprehensive",
+    page: <ComprehensiveJobs />,
   },
 ];
