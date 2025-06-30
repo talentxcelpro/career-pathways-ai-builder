@@ -12,6 +12,9 @@ import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
 import { updateMetaTags } from '@/utils/metaTags';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Search, MapPin, Briefcase, Sparkles } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const Jobs = () => {
   const [filters, setFilters] = useState({
@@ -32,7 +35,7 @@ const Jobs = () => {
   const { manualRefresh } = useJobsAutoRefresh();
   useRealtimeJobs();
 
-  // Get current user
+  // Get current user (optional for job viewing)
   useEffect(() => {
     const getCurrentUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -105,7 +108,7 @@ const Jobs = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Get saved jobs
+  // Get saved jobs (only if user is logged in)
   const { data: savedJobsData = [] } = useQuery({
     queryKey: ['saved_jobs', currentUser?.id],
     queryFn: async () => {
@@ -201,20 +204,104 @@ const Jobs = () => {
     });
   };
 
+  const handleQuickSearch = () => {
+    // Trigger search with current filters
+    refetch();
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <OfflineIndicator />
-      <JobsHeader 
-        jobsCount={allJobs.length}
-        remoteJobsCount={remoteJobs.length}
-        featuredJobsCount={featuredJobs.length}
-        categoriesCount={categories.length}
-      />
+      
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Find Your Dream Job
+            </h1>
+            <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+              Discover thousands of opportunities from top companies. Your next career move starts here.
+            </p>
+          </div>
+
+          {/* Quick Search Bar */}
+          <div className="max-w-4xl mx-auto bg-white rounded-xl p-6 shadow-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Input
+                  placeholder="Job title, keywords, or company"
+                  value={filters.search}
+                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  className="pl-10 h-12 text-gray-900"
+                />
+              </div>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Input
+                  placeholder="City, state, or remote"
+                  value={filters.location}
+                  onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                  className="pl-10 h-12 text-gray-900"
+                />
+              </div>
+              <Button 
+                onClick={handleQuickSearch}
+                className="h-12 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              >
+                <Search className="h-5 w-5 mr-2" />
+                Search Jobs
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Section */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="flex flex-col items-center">
+              <div className="bg-blue-100 p-3 rounded-full mb-2">
+                <Briefcase className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="text-2xl font-bold text-gray-900">{allJobs.length}</div>
+              <div className="text-gray-600">Total Jobs</div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="bg-green-100 p-3 rounded-full mb-2">
+                <Sparkles className="h-6 w-6 text-green-600" />
+              </div>
+              <div className="text-2xl font-bold text-gray-900">{featuredJobs.length}</div>
+              <div className="text-gray-600">Featured Jobs</div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="bg-purple-100 p-3 rounded-full mb-2">
+                <MapPin className="h-6 w-6 text-purple-600" />
+              </div>
+              <div className="text-2xl font-bold text-gray-900">{remoteJobs.length}</div>
+              <div className="text-gray-600">Remote Jobs</div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="bg-orange-100 p-3 rounded-full mb-2">
+                <Briefcase className="h-6 w-6 text-orange-600" />
+              </div>
+              <div className="text-2xl font-bold text-gray-900">{categories.length}</div>
+              <div className="text-gray-600">Categories</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <JobsCategories categories={categories} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Job Opportunities</h1>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Job Opportunities</h2>
+            <p className="text-gray-600 mt-1">Find your perfect match from {allJobs.length} active positions</p>
+          </div>
           <DataFreshness 
             lastUpdated={new Date(dataUpdatedAt || Date.now())}
             onRefresh={() => {
@@ -227,24 +314,28 @@ const Jobs = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1">
-            <EnhancedJobFilters
-              filters={filters}
-              onFiltersChange={setFilters}
+            <div className="bg-white rounded-xl shadow-sm border p-6 sticky top-4">
+              <EnhancedJobFilters
+                filters={filters}
+                onFiltersChange={setFilters}
+                onClearFilters={handleClearFilters}
+              />
+            </div>
+          </div>
+          
+          <div className="lg:col-span-3">
+            <JobsList
+              jobs={sortedJobs}
+              featuredJobs={featuredJobs}
+              regularJobs={regularJobs}
+              savedJobs={savedJobs}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              isLoading={isLoading}
+              onSaveJob={handleSaveJob}
               onClearFilters={handleClearFilters}
             />
           </div>
-          
-          <JobsList
-            jobs={sortedJobs}
-            featuredJobs={featuredJobs}
-            regularJobs={regularJobs}
-            savedJobs={savedJobs}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
-            isLoading={isLoading}
-            onSaveJob={handleSaveJob}
-            onClearFilters={handleClearFilters}
-          />
         </div>
       </div>
     </div>
