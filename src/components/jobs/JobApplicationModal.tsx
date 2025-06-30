@@ -205,6 +205,7 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
             user_id: user.id,
             title: `Resume for ${job.title}`,
             file_url: publicUrl,
+            content: { fileName: uploadedFile.name }, // Add required content field
             is_primary: resumes.length === 0, // Make primary if it's the first resume
             is_active: true
           });
