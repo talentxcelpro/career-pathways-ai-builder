@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -115,7 +114,7 @@ const UploadResume = () => {
             certifications: []
           },
           ats_score: Math.floor(Math.random() * 30) + 70, // Random score between 70-100
-          template_id: 'prof-1' // Default to Professional Classic
+          template_id: null // Set to null instead of string, will be set when user chooses template
         })
         .select()
         .single();
