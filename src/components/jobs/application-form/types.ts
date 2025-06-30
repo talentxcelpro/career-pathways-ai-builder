@@ -42,4 +42,6 @@ export interface Resume {
   id: string;
   title: string;
   is_primary: boolean;
+  file_url?: string;
+  is_active?: boolean;
 }
