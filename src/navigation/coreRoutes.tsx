@@ -1,4 +1,3 @@
-
 import { HomeIcon, Settings, BarChart3 } from "lucide-react";
 import { LandingPage } from "../components/landing/LandingPage";
 import About from "../pages/About";
@@ -12,6 +11,7 @@ import Dashboard from "../pages/Dashboard";
 import SEOAdmin from "../pages/admin/SEOAdmin";
 import AdvancedSEOAdmin from "../pages/admin/AdvancedSEOAdmin";
 import Phase5SEOAdmin from "../pages/admin/Phase5SEOAdmin";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 
 export const coreRoutes = [
   {
@@ -26,6 +26,12 @@ export const coreRoutes = [
     to: "/dashboard",
     icon: <BarChart3 className="h-4 w-4" />,
     page: <Dashboard />,
+  },
+  {
+    title: "Admin Dashboard",
+    to: "/admin",
+    icon: <Settings className="h-4 w-4" />,
+    page: <AdminDashboard />,
   },
   {
     title: "About",
