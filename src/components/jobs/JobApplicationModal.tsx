@@ -118,14 +118,16 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
     // Simulate AI processing
     setAiProcessing(true);
     setTimeout(() => {
-      // Calculate mock match score
+      // Calculate mock match score - ensure it's within safe range
       const jobSkills = job.skills_required || [];
       const mockExtractedSkills = ['React', 'TypeScript', 'Node.js', 'Python'];
       const matchingSkills = mockExtractedSkills.filter(skill => 
         jobSkills.some(jobSkill => jobSkill.toLowerCase().includes(skill.toLowerCase()))
       );
-      const score = Math.round((matchingSkills.length / Math.max(jobSkills.length, 1)) * 100);
-      setMatchScore(Math.min(score + Math.floor(Math.random() * 20), 95));
+      const baseScore = Math.round((matchingSkills.length / Math.max(jobSkills.length, 1)) * 100);
+      // Ensure score is between 0-95 to avoid overflow
+      const finalScore = Math.min(Math.max(baseScore + Math.floor(Math.random() * 20), 0), 95);
+      setMatchScore(finalScore);
 
       setAiProcessing(false);
       toast.success('Resume analyzed and processed!');
@@ -223,9 +225,9 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
         throw new Error('Resume upload failed. Please try again.');
       }
 
-      // Ensure numeric values are within safe ranges
+      // Ensure match score is within safe bounds (0-100)
       const safeMatchScore = matchScore !== null && matchScore !== undefined 
-        ? Math.min(Math.max(matchScore, 0), 100) // Clamp between 0-100
+        ? Math.min(Math.max(Number(matchScore), 0), 100) // Ensure it's a valid number between 0-100
         : null;
 
       // Submit application with properly formatted data
