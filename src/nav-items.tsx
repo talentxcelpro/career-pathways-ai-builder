@@ -14,6 +14,7 @@ import { collegesRoutes } from "./navigation/collegesRoutes";
 import { marketplaceRoutes } from "./navigation/marketplaceRoutes";
 import { seoRoutes } from "./navigation/seoRoutes";
 import { resumeRoutes } from "./navigation/resumeRoutes";
+import { adminRoutes } from "./navigation/adminRoutes";
 
 export const navItems = [
   ...coreRoutes,
@@ -31,4 +32,5 @@ export const navItems = [
   ...marketplaceRoutes,
   ...aiRoutes,
   ...seoRoutes,
+  ...adminRoutes,
 ];
