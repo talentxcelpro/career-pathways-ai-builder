@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Upload, FileText, Loader2, X, File } from "lucide-react";
 import { useFileUpload } from "@/hooks/useFileUpload";
@@ -8,6 +7,7 @@ interface FileUploadZoneProps {
   onFileSelect: (files: FileList | null) => void;
   uploadedFile: File | null;
   onRemoveFile: () => void;
+  onProcessResume: () => void;
   isProcessing: boolean;
   dragActive: boolean;
   onDragEnter: (e: React.DragEvent) => void;
@@ -20,6 +20,7 @@ export const FileUploadZone = ({
   onFileSelect,
   uploadedFile,
   onRemoveFile,
+  onProcessResume,
   isProcessing,
   dragActive,
   onDragEnter,
@@ -60,10 +61,10 @@ export const FileUploadZone = ({
               Remove
             </Button>
             <Button 
-              onClick={() => onFileSelect(uploadedFile ? [uploadedFile] as any : null)} 
-              disabled={uploading}
+              onClick={onProcessResume} 
+              disabled={uploading || isProcessing}
             >
-              {uploading ? (
+              {uploading || isProcessing ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Processing...

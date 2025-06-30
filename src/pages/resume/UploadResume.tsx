@@ -29,11 +29,25 @@ const UploadResume = () => {
     }
   });
 
-  const handleFileUpload = (files: FileList | null) => {
+  const handleFileSelect = (files: FileList | null) => {
     if (files && files[0]) {
       setUploadedFile(files[0]);
-    } else {
-      processResume(files);
+    }
+  };
+
+  const handleProcessResume = () => {
+    if (uploadedFile) {
+      // Create a FileList-like object from the single file
+      const fileList = {
+        0: uploadedFile,
+        length: 1,
+        item: (index: number) => index === 0 ? uploadedFile : null,
+        [Symbol.iterator]: function* () {
+          yield uploadedFile;
+        }
+      } as FileList;
+      
+      processResume(fileList);
     }
   };
 
@@ -91,9 +105,10 @@ const UploadResume = () => {
                 {!uploadSuccess && !isProcessing && (
                   <div className="space-y-4">
                     <FileUploadZone
-                      onFileSelect={handleFileUpload}
+                      onFileSelect={handleFileSelect}
                       uploadedFile={uploadedFile}
                       onRemoveFile={removeFile}
+                      onProcessResume={handleProcessResume}
                       isProcessing={isProcessing}
                       dragActive={dragActive}
                       onDragEnter={handleDrag}
