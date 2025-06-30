@@ -53,7 +53,7 @@ const Jobs = () => {
     });
   }, []);
 
-  // Enhanced search function that handles natural language
+  // Enhanced search function that handles natural language (backend only)
   const processNaturalLanguageSearch = (searchTerm: string) => {
     const lowerTerm = searchTerm.toLowerCase();
     let processedFilters = { ...filters };
@@ -256,37 +256,42 @@ const Jobs = () => {
       
       {/* Compact Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center mb-6">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">
               Find Your Dream Job
             </h1>
-            <p className="text-lg text-blue-100">
-              Your next career move starts here
+            <p className="text-blue-100">
+              Discover thousands of opportunities from top companies
             </p>
           </div>
 
-          {/* Enhanced Search Bar with Natural Language Support */}
-          <div className="max-w-3xl mx-auto bg-white rounded-xl p-4 shadow-2xl">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="relative md:col-span-2">
-                <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+          {/* Compact Search Bar */}
+          <div className="max-w-2xl mx-auto bg-white rounded-lg p-3 shadow-lg">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Try: 'Senior React developer remote' or 'Entry level marketing jobs'"
+                  placeholder="Job title, keywords, or company"
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                  className="pl-10 h-12 text-gray-900"
+                  className="pl-10 h-10 text-gray-900"
                 />
-                <div className="text-xs text-gray-500 mt-1 pl-10">
-                  Natural language search enabled
-                </div>
+              </div>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Location"
+                  value={filters.location}
+                  onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                  className="pl-10 h-10 w-32 text-gray-900"
+                />
               </div>
               <Button 
                 onClick={handleQuickSearch}
-                className="h-12 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="h-10 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
-                <Search className="h-5 w-5 mr-2" />
-                Search Jobs
+                Search
               </Button>
             </div>
           </div>
