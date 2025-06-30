@@ -10,8 +10,8 @@ export const useRecentActivity = () => {
         .from('job_applications')
         .select(`
           applied_at,
-          profiles!job_applications_user_id_fkey(full_name),
-          jobs!job_applications_job_id_fkey(title)
+          profiles!fk_job_applications_user_id(full_name),
+          jobs!fk_job_applications_job_id(title)
         `)
         .order('applied_at', { ascending: false })
         .limit(10);
