@@ -37,36 +37,62 @@ export const useResumeManagement = () => {
     queryFn: async () => {
       let query = supabase
         .from('ai_resumes')
-        .select(`
-          *,
-          profiles!ai_resumes_user_id_fkey(full_name, email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (searchTerm) {
         query = query.ilike('title', `%${searchTerm}%`);
       }
 
-      const { data, error } = await query;
+      const { data: resumeData, error } = await query;
       if (error) throw error;
-      return data;
+
+      // Fetch profile data separately
+      if (resumeData && resumeData.length > 0) {
+        const userIds = resumeData.map(resume => resume.user_id).filter(Boolean);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', userIds);
+
+        // Combine data
+        return resumeData.map(resume => ({
+          ...resume,
+          profiles: profiles?.find(profile => profile.id === resume.user_id)
+        }));
+      }
+
+      return resumeData;
     }
   });
 
   const { data: coverLetters } = useQuery({
     queryKey: ['admin-cover-letters'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: letterData, error } = await supabase
         .from('ai_cover_letters')
-        .select(`
-          *,
-          profiles!ai_cover_letters_user_id_fkey(full_name, email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(20);
       
       if (error) throw error;
-      return data;
+
+      // Fetch profile data separately
+      if (letterData && letterData.length > 0) {
+        const userIds = letterData.map(letter => letter.user_id).filter(Boolean);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', userIds);
+
+        // Combine data
+        return letterData.map(letter => ({
+          ...letter,
+          profiles: profiles?.find(profile => profile.id === letter.user_id)
+        }));
+      }
+
+      return letterData;
     }
   });
 

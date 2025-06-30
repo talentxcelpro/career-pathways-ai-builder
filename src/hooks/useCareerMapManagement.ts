@@ -37,36 +37,62 @@ export const useCareerMapManagement = () => {
     queryFn: async () => {
       let query = supabase
         .from('career_goals')
-        .select(`
-          *,
-          profiles!career_goals_user_id_fkey(full_name, email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (searchTerm) {
         query = query.or(`target_role.ilike.%${searchTerm}%,current_position.ilike.%${searchTerm}%`);
       }
 
-      const { data, error } = await query;
+      const { data: goals, error } = await query;
       if (error) throw error;
-      return data;
+
+      // Fetch profile data separately
+      if (goals && goals.length > 0) {
+        const userIds = goals.map(goal => goal.user_id).filter(Boolean);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', userIds);
+
+        // Combine data
+        return goals.map(goal => ({
+          ...goal,
+          profiles: profiles?.find(profile => profile.id === goal.user_id)
+        }));
+      }
+
+      return goals;
     }
   });
 
   const { data: careerSwitches } = useQuery({
     queryKey: ['career-switches'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: switches, error } = await supabase
         .from('career_switches')
-        .select(`
-          *,
-          profiles!career_switches_user_id_fkey(full_name, email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
       
       if (error) throw error;
-      return data;
+
+      // Fetch profile data separately
+      if (switches && switches.length > 0) {
+        const userIds = switches.map(switchData => switchData.user_id).filter(Boolean);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', userIds);
+
+        // Combine data
+        return switches.map(switchData => ({
+          ...switchData,
+          profiles: profiles?.find(profile => profile.id === switchData.user_id)
+        }));
+      }
+
+      return switches;
     }
   });
 

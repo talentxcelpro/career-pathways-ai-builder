@@ -55,18 +55,34 @@ export const useSecurityLogs = () => {
   const { data: profileViews } = useQuery({
     queryKey: ['profile-views'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: viewData, error } = await supabase
         .from('profile_views')
-        .select(`
-          *,
-          profiles!profile_views_profile_id_fkey(full_name, email),
-          viewer:profiles!profile_views_viewer_id_fkey(full_name)
-        `)
+        .select('*')
         .order('viewed_at', { ascending: false })
         .limit(20);
       
       if (error) throw error;
-      return data;
+
+      // Fetch profile data separately for both profile and viewer
+      if (viewData && viewData.length > 0) {
+        const profileIds = viewData.map(view => view.profile_id).filter(Boolean);
+        const viewerIds = viewData.map(view => view.viewer_id).filter(Boolean);
+        const allUserIds = [...new Set([...profileIds, ...viewerIds])];
+
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', allUserIds);
+
+        // Combine data
+        return viewData.map(view => ({
+          ...view,
+          profiles: profiles?.find(profile => profile.id === view.profile_id),
+          viewer: profiles?.find(profile => profile.id === view.viewer_id)
+        }));
+      }
+
+      return viewData;
     }
   });
 
