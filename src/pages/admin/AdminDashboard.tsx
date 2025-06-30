@@ -1,217 +1,249 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { 
   Users, 
-  Building2, 
   Briefcase, 
-  FileText, 
-  Wrench, 
-  GraduationCap, 
-  Map, 
-  Shield, 
-  BarChart3,
-  CreditCard,
-  Lock,
-  Home,
-  Network
+  Building2, 
+  BookOpen, 
+  Activity,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Eye
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { AdminLayout } from '@/components/admin/AdminLayout';
+import { AdminGuard } from '@/components/admin/AdminGuard';
+import { AdminNotifications } from '@/components/admin/AdminNotifications';
+import { Line, Bar, Doughnut } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 const AdminDashboard = () => {
-  const adminModules = [
-    {
-      title: 'Admin Management',
-      description: 'Manage other admins, roles, and permissions',
-      icon: Shield,
-      path: '/admin/admins',
-      color: 'bg-red-50 text-red-600'
-    },
-    {
-      title: 'User Management',
-      description: 'View, manage, and moderate all users',
-      icon: Users,
-      path: '/admin/users',
-      color: 'bg-blue-50 text-blue-600'
-    },
-    {
-      title: 'Home & Dashboard',
-      description: 'Manage homepage content and announcements',
-      icon: Home,
-      path: '/admin/home',
-      color: 'bg-green-50 text-green-600'
-    },
-    {
-      title: 'Network Management',
-      description: 'Moderate posts, comments, and community content',
-      icon: Network,
-      path: '/admin/network',
-      color: 'bg-purple-50 text-purple-600'
-    },
-    {
-      title: 'Jobs Management',
-      description: 'Approve jobs, manage categories, and monitor activity',
-      icon: Briefcase,
-      path: '/admin/jobs',
-      color: 'bg-orange-50 text-orange-600'
-    },
-    {
-      title: 'Resume Management',
-      description: 'Manage templates, usage stats, and documents',
-      icon: FileText,
-      path: '/admin/resumes',
-      color: 'bg-cyan-50 text-cyan-600'
-    },
-    {
-      title: 'Tools Management',
-      description: 'Configure AI tools, settings, and access levels',
-      icon: Wrench,
-      path: '/admin/tools',
-      color: 'bg-yellow-50 text-yellow-600'
-    },
-    {
-      title: 'Companies Management',
-      description: 'Approve companies, verify profiles, and manage branding',
-      icon: Building2,
-      path: '/admin/companies',
-      color: 'bg-indigo-50 text-indigo-600'
-    },
-    {
-      title: 'Learning Management',
-      description: 'Create courses, manage paths, and track engagement',
-      icon: GraduationCap,
-      path: '/admin/learning',
-      color: 'bg-pink-50 text-pink-600'
-    },
-    {
-      title: 'Career Map',
-      description: 'Configure career journeys and AI recommendations',
-      icon: Map,
-      path: '/admin/career-map',
-      color: 'bg-teal-50 text-teal-600'
-    },
-    {
-      title: 'Employer Requests',
-      description: 'Approve/reject employer signups and monitor activity',
-      icon: Building2,
-      path: '/admin/employer-requests',
-      color: 'bg-emerald-50 text-emerald-600'
-    },
-    {
-      title: 'Pricing & Payments',
-      description: 'Manage pricing plans, payments, and transactions',
-      icon: CreditCard,
-      path: '/admin/payments',
-      color: 'bg-violet-50 text-violet-600'
-    },
-    {
-      title: 'Analytics & Reports',
-      description: 'View detailed reports and platform analytics',
-      icon: BarChart3,
-      path: '/admin/analytics',
-      color: 'bg-rose-50 text-rose-600'
-    },
-    {
-      title: 'Security & Logs',
-      description: 'View access logs, audit trails, and security settings',
-      icon: Lock,
-      path: '/admin/security',
-      color: 'bg-gray-50 text-gray-600'
-    }
+  // Platform Stats
+  const platformStats = [
+    { label: 'Total Users', value: '25,847', change: '+12%', icon: Users, color: 'text-blue-600' },
+    { label: 'Active Users (30d)', value: '18,234', change: '+8%', icon: Activity, color: 'text-green-600' },
+    { label: 'Jobs Posted', value: '3,456', change: '+23%', icon: Briefcase, color: 'text-purple-600' },
+    { label: 'Companies', value: '1,234', change: '+15%', icon: Building2, color: 'text-orange-600' },
+    { label: 'Course Enrollments', value: '12,567', change: '+18%', icon: BookOpen, color: 'text-indigo-600' },
+    { label: 'Resume Created', value: '8,943', change: '+25%', icon: TrendingUp, color: 'text-pink-600' }
   ];
 
-  const quickStats = [
-    { label: 'Total Users', value: '12,456', change: '+12%' },
-    { label: 'Active Jobs', value: '2,341', change: '+8%' },
-    { label: 'Companies', value: '856', change: '+15%' },
-    { label: 'Monthly Revenue', value: '₹45,670', change: '+23%' }
+  // Pending Actions
+  const pendingActions = [
+    { label: 'Employer Requests', count: 12, icon: AlertTriangle, color: 'text-red-600', url: '/admin/employer-requests' },
+    { label: 'Job Approvals', count: 8, icon: Clock, color: 'text-yellow-600', url: '/admin/jobs' },
+    { label: 'Reported Content', count: 5, icon: AlertTriangle, color: 'text-red-600', url: '/admin/network' },
+    { label: 'Company Verifications', count: 3, icon: CheckCircle, color: 'text-green-600', url: '/admin/companies' }
   ];
+
+  // Chart Data
+  const userGrowthData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [
+      {
+        label: 'New Signups',
+        data: [1200, 1900, 3000, 2500, 3200, 3800],
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.1,
+      },
+    ],
+  };
+
+  const jobApplicationsData = {
+    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+    datasets: [
+      {
+        label: 'Applications',
+        data: [450, 620, 580, 720],
+        backgroundColor: 'rgba(147, 51, 234, 0.8)',
+      },
+    ],
+  };
+
+  const userTypeData = {
+    labels: ['Job Seekers', 'Employers', 'Premium Users'],
+    datasets: [
+      {
+        data: [18500, 2200, 890],
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.8)',
+          'rgba(34, 197, 94, 0.8)',
+          'rgba(251, 191, 36, 0.8)',
+        ],
+      },
+    ],
+  };
+
+  const recentActivity = [
+    { user: 'John Doe', action: 'Applied to Software Engineer at TechCorp', time: '5 mins ago' },
+    { user: 'Jane Smith', action: 'Created a new resume template', time: '12 mins ago' },
+    { user: 'TechStartup Inc.', action: 'Posted 3 new job openings', time: '25 mins ago' },
+    { user: 'Mike Johnson', action: 'Completed React Development course', time: '1 hour ago' },
+    { user: 'Sarah Wilson', action: 'Updated company profile', time: '2 hours ago' },
+  ];
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+    },
+  };
 
   return (
-    <AdminLayout>
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Panel - Master Controls</h1>
-            <p className="text-gray-600">Manage all aspects of the TalentXcel platform</p>
-          </div>
+    <AdminGuard requiredPermission="canAccessDashboard">
+      <AdminLayout>
+        <div className="min-h-screen bg-gray-50 p-6">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+              <p className="text-gray-600">Welcome back! Here's what's happening on TalentXcel.</p>
+            </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {quickStats.map((stat, index) => (
-              <Card key={index}>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                      <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+            {/* Platform Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {platformStats.map((stat, index) => (
+                <Card key={index}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center">
+                      <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                      <div className="ml-3">
+                        <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                          <span className="text-sm text-green-600 font-medium">{stat.change}</span>
+                        </div>
+                      </div>
                     </div>
-                    <span className="text-sm text-green-600 font-medium">{stat.change}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-          {/* Admin Modules Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {adminModules.map((module, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${module.color}`}>
-                    <module.icon className="h-6 w-6" />
-                  </div>
-                  <CardTitle className="text-lg">{module.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <p className="text-gray-600 text-sm mb-4">{module.description}</p>
-                  <Link to={module.path}>
-                    <Button className="w-full" variant="outline">
-                      Manage
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+            {/* Pending Actions */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-orange-600" />
+                  Pending Actions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {pendingActions.map((action, index) => (
+                    <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <action.icon className={`h-5 w-5 ${action.color}`} />
+                          <div>
+                            <p className="font-medium text-sm">{action.label}</p>
+                            <p className="text-xs text-gray-500">Needs attention</p>
+                          </div>
+                        </div>
+                        <div className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">
+                          {action.count}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Recent Activity */}
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle>Recent Platform Activity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between py-2 border-b">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">New employer request from TechCorp Solutions</span>
-                  </div>
-                  <span className="text-xs text-gray-500">5 mins ago</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm">45 new job applications received</span>
-                  </div>
-                  <span className="text-xs text-gray-500">12 mins ago</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                    <span className="text-sm">Content reported in Network module</span>
-                  </div>
-                  <span className="text-xs text-gray-500">1 hour ago</span>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              {/* Charts */}
+              <div className="lg:col-span-2 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>User Growth</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Line data={userGrowthData} options={chartOptions} />
+                  </CardContent>
+                </Card>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Job Applications</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Bar data={jobApplicationsData} options={chartOptions} />
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>User Distribution</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Doughnut data={userTypeData} options={chartOptions} />
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+
+              {/* Notifications */}
+              <div className="space-y-6">
+                <AdminNotifications />
+
+                {/* Recent Activity */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Activity className="h-5 w-5 text-green-600" />
+                      Recent Activity
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {recentActivity.map((activity, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 border-l-2 border-blue-200">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{activity.user}</p>
+                            <p className="text-sm text-gray-600">{activity.action}</p>
+                            <p className="text-xs text-gray-500">{activity.time}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </AdminLayout>
+      </AdminLayout>
+    </AdminGuard>
   );
 };
 

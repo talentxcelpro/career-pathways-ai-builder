@@ -23,6 +23,7 @@ export const adminRoutes = [
     icon: <Shield className="h-4 w-4" />,
     page: <AdminDashboard />,
     requiresAuth: true,
+    permission: "canAccessDashboard" as const,
   },
   {
     title: "Admin Management",
@@ -30,6 +31,7 @@ export const adminRoutes = [
     icon: <Shield className="h-4 w-4" />,
     page: <AdminManagement />,
     requiresAuth: true,
+    permission: "canAccessAdmins" as const,
   },
   {
     title: "User Management",
@@ -37,6 +39,7 @@ export const adminRoutes = [
     icon: <Users className="h-4 w-4" />,
     page: <UserManagement />,
     requiresAuth: true,
+    permission: "canAccessUsers" as const,
   },
   {
     title: "Home Management",
@@ -44,6 +47,7 @@ export const adminRoutes = [
     icon: <Home className="h-4 w-4" />,
     page: <HomeManagement />,
     requiresAuth: true,
+    permission: "canAccessDashboard" as const,
   },
   {
     title: "Network Management",
@@ -51,6 +55,7 @@ export const adminRoutes = [
     icon: <Network className="h-4 w-4" />,
     page: <NetworkManagement />,
     requiresAuth: true,
+    permission: "canAccessNetwork" as const,
   },
   {
     title: "Jobs Management",
@@ -58,6 +63,7 @@ export const adminRoutes = [
     icon: <Briefcase className="h-4 w-4" />,
     page: <JobsManagement />,
     requiresAuth: true,
+    permission: "canAccessJobs" as const,
   },
   {
     title: "Resume Management",
@@ -65,6 +71,7 @@ export const adminRoutes = [
     icon: <FileText className="h-4 w-4" />,
     page: <ResumeManagement />,
     requiresAuth: true,
+    permission: "canAccessResumes" as const,
   },
   {
     title: "Tools Management",
@@ -72,6 +79,7 @@ export const adminRoutes = [
     icon: <Wrench className="h-4 w-4" />,
     page: <ToolsManagement />,
     requiresAuth: true,
+    permission: "canAccessTools" as const,
   },
   {
     title: "Companies Management",
@@ -79,6 +87,7 @@ export const adminRoutes = [
     icon: <Building2 className="h-4 w-4" />,
     page: <CompaniesManagement />,
     requiresAuth: true,
+    permission: "canAccessCompanies" as const,
   },
   {
     title: "Learning Management",
@@ -86,6 +95,7 @@ export const adminRoutes = [
     icon: <GraduationCap className="h-4 w-4" />,
     page: <LearningManagement />,
     requiresAuth: true,
+    permission: "canAccessLearning" as const,
   },
   {
     title: "Career Map Management",
@@ -93,6 +103,7 @@ export const adminRoutes = [
     icon: <Map className="h-4 w-4" />,
     page: <CareerMapManagement />,
     requiresAuth: true,
+    permission: "canAccessCareerMap" as const,
   },
   {
     title: "Employer Requests",
@@ -100,6 +111,7 @@ export const adminRoutes = [
     icon: <Building2 className="h-4 w-4" />,
     page: <EmployerRequests />,
     requiresAuth: true,
+    permission: "canAccessEmployerRequests" as const,
   },
   {
     title: "Pricing & Payments",
@@ -107,6 +119,7 @@ export const adminRoutes = [
     icon: <CreditCard className="h-4 w-4" />,
     page: <PricingPayments />,
     requiresAuth: true,
+    permission: "canAccessDashboard" as const,
   },
   {
     title: "Analytics & Reports",
@@ -114,6 +127,7 @@ export const adminRoutes = [
     icon: <BarChart3 className="h-4 w-4" />,
     page: <AnalyticsReports />,
     requiresAuth: true,
+    permission: "canAccessAnalytics" as const,
   },
   {
     title: "Security & Logs",
@@ -121,5 +135,6 @@ export const adminRoutes = [
     icon: <Lock className="h-4 w-4" />,
     page: <SecurityLogs />,
     requiresAuth: true,
+    permission: "canAccessSecurity" as const,
   },
 ];
