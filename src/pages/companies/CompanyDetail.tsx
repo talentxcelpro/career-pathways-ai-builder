@@ -1,7 +1,6 @@
+
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,81 +20,68 @@ import {
   DollarSign,
   Coffee,
   Award,
-  TrendingUp,
-  ArrowLeft,
-  ExternalLink
+  TrendingUp
 } from 'lucide-react';
 
 const CompanyDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const [isFollowing, setIsFollowing] = useState(false);
 
-  // Fetch company data from Supabase
-  const { data: company, isLoading, error } = useQuery({
-    queryKey: ['company', id],
-    queryFn: async () => {
-      if (!id) throw new Error('Company ID is required');
-      
-      const { data, error } = await supabase
-        .from('companies')
-        .select(`
-          *,
-          jobs!inner(
-            id,
-            title,
-            location,
-            employment_type,
-            created_at,
-            salary_min,
-            salary_max,
-            salary_currency,
-            description,
-            skills_required,
-            applications_count,
-            views_count,
-            is_active
-          )
-        `)
-        .eq('id', id)
-        .eq('is_verified', true)
-        .eq('jobs.is_active', true)
-        .single();
+  // Sample company data - in real app, fetch based on id
+  const company = {
+    id: '1',
+    name: 'TechCorp Inc.',
+    description: 'Leading technology solutions provider specializing in AI and cloud computing',
+    logo_url: '/placeholder.svg',
+    cover_image_url: '/placeholder.svg',
+    location: 'San Francisco, CA',
+    industry: 'Technology',
+    size_range: '1000-5000',
+    rating: 4.5,
+    reviewCount: 234,
+    openJobs: 15,
+    employees: 3200,
+    founded_year: 2010,
+    website: 'https://techcorp.com',
+    culture_description: 'We foster innovation, collaboration, and continuous learning in a fast-paced environment.',
+    benefits: ['Health Insurance', 'Remote Work', '401k Matching', 'Stock Options', 'Learning Budget'],
+    tech_stack: ['React', 'Node.js', 'AWS', 'Docker', 'Kubernetes', 'Python', 'PostgreSQL'],
+    social_links: {
+      linkedin: 'https://linkedin.com/company/techcorp',
+      twitter: 'https://twitter.com/techcorp'
+    }
+  };
 
-      if (error) throw error;
-      return data;
+  const jobs = [
+    {
+      id: '1',
+      title: 'Senior Software Engineer',
+      department: 'Engineering',
+      location: 'San Francisco, CA',
+      type: 'Full-time',
+      salary_range: '$120k - $180k',
+      posted_days_ago: 2
     },
-    enabled: !!id
-  });
+    {
+      id: '2',
+      title: 'Product Manager',
+      department: 'Product',
+      location: 'Remote',
+      type: 'Full-time',
+      salary_range: '$140k - $200k',
+      posted_days_ago: 5
+    },
+    {
+      id: '3',
+      title: 'Data Scientist',
+      department: 'Data Science',
+      location: 'San Francisco, CA',
+      type: 'Full-time',
+      salary_range: '$130k - $190k',
+      posted_days_ago: 1
+    }
+  ];
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading company details...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !company) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Company Not Found</h1>
-          <p className="text-gray-600 mb-4">The company you're looking for doesn't exist or is not publicly available.</p>
-          <Link to="/companies">
-            <Button>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Companies
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // Sample reviews and rating data (in real app, this would come from database)
   const reviews = [
     {
       id: '1',
@@ -131,144 +117,55 @@ const CompanyDetail = () => {
     { category: 'Culture', rating: 4.7 }
   ];
 
-  const averageRating = 4.5;
-  const reviewCount = reviews.length;
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Enhanced Cover Image with Overlay */}
-      <div className="relative h-80 overflow-hidden">
-        {company.cover_image_url ? (
-          <img 
-            src={company.cover_image_url} 
-            alt={`${company.name} cover`}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              e.currentTarget.nextElementSibling?.classList.remove('hidden');
-            }}
-          />
-        ) : null}
-        <div className={`${company.cover_image_url ? 'hidden' : ''} absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700`}></div>
-        <div className="absolute inset-0 bg-black bg-opacity-30"></div>
-        
-        {/* Back Button Overlay */}
-        <div className="absolute top-6 left-6 z-10">
-          <Link to="/companies">
-            <Button variant="ghost" className="text-white hover:bg-white/20 backdrop-blur-sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Companies
-            </Button>
-          </Link>
-        </div>
+      {/* Cover Image */}
+      <div className="h-64 bg-gradient-to-r from-blue-600 to-indigo-600 relative">
+        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Enhanced Company Header */}
-        <div className="relative -mt-24 mb-8">
-          <Card className="p-8 shadow-xl backdrop-blur-sm bg-white/95">
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-              <div className="flex flex-col md:flex-row md:items-start gap-6">
-                {/* Enhanced Company Logo */}
-                <div className="relative">
-                  <Avatar className="h-32 w-32 border-4 border-white shadow-xl ring-4 ring-blue-100">
-                    <AvatarImage 
-                      src={company.logo_url} 
-                      alt={company.name}
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                      {company.name?.substring(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  {company.is_verified && (
-                    <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
-                      <Award className="h-4 w-4 text-white" />
+        {/* Company Header */}
+        <div className="relative -mt-32 mb-8">
+          <Card className="p-6">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between">
+              <div className="flex items-start space-x-4 mb-4 md:mb-0">
+                <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
+                  <AvatarImage src={company.logo_url} alt={company.name} />
+                  <AvatarFallback className="text-2xl">{company.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{company.name}</h1>
+                  <div className="flex items-center space-x-4 text-gray-600 mb-2">
+                    <div className="flex items-center">
+                      <Star className="h-5 w-5 text-yellow-400 fill-current mr-1" />
+                      <span className="font-medium">{company.rating}</span>
+                      <span className="ml-1">({company.reviewCount} reviews)</span>
                     </div>
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <div className="mb-4">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">{company.name}</h1>
-                    {company.description && (
-                      <p className="text-lg text-gray-600 leading-relaxed max-w-3xl">
-                        {company.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Enhanced Meta Information */}
-                  <div className="flex flex-wrap items-center gap-6 text-gray-600 mb-4">
-                    <div className="flex items-center gap-2">
-                      <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                      <span className="font-semibold text-gray-900">{averageRating}</span>
-                      <span>({reviewCount} reviews)</span>
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {company.location}
                     </div>
-                    {company.location && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-5 w-5 text-blue-500" />
-                        <span>{company.location}</span>
-                      </div>
-                    )}
-                    {company.employee_count_range && (
-                      <div className="flex items-center gap-2">
-                        <Users className="h-5 w-5 text-green-500" />
-                        <span>{company.employee_count_range}</span>
-                      </div>
-                    )}
-                    {company.website && (
-                      <div className="flex items-center gap-2">
-                        <Globe className="h-5 w-5 text-purple-500" />
-                        <a 
-                          href={company.website} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
-                        >
-                          Visit Website
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                    )}
+                    <div className="flex items-center">
+                      <Users className="h-4 w-4 mr-1" />
+                      {company.employees.toLocaleString()} employees
+                    </div>
                   </div>
-
-                  {/* Enhanced Badges */}
                   <div className="flex flex-wrap gap-2">
-                    {company.industry && (
-                      <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                        <Building className="h-3 w-3 mr-1" />
-                        {company.industry}
-                      </Badge>
-                    )}
-                    {company.founded_year && (
-                      <Badge variant="outline" className="border-gray-300">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        Founded {company.founded_year}
-                      </Badge>
-                    )}
-                    {company.jobs && (
-                      <Badge className="bg-green-100 text-green-800 border-green-200">
-                        <Briefcase className="h-3 w-3 mr-1" />
-                        {company.jobs.length} open positions
-                      </Badge>
-                    )}
-                    {company.is_verified && (
-                      <Badge className="bg-purple-100 text-purple-800 border-purple-200">
-                        <Award className="h-3 w-3 mr-1" />
-                        Verified Company
-                      </Badge>
-                    )}
+                    <Badge variant="secondary">{company.industry}</Badge>
+                    <Badge variant="outline">Founded {company.founded_year}</Badge>
+                    <Badge variant="outline" className="text-green-600">
+                      <Briefcase className="h-3 w-3 mr-1" />
+                      {company.openJobs} open positions
+                    </Badge>
                   </div>
                 </div>
               </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex space-x-2">
                 <Button
                   variant={isFollowing ? "default" : "outline"}
                   onClick={() => setIsFollowing(!isFollowing)}
-                  className="flex items-center gap-2 min-w-[120px]"
+                  className="flex items-center space-x-2"
                 >
                   <Heart className={`h-4 w-4 ${isFollowing ? 'fill-current' : ''}`} />
                   <span>{isFollowing ? 'Following' : 'Follow'}</span>
@@ -281,13 +178,13 @@ const CompanyDetail = () => {
           </Card>
         </div>
 
-        {/* Content Tabs - keep existing tab structure */}
+        {/* Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 h-12">
-            <TabsTrigger value="overview" className="text-sm font-medium">Overview</TabsTrigger>
-            <TabsTrigger value="jobs" className="text-sm font-medium">Jobs ({company.jobs?.length || 0})</TabsTrigger>
-            <TabsTrigger value="reviews" className="text-sm font-medium">Reviews ({reviewCount})</TabsTrigger>
-            <TabsTrigger value="culture" className="text-sm font-medium">Culture</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="jobs">Jobs ({company.openJobs})</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews ({company.reviewCount})</TabsTrigger>
+            <TabsTrigger value="culture">Culture</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -298,29 +195,23 @@ const CompanyDetail = () => {
                     <CardTitle>About {company.name}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {company.description && (
-                      <p className="text-gray-600 mb-4">{company.description}</p>
-                    )}
-                    {company.culture_description && (
-                      <p className="text-gray-600">{company.culture_description}</p>
-                    )}
+                    <p className="text-gray-600 mb-4">{company.description}</p>
+                    <p className="text-gray-600">{company.culture_description}</p>
                   </CardContent>
                 </Card>
 
-                {company.tech_stack && company.tech_stack.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Technology Stack</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-wrap gap-2">
-                        {company.tech_stack.map((tech, index) => (
-                          <Badge key={index} variant="outline">{tech}</Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Technology Stack</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      {company.tech_stack.map((tech, index) => (
+                        <Badge key={index} variant="outline">{tech}</Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
 
               <div className="space-y-6">
@@ -329,109 +220,78 @@ const CompanyDetail = () => {
                     <CardTitle>Company Info</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {company.industry && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Industry</span>
-                        <span className="font-medium">{company.industry}</span>
-                      </div>
-                    )}
-                    {company.employee_count_range && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Size</span>
-                        <span className="font-medium">{company.employee_count_range}</span>
-                      </div>
-                    )}
-                    {company.founded_year && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Founded</span>
-                        <span className="font-medium">{company.founded_year}</span>
-                      </div>
-                    )}
-                    {company.website && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Website</span>
-                        <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center">
-                          <Globe className="h-4 w-4 mr-1" />
-                          Visit
-                        </a>
-                      </div>
-                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Industry</span>
+                      <span className="font-medium">{company.industry}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Size</span>
+                      <span className="font-medium">{company.size_range} employees</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Founded</span>
+                      <span className="font-medium">{company.founded_year}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Website</span>
+                      <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center">
+                        <Globe className="h-4 w-4 mr-1" />
+                        Visit
+                      </a>
+                    </div>
                   </CardContent>
                 </Card>
 
-                {company.benefits && company.benefits.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Benefits & Perks</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {company.benefits.map((benefit, index) => (
-                          <div key={index} className="flex items-center space-x-2">
-                            <Award className="h-4 w-4 text-green-600" />
-                            <span className="text-sm">{benefit}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Benefits & Perks</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {company.benefits.map((benefit, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                          <Award className="h-4 w-4 text-green-600" />
+                          <span className="text-sm">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="jobs" className="space-y-6">
             <div className="grid gap-4">
-              {company.jobs && company.jobs.length > 0 ? (
-                company.jobs.map((job: any) => (
-                  <Card key={job.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{job.title}</h3>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                            <span>{job.location || 'Remote'}</span>
-                            <span>•</span>
-                            <span className="capitalize">{job.employment_type?.replace('_', ' ')}</span>
-                            <span>•</span>
-                            <span>Posted {new Date(job.created_at).toLocaleDateString()}</span>
-                          </div>
-                          {(job.salary_min || job.salary_max) && (
-                            <div className="flex items-center text-green-600 mb-3">
-                              <DollarSign className="h-4 w-4 mr-1" />
-                              <span className="font-medium">
-                                {job.salary_currency || 'INR'} {job.salary_min?.toLocaleString()}{job.salary_max ? ` - ${job.salary_max.toLocaleString()}` : '+'}
-                              </span>
-                            </div>
-                          )}
-                          {job.skills_required && job.skills_required.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-4">
-                              {job.skills_required.slice(0, 5).map((skill: string, index: number) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                  {skill}
-                                </Badge>
-                              ))}
-                              {job.skills_required.length > 5 && (
-                                <Badge variant="outline" className="text-xs">
-                                  +{job.skills_required.length - 5} more
-                                </Badge>
-                              )}
-                            </div>
-                          )}
+              {jobs.map((job) => (
+                <Card key={job.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{job.title}</h3>
+                        <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                          <span>{job.department}</span>
+                          <span>•</span>
+                          <span>{job.location}</span>
+                          <span>•</span>
+                          <span>{job.type}</span>
                         </div>
-                        <Link to={`/jobs/${job.id}`}>
-                          <Button>View Details</Button>
-                        </Link>
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center text-green-600">
+                            <DollarSign className="h-4 w-4 mr-1" />
+                            <span className="font-medium">{job.salary_range}</span>
+                          </div>
+                          <div className="flex items-center text-gray-500">
+                            <Calendar className="h-4 w-4 mr-1" />
+                            <span>Posted {job.posted_days_ago} days ago</span>
+                          </div>
+                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <Briefcase className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                  <p>No current job openings</p>
-                </div>
-              )}
+                      <Button>Apply Now</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 
@@ -443,16 +303,16 @@ const CompanyDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-center mb-4">
-                    <div className="text-4xl font-bold text-gray-900 mb-2">{averageRating}</div>
+                    <div className="text-4xl font-bold text-gray-900 mb-2">{company.rating}</div>
                     <div className="flex justify-center mb-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                           key={star}
-                          className={`h-5 w-5 ${star <= averageRating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                          className={`h-5 w-5 ${star <= company.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
                         />
                       ))}
                     </div>
-                    <div className="text-gray-600">{reviewCount} reviews</div>
+                    <div className="text-gray-600">{company.reviewCount} reviews</div>
                   </div>
                   
                   <div className="space-y-2">

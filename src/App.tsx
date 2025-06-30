@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { navItems } from "./nav-items";
-import { authRoutes } from "./navigation/authRoutes";
 import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
 import { Footer } from "./components/layout/Footer";
@@ -65,16 +64,6 @@ const App = () => (
               <Navbar />
               <main className="flex-1">
                 <Routes>
-                  {/* Auth Routes */}
-                  {authRoutes.map((item) => (
-                    <Route 
-                      key={item.to} 
-                      path={item.to} 
-                      element={item.page}
-                    />
-                  ))}
-                  
-                  {/* Main Navigation Routes */}
                   {navItems.map((item: NavItem) => {
                     const isPublicRoute = publicRoutes.some(route => {
                       // Handle dynamic routes like /companies/:id, /profile/:id, and /jobs/:id
