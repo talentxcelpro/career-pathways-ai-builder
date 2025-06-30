@@ -17,6 +17,8 @@ const Jobs = () => {
   const [salaryRange, setSalaryRange] = useState([0, 1000000]);
   const [isRemoteOnly, setIsRemoteOnly] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState('');
+  const [sortBy, setSortBy] = useState('posted_at');
+  const [savedJobs, setSavedJobs] = useState<string[]>([]);
 
   // Get company filter from URL params
   React.useEffect(() => {
@@ -105,33 +107,64 @@ const Jobs = () => {
     window.history.replaceState({}, '', '/jobs');
   };
 
+  const handleSaveJob = (jobId: string) => {
+    setSavedJobs(prev => 
+      prev.includes(jobId) 
+        ? prev.filter(id => id !== jobId)
+        : [...prev, jobId]
+    );
+  };
+
+  // Mock categories data
+  const categories = [
+    { id: '1', name: 'Technology', slug: 'technology' },
+    { id: '2', name: 'Marketing', slug: 'marketing' },
+    { id: '3', name: 'Design', slug: 'design' },
+    { id: '4', name: 'Sales', slug: 'sales' },
+    { id: '5', name: 'Finance', slug: 'finance' }
+  ];
+
+  // Separate featured and regular jobs
+  const featuredJobs = jobs?.filter(job => job.is_featured) || [];
+  const regularJobs = jobs?.filter(job => !job.is_featured) || [];
+  const remoteJobsCount = jobs?.filter(job => job.is_remote).length || 0;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <JobsHeader />
+        <JobsHeader 
+          jobsCount={jobs?.length || 0}
+          remoteJobsCount={remoteJobsCount}
+          featuredJobsCount={featuredJobs.length}
+          categoriesCount={categories.length}
+        />
         
         <div className="mb-8">
-          <JobsCategories onCategorySelect={setSelectedCategory} />
+          <JobsCategories categories={categories} />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1">
             <EnhancedJobFilters
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              selectedLocation={selectedLocation}
-              onLocationChange={setSelectedLocation}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              selectedEmploymentType={selectedEmploymentType}
-              onEmploymentTypeChange={setSelectedEmploymentType}
-              selectedExperienceLevel={selectedExperienceLevel}
-              onExperienceLevelChange={setSelectedExperienceLevel}
-              salaryRange={salaryRange}
-              onSalaryRangeChange={setSalaryRange}
-              isRemoteOnly={isRemoteOnly}
-              onRemoteOnlyChange={setIsRemoteOnly}
-              onResetFilters={resetFilters}
+              filters={{
+                search: searchQuery,
+                location: selectedLocation,
+                employment_type: selectedEmploymentType ? [selectedEmploymentType] : [],
+                experience_level: selectedExperienceLevel ? [selectedExperienceLevel] : [],
+                salary_min: salaryRange[0],
+                salary_max: salaryRange[1],
+                is_remote: isRemoteOnly,
+                skills: []
+              }}
+              onFiltersChange={(filters) => {
+                setSearchQuery(filters.search);
+                setSelectedLocation(filters.location);
+                setSelectedEmploymentType(filters.employment_type[0] || '');
+                setSelectedExperienceLevel(filters.experience_level[0] || '');
+                setSalaryRange([filters.salary_min, filters.salary_max]);
+                setIsRemoteOnly(filters.is_remote);
+              }}
+              onClearFilters={resetFilters}
             />
           </div>
           
@@ -143,9 +176,23 @@ const Jobs = () => {
                 ))}
               </div>
             ) : jobs && jobs.length > 0 ? (
-              <JobsList jobs={jobs} />
+              <JobsList 
+                jobs={jobs}
+                featuredJobs={featuredJobs}
+                regularJobs={regularJobs}
+                savedJobs={savedJobs}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                isLoading={isLoading}
+                onSaveJob={handleSaveJob}
+                onClearFilters={resetFilters}
+              />
             ) : (
-              <EmptyJobsState />
+              <EmptyJobsState 
+                onResetFilters={resetFilters}
+                onUpdateResume={() => window.open('/resume', '_blank')}
+                onSetAlerts={() => console.log('Set alerts')}
+              />
             )}
           </div>
         </div>

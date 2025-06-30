@@ -17,7 +17,7 @@ import {
   Building2,
   Share2
 } from "lucide-react";
-import { JobApplicationModal } from "@/components/jobs/JobApplicationModal";
+import JobApplicationModal from "@/components/jobs/JobApplicationModal";
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from "sonner";
 
