@@ -21,7 +21,7 @@ export const useUserGrowthData = () => {
 
       return Object.entries(monthlyData || {}).map(([name, signups]) => ({
         name,
-        signups
+        signups: Number(signups) // Ensure signups is a number
       })).slice(0, 6);
     }
   });
