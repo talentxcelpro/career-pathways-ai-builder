@@ -1,12 +1,16 @@
 
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { useFileUpload } from '@/hooks/useFileUpload';
 import { 
   MapPin, 
   Users, 
@@ -20,94 +24,161 @@ import {
   DollarSign,
   Coffee,
   Award,
-  TrendingUp
+  TrendingUp,
+  Upload,
+  Camera,
+  Edit3
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const CompanyDetail = () => {
   const { id } = useParams();
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const { uploadFile, uploading } = useFileUpload({ bucket: 'companies' });
 
-  // Sample company data - in real app, fetch based on id
-  const company = {
-    id: '1',
-    name: 'TechCorp Inc.',
-    description: 'Leading technology solutions provider specializing in AI and cloud computing',
-    logo_url: '/placeholder.svg',
-    cover_image_url: '/placeholder.svg',
-    location: 'San Francisco, CA',
-    industry: 'Technology',
-    size_range: '1000-5000',
-    rating: 4.5,
-    reviewCount: 234,
-    openJobs: 15,
-    employees: 3200,
-    founded_year: 2010,
-    website: 'https://techcorp.com',
-    culture_description: 'We foster innovation, collaboration, and continuous learning in a fast-paced environment.',
-    benefits: ['Health Insurance', 'Remote Work', '401k Matching', 'Stock Options', 'Learning Budget'],
-    tech_stack: ['React', 'Node.js', 'AWS', 'Docker', 'Kubernetes', 'Python', 'PostgreSQL'],
-    social_links: {
-      linkedin: 'https://linkedin.com/company/techcorp',
-      twitter: 'https://twitter.com/techcorp'
+  // Get current user
+  React.useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    };
+    getCurrentUser();
+  }, []);
+
+  // Fetch company data
+  const { data: company, isLoading, refetch } = useQuery({
+    queryKey: ['company-detail', id],
+    queryFn: async () => {
+      if (!id) return null;
+
+      const { data, error } = await supabase
+        .from('companies')
+        .select(`
+          *,
+          jobs!inner(
+            id,
+            title,
+            location,
+            employment_type,
+            created_at,
+            expires_at,
+            is_active,
+            salary_min,
+            salary_max,
+            salary_currency,
+            description,
+            skills_required,
+            applications_count,
+            views_count
+          )
+        `)
+        .eq('id', id)
+        .eq('is_verified', true)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id
+  });
+
+  // Check if current user can edit this company
+  const { data: canEdit } = useQuery({
+    queryKey: ['can-edit-company', id, currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser || !id) return false;
+
+      // Check if user is company owner
+      const { data: profile } = await supabase
+        .from('company_profiles')
+        .select('id')
+        .eq('company_id', id)
+        .eq('owner_id', currentUser.id)
+        .single();
+
+      if (profile) return true;
+
+      // Check if user is admin team member
+      const { data: teamMember } = await supabase
+        .from('company_team_members')
+        .select('id')
+        .eq('company_id', id)
+        .eq('user_id', currentUser.id)
+        .in('role', ['admin', 'owner'])
+        .eq('is_active', true)
+        .single();
+
+      return !!teamMember;
+    },
+    enabled: !!currentUser && !!id
+  });
+
+  const handleImageUpload = async (file: File, type: 'logo' | 'cover') => {
+    if (!company || !canEdit) {
+      toast.error('You do not have permission to edit this company');
+      return;
+    }
+
+    try {
+      const fileName = `${company.id}/${type}-${Date.now()}.${file.name.split('.').pop()}`;
+      const imageUrl = await uploadFile(file, fileName, 'companies');
+
+      const updateField = type === 'logo' ? 'logo_url' : 'cover_image_url';
+      
+      const { error } = await supabase
+        .from('companies')
+        .update({ [updateField]: imageUrl })
+        .eq('id', company.id);
+
+      if (error) throw error;
+
+      toast.success(`${type === 'logo' ? 'Logo' : 'Banner'} updated successfully`);
+      refetch();
+    } catch (error: any) {
+      toast.error(`Failed to update ${type}: ${error.message}`);
     }
   };
 
-  const jobs = [
-    {
-      id: '1',
-      title: 'Senior Software Engineer',
-      department: 'Engineering',
-      location: 'San Francisco, CA',
-      type: 'Full-time',
-      salary_range: '$120k - $180k',
-      posted_days_ago: 2
-    },
-    {
-      id: '2',
-      title: 'Product Manager',
-      department: 'Product',
-      location: 'Remote',
-      type: 'Full-time',
-      salary_range: '$140k - $200k',
-      posted_days_ago: 5
-    },
-    {
-      id: '3',
-      title: 'Data Scientist',
-      department: 'Data Science',
-      location: 'San Francisco, CA',
-      type: 'Full-time',
-      salary_range: '$130k - $190k',
-      posted_days_ago: 1
-    }
-  ];
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="animate-pulse">
+          <div className="h-80 bg-gray-300"></div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative -mt-32 mb-8">
+              <div className="bg-white rounded-lg p-6 shadow-lg">
+                <div className="flex items-start space-x-4">
+                  <div className="h-24 w-24 bg-gray-300 rounded-full"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-8 bg-gray-300 rounded w-1/3"></div>
+                    <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+                    <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const reviews = [
-    {
-      id: '1',
-      rating: 5,
-      title: 'Amazing place to grow',
-      content: 'Great culture, excellent benefits, and amazing growth opportunities. The team is very supportive.',
-      author: 'Software Engineer',
-      department: 'Engineering',
-      tenure: '2 years',
-      date: '2 weeks ago',
-      pros: ['Great work-life balance', 'Innovative projects', 'Supportive management'],
-      cons: ['Fast-paced environment', 'High expectations']
-    },
-    {
-      id: '2',
-      rating: 4,
-      title: 'Good company with room for improvement',
-      content: 'Solid company with good benefits. Could improve on internal communication.',
-      author: 'Product Designer',
-      department: 'Design',
-      tenure: '1 year',
-      date: '1 month ago',
-      pros: ['Good benefits', 'Smart colleagues', 'Interesting challenges'],
-      cons: ['Communication gaps', 'Limited remote flexibility']
-    }
-  ];
+  if (!company) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Building className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-xl font-medium text-gray-900 mb-2">Company Not Found</h3>
+          <p className="text-gray-600 mb-4">The company you're looking for doesn't exist or is not verified.</p>
+          <Link to="/companies">
+            <Button>Browse All Companies</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const ratingBreakdown = [
     { category: 'Work-Life Balance', rating: 4.2 },
@@ -119,28 +190,96 @@ const CompanyDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Cover Image */}
-      <div className="h-64 bg-gradient-to-r from-blue-600 to-indigo-600 relative">
+      {/* Enhanced Cover Image Section */}
+      <div className="relative h-80 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700">
+        {company.cover_image_url ? (
+          <img 
+            src={company.cover_image_url} 
+            alt={`${company.name} cover`}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 via-purple-600/90 to-indigo-700/90"></div>
+        )}
+        
+        {/* Upload Banner Button for Authorized Users */}
+        {canEdit && (
+          <div className="absolute top-4 right-4">
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleImageUpload(file, 'cover');
+                }}
+                className="hidden"
+              />
+              <Button variant="secondary" size="sm" disabled={uploading}>
+                <Camera className="h-4 w-4 mr-2" />
+                {uploading ? 'Uploading...' : 'Update Banner'}
+              </Button>
+            </label>
+          </div>
+        )}
+        
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Company Header */}
+        {/* Enhanced Company Header */}
         <div className="relative -mt-32 mb-8">
-          <Card className="p-6">
+          <Card className="p-6 shadow-xl border-0 bg-white/95 backdrop-blur-sm">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between">
-              <div className="flex items-start space-x-4 mb-4 md:mb-0">
-                <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
-                  <AvatarImage src={company.logo_url} alt={company.name} />
-                  <AvatarFallback className="text-2xl">{company.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{company.name}</h1>
-                  <div className="flex items-center space-x-4 text-gray-600 mb-2">
+              <div className="flex items-start space-x-6 mb-4 md:mb-0">
+                {/* Enhanced Profile Picture with Upload */}
+                <div className="relative group">
+                  <Avatar className="h-32 w-32 border-4 border-white shadow-2xl ring-4 ring-blue-100">
+                    <AvatarImage src={company.logo_url} alt={company.name} />
+                    <AvatarFallback className="text-3xl bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                      {company.name.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  {/* Upload Logo Button for Authorized Users */}
+                  {canEdit && (
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-full flex items-center justify-center">
+                      <label className="cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleImageUpload(file, 'logo');
+                          }}
+                          className="hidden"
+                        />
+                        <div className="bg-white rounded-full p-2 shadow-lg">
+                          <Upload className="h-5 w-5 text-gray-700" />
+                        </div>
+                      </label>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <h1 className="text-4xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      {company.name}
+                    </h1>
+                    {company.is_verified && (
+                      <Badge className="bg-green-100 text-green-800 border-green-200">
+                        <Award className="h-3 w-3 mr-1" />
+                        Verified
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center space-x-6 text-gray-600 mb-4">
                     <div className="flex items-center">
                       <Star className="h-5 w-5 text-yellow-400 fill-current mr-1" />
-                      <span className="font-medium">{company.rating}</span>
-                      <span className="ml-1">({company.reviewCount} reviews)</span>
+                      <span className="font-medium">4.5</span>
+                      <span className="ml-1">(234 reviews)</span>
                     </div>
                     <div className="flex items-center">
                       <MapPin className="h-4 w-4 mr-1" />
@@ -148,20 +287,31 @@ const CompanyDetail = () => {
                     </div>
                     <div className="flex items-center">
                       <Users className="h-4 w-4 mr-1" />
-                      {company.employees.toLocaleString()} employees
+                      {company.employee_count_range} employees
                     </div>
+                    {company.website && (
+                      <a href={company.website} target="_blank" rel="noopener noreferrer" 
+                         className="flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+                        <Globe className="h-4 w-4 mr-1" />
+                        Website
+                      </a>
+                    )}
                   </div>
+                  
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">{company.industry}</Badge>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                      {company.industry}
+                    </Badge>
                     <Badge variant="outline">Founded {company.founded_year}</Badge>
-                    <Badge variant="outline" className="text-green-600">
+                    <Badge variant="outline" className="text-green-600 border-green-200">
                       <Briefcase className="h-3 w-3 mr-1" />
-                      {company.openJobs} open positions
+                      {company.jobs?.length || 0} open positions
                     </Badge>
                   </div>
                 </div>
               </div>
-              <div className="flex space-x-2">
+              
+              <div className="flex space-x-3">
                 <Button
                   variant={isFollowing ? "default" : "outline"}
                   onClick={() => setIsFollowing(!isFollowing)}
@@ -173,6 +323,16 @@ const CompanyDetail = () => {
                 <Button variant="outline" size="icon">
                   <Share2 className="h-4 w-4" />
                 </Button>
+                {canEdit && (
+                  <Button 
+                    variant="outline"
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="flex items-center space-x-2"
+                  >
+                    <Edit3 className="h-4 w-4" />
+                    <span>Edit Profile</span>
+                  </Button>
+                )}
               </div>
             </div>
           </Card>
@@ -180,225 +340,251 @@ const CompanyDetail = () => {
 
         {/* Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="jobs">Jobs ({company.openJobs})</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews ({company.reviewCount})</TabsTrigger>
-            <TabsTrigger value="culture">Culture</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="jobs" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+              Jobs ({company.jobs?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="reviews" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+              Reviews (234)
+            </TabsTrigger>
+            <TabsTrigger value="culture" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+              Culture
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>About {company.name}</CardTitle>
+                <Card className="shadow-lg border-0">
+                  <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
+                    <CardTitle className="text-xl">About {company.name}</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 mb-4">{company.description}</p>
-                    <p className="text-gray-600">{company.culture_description}</p>
+                  <CardContent className="p-6">
+                    <p className="text-gray-600 mb-4 leading-relaxed">
+                      {company.description || 'No description available'}
+                    </p>
+                    {company.culture_description && (
+                      <p className="text-gray-600 leading-relaxed">
+                        {company.culture_description}
+                      </p>
+                    )}
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Technology Stack</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {company.tech_stack.map((tech, index) => (
-                        <Badge key={index} variant="outline">{tech}</Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                {company.tech_stack && company.tech_stack.length > 0 && (
+                  <Card className="shadow-lg border-0">
+                    <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+                      <CardTitle className="text-xl">Technology Stack</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                      <div className="flex flex-wrap gap-3">
+                        {company.tech_stack.map((tech: string, index: number) => (
+                          <Badge key={index} variant="outline" className="px-3 py-1 text-sm">
+                            {tech}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
 
               <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Company Info</CardTitle>
+                <Card className="shadow-lg border-0">
+                  <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50">
+                    <CardTitle className="text-xl">Company Info</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Industry</span>
                       <span className="font-medium">{company.industry}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Size</span>
-                      <span className="font-medium">{company.size_range} employees</span>
+                      <span className="font-medium">{company.employee_count_range} employees</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Founded</span>
                       <span className="font-medium">{company.founded_year}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Website</span>
-                      <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center">
-                        <Globe className="h-4 w-4 mr-1" />
-                        Visit
-                      </a>
+                      <span className="text-gray-600">Location</span>
+                      <span className="font-medium">{company.location}</span>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Benefits & Perks</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {company.benefits.map((benefit, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <Award className="h-4 w-4 text-green-600" />
-                          <span className="text-sm">{benefit}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                {company.benefits && company.benefits.length > 0 && (
+                  <Card className="shadow-lg border-0">
+                    <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50">
+                      <CardTitle className="text-xl">Benefits & Perks</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                      <div className="space-y-3">
+                        {company.benefits.map((benefit: string, index: number) => (
+                          <div key={index} className="flex items-center space-x-3">
+                            <Award className="h-4 w-4 text-green-600 flex-shrink-0" />
+                            <span className="text-sm">{benefit}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="jobs" className="space-y-6">
-            <div className="grid gap-4">
-              {jobs.map((job) => (
-                <Card key={job.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{job.title}</h3>
-                        <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                          <span>{job.department}</span>
-                          <span>•</span>
-                          <span>{job.location}</span>
-                          <span>•</span>
-                          <span>{job.type}</span>
+            <div className="grid gap-6">
+              {company.jobs && company.jobs.length > 0 ? (
+                company.jobs.map((job: any) => (
+                  <Card key={job.id} className="hover:shadow-lg transition-all duration-200 border-0 shadow-md">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                            <span className="flex items-center">
+                              <MapPin className="h-4 w-4 mr-1" />
+                              {job.location || 'Remote'}
+                            </span>
+                            <span className="capitalize">{job.employment_type?.replace('_', ' ')}</span>
+                            <span className="flex items-center">
+                              <Calendar className="h-4 w-4 mr-1" />
+                              Posted {new Date(job.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                          {(job.salary_min || job.salary_max) && (
+                            <div className="mb-3">
+                              <span className="font-medium text-green-600 flex items-center">
+                                <DollarSign className="h-4 w-4 mr-1" />
+                                {job.salary_min && job.salary_max 
+                                  ? `${job.salary_currency} ${job.salary_min?.toLocaleString()} - ${job.salary_max?.toLocaleString()}`
+                                  : job.salary_min 
+                                    ? `${job.salary_currency} ${job.salary_min?.toLocaleString()}+`
+                                    : `Up to ${job.salary_currency} ${job.salary_max?.toLocaleString()}`
+                                }
+                              </span>
+                            </div>
+                          )}
+                          {job.skills_required && job.skills_required.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {job.skills_required.slice(0, 4).map((skill: string, index: number) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {skill}
+                                </Badge>
+                              ))}
+                              {job.skills_required.length > 4 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{job.skills_required.length - 4} more
+                                </Badge>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center text-green-600">
-                            <DollarSign className="h-4 w-4 mr-1" />
-                            <span className="font-medium">{job.salary_range}</span>
-                          </div>
-                          <div className="flex items-center text-gray-500">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            <span>Posted {job.posted_days_ago} days ago</span>
-                          </div>
+                        <div className="ml-6">
+                          <Link to={`/jobs/${job.id}`}>
+                            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                              View Details
+                            </Button>
+                          </Link>
                         </div>
                       </div>
-                      <Button>Apply Now</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <Briefcase className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-medium text-gray-900 mb-2">No Open Positions</h3>
+                  <p className="text-gray-600">This company doesn't have any job openings at the moment.</p>
+                </div>
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="reviews" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
+              <Card className="shadow-lg border-0">
+                <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50">
                   <CardTitle>Overall Rating</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-center mb-4">
-                    <div className="text-4xl font-bold text-gray-900 mb-2">{company.rating}</div>
+                <CardContent className="p-6">
+                  <div className="text-center mb-6">
+                    <div className="text-5xl font-bold text-gray-900 mb-2">4.5</div>
                     <div className="flex justify-center mb-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                           key={star}
-                          className={`h-5 w-5 ${star <= company.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                          className={`h-6 w-6 ${star <= 4.5 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
                         />
                       ))}
                     </div>
-                    <div className="text-gray-600">{company.reviewCount} reviews</div>
+                    <div className="text-gray-600">234 reviews</div>
                   </div>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {ratingBreakdown.map((item, index) => (
                       <div key={index} className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">{item.category}</span>
-                        <div className="flex items-center space-x-2">
-                          <Progress value={item.rating * 20} className="w-16 h-2" />
-                          <span className="text-sm font-medium w-8">{item.rating}</span>
-                        </div>
+                        <span className="text-sm text-gray-600 flex-1">{item.category}</span>
+                        <Progress value={item.rating * 20} className="w-20 h-2 mx-3" />
+                        <span className="text-sm font-medium w-8">{item.rating}</span>
                       </div>
                     ))}
                   </div>
                 </CardContent>
               </Card>
 
-              <div className="lg:col-span-2 space-y-4">
-                {reviews.map((review) => (
-                  <Card key={review.id}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center mb-2">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                className={`h-4 w-4 ${star <= review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
-                              />
-                            ))}
-                          </div>
-                          <CardTitle className="text-lg">{review.title}</CardTitle>
-                          <CardDescription>
-                            {review.author} • {review.department} • {review.tenure} • {review.date}
-                          </CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-600 mb-4">{review.content}</p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <h4 className="font-medium text-green-600 mb-2">Pros</h4>
-                          <ul className="text-sm text-gray-600 space-y-1">
-                            {review.pros.map((pro, index) => (
-                              <li key={index}>• {pro}</li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-red-600 mb-2">Cons</h4>
-                          <ul className="text-sm text-gray-600 space-y-1">
-                            {review.cons.map((con, index) => (
-                              <li key={index}>• {con}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+              <div className="lg:col-span-2">
+                <Card className="shadow-lg border-0">
+                  <CardHeader>
+                    <CardTitle>Recent Reviews</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="text-center py-8 text-gray-500">
+                      <Star className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <p>No reviews available yet</p>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="culture" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Company Culture</CardTitle>
+            <Card className="shadow-lg border-0">
+              <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
+                <CardTitle className="text-xl">Company Culture</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-6">{company.culture_description}</p>
+              <CardContent className="p-6">
+                <p className="text-gray-600 mb-8 leading-relaxed">
+                  {company.culture_description || 'We foster innovation, collaboration, and continuous learning in a fast-paced environment.'}
+                </p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="text-center">
-                    <Coffee className="h-12 w-12 text-blue-600 mx-auto mb-3" />
-                    <h3 className="font-semibold mb-2">Work-Life Balance</h3>
+                    <div className="bg-blue-100 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                      <Coffee className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <h3 className="font-semibold mb-2 text-lg">Work-Life Balance</h3>
                     <p className="text-sm text-gray-600">Flexible hours and remote work options</p>
                   </div>
                   <div className="text-center">
-                    <TrendingUp className="h-12 w-12 text-green-600 mx-auto mb-3" />
-                    <h3 className="font-semibold mb-2">Growth Opportunities</h3>
+                    <div className="bg-green-100 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                      <TrendingUp className="h-8 w-8 text-green-600" />
+                    </div>
+                    <h3 className="font-semibold mb-2 text-lg">Growth Opportunities</h3>
                     <p className="text-sm text-gray-600">Clear career progression paths</p>
                   </div>
                   <div className="text-center">
-                    <Users className="h-12 w-12 text-purple-600 mx-auto mb-3" />
-                    <h3 className="font-semibold mb-2">Team Collaboration</h3>
+                    <div className="bg-purple-100 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                      <Users className="h-8 w-8 text-purple-600" />
+                    </div>
+                    <h3 className="font-semibold mb-2 text-lg">Team Collaboration</h3>
                     <p className="text-sm text-gray-600">Open communication and teamwork</p>
                   </div>
                 </div>
