@@ -16,31 +16,7 @@ import {
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { AdminNotifications } from '@/components/admin/AdminNotifications';
-import { Line, Bar, Doughnut } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from 'chart.js';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const AdminDashboard = () => {
   // Platform Stats
@@ -62,43 +38,27 @@ const AdminDashboard = () => {
   ];
 
   // Chart Data
-  const userGrowthData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    datasets: [
-      {
-        label: 'New Signups',
-        data: [1200, 1900, 3000, 2500, 3200, 3800],
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        tension: 0.1,
-      },
-    ],
-  };
+  const userGrowthData = [
+    { name: 'Jan', signups: 1200 },
+    { name: 'Feb', signups: 1900 },
+    { name: 'Mar', signups: 3000 },
+    { name: 'Apr', signups: 2500 },
+    { name: 'May', signups: 3200 },
+    { name: 'Jun', signups: 3800 },
+  ];
 
-  const jobApplicationsData = {
-    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-    datasets: [
-      {
-        label: 'Applications',
-        data: [450, 620, 580, 720],
-        backgroundColor: 'rgba(147, 51, 234, 0.8)',
-      },
-    ],
-  };
+  const jobApplicationsData = [
+    { name: 'Week 1', applications: 450 },
+    { name: 'Week 2', applications: 620 },
+    { name: 'Week 3', applications: 580 },
+    { name: 'Week 4', applications: 720 },
+  ];
 
-  const userTypeData = {
-    labels: ['Job Seekers', 'Employers', 'Premium Users'],
-    datasets: [
-      {
-        data: [18500, 2200, 890],
-        backgroundColor: [
-          'rgba(59, 130, 246, 0.8)',
-          'rgba(34, 197, 94, 0.8)',
-          'rgba(251, 191, 36, 0.8)',
-        ],
-      },
-    ],
-  };
+  const userTypeData = [
+    { name: 'Job Seekers', value: 18500, color: '#3b82f6' },
+    { name: 'Employers', value: 2200, color: '#22c55e' },
+    { name: 'Premium Users', value: 890, color: '#fbbf24' },
+  ];
 
   const recentActivity = [
     { user: 'John Doe', action: 'Applied to Software Engineer at TechCorp', time: '5 mins ago' },
@@ -107,15 +67,6 @@ const AdminDashboard = () => {
     { user: 'Mike Johnson', action: 'Completed React Development course', time: '1 hour ago' },
     { user: 'Sarah Wilson', action: 'Updated company profile', time: '2 hours ago' },
   ];
-
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-    },
-  };
 
   return (
     <AdminGuard requiredPermission="canAccessDashboard">
@@ -186,7 +137,16 @@ const AdminDashboard = () => {
                     <CardTitle>User Growth</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Line data={userGrowthData} options={chartOptions} />
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={userGrowthData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="signups" stroke="#3b82f6" strokeWidth={2} />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </CardContent>
                 </Card>
 
@@ -196,7 +156,15 @@ const AdminDashboard = () => {
                       <CardTitle>Job Applications</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <Bar data={jobApplicationsData} options={chartOptions} />
+                      <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={jobApplicationsData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Bar dataKey="applications" fill="#9333ea" />
+                        </BarChart>
+                      </ResponsiveContainer>
                     </CardContent>
                   </Card>
 
@@ -205,7 +173,24 @@ const AdminDashboard = () => {
                       <CardTitle>User Distribution</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <Doughnut data={userTypeData} options={chartOptions} />
+                      <ResponsiveContainer width="100%" height={250}>
+                        <PieChart>
+                          <Pie
+                            data={userTypeData}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="value"
+                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          >
+                            {userTypeData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
                     </CardContent>
                   </Card>
                 </div>
