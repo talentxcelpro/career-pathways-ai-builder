@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { 
@@ -47,7 +46,7 @@ const CompanyDetail = () => {
     getCurrentUser();
   }, []);
 
-  // Fetch company data
+  // Fetch company data with real relationships
   const { data: company, isLoading, refetch } = useQuery({
     queryKey: ['company-detail', id],
     queryFn: async () => {
@@ -72,6 +71,10 @@ const CompanyDetail = () => {
             skills_required,
             applications_count,
             views_count
+          ),
+          company_follows(
+            id,
+            user_id
           )
         `)
         .eq('id', id)
@@ -115,6 +118,40 @@ const CompanyDetail = () => {
     enabled: !!currentUser && !!id
   });
 
+  // Get company followers count
+  const { data: followersCount } = useQuery({
+    queryKey: ['company-followers', id],
+    queryFn: async () => {
+      if (!id) return 0;
+      
+      const { count } = await supabase
+        .from('company_follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('company_id', id);
+      
+      return count || 0;
+    },
+    enabled: !!id
+  });
+
+  // Check if current user follows this company
+  React.useEffect(() => {
+    const checkFollowing = async () => {
+      if (!currentUser || !id) return;
+      
+      const { data } = await supabase
+        .from('company_follows')
+        .select('id')
+        .eq('company_id', id)
+        .eq('user_id', currentUser.id)
+        .single();
+      
+      setIsFollowing(!!data);
+    };
+    
+    checkFollowing();
+  }, [currentUser, id]);
+
   const handleImageUpload = async (file: File, type: 'logo' | 'cover') => {
     if (!company || !canEdit) {
       toast.error('You do not have permission to edit this company');
@@ -138,6 +175,38 @@ const CompanyDetail = () => {
       refetch();
     } catch (error: any) {
       toast.error(`Failed to update ${type}: ${error.message}`);
+    }
+  };
+
+  const handleFollowToggle = async () => {
+    if (!currentUser || !company) {
+      toast.error('Please log in to follow companies');
+      return;
+    }
+
+    try {
+      if (isFollowing) {
+        await supabase
+          .from('company_follows')
+          .delete()
+          .eq('company_id', company.id)
+          .eq('user_id', currentUser.id);
+        
+        setIsFollowing(false);
+        toast.success('Unfollowed company');
+      } else {
+        await supabase
+          .from('company_follows')
+          .insert({
+            company_id: company.id,
+            user_id: currentUser.id
+          });
+        
+        setIsFollowing(true);
+        toast.success('Following company');
+      }
+    } catch (error: any) {
+      toast.error('Failed to update follow status');
     }
   };
 
@@ -179,14 +248,6 @@ const CompanyDetail = () => {
       </div>
     );
   }
-
-  const ratingBreakdown = [
-    { category: 'Work-Life Balance', rating: 4.2 },
-    { category: 'Compensation', rating: 4.6 },
-    { category: 'Career Growth', rating: 4.4 },
-    { category: 'Management', rating: 4.1 },
-    { category: 'Culture', rating: 4.7 }
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -277,9 +338,8 @@ const CompanyDetail = () => {
                   
                   <div className="flex items-center space-x-6 text-gray-600 mb-4">
                     <div className="flex items-center">
-                      <Star className="h-5 w-5 text-yellow-400 fill-current mr-1" />
-                      <span className="font-medium">4.5</span>
-                      <span className="ml-1">(234 reviews)</span>
+                      <Heart className="h-4 w-4 mr-1" />
+                      <span className="font-medium">{followersCount || 0} followers</span>
                     </div>
                     <div className="flex items-center">
                       <MapPin className="h-4 w-4 mr-1" />
@@ -302,7 +362,9 @@ const CompanyDetail = () => {
                     <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                       {company.industry}
                     </Badge>
-                    <Badge variant="outline">Founded {company.founded_year}</Badge>
+                    {company.founded_year && (
+                      <Badge variant="outline">Founded {company.founded_year}</Badge>
+                    )}
                     <Badge variant="outline" className="text-green-600 border-green-200">
                       <Briefcase className="h-3 w-3 mr-1" />
                       {company.jobs?.length || 0} open positions
@@ -314,7 +376,7 @@ const CompanyDetail = () => {
               <div className="flex space-x-3">
                 <Button
                   variant={isFollowing ? "default" : "outline"}
-                  onClick={() => setIsFollowing(!isFollowing)}
+                  onClick={handleFollowToggle}
                   className="flex items-center space-x-2"
                 >
                   <Heart className={`h-4 w-4 ${isFollowing ? 'fill-current' : ''}`} />
@@ -340,15 +402,12 @@ const CompanyDetail = () => {
 
         {/* Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm">
+          <TabsList className="grid w-full grid-cols-3 bg-white shadow-sm">
             <TabsTrigger value="overview" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
               Overview
             </TabsTrigger>
             <TabsTrigger value="jobs" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
               Jobs ({company.jobs?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="reviews" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
-              Reviews (234)
             </TabsTrigger>
             <TabsTrigger value="culture" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
               Culture
@@ -406,10 +465,12 @@ const CompanyDetail = () => {
                       <span className="text-gray-600">Size</span>
                       <span className="font-medium">{company.employee_count_range} employees</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Founded</span>
-                      <span className="font-medium">{company.founded_year}</span>
-                    </div>
+                    {company.founded_year && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Founded</span>
+                        <span className="font-medium">{company.founded_year}</span>
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Location</span>
                       <span className="font-medium">{company.location}</span>
@@ -441,7 +502,7 @@ const CompanyDetail = () => {
           <TabsContent value="jobs" className="space-y-6">
             <div className="grid gap-6">
               {company.jobs && company.jobs.length > 0 ? (
-                company.jobs.map((job: any) => (
+                company.jobs.filter((job: any) => job.is_active).map((job: any) => (
                   <Card key={job.id} className="hover:shadow-lg transition-all duration-200 border-0 shadow-md">
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
@@ -452,7 +513,9 @@ const CompanyDetail = () => {
                               <MapPin className="h-4 w-4 mr-1" />
                               {job.location || 'Remote'}
                             </span>
-                            <span className="capitalize">{job.employment_type?.replace('_', ' ')}</span>
+                            {job.employment_type && (
+                              <span className="capitalize">{job.employment_type.replace('_', ' ')}</span>
+                            )}
                             <span className="flex items-center">
                               <Calendar className="h-4 w-4 mr-1" />
                               Posted {new Date(job.created_at).toLocaleDateString()}
@@ -485,6 +548,10 @@ const CompanyDetail = () => {
                               )}
                             </div>
                           )}
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>{job.views_count || 0} views</span>
+                            <span>{job.applications_count || 0} applications</span>
+                          </div>
                         </div>
                         <div className="ml-6">
                           <Link to={`/jobs/${job.id}`}>
@@ -507,54 +574,6 @@ const CompanyDetail = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="reviews" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="shadow-lg border-0">
-                <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50">
-                  <CardTitle>Overall Rating</CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="text-center mb-6">
-                    <div className="text-5xl font-bold text-gray-900 mb-2">4.5</div>
-                    <div className="flex justify-center mb-2">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          className={`h-6 w-6 ${star <= 4.5 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
-                        />
-                      ))}
-                    </div>
-                    <div className="text-gray-600">234 reviews</div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    {ratingBreakdown.map((item, index) => (
-                      <div key={index} className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 flex-1">{item.category}</span>
-                        <Progress value={item.rating * 20} className="w-20 h-2 mx-3" />
-                        <span className="text-sm font-medium w-8">{item.rating}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="lg:col-span-2">
-                <Card className="shadow-lg border-0">
-                  <CardHeader>
-                    <CardTitle>Recent Reviews</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="text-center py-8 text-gray-500">
-                      <Star className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                      <p>No reviews available yet</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </TabsContent>
-
           <TabsContent value="culture" className="space-y-6">
             <Card className="shadow-lg border-0">
               <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
@@ -562,7 +581,7 @@ const CompanyDetail = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <p className="text-gray-600 mb-8 leading-relaxed">
-                  {company.culture_description || 'We foster innovation, collaboration, and continuous learning in a fast-paced environment.'}
+                  {company.culture_description || 'Learn more about our company culture and values.'}
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
