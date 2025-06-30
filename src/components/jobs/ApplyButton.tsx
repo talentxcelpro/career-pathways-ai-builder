@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
-import JobApplicationModal from './JobApplicationModal';
+import ComprehensiveJobApplicationForm from './ComprehensiveJobApplicationForm';
 
 interface ApplyButtonProps {
   job: {
@@ -20,12 +20,12 @@ interface ApplyButtonProps {
 }
 
 export default function ApplyButton({ job, variant = "default", size = "default", className }: ApplyButtonProps) {
-  const [showModal, setShowModal] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   return (
     <>
       <Button
-        onClick={() => setShowModal(true)}
+        onClick={() => setShowForm(true)}
         variant={variant}
         size={size}
         className={className}
@@ -34,9 +34,9 @@ export default function ApplyButton({ job, variant = "default", size = "default"
         Apply Now
       </Button>
 
-      <JobApplicationModal
-        open={showModal}
-        onOpenChange={setShowModal}
+      <ComprehensiveJobApplicationForm
+        open={showForm}
+        onOpenChange={setShowForm}
         job={job}
       />
     </>
