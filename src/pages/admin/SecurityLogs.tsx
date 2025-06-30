@@ -200,7 +200,7 @@ const SecurityLogs = () => {
                         </span>
                         {view.ip_address && (
                           <Badge variant="outline" className="text-xs">
-                            {view.ip_address}
+                            {String(view.ip_address)}
                           </Badge>
                         )}
                       </div>
