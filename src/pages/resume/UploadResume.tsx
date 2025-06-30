@@ -2,18 +2,36 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Upload, FileText, Loader2, CheckCircle } from "lucide-react";
+import { ArrowLeft, Upload, FileText, Loader2, CheckCircle, X, File } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { toast } from "sonner";
 
 const UploadResume = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [isUploading, setIsUploading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [processingStep, setProcessingStep] = useState(0);
+
+  const { uploadFile, uploading } = useFileUpload({
+    bucket: 'resumes',
+    maxSize: 10 * 1024 * 1024, // 10MB
+    allowedTypes: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']
+  });
+
+  const processingSteps = [
+    'Uploading file...',
+    'Extracting content...',
+    'Analyzing structure...',
+    'Optimizing for ATS...',
+    'Generating suggestions...',
+    'Finalizing resume...'
+  ];
 
   const handleFileUpload = async (files: FileList | null) => {
     if (!files || files.length === 0 || !user) return;
@@ -23,38 +41,81 @@ const UploadResume = () => {
     // Validate file type
     const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
     if (!allowedTypes.includes(file.type)) {
-      alert('Please upload a PDF or Word document');
+      toast.error('Please upload a PDF or Word document');
       return;
     }
     
     // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      alert('File size must be less than 10MB');
+      toast.error('File size must be less than 10MB');
       return;
     }
     
-    setIsUploading(true);
     setUploadedFile(file);
+    setIsProcessing(true);
+    setProcessingStep(0);
     
     try {
-      // Simulate AI processing with a delay
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Step 1: Upload file
+      setProcessingStep(1);
+      const fileUrl = await uploadFile(file, `resume-${Date.now()}.${file.name.split('.').pop()}`);
       
-      // Create a new resume entry in the database
+      // Step 2: Extract content (simulate AI processing)
+      setProcessingStep(2);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Step 3: Analyze structure
+      setProcessingStep(3);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Step 4: ATS Optimization
+      setProcessingStep(4);
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      // Step 5: Generate suggestions
+      setProcessingStep(5);
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Step 6: Create resume entry in database
+      setProcessingStep(6);
       const { data, error } = await supabase
         .from('ai_resumes')
         .insert({
           user_id: user.id,
           title: `Resume from ${file.name}`,
           content: {
-            personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
-            experience: [],
-            education: [],
-            skills: [],
+            personalInfo: { 
+              fullName: '', 
+              email: user.email || '', 
+              phone: '', 
+              location: '', 
+              summary: 'Experienced professional seeking new opportunities to leverage skills and drive innovation.' 
+            },
+            experience: [
+              {
+                title: 'Software Engineer',
+                company: 'Tech Company',
+                location: 'Remote',
+                startDate: '2022',
+                endDate: 'Present',
+                description: 'Developed and maintained web applications using modern technologies.'
+              }
+            ],
+            education: [
+              {
+                degree: 'Bachelor of Technology',
+                school: 'University',
+                location: 'India',
+                startDate: '2018',
+                endDate: '2022'
+              }
+            ],
+            skills: ['JavaScript', 'React', 'Node.js', 'Python', 'SQL'],
             projects: [],
             certifications: []
           },
-          ats_score: Math.floor(Math.random() * 30) + 70 // Random score between 70-100
+          ats_score: Math.floor(Math.random() * 30) + 70, // Random score between 70-100
+          template_id: 'prof-1' // Default to Professional Classic
         })
         .select()
         .single();
@@ -62,6 +123,7 @@ const UploadResume = () => {
       if (error) throw error;
       
       setUploadSuccess(true);
+      toast.success('Resume processed successfully!');
       
       // Navigate to edit mode after a short delay
       setTimeout(() => {
@@ -69,9 +131,9 @@ const UploadResume = () => {
       }, 2000);
     } catch (error) {
       console.error('Error processing resume:', error);
-      alert('Error processing resume. Please try again.');
-    } finally {
-      setIsUploading(false);
+      toast.error('Error processing resume. Please try again.');
+      setIsProcessing(false);
+      setUploadedFile(null);
     }
   };
 
@@ -93,6 +155,21 @@ const UploadResume = () => {
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFileUpload(e.dataTransfer.files);
     }
+  };
+
+  const removeFile = () => {
+    setUploadedFile(null);
+    const fileInput = document.getElementById('resume-upload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  };
+
+  const resetUpload = () => {
+    setUploadedFile(null);
+    setIsProcessing(false);
+    setUploadSuccess(false);
+    setProcessingStep(0);
+    const fileInput = document.getElementById('resume-upload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
   };
 
   return (
@@ -125,63 +202,122 @@ const UploadResume = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div
-                  className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                    dragActive 
-                      ? 'border-blue-400 bg-blue-50' 
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                >
-                  {uploadSuccess ? (
-                    <div className="space-y-4">
-                      <CheckCircle className="h-12 w-12 mx-auto text-green-600" />
-                      <div>
-                        <h3 className="font-medium text-gray-900">Upload Successful!</h3>
-                        <p className="text-sm text-gray-600">Redirecting to editor...</p>
-                      </div>
+                {uploadSuccess ? (
+                  <div className="text-center py-12">
+                    <CheckCircle className="h-16 w-16 mx-auto text-green-600 mb-4" />
+                    <div>
+                      <h3 className="text-xl font-medium text-gray-900 mb-2">Upload Successful!</h3>
+                      <p className="text-gray-600 mb-4">Your resume has been processed and optimized.</p>
+                      <p className="text-sm text-gray-500">Redirecting to editor...</p>
                     </div>
-                  ) : isUploading ? (
-                    <div className="space-y-4">
-                      <Loader2 className="h-12 w-12 mx-auto text-blue-600 animate-spin" />
-                      <div>
-                        <h3 className="font-medium text-gray-900">Processing your resume...</h3>
-                        <p className="text-sm text-gray-600">AI is extracting and optimizing your content</p>
-                        {uploadedFile && (
-                          <p className="text-xs text-gray-500 mt-2">Processing: {uploadedFile.name}</p>
-                        )}
+                  </div>
+                ) : isProcessing ? (
+                  <div className="text-center py-12">
+                    <Loader2 className="h-16 w-16 mx-auto text-blue-600 animate-spin mb-4" />
+                    <div>
+                      <h3 className="text-xl font-medium text-gray-900 mb-2">
+                        {processingSteps[processingStep] || 'Processing...'}
+                      </h3>
+                      <p className="text-gray-600 mb-4">AI is analyzing and optimizing your resume content</p>
+                      {uploadedFile && (
+                        <p className="text-sm text-gray-500 mb-4">Processing: {uploadedFile.name}</p>
+                      )}
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${((processingStep + 1) / processingSteps.length) * 100}%` }}
+                        ></div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <Upload className="h-12 w-12 mx-auto text-gray-400" />
-                      <div>
-                        <h3 className="font-medium text-gray-900">Drop your resume here</h3>
-                        <p className="text-sm text-gray-600">or click to browse files</p>
-                      </div>
-                      <input
-                        type="file"
-                        accept=".pdf,.docx,.doc"
-                        onChange={(e) => handleFileUpload(e.target.files)}
-                        className="hidden"
-                        id="resume-upload"
-                        disabled={isUploading}
-                      />
-                      <label htmlFor="resume-upload">
-                        <Button variant="outline" className="cursor-pointer" disabled={isUploading}>
-                          <FileText className="h-4 w-4 mr-2" />
-                          Choose File
-                        </Button>
-                      </label>
-                      <p className="text-xs text-gray-500">
-                        Supported formats: PDF, DOCX • Max size: 10MB
+                      <p className="text-xs text-gray-500 mt-2">
+                        Step {processingStep + 1} of {processingSteps.length}
                       </p>
                     </div>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div
+                      className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                        dragActive 
+                          ? 'border-blue-400 bg-blue-50' 
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                      onDragEnter={handleDrag}
+                      onDragLeave={handleDrag}
+                      onDragOver={handleDrag}
+                      onDrop={handleDrop}
+                    >
+                      {uploadedFile ? (
+                        <div className="space-y-4">
+                          <File className="h-12 w-12 mx-auto text-blue-600" />
+                          <div>
+                            <h3 className="font-medium text-gray-900">{uploadedFile.name}</h3>
+                            <p className="text-sm text-gray-600">
+                              {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
+                          <div className="flex justify-center space-x-2">
+                            <Button onClick={removeFile} variant="outline" size="sm">
+                              <X className="h-4 w-4 mr-1" />
+                              Remove
+                            </Button>
+                            <Button 
+                              onClick={() => handleFileUpload(uploadedFile ? [uploadedFile] as any : null)} 
+                              disabled={uploading}
+                            >
+                              {uploading ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  Processing...
+                                </>
+                              ) : (
+                                'Process Resume'
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <Upload className="h-12 w-12 mx-auto text-gray-400" />
+                          <div>
+                            <h3 className="font-medium text-gray-900">Drop your resume here</h3>
+                            <p className="text-sm text-gray-600">or click to browse files</p>
+                          </div>
+                          <input
+                            type="file"
+                            accept=".pdf,.docx,.doc"
+                            onChange={(e) => handleFileUpload(e.target.files)}
+                            className="hidden"
+                            id="resume-upload"
+                            disabled={uploading || isProcessing}
+                          />
+                          <label htmlFor="resume-upload">
+                            <Button variant="outline" className="cursor-pointer" asChild>
+                              <span>
+                                <FileText className="h-4 w-4 mr-2" />
+                                Choose File
+                              </span>
+                            </Button>
+                          </label>
+                          <p className="text-xs text-gray-500">
+                            Supported formats: PDF, DOCX • Max size: 10MB
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {isProcessing && (
+                      <div className="mt-4">
+                        <Button 
+                          variant="outline" 
+                          onClick={resetUpload}
+                          className="w-full"
+                        >
+                          Cancel Processing
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
