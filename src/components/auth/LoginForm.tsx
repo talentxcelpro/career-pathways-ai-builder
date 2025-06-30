@@ -1,95 +1,166 @@
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Lock } from "lucide-react";
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from "sonner";
 
-export default function LoginForm() {
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Eye, EyeOff, Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
+import { SocialLogin } from './SocialLogin';
+
+const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-	const navigate = useNavigate();
-  const location = useLocation();
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
-
-    setIsLoading(true);
-    setError('');
+    setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
 
-      toast.success('Welcome back!');
-      
-      // Handle redirect after login
-      const returnTo = location.state?.returnTo || '/dashboard';
-      navigate(returnTo, { replace: true });
+      if (data.user) {
+        toast.success('Welcome back! 🎉');
+        // AuthContext will handle navigation
+      }
     } catch (error: any) {
-      console.error('Login error:', error);
-      setError(error.message || 'An error occurred during login');
-      toast.error(error.message || 'Login failed');
+      toast.error('An unexpected error occurred');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-md space-y-4">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Sign In</CardTitle>
-        <CardDescription>Enter your email and password to sign in</CardDescription>
+    <Card className="w-full max-w-md mx-auto shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+      <CardHeader className="space-y-2 text-center pb-4">
+        <CardTitle className="text-xl font-bold text-slate-900">Welcome back</CardTitle>
+        <CardDescription className="text-sm text-slate-600 font-medium">
+          Sign in to your account to continue your journey
+        </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <Input 
-              type="email" 
-              id="email" 
-              placeholder="Enter your email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="pl-10"
-            />
+      
+      <CardContent className="space-y-5">
+        {/* Enhanced Social Login */}
+        <div className="space-y-3">
+          <SocialLogin variant="prominent" />
+        </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <Separator className="w-full bg-slate-200" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-3 text-slate-500 font-semibold tracking-wide">
+              Or continue with email
+            </span>
           </div>
         </div>
-        <div className="grid gap-2">
-          <Label htmlFor="password">Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <Input 
-              type="password" 
-              id="password" 
-              placeholder="Enter your password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="pl-10"
-            />
+
+        {/* Enhanced Email Login Form */}
+        <form onSubmit={handleEmailLogin} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
+              Email Address
+            </Label>
+            <div className="relative group">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10 h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-sm font-medium text-slate-800"
+                required
+              />
+            </div>
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
+              Password
+            </Label>
+            <div className="relative group">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10 pr-12 h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-sm font-medium text-slate-800"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-1">
+            <div className="text-sm">
+              <Link 
+                to="/auth/forgot-password" 
+                className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
+          </div>
+
+          <Button 
+            type="submit" 
+            className="w-full h-11 font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200" 
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              <>
+                Sign in
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </>
+            )}
+          </Button>
+        </form>
+
+        <div className="text-center pt-2">
+          <span className="text-sm text-slate-600 font-medium">Don't have an account? </span>
+          <Link 
+            to="/auth/register" 
+            className="text-sm text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors"
+          >
+            Sign up for free
+          </Link>
         </div>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        <Button disabled={isLoading} onClick={handleLogin}>
-          {isLoading ? 'Signing In...' : 'Sign In'}
-        </Button>
       </CardContent>
-      <div className="px-4 pb-4 text-center text-sm text-gray-500">
-        Don't have an account? <Link to="/auth/register" className="text-blue-600 hover:underline">Sign up</Link>
-        <br/>
-        <Link to="/auth/forgot-password" className="text-blue-600 hover:underline">Forgot Password?</Link>
-      </div>
     </Card>
   );
-}
+};
+
+export default LoginForm;

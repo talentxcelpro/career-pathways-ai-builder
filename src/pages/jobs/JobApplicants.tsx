@@ -20,7 +20,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ApplicantResumeDownload } from "@/components/employer/ApplicantResumeDownload";
 
 interface JobApplication {
   id: string;
@@ -255,56 +254,121 @@ const JobApplicants = () => {
         </CardContent>
       </Card>
 
-      {/* Applicants List - Updated to use download cards */}
+      {/* Applicants Table */}
       {applications && applications.length > 0 ? (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Applicants ({applications.length})</h2>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  const csvData = applications.map(app => ({
-                    name: app.profiles?.full_name || 'Unknown',
-                    email: app.profiles?.email || '',
-                    phone: app.profiles?.phone || '',
-                    location: app.profiles?.location || '',
-                    status: app.status,
-                    applied_date: new Date(app.applied_at).toLocaleDateString(),
-                    match_score: app.ai_match_score ? Math.round(app.ai_match_score * 100) + '%' : 'N/A',
-                    experience: app.profiles?.experience_years || 0
-                  }));
-                  
-                  const csv = [
-                    Object.keys(csvData[0]).join(','),
-                    ...csvData.map(row => Object.values(row).join(','))
-                  ].join('\n');
-                  
-                  const blob = new Blob([csv], { type: 'text/csv' });
-                  const url = URL.createObjectURL(blob);
-                  const link = document.createElement('a');
-                  link.href = url;
-                  link.download = `${job?.title || 'job'}_applicants.csv`;
-                  link.click();
-                  URL.revokeObjectURL(url);
-                }}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Export All
-              </Button>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {applications.map((application) => (
-              <ApplicantResumeDownload
-                key={application.id}
-                applicant={application}
-                jobTitle={job?.title || 'Unknown Job'}
-              />
-            ))}
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Applicants ({applications.length})</CardTitle>
+            <CardDescription>Manage and review job applications</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Candidate</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Match Score</TableHead>
+                  <TableHead>Experience</TableHead>
+                  <TableHead>Applied</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {applications.map((application) => (
+                  <TableRow key={application.id} className="hover:bg-gray-50">
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                          {application.profiles?.profile_picture_url ? (
+                            <img 
+                              src={application.profiles.profile_picture_url} 
+                              alt={application.profiles.full_name || 'Profile'}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <Users className="h-5 w-5 text-gray-400" />
+                          )}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">
+                            {application.profiles?.full_name || 'Unknown'}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {application.profiles?.title || 'No title'}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            {application.profiles?.location || 'Location not specified'}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {getStatusBadge(application.status)}
+                    </TableCell>
+                    <TableCell>
+                      {application.ai_match_score ? (
+                        <div className="flex items-center gap-1">
+                          <Star className="h-4 w-4 text-yellow-500" />
+                          <span className={`font-medium ${getMatchScoreColor(application.ai_match_score)}`}>
+                            {Math.round(application.ai_match_score * 100)}%
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">Not scored</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-gray-600">
+                        {application.profiles?.experience_years || 0} years
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-gray-600">
+                        {formatDate(application.applied_at)}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => navigate(`/jobs/manage/${jobId}/applicants/${application.user_id}`)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.open(`mailto:${application.profiles?.email}`)}
+                        >
+                          <Mail className="h-4 w-4" />
+                        </Button>
+                        {application.profiles?.phone && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => window.open(`tel:${application.profiles.phone}`)}
+                          >
+                            <Phone className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {application.resume_url && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => window.open(application.resume_url, '_blank')}
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       ) : (
         <Card>
           <CardContent className="pt-6">
