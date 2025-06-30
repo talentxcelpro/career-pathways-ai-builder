@@ -1,40 +1,55 @@
 
 import React from 'react';
-import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Code, 
+  Megaphone, 
+  Palette, 
+  TrendingUp, 
+  Calculator 
+} from 'lucide-react';
 
-interface JobsCategoriesProps {
-  categories: Array<{ id: string; name: string; slug: string }>;
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
 }
 
-export const JobsCategories: React.FC<JobsCategoriesProps> = ({ categories }) => {
-  const navigate = useNavigate();
+interface JobsCategoriesProps {
+  categories: Category[];
+}
 
+const categoryIcons = {
+  'technology': Code,
+  'marketing': Megaphone,
+  'design': Palette,
+  'sales': TrendingUp,
+  'finance': Calculator,
+};
+
+export const JobsCategories: React.FC<JobsCategoriesProps> = ({ categories }) => {
   return (
-    <div className="mb-6">
-      <div className="flex items-center gap-2 mb-3">
-        <h2 className="text-lg font-semibold">Browse by Category</h2>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {categories.slice(0, 10).map((category) => (
-          <Badge
-            key={category.id}
-            variant="outline"
-            className="cursor-pointer hover:bg-blue-50 hover:border-blue-300"
-            onClick={() => navigate(`/jobs/categories?category=${category.slug}`)}
-          >
-            {category.name}
-          </Badge>
-        ))}
-        {categories.length > 10 && (
-          <Badge
-            variant="outline"
-            className="cursor-pointer hover:bg-gray-100"
-            onClick={() => navigate('/jobs/categories')}
-          >
-            +{categories.length - 10} more
-          </Badge>
-        )}
+    <div className="bg-white border-b">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="text-center mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Browse by Category</h3>
+        </div>
+        <div className="flex flex-wrap justify-center gap-3">
+          {categories.map((category) => {
+            const IconComponent = categoryIcons[category.slug as keyof typeof categoryIcons] || Code;
+            return (
+              <Badge
+                key={category.id}
+                variant="outline"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-colors"
+              >
+                <IconComponent className="h-4 w-4" />
+                {category.name}
+              </Badge>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
