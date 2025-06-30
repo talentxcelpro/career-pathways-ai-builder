@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -106,7 +105,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
     toast.success('Resume uploaded successfully!');
   };
 
-  const handleCoverLetterUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, type: 'coverLetter') => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -118,8 +117,10 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       return;
     }
 
-    setFormData(prev => ({ ...prev, coverLetter: file }));
-    toast.success('Cover letter uploaded successfully!');
+    if (type === 'coverLetter') {
+      setFormData(prev => ({ ...prev, coverLetter: file }));
+      toast.success('Cover letter uploaded successfully!');
+    }
   };
 
   const handleInputChange = (key: keyof FormData, value: any) => {
@@ -249,7 +250,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
           <PersonalDetailsStep
             formData={formData}
             onInputChange={handleInputChange}
-            onCoverLetterUpload={handleCoverLetterUpload}
+            onFileUpload={handleFileUpload}
           />
         );
       case 4:
