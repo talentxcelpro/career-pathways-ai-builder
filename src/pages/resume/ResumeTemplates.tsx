@@ -1,8 +1,8 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, Eye, Palette, Crown, Code, Brush, Minimize, Wrench, GraduationCap, Zap, Building } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,6 +13,8 @@ const ResumeTemplates = () => {
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isCreating, setIsCreating] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [previewTemplate, setPreviewTemplate] = useState<any>(null);
 
   const templateCategories = [
     { id: 'all', name: 'All Templates', icon: null },
@@ -298,6 +300,158 @@ const ResumeTemplates = () => {
     }
   };
 
+  const handlePreview = (template: any) => {
+    setPreviewTemplate(template);
+    setShowPreviewModal(true);
+  };
+
+  const generateSampleResume = (template: any) => {
+    const sampleData = {
+      personalInfo: {
+        fullName: "John Smith",
+        email: "john.smith@email.com",
+        phone: "(555) 123-4567",
+        location: "New York, NY",
+        summary: "Experienced professional with 8+ years in software development and team leadership. Proven track record of delivering scalable solutions and driving innovation in fast-paced environments."
+      },
+      experience: [
+        {
+          title: "Senior Software Engineer",
+          company: "Tech Solutions Inc.",
+          location: "New York, NY",
+          startDate: "Jan 2020",
+          endDate: "Present",
+          description: "Led development of microservices architecture serving 10M+ users. Mentored junior developers and improved deployment efficiency by 40%."
+        },
+        {
+          title: "Software Developer",
+          company: "Digital Innovations",
+          location: "Boston, MA",
+          startDate: "Jun 2018",
+          endDate: "Dec 2019",
+          description: "Developed full-stack web applications using React and Node.js. Collaborated with design team to implement responsive user interfaces."
+        }
+      ],
+      education: [
+        {
+          degree: "Bachelor of Science in Computer Science",
+          school: "University of Technology",
+          location: "Cambridge, MA",
+          startDate: "2014",
+          endDate: "2018"
+        }
+      ],
+      skills: ["JavaScript", "React", "Node.js", "Python", "AWS", "Docker", "MongoDB", "Git"]
+    };
+
+    const primaryColor = template.colors[0];
+    const secondaryColor = template.colors[1] || '#374151';
+    const accentColor = template.colors[2] || '#6B7280';
+
+    return `
+      <div style="
+        max-width: 800px; 
+        margin: 0 auto; 
+        padding: 40px; 
+        font-family: 'Arial', sans-serif; 
+        line-height: 1.6; 
+        color: ${secondaryColor};
+        background: white;
+      ">
+        <header style="
+          text-align: center; 
+          border-bottom: 3px solid ${primaryColor}; 
+          padding-bottom: 20px; 
+          margin-bottom: 30px;
+        ">
+          <h1 style="
+            font-size: 2.5em; 
+            margin: 0; 
+            color: ${secondaryColor};
+            font-weight: 700;
+          ">${sampleData.personalInfo.fullName}</h1>
+          <div style="margin-top: 10px; font-size: 1.1em; color: ${accentColor};">
+            ${sampleData.personalInfo.email} | ${sampleData.personalInfo.phone} | ${sampleData.personalInfo.location}
+          </div>
+        </header>
+        
+        <section style="margin-bottom: 30px;">
+          <h2 style="
+            font-size: 1.5em; 
+            color: ${primaryColor}; 
+            border-bottom: 2px solid #E5E7EB; 
+            padding-bottom: 5px; 
+            margin-bottom: 15px;
+          ">Professional Summary</h2>
+          <p style="font-size: 1.1em; line-height: 1.7; margin: 0;">
+            ${sampleData.personalInfo.summary}
+          </p>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+          <h2 style="
+            font-size: 1.5em; 
+            color: ${primaryColor}; 
+            border-bottom: 2px solid #E5E7EB; 
+            padding-bottom: 5px; 
+            margin-bottom: 15px;
+          ">Core Skills</h2>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            ${sampleData.skills.map(skill => `
+              <span style="
+                background: ${primaryColor}15; 
+                color: ${primaryColor}; 
+                padding: 6px 12px; 
+                border-radius: 20px; 
+                font-size: 0.9em;
+                font-weight: 500;
+              ">${skill}</span>
+            `).join('')}
+          </div>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+          <h2 style="
+            font-size: 1.5em; 
+            color: ${primaryColor}; 
+            border-bottom: 2px solid #E5E7EB; 
+            padding-bottom: 5px; 
+            margin-bottom: 15px;
+          ">Professional Experience</h2>
+          ${sampleData.experience.map(exp => `
+            <div style="margin-bottom: 25px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                <h3 style="font-size: 1.2em; margin: 0; color: ${secondaryColor}; font-weight: 600;">${exp.title}</h3>
+                <span style="font-size: 0.9em; color: ${accentColor}; font-weight: 500;">${exp.startDate} - ${exp.endDate}</span>
+              </div>
+              <div style="font-weight: 600; color: ${primaryColor}; margin-bottom: 8px;">${exp.company} • ${exp.location}</div>
+              <p style="margin: 0; color: #4B5563; line-height: 1.6;">${exp.description}</p>
+            </div>
+          `).join('')}
+        </section>
+        
+        <section>
+          <h2 style="
+            font-size: 1.5em; 
+            color: ${primaryColor}; 
+            border-bottom: 2px solid #E5E7EB; 
+            padding-bottom: 5px; 
+            margin-bottom: 15px;
+          ">Education</h2>
+          ${sampleData.education.map(edu => `
+            <div style="margin-bottom: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
+                <h3 style="font-size: 1.1em; margin: 0; color: ${secondaryColor}; font-weight: 600;">${edu.degree}</h3>
+                <span style="font-size: 0.9em; color: ${accentColor}; font-weight: 500;">${edu.startDate} - ${edu.endDate}</span>
+              </div>
+              <div style="color: ${primaryColor}; font-weight: 600;">${edu.school} • ${edu.location}</div>
+            </div>
+          `).join('')}
+        </section>
+      </div>
+    `;
+  };
+
   const getAtsScoreColor = (score: number) => {
     if (score >= 95) return 'bg-green-100 text-green-800';
     if (score >= 85) return 'bg-blue-100 text-blue-800';
@@ -376,7 +530,11 @@ const ResumeTemplates = () => {
                   
                   {/* Hover Overlay */}
                   <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
-                    <Button size="sm" variant="secondary">
+                    <Button 
+                      size="sm" 
+                      variant="secondary"
+                      onClick={() => handlePreview(template)}
+                    >
                       <Eye className="h-4 w-4 mr-1" />
                       Preview
                     </Button>
@@ -414,14 +572,23 @@ const ResumeTemplates = () => {
                         ))}
                       </div>
                     </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleUseTemplate(template.id)}
-                      disabled={isCreating}
-                    >
-                      Use Template
-                    </Button>
+                    <div className="flex space-x-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handlePreview(template)}
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Preview
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        onClick={() => handleUseTemplate(template.id)}
+                        disabled={isCreating}
+                      >
+                        Use
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -440,6 +607,61 @@ const ResumeTemplates = () => {
           </div>
         )}
       </div>
+
+      {/* Preview Modal */}
+      <Dialog open={showPreviewModal} onOpenChange={setShowPreviewModal}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span>Preview: {previewTemplate?.name}</span>
+              <div className="flex items-center gap-2">
+                <Badge className={`text-xs ${previewTemplate ? getAtsScoreColor(previewTemplate.ats_score) : ''}`}>
+                  ATS {previewTemplate?.ats_score}%
+                </Badge>
+                <div className="flex items-center space-x-1">
+                  <Palette className="h-3 w-3 text-gray-400" />
+                  <div className="flex space-x-1">
+                    {previewTemplate?.colors.map((color: string, index: number) => (
+                      <div
+                        key={index}
+                        className="w-3 h-3 rounded-full border border-gray-200"
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            {previewTemplate && (
+              <div 
+                className="border rounded-lg bg-white shadow-sm"
+                dangerouslySetInnerHTML={{ __html: generateSampleResume(previewTemplate) }}
+              />
+            )}
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowPreviewModal(false)}
+            >
+              Close
+            </Button>
+            <Button 
+              onClick={() => {
+                setShowPreviewModal(false);
+                if (previewTemplate) {
+                  handleUseTemplate(previewTemplate.id);
+                }
+              }}
+              disabled={isCreating}
+            >
+              Use This Template
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
