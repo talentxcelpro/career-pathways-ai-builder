@@ -20,6 +20,8 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ApplicantResumeDownload } from "@/components/employer/ApplicantResumeDownload";
+import { BulkApplicantExport } from "@/components/employer/BulkApplicantExport";
 
 interface JobApplication {
   id: string;
@@ -202,6 +204,11 @@ const JobApplicants = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <BulkApplicantExport 
+            jobId={jobId!} 
+            jobTitle={job.title}
+            applicants={applications || []}
+          />
           <Button variant="outline" onClick={() => navigate(`/jobs/manage/${jobId}/edit`)}>
             Edit Job
           </Button>
@@ -270,6 +277,7 @@ const JobApplicants = () => {
                   <TableHead>Match Score</TableHead>
                   <TableHead>Experience</TableHead>
                   <TableHead>Applied</TableHead>
+                  <TableHead>Resume</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -328,6 +336,13 @@ const JobApplicants = () => {
                       </span>
                     </TableCell>
                     <TableCell>
+                      <ApplicantResumeDownload
+                        resumeUrl={application.resume_url}
+                        applicantName={application.profiles?.full_name || 'Unknown'}
+                        applicationId={application.id}
+                      />
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         <Button
                           variant="ghost"
@@ -350,15 +365,6 @@ const JobApplicants = () => {
                             onClick={() => window.open(`tel:${application.profiles.phone}`)}
                           >
                             <Phone className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {application.resume_url && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => window.open(application.resume_url, '_blank')}
-                          >
-                            <Download className="h-4 w-4" />
                           </Button>
                         )}
                       </div>

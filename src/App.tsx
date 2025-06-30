@@ -34,7 +34,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Routes that don't require authentication
+// Routes that don't require authentication - updated to include job viewing
 const publicRoutes = [
   '/', 
   '/auth/login', 
@@ -42,6 +42,8 @@ const publicRoutes = [
   '/auth/forgot-password', 
   '/auth/reset-password', 
   '/auth/callback',
+  '/jobs',
+  '/jobs/:id',
   '/companies',
   '/companies/:id',
   '/profile/:id',
@@ -64,7 +66,7 @@ const App = () => (
                 <Routes>
                   {navItems.map((item: NavItem) => {
                     const isPublicRoute = publicRoutes.some(route => {
-                      // Handle dynamic routes like /companies/:id and /profile/:id
+                      // Handle dynamic routes like /companies/:id, /profile/:id, and /jobs/:id
                       if (route.includes(':')) {
                         const routePattern = route.replace(':id', '[^/]+');
                         return new RegExp(`^${routePattern}$`).test(item.to);

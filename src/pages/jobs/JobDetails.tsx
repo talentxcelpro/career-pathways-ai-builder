@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -15,31 +14,20 @@ import {
   Building2, 
   Users, 
   Eye,
-  Heart,
   Share2,
   ArrowLeft,
-  Briefcase,
-  Calendar,
   Star
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';
+import { PublicJobApplyButton } from '@/components/jobs/PublicJobApplyButton';
+import { PublicJobSaveButton } from '@/components/jobs/PublicJobSaveButton';
+import { updateMetaTags } from '@/utils/metaTags';
 
 const JobDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [isSaved, setIsSaved] = useState(false);
-
-  // Get current user (optional)
-  useEffect(() => {
-    const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUser(user);
-    };
-    getCurrentUser();
-  }, []);
 
   // Fetch job details (no authentication required)
   const { data: job, isLoading, error } = useQuery({
@@ -63,6 +51,7 @@ const JobDetails = () => {
         `)
         .eq('id', id)
         .eq('is_active', true)
+        .eq('job_status', 'open')
         .single();
 
       if (error) throw error;
@@ -70,28 +59,16 @@ const JobDetails = () => {
     },
   });
 
-  // Check if job is saved (only if user is logged in)
-  const { data: savedJobData } = useQuery({
-    queryKey: ['saved_job', id, currentUser?.id],
-    queryFn: async () => {
-      if (!currentUser || !id) return null;
-      
-      const { data, error } = await supabase
-        .from('saved_jobs')
-        .select('id')
-        .eq('user_id', currentUser.id)
-        .eq('job_id', id)
-        .single();
-      
-      if (error && error.code !== 'PGRST116') throw error;
-      return data;
-    },
-    enabled: !!currentUser && !!id,
-  });
-
+  // Update meta tags for SEO
   useEffect(() => {
-    setIsSaved(!!savedJobData);
-  }, [savedJobData]);
+    if (job) {
+      updateMetaTags({
+        title: `${job.title} at ${job.companies?.name || 'Company'} | TalentXcel Jobs`,
+        description: job.description.substring(0, 160) + '...',
+        url: `${window.location.origin}/jobs/${id}`,
+      });
+    }
+  }, [job, id]);
 
   // Increment view count
   useEffect(() => {
@@ -102,36 +79,6 @@ const JobDetails = () => {
       incrementViewCount();
     }
   }, [job?.id]);
-
-  const handleSave = async () => {
-    if (!currentUser) {
-      toast.error('Please login to save jobs');
-      navigate('/auth/login');
-      return;
-    }
-
-    try {
-      if (isSaved) {
-        await supabase
-          .from('saved_jobs')
-          .delete()
-          .eq('user_id', currentUser.id)
-          .eq('job_id', id);
-        
-        setIsSaved(false);
-        toast.success('Job removed from saved');
-      } else {
-        await supabase
-          .from('saved_jobs')
-          .insert({ user_id: currentUser.id, job_id: id });
-        
-        setIsSaved(true);
-        toast.success('Job saved successfully');
-      }
-    } catch (error) {
-      toast.error('Failed to save job');
-    }
-  };
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -149,15 +96,6 @@ const JobDetails = () => {
       navigator.clipboard.writeText(url);
       toast.success('Job link copied to clipboard!');
     }
-  };
-
-  const handleApply = () => {
-    if (!currentUser) {
-      // Redirect to login with return URL
-      navigate(`/auth/login?returnUrl=/jobs/${id}/apply`);
-      return;
-    }
-    navigate(`/jobs/${id}/apply`);
   };
 
   if (isLoading) {
@@ -273,21 +211,8 @@ const JobDetails = () => {
               <Button variant="outline" size="sm" onClick={handleShare}>
                 <Share2 className="h-4 w-4" />
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleSave}
-                className={isSaved ? 'text-red-500 border-red-200' : ''}
-              >
-                <Heart className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
-              </Button>
-              <Button 
-                onClick={handleApply}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              >
-                <Briefcase className="h-4 w-4 mr-2" />
-                Apply Now
-              </Button>
+              <PublicJobSaveButton jobId={job.id} />
+              <PublicJobApplyButton jobId={job.id} job={job} />
             </div>
           </div>
         </div>
@@ -375,17 +300,16 @@ const JobDetails = () => {
             {/* Quick Apply */}
             <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
               <CardContent className="p-6 text-center">
-                <Briefcase className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+                <div className="mb-4">
+                  <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Users className="h-6 w-6 text-blue-600" />
+                  </div>
+                </div>
                 <h3 className="text-xl font-semibold mb-2">Ready to Apply?</h3>
                 <p className="text-gray-600 mb-4">
                   Take the next step in your career journey
                 </p>
-                <Button 
-                  onClick={handleApply}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                >
-                  Apply for this Position
-                </Button>
+                <PublicJobApplyButton jobId={job.id} job={job} className="w-full" />
               </CardContent>
             </Card>
 

@@ -1,6 +1,5 @@
-
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +16,26 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Get return URL from query params
+  const returnUrl = searchParams.get('returnUrl');
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // User is already logged in, redirect appropriately
+        if (returnUrl) {
+          navigate(decodeURIComponent(returnUrl));
+        } else {
+          navigate('/dashboard');
+        }
+      }
+    };
+    checkUser();
+  }, [navigate, returnUrl]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +54,13 @@ const LoginForm = () => {
 
       if (data.user) {
         toast.success('Welcome back! 🎉');
-        // AuthContext will handle navigation
+        
+        // Redirect to return URL or dashboard
+        if (returnUrl) {
+          navigate(decodeURIComponent(returnUrl));
+        } else {
+          navigate('/dashboard');
+        }
       }
     } catch (error: any) {
       toast.error('An unexpected error occurred');
@@ -47,9 +72,14 @@ const LoginForm = () => {
   return (
     <Card className="w-full max-w-md mx-auto shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
       <CardHeader className="space-y-2 text-center pb-4">
-        <CardTitle className="text-xl font-bold text-slate-900">Welcome back</CardTitle>
+        <CardTitle className="text-xl font-bold text-slate-900">
+          {returnUrl ? 'Login to Continue' : 'Welcome back'}
+        </CardTitle>
         <CardDescription className="text-sm text-slate-600 font-medium">
-          Sign in to your account to continue your journey
+          {returnUrl 
+            ? 'Please sign in to apply for this job'
+            : 'Sign in to your account to continue your journey'
+          }
         </CardDescription>
       </CardHeader>
       
@@ -152,7 +182,7 @@ const LoginForm = () => {
         <div className="text-center pt-2">
           <span className="text-sm text-slate-600 font-medium">Don't have an account? </span>
           <Link 
-            to="/auth/register" 
+            to={`/auth/register${returnUrl ? `?returnUrl=${encodeURIComponent(returnUrl)}` : ''}`}
             className="text-sm text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors"
           >
             Sign up for free
