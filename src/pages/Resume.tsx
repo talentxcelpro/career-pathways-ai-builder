@@ -1,23 +1,23 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
-const Learning = () => {
+const Resume = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center space-x-2 mb-6">
-        <BookOpen className="h-8 w-8 text-blue-600" />
-        <h1 className="text-3xl font-bold text-gray-900">Learning</h1>
+        <FileText className="h-8 w-8 text-blue-600" />
+        <h1 className="text-3xl font-bold text-gray-900">Resume</h1>
       </div>
       
       <Card>
         <CardHeader>
-          <CardTitle>Skill Development & Courses</CardTitle>
+          <CardTitle>Resume Builder & Manager</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-gray-600">
-            Enhance your skills with our comprehensive learning platform and courses.
+            Create, edit, and manage your professional resume with our powerful tools.
           </p>
         </CardContent>
       </Card>
@@ -25,4 +25,4 @@ const Learning = () => {
   );
 };
 
-export default Learning;
+export default Resume;

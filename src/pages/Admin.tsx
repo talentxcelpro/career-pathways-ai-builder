@@ -1,23 +1,23 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
-const Learning = () => {
+const Admin = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center space-x-2 mb-6">
-        <BookOpen className="h-8 w-8 text-blue-600" />
-        <h1 className="text-3xl font-bold text-gray-900">Learning</h1>
+        <Shield className="h-8 w-8 text-blue-600" />
+        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
       </div>
       
       <Card>
         <CardHeader>
-          <CardTitle>Skill Development & Courses</CardTitle>
+          <CardTitle>Platform Administration</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-gray-600">
-            Enhance your skills with our comprehensive learning platform and courses.
+            Manage users, content, and platform settings from this admin panel.
           </p>
         </CardContent>
       </Card>
@@ -25,4 +25,4 @@ const Learning = () => {
   );
 };
 
-export default Learning;
+export default Admin;

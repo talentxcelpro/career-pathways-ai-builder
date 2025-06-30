@@ -1,5 +1,5 @@
 
-import { HomeIcon, Briefcase, Users, BookOpen, Network, Building2, BarChart3 } from "lucide-react";
+import { HomeIcon, Briefcase, Users, BookOpen, Network, Building2, BarChart3, FileText, Wrench, Map, Building, Shield } from "lucide-react";
 import Index from "./pages/Index.jsx";
 import Jobs from "./pages/Jobs";
 import JobDetails from "./pages/jobs/JobDetails";
@@ -8,6 +8,11 @@ import CompanyDetail from "./pages/companies/CompanyDetail";
 import Learning from "./pages/Learning";
 import NetworkPage from "./pages/Network";
 import Dashboard from "./pages/Dashboard";
+import Resume from "./pages/Resume";
+import Tools from "./pages/Tools";
+import CareerMap from "./pages/CareerMap";
+import Employer from "./pages/Employer";
+import Admin from "./pages/Admin";
 
 /**
  * Central place for defining the navigation items. Used for navigation components and routing.
@@ -27,6 +32,12 @@ export const navItems = [
     page: <Dashboard />,
   },
   {
+    title: "Network",
+    to: "/network",
+    icon: <Network className="h-4 w-4" />,
+    page: <NetworkPage />,
+  },
+  {
     title: "Jobs",
     to: "/jobs",
     icon: <Briefcase className="h-4 w-4" />,
@@ -37,6 +48,18 @@ export const navItems = [
     to: "/jobs/:id",
     page: <JobDetails />,
     hideFromNav: true,
+  },
+  {
+    title: "Resume",
+    to: "/resume",
+    icon: <FileText className="h-4 w-4" />,
+    page: <Resume />,
+  },
+  {
+    title: "Tools",
+    to: "/tools",
+    icon: <Wrench className="h-4 w-4" />,
+    page: <Tools />,
   },
   {
     title: "Companies",
@@ -57,9 +80,21 @@ export const navItems = [
     page: <Learning />,
   },
   {
-    title: "Network",
-    to: "/network",
-    icon: <Network className="h-4 w-4" />,
-    page: <NetworkPage />,
+    title: "Career Map",
+    to: "/career-map",
+    icon: <Map className="h-4 w-4" />,
+    page: <CareerMap />,
+  },
+  {
+    title: "Employer",
+    to: "/employer",
+    icon: <Building className="h-4 w-4" />,
+    page: <Employer />,
+  },
+  {
+    title: "Admin",
+    to: "/admin",
+    icon: <Shield className="h-4 w-4" />,
+    page: <Admin />,
   },
 ];
