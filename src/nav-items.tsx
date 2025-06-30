@@ -1,5 +1,5 @@
 
-import { HomeIcon, Briefcase, Users, BookOpen, Network, Building2 } from "lucide-react";
+import { HomeIcon, Briefcase, Users, BookOpen, Network, Building2, BarChart3 } from "lucide-react";
 import Index from "./pages/Index.jsx";
 import Jobs from "./pages/Jobs";
 import JobDetails from "./pages/jobs/JobDetails";
@@ -7,6 +7,7 @@ import Companies from "./pages/Companies";
 import CompanyDetail from "./pages/companies/CompanyDetail";
 import Learning from "./pages/Learning";
 import NetworkPage from "./pages/Network";
+import Dashboard from "./pages/Dashboard";
 
 /**
  * Central place for defining the navigation items. Used for navigation components and routing.
@@ -18,6 +19,12 @@ export const navItems = [
     icon: <HomeIcon className="h-4 w-4" />,
     page: <Index />,
     exact: true,
+  },
+  {
+    title: "Dashboard",
+    to: "/dashboard",
+    icon: <BarChart3 className="h-4 w-4" />,
+    page: <Dashboard />,
   },
   {
     title: "Jobs",
