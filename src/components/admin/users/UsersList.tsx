@@ -3,7 +3,22 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Ban, Mail, Calendar, MapPin } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { 
+  Eye, 
+  Edit, 
+  Shield,
+  Mail,
+  Calendar
+} from 'lucide-react';
 
 interface UsersListProps {
   users: any[];
@@ -14,94 +29,108 @@ interface UsersListProps {
 export const UsersList: React.FC<UsersListProps> = ({ 
   users, 
   isLoading, 
-  handleUserAction 
+  handleUserAction
 }) => {
-  const getUserStatusColor = (user: any) => {
-    if (user.last_login_at) {
-      const lastLogin = new Date(user.last_login_at);
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      return lastLogin > thirtyDaysAgo ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
-    }
-    return 'bg-gray-100 text-gray-800';
-  };
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
-  const getUserStatusText = (user: any) => {
-    if (user.last_login_at) {
-      const lastLogin = new Date(user.last_login_at);
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      return lastLogin > thirtyDaysAgo ? 'Active' : 'Inactive';
+  const getRoleBadgeColor = (role: string) => {
+    switch (role) {
+      case 'admin': return 'bg-red-100 text-red-800';
+      case 'employer': return 'bg-blue-100 text-blue-800';
+      case 'job_seeker': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
-    return 'Never logged in';
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Users ({users.length})</CardTitle>
+        <CardTitle>Users ({users?.length || 0})</CardTitle>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {users.map((user) => (
-              <div key={user.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                      {user.full_name?.charAt(0)?.toUpperCase() || 'U'}
-                    </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>User</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Last Login</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {users?.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={user.profile_picture_url} />
+                      <AvatarFallback>
+                        {user.full_name?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold">{user.full_name || 'No Name'}</h3>
-                        <Badge className={getUserStatusColor(user)}>
-                          {getUserStatusText(user)}
-                        </Badge>
-                        {user.is_employer && (
-                          <Badge variant="outline" className="bg-purple-50 text-purple-700">
-                            Employer
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-                        <div className="flex items-center gap-1">
-                          <Mail className="h-4 w-4" />
-                          {user.email}
-                        </div>
-                        {user.location && (
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            {user.location}
-                          </div>
-                        )}
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          Joined {new Date(user.created_at).toLocaleDateString()}
-                        </div>
-                      </div>
+                      <p className="font-medium">{user.full_name || 'Unknown User'}</p>
+                      <p className="text-sm text-gray-600 flex items-center gap-1">
+                        <Mail className="h-3 w-3" />
+                        {user.email}
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                </TableCell>
+                <TableCell>
+                  <Badge className={getRoleBadgeColor(user.user_role)}>
+                    {user.user_role?.replace('_', ' ') || 'Unknown'}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={user.profile_completed ? 'default' : 'secondary'}>
+                    {user.profile_completed ? 'Active' : 'Inactive'}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                    <Calendar className="h-3 w-3" />
+                    {user.last_login_at 
+                      ? new Date(user.last_login_at).toLocaleDateString()
+                      : 'Never'
+                    }
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
                     <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Profile
+                      <Eye className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
                     </Button>
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => handleUserAction(user.id, 'Suspend')}
+                      onClick={() => handleUserAction(user.id, user.profile_completed ? 'deactivate' : 'activate')}
                     >
-                      <Ban className="h-4 w-4 mr-2" />
-                      Suspend
+                      <Shield className="h-4 w-4 mr-1" />
+                      {user.profile_completed ? 'Deactivate' : 'Activate'}
                     </Button>
                   </div>
-                </div>
-              </div>
+                </TableCell>
+              </TableRow>
             ))}
-          </div>
-        )}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );

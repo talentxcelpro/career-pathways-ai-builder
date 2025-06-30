@@ -1,40 +1,46 @@
 
 import React from 'react';
 import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
-import { AdminNotifications } from '@/components/admin/AdminNotifications';
 import { PlatformStatsCards } from '@/components/admin/dashboard/PlatformStatsCards';
-import { PendingActionsCard } from '@/components/admin/dashboard/PendingActionsCard';
 import { UserGrowthChart } from '@/components/admin/dashboard/UserGrowthChart';
 import { RecentActivityCard } from '@/components/admin/dashboard/RecentActivityCard';
+import { PendingActionsCard } from '@/components/admin/dashboard/PendingActionsCard';
 import { useAdminStats } from '@/hooks/useAdminStats';
-import { useRecentActivity } from '@/hooks/useRecentActivity';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
+import { useRecentActivity } from '@/hooks/useRecentActivity';
 
 const AdminDashboard = () => {
-  const { data: stats } = useAdminStats();
-  const { data: recentActivity } = useRecentActivity();
-  const { data: userGrowthData } = useUserGrowthData();
+  const { data: adminStats, isLoading: statsLoading } = useAdminStats();
+  const { data: userGrowthData, isLoading: growthLoading } = useUserGrowthData();
+  const { data: recentActivity, isLoading: activityLoading } = useRecentActivity();
+
+  if (statsLoading || growthLoading || activityLoading) {
+    return (
+      <UnifiedAdminLayout 
+        title="Admin Dashboard" 
+        description="Platform overview and analytics"
+      >
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </UnifiedAdminLayout>
+    );
+  }
 
   return (
     <UnifiedAdminLayout 
       title="Admin Dashboard" 
-      description="Welcome back! Here's what's happening on TalentXcel."
+      description="Platform overview and analytics"
     >
       <div className="space-y-8">
-        <PlatformStatsCards stats={stats} />
+        <PlatformStatsCards stats={adminStats} />
         
-        <PendingActionsCard stats={stats} />
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <UserGrowthChart data={userGrowthData} />
-          </div>
-
-          <div className="space-y-6">
-            <AdminNotifications />
-            <RecentActivityCard activities={recentActivity} />
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <UserGrowthChart data={userGrowthData} />
+          <RecentActivityCard activities={recentActivity} />
         </div>
+
+        <PendingActionsCard stats={adminStats} />
       </div>
     </UnifiedAdminLayout>
   );

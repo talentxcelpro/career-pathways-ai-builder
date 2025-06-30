@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -8,6 +8,7 @@ export const useUserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const queryClient = useQueryClient();
 
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-users', searchTerm, roleFilter, statusFilter],
@@ -22,10 +23,7 @@ export const useUserManagement = () => {
       }
 
       if (roleFilter !== 'all') {
-        const validRoles = ['job_seeker', 'employer', 'admin'] as const;
-        if (validRoles.includes(roleFilter as any)) {
-          query = query.eq('user_role', roleFilter as 'job_seeker' | 'employer' | 'admin');
-        }
+        query = query.eq('user_role', roleFilter);
       }
 
       const { data, error } = await query;
@@ -44,8 +42,8 @@ export const useUserManagement = () => {
         { count: candidates }
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).not('last_login_at', 'is', null),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_employer', true),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).gt('last_login_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'employer'),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'job_seeker')
       ]);
 
@@ -58,17 +56,39 @@ export const useUserManagement = () => {
     }
   });
 
+  const updateUserStatus = useMutation({
+    mutationFn: async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
+      // For now, we'll update the profile_completed status as a proxy for active/inactive
+      const { error } = await supabase
+        .from('profiles')
+        .update({ profile_completed: isActive })
+        .eq('id', userId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('User status updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to update user status');
+    }
+  });
+
   const handleUserAction = (userId: string, action: string) => {
-    toast.info(`${action} action would be implemented here for user ${userId}`);
+    switch (action) {
+      case 'activate':
+        updateUserStatus.mutate({ userId, isActive: true });
+        break;
+      case 'deactivate':
+        updateUserStatus.mutate({ userId, isActive: false });
+        break;
+      default:
+        toast.info(`Action ${action} not implemented yet`);
+    }
   };
 
-  const filteredUsers = users?.filter(user => {
-    const matchesStatus = statusFilter === 'all' || 
-      (statusFilter === 'active' && user.last_login_at) ||
-      (statusFilter === 'inactive' && !user.last_login_at);
-    
-    return matchesStatus;
-  }) || [];
+  const filteredUsers = users || [];
 
   return {
     searchTerm,
