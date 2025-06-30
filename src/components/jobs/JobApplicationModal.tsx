@@ -5,12 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Upload, FileText, Star, Sparkles, User, Mail, Phone, MapPin } from "lucide-react";
+import { Upload, FileText, Star, Sparkles, AlertCircle, CheckCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { incrementJobApplications } from "@/utils/supabaseHelpers";
@@ -50,6 +49,7 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [aiProcessing, setAiProcessing] = useState(false);
   const [matchScore, setMatchScore] = useState<number | null>(null);
+  const [resumeRequired, setResumeRequired] = useState(true);
 
   const [formData, setFormData] = useState<ApplicationData>({
     cover_letter: '',
@@ -79,10 +79,22 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
       if (resumesData) {
         setResumes(resumesData);
         const primaryResume = resumesData.find(r => r.is_primary);
-        if (primaryResume) setSelectedResumeId(primaryResume.id);
+        if (primaryResume) {
+          setSelectedResumeId(primaryResume.id);
+          setActiveTab('existing');
+        } else if (resumesData.length === 0) {
+          // No resumes available, force upload
+          setActiveTab('upload');
+          setResumeRequired(true);
+        }
+      } else {
+        // No resumes found, user must upload
+        setActiveTab('upload');
+        setResumeRequired(true);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
+      toast.error('Failed to load your resumes');
     }
   };
 
@@ -122,10 +134,33 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
 
   const handleExistingResumeSelect = (resumeId: string) => {
     setSelectedResumeId(resumeId);
+    setUploadedFile(null); // Clear any uploaded file
+    setMatchScore(null); // Clear match score from upload
+  };
+
+  const isResumeSelected = () => {
+    return (activeTab === 'existing' && selectedResumeId) || (activeTab === 'upload' && uploadedFile);
+  };
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    // Clear selections when switching tabs
+    if (value === 'existing') {
+      setUploadedFile(null);
+      setMatchScore(null);
+    } else {
+      setSelectedResumeId('');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isResumeSelected()) {
+      toast.error('Please select a resume or upload one to proceed');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -162,13 +197,29 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
           .getPublicUrl(fileName);
         
         resumeUrl = publicUrl;
+
+        // Save the uploaded resume to user's resume collection
+        const { error: resumeError } = await supabase
+          .from('resumes')
+          .insert({
+            user_id: user.id,
+            title: `Resume for ${job.title}`,
+            file_url: publicUrl,
+            is_primary: resumes.length === 0, // Make primary if it's the first resume
+            is_active: true
+          });
+
+        if (resumeError) {
+          console.error('Failed to save resume:', resumeError);
+          // Don't throw error here as the main application should still proceed
+        }
       } else if (selectedResumeId && activeTab === 'existing') {
         const selectedResume = resumes.find(r => r.id === selectedResumeId);
         resumeUrl = selectedResume?.file_url || '';
       }
 
-      if (!resumeUrl && !selectedResumeId) {
-        throw new Error('Please select a resume or upload one');
+      if (!resumeUrl) {
+        throw new Error('Resume upload failed. Please try again.');
       }
 
       // Ensure numeric values are within safe ranges
@@ -181,7 +232,7 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
         user_id: user.id,
         job_id: job.id,
         cover_letter: formData.cover_letter?.trim() || null,
-        resume_url: resumeUrl || null,
+        resume_url: resumeUrl,
         status: 'applied' as const,
         applied_at: new Date().toISOString(),
         ai_match_score: safeMatchScore
@@ -261,13 +312,24 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                Resume Selection
+                Resume Selection *
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
+              {resumeRequired && !isResumeSelected() && (
+                <Alert className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    A resume is required to apply for this job. Please select an existing resume or upload a new one.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <Tabs value={activeTab} onValueChange={handleTabChange}>
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="existing">Use Existing Resume</TabsTrigger>
+                  <TabsTrigger value="existing" disabled={resumes.length === 0}>
+                    Use Existing Resume {resumes.length > 0 && `(${resumes.length})`}
+                  </TabsTrigger>
                   <TabsTrigger value="upload">Upload New Resume</TabsTrigger>
                 </TabsList>
 
@@ -290,12 +352,17 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
                                 <Badge variant="secondary" className="text-xs">Primary</Badge>
                               )}
                             </div>
-                            <input
-                              type="radio"
-                              checked={selectedResumeId === resume.id}
-                              onChange={() => handleExistingResumeSelect(resume.id)}
-                              className="h-4 w-4"
-                            />
+                            <div className="flex items-center gap-2">
+                              {selectedResumeId === resume.id && (
+                                <CheckCircle className="h-4 w-4 text-green-500" />
+                              )}
+                              <input
+                                type="radio"
+                                checked={selectedResumeId === resume.id}
+                                onChange={() => handleExistingResumeSelect(resume.id)}
+                                className="h-4 w-4"
+                              />
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -303,7 +370,8 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
                   ) : (
                     <div className="text-center py-8 text-gray-500">
                       <FileText className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                      <p>No resumes found. Upload a new one to get started.</p>
+                      <p className="font-medium">No resumes found</p>
+                      <p className="text-sm">Upload a new resume to get started</p>
                     </div>
                   )}
                 </TabsContent>
@@ -319,8 +387,15 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
                     />
                     <label htmlFor="resume-upload" className="cursor-pointer">
                       <Upload className="h-8 w-8 mx-auto mb-3 text-gray-400" />
-                      <p className="text-sm text-gray-600">
-                        {uploadedFile ? uploadedFile.name : 'Click to upload your resume'}
+                      <p className="text-sm text-gray-600 font-medium">
+                        {uploadedFile ? (
+                          <span className="text-green-600 flex items-center justify-center gap-2">
+                            <CheckCircle className="h-4 w-4" />
+                            {uploadedFile.name}
+                          </span>
+                        ) : (
+                          'Click to upload your resume'
+                        )}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
                         PDF or Word document (max 5MB)
@@ -383,7 +458,7 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting || (!selectedResumeId && !uploadedFile)}
+              disabled={isSubmitting || !isResumeSelected()}
             >
               {isSubmitting ? 'Submitting...' : 'Submit Application'}
             </Button>
