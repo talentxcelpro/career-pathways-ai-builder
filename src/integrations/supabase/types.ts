@@ -507,6 +507,59 @@ export type Database = {
         }
         Relationships: []
       }
+      company_access_requests: {
+        Row: {
+          approved_by: string | null
+          company_domain: string
+          company_id: string
+          created_at: string | null
+          id: string
+          rejection_reason: string | null
+          request_message: string | null
+          requested_role: string | null
+          requester_email: string
+          requester_id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          approved_by?: string | null
+          company_domain: string
+          company_id: string
+          created_at?: string | null
+          id?: string
+          rejection_reason?: string | null
+          request_message?: string | null
+          requested_role?: string | null
+          requester_email: string
+          requester_id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          approved_by?: string | null
+          company_domain?: string
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          rejection_reason?: string | null
+          request_message?: string | null
+          requested_role?: string | null
+          requester_email?: string
+          requester_id?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_access_requests_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_admins: {
         Row: {
           company_id: string
@@ -3045,6 +3098,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_company_access_request: {
+        Args: { request_id: string }
+        Returns: undefined
+      }
       approve_employer_request: {
         Args: { request_id: string }
         Returns: undefined
@@ -3057,6 +3114,10 @@ export type Database = {
           user_preferences?: Json
         }
         Returns: undefined
+      }
+      get_email_domain: {
+        Args: { email_address: string }
+        Returns: string
       }
       get_user_role: {
         Args: { user_uuid: string }
@@ -3088,6 +3149,10 @@ export type Database = {
       is_company_admin_or_owner: {
         Args: { company_uuid: string }
         Returns: boolean
+      }
+      reject_company_access_request: {
+        Args: { request_id: string; reason?: string }
+        Returns: undefined
       }
       reject_employer_request: {
         Args: { request_id: string; reason?: string }

@@ -1,273 +1,199 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Settings, Bell, Users, Shield, ArrowLeft } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Settings, Bell, Shield, Users, Building2 } from "lucide-react";
+import { CompanyAccessRequests } from "@/components/employer/CompanyAccessRequests";
 
 const EmployerSettings = () => {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  
-  const [companyInfo, setCompanyInfo] = useState({
-    name: '',
-    website: '',
-    description: ''
-  });
-
-  const [notifications, setNotifications] = useState({
-    newApplications: true,
-    interviewReminders: true,
-    jobExpiry: true,
-    teamActivity: false
-  });
-
-  // Fetch company settings
-  const { data: settings, isLoading } = useQuery({
-    queryKey: ['company-settings'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      // Get user's company
-      const { data: teamMember } = await supabase
-        .from('company_team_members')
-        .select('company_id')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .single();
-
-      if (!teamMember) throw new Error('No company found');
-
-      // Get company details
-      const { data: company } = await supabase
-        .from('companies')
-        .select('*')
-        .eq('id', teamMember.company_id)
-        .single();
-
-      return {
-        company: company,
-        companyId: teamMember.company_id
-      };
-    }
-  });
-
-  // Update settings when data is loaded
-  useEffect(() => {
-    if (settings?.company) {
-      setCompanyInfo({
-        name: settings.company.name || '',
-        website: settings.company.website || '',
-        description: settings.company.description || ''
-      });
-    }
-  }, [settings]);
-
-  // Save settings mutation
-  const saveSettingsMutation = useMutation({
-    mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      if (!settings?.companyId) throw new Error('No company found');
-
-      // Update company info
-      const { error: companyError } = await supabase
-        .from('companies')
-        .update({
-          name: companyInfo.name,
-          website: companyInfo.website,
-          description: companyInfo.description,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', settings.companyId);
-
-      if (companyError) throw companyError;
-    },
-    onSuccess: () => {
-      toast.success('Settings saved successfully');
-      queryClient.invalidateQueries({ queryKey: ['company-settings'] });
-    },
-    onError: (error: any) => {
-      toast.error('Failed to save settings: ' + error.message);
-    }
-  });
-
-  const handleSave = () => {
-    saveSettingsMutation.mutate();
-  };
-
-  if (isLoading) {
-    return (
-      <div className="p-6 max-w-4xl mx-auto space-y-6">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-gray-200 rounded w-1/2"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
-          <div className="h-32 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-    );
-  }
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [applicationAlerts, setApplicationAlerts] = useState(true);
+  const [weeklyReports, setWeeklyReports] = useState(false);
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center space-x-2">
-        <Button variant="ghost" onClick={() => navigate('/employer')}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <Settings className="h-8 w-8 text-blue-600" />
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Account Settings</h1>
-          <p className="text-gray-600">Manage your account preferences and notifications</p>
-        </div>
+    <div className="container mx-auto p-6 max-w-4xl">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
+        <p className="text-gray-600">Manage your account and employer preferences</p>
       </div>
 
-      {/* Company Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Company Information</CardTitle>
-          <CardDescription>Basic company details and contact information</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="companyName">Company Name</Label>
-              <Input 
-                id="companyName" 
-                placeholder="Your Company Name"
-                value={companyInfo.name}
-                onChange={(e) => setCompanyInfo(prev => ({ ...prev, name: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="website">Website</Label>
-              <Input 
-                id="website" 
-                placeholder="https://yourcompany.com"
-                value={companyInfo.website}
-                onChange={(e) => setCompanyInfo(prev => ({ ...prev, website: e.target.value }))}
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Company Description</Label>
-            <Input 
-              id="description" 
-              placeholder="Brief description of your company"
-              value={companyInfo.description}
-              onChange={(e) => setCompanyInfo(prev => ({ ...prev, description: e.target.value }))}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="general" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="general" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            General
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="flex items-center gap-2">
+            <Bell className="h-4 w-4" />
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger value="team" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Team Access
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Security
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Notification Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
-            Notification Preferences
-          </CardTitle>
-          <CardDescription>Choose what notifications you want to receive</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="newApps">New Applications</Label>
-              <p className="text-sm text-gray-600">Get notified when someone applies to your jobs</p>
-            </div>
-            <Switch 
-              id="newApps"
-              checked={notifications.newApplications}
-              onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, newApplications: checked }))}
-            />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="interviews">Interview Reminders</Label>
-              <p className="text-sm text-gray-600">Reminders for upcoming interviews</p>
-            </div>
-            <Switch 
-              id="interviews"
-              checked={notifications.interviewReminders}
-              onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, interviewReminders: checked }))}
-            />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="jobExpiry">Job Expiry Alerts</Label>
-              <p className="text-sm text-gray-600">Alerts when your job posts are about to expire</p>
-            </div>
-            <Switch 
-              id="jobExpiry"
-              checked={notifications.jobExpiry}
-              onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, jobExpiry: checked }))}
-            />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="teamActivity">Team Activity</Label>
-              <p className="text-sm text-gray-600">Updates on team member activities</p>
-            </div>
-            <Switch 
-              id="teamActivity"
-              checked={notifications.teamActivity}
-              onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, teamActivity: checked }))}
-            />
-          </div>
-        </CardContent>
-      </Card>
+        <TabsContent value="general">
+          <Card>
+            <CardHeader>
+              <CardTitle>General Settings</CardTitle>
+              <CardDescription>
+                Update your account information and preferences
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input id="firstName" placeholder="John" />
+                </div>
+                <div>
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input id="lastName" placeholder="Doe" />
+                </div>
+              </div>
 
-      {/* Privacy & Security */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Privacy & Security
-          </CardTitle>
-          <CardDescription>Manage your privacy and security settings</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="currentPassword">Current Password</Label>
-            <Input id="currentPassword" type="password" placeholder="Enter current password" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="newPassword">New Password</Label>
-            <Input id="newPassword" type="password" placeholder="Enter new password" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
-            <Input id="confirmPassword" type="password" placeholder="Confirm new password" />
-          </div>
-          <Button variant="outline" className="w-full">
-            Update Password
-          </Button>
-        </CardContent>
-      </Card>
+              <div>
+                <Label htmlFor="email">Email Address</Label>
+                <Input id="email" type="email" placeholder="john@company.com" />
+              </div>
 
-      <div className="flex justify-end space-x-2">
-        <Button variant="outline" onClick={() => navigate('/employer')}>
-          Cancel
-        </Button>
-        <Button 
-          onClick={handleSave}
-          disabled={saveSettingsMutation.isPending}
-        >
-          {saveSettingsMutation.isPending ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </div>
+              <div>
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input id="phone" placeholder="+1 (555) 000-0000" />
+              </div>
+
+              <div>
+                <Label htmlFor="timezone">Timezone</Label>
+                <Input id="timezone" placeholder="EST (UTC-5)" />
+              </div>
+
+              <Button>Save Changes</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <Card>
+            <CardHeader>
+              <CardTitle>Notification Preferences</CardTitle>
+              <CardDescription>
+                Choose how you want to be notified about important updates
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="email-notifications">Email Notifications</Label>
+                  <p className="text-sm text-gray-600">
+                    Receive email updates about your jobs and applications
+                  </p>
+                </div>
+                <Switch
+                  id="email-notifications"
+                  checked={emailNotifications}
+                  onCheckedChange={setEmailNotifications}
+                />
+              </div>
+
+              <Separator />
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="application-alerts">Application Alerts</Label>
+                  <p className="text-sm text-gray-600">
+                    Get notified when someone applies to your jobs
+                  </p>
+                </div>
+                <Switch
+                  id="application-alerts"
+                  checked={applicationAlerts}
+                  onCheckedChange={setApplicationAlerts}
+                />
+              </div>
+
+              <Separator />
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="weekly-reports">Weekly Reports</Label>
+                  <p className="text-sm text-gray-600">
+                    Receive weekly summaries of your hiring activity
+                  </p>
+                </div>
+                <Switch
+                  id="weekly-reports"
+                  checked={weeklyReports}
+                  onCheckedChange={setWeeklyReports}
+                />
+              </div>
+
+              <Button>Save Preferences</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="team">
+          <CompanyAccessRequests />
+        </TabsContent>
+
+        <TabsContent value="security">
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Password</CardTitle>
+                <CardDescription>
+                  Update your password to keep your account secure
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="current-password">Current Password</Label>
+                  <Input id="current-password" type="password" />
+                </div>
+                <div>
+                  <Label htmlFor="new-password">New Password</Label>
+                  <Input id="new-password" type="password" />
+                </div>
+                <div>
+                  <Label htmlFor="confirm-password">Confirm New Password</Label>
+                  <Input id="confirm-password" type="password" />
+                </div>
+                <Button>Update Password</Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Two-Factor Authentication</CardTitle>
+                <CardDescription>
+                  Add an extra layer of security to your account
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">SMS Authentication</p>
+                    <p className="text-sm text-gray-600">
+                      Receive verification codes via SMS
+                    </p>
+                  </div>
+                  <Button variant="outline">Enable</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
