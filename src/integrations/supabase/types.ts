@@ -1616,6 +1616,7 @@ export type Database = {
       job_applications: {
         Row: {
           ai_match_score: number | null
+          application_data: Json | null
           applied_at: string | null
           assigned_to: string | null
           cover_letter: string | null
@@ -1629,6 +1630,7 @@ export type Database = {
         }
         Insert: {
           ai_match_score?: number | null
+          application_data?: Json | null
           applied_at?: string | null
           assigned_to?: string | null
           cover_letter?: string | null
@@ -1642,6 +1644,7 @@ export type Database = {
         }
         Update: {
           ai_match_score?: number | null
+          application_data?: Json | null
           applied_at?: string | null
           assigned_to?: string | null
           cover_letter?: string | null

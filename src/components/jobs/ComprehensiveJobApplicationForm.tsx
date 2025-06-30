@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -232,7 +231,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         user_id: user.id,
         job_id: job.id,
         resume_url: resumeUrl,
-        cover_letter: coverLetterUrl,
+        cover_letter: coverLetterUrl ? 'Uploaded separately' : null,
         status: 'applied',
         applied_at: new Date().toISOString(),
         application_data: {
@@ -248,7 +247,8 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
           remoteWorkPreference: formData.remoteWorkPreference,
           yearsOfExperience: formData.yearsOfExperience,
           linkedinProfile: formData.linkedinProfile,
-          portfolioWebsite: formData.portfolioWebsite
+          portfolioWebsite: formData.portfolioWebsite,
+          coverLetterUrl: coverLetterUrl
         }
       };
 
@@ -618,7 +618,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       case 1:
         return formData.resumeSource === 'existing' ? formData.selectedResumeId : formData.uploadedResume;
       case 2:
-        return true; // Job role is pre-filled
+        return true;
       case 3:
         return formData.fullName && formData.email && formData.phoneNumber && formData.location && 
                formData.expectedCTC && formData.noticePeriod && formData.readyToRelocate && 
