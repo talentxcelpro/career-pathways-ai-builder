@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export const useEmployerAccess = () => {
   const { user } = useAuth();
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile, isLoading, refetch } = useQuery({
     queryKey: ['employer-access', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -20,7 +20,9 @@ export const useEmployerAccess = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    staleTime: 0, // Always refetch to get latest status
+    gcTime: 0 // Don't cache
   });
 
   const isEmployer = profile?.is_employer === true;
@@ -32,6 +34,7 @@ export const useEmployerAccess = () => {
     isApproved,
     hasEmployerAccess,
     employerStatus: profile?.employer_status,
-    isLoading
+    isLoading,
+    refetch
   };
 };

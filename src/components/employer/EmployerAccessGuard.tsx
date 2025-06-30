@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useEmployerAccess } from '@/hooks/useEmployerAccess';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,23 +14,7 @@ interface EmployerAccessGuardProps {
 export const EmployerAccessGuard: React.FC<EmployerAccessGuardProps> = ({ children }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  const { data: profile, isLoading } = useQuery({
-    queryKey: ['user-profile', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('is_employer, employer_status')
-        .eq('id', user.id)
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id
-  });
+  const { hasEmployerAccess, isLoading, employerStatus } = useEmployerAccess();
 
   if (isLoading) {
     return (
@@ -58,7 +41,7 @@ export const EmployerAccessGuard: React.FC<EmployerAccessGuardProps> = ({ childr
     );
   }
 
-  if (!profile?.is_employer || profile?.employer_status !== 'approved') {
+  if (!hasEmployerAccess) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -66,11 +49,21 @@ export const EmployerAccessGuard: React.FC<EmployerAccessGuardProps> = ({ childr
             <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">Employer Access Required</h2>
             <p className="text-gray-600 mb-4">
-              You need to be an approved employer to access this feature.
+              {employerStatus === 'pending' 
+                ? 'Your employer access request is pending approval.' 
+                : employerStatus === 'rejected'
+                ? 'Your employer access request was rejected.'
+                : 'You need to be an approved employer to access this feature.'
+              }
             </p>
-            <Button onClick={() => navigate('/employer/request-access')}>
-              Request Access
-            </Button>
+            <div className="space-y-2">
+              <Button onClick={() => navigate('/employer/request-access')}>
+                {employerStatus === 'pending' ? 'Check Status' : 'Request Access'}
+              </Button>
+              <Button variant="outline" onClick={() => window.location.reload()}>
+                Refresh Status
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
