@@ -257,7 +257,7 @@ export const Navbar = () => {
             <Link
               to="/admin/employer-requests"
               className="block px-4 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               <Building2 className="h-4 w-4 inline mr-2" />
               Employer Requests
