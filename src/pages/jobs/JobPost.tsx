@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +9,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import EnhancedCompanyForm from "@/components/jobs/EnhancedCompanyForm";
 import BasicJobInformation from "@/components/jobs/BasicJobInformation";
-import JobDetailsForm from "@/components/jobs/JobDetailsForm";
 import SkillsBenefitsForm from "@/components/jobs/SkillsBenefitsForm";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
 
@@ -28,7 +28,11 @@ function JobPostContent() {
     category_id: '',
     skills_required: [] as string[],
     benefits: [] as string[],
-    application_deadline: ''
+    application_deadline: '',
+    location_type: '',
+    work_schedule: '',
+    contact_person_name: '',
+    contact_person_designation: ''
   });
 
   // Fetch job categories
@@ -63,7 +67,13 @@ function JobPostContent() {
         application_deadline: jobData.application_deadline || null,
         employment_type: jobData.employment_type || null,
         experience_level: jobData.experience_level || null,
-        category_id: jobData.category_id || null
+        category_id: jobData.category_id || null,
+        // Map location_type to is_remote for backward compatibility
+        is_remote: jobData.location_type === 'remote',
+        // Additional fields that might not be in the database yet
+        work_schedule: jobData.work_schedule || null,
+        contact_person_name: jobData.contact_person_name || null,
+        contact_person_designation: jobData.contact_person_designation || null
       };
 
       const { error } = await supabase
@@ -94,6 +104,11 @@ function JobPostContent() {
     
     if (!formData.title.trim() || !formData.description.trim() || !formData.company_id) {
       toast.error('Please fill in all required fields (title, description, and company)');
+      return;
+    }
+
+    if (formData.skills_required.length === 0) {
+      toast.error('Please add at least one required skill');
       return;
     }
 
@@ -131,16 +146,10 @@ function JobPostContent() {
             }}
           />
 
-          {/* Basic Information */}
+          {/* Basic Job Information */}
           <BasicJobInformation
             formData={formData}
             categories={categories}
-            onInputChange={handleInputChange}
-          />
-
-          {/* Job Details */}
-          <JobDetailsForm
-            formData={formData}
             onInputChange={handleInputChange}
           />
 
@@ -159,8 +168,11 @@ function JobPostContent() {
                 className="w-full"
                 disabled={postJobMutation.isPending}
               >
-                {postJobMutation.isPending ? 'Posting...' : 'Post Job'}
+                {postJobMutation.isPending ? 'Posting Job...' : 'Post Job'}
               </Button>
+              <p className="text-xs text-center text-muted-foreground mt-2">
+                By posting, you agree to our terms and the job will be live for 15 days
+              </p>
             </CardContent>
           </Card>
         </form>
