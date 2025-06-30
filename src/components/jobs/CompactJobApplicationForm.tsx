@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -132,12 +131,36 @@ export default function CompactJobApplicationForm({ open, onOpenChange, job }: C
         resumeUrl = selectedResume?.file_url || '';
       }
 
+      // Create a clean application data object without File objects
+      const applicationData = {
+        resumeSource: formData.resumeSource,
+        selectedResumeId: formData.selectedResumeId,
+        fullName: formData.fullName,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        preferredCallTime: formData.preferredCallTime,
+        location: formData.location,
+        currentCTC: formData.currentCTC,
+        expectedCTC: formData.expectedCTC,
+        noticePeriod: formData.noticePeriod,
+        readyToRelocate: formData.readyToRelocate,
+        remoteWorkPreference: formData.remoteWorkPreference,
+        yearsOfExperience: formData.yearsOfExperience,
+        linkedinProfile: formData.linkedinProfile,
+        portfolioWebsite: formData.portfolioWebsite,
+        informationConfirmed: formData.informationConfirmed,
+        contactAuthorized: formData.contactAuthorized,
+        // Store file names instead of File objects
+        uploadedResumeFileName: formData.uploadedResume?.name || null,
+        coverLetterFileName: formData.coverLetter?.name || null
+      };
+
       const { error } = await supabase.from('job_applications').insert({
         user_id: user.id,
         job_id: job.id,
         resume_url: resumeUrl,
         status: 'applied',
-        application_data: formData
+        application_data: applicationData
       });
 
       if (error) throw error;
