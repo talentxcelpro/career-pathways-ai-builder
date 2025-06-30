@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Chrome, Linkedin, Loader2 } from 'lucide-react';
+import { Chrome, Loader2 } from 'lucide-react';
 
 interface SocialLoginProps {
   variant?: 'default' | 'prominent';
@@ -14,16 +14,16 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
   variant = 'default',
   showText = true 
 }) => {
-  const [loading, setLoading] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSocialLogin = async (provider: 'google' | 'linkedin_oidc') => {
-    setLoading(provider);
+  const handleGoogleLogin = async () => {
+    setLoading(true);
 
     try {
-      console.log(`Starting ${provider} OAuth flow...`);
+      console.log('Starting Google OAuth flow...');
       
       const { error } = await supabase.auth.signInWithOAuth({
-        provider,
+        provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
@@ -34,18 +34,18 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
       });
 
       if (error) {
-        console.error(`${provider} OAuth error:`, error);
-        toast.error(`Failed to sign in with ${provider}. Please try again.`);
-        setLoading(null);
+        console.error('Google OAuth error:', error);
+        toast.error('Failed to sign in with Google. Please try again.');
+        setLoading(false);
         return;
       }
 
-      console.log(`${provider} OAuth initiated successfully`);
+      console.log('Google OAuth initiated successfully');
       // The redirect will handle the loading state
     } catch (error: any) {
-      console.error(`${provider} login error:`, error);
-      toast.error(`${provider} sign in failed. Please try again.`);
-      setLoading(null);
+      console.error('Google login error:', error);
+      toast.error('Google sign in failed. Please try again.');
+      setLoading(false);
     }
   };
 
@@ -58,35 +58,17 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
       <Button
         variant="outline"
         className={`w-full ${buttonClass} border-2 hover:bg-blue-50 hover:border-blue-300 group`}
-        onClick={() => handleSocialLogin('google')}
-        disabled={!!loading}
+        onClick={handleGoogleLogin}
+        disabled={loading}
       >
-        {loading === 'google' ? (
+        {loading ? (
           <Loader2 className="h-5 w-5 mr-3 animate-spin" />
         ) : (
           <Chrome className="h-5 w-5 mr-3 text-blue-600 group-hover:text-blue-700" />
         )}
         {showText && (
           <span className="text-gray-700 group-hover:text-gray-900">
-            {loading === 'google' ? 'Signing in...' : 'Continue with Google'}
-          </span>
-        )}
-      </Button>
-      
-      <Button
-        variant="outline"
-        className={`w-full ${buttonClass} border-2 hover:bg-blue-50 hover:border-blue-300 group`}
-        onClick={() => handleSocialLogin('linkedin_oidc')}
-        disabled={!!loading}
-      >
-        {loading === 'linkedin_oidc' ? (
-          <Loader2 className="h-5 w-5 mr-3 animate-spin" />
-        ) : (
-          <Linkedin className="h-5 w-5 mr-3 text-blue-700 group-hover:text-blue-800" />
-        )}
-        {showText && (
-          <span className="text-gray-700 group-hover:text-gray-900">
-            {loading === 'linkedin_oidc' ? 'Signing in...' : 'Continue with LinkedIn'}
+            {loading ? 'Signing in...' : 'Continue with Google'}
           </span>
         )}
       </Button>
