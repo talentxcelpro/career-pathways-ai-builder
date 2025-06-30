@@ -1,8 +1,9 @@
-
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+
+type UserRole = 'admin' | 'job_seeker' | 'employer' | 'candidate';
 
 export const useUserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,8 +23,8 @@ export const useUserManagement = () => {
         query = query.or(`full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
       }
 
-      if (roleFilter !== 'all') {
-        query = query.eq('user_role', roleFilter);
+      if (roleFilter !== 'all' && (roleFilter === 'admin' || roleFilter === 'job_seeker' || roleFilter === 'employer' || roleFilter === 'candidate')) {
+        query = query.eq('user_role', roleFilter as UserRole);
       }
 
       const { data, error } = await query;
