@@ -22,7 +22,8 @@ import {
   Coffee,
   Award,
   TrendingUp,
-  ArrowLeft
+  ArrowLeft,
+  ExternalLink
 } from 'lucide-react';
 
 const CompanyDetail = () => {
@@ -135,69 +136,139 @@ const CompanyDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Cover Image */}
-      <div className="h-64 bg-gradient-to-r from-blue-600 to-indigo-600 relative">
-        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Back Button */}
-        <div className="pt-4 -mt-60 relative z-10">
+      {/* Enhanced Cover Image with Overlay */}
+      <div className="relative h-80 overflow-hidden">
+        {company.cover_image_url ? (
+          <img 
+            src={company.cover_image_url} 
+            alt={`${company.name} cover`}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+        ) : null}
+        <div className={`${company.cover_image_url ? 'hidden' : ''} absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700`}></div>
+        <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+        
+        {/* Back Button Overlay */}
+        <div className="absolute top-6 left-6 z-10">
           <Link to="/companies">
-            <Button variant="ghost" className="text-white hover:bg-white/20">
+            <Button variant="ghost" className="text-white hover:bg-white/20 backdrop-blur-sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Companies
             </Button>
           </Link>
         </div>
+      </div>
 
-        {/* Company Header */}
-        <div className="relative -mt-32 mb-8">
-          <Card className="p-6">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between">
-              <div className="flex items-start space-x-4 mb-4 md:mb-0">
-                <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
-                  <AvatarImage src={company.logo_url} alt={company.name} />
-                  <AvatarFallback className="text-2xl">{company.name?.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{company.name}</h1>
-                  <div className="flex items-center space-x-4 text-gray-600 mb-2">
-                    <div className="flex items-center">
-                      <Star className="h-5 w-5 text-yellow-400 fill-current mr-1" />
-                      <span className="font-medium">{averageRating}</span>
-                      <span className="ml-1">({reviewCount} reviews)</span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Enhanced Company Header */}
+        <div className="relative -mt-24 mb-8">
+          <Card className="p-8 shadow-xl backdrop-blur-sm bg-white/95">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+              <div className="flex flex-col md:flex-row md:items-start gap-6">
+                {/* Enhanced Company Logo */}
+                <div className="relative">
+                  <Avatar className="h-32 w-32 border-4 border-white shadow-xl ring-4 ring-blue-100">
+                    <AvatarImage 
+                      src={company.logo_url} 
+                      alt={company.name}
+                      className="object-cover"
+                    />
+                    <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                      {company.name?.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {company.is_verified && (
+                    <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
+                      <Award className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1">
+                  <div className="mb-4">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">{company.name}</h1>
+                    {company.description && (
+                      <p className="text-lg text-gray-600 leading-relaxed max-w-3xl">
+                        {company.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Enhanced Meta Information */}
+                  <div className="flex flex-wrap items-center gap-6 text-gray-600 mb-4">
+                    <div className="flex items-center gap-2">
+                      <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                      <span className="font-semibold text-gray-900">{averageRating}</span>
+                      <span>({reviewCount} reviews)</span>
                     </div>
                     {company.location && (
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        {company.location}
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-5 w-5 text-blue-500" />
+                        <span>{company.location}</span>
                       </div>
                     )}
                     {company.employee_count_range && (
-                      <div className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />
-                        {company.employee_count_range}
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-green-500" />
+                        <span>{company.employee_count_range}</span>
+                      </div>
+                    )}
+                    {company.website && (
+                      <div className="flex items-center gap-2">
+                        <Globe className="h-5 w-5 text-purple-500" />
+                        <a 
+                          href={company.website} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                        >
+                          Visit Website
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
                       </div>
                     )}
                   </div>
+
+                  {/* Enhanced Badges */}
                   <div className="flex flex-wrap gap-2">
-                    {company.industry && <Badge variant="secondary">{company.industry}</Badge>}
-                    {company.founded_year && <Badge variant="outline">Founded {company.founded_year}</Badge>}
+                    {company.industry && (
+                      <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                        <Building className="h-3 w-3 mr-1" />
+                        {company.industry}
+                      </Badge>
+                    )}
+                    {company.founded_year && (
+                      <Badge variant="outline" className="border-gray-300">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        Founded {company.founded_year}
+                      </Badge>
+                    )}
                     {company.jobs && (
-                      <Badge variant="outline" className="text-green-600">
+                      <Badge className="bg-green-100 text-green-800 border-green-200">
                         <Briefcase className="h-3 w-3 mr-1" />
                         {company.jobs.length} open positions
+                      </Badge>
+                    )}
+                    {company.is_verified && (
+                      <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                        <Award className="h-3 w-3 mr-1" />
+                        Verified Company
                       </Badge>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="flex space-x-2">
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   variant={isFollowing ? "default" : "outline"}
                   onClick={() => setIsFollowing(!isFollowing)}
-                  className="flex items-center space-x-2"
+                  className="flex items-center gap-2 min-w-[120px]"
                 >
                   <Heart className={`h-4 w-4 ${isFollowing ? 'fill-current' : ''}`} />
                   <span>{isFollowing ? 'Following' : 'Follow'}</span>
@@ -210,13 +281,13 @@ const CompanyDetail = () => {
           </Card>
         </div>
 
-        {/* Content Tabs */}
+        {/* Content Tabs - keep existing tab structure */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="jobs">Jobs ({company.jobs?.length || 0})</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews ({reviewCount})</TabsTrigger>
-            <TabsTrigger value="culture">Culture</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 h-12">
+            <TabsTrigger value="overview" className="text-sm font-medium">Overview</TabsTrigger>
+            <TabsTrigger value="jobs" className="text-sm font-medium">Jobs ({company.jobs?.length || 0})</TabsTrigger>
+            <TabsTrigger value="reviews" className="text-sm font-medium">Reviews ({reviewCount})</TabsTrigger>
+            <TabsTrigger value="culture" className="text-sm font-medium">Culture</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -364,7 +435,6 @@ const CompanyDetail = () => {
             </div>
           </TabsContent>
 
-          
           <TabsContent value="reviews" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card>
