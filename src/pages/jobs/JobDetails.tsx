@@ -58,7 +58,6 @@ const JobDetails = () => {
             industry,
             description,
             website,
-            company_size,
             founded_year
           )
         `)
@@ -437,12 +436,6 @@ const JobDetails = () => {
                       <div className="flex justify-between">
                         <span className="text-gray-600">Industry:</span>
                         <span className="font-medium">{job.companies.industry}</span>
-                      </div>
-                    )}
-                    {job.companies.company_size && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Company Size:</span>
-                        <span className="font-medium">{job.companies.company_size}</span>
                       </div>
                     )}
                     {job.companies.founded_year && (
