@@ -44,7 +44,7 @@ const UserManagement = () => {
         // Cast the roleFilter to the proper enum type
         const validRoles = ['job_seeker', 'employer', 'admin'] as const;
         if (validRoles.includes(roleFilter as any)) {
-          query = query.eq('user_role', roleFilter);
+          query = query.eq('user_role', roleFilter as 'job_seeker' | 'employer' | 'admin');
         }
       }
 

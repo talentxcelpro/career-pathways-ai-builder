@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -51,7 +50,7 @@ const AdminDashboard = () => {
     }
   });
 
-  // Fetch recent activity - Fixed the query to properly join tables
+  // Fetch recent activity - Fixed the query to properly specify the foreign key relationship
   const { data: recentActivity } = useQuery({
     queryKey: ['recent-activity'],
     queryFn: async () => {
@@ -59,8 +58,8 @@ const AdminDashboard = () => {
         .from('job_applications')
         .select(`
           *,
-          profiles!inner(full_name),
-          jobs!inner(title)
+          profiles!job_applications_user_id_fkey(full_name),
+          jobs!job_applications_job_id_fkey(title)
         `)
         .order('applied_at', { ascending: false })
         .limit(10);
