@@ -33,7 +33,7 @@ export const UnifiedAdminLayout: React.FC<UnifiedAdminLayoutProps> = ({
 
   return (
     <AdminGuard>
-      <SidebarProvider collapsedWidth={64}>
+      <SidebarProvider>
         <div className="min-h-screen flex w-full bg-gray-50">
           <AdminSidebar />
           

@@ -130,9 +130,10 @@ const adminMenuItems = [
 ];
 
 export const AdminSidebar: React.FC = () => {
-  const { collapsed } = useSidebar();
+  const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
+  const isCollapsed = state === 'collapsed';
 
   const isActive = (path: string) => {
     if (path === '/admin') {
@@ -151,9 +152,9 @@ export const AdminSidebar: React.FC = () => {
   };
 
   return (
-    <Sidebar className={collapsed ? 'w-16' : 'w-72'} collapsible>
+    <Sidebar collapsible="icon">
       <div className="flex items-center justify-between p-4 border-b">
-        {!collapsed && (
+        {!isCollapsed && (
           <div className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg">Admin Panel</span>
@@ -164,7 +165,7 @@ export const AdminSidebar: React.FC = () => {
 
       <SidebarContent className="px-2">
         <SidebarGroup>
-          <SidebarGroupLabel className={collapsed ? 'sr-only' : ''}>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
             Platform Management
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -174,7 +175,7 @@ export const AdminSidebar: React.FC = () => {
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} className={getNavClasses(item.url)}>
                       <item.icon className="h-4 w-4 flex-shrink-0" />
-                      {!collapsed && (
+                      {!isCollapsed && (
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <span className="font-medium">{item.title}</span>
