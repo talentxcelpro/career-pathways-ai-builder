@@ -3,6 +3,25 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+type ProfileViewWithProfiles = {
+  id: string;
+  profile_id: string;
+  viewer_id: string;
+  viewed_at: string;
+  ip_address: unknown;
+  user_agent: string;
+  profiles?: {
+    id: string;
+    full_name: string;
+    email: string;
+  };
+  viewer?: {
+    id: string;
+    full_name: string;
+    email: string;
+  };
+};
+
 export const useSecurityLogs = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [logType, setLogType] = useState('all');
@@ -17,7 +36,6 @@ export const useSecurityLogs = () => {
         { count: blockedIPs }
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }).not('last_login_at', 'is', null),
-        // Mock failed logins count as we don't have a table for this
         Promise.resolve({ count: 45 }),
         Promise.resolve({ count: 12 }),
         Promise.resolve({ count: 8 })
@@ -54,7 +72,7 @@ export const useSecurityLogs = () => {
 
   const { data: profileViews } = useQuery({
     queryKey: ['profile-views'],
-    queryFn: async () => {
+    queryFn: async (): Promise<ProfileViewWithProfiles[]> => {
       const { data: viewData, error } = await supabase
         .from('profile_views')
         .select('*')
@@ -63,7 +81,6 @@ export const useSecurityLogs = () => {
       
       if (error) throw error;
 
-      // Fetch profile data separately for both profile and viewer
       if (viewData && viewData.length > 0) {
         const profileIds = viewData.map(view => view.profile_id).filter(Boolean);
         const viewerIds = viewData.map(view => view.viewer_id).filter(Boolean);
@@ -74,7 +91,6 @@ export const useSecurityLogs = () => {
           .select('id, full_name, email')
           .in('id', allUserIds);
 
-        // Combine data
         return viewData.map(view => ({
           ...view,
           profiles: profiles?.find(profile => profile.id === view.profile_id),
@@ -82,7 +98,7 @@ export const useSecurityLogs = () => {
         }));
       }
 
-      return viewData;
+      return viewData || [];
     }
   });
 

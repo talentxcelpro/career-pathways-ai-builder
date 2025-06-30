@@ -4,6 +4,44 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+type ResumeWithProfile = {
+  id: string;
+  user_id: string;
+  title: string;
+  content: any;
+  ats_score: number;
+  is_public: boolean;
+  is_primary: boolean;
+  created_at: string;
+  updated_at: string;
+  template_id: string;
+  public_url_slug: string;
+  profiles?: {
+    id: string;
+    full_name: string;
+    email: string;
+  };
+};
+
+type CoverLetterWithProfile = {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string;
+  tone: string;
+  job_title: string;
+  company_name: string;
+  template_id: string;
+  resume_id: string;
+  created_at: string;
+  updated_at: string;
+  profiles?: {
+    id: string;
+    full_name: string;
+    email: string;
+  };
+};
+
 export const useResumeManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const queryClient = useQueryClient();
@@ -34,7 +72,7 @@ export const useResumeManagement = () => {
 
   const { data: resumes, isLoading } = useQuery({
     queryKey: ['admin-resumes', searchTerm],
-    queryFn: async () => {
+    queryFn: async (): Promise<ResumeWithProfile[]> => {
       let query = supabase
         .from('ai_resumes')
         .select('*')
@@ -47,7 +85,6 @@ export const useResumeManagement = () => {
       const { data: resumeData, error } = await query;
       if (error) throw error;
 
-      // Fetch profile data separately
       if (resumeData && resumeData.length > 0) {
         const userIds = resumeData.map(resume => resume.user_id).filter(Boolean);
         const { data: profiles } = await supabase
@@ -55,20 +92,19 @@ export const useResumeManagement = () => {
           .select('id, full_name, email')
           .in('id', userIds);
 
-        // Combine data
         return resumeData.map(resume => ({
           ...resume,
           profiles: profiles?.find(profile => profile.id === resume.user_id)
         }));
       }
 
-      return resumeData;
+      return resumeData || [];
     }
   });
 
   const { data: coverLetters } = useQuery({
     queryKey: ['admin-cover-letters'],
-    queryFn: async () => {
+    queryFn: async (): Promise<CoverLetterWithProfile[]> => {
       const { data: letterData, error } = await supabase
         .from('ai_cover_letters')
         .select('*')
@@ -77,7 +113,6 @@ export const useResumeManagement = () => {
       
       if (error) throw error;
 
-      // Fetch profile data separately
       if (letterData && letterData.length > 0) {
         const userIds = letterData.map(letter => letter.user_id).filter(Boolean);
         const { data: profiles } = await supabase
@@ -85,14 +120,13 @@ export const useResumeManagement = () => {
           .select('id, full_name, email')
           .in('id', userIds);
 
-        // Combine data
         return letterData.map(letter => ({
           ...letter,
           profiles: profiles?.find(profile => profile.id === letter.user_id)
         }));
       }
 
-      return letterData;
+      return letterData || [];
     }
   });
 
