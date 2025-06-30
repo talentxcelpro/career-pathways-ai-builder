@@ -6,16 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, ArrowLeft, Save, Upload, X } from "lucide-react";
+import { Building2, ArrowLeft, Save, Upload, X, Plus } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from '@/contexts/AuthContext';
 
 const CompanyProfileEdit = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -35,13 +37,13 @@ const CompanyProfileEdit = () => {
 
   const [newBenefit, setNewBenefit] = useState('');
   const [newTech, setNewTech] = useState('');
+  const [isCreatingCompany, setIsCreatingCompany] = useState(false);
 
   // Fetch current user's company
   const { data: company, isLoading } = useQuery({
-    queryKey: ['user-company'],
+    queryKey: ['user-company', user?.id],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      if (!user?.id) throw new Error('Not authenticated');
 
       // First check if user has a company through company_profiles
       const { data: profile } = await supabase
@@ -67,8 +69,10 @@ const CompanyProfileEdit = () => {
         return teamMember.companies;
       }
 
-      throw new Error('No company found for user');
-    }
+      // Return null if no company found (don't throw error)
+      return null;
+    },
+    enabled: !!user?.id
   });
 
   // Update form data when company data is loaded
@@ -91,6 +95,61 @@ const CompanyProfileEdit = () => {
       });
     }
   }, [company]);
+
+  // Create new company mutation
+  const createCompanyMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      if (!user?.id) throw new Error('Not authenticated');
+
+      const companyData = {
+        ...data,
+        founded_year: data.founded_year ? parseInt(data.founded_year) : null,
+        created_by: user.id,
+        is_verified: false
+      };
+
+      // Create the company
+      const { data: newCompany, error: companyError } = await supabase
+        .from('companies')
+        .insert(companyData)
+        .select()
+        .single();
+
+      if (companyError) throw companyError;
+
+      // Create company profile linking user as owner
+      const { error: profileError } = await supabase
+        .from('company_profiles')
+        .insert({
+          company_id: newCompany.id,
+          owner_id: user.id
+        });
+
+      if (profileError) throw profileError;
+
+      // Update user's employer status
+      const { error: userError } = await supabase
+        .from('profiles')
+        .update({
+          is_employer: true,
+          employer_status: 'approved'
+        })
+        .eq('id', user.id);
+
+      if (userError) throw userError;
+
+      return newCompany;
+    },
+    onSuccess: () => {
+      toast.success('Company created successfully!');
+      queryClient.invalidateQueries({ queryKey: ['user-company'] });
+      setIsCreatingCompany(false);
+    },
+    onError: (error: any) => {
+      console.error('Create error:', error);
+      toast.error(error.message || 'Failed to create company');
+    }
+  });
 
   // Update company mutation
   const updateCompanyMutation = useMutation({
@@ -166,7 +225,15 @@ const CompanyProfileEdit = () => {
       return;
     }
 
-    updateCompanyMutation.mutate(formData);
+    if (company) {
+      updateCompanyMutation.mutate(formData);
+    } else {
+      createCompanyMutation.mutate(formData);
+    }
+  };
+
+  const handleCreateCompany = () => {
+    setIsCreatingCompany(true);
   };
 
   if (isLoading) {
@@ -180,17 +247,37 @@ const CompanyProfileEdit = () => {
     );
   }
 
-  if (!company) {
+  // Show create company option if no company exists
+  if (!company && !isCreatingCompany) {
     return (
       <div className="p-6 max-w-4xl mx-auto">
-        <div className="text-center py-12">
-          <Building2 className="h-16 w-16 mx-auto mb-4 opacity-50" />
-          <h3 className="text-lg font-semibold mb-2">No Company Found</h3>
-          <p className="text-gray-500 mb-4">You don't have access to edit any company profile.</p>
-          <Button onClick={() => navigate('/employer')}>
-            Go to Dashboard
+        <div className="flex items-center space-x-2 mb-6">
+          <Button variant="ghost" onClick={() => navigate('/employer')}>
+            <ArrowLeft className="h-4 w-4" />
           </Button>
+          <Building2 className="h-8 w-8 text-blue-600" />
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Company Profile</h1>
+            <p className="text-gray-600">Set up your company profile</p>
+          </div>
         </div>
+
+        <Card>
+          <CardContent className="pt-6 text-center py-12">
+            <Building2 className="h-16 w-16 mx-auto mb-4 opacity-50" />
+            <h3 className="text-lg font-semibold mb-2">Create Your Company Profile</h3>
+            <p className="text-gray-500 mb-6">Set up your company profile to start posting jobs and managing your team.</p>
+            <Button onClick={handleCreateCompany} className="mb-4">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Company Profile
+            </Button>
+            <div className="mt-4">
+              <Button variant="outline" onClick={() => navigate('/employer')}>
+                Go to Dashboard
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -203,8 +290,12 @@ const CompanyProfileEdit = () => {
         </Button>
         <Building2 className="h-8 w-8 text-blue-600" />
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Company Profile</h1>
-          <p className="text-gray-600">Update your company information</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {company ? 'Edit Company Profile' : 'Create Company Profile'}
+          </h1>
+          <p className="text-gray-600">
+            {company ? 'Update your company information' : 'Set up your company profile'}
+          </p>
         </div>
       </div>
 
@@ -213,7 +304,9 @@ const CompanyProfileEdit = () => {
         <Card>
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
-            <CardDescription>Update your company's basic details</CardDescription>
+            <CardDescription>
+              {company ? 'Update your company\'s basic details' : 'Enter your company\'s basic details'}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -409,10 +502,10 @@ const CompanyProfileEdit = () => {
           </Button>
           <Button 
             type="submit" 
-            disabled={updateCompanyMutation.isPending}
+            disabled={updateCompanyMutation.isPending || createCompanyMutation.isPending}
           >
             <Save className="h-4 w-4 mr-2" />
-            {updateCompanyMutation.isPending ? 'Saving...' : 'Save Changes'}
+            {(updateCompanyMutation.isPending || createCompanyMutation.isPending) ? 'Saving...' : company ? 'Save Changes' : 'Create Company'}
           </Button>
         </div>
       </form>
