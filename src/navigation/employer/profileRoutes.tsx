@@ -6,7 +6,7 @@ import CompanyProfileEdit from "../../pages/employer/profile/CompanyProfileEdit"
 import CompanyTeamManage from "../../pages/employer/profile/CompanyTeamManage";
 import CompanySocials from "../../pages/employer/profile/CompanySocials";
 import CompanyJobs from "../../pages/employer/profile/CompanyJobs";
-import CompanyPublicProfile from "../../pages/employer/profile/CompanyPublicProfile";
+import CompanyDetail from "../../pages/companies/CompanyDetail";
 
 export const employerProfileRoutes = [
   // Company Profile & Promotion
@@ -32,7 +32,7 @@ export const employerProfileRoutes = [
   },
   {
     title: "Company Public Profile",
-    to: "/employer/profile/public",
-    page: <CompanyPublicProfile />,
+    to: "/employer/profile/public/:id",
+    page: <CompanyDetail />,
   },
 ];
