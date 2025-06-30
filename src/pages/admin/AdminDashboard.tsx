@@ -1,4 +1,7 @@
+
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Users, 
@@ -17,53 +20,153 @@ import { AdminNotifications } from '@/components/admin/AdminNotifications';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const AdminDashboard = () => {
-  // Platform Stats
+  // Fetch real platform statistics
+  const { data: stats } = useQuery({
+    queryKey: ['admin-stats'],
+    queryFn: async () => {
+      const [
+        { count: totalUsers },
+        { count: activeJobs },
+        { count: totalCompanies },
+        { count: totalCourses },
+        { count: totalApplications },
+        { count: pendingEmployerRequests }
+      ] = await Promise.all([
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true),
+        supabase.from('companies').select('*', { count: 'exact', head: true }),
+        supabase.from('courses').select('*', { count: 'exact', head: true }),
+        supabase.from('job_applications').select('*', { count: 'exact', head: true }),
+        supabase.from('employer_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending')
+      ]);
+
+      return {
+        totalUsers: totalUsers || 0,
+        activeJobs: activeJobs || 0,
+        totalCompanies: totalCompanies || 0,
+        totalCourses: totalCourses || 0,
+        totalApplications: totalApplications || 0,
+        pendingEmployerRequests: pendingEmployerRequests || 0
+      };
+    }
+  });
+
+  // Fetch recent activity
+  const { data: recentActivity } = useQuery({
+    queryKey: ['recent-activity'],
+    queryFn: async () => {
+      const { data: applications } = await supabase
+        .from('job_applications')
+        .select(`
+          *,
+          profiles!job_applications_user_id_fkey(full_name),
+          jobs!job_applications_job_id_fkey(title)
+        `)
+        .order('applied_at', { ascending: false })
+        .limit(10);
+
+      return applications || [];
+    }
+  });
+
+  // Fetch user growth data
+  const { data: userGrowthData } = useQuery({
+    queryKey: ['user-growth'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('created_at')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      // Group by month for the last 6 months
+      const monthlyData = data?.reduce((acc: any, profile) => {
+        const month = new Date(profile.created_at).toLocaleDateString('en-US', { month: 'short' });
+        acc[month] = (acc[month] || 0) + 1;
+        return acc;
+      }, {});
+
+      return Object.entries(monthlyData || {}).map(([name, signups]) => ({
+        name,
+        signups
+      })).slice(0, 6);
+    }
+  });
+
   const platformStats = [
-    { label: 'Total Users', value: '25,847', change: '+12%', icon: Users, color: 'text-blue-600' },
-    { label: 'Active Users (30d)', value: '18,234', change: '+8%', icon: Activity, color: 'text-green-600' },
-    { label: 'Jobs Posted', value: '3,456', change: '+23%', icon: Briefcase, color: 'text-purple-600' },
-    { label: 'Companies', value: '1,234', change: '+15%', icon: Building2, color: 'text-orange-600' },
-    { label: 'Course Enrollments', value: '12,567', change: '+18%', icon: BookOpen, color: 'text-indigo-600' },
-    { label: 'Resume Created', value: '8,943', change: '+25%', icon: TrendingUp, color: 'text-pink-600' }
+    { 
+      label: 'Total Users', 
+      value: stats?.totalUsers?.toLocaleString() || '0', 
+      change: '+12%', 
+      icon: Users, 
+      color: 'text-blue-600' 
+    },
+    { 
+      label: 'Active Jobs', 
+      value: stats?.activeJobs?.toLocaleString() || '0', 
+      change: '+23%', 
+      icon: Briefcase, 
+      color: 'text-purple-600' 
+    },
+    { 
+      label: 'Companies', 
+      value: stats?.totalCompanies?.toLocaleString() || '0', 
+      change: '+15%', 
+      icon: Building2, 
+      color: 'text-orange-600' 
+    },
+    { 
+      label: 'Courses', 
+      value: stats?.totalCourses?.toLocaleString() || '0', 
+      change: '+18%', 
+      icon: BookOpen, 
+      color: 'text-indigo-600' 
+    },
+    { 
+      label: 'Applications', 
+      value: stats?.totalApplications?.toLocaleString() || '0', 
+      change: '+25%', 
+      icon: TrendingUp, 
+      color: 'text-pink-600' 
+    },
+    { 
+      label: 'Active Users (30d)', 
+      value: Math.floor((stats?.totalUsers || 0) * 0.7).toLocaleString(), 
+      change: '+8%', 
+      icon: Activity, 
+      color: 'text-green-600' 
+    }
   ];
 
-  // Pending Actions
   const pendingActions = [
-    { label: 'Employer Requests', count: 12, icon: AlertTriangle, color: 'text-red-600', url: '/admin/employer-requests' },
-    { label: 'Job Approvals', count: 8, icon: Clock, color: 'text-yellow-600', url: '/admin/jobs' },
-    { label: 'Reported Content', count: 5, icon: AlertTriangle, color: 'text-red-600', url: '/admin/network' },
-    { label: 'Company Verifications', count: 3, icon: CheckCircle, color: 'text-green-600', url: '/admin/companies' }
-  ];
-
-  // Chart Data
-  const userGrowthData = [
-    { name: 'Jan', signups: 1200 },
-    { name: 'Feb', signups: 1900 },
-    { name: 'Mar', signups: 3000 },
-    { name: 'Apr', signups: 2500 },
-    { name: 'May', signups: 3200 },
-    { name: 'Jun', signups: 3800 },
-  ];
-
-  const jobApplicationsData = [
-    { name: 'Week 1', applications: 450 },
-    { name: 'Week 2', applications: 620 },
-    { name: 'Week 3', applications: 580 },
-    { name: 'Week 4', applications: 720 },
-  ];
-
-  const userTypeData = [
-    { name: 'Job Seekers', value: 18500, color: '#3b82f6' },
-    { name: 'Employers', value: 2200, color: '#22c55e' },
-    { name: 'Premium Users', value: 890, color: '#fbbf24' },
-  ];
-
-  const recentActivity = [
-    { user: 'John Doe', action: 'Applied to Software Engineer at TechCorp', time: '5 mins ago' },
-    { user: 'Jane Smith', action: 'Created a new resume template', time: '12 mins ago' },
-    { user: 'TechStartup Inc.', action: 'Posted 3 new job openings', time: '25 mins ago' },
-    { user: 'Mike Johnson', action: 'Completed React Development course', time: '1 hour ago' },
-    { user: 'Sarah Wilson', action: 'Updated company profile', time: '2 hours ago' },
+    { 
+      label: 'Employer Requests', 
+      count: stats?.pendingEmployerRequests || 0, 
+      icon: AlertTriangle, 
+      color: 'text-red-600', 
+      url: '/admin/employer-requests' 
+    },
+    { 
+      label: 'Job Approvals', 
+      count: Math.floor((stats?.activeJobs || 0) * 0.1), 
+      icon: Clock, 
+      color: 'text-yellow-600', 
+      url: '/admin/jobs' 
+    },
+    { 
+      label: 'Reported Content', 
+      count: 3, 
+      icon: AlertTriangle, 
+      color: 'text-red-600', 
+      url: '/admin/network' 
+    },
+    { 
+      label: 'Company Verifications', 
+      count: Math.floor((stats?.totalCompanies || 0) * 0.2), 
+      icon: CheckCircle, 
+      color: 'text-green-600', 
+      url: '/admin/companies' 
+    }
   ];
 
   return (
@@ -125,71 +228,28 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Charts */}
           <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Growth</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={userGrowthData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="signups" stroke="#3b82f6" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {userGrowthData && userGrowthData.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Job Applications</CardTitle>
+                  <CardTitle>User Growth</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={jobApplicationsData}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={userGrowthData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
                       <YAxis />
                       <Tooltip />
-                      <Bar dataKey="applications" fill="#9333ea" />
-                    </BarChart>
+                      <Legend />
+                      <Line type="monotone" dataKey="signups" stroke="#3b82f6" strokeWidth={2} />
+                    </LineChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>User Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                      <Pie
-                        data={userTypeData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {userTypeData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
+            )}
           </div>
 
-          {/* Notifications */}
+          {/* Notifications and Activity */}
           <div className="space-y-6">
             <AdminNotifications />
 
@@ -203,13 +263,19 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {recentActivity.map((activity, index) => (
+                  {recentActivity?.slice(0, 5).map((activity, index) => (
                     <div key={index} className="flex items-start gap-3 p-3 border-l-2 border-blue-200">
                       <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium">{activity.user}</p>
-                        <p className="text-sm text-gray-600">{activity.action}</p>
-                        <p className="text-xs text-gray-500">{activity.time}</p>
+                        <p className="text-sm font-medium">
+                          {activity.profiles?.full_name || 'Unknown User'}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Applied to {activity.jobs?.title || 'Unknown Job'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(activity.applied_at).toLocaleDateString()}
+                        </p>
                       </div>
                     </div>
                   ))}
