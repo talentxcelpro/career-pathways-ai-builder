@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -13,8 +12,7 @@ import {
   Clock,
   Eye
 } from 'lucide-react';
-import { AdminLayout } from '@/components/admin/AdminLayout';
-import { AdminGuard } from '@/components/admin/AdminGuard';
+import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
 import { AdminNotifications } from '@/components/admin/AdminNotifications';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -69,166 +67,159 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <AdminGuard requiredPermission="canAccessDashboard">
-      <AdminLayout>
-        <div className="min-h-screen bg-gray-50 p-6">
-          <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-              <p className="text-gray-600">Welcome back! Here's what's happening on TalentXcel.</p>
-            </div>
+    <UnifiedAdminLayout 
+      title="Admin Dashboard" 
+      description="Welcome back! Here's what's happening on TalentXcel."
+    >
+      <div className="space-y-8">
+        {/* Platform Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {platformStats.map((stat, index) => (
+            <Card key={index}>
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                      <span className="text-sm text-green-600 font-medium">{stat.change}</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
-            {/* Platform Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {platformStats.map((stat, index) => (
-                <Card key={index}>
-                  <CardContent className="p-6">
-                    <div className="flex items-center">
-                      <stat.icon className={`h-8 w-8 ${stat.color}`} />
-                      <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                        <div className="flex items-center gap-2">
-                          <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                          <span className="text-sm text-green-600 font-medium">{stat.change}</span>
-                        </div>
+        {/* Pending Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-orange-600" />
+              Pending Actions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {pendingActions.map((action, index) => (
+                <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <action.icon className={`h-5 w-5 ${action.color}`} />
+                      <div>
+                        <p className="font-medium text-sm">{action.label}</p>
+                        <p className="text-xs text-gray-500">Needs attention</p>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                    <div className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">
+                      {action.count}
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Pending Actions */}
-            <Card className="mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Charts */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>User Growth</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={userGrowthData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="signups" stroke="#3b82f6" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Job Applications</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={jobApplicationsData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="applications" fill="#9333ea" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>User Distribution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <PieChart>
+                      <Pie
+                        data={userTypeData}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {userTypeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Notifications */}
+          <div className="space-y-6">
+            <AdminNotifications />
+
+            {/* Recent Activity */}
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-orange-600" />
-                  Pending Actions
+                  <Activity className="h-5 w-5 text-green-600" />
+                  Recent Activity
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {pendingActions.map((action, index) => (
-                    <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <action.icon className={`h-5 w-5 ${action.color}`} />
-                          <div>
-                            <p className="font-medium text-sm">{action.label}</p>
-                            <p className="text-xs text-gray-500">Needs attention</p>
-                          </div>
-                        </div>
-                        <div className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">
-                          {action.count}
-                        </div>
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {recentActivity.map((activity, index) => (
+                    <div key={index} className="flex items-start gap-3 p-3 border-l-2 border-blue-200">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">{activity.user}</p>
+                        <p className="text-sm text-gray-600">{activity.action}</p>
+                        <p className="text-xs text-gray-500">{activity.time}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-              {/* Charts */}
-              <div className="lg:col-span-2 space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>User Growth</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <LineChart data={userGrowthData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Line type="monotone" dataKey="signups" stroke="#3b82f6" strokeWidth={2} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Job Applications</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={250}>
-                        <BarChart data={jobApplicationsData}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="name" />
-                          <YAxis />
-                          <Tooltip />
-                          <Bar dataKey="applications" fill="#9333ea" />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>User Distribution</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={250}>
-                        <PieChart>
-                          <Pie
-                            data={userTypeData}
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                          >
-                            {userTypeData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-
-              {/* Notifications */}
-              <div className="space-y-6">
-                <AdminNotifications />
-
-                {/* Recent Activity */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Activity className="h-5 w-5 text-green-600" />
-                      Recent Activity
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {recentActivity.map((activity, index) => (
-                        <div key={index} className="flex items-start gap-3 p-3 border-l-2 border-blue-200">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">{activity.user}</p>
-                            <p className="text-sm text-gray-600">{activity.action}</p>
-                            <p className="text-xs text-gray-500">{activity.time}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
           </div>
         </div>
-      </AdminLayout>
-    </AdminGuard>
+      </div>
+    </UnifiedAdminLayout>
   );
 };
 
