@@ -84,7 +84,7 @@ export const useResumeUpload = () => {
         .insert({
           user_id: user.id,
           title: `Resume from ${file.name}`,
-          content: extractedContent,
+          content: extractedContent as any, // Convert to Json type
           ats_score: Math.floor(Math.random() * 30) + 70,
           template_id: null
         })
