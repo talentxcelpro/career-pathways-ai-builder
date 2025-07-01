@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
   const [currentStep, setCurrentStep] = useState(1);
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     resumeSource: 'existing',
     selectedResumeId: '',
@@ -45,8 +47,30 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
   useEffect(() => {
     if (open) {
       fetchUserData();
+      checkExistingApplication();
     }
   }, [open]);
+
+  const checkExistingApplication = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: existingApplication } = await supabase
+        .from('job_applications')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('job_id', job.id)
+        .single();
+
+      if (existingApplication) {
+        setHasApplied(true);
+        toast.info('You have already applied to this job');
+      }
+    } catch (error) {
+      console.error('Error checking existing application:', error);
+    }
+  };
 
   const fetchUserData = async () => {
     try {
@@ -145,11 +169,30 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       return;
     }
 
+    if (hasApplied) {
+      toast.error('You have already applied to this job');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
+
+      // Double-check for existing application before inserting
+      const { data: existingCheck } = await supabase
+        .from('job_applications')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('job_id', job.id)
+        .single();
+
+      if (existingCheck) {
+        toast.error('You have already applied to this job');
+        setHasApplied(true);
+        return;
+      }
 
       // Upload resume if new one was provided
       let resumeUrl = '';
@@ -218,7 +261,15 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         .from('job_applications')
         .insert(applicationData);
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === '23505') { // Unique constraint violation
+          toast.error('You have already applied to this job');
+          setHasApplied(true);
+        } else {
+          throw error;
+        }
+        return;
+      }
 
       toast.success('Application submitted successfully!');
       onOpenChange(false);
@@ -231,6 +282,47 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       setIsSubmitting(false);
     }
   };
+
+  // If user has already applied, show a message instead of the form
+  if (hasApplied) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-md p-6">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              {job.companies?.logo_url && (
+                <img 
+                  src={job.companies.logo_url} 
+                  alt={job.companies.name}
+                  className="w-8 h-8 rounded"
+                />
+              )}
+              <div>
+                <span>Application Status</span>
+                {job.companies?.name && (
+                  <p className="text-sm text-gray-600 font-normal">for {job.title}</p>
+                )}
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">Already Applied</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                You have already submitted an application for this position.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const renderCurrentStep = () => {
     switch (currentStep) {

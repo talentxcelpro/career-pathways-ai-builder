@@ -20,6 +20,7 @@ interface CompactApplicationFormProps {
 export default function CompactApplicationForm({ open, onOpenChange, job }: CompactApplicationFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     resumeSource: 'existing',
     selectedResumeId: '',
@@ -46,8 +47,30 @@ export default function CompactApplicationForm({ open, onOpenChange, job }: Comp
   useEffect(() => {
     if (open) {
       fetchUserData();
+      checkExistingApplication();
     }
   }, [open]);
+
+  const checkExistingApplication = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: existingApplication } = await supabase
+        .from('job_applications')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('job_id', job.id)
+        .single();
+
+      if (existingApplication) {
+        setHasApplied(true);
+        toast.info('You have already applied to this job');
+      }
+    } catch (error) {
+      console.error('Error checking existing application:', error);
+    }
+  };
 
   const fetchUserData = async () => {
     try {
@@ -113,10 +136,29 @@ export default function CompactApplicationForm({ open, onOpenChange, job }: Comp
       return;
     }
 
+    if (hasApplied) {
+      toast.error('You have already applied to this job');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
+
+      // Double-check for existing application before inserting
+      const { data: existingCheck } = await supabase
+        .from('job_applications')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('job_id', job.id)
+        .single();
+
+      if (existingCheck) {
+        toast.error('You have already applied to this job');
+        setHasApplied(true);
+        return;
+      }
 
       let resumeUrl = '';
       if (formData.resumeSource === 'upload' && formData.uploadedResume) {
@@ -156,17 +198,58 @@ export default function CompactApplicationForm({ open, onOpenChange, job }: Comp
         application_data: cleanApplicationData
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === '23505') { // Unique constraint violation
+          toast.error('You have already applied to this job');
+          setHasApplied(true);
+        } else {
+          throw error;
+        }
+        return;
+      }
 
       toast.success('Application submitted successfully!');
       onOpenChange(false);
       setCurrentStep(1);
     } catch (error: any) {
+      console.error('Application submission error:', error);
       toast.error(error.message || 'Failed to submit application');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // If user has already applied, show a message instead of the form
+  if (hasApplied) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-md p-6">
+          <DialogHeader className="pb-3">
+            <DialogTitle className="flex items-center gap-2 text-base">
+              {job.companies?.logo_url && (
+                <img src={job.companies.logo_url} alt={job.companies.name} className="w-5 h-5 rounded" />
+              )}
+              Application Status
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">Already Applied</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                You have already submitted an application for this position.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const renderStep = () => {
     switch (currentStep) {
