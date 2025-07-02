@@ -5,6 +5,7 @@ import { Heart, MessageCircle, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { EmojiReactions } from "./EmojiReactions";
 
 interface PostActionsProps {
   postId: string;
@@ -144,37 +145,43 @@ export const PostActions: React.FC<PostActionsProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between border-t pt-4">
-      <div className="flex space-x-6">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className={`${userLike ? 'text-red-600' : 'text-gray-600'} hover:text-red-600`}
-          onClick={handleLike}
-          disabled={likeMutation.isPending}
-        >
-          <Heart className={`h-4 w-4 mr-2 ${userLike ? 'fill-current' : ''}`} />
-          {postCounts?.likes || 0}
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="text-gray-600 hover:text-blue-600"
-          onClick={onCommentClick}
-        >
-          <MessageCircle className="h-4 w-4 mr-2" />
-          {postCounts?.comments || 0}
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="text-gray-600 hover:text-green-600"
-          onClick={handleShare}
-          disabled={shareMutation.isPending}
-        >
-          <Share2 className="h-4 w-4 mr-2" />
-          {postCounts?.shares || 0}
-        </Button>
+    <div className="border-t pt-4 space-y-3">
+      {/* Emoji Reactions */}
+      <EmojiReactions postId={postId} />
+      
+      {/* Traditional Actions */}
+      <div className="flex items-center justify-between">
+        <div className="flex space-x-6">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className={`${userLike ? 'text-red-600' : 'text-gray-600'} hover:text-red-600`}
+            onClick={handleLike}
+            disabled={likeMutation.isPending}
+          >
+            <Heart className={`h-4 w-4 mr-2 ${userLike ? 'fill-current' : ''}`} />
+            {postCounts?.likes || 0}
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-gray-600 hover:text-blue-600"
+            onClick={onCommentClick}
+          >
+            <MessageCircle className="h-4 w-4 mr-2" />
+            {postCounts?.comments || 0}
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-gray-600 hover:text-green-600"
+            onClick={handleShare}
+            disabled={shareMutation.isPending}
+          >
+            <Share2 className="h-4 w-4 mr-2" />
+            {postCounts?.shares || 0}
+          </Button>
+        </div>
       </div>
     </div>
   );

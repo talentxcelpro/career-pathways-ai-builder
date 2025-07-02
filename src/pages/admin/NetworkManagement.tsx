@@ -5,6 +5,7 @@ import { NetworkStatsCards } from '@/components/admin/network/NetworkStatsCards'
 import { NetworkFilters } from '@/components/admin/network/NetworkFilters';
 import { PostsList } from '@/components/admin/network/PostsList';
 import { TrendingTopics } from '@/components/admin/network/TrendingTopics';
+import { EmojiConfigManagement } from '@/components/admin/network/EmojiConfigManagement';
 import { useNetworkManagement } from '@/hooks/useNetworkManagement';
 
 const NetworkManagement = () => {
@@ -32,6 +33,8 @@ const NetworkManagement = () => {
           posts={posts || []}
         />
 
+        <EmojiConfigManagement />
+        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <PostsList

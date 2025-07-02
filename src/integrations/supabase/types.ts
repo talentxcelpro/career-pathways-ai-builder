@@ -1103,6 +1103,36 @@ export type Database = {
           },
         ]
       }
+      emoji_configs: {
+        Row: {
+          created_at: string
+          display_order: number
+          emoji_code: string
+          emoji_name: string
+          id: string
+          is_active: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          emoji_code: string
+          emoji_name: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          emoji_code?: string
+          emoji_name?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       employer_requests: {
         Row: {
           admin_notes: string | null
@@ -3121,6 +3151,14 @@ export type Database = {
       get_email_domain: {
         Args: { email_address: string }
         Returns: string
+      }
+      get_post_reaction_counts: {
+        Args: { post_uuid: string }
+        Returns: {
+          reaction_type: string
+          emoji_code: string
+          count: number
+        }[]
       }
       get_user_role: {
         Args: { user_uuid: string }
