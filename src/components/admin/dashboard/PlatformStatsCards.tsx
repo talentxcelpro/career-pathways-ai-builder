@@ -17,6 +17,11 @@ interface PlatformStatsProps {
     totalCompanies: number;
     totalCourses: number;
     totalApplications: number;
+    totalPosts: number;
+    totalResumes: number;
+    recentLogins: number;
+    weeklyNewUsers: number;
+    monthlyApplications: number;
   } | undefined;
 }
 
@@ -58,11 +63,25 @@ export const PlatformStatsCards: React.FC<PlatformStatsProps> = ({ stats }) => {
       color: 'text-pink-600' 
     },
     { 
-      label: 'Active Users (30d)', 
-      value: Math.floor((stats?.totalUsers || 0) * 0.7).toLocaleString(), 
-      change: '+8%', 
+      label: 'Posts', 
+      value: stats?.totalPosts?.toLocaleString() || '0', 
+      change: '+15%', 
       icon: Activity, 
       color: 'text-green-600' 
+    },
+    { 
+      label: 'Resumes', 
+      value: stats?.totalResumes?.toLocaleString() || '0', 
+      change: '+12%', 
+      icon: TrendingUp, 
+      color: 'text-purple-600' 
+    },
+    { 
+      label: 'Active Users (30d)', 
+      value: stats?.recentLogins?.toLocaleString() || '0', 
+      change: '+8%', 
+      icon: Activity, 
+      color: 'text-emerald-600' 
     }
   ];
 

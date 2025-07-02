@@ -5,6 +5,10 @@ import { PlatformStatsCards } from '@/components/admin/dashboard/PlatformStatsCa
 import { UserGrowthChart } from '@/components/admin/dashboard/UserGrowthChart';
 import { RecentActivityCard } from '@/components/admin/dashboard/RecentActivityCard';
 import { PendingActionsCard } from '@/components/admin/dashboard/PendingActionsCard';
+import { RealtimeStatsWidget } from '@/components/admin/dashboard/RealtimeStatsWidget';
+import { SystemHealthWidget } from '@/components/admin/dashboard/SystemHealthWidget';
+import { QuickActionsPanel } from '@/components/admin/QuickActionsPanel';
+import { PlatformOverviewWidget } from '@/components/admin/dashboard/PlatformOverviewWidget';
 import { useAdminStats } from '@/hooks/useAdminStats';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
@@ -35,12 +39,25 @@ const AdminDashboard = () => {
       <div className="space-y-8">
         <PlatformStatsCards stats={adminStats} />
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <UserGrowthChart data={userGrowthData} />
-          <RecentActivityCard activities={recentActivity} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <UserGrowthChart data={userGrowthData} />
+          </div>
+          <div className="space-y-6">
+            <RealtimeStatsWidget stats={adminStats} />
+            <SystemHealthWidget stats={adminStats} />
+          </div>
         </div>
 
-        <PendingActionsCard stats={adminStats} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <RecentActivityCard activities={recentActivity} />
+            <QuickActionsPanel stats={adminStats} />
+          </div>
+          <div>
+            <PlatformOverviewWidget stats={adminStats} />
+          </div>
+        </div>
       </div>
     </UnifiedAdminLayout>
   );

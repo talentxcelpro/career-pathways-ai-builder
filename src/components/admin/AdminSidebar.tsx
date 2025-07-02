@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useAdminStats } from '@/hooks/useAdminStats';
 
 const adminMenuItems = [
   {
@@ -53,7 +54,7 @@ const adminMenuItems = [
     url: '/admin/employer-requests',
     icon: Building2,
     description: 'Review employer applications',
-    badge: '12'
+    badge: 'dynamic' // This will be updated dynamically
   },
   {
     title: 'Jobs Management',
@@ -134,6 +135,7 @@ export const AdminSidebar: React.FC = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const isCollapsed = state === 'collapsed';
+  const { data: adminStats } = useAdminStats();
 
   const isActive = (path: string) => {
     if (path === '/admin') {
@@ -179,7 +181,12 @@ export const AdminSidebar: React.FC = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <span className="font-medium">{item.title}</span>
-                            {item.badge && (
+                            {item.badge && item.badge === 'dynamic' && item.url === '/admin/employer-requests' && (
+                              <Badge variant="destructive" className="text-xs">
+                                {adminStats?.pendingEmployerRequests || 0}
+                              </Badge>
+                            )}
+                            {item.badge && item.badge !== 'dynamic' && (
                               <Badge variant="destructive" className="text-xs">
                                 {item.badge}
                               </Badge>
