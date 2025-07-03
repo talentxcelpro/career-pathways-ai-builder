@@ -34,30 +34,43 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
   };
 
   const generateAIContent = async (type: 'job_summary' | 'job_description' | 'key_responsibilities', isRegenerate = false) => {
+    // Validate required fields for AI generation
+    if (!formData.job_title?.trim()) {
+      toast.error('Please enter a job title first to use AI generation');
+      return;
+    }
+
     setIsGenerating(type);
     try {
       const { data, error } = await supabase.functions.invoke('ai-job-generator', {
         body: {
           type: isRegenerate ? 'regenerate' : type,
           job_title: formData.job_title,
-          industry_domain: formData.industry_domain,
-          employment_type: formData.employment_type,
-          work_mode: formData.work_mode,
-          location_city: formData.location_city,
-          experience_level: formData.experience_level,
+          industry_domain: formData.industry_domain || 'Technology',
+          employment_type: formData.employment_type || 'Full-Time',
+          work_mode: formData.work_mode || 'On-site',
+          location_city: formData.location_city || 'Remote',
+          experience_level: formData.experience_level || '2-5 Years',
           required_skills: formData.required_skills || [],
-          company_name: formData.company_name,
+          company_name: formData.company_name || 'Our Company',
           existing_content: isRegenerate ? formData[type] : ''
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw error;
+      }
+
+      if (!data?.content) {
+        throw new Error('No content received from AI');
+      }
 
       onInputChange(type, data.content);
       toast.success(`AI-generated ${type.replace('_', ' ')} created successfully!`);
     } catch (error) {
       console.error('AI generation error:', error);
-      toast.error('Failed to generate content. Please try again.');
+      toast.error('Failed to generate content. Please ensure you have a job title and try again.');
     } finally {
       setIsGenerating(null);
     }
