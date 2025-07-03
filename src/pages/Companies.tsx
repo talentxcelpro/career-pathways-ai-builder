@@ -17,8 +17,7 @@ const Companies = () => {
     queryFn: async () => {
       let query = supabase
         .from('companies')
-        .select('*')
-        .eq('is_verified', true);
+        .select('*');
       
       if (searchTerm) {
         query = query.or(`name.ilike.%${searchTerm}%,industry.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`);

@@ -1870,6 +1870,7 @@ export type Database = {
           benefits: string[] | null
           category_id: string | null
           company_id: string | null
+          contact_person_designation: string | null
           created_at: string | null
           description: string
           employment_type: string | null
@@ -1901,6 +1902,7 @@ export type Database = {
           benefits?: string[] | null
           category_id?: string | null
           company_id?: string | null
+          contact_person_designation?: string | null
           created_at?: string | null
           description: string
           employment_type?: string | null
@@ -1932,6 +1934,7 @@ export type Database = {
           benefits?: string[] | null
           category_id?: string | null
           company_id?: string | null
+          contact_person_designation?: string | null
           created_at?: string | null
           description?: string
           employment_type?: string | null
