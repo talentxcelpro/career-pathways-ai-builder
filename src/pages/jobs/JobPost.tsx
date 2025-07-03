@@ -11,6 +11,7 @@ import EnhancedCompanyForm from "@/components/jobs/EnhancedCompanyForm";
 import BasicJobInformation from "@/components/jobs/BasicJobInformation";
 import SkillsBenefitsForm from "@/components/jobs/SkillsBenefitsForm";
 import EducationCertificationForm from "@/components/jobs/EducationCertificationForm";
+import SupportingDocumentsForm from "@/components/jobs/SupportingDocumentsForm";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
 
 function JobPostContent() {
@@ -47,7 +48,9 @@ function JobPostContent() {
     maximum_experience_years: null as number | null,
     relevant_industry_experience: [] as string[],
     specific_experience_areas: '',
-    preferred_experience_in: [] as string[]
+    preferred_experience_in: [] as string[],
+    // Supporting documents
+    supporting_documents: [] as any[]
   });
 
   // Fetch job categories
@@ -176,6 +179,12 @@ function JobPostContent() {
 
           {/* Education & Certification Requirements */}
           <EducationCertificationForm
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
+
+          {/* Supporting Documents */}
+          <SupportingDocumentsForm
             formData={formData}
             onInputChange={handleInputChange}
           />
