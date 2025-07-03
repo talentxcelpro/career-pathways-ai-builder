@@ -71,32 +71,32 @@ const CareerMap = () => {
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full translate-y-48 -translate-x-48"></div>
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="text-center max-w-2xl mx-auto">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
-                <Brain className="h-4 w-4 text-white" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+          <div className="text-center max-w-xl mx-auto">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <div className="p-1 bg-white/20 rounded-md backdrop-blur-sm">
+                <Brain className="h-3 w-3 text-white" />
               </div>
-              <Badge className="bg-white/20 text-white border-white/30 px-2 py-1 text-xs">
-                AI-Powered Career Intelligence
+              <Badge className="bg-white/20 text-white border-white/30 px-1.5 py-0.5 text-xs">
+                AI Career
               </Badge>
             </div>
-            <h1 className="text-xl font-bold mb-2">Your AI Career Roadmap</h1>
-            <p className="text-sm text-purple-100 mb-4 max-w-md mx-auto">
-              Navigate your career journey with AI-powered insights and personalized roadmaps.
+            <h1 className="text-lg font-bold mb-1">AI Career Roadmap</h1>
+            <p className="text-xs text-purple-100 mb-2 max-w-xs mx-auto">
+              AI-powered career insights and roadmaps.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+            <div className="flex gap-2 justify-center">
               <Link to="/career-map/ai-roadmap-builder">
-                <Button size="sm" className="bg-white text-indigo-600 hover:bg-white/90 px-4 py-2">
+                <Button size="sm" className="bg-white text-indigo-600 hover:bg-white/90 px-3 py-1.5 text-xs">
                   <Rocket className="h-3 w-3 mr-1" />
-                  Start AI Roadmap
+                  Start
                 </Button>
               </Link>
               <Link to="/career-map/skills-gap">
-                <Button size="sm" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-4 py-2">
+                <Button size="sm" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-3 py-1.5 text-xs">
                   <Target className="h-3 w-3 mr-1" />
-                  Analyze Skills Gap
+                  Analyze
                 </Button>
               </Link>
             </div>
@@ -118,11 +118,11 @@ const CareerMap = () => {
             <Link to="/career-map/ai-roadmap-builder">
               <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-blue-50 to-indigo-100 hover:-translate-y-2">
                 <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                    <Brain className="h-8 w-8 text-white" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform shadow-lg">
+                    <Brain className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">AI Roadmap Builder</h3>
-                  <p className="text-gray-600 text-sm mb-4">Create personalized roadmaps with AI analysis</p>
+                  <h3 className="font-bold text-base text-gray-900 mb-2">AI Roadmap Builder</h3>
+                  <p className="text-gray-600 text-xs mb-3">Create personalized roadmaps</p>
                   <Badge className="bg-blue-100 text-blue-800 border-blue-200">Enhanced</Badge>
                 </CardContent>
               </Card>
@@ -131,11 +131,11 @@ const CareerMap = () => {
             <Link to="/career-map/my-roadmaps">
               <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-emerald-50 to-green-100 hover:-translate-y-2">
                 <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                    <Map className="h-8 w-8 text-white" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform shadow-lg">
+                    <Map className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">My Roadmaps</h3>
-                  <p className="text-gray-600 text-sm mb-4">Track progress with interactive timelines</p>
+                  <h3 className="font-bold text-base text-gray-900 mb-2">My Roadmaps</h3>
+                  <p className="text-gray-600 text-xs mb-3">Track progress with timelines</p>
                   <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">Active</Badge>
                 </CardContent>
               </Card>
@@ -144,11 +144,11 @@ const CareerMap = () => {
             <Link to="/career-map/switch">
               <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-orange-50 to-amber-100 hover:-translate-y-2">
                 <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                    <Zap className="h-8 w-8 text-white" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform shadow-lg">
+                    <Zap className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">Career Switch AI</h3>
-                  <p className="text-gray-600 text-sm mb-4">Smart risk assessment & predictions</p>
+                  <h3 className="font-bold text-base text-gray-900 mb-2">Career Switch AI</h3>
+                  <p className="text-gray-600 text-xs mb-3">Smart risk assessment</p>
                   <Badge className="bg-orange-100 text-orange-800 border-orange-200">AI-Enhanced</Badge>
                 </CardContent>
               </Card>
@@ -157,11 +157,11 @@ const CareerMap = () => {
             <Link to="/career-map/skills-gap">
               <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-purple-50 to-violet-100 hover:-translate-y-2">
                 <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                    <Target className="h-8 w-8 text-white" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-violet-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform shadow-lg">
+                    <Target className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">Skills Gap Analyzer</h3>
-                  <p className="text-gray-600 text-sm mb-4">Market data-driven insights</p>
+                  <h3 className="font-bold text-base text-gray-900 mb-2">Skills Gap Analyzer</h3>
+                  <p className="text-gray-600 text-xs mb-3">Market data insights</p>
                   <Badge className="bg-purple-100 text-purple-800 border-purple-200">Data-Driven</Badge>
                 </CardContent>
               </Card>

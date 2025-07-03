@@ -48,9 +48,9 @@ const Learning = () => {
 
   const getTabIcon = (tab: string) => {
     switch (tab) {
-      case 'courses': return <BookOpen className="h-4 w-4" />;
-      case 'paths': return <TrendingUp className="h-4 w-4" />;
-      case 'my-learning': return <Award className="h-4 w-4" />;
+      case 'courses': return <BookOpen className="h-3 w-3" />;
+      case 'paths': return <TrendingUp className="h-3 w-3" />;
+      case 'my-learning': return <Award className="h-3 w-3" />;
       default: return null;
     }
   };
@@ -89,40 +89,20 @@ const Learning = () => {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-32 -translate-x-32"></div>
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="text-center max-w-2xl mx-auto">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-yellow-300" />
-              <Badge className="bg-white/20 text-white border-white/30 px-2 py-1 text-xs">
-                AI-Powered Learning
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+          <div className="text-center max-w-xl mx-auto">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Sparkles className="h-3 w-3 text-yellow-300" />
+              <Badge className="bg-white/20 text-white border-white/30 px-1.5 py-0.5 text-xs">
+                AI Learning
               </Badge>
             </div>
-            <h1 className="text-xl font-bold mb-2 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+            <h1 className="text-lg font-bold mb-1 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
               Accelerate Your Career
             </h1>
-            <p className="text-sm text-blue-100 mb-4 max-w-md mx-auto">
-              Master in-demand skills with expert courses and AI recommendations.
+            <p className="text-xs text-blue-100 mb-2 max-w-xs mx-auto">
+              Master skills with AI recommendations.
             </p>
-            
-            {/* Quick Stats */}
-            <div className="grid grid-cols-4 gap-3 max-w-sm mx-auto">
-              <div className="text-center">
-                <div className="text-lg font-bold text-white">{courses.length}+</div>
-                <p className="text-blue-100 text-xs">Courses</p>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-white">50K+</div>
-                <p className="text-blue-100 text-xs">Learners</p>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-white">95%</div>
-                <p className="text-blue-100 text-xs">Success</p>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-white">24/7</div>
-                <p className="text-blue-100 text-xs">Support</p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -184,39 +164,39 @@ const Learning = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-xl transition-all duration-300 group cursor-pointer">
               <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Sparkles className="h-8 w-8 text-white" />
+                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                  <Sparkles className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-blue-900 mb-2">AI Recommendations</h3>
-                <p className="text-blue-700 text-sm mb-4">Personalized course suggestions based on your goals</p>
-                <Button variant="ghost" className="text-blue-600 hover:text-blue-800">
-                  Explore <ArrowRight className="h-4 w-4 ml-1" />
+                <h3 className="text-base font-bold text-blue-900 mb-2">AI Recommendations</h3>
+                <p className="text-blue-700 text-xs mb-3">Personalized course suggestions</p>
+                <Button variant="ghost" className="text-blue-600 hover:text-blue-800 text-xs">
+                  Explore <ArrowRight className="h-3 w-3 ml-1" />
                 </Button>
               </CardContent>
             </Card>
 
             <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-xl transition-all duration-300 group cursor-pointer">
               <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Target className="h-8 w-8 text-white" />
+                <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                  <Target className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-purple-900 mb-2">Skill-Based Learning</h3>
-                <p className="text-purple-700 text-sm mb-4">Target specific skills for your career advancement</p>
-                <Button variant="ghost" className="text-purple-600 hover:text-purple-800">
-                  Start <ArrowRight className="h-4 w-4 ml-1" />
+                <h3 className="text-base font-bold text-purple-900 mb-2">Skill-Based Learning</h3>
+                <p className="text-purple-700 text-xs mb-3">Target specific skills</p>
+                <Button variant="ghost" className="text-purple-600 hover:text-purple-800 text-xs">
+                  Start <ArrowRight className="h-3 w-3 ml-1" />
                 </Button>
               </CardContent>
             </Card>
 
             <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-emerald-100 hover:shadow-xl transition-all duration-300 group cursor-pointer">
               <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Users className="h-8 w-8 text-white" />
+                <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                  <Users className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-emerald-900 mb-2">Community Learning</h3>
-                <p className="text-emerald-700 text-sm mb-4">Learn with peers and industry experts</p>
-                <Button variant="ghost" className="text-emerald-600 hover:text-emerald-800">
-                  Join <ArrowRight className="h-4 w-4 ml-1" />
+                <h3 className="text-base font-bold text-emerald-900 mb-2">Community Learning</h3>
+                <p className="text-emerald-700 text-xs mb-3">Learn with peers</p>
+                <Button variant="ghost" className="text-emerald-600 hover:text-emerald-800 text-xs">
+                  Join <ArrowRight className="h-3 w-3 ml-1" />
                 </Button>
               </CardContent>
             </Card>
