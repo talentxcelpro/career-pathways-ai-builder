@@ -81,7 +81,6 @@ export const Navbar = () => {
   };
 
   const mainNavItems = [
-    { to: "/", label: "Home" },
     { to: "/network", label: "Network" },
     { to: "/jobs", label: "Jobs" },
     { to: "/resume", label: "Resume" },
@@ -111,13 +110,12 @@ export const Navbar = () => {
         <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
+            <Link to="/" className="flex items-center">
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel Logo" 
+                alt="TalentXcel" 
                 className="h-8 w-8 rounded-sm"
               />
-              <span className="font-bold text-xl text-gray-900 hidden sm:block">TalentXcel</span>
             </Link>
           </div>
 
