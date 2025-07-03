@@ -17,7 +17,6 @@ import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
 import { useNetworkRealtime, useAutoRefreshPosts } from "@/hooks/useRealtimeData";
-import { AutoRefreshIndicator } from "@/components/shared/AutoRefreshIndicator";
 import FloatingMessenger from "@/components/network/FloatingMessenger";
 import { Link } from 'react-router-dom';
 
@@ -162,16 +161,9 @@ const Posts = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Simplified Header */}
         <div className="mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Professional Network</h1>
-              <p className="text-gray-600 mt-1">Stay connected with your professional community</p>
-            </div>
-            <AutoRefreshIndicator 
-              isConnected={isConnected} 
-              lastRefresh={lastRefresh}
-              className="flex-shrink-0"
-            />
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Professional Network</h1>
+            <p className="text-gray-600 mt-1">Stay connected with your professional community</p>
           </div>
         </div>
 
