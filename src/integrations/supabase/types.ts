@@ -1871,6 +1871,7 @@ export type Database = {
           category_id: string | null
           company_id: string | null
           contact_person_designation: string | null
+          contact_person_name: string | null
           created_at: string | null
           description: string
           employment_type: string | null
@@ -1903,6 +1904,7 @@ export type Database = {
           category_id?: string | null
           company_id?: string | null
           contact_person_designation?: string | null
+          contact_person_name?: string | null
           created_at?: string | null
           description: string
           employment_type?: string | null
@@ -1935,6 +1937,7 @@ export type Database = {
           category_id?: string | null
           company_id?: string | null
           contact_person_designation?: string | null
+          contact_person_name?: string | null
           created_at?: string | null
           description?: string
           employment_type?: string | null
