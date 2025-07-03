@@ -25,7 +25,12 @@ interface CompanyDetailsProps {
 }
 
 export default function CompanyDetails({ company }: CompanyDetailsProps) {
-  const { followCompany, isFollowing: isFollowingMutation } = useCompanyFollow();
+  const { 
+    isFollowing: isFollowingHook, 
+    isUpdating, 
+    toggleFollow, 
+    canFollow 
+  } = useCompanyFollow(company?.id || '');
 
   if (!company) {
     return (
@@ -40,10 +45,8 @@ export default function CompanyDetails({ company }: CompanyDetailsProps) {
     );
   }
 
-  const isFollowing = company.company_follows && company.company_follows.length > 0;
-
   const handleFollowToggle = () => {
-    followCompany({ companyId: company.id, isFollowing });
+    toggleFollow();
   };
 
   return (
@@ -66,14 +69,14 @@ export default function CompanyDetails({ company }: CompanyDetailsProps) {
                 )}
               </div>
               <Button
-                variant={isFollowing ? "default" : "outline"}
+                variant={isFollowingHook ? "default" : "outline"}
                 size="sm"
                 onClick={handleFollowToggle}
-                disabled={isFollowingMutation}
+                disabled={isUpdating}
                 className="flex items-center gap-2"
               >
-                <Heart className={`h-4 w-4 ${isFollowing ? 'fill-current' : ''}`} />
-                {isFollowing ? 'Following' : 'Follow'}
+                <Heart className={`h-4 w-4 ${isFollowingHook ? 'fill-current' : ''}`} />
+                {isFollowingHook ? 'Following' : 'Follow'}
               </Button>
             </div>
             

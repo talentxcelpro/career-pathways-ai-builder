@@ -6,6 +6,7 @@ import ProfileLayout from '@/components/profile/ProfileLayout';
 import { ProfileCompletionBanner } from '@/components/profile/ProfileCompletionBanner';
 import { ProfileShareDialog } from '@/components/profile/ProfileShareDialog';
 import { PortfolioManager } from '@/components/profile/PortfolioManager';
+import { FollowedCompanies } from '@/components/profile/FollowedCompanies';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -292,6 +293,13 @@ const Profile = () => {
         {/* Portfolio Section */}
         {currentUser?.id && (
           <PortfolioManager userId={currentUser.id} />
+        )}
+
+        {/* Followed Companies Section */}
+        {currentUser?.id && (
+          <div className="mb-6">
+            <FollowedCompanies userId={currentUser.id} />
+          </div>
         )}
 
         {/* Share Dialog */}

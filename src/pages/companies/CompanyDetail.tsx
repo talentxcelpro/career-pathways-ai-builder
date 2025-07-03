@@ -27,7 +27,8 @@ import {
   Upload,
   Camera,
   Edit3
-} from 'lucide-react';
+ } from 'lucide-react';
+import { CompanyFollowButton } from '@/components/company/CompanyFollowButton';
 import { toast } from 'sonner';
 
 const CompanyDetail = () => {
@@ -374,14 +375,12 @@ const CompanyDetail = () => {
               </div>
               
               <div className="flex space-x-3">
-                <Button
-                  variant={isFollowing ? "default" : "outline"}
-                  onClick={handleFollowToggle}
-                  className="flex items-center space-x-2"
-                >
-                  <Heart className={`h-4 w-4 ${isFollowing ? 'fill-current' : ''}`} />
-                  <span>{isFollowing ? 'Following' : 'Follow'}</span>
-                </Button>
+                <CompanyFollowButton 
+                  companyId={company.id}
+                  size="default"
+                  variant="outline"
+                  showFollowersCount={false}
+                />
                 <Button variant="outline" size="icon">
                   <Share2 className="h-4 w-4" />
                 </Button>
