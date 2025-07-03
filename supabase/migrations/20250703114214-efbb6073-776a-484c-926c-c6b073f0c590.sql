@@ -1,0 +1,21 @@
+-- Enable realtime for key tables
+ALTER TABLE public.posts REPLICA IDENTITY FULL;
+ALTER TABLE public.jobs REPLICA IDENTITY FULL;
+ALTER TABLE public.connections REPLICA IDENTITY FULL;
+ALTER TABLE public.messages REPLICA IDENTITY FULL;
+ALTER TABLE public.job_applications REPLICA IDENTITY FULL;
+ALTER TABLE public.notifications REPLICA IDENTITY FULL;
+ALTER TABLE public.events REPLICA IDENTITY FULL;
+ALTER TABLE public.company_access_requests REPLICA IDENTITY FULL;
+ALTER TABLE public.employer_requests REPLICA IDENTITY FULL;
+
+-- Add tables to realtime publication
+ALTER PUBLICATION supabase_realtime ADD TABLE public.posts;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.jobs;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.connections;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.job_applications;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.notifications;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.events;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.company_access_requests;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.employer_requests;
