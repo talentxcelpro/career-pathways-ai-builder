@@ -7,6 +7,7 @@ import { ProfileCompletionBanner } from '@/components/profile/ProfileCompletionB
 import { ProfileShareDialog } from '@/components/profile/ProfileShareDialog';
 import { PortfolioManager } from '@/components/profile/PortfolioManager';
 import { FollowedCompanies } from '@/components/profile/FollowedCompanies';
+import { ProfileViewers } from '@/components/profile/ProfileViewers';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -138,12 +139,12 @@ const Profile = () => {
                   <p className="text-gray-500">{profile.location}</p>
                 )}
                 
-                {/* Profile Stats */}
-                <div className="flex items-center space-x-4 mt-2">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Eye className="h-4 w-4 mr-1" />
-                    {profile?.profile_views_count || 0} views
-                  </div>
+                 {/* Profile Stats */}
+                 <div className="flex items-center space-x-4 mt-2">
+                   <ProfileViewers 
+                     profileUserId={currentUser.id} 
+                     viewsCount={profile?.profile_views_count || 0} 
+                   />
                   <Badge variant="outline" className="capitalize">
                     {profile?.profile_visibility || 'public'} profile
                   </Badge>
