@@ -173,10 +173,54 @@ const Tools = () => {
   ];
 
   const filteredTools = tools.filter(tool => {
-    const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         tool.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         tool.features.some(feature => feature.toLowerCase().includes(searchQuery.toLowerCase()));
+    if (!searchQuery) {
+      const matchesCategory = selectedCategory === 'all' || tool.category === selectedCategory;
+      return matchesCategory;
+    }
+
+    const query = searchQuery.toLowerCase();
+    
+    // Natural language search patterns
+    const naturalLanguageMatches = [
+      // Intent-based matching
+      query.includes('interview') && tool.category === 'interview',
+      query.includes('resume') && tool.category === 'resume',
+      query.includes('salary') && tool.id.includes('salary'),
+      query.includes('job') && (tool.category === 'job-search' || tool.id.includes('job')),
+      query.includes('career') && tool.category === 'career',
+      query.includes('skill') && tool.category === 'skills',
+      query.includes('network') && tool.category === 'networking',
+      query.includes('profile') && tool.category === 'profile',
+      query.includes('market') && tool.id.includes('market'),
+      
+      // Feature-based matching
+      query.includes('ai') && tool.description.toLowerCase().includes('ai'),
+      query.includes('free') && !tool.isPremium,
+      query.includes('premium') && tool.isPremium,
+      query.includes('popular') && tool.popularity >= 85,
+      query.includes('quick') && parseInt(tool.estimatedTime.split('-')[0]) <= 5,
+      query.includes('analysis') && tool.description.toLowerCase().includes('analy'),
+      query.includes('optimization') && tool.description.toLowerCase().includes('optimi'),
+      query.includes('matching') && tool.description.toLowerCase().includes('match'),
+      
+      // Action-based matching
+      query.includes('improve') && (tool.category === 'skills' || tool.category === 'profile'),
+      query.includes('find') && tool.category === 'job-search',
+      query.includes('practice') && tool.category === 'interview',
+      query.includes('build') && (tool.category === 'networking' || tool.category === 'resume'),
+      query.includes('assess') && tool.category === 'skills',
+      query.includes('score') && tool.id.includes('score'),
+    ];
+
+    // Traditional keyword matching
+    const keywordMatches = tool.name.toLowerCase().includes(query) ||
+                          tool.description.toLowerCase().includes(query) ||
+                          tool.features.some(feature => feature.toLowerCase().includes(query)) ||
+                          tool.category.toLowerCase().includes(query);
+
+    const matchesSearch = naturalLanguageMatches.some(match => match) || keywordMatches;
     const matchesCategory = selectedCategory === 'all' || tool.category === selectedCategory;
+    
     return matchesSearch && matchesCategory;
   });
 
@@ -249,46 +293,33 @@ const Tools = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-3xl p-8 mb-12 text-white">
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
-                <Brain className="h-8 w-8" />
+        {/* Compact Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 mb-8 text-white">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                <Brain className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold mb-2">AI-Powered Career Tools</h1>
-                <p className="text-blue-100 text-lg max-w-3xl">
-                  Transform your career with our comprehensive suite of AI-powered tools designed to accelerate your professional growth and success.
-                </p>
+                <h1 className="text-2xl font-bold">AI-Powered Career Tools</h1>
+                <p className="text-blue-100 text-sm">Transform your career with intelligent tools</p>
               </div>
             </div>
-            
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-2xl font-bold">{tools.length}</div>
-                <p className="text-sm text-blue-100">Total Tools</p>
+            <div className="hidden md:flex items-center gap-6 text-sm">
+              <div className="text-center">
+                <div className="font-bold text-lg">{tools.length}</div>
+                <p className="text-blue-100">Tools</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-2xl font-bold">{freeTools.length}</div>
-                <p className="text-sm text-blue-100">Free Tools</p>
+              <div className="text-center">
+                <div className="font-bold text-lg">{freeTools.length}</div>
+                <p className="text-blue-100">Free</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-2xl font-bold">{tools.filter(t => t.isPremium).length}</div>
-                <p className="text-sm text-blue-100">Premium Tools</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-2xl font-bold">{Object.values(toolUsage).reduce((a, b) => a + b, 0)}</div>
-                <p className="text-sm text-blue-100">Your Usage</p>
+              <div className="text-center">
+                <div className="font-bold text-lg">{Object.values(toolUsage).reduce((a, b) => a + b, 0)}</div>
+                <p className="text-blue-100">Used</p>
               </div>
             </div>
           </div>
-          
-          {/* Decorative Elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full translate-y-48 -translate-x-48"></div>
         </div>
 
         {/* Search and Filters */}
@@ -296,7 +327,7 @@ const Tools = () => {
           <div className="relative mb-6">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
-              placeholder="Search tools, features, or keywords..."
+              placeholder="Search tools naturally - try 'find free interview tools' or 'improve my resume'..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 h-14 text-lg rounded-2xl border-0 bg-white shadow-lg ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-500"
