@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { FormData, JobInfo, Resume } from './types';
+import { validateStep } from './validation';
 import ResumeSelectionStep from './ResumeSelectionStep';
 import JobRoleStep from './JobRoleStep';
 import PersonalDetailsStep from './PersonalDetailsStep';
@@ -305,6 +306,7 @@ export default function CompactApplicationForm({ open, onOpenChange, job }: Comp
           totalSteps={4}
           isSubmitting={isSubmitting}
           canSubmit={formData.informationConfirmed && formData.contactAuthorized}
+          canProceedToNext={validateStep(currentStep, formData)}
           onPrevious={() => setCurrentStep(Math.max(1, currentStep - 1))}
           onNext={() => setCurrentStep(Math.min(4, currentStep + 1))}
           onSubmit={handleSubmit}

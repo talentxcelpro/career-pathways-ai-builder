@@ -8,6 +8,7 @@ interface NavigationButtonsProps {
   totalSteps: number;
   isSubmitting: boolean;
   canSubmit: boolean;
+  canProceedToNext?: boolean;
   onPrevious: () => void;
   onNext: () => void;
   onSubmit: () => void;
@@ -18,6 +19,7 @@ export default function NavigationButtons({
   totalSteps,
   isSubmitting,
   canSubmit,
+  canProceedToNext = true,
   onPrevious,
   onNext,
   onSubmit
@@ -38,6 +40,7 @@ export default function NavigationButtons({
         {currentStep < totalSteps ? (
           <Button
             onClick={onNext}
+            disabled={!canProceedToNext}
             size="sm"
             className="h-8 px-3"
           >
