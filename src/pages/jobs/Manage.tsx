@@ -36,23 +36,14 @@ const JobsManage = () => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('Not authenticated');
 
-      // Get user's company
-      const { data: teamMember } = await supabase
-        .from('company_team_members')
-        .select('company_id')
-        .eq('user_id', user.user.id)
-        .eq('is_active', true)
-        .single();
-
-      if (!teamMember) return [];
-
+      // First try to get jobs posted directly by the user
       let query = supabase
         .from('jobs')
         .select(`
           *,
-          companies!inner(name, logo_url)
+          companies(name, logo_url)
         `)
-        .eq('company_id', teamMember.company_id);
+        .eq('posted_by', user.user.id);
 
       if (searchTerm) {
         query = query.ilike('title', `%${searchTerm}%`);
@@ -62,10 +53,51 @@ const JobsManage = () => {
         query = query.eq('is_active', statusFilter === 'active');
       }
 
-      const { data, error } = await query.order('created_at', { ascending: false });
+      const { data: userJobs, error: userJobsError } = await query.order('created_at', { ascending: false });
       
-      if (error) throw error;
-      return data as Job[];
+      if (userJobsError) throw userJobsError;
+
+      // Also try to get jobs from company if user is part of a team
+      let companyJobs = [];
+      try {
+        const { data: teamMember } = await supabase
+          .from('company_team_members')
+          .select('company_id')
+          .eq('user_id', user.user.id)
+          .eq('is_active', true)
+          .single();
+
+        if (teamMember) {
+          let companyQuery = supabase
+            .from('jobs')
+            .select(`
+              *,
+              companies!inner(name, logo_url)
+            `)
+            .eq('company_id', teamMember.company_id);
+
+          if (searchTerm) {
+            companyQuery = companyQuery.ilike('title', `%${searchTerm}%`);
+          }
+
+          if (statusFilter !== 'all') {
+            companyQuery = companyQuery.eq('is_active', statusFilter === 'active');
+          }
+
+          const { data: companyJobsData } = await companyQuery.order('created_at', { ascending: false });
+          companyJobs = companyJobsData || [];
+        }
+      } catch (error) {
+        console.log('No company team membership found');
+      }
+
+      // Combine and deduplicate jobs
+      const allJobs = [...(userJobs || []), ...companyJobs];
+      const uniqueJobs = allJobs.filter((job, index, self) => 
+        index === self.findIndex(j => j.id === job.id)
+      );
+
+      return uniqueJobs as Job[];
     }
   });
 
@@ -175,6 +207,16 @@ const JobsManage = () => {
                   </div>
                   
                   <div className="flex items-center gap-2">
+                    {job.applications_count > 0 && (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => navigate(`/jobs/${job.id}/applicants`)}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        View Applications ({job.applications_count})
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
