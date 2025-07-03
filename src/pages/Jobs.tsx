@@ -5,8 +5,8 @@ import { JobsHeader } from '@/components/jobs/JobsHeader';
 import { JobsCategories } from '@/components/jobs/JobsCategories';
 import { EnhancedJobFilters } from '@/components/jobs/EnhancedJobFilters';
 import { JobsList } from '@/components/jobs/JobsList';
-import { useJobsAutoRefresh } from '@/hooks/useAutoRefresh';
-import { useRealtimeJobs } from '@/hooks/useRealtimeData';
+import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
+import { useJobsRealtime } from '@/hooks/useRealtimeData';
 import { DataFreshness } from '@/components/shared/DataFreshness';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
 import { updateMetaTags } from '@/utils/metaTags';
@@ -30,10 +30,6 @@ const Jobs = () => {
   const [sortBy, setSortBy] = useState('posted_at');
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
-
-  // Auto-refresh and real-time updates
-  const { manualRefresh } = useJobsAutoRefresh();
-  useRealtimeJobs();
 
   // Get current user (optional for job viewing)
   useEffect(() => {
@@ -146,6 +142,17 @@ const Jobs = () => {
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  // Auto-refresh jobs data every 20 seconds
+  useSmartAutoRefresh(() => {
+    refetch();
+  }, REFRESH_INTERVALS.JOBS);
+
+  // Set up realtime for jobs updates
+  useJobsRealtime(
+    () => refetch(),
+    () => refetch()
+  );
 
   // Get saved jobs (only if user is logged in)
   const { data: savedJobsData = [] } = useQuery({
@@ -345,7 +352,6 @@ const Jobs = () => {
           <DataFreshness 
             lastUpdated={new Date(dataUpdatedAt || Date.now())}
             onRefresh={() => {
-              manualRefresh();
               refetch();
             }}
             isRefreshing={isLoading}

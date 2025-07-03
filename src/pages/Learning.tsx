@@ -26,14 +26,8 @@ const Learning = () => {
     setSelectedCategory,
     selectedDifficulty,
     setSelectedDifficulty,
-    isLoading,
-    refetch
+    isLoading
   } = useLearningData();
-
-  // Auto-refresh learning data every 30 seconds
-  useSmartAutoRefresh(() => {
-    if (refetch) refetch();
-  }, REFRESH_INTERVALS.LEARNING);
 
   // Update meta tags for SEO
   useEffect(() => {

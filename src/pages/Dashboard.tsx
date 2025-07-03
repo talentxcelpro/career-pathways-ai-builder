@@ -6,8 +6,8 @@ import { FeaturedJobs } from '@/components/dashboard/FeaturedJobs';
 import { TrendingCourses } from '@/components/dashboard/TrendingCourses';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { CareerInsights } from '@/components/dashboard/CareerInsights';
-import { useDashboardAutoRefresh } from '@/hooks/useAutoRefresh';
-import { useRealtimeMessages, useRealtimeJobs } from '@/hooks/useRealtimeData';
+import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
+import { useJobsRealtime } from '@/hooks/useRealtimeData';
 import { DataFreshness } from '@/components/shared/DataFreshness';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
 import { realDataService } from '@/utils/realDataService';
@@ -22,10 +22,40 @@ import { TrendingUp, Clock, Target, BookOpen, Briefcase, Users, Star, ArrowRight
 const Dashboard = () => {
   const navigate = useNavigate();
   
-  // Auto-refresh and real-time updates
-  const { manualRefresh } = useDashboardAutoRefresh();
-  useRealtimeMessages();
-  useRealtimeJobs();
+  // Get data with auto-refresh
+  const { data: dashboardStats, isLoading: statsLoading, dataUpdatedAt: statsUpdatedAt, refetch: refetchStats } = useQuery({
+    queryKey: ['dashboard_stats'],
+    queryFn: realDataService.getDashboardStats,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const { data: featuredJobs = [], isLoading: jobsLoading, refetch: refetchJobs } = useQuery({
+    queryKey: ['featured_jobs'],
+    queryFn: realDataService.getFeaturedJobs,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+  });
+
+  const { data: popularCourses = [], isLoading: coursesLoading, refetch: refetchCourses } = useQuery({
+    queryKey: ['popular_courses'],
+    queryFn: realDataService.getPopularCourses,
+    staleTime: 15 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+
+  // Auto-refresh dashboard data
+  useSmartAutoRefresh(() => {
+    refetchStats();
+    refetchJobs();
+    refetchCourses();
+  }, REFRESH_INTERVALS.NETWORK);
+
+  // Set up realtime for jobs updates
+  useJobsRealtime(
+    () => refetchJobs(),
+    () => refetchJobs()
+  );
 
   // Meta tags
   useEffect(() => {
@@ -35,28 +65,6 @@ const Dashboard = () => {
       url: `${window.location.origin}/dashboard`,
     });
   }, []);
-
-  // Fetch dashboard data with optimized queries
-  const { data: dashboardStats, isLoading: statsLoading, dataUpdatedAt: statsUpdatedAt } = useQuery({
-    queryKey: ['dashboard_stats'],
-    queryFn: realDataService.getDashboardStats,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
-
-  const { data: featuredJobs = [], isLoading: jobsLoading } = useQuery({
-    queryKey: ['featured_jobs'],
-    queryFn: realDataService.getFeaturedJobs,
-    staleTime: 10 * 60 * 1000,
-    gcTime: 15 * 60 * 1000,
-  });
-
-  const { data: popularCourses = [], isLoading: coursesLoading } = useQuery({
-    queryKey: ['popular_courses'],
-    queryFn: realDataService.getPopularCourses,
-    staleTime: 15 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-  });
 
   const { data: userProfile } = useQuery({
     queryKey: ['user_profile'],
@@ -77,7 +85,9 @@ const Dashboard = () => {
   });
 
   const handleRefreshAll = () => {
-    manualRefresh();
+    refetchStats();
+    refetchJobs();
+    refetchCourses();
   };
 
   const handleQuickAction = (action: string) => {
