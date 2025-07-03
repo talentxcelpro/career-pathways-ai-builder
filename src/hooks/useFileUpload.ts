@@ -32,8 +32,19 @@ export function useFileUpload(options?: UseFileUploadOptions) {
     }
 
     // Validate file type
-    if (config.allowedTypes && !config.allowedTypes.includes(file.type)) {
-      throw new Error(`File type not allowed. Allowed types: ${config.allowedTypes.join(', ')}`);
+    if (config.allowedTypes && config.allowedTypes.length > 0) {
+      const isAllowed = config.allowedTypes.some(allowedType => {
+        if (allowedType.includes('*')) {
+          // Handle wildcard types like 'image/*'
+          const baseType = allowedType.split('/')[0];
+          return file.type.startsWith(baseType + '/');
+        }
+        return file.type === allowedType;
+      });
+      
+      if (!isAllowed) {
+        throw new Error(`File type not allowed. Allowed types: ${config.allowedTypes.join(', ')}`);
+      }
     }
 
     setUploading(true);
