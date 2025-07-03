@@ -2289,6 +2289,7 @@ export type Database = {
           id: string
           is_public: boolean | null
           likes_count: number | null
+          location: string | null
           media_urls: string[] | null
           post_type: string | null
           preview_url: string | null
@@ -2304,6 +2305,7 @@ export type Database = {
           id?: string
           is_public?: boolean | null
           likes_count?: number | null
+          location?: string | null
           media_urls?: string[] | null
           post_type?: string | null
           preview_url?: string | null
@@ -2319,6 +2321,7 @@ export type Database = {
           id?: string
           is_public?: boolean | null
           likes_count?: number | null
+          location?: string | null
           media_urls?: string[] | null
           post_type?: string | null
           preview_url?: string | null

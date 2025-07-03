@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera } from "lucide-react";
+import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostActions } from "@/components/posts/PostActions";
@@ -337,7 +337,9 @@ const Posts = () => {
                                                '1fr 1fr'
                           }}>
                             {post.media_urls.slice(0, 4).map((url: string, index: number) => {
-                              const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
+                              const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('video');
+                              const isDocument = url.includes('.pdf') || url.includes('.doc') || url.includes('document');
+                              
                               return (
                                 <div key={index} className="relative">
                                   {isVideo ? (
@@ -346,6 +348,15 @@ const Posts = () => {
                                       className="w-full h-64 object-cover rounded-lg"
                                       controls
                                     />
+                                  ) : isDocument ? (
+                                    <div className="flex items-center justify-center h-32 bg-gray-100 rounded-lg">
+                                      <div className="text-center">
+                                        <FileText className="h-8 w-8 mx-auto mb-2 text-gray-600" />
+                                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
+                                          View Document
+                                        </a>
+                                      </div>
+                                    </div>
                                   ) : (
                                     <img 
                                       src={url}
@@ -363,6 +374,14 @@ const Posts = () => {
                                 </div>
                               );
                             })}
+                          </div>
+                        )}
+                        
+                        {/* Location */}
+                        {post.location && (
+                          <div className="flex items-center gap-1 mt-3 text-sm text-gray-500">
+                            <MapPin className="h-4 w-4" />
+                            <span>{post.location}</span>
                           </div>
                         )}
                         
