@@ -344,7 +344,7 @@ const ProfileEdit = () => {
         <Card>
           <CardHeader>
             <CardTitle>Skills & Expertise</CardTitle>
-            <CardDescription>Add your technical and professional skills</CardDescription>
+            <CardDescription>Add your technical and professional skills from our comprehensive list</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -361,16 +361,271 @@ const ProfileEdit = () => {
                   </Badge>
                 ))}
               </div>
-              <div className="flex gap-2">
-                <Input
-                  value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  placeholder="Add a skill"
-                  onKeyPress={(e) => e.key === 'Enter' && addSkill()}
-                />
-                <Button onClick={addSkill} size="sm">
-                  <Plus className="h-4 w-4" />
-                </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Software Development */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">💻 Software Development</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="JavaScript">JavaScript</SelectItem>
+                      <SelectItem value="React.js">React.js</SelectItem>
+                      <SelectItem value="Node.js">Node.js</SelectItem>
+                      <SelectItem value="Python">Python</SelectItem>
+                      <SelectItem value="Django">Django</SelectItem>
+                      <SelectItem value="Java">Java</SelectItem>
+                      <SelectItem value="Spring Boot">Spring Boot</SelectItem>
+                      <SelectItem value="C++">C++</SelectItem>
+                      <SelectItem value="Git/GitHub">Git/GitHub</SelectItem>
+                      <SelectItem value="REST APIs">REST APIs</SelectItem>
+                      <SelectItem value="GraphQL">GraphQL</SelectItem>
+                      <SelectItem value="Docker">Docker</SelectItem>
+                      <SelectItem value="Kubernetes">Kubernetes</SelectItem>
+                      <SelectItem value="CI/CD">CI/CD</SelectItem>
+                      <SelectItem value="SQL">SQL</SelectItem>
+                      <SelectItem value="MongoDB">MongoDB</SelectItem>
+                      <SelectItem value="PostgreSQL">PostgreSQL</SelectItem>
+                      <SelectItem value="AWS">AWS</SelectItem>
+                      <SelectItem value="Azure">Azure</SelectItem>
+                      <SelectItem value="Google Cloud Platform (GCP)">Google Cloud Platform (GCP)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* UI/UX & Design */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">🎨 UI/UX & Design</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Adobe Photoshop">Adobe Photoshop</SelectItem>
+                      <SelectItem value="Adobe Illustrator">Adobe Illustrator</SelectItem>
+                      <SelectItem value="Figma">Figma</SelectItem>
+                      <SelectItem value="Sketch">Sketch</SelectItem>
+                      <SelectItem value="Adobe XD">Adobe XD</SelectItem>
+                      <SelectItem value="Wireframing">Wireframing</SelectItem>
+                      <SelectItem value="Prototyping">Prototyping</SelectItem>
+                      <SelectItem value="User Research">User Research</SelectItem>
+                      <SelectItem value="Design Thinking">Design Thinking</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Data & Analytics */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">📊 Data & Analytics</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Excel (Advanced)">Excel (Advanced)</SelectItem>
+                      <SelectItem value="Power BI">Power BI</SelectItem>
+                      <SelectItem value="Tableau">Tableau</SelectItem>
+                      <SelectItem value="Python (Pandas, NumPy)">Python (Pandas, NumPy)</SelectItem>
+                      <SelectItem value="R Programming">R Programming</SelectItem>
+                      <SelectItem value="Machine Learning">Machine Learning</SelectItem>
+                      <SelectItem value="Deep Learning">Deep Learning</SelectItem>
+                      <SelectItem value="Data Visualization">Data Visualization</SelectItem>
+                      <SelectItem value="Data Cleaning">Data Cleaning</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Web Development */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">🌐 Web Development</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="HTML5">HTML5</SelectItem>
+                      <SelectItem value="CSS3">CSS3</SelectItem>
+                      <SelectItem value="Bootstrap">Bootstrap</SelectItem>
+                      <SelectItem value="Tailwind CSS">Tailwind CSS</SelectItem>
+                      <SelectItem value="JavaScript (ES6+)">JavaScript (ES6+)</SelectItem>
+                      <SelectItem value="React">React</SelectItem>
+                      <SelectItem value="Angular">Angular</SelectItem>
+                      <SelectItem value="Vue.js">Vue.js</SelectItem>
+                      <SelectItem value="WebSockets">WebSockets</SelectItem>
+                      <SelectItem value="Responsive Design">Responsive Design</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Mobile Development */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">📱 Mobile Development</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Flutter">Flutter</SelectItem>
+                      <SelectItem value="React Native">React Native</SelectItem>
+                      <SelectItem value="Swift">Swift</SelectItem>
+                      <SelectItem value="Kotlin">Kotlin</SelectItem>
+                      <SelectItem value="Android SDK">Android SDK</SelectItem>
+                      <SelectItem value="iOS Development">iOS Development</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Cybersecurity */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">🔐 Cybersecurity</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Ethical Hacking">Ethical Hacking</SelectItem>
+                      <SelectItem value="Penetration Testing">Penetration Testing</SelectItem>
+                      <SelectItem value="Network Security">Network Security</SelectItem>
+                      <SelectItem value="Vulnerability Assessment">Vulnerability Assessment</SelectItem>
+                      <SelectItem value="Firewalls & IDS/IPS">Firewalls & IDS/IPS</SelectItem>
+                      <SelectItem value="ISO 27001">ISO 27001</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Business & Management */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">📈 Business & Management</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Project Management">Project Management</SelectItem>
+                      <SelectItem value="Agile & Scrum">Agile & Scrum</SelectItem>
+                      <SelectItem value="Business Analysis">Business Analysis</SelectItem>
+                      <SelectItem value="Product Management">Product Management</SelectItem>
+                      <SelectItem value="Stakeholder Communication">Stakeholder Communication</SelectItem>
+                      <SelectItem value="Strategic Planning">Strategic Planning</SelectItem>
+                      <SelectItem value="Risk Management">Risk Management</SelectItem>
+                      <SelectItem value="Financial Forecasting">Financial Forecasting</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Marketing & Communications */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">📢 Marketing & Communications</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Digital Marketing">Digital Marketing</SelectItem>
+                      <SelectItem value="SEO/SEM">SEO/SEM</SelectItem>
+                      <SelectItem value="Content Writing">Content Writing</SelectItem>
+                      <SelectItem value="Copywriting">Copywriting</SelectItem>
+                      <SelectItem value="Branding">Branding</SelectItem>
+                      <SelectItem value="Email Marketing">Email Marketing</SelectItem>
+                      <SelectItem value="Social Media Strategy">Social Media Strategy</SelectItem>
+                      <SelectItem value="Google Analytics">Google Analytics</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Sales & Customer Service */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">🛒 Sales & Customer Service</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Lead Generation">Lead Generation</SelectItem>
+                      <SelectItem value="CRM (Salesforce, HubSpot)">CRM (Salesforce, HubSpot)</SelectItem>
+                      <SelectItem value="B2B Sales">B2B Sales</SelectItem>
+                      <SelectItem value="Negotiation Skills">Negotiation Skills</SelectItem>
+                      <SelectItem value="Client Relationship Management">Client Relationship Management</SelectItem>
+                      <SelectItem value="Inbound/Outbound Sales">Inbound/Outbound Sales</SelectItem>
+                      <SelectItem value="Cold Calling">Cold Calling</SelectItem>
+                      <SelectItem value="Customer Retention">Customer Retention</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Operations & Administration */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">🏢 Operations & Administration</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="MS Office Suite">MS Office Suite</SelectItem>
+                      <SelectItem value="Google Workspace">Google Workspace</SelectItem>
+                      <SelectItem value="Data Entry">Data Entry</SelectItem>
+                      <SelectItem value="Documentation">Documentation</SelectItem>
+                      <SelectItem value="Time Management">Time Management</SelectItem>
+                      <SelectItem value="Inventory Management">Inventory Management</SelectItem>
+                      <SelectItem value="Vendor Coordination">Vendor Coordination</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Languages & Communication */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">🌍 Languages & Communication</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="English (Fluent)">English (Fluent)</SelectItem>
+                      <SelectItem value="Hindi (Native)">Hindi (Native)</SelectItem>
+                      <SelectItem value="Tamil">Tamil</SelectItem>
+                      <SelectItem value="Bengali">Bengali</SelectItem>
+                      <SelectItem value="French">French</SelectItem>
+                      <SelectItem value="German">German</SelectItem>
+                      <SelectItem value="Communication Skills">Communication Skills</SelectItem>
+                      <SelectItem value="Presentation Skills">Presentation Skills</SelectItem>
+                      <SelectItem value="Public Speaking">Public Speaking</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Teaching & Training */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">🧑‍🏫 Teaching & Training</label>
+                  <Select onValueChange={(value) => value && !formData.skills.includes(value) && setFormData(prev => ({ ...prev, skills: [...prev.skills, value] }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Instructional Design">Instructional Design</SelectItem>
+                      <SelectItem value="eLearning Tools">eLearning Tools</SelectItem>
+                      <SelectItem value="Classroom Management">Classroom Management</SelectItem>
+                      <SelectItem value="Curriculum Development">Curriculum Development</SelectItem>
+                      <SelectItem value="Online Teaching">Online Teaching</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              {/* Custom skill input for skills not in the list */}
+              <div className="border-t pt-4">
+                <label className="text-sm font-medium mb-2 block">Add Custom Skill</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={newSkill}
+                    onChange={(e) => setNewSkill(e.target.value)}
+                    placeholder="Enter a custom skill not listed above"
+                    onKeyPress={(e) => e.key === 'Enter' && addSkill()}
+                  />
+                  <Button onClick={addSkill} size="sm">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
