@@ -184,6 +184,33 @@
   .card-shadow-lg {
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   }
+
+  /* Global icon size overrides */
+  .lucide {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+
+  /* Specific icon size classes */
+  .icon-xs {
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+  }
+
+  .icon-sm {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+
+  .icon-md {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+
+  .icon-lg {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
 }
 
 /* Custom animations for better UX */
