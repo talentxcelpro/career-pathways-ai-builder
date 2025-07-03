@@ -1866,6 +1866,7 @@ export type Database = {
       jobs: {
         Row: {
           application_deadline: string | null
+          application_method: string | null
           applications_count: number | null
           benefits: string[] | null
           category_id: string | null
@@ -1894,12 +1895,16 @@ export type Database = {
           salary_max: number | null
           salary_min: number | null
           skills_required: string[] | null
+          supporting_documents: Json | null
           title: string
           updated_at: string | null
           views_count: number | null
+          visibility_duration_days: number | null
+          work_schedule: string | null
         }
         Insert: {
           application_deadline?: string | null
+          application_method?: string | null
           applications_count?: number | null
           benefits?: string[] | null
           category_id?: string | null
@@ -1928,12 +1933,16 @@ export type Database = {
           salary_max?: number | null
           salary_min?: number | null
           skills_required?: string[] | null
+          supporting_documents?: Json | null
           title: string
           updated_at?: string | null
           views_count?: number | null
+          visibility_duration_days?: number | null
+          work_schedule?: string | null
         }
         Update: {
           application_deadline?: string | null
+          application_method?: string | null
           applications_count?: number | null
           benefits?: string[] | null
           category_id?: string | null
@@ -1962,9 +1971,12 @@ export type Database = {
           salary_max?: number | null
           salary_min?: number | null
           skills_required?: string[] | null
+          supporting_documents?: Json | null
           title?: string
           updated_at?: string | null
           views_count?: number | null
+          visibility_duration_days?: number | null
+          work_schedule?: string | null
         }
         Relationships: [
           {
