@@ -6,7 +6,9 @@ import { LearningContent } from '@/components/learning/LearningContent';
 import { useLearningData } from '@/hooks/useLearningData';
 import { updateMetaTags } from '@/utils/metaTags';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, TrendingUp, Award } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { BookOpen, TrendingUp, Award, Sparkles, Target, Users, ArrowRight, Play, Clock, Star } from 'lucide-react';
 
 const Learning = () => {
   const [activeTab, setActiveTab] = useState('courses');
@@ -64,65 +66,107 @@ const Learning = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-          <p className="text-sm text-slate-600 font-medium">Loading learning content...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+            <Sparkles className="h-6 w-6 text-blue-600 absolute top-3 left-3 animate-pulse" />
+          </div>
+          <p className="text-lg font-medium text-slate-700">Loading your learning journey...</p>
+          <p className="text-sm text-slate-500">Personalizing content just for you</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Compact Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/50 sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900 mb-1">Learning Hub</h1>
-              <p className="text-sm text-slate-600">Advance your career with expert-led courses</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-48 translate-x-48"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-32 -translate-x-32"></div>
+        </div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center max-w-4xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Sparkles className="h-8 w-8 text-yellow-300" />
+              <Badge className="bg-white/20 text-white border-white/30 px-3 py-1">
+                AI-Powered Learning
+              </Badge>
             </div>
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 px-3 py-1">
-              <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-              Live Content
-            </Badge>
+            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+              Accelerate Your Career
+            </h1>
+            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
+              Master in-demand skills with our expert-designed courses, AI recommendations, and personalized learning paths.
+            </p>
+            
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white">{courses.length}+</div>
+                <p className="text-blue-100 text-sm">Expert Courses</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white">50K+</div>
+                <p className="text-blue-100 text-sm">Active Learners</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white">95%</div>
+                <p className="text-blue-100 text-sm">Success Rate</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white">24/7</div>
+                <p className="text-blue-100 text-sm">AI Support</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Compact Tabs */}
-        <div className="mb-6">
-          <div className="flex space-x-1 bg-white/60 backdrop-blur-sm p-1 rounded-xl border border-slate-200/50 w-fit">
-            {['courses', 'paths', 'my-learning'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  activeTab === tab
-                    ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
-                }`}
-              >
-                {getTabIcon(tab)}
-                <span className="capitalize">{tab.replace('-', ' ')}</span>
-                <Badge 
-                  variant="secondary" 
-                  className={`ml-1 text-xs ${
-                    activeTab === tab ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
-                  }`}
-                >
-                  {getTabCount(tab)}
-                </Badge>
-              </button>
-            ))}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Modern Tab Navigation */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center">
+            <div className="bg-white/80 backdrop-blur-sm p-2 rounded-2xl shadow-lg border border-white/50">
+              <div className="flex space-x-2">
+                {['courses', 'paths', 'my-learning'].map((tab) => {
+                  const isActive = activeTab === tab;
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
+                        isActive
+                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25 scale-105'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                      }`}
+                    >
+                      {getTabIcon(tab)}
+                      <span className="capitalize font-semibold">{tab.replace('-', ' ')}</span>
+                      <Badge 
+                        className={`text-xs ${
+                          isActive 
+                            ? 'bg-white/20 text-white border-white/30' 
+                            : 'bg-slate-100 text-slate-600 border-slate-200'
+                        }`}
+                      >
+                        {getTabCount(tab)}
+                      </Badge>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Compact Search and Filters */}
-        <div className="mb-6">
-          <div className="bg-white/60 backdrop-blur-sm rounded-xl border border-slate-200/50 p-4">
+        {/* Enhanced Search and Filters */}
+        <Card className="mb-8 border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+          <CardContent className="p-6">
             <SearchAndFilters
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
@@ -132,21 +176,67 @@ const Learning = () => {
               setSelectedDifficulty={setSelectedDifficulty}
               categories={categories}
             />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        {/* Main Content */}
-        <div className="bg-white/40 backdrop-blur-sm rounded-xl border border-slate-200/50 p-6">
-          <LearningContent
-            activeTab={activeTab}
-            filteredCourses={filteredCourses}
-            filteredLearningPaths={filteredLearningPaths}
-            enrolledCourses={enrolledCourses}
-            courses={courses}
-            onEnroll={handleEnroll}
-            onBrowseCourses={handleBrowseCourses}
-          />
-        </div>
+        {/* AI-Powered Features Showcase */}
+        {activeTab === 'courses' && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-xl transition-all duration-300 group cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Sparkles className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-blue-900 mb-2">AI Recommendations</h3>
+                <p className="text-blue-700 text-sm mb-4">Personalized course suggestions based on your goals</p>
+                <Button variant="ghost" className="text-blue-600 hover:text-blue-800">
+                  Explore <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-xl transition-all duration-300 group cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Target className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-purple-900 mb-2">Skill-Based Learning</h3>
+                <p className="text-purple-700 text-sm mb-4">Target specific skills for your career advancement</p>
+                <Button variant="ghost" className="text-purple-600 hover:text-purple-800">
+                  Start <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-emerald-100 hover:shadow-xl transition-all duration-300 group cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Users className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-emerald-900 mb-2">Community Learning</h3>
+                <p className="text-emerald-700 text-sm mb-4">Learn with peers and industry experts</p>
+                <Button variant="ghost" className="text-emerald-600 hover:text-emerald-800">
+                  Join <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Main Content Area */}
+        <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
+          <CardContent className="p-8">
+            <LearningContent
+              activeTab={activeTab}
+              filteredCourses={filteredCourses}
+              filteredLearningPaths={filteredLearningPaths}
+              enrolledCourses={enrolledCourses}
+              courses={courses}
+              onEnroll={handleEnroll}
+              onBrowseCourses={handleBrowseCourses}
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

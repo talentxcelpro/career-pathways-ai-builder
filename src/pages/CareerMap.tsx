@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { TrendingUp, Target, Calendar, Users, BookOpen, ArrowRight, Plus, Brain, Map, Zap, Star, BarChart } from 'lucide-react';
+import { TrendingUp, Target, Calendar, Users, BookOpen, ArrowRight, Plus, Brain, Map, Zap, Star, BarChart, Rocket, Award, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const CareerMap = () => {
@@ -48,413 +48,209 @@ const CareerMap = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">Loading your career map...</div>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-200 border-t-indigo-600 mx-auto"></div>
+            <Brain className="h-6 w-6 text-indigo-600 absolute top-3 left-3 animate-pulse" />
+          </div>
+          <p className="text-lg font-medium text-slate-700">Building your career map...</p>
+          <p className="text-sm text-slate-500">AI is analyzing optimal paths</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+      {/* Enhanced Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -translate-y-36 translate-x-36"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full translate-y-48 -translate-x-48"></div>
+        </div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center max-w-4xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
+                <Brain className="h-8 w-8 text-white" />
+              </div>
+              <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
+                AI-Powered Career Intelligence
+              </Badge>
+            </div>
+            <h1 className="text-5xl font-bold mb-6">Your AI Career Roadmap</h1>
+            <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto leading-relaxed">
+              Navigate your career journey with AI-powered insights, market analysis, and personalized roadmaps.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/career-map/ai-roadmap-builder">
+                <Button size="lg" className="bg-white text-indigo-600 hover:bg-white/90 px-8 py-3">
+                  <Rocket className="h-5 w-5 mr-2" />
+                  Start AI Roadmap
+                </Button>
+              </Link>
+              <Link to="/career-map/skills-gap">
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-3">
+                  <Target className="h-5 w-5 mr-2" />
+                  Analyze Skills Gap
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI-Powered Career Map</h1>
-          <p className="text-gray-600">Plan and visualize your career journey with advanced AI guidance and real-world market data</p>
+        {/* AI-Powered Career Tools */}
+        <div className="mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">AI-Powered Career Tools</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Leverage cutting-edge AI to make data-driven career decisions and accelerate your growth.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Link to="/career-map/ai-roadmap-builder">
+              <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-blue-50 to-indigo-100 hover:-translate-y-2">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                    <Brain className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">AI Roadmap Builder</h3>
+                  <p className="text-gray-600 text-sm mb-4">Create personalized roadmaps with AI analysis</p>
+                  <Badge className="bg-blue-100 text-blue-800 border-blue-200">Enhanced</Badge>
+                </CardContent>
+              </Card>
+            </Link>
+            
+            <Link to="/career-map/my-roadmaps">
+              <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-emerald-50 to-green-100 hover:-translate-y-2">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                    <Map className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">My Roadmaps</h3>
+                  <p className="text-gray-600 text-sm mb-4">Track progress with interactive timelines</p>
+                  <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">Active</Badge>
+                </CardContent>
+              </Card>
+            </Link>
+            
+            <Link to="/career-map/switch">
+              <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-orange-50 to-amber-100 hover:-translate-y-2">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                    <Zap className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">Career Switch AI</h3>
+                  <p className="text-gray-600 text-sm mb-4">Smart risk assessment & predictions</p>
+                  <Badge className="bg-orange-100 text-orange-800 border-orange-200">AI-Enhanced</Badge>
+                </CardContent>
+              </Card>
+            </Link>
+            
+            <Link to="/career-map/skills-gap">
+              <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-purple-50 to-violet-100 hover:-translate-y-2">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                    <Target className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">Skills Gap Analyzer</h3>
+                  <p className="text-gray-600 text-sm mb-4">Market data-driven insights</p>
+                  <Badge className="bg-purple-100 text-purple-800 border-purple-200">Data-Driven</Badge>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
         </div>
 
-        {/* AI-Powered Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Link to="/career-map/ai-roadmap-builder">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
-              <CardContent className="p-6 text-center">
-                <Brain className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <h3 className="font-medium">AI Roadmap Builder</h3>
-                <p className="text-sm text-gray-600">Create personalized roadmaps with AI</p>
-                <Badge className="mt-2 bg-blue-100 text-blue-800">Enhanced</Badge>
-              </CardContent>
-            </Card>
-          </Link>
-          
-          <Link to="/career-map/my-roadmaps">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardContent className="p-6 text-center">
-                <Map className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <h3 className="font-medium">My Roadmaps</h3>
-                <p className="text-sm text-gray-600">Interactive timeline tracking</p>
-                <Badge className="mt-2 bg-green-100 text-green-800">Updated</Badge>
-              </CardContent>
-            </Card>
-          </Link>
-          
-          <Link to="/career-map/switch">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardContent className="p-6 text-center">
-                <Zap className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                <h3 className="font-medium">Career Switch AI</h3>
-                <p className="text-sm text-gray-600">Risk assessment & predictions</p>
-                <Badge className="mt-2 bg-orange-100 text-orange-800">AI-Enhanced</Badge>
-              </CardContent>
-            </Card>
-          </Link>
-          
-          <Link to="/career-map/skills-gap">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardContent className="p-6 text-center">
-                <Target className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                <h3 className="font-medium">Smart Skills Gap</h3>
-                <p className="text-sm text-gray-600">Market data integration</p>
-                <Badge className="mt-2 bg-purple-100 text-purple-800">Data-Driven</Badge>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
-
-        {/* AI Insights Overview */}
-        <Card className="mb-8 bg-gradient-to-r from-indigo-50 to-blue-50 border-indigo-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-indigo-600" />
-              AI Career Insights
-            </CardTitle>
-            <CardDescription>
-              Real-time market analysis and personalized recommendations
+        {/* AI Career Intelligence Dashboard */}
+        <Card className="mb-8 border-0 shadow-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50">
+          <CardHeader className="text-center pb-6">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl">
+                <Star className="h-5 w-5 text-white" />
+              </div>
+              <CardTitle className="text-2xl text-gray-900">AI Career Intelligence</CardTitle>
+            </div>
+            <CardDescription className="text-lg">
+              Real-time market analysis and personalized career recommendations
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-4 bg-white rounded-lg">
-                <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-green-600">+32%</div>
-                <div className="text-sm text-gray-600">Market Growth</div>
+              <div className="text-center p-6 bg-white rounded-2xl shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="h-6 w-6 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-green-600 mb-1">+32%</div>
+                <div className="text-sm font-medium text-gray-900 mb-1">Market Growth</div>
                 <div className="text-xs text-gray-500">Your target industry</div>
               </div>
-              <div className="text-center p-4 bg-white rounded-lg">
-                <BarChart className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-blue-600">$125K</div>
-                <div className="text-sm text-gray-600">Salary Potential</div>
+              <div className="text-center p-6 bg-white rounded-2xl shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <BarChart className="h-6 w-6 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-blue-600 mb-1">$125K</div>
+                <div className="text-sm font-medium text-gray-900 mb-1">Salary Potential</div>
                 <div className="text-xs text-gray-500">With skill upgrades</div>
               </div>
-              <div className="text-center p-4 bg-white rounded-lg">
-                <Calendar className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-purple-600">18mo</div>
-                <div className="text-sm text-gray-600">Optimal Timeline</div>
+              <div className="text-center p-6 bg-white rounded-2xl shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Calendar className="h-6 w-6 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-purple-600 mb-1">18mo</div>
+                <div className="text-sm font-medium text-gray-900 mb-1">Optimal Timeline</div>
                 <div className="text-xs text-gray-500">AI-calculated path</div>
               </div>
             </div>
-            <div className="mt-6 text-center">
+            <div className="text-center mt-8">
               <Link to="/career-map/ai-roadmap-builder">
-                <Button>
-                  <Brain className="h-4 w-4 mr-2" />
+                <Button size="lg" className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-3">
+                  <Brain className="h-5 w-5 mr-2" />
                   Get Detailed AI Analysis
+                  <ChevronRight className="h-5 w-5 ml-2" />
                 </Button>
               </Link>
             </div>
           </CardContent>
         </Card>
 
-        {/* Active Roadmaps Overview */}
-        {roadmaps.length > 0 && (
-          <Card className="mb-8">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Active AI Roadmaps</CardTitle>
-                <CardDescription>Your current career development plans with AI tracking</CardDescription>
-              </div>
-              <Link to="/career-map/my-roadmaps">
-                <Button variant="outline" size="sm">
-                  View All <ArrowRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {roadmaps.slice(0, 3).map((roadmap: any) => (
-                  <div key={roadmap.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start mb-3">
-                      <h4 className="font-medium text-sm">{roadmap.title}</h4>
-                      <div className="flex gap-1">
-                        {roadmap.ai_generated && (
-                          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">AI</Badge>
-                        )}
-                        <Badge variant="outline" className="text-xs bg-green-50 text-green-700">Active</Badge>
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-600 mb-3 line-clamp-2">{roadmap.description}</p>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs font-medium">AI Progress Tracking</span>
-                        <span className="text-xs text-gray-600">{roadmap.progress_percentage}%</span>
-                      </div>
-                      <Progress value={roadmap.progress_percentage} className="h-1" />
-                    </div>
-                    <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
-                      <span>{roadmap.timeline_months} months timeline</span>
-                      <Link to={`/career-map/${roadmap.id}`}>
-                        <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
-                          Open <ArrowRight className="h-3 w-3 ml-1" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Enhanced Features Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Brain className="h-5 w-5 mr-2 text-blue-600" />
-                AI-Powered Features
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                  <div className="flex items-center">
-                    <TrendingUp className="h-5 w-5 text-blue-600 mr-2" />
-                    <span className="text-sm font-medium">Industry Trend Analysis</span>
-                  </div>
-                  <Badge className="bg-blue-100 text-blue-800 text-xs">Real-time</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                  <div className="flex items-center">
-                    <Target className="h-5 w-5 text-green-600 mr-2" />
-                    <span className="text-sm font-medium">Smart Skill Gap Analysis</span>
-                  </div>
-                  <Badge className="bg-green-100 text-green-800 text-xs">Market Data</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                  <div className="flex items-center">
-                    <BarChart className="h-5 w-5 text-purple-600 mr-2" />
-                    <span className="text-sm font-medium">Salary Progression Forecast</span>
-                  </div>
-                  <Badge className="bg-purple-100 text-purple-800 text-xs">Predictive</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Users className="h-5 w-5 mr-2 text-green-600" />
-                Enhanced Networking
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                  <div className="flex items-center">
-                    <Users className="h-5 w-5 text-orange-600 mr-2" />
-                    <span className="text-sm font-medium">AI Connection Matching</span>
-                  </div>
-                  <Badge className="bg-orange-100 text-orange-800 text-xs">Smart</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-indigo-50 rounded-lg">
-                  <div className="flex items-center">
-                    <Calendar className="h-5 w-5 text-indigo-600 mr-2" />
-                    <span className="text-sm font-medium">Event Recommendations</span>
-                  </div>
-                  <Badge className="bg-indigo-100 text-indigo-800 text-xs">Curated</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-pink-50 rounded-lg">
-                  <div className="flex items-center">
-                    <BookOpen className="h-5 w-5 text-pink-600 mr-2" />
-                    <span className="text-sm font-medium">Learning Resources</span>
-                  </div>
-                  <Badge className="bg-pink-100 text-pink-800 text-xs">Personalized</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Get Started Section */}
+        {/* Get Started Section - Enhanced */}
         {roadmaps.length === 0 && careerGoals.length === 0 && (
-          <Card className="text-center py-12">
-            <CardContent>
-              <Brain className="h-16 w-16 text-blue-600 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Start Your AI-Powered Career Journey</h3>
-              <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-                Leverage cutting-edge AI technology to create personalized career roadmaps, 
-                analyze market trends, and make data-driven career decisions.
-              </p>
-              <div className="flex justify-center space-x-4">
-                <Link to="/career-map/ai-roadmap-builder">
-                  <Button size="lg">
-                    <Brain className="h-5 w-5 mr-2" />
-                    Create AI Roadmap
-                  </Button>
-                </Link>
-                <Link to="/career-map/skills-gap">
-                  <Button variant="outline" size="lg">
-                    <Target className="h-5 w-5 mr-2" />
-                    Analyze Skills Gap
-                  </Button>
-                </Link>
+          <Card className="border-0 shadow-2xl bg-gradient-to-br from-white to-gray-50">
+            <CardContent className="text-center py-16">
+              <div className="max-w-2xl mx-auto">
+                <div className="w-24 h-24 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-xl">
+                  <Brain className="h-12 w-12 text-white" />
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Start Your AI-Powered Career Journey</h3>
+                <p className="text-gray-600 text-lg mb-8 leading-relaxed">
+                  Leverage cutting-edge AI technology to create personalized career roadmaps and make data-driven decisions.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link to="/career-map/ai-roadmap-builder">
+                    <Button size="lg" className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-3">
+                      <Brain className="h-5 w-5 mr-2" />
+                      Create AI Roadmap
+                    </Button>
+                  </Link>
+                  <Link to="/career-map/skills-gap">
+                    <Button variant="outline" size="lg" className="border-indigo-200 text-indigo-600 hover:bg-indigo-50 px-8 py-3">
+                      <Target className="h-5 w-5 mr-2" />
+                      Analyze Skills Gap
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </CardContent>
           </Card>
         )}
-
-        {/* Legacy Career Goals */}
-        {careerGoals.length === 0 && roadmaps.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Start Your Career Journey</h3>
-              <p className="text-gray-600 mb-6">Create your first AI-powered career roadmap and start tracking your professional growth</p>
-              <div className="flex justify-center space-x-4">
-                <Link to="/career-map/ai-roadmap-builder">
-                  <Button>
-                    <Brain className="h-4 w-4 mr-2" />
-                    Create AI Roadmap
-                  </Button>
-                </Link>
-                <Link to="/career-map/switch">
-                  <Button variant="outline">
-                    <Zap className="h-4 w-4 mr-2" />
-                    Evaluate Career Switch
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        ) : careerGoals.length > 0 && (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">Legacy Career Goals</h2>
-              <Link to="/career-map/ai-roadmap-builder">
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create New Roadmap
-                </Button>
-              </Link>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {careerGoals.map((goal: any) => (
-                <Card key={goal.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{goal.target_role}</CardTitle>
-                        <CardDescription>
-                          {goal.target_company && `at ${goal.target_company}`}
-                        </CardDescription>
-                      </div>
-                      <Badge variant="outline">
-                        {goal.timeline_months} months
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {goal.skills_needed && goal.skills_needed.length > 0 && (
-                        <div>
-                          <p className="text-sm font-medium mb-2">Skills needed:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {goal.skills_needed.slice(0, 3).map((skill: string, index: number) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
-                                {skill}
-                              </Badge>
-                            ))}
-                            {goal.skills_needed.length > 3 && (
-                              <Badge variant="secondary" className="text-xs">
-                                +{goal.skills_needed.length - 3} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {goal.progress_notes && (
-                        <div>
-                          <p className="text-sm font-medium mb-1">Progress Notes:</p>
-                          <p className="text-sm text-gray-600 line-clamp-2">{goal.progress_notes}</p>
-                        </div>
-                      )}
-
-                      <div className="flex gap-2">
-                        <Link to={`/career-map/${goal.id}`} className="flex-1">
-                          <Button variant="outline" className="w-full">
-                            View Details
-                          </Button>
-                        </Link>
-                        <Link to="/career-map/skills-gap">
-                          <Button>
-                            <BookOpen className="h-4 w-4 mr-1" />
-                            Skills Gap
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Additional Quick Actions */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <BookOpen className="h-5 w-5 mr-2" />
-                Learning & Development
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Link to="/career-map/skills-gap" className="block">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Target className="h-4 w-4 mr-2" />
-                    Skills Gap Analysis
-                  </Button>
-                </Link>
-                <Link to="/career-map/recommendations" className="block">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Users className="h-4 w-4 mr-2" />
-                    Get Recommendations
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2" />
-                Career Planning
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Link to="/career-map/comparison" className="block">
-                  <Button variant="outline" className="w-full justify-start">
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    Compare Career Paths
-                  </Button>
-                </Link>
-                <Link to="/career-map/generate" className="block">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Traditional Generator
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );
