@@ -229,3 +229,59 @@ export function useTableRealtime<T = any>(
     }
   ]);
 }
+
+// Auto-refresh hooks for specific use cases
+export function useAutoRefreshPosts(refreshInterval: number = 30000) {
+  const [posts, setPosts] = useState<any[]>([]);
+  const [lastRefresh, setLastRefresh] = useState(new Date());
+
+  // Real-time subscription for instant updates
+  useNetworkRealtime(
+    (payload) => {
+      console.log('Post updated in real-time:', payload);
+      setLastRefresh(new Date());
+    },
+    (payload) => {
+      console.log('Connection updated in real-time:', payload);
+    }
+  );
+
+  // Periodic refresh as fallback
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLastRefresh(new Date());
+    }, refreshInterval);
+
+    return () => clearInterval(interval);
+  }, [refreshInterval]);
+
+  return { posts, lastRefresh };
+}
+
+export function useAutoRefreshJobs(refreshInterval: number = 60000) {
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [lastRefresh, setLastRefresh] = useState(new Date());
+
+  // Real-time subscription for instant updates
+  useJobsRealtime(
+    (payload) => {
+      console.log('Job updated in real-time:', payload);
+      setLastRefresh(new Date());
+    },
+    (payload) => {
+      console.log('Application updated in real-time:', payload);
+      setLastRefresh(new Date());
+    }
+  );
+
+  // Periodic refresh as fallback
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLastRefresh(new Date());
+    }, refreshInterval);
+
+    return () => clearInterval(interval);
+  }, [refreshInterval]);
+
+  return { jobs, lastRefresh };
+}

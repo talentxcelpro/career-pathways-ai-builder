@@ -16,6 +16,8 @@ import { AIPostAssistant } from "@/components/network/AIPostAssistant";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
+import { useNetworkRealtime, useAutoRefreshPosts } from "@/hooks/useRealtimeData";
+import { AutoRefreshIndicator } from "@/components/shared/AutoRefreshIndicator";
 import FloatingMessenger from "@/components/network/FloatingMessenger";
 import { Link } from 'react-router-dom';
 
@@ -23,6 +25,19 @@ const Posts = () => {
   const [openComments, setOpenComments] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const queryClient = useQueryClient();
+
+  // Auto-refresh with realtime updates
+  const { lastRefresh } = useAutoRefreshPosts();
+  const { isConnected } = useNetworkRealtime(
+    (payload) => {
+      console.log('Post updated:', payload);
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+    (payload) => {
+      console.log('Connection updated:', payload);
+      queryClient.invalidateQueries({ queryKey: ['connections'] });
+    }
+  );
 
   // Use real-time hooks
   const { connections, stats, isLoading: connectionsLoading } = useRealtimeConnections();
@@ -147,8 +162,17 @@ const Posts = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Simplified Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Professional Network</h1>
-          <p className="text-gray-600 mt-1">Stay connected with your professional community</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Professional Network</h1>
+              <p className="text-gray-600 mt-1">Stay connected with your professional community</p>
+            </div>
+            <AutoRefreshIndicator 
+              isConnected={isConnected} 
+              lastRefresh={lastRefresh}
+              className="flex-shrink-0"
+            />
+          </div>
         </div>
 
         {/* Three Column Layout */}

@@ -1,12 +1,13 @@
 
 import React, { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { JobsHeader } from '@/components/jobs/JobsHeader';
 import { JobsCategories } from '@/components/jobs/JobsCategories';
 import { EnhancedJobFilters } from '@/components/jobs/EnhancedJobFilters';
 import { JobsList } from '@/components/jobs/JobsList';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
-import { useJobsRealtime } from '@/hooks/useRealtimeData';
+import { useJobsRealtime, useAutoRefreshJobs } from '@/hooks/useRealtimeData';
+import { AutoRefreshIndicator } from '@/components/shared/AutoRefreshIndicator';
 import { DataFreshness } from '@/components/shared/DataFreshness';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
 import { updateMetaTags } from '@/utils/metaTags';
@@ -30,6 +31,20 @@ const Jobs = () => {
   const [sortBy, setSortBy] = useState('posted_at');
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const queryClient = useQueryClient();
+
+  // Auto-refresh with realtime updates
+  const { lastRefresh } = useAutoRefreshJobs();
+  const { isConnected } = useJobsRealtime(
+    (payload) => {
+      console.log('Job updated:', payload);
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+    },
+    (payload) => {
+      console.log('Application updated:', payload);
+      queryClient.invalidateQueries({ queryKey: ['job_applications'] });
+    }
+  );
 
   // Get current user (optional for job viewing)
   useEffect(() => {
@@ -349,13 +364,19 @@ const Jobs = () => {
             <h2 className="text-2xl font-bold text-gray-900">Job Opportunities</h2>
             <p className="text-gray-600 mt-1">Find your perfect match from {allJobs.length} active positions</p>
           </div>
-          <DataFreshness 
-            lastUpdated={new Date(dataUpdatedAt || Date.now())}
-            onRefresh={() => {
-              refetch();
-            }}
-            isRefreshing={isLoading}
-          />
+          <div className="flex items-center gap-4">
+            <AutoRefreshIndicator 
+              isConnected={isConnected} 
+              lastRefresh={lastRefresh}
+            />
+            <DataFreshness 
+              lastUpdated={new Date(dataUpdatedAt || Date.now())}
+              onRefresh={() => {
+                refetch();
+              }}
+              isRefreshing={isLoading}
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
