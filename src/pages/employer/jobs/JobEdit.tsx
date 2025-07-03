@@ -392,50 +392,18 @@ const JobEdit = () => {
         <Card>
           <CardHeader>
             <CardTitle>Application Details</CardTitle>
-            <CardDescription>How candidates should apply and deadlines</CardDescription>
+            <CardDescription>Application deadlines</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="application_method">Application Method</Label>
-                <Select 
-                  value={formData.application_method || 'platform'} 
-                  onValueChange={(value) => handleInputChange('application_method', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="platform">Through Platform</SelectItem>
-                    <SelectItem value="email">Email Application</SelectItem>
-                    <SelectItem value="external">External Link</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="application_deadline">Application Deadline</Label>
-                <Input 
-                  id="application_deadline" 
-                  type="date"
-                  value={formData.application_deadline ? new Date(formData.application_deadline).toISOString().split('T')[0] : ''} 
-                  onChange={(e) => handleInputChange('application_deadline', e.target.value)}
-                />
-              </div>
-            </div>
-
             <div>
-              <Label htmlFor="external_url">External Application URL</Label>
+              <Label htmlFor="application_deadline">Application Deadline</Label>
               <Input 
-                id="external_url" 
-                type="url"
-                value={formData.external_url || ''} 
-                onChange={(e) => handleInputChange('external_url', e.target.value)}
-                placeholder="https://company.com/careers/apply"
+                id="application_deadline" 
+                type="date"
+                value={formData.application_deadline ? new Date(formData.application_deadline).toISOString().split('T')[0] : ''} 
+                onChange={(e) => handleInputChange('application_deadline', e.target.value)}
               />
-              <p className="text-sm text-gray-500 mt-1">Only required if application method is "External Link"</p>
             </div>
-
           </CardContent>
         </Card>
 
