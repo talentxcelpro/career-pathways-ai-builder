@@ -240,9 +240,9 @@ const JobEdit = () => {
                     <SelectValue placeholder="Select experience level" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="entry">Entry Level (0-2 years)</SelectItem>
-                    <SelectItem value="mid">Mid Level (3-5 years)</SelectItem>
-                    <SelectItem value="senior">Senior Level (6+ years)</SelectItem>
+                    <SelectItem value="fresher">Entry Level (0-2 years)</SelectItem>
+                    <SelectItem value="mid-level">Mid Level (3-5 years)</SelectItem>
+                    <SelectItem value="senior-level">Senior Level (6+ years)</SelectItem>
                     <SelectItem value="executive">Executive/Leadership</SelectItem>
                   </SelectContent>
                 </Select>
