@@ -27,6 +27,10 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { CreateAnnouncementDialog } from '@/components/admin/dialogs/CreateAnnouncementDialog';
+import { UpdateHeroSectionDialog } from '@/components/admin/dialogs/UpdateHeroSectionDialog';
+import { UpdateStatsDialog } from '@/components/admin/dialogs/UpdateStatsDialog';
+import { UpdateSEODialog } from '@/components/admin/dialogs/UpdateSEODialog';
 
 const HomeManagement = () => {
   const [selectedSection, setSelectedSection] = useState<'metrics' | 'announcements' | 'content'>('metrics');
@@ -179,10 +183,7 @@ const HomeManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Platform Announcements</h3>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Announcement
-        </Button>
+        <CreateAnnouncementDialog onAnnouncementCreated={() => window.location.reload()} />
       </div>
 
       <Card>
@@ -270,7 +271,7 @@ const HomeManagement = () => {
               <label className="text-sm font-medium">Subheadline</label>
               <Textarea defaultValue="Connect with top employers and discover opportunities that match your skills and aspirations." />
             </div>
-            <Button className="w-full">Update Hero Section</Button>
+            <UpdateHeroSectionDialog onHeroUpdated={() => window.location.reload()} />
           </CardContent>
         </Card>
 
@@ -297,7 +298,7 @@ const HomeManagement = () => {
                 <Input defaultValue="25,000+" />
               </div>
             </div>
-            <Button className="w-full">Update Stats</Button>
+            <UpdateStatsDialog onStatsUpdated={() => window.location.reload()} />
           </CardContent>
         </Card>
       </div>
@@ -319,7 +320,7 @@ const HomeManagement = () => {
             <label className="text-sm font-medium">Keywords</label>
             <Input defaultValue="jobs, careers, recruitment, hiring, talent, professional network" />
           </div>
-          <Button>Update SEO Settings</Button>
+          <UpdateSEODialog onSEOUpdated={() => window.location.reload()} />
         </CardContent>
       </Card>
     </div>
