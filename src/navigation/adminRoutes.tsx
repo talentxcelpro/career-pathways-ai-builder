@@ -145,11 +145,11 @@ export const adminRoutes = [
   },
   {
     title: "Admin Management",
-    to: "/admin/admins",
+    to: "/admin/management",
     icon: <Shield className="h-4 w-4" />,
     page: <AdminManagement />,
     requiresAuth: true,
     permission: "canAccessAdmins" as const,
-    description: "Manage administrator accounts"
+    description: "Manage admin users, roles, and permissions"
   },
 ];

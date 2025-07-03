@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_activity_log: {
+        Row: {
+          action_type: string
+          admin_user_id: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          ip_address: unknown | null
+          target_user_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action_type: string
+          admin_user_id: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          target_user_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action_type?: string
+          admin_user_id?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          target_user_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       ai_cover_letters: {
         Row: {
           company_name: string | null
@@ -2399,6 +2432,7 @@ export type Database = {
           preferred_locations: string[] | null
           preferred_salary_max: number | null
           preferred_salary_min: number | null
+          primary_role: Database["public"]["Enums"]["app_role"] | null
           profile_completed: boolean | null
           profile_picture_url: string | null
           profile_views_count: number | null
@@ -2444,6 +2478,7 @@ export type Database = {
           preferred_locations?: string[] | null
           preferred_salary_max?: number | null
           preferred_salary_min?: number | null
+          primary_role?: Database["public"]["Enums"]["app_role"] | null
           profile_completed?: boolean | null
           profile_picture_url?: string | null
           profile_views_count?: number | null
@@ -2489,6 +2524,7 @@ export type Database = {
           preferred_locations?: string[] | null
           preferred_salary_max?: number | null
           preferred_salary_min?: number | null
+          primary_role?: Database["public"]["Enums"]["app_role"] | null
           profile_completed?: boolean | null
           profile_picture_url?: string | null
           profile_views_count?: number | null
@@ -3105,6 +3141,42 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_suggestions: {
         Row: {
           created_at: string
@@ -3211,14 +3283,14 @@ export type Database = {
           count: number
         }[]
       }
-      get_user_role: {
-        Args: { user_uuid: string }
-        Returns: Database["public"]["Enums"]["user_role"]
+      get_user_app_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
       }
-      has_role: {
+      has_app_role: {
         Args: {
-          user_uuid: string
-          required_role: Database["public"]["Enums"]["user_role"]
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
       }
@@ -3238,6 +3310,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      is_app_admin: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       is_company_admin_or_owner: {
         Args: { company_uuid: string }
         Returns: boolean
@@ -3256,6 +3332,7 @@ export type Database = {
       }
     }
     Enums: {
+      app_role: "super_admin" | "admin" | "moderator" | "employer" | "user"
       application_status:
         | "applied"
         | "reviewing"
@@ -3383,6 +3460,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["super_admin", "admin", "moderator", "employer", "user"],
       application_status: [
         "applied",
         "reviewing",
