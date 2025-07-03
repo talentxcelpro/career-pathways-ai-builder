@@ -263,18 +263,18 @@ const Jobs = () => {
       
       {/* Compact Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="text-center mb-3">
+            <h1 className="text-xl md:text-2xl font-bold mb-1">
               Find Your Dream Job
             </h1>
-            <p className="text-blue-100">
+            <p className="text-blue-100 text-sm">
               Discover thousands of opportunities from top companies
             </p>
           </div>
 
           {/* Compact Search Bar */}
-          <div className="max-w-2xl mx-auto bg-white rounded-lg p-3 shadow-lg">
+          <div className="max-w-2xl mx-auto bg-white rounded-lg p-2 shadow-lg">
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
