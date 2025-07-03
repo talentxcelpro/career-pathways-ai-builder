@@ -52,12 +52,12 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="detailed_description">Detailed Job Description *</Label>
+          <Label htmlFor="job_description">Detailed Job Description *</Label>
           <Textarea
-            id="detailed_description"
+            id="job_description"
             placeholder="Comprehensive description of the role, team, company culture, growth opportunities..."
-            value={formData.detailed_description || ''}
-            onChange={(e) => onInputChange('detailed_description', e.target.value)}
+            value={formData.job_description || ''}
+            onChange={(e) => onInputChange('job_description', e.target.value)}
             rows={5}
             required
           />
@@ -146,25 +146,25 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  addListItem('nice_to_have', newNiceToHave, setNewNiceToHave);
+                  addListItem('preferred_requirements', newNiceToHave, setNewNiceToHave);
                 }
               }}
             />
             <Button
               type="button"
-              onClick={() => addListItem('nice_to_have', newNiceToHave, setNewNiceToHave)}
+              onClick={() => addListItem('preferred_requirements', newNiceToHave, setNewNiceToHave)}
               size="sm"
             >
               <Plus className="h-4 w-4" />
             </Button>
           </div>
           <div className="flex flex-wrap gap-2">
-            {(formData.nice_to_have || []).map((item: string, index: number) => (
+            {(formData.preferred_requirements || []).map((item: string, index: number) => (
               <Badge key={index} variant="secondary" className="flex items-center gap-1">
                 {item}
                 <X
                   className="h-3 w-3 cursor-pointer"
-                  onClick={() => removeListItem('nice_to_have', index)}
+                  onClick={() => removeListItem('preferred_requirements', index)}
                 />
               </Badge>
             ))}

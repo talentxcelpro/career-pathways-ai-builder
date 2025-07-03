@@ -24,46 +24,46 @@ export default function ContactPersonForm({ formData, onInputChange }: ContactPe
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="contact_person_name">Full Name</Label>
+            <Label htmlFor="contact_name">Full Name</Label>
             <Input
-              id="contact_person_name"
+              id="contact_name"
               placeholder="e.g., John Doe"
-              value={formData.contact_person_name || ''}
-              onChange={(e) => onInputChange('contact_person_name', e.target.value)}
+              value={formData.contact_name || ''}
+              onChange={(e) => onInputChange('contact_name', e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="contact_person_designation">Designation</Label>
+            <Label htmlFor="contact_designation">Designation</Label>
             <Input
-              id="contact_person_designation"
+              id="contact_designation"
               placeholder="e.g., HR Manager"
-              value={formData.contact_person_designation || ''}
-              onChange={(e) => onInputChange('contact_person_designation', e.target.value)}
+              value={formData.contact_designation || ''}
+              onChange={(e) => onInputChange('contact_designation', e.target.value)}
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="contact_person_email">Email Address</Label>
+            <Label htmlFor="contact_email">Email Address</Label>
             <Input
-              id="contact_person_email"
+              id="contact_email"
               type="email"
               placeholder="john.doe@company.com"
-              value={formData.contact_person_email || ''}
-              onChange={(e) => onInputChange('contact_person_email', e.target.value)}
+              value={formData.contact_email || ''}
+              onChange={(e) => onInputChange('contact_email', e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="contact_person_phone">Phone Number</Label>
+            <Label htmlFor="contact_phone">Phone Number</Label>
             <Input
-              id="contact_person_phone"
+              id="contact_phone"
               type="tel"
               placeholder="+91 98765 43210"
-              value={formData.contact_person_phone || ''}
-              onChange={(e) => onInputChange('contact_person_phone', e.target.value)}
+              value={formData.contact_phone || ''}
+              onChange={(e) => onInputChange('contact_phone', e.target.value)}
             />
           </div>
         </div>

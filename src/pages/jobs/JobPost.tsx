@@ -22,72 +22,64 @@ function JobPostContent() {
   const [formData, setFormData] = useState({
     // Company Information
     company_id: '',
+    company_name: '',
     company_website: '',
     industry_domain: '',
     company_size: '',
     
     // Job Overview
-    title: '',
+    job_title: '',
     employment_type: '',
     work_mode: '',
-    location: '',
+    location_city: '',
+    location_state: '',
     work_schedule: '',
     experience_level: '',
     application_deadline: '',
-    category_id: '',
     
-    // Role Description
+    // Description
     job_summary: '',
-    detailed_description: '',
+    job_description: '',
     key_responsibilities: [] as string[],
     must_have_requirements: [] as string[],
-    nice_to_have: [] as string[],
+    preferred_requirements: [] as string[],
     
-    // Skills & Qualifications
-    skills_required: [] as string[],
-    minimum_education: '',
+    // Skills & Education
+    required_skills: [] as string[],
+    education_level: '',
     field_of_study: [] as string[],
-    minimum_year_of_passing: null as number | null,
+    year_of_passing: null as number | null,
     max_education_gap: null as number | null,
-    preferred_certifications_list: [] as string[],
-    experience_preference: '',
-    minimum_experience_years: null as number | null,
-    maximum_experience_years: null as number | null,
-    preferred_industries: [] as string[],
-    preferred_company_background: [] as string[],
-    specific_tools_domains: '',
+    certifications: [] as string[],
     
-    // Compensation & Benefits
-    salary_min: '',
-    salary_max: '',
-    benefits_offered: [] as string[],
+    // Experience
+    experience_type: '',
+    min_experience: null as number | null,
+    max_experience: null as number | null,
+    preferred_industries: [] as string[],
+    preferred_company_types: [] as string[],
+    specific_tools: [] as string[],
+    
+    // Salary & Benefits
+    min_salary: null as number | null,
+    max_salary: null as number | null,
+    benefits: [] as string[],
+    
+    // Supporting Documents (URLs to Supabase Storage)
+    jd_flyer_url: '',
+    team_brochure_url: '',
+    benefits_policy_url: '',
     
     // Contact Person
-    contact_person_name: '',
-    contact_person_designation: '',
-    contact_person_email: '',
-    contact_person_phone: '',
+    contact_name: '',
+    contact_designation: '',
+    contact_email: '',
+    contact_phone: '',
     
-    // Supporting Documents
-    supporting_documents: [] as any[],
-    
-    // Legacy fields for backward compatibility
-    description: '',
-    requirements: '',
-    is_remote: false,
-    benefits: [] as string[],
-    location_type: '',
-    specialization_fields: [] as string[],
-    preferred_certifications: [] as any[],
-    maximum_gap_allowed: null as number | null,
-    education_notes: '',
-    experience_type: '',
-    relevant_industry_experience: [] as string[],
-    specific_experience_areas: '',
-    preferred_experience_in: [] as string[],
-    
-    // Draft functionality
-    is_draft: false
+    // System Fields
+    visibility_status: 'active' as 'active' | 'expired' | 'draft',
+    ai_match_enabled: true,
+    ai_priority: false
   });
 
   // Fetch job categories
@@ -117,18 +109,26 @@ function JobPostContent() {
       const insertData = {
         ...jobData,
         posted_by: user.id,
-        salary_min: jobData.salary_min ? parseInt(jobData.salary_min) : null,
-        salary_max: jobData.salary_max ? parseInt(jobData.salary_max) : null,
-        application_deadline: jobData.application_deadline || null,
-        employment_type: jobData.employment_type || null,
-        experience_level: jobData.experience_level || null,
-        category_id: jobData.category_id || null,
-        // Map location_type to is_remote for backward compatibility
-        is_remote: jobData.location_type === 'remote',
-        // Additional fields that might not be in the database yet
-        work_schedule: jobData.work_schedule || null,
-        contact_person_name: jobData.contact_person_name || null,
-        contact_person_designation: jobData.contact_person_designation || null
+        // Convert string numbers to integers
+        min_salary: jobData.min_salary || null,
+        max_salary: jobData.max_salary || null,
+        min_experience: jobData.min_experience || null,
+        max_experience: jobData.max_experience || null,
+        year_of_passing: jobData.year_of_passing || null,
+        max_education_gap: jobData.max_education_gap || null,
+        // Convert date string to date
+        application_deadline: jobData.application_deadline ? new Date(jobData.application_deadline).toISOString().split('T')[0] : null,
+        // Ensure arrays are properly formatted
+        required_skills: jobData.required_skills || [],
+        key_responsibilities: jobData.key_responsibilities || [],
+        must_have_requirements: jobData.must_have_requirements || [],
+        preferred_requirements: jobData.preferred_requirements || [],
+        field_of_study: jobData.field_of_study || [],
+        certifications: jobData.certifications || [],
+        preferred_industries: jobData.preferred_industries || [],
+        preferred_company_types: jobData.preferred_company_types || [],
+        specific_tools: jobData.specific_tools || [],
+        benefits: jobData.benefits || []
       };
 
       const { error } = await supabase
@@ -157,22 +157,30 @@ function JobPostContent() {
   const handleSubmit = (e: React.FormEvent, isDraft = false) => {
     e.preventDefault();
     
-    const submitData = { ...formData, is_draft: isDraft };
+    const submitData = { 
+      ...formData, 
+      visibility_status: isDraft ? 'draft' : 'active'
+    };
     
     if (!isDraft) {
       // Validation for publishing
-      if (!formData.title.trim() || !formData.job_summary.trim() || !formData.company_id) {
-        toast.error('Please fill in all required fields (title, job summary, and company)');
+      if (!formData.job_title.trim() || !formData.job_summary.trim() || !formData.company_id) {
+        toast.error('Please fill in all required fields (job title, job summary, and company)');
         return;
       }
 
-      if (formData.skills_required.length === 0) {
+      if (formData.required_skills.length === 0) {
         toast.error('Please add at least one required skill');
+        return;
+      }
+
+      if (!formData.company_name.trim()) {
+        toast.error('Please select or create a company');
         return;
       }
     } else {
       // Minimal validation for draft
-      if (!formData.title.trim()) {
+      if (!formData.job_title.trim()) {
         toast.error('Please add a job title to save as draft');
         return;
       }

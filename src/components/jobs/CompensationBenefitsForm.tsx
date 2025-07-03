@@ -34,11 +34,11 @@ const benefitsOptions = [
 
 export default function CompensationBenefitsForm({ formData, onInputChange }: CompensationBenefitsFormProps) {
   const handleBenefitChange = (benefit: string, checked: boolean) => {
-    const current = formData.benefits_offered || [];
+    const current = formData.benefits || [];
     if (checked) {
-      onInputChange('benefits_offered', [...current, benefit]);
+      onInputChange('benefits', [...current, benefit]);
     } else {
-      onInputChange('benefits_offered', current.filter((b: string) => b !== benefit));
+      onInputChange('benefits', current.filter((b: string) => b !== benefit));
     }
   };
 
@@ -65,8 +65,8 @@ export default function CompensationBenefitsForm({ formData, onInputChange }: Co
             <div className="space-y-2">
               <Label>Minimum Salary</Label>
               <Select
-                value={formData.salary_min?.toString() || ''}
-                onValueChange={(value) => onInputChange('salary_min', parseInt(value))}
+                value={formData.min_salary?.toString() || ''}
+                onValueChange={(value) => onInputChange('min_salary', parseInt(value))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select minimum salary" />
@@ -84,14 +84,14 @@ export default function CompensationBenefitsForm({ formData, onInputChange }: Co
             <div className="space-y-2">
               <Label>Maximum Salary</Label>
               <Select
-                value={formData.salary_max?.toString() || ''}
-                onValueChange={(value) => onInputChange('salary_max', parseInt(value))}
+                value={formData.max_salary?.toString() || ''}
+                onValueChange={(value) => onInputChange('max_salary', parseInt(value))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select maximum salary" />
                 </SelectTrigger>
                 <SelectContent>
-                  {salaryOptions.filter(amount => !formData.salary_min || amount >= parseInt(formData.salary_min)).map((amount) => (
+                  {salaryOptions.filter(amount => !formData.min_salary || amount >= formData.min_salary).map((amount) => (
                     <SelectItem key={amount} value={amount.toString()}>
                       {formatSalary(amount)}
                     </SelectItem>
@@ -114,7 +114,7 @@ export default function CompensationBenefitsForm({ formData, onInputChange }: Co
               <div key={benefit} className="flex items-center space-x-2">
                 <Checkbox
                   id={`benefit-${benefit}`}
-                  checked={(formData.benefits_offered || []).includes(benefit)}
+                  checked={(formData.benefits || []).includes(benefit)}
                   onCheckedChange={(checked) => handleBenefitChange(benefit, !!checked)}
                 />
                 <Label htmlFor={`benefit-${benefit}`} className="text-sm">
@@ -124,11 +124,11 @@ export default function CompensationBenefitsForm({ formData, onInputChange }: Co
             ))}
           </div>
 
-          {(formData.benefits_offered || []).length > 0 && (
+          {(formData.benefits || []).length > 0 && (
             <div className="p-3 bg-muted/30 rounded-lg">
               <p className="text-sm font-medium mb-2">Selected benefits:</p>
               <div className="flex flex-wrap gap-2">
-                {(formData.benefits_offered || []).map((benefit: string) => (
+                {(formData.benefits || []).map((benefit: string) => (
                   <span key={benefit} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
                     {benefit}
                   </span>

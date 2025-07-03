@@ -1784,6 +1784,41 @@ export type Database = {
           },
         ]
       }
+      job_documents: {
+        Row: {
+          document_type: string | null
+          file_url: string
+          filename: string | null
+          id: string
+          job_id: string | null
+          uploaded_at: string | null
+        }
+        Insert: {
+          document_type?: string | null
+          file_url: string
+          filename?: string | null
+          id?: string
+          job_id?: string | null
+          uploaded_at?: string | null
+        }
+        Update: {
+          document_type?: string | null
+          file_url?: string
+          filename?: string | null
+          id?: string
+          job_id?: string | null
+          uploaded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_documents_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_recommendations: {
         Row: {
           created_at: string | null
@@ -1878,7 +1913,7 @@ export type Database = {
           certification_required: string | null
           certifications: string[] | null
           company_id: string | null
-          company_name: string | null
+          company_name: string
           company_size: string | null
           company_website: string | null
           contact_designation: string | null
@@ -1912,7 +1947,7 @@ export type Database = {
           job_description: string | null
           job_status: string | null
           job_summary: string | null
-          job_title: string | null
+          job_title: string
           key_responsibilities: string[] | null
           location: string | null
           location_city: string | null
@@ -1972,7 +2007,7 @@ export type Database = {
           certification_required?: string | null
           certifications?: string[] | null
           company_id?: string | null
-          company_name?: string | null
+          company_name?: string
           company_size?: string | null
           company_website?: string | null
           contact_designation?: string | null
@@ -2006,7 +2041,7 @@ export type Database = {
           job_description?: string | null
           job_status?: string | null
           job_summary?: string | null
-          job_title?: string | null
+          job_title?: string
           key_responsibilities?: string[] | null
           location?: string | null
           location_city?: string | null
@@ -2066,7 +2101,7 @@ export type Database = {
           certification_required?: string | null
           certifications?: string[] | null
           company_id?: string | null
-          company_name?: string | null
+          company_name?: string
           company_size?: string | null
           company_website?: string | null
           contact_designation?: string | null
@@ -2100,7 +2135,7 @@ export type Database = {
           job_description?: string | null
           job_status?: string | null
           job_summary?: string | null
-          job_title?: string | null
+          job_title?: string
           key_responsibilities?: string[] | null
           location?: string | null
           location_city?: string | null

@@ -66,12 +66,12 @@ export default function JobOverviewForm({ formData, onInputChange, categories }:
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Job Title *</Label>
+            <Label htmlFor="job_title">Job Title *</Label>
             <Input
-              id="title"
+              id="job_title"
               placeholder="e.g., Senior Software Engineer"
-              value={formData.title || ''}
-              onChange={(e) => onInputChange('title', e.target.value)}
+              value={formData.job_title || ''}
+              onChange={(e) => onInputChange('job_title', e.target.value)}
               required
             />
           </div>
@@ -117,12 +117,25 @@ export default function JobOverviewForm({ formData, onInputChange, categories }:
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">Location (City, State) *</Label>
+            <Label htmlFor="location_city">City *</Label>
             <Input
-              id="location"
-              placeholder="e.g., Mumbai, Maharashtra"
-              value={formData.location || ''}
-              onChange={(e) => onInputChange('location', e.target.value)}
+              id="location_city"
+              placeholder="e.g., Mumbai"
+              value={formData.location_city || ''}
+              onChange={(e) => onInputChange('location_city', e.target.value)}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="location_state">State *</Label>
+            <Input
+              id="location_state"
+              placeholder="e.g., Maharashtra"
+              value={formData.location_state || ''}
+              onChange={(e) => onInputChange('location_state', e.target.value)}
               required
             />
           </div>

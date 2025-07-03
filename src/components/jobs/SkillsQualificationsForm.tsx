@@ -73,26 +73,26 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
   const [newCertification, setNewCertification] = useState('');
 
   const addSkill = (skill: string) => {
-    if (skill && !(formData.skills_required || []).includes(skill) && (formData.skills_required || []).length < 15) {
-      onInputChange('skills_required', [...(formData.skills_required || []), skill]);
+    if (skill && !(formData.required_skills || []).includes(skill) && (formData.required_skills || []).length < 15) {
+      onInputChange('required_skills', [...(formData.required_skills || []), skill]);
       setNewSkill('');
     }
   };
 
   const removeSkill = (skillToRemove: string) => {
-    onInputChange('skills_required', (formData.skills_required || []).filter((skill: string) => skill !== skillToRemove));
+    onInputChange('required_skills', (formData.required_skills || []).filter((skill: string) => skill !== skillToRemove));
   };
 
   const addCertification = () => {
     if (newCertification.trim()) {
-      onInputChange('preferred_certifications_list', [...(formData.preferred_certifications_list || []), newCertification.trim()]);
+      onInputChange('certifications', [...(formData.certifications || []), newCertification.trim()]);
       setNewCertification('');
     }
   };
 
   const removeCertification = (index: number) => {
-    const current = formData.preferred_certifications_list || [];
-    onInputChange('preferred_certifications_list', current.filter((_: any, i: number) => i !== index));
+    const current = formData.certifications || [];
+    onInputChange('certifications', current.filter((_: any, i: number) => i !== index));
   };
 
   const handleMultiSelectChange = (field: string, value: string, checked: boolean) => {
@@ -156,7 +156,7 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
                   variant="outline"
                   size="sm"
                   onClick={() => addSkill(skill)}
-                  disabled={(formData.skills_required || []).includes(skill) || (formData.skills_required || []).length >= 15}
+                  disabled={(formData.required_skills || []).includes(skill) || (formData.required_skills || []).length >= 15}
                 >
                   {skill}
                 </Button>
@@ -165,7 +165,7 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {(formData.skills_required || []).map((skill: string) => (
+            {(formData.required_skills || []).map((skill: string) => (
               <Badge key={skill} variant="secondary" className="flex items-center gap-1">
                 {skill}
                 <X className="h-3 w-3 cursor-pointer" onClick={() => removeSkill(skill)} />
@@ -173,7 +173,7 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            {(formData.skills_required || []).length}/15 skills added
+            {(formData.required_skills || []).length}/15 skills added
           </p>
         </div>
 
@@ -185,8 +185,8 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
             <div className="space-y-2">
               <Label>Minimum Education *</Label>
               <Select
-                value={formData.minimum_education || ''}
-                onValueChange={(value) => onInputChange('minimum_education', value)}
+                value={formData.education_level || ''}
+                onValueChange={(value) => onInputChange('education_level', value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select minimum education" />
@@ -204,8 +204,8 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
             <div className="space-y-2">
               <Label>Minimum Year of Passing</Label>
               <Select
-                value={formData.minimum_year_of_passing?.toString() || ''}
-                onValueChange={(value) => onInputChange('minimum_year_of_passing', parseInt(value))}
+                value={formData.year_of_passing?.toString() || ''}
+                onValueChange={(value) => onInputChange('year_of_passing', parseInt(value))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select year" />
@@ -277,7 +277,7 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {(formData.preferred_certifications_list || []).map((cert: string, index: number) => (
+              {(formData.certifications || []).map((cert: string, index: number) => (
                 <Badge key={index} variant="secondary" className="flex items-center gap-1">
                   {cert}
                   <X className="h-3 w-3 cursor-pointer" onClick={() => removeCertification(index)} />
@@ -294,8 +294,8 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
           <div className="space-y-2">
             <Label>Experience Type *</Label>
             <Select
-              value={formData.experience_preference || ''}
-              onValueChange={(value) => onInputChange('experience_preference', value)}
+              value={formData.experience_type || ''}
+              onValueChange={(value) => onInputChange('experience_type', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select experience type" />
@@ -314,8 +314,8 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
             <div className="space-y-2">
               <Label>Minimum Experience (Years)</Label>
               <Select
-                value={formData.minimum_experience_years?.toString() || ''}
-                onValueChange={(value) => onInputChange('minimum_experience_years', parseInt(value))}
+                value={formData.min_experience?.toString() || ''}
+                onValueChange={(value) => onInputChange('min_experience', parseInt(value))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select minimum" />
@@ -333,8 +333,8 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
             <div className="space-y-2">
               <Label>Maximum Experience (Years)</Label>
               <Select
-                value={formData.maximum_experience_years?.toString() || ''}
-                onValueChange={(value) => onInputChange('maximum_experience_years', parseInt(value))}
+                value={formData.max_experience?.toString() || ''}
+                onValueChange={(value) => onInputChange('max_experience', parseInt(value))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select maximum" />
@@ -375,8 +375,8 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
                 <div key={background} className="flex items-center space-x-2">
                   <Checkbox
                     id={`background-${background}`}
-                    checked={(formData.preferred_company_background || []).includes(background)}
-                    onCheckedChange={(checked) => handleMultiSelectChange('preferred_company_background', background, !!checked)}
+                    checked={(formData.preferred_company_types || []).includes(background)}
+                    onCheckedChange={(checked) => handleMultiSelectChange('preferred_company_types', background, !!checked)}
                   />
                   <Label htmlFor={`background-${background}`} className="text-sm">
                     {background}
@@ -390,8 +390,8 @@ export default function SkillsQualificationsForm({ formData, onInputChange }: Sk
             <Label>Specific Tools / Domains</Label>
             <Input
               placeholder="e.g., React Native, SAP, Salesforce, Adobe XD"
-              value={formData.specific_tools_domains || ''}
-              onChange={(e) => onInputChange('specific_tools_domains', e.target.value)}
+              value={(formData.specific_tools || []).join(', ')}
+              onChange={(e) => onInputChange('specific_tools', e.target.value.split(',').map(s => s.trim()).filter(s => s))}
             />
           </div>
         </div>
