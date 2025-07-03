@@ -89,38 +89,38 @@ const Learning = () => {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-32 -translate-x-32"></div>
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="h-8 w-8 text-yellow-300" />
-              <Badge className="bg-white/20 text-white border-white/30 px-3 py-1">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Sparkles className="h-6 w-6 text-yellow-300" />
+              <Badge className="bg-white/20 text-white border-white/30 px-2 py-1 text-sm">
                 AI-Powered Learning
               </Badge>
             </div>
-            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
               Accelerate Your Career
             </h1>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Master in-demand skills with our expert-designed courses, AI recommendations, and personalized learning paths.
+            <p className="text-lg text-blue-100 mb-6 max-w-xl mx-auto">
+              Master in-demand skills with expert courses and AI recommendations.
             </p>
             
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-lg mx-auto">
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">{courses.length}+</div>
-                <p className="text-blue-100 text-sm">Expert Courses</p>
+                <div className="text-2xl font-bold text-white">{courses.length}+</div>
+                <p className="text-blue-100 text-xs">Courses</p>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">50K+</div>
-                <p className="text-blue-100 text-sm">Active Learners</p>
+                <div className="text-2xl font-bold text-white">50K+</div>
+                <p className="text-blue-100 text-xs">Learners</p>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">95%</div>
-                <p className="text-blue-100 text-sm">Success Rate</p>
+                <div className="text-2xl font-bold text-white">95%</div>
+                <p className="text-blue-100 text-xs">Success</p>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">24/7</div>
-                <p className="text-blue-100 text-sm">AI Support</p>
+                <div className="text-2xl font-bold text-white">24/7</div>
+                <p className="text-blue-100 text-xs">Support</p>
               </div>
             </div>
           </div>

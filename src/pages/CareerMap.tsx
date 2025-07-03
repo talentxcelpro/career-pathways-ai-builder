@@ -71,31 +71,31 @@ const CareerMap = () => {
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full translate-y-48 -translate-x-48"></div>
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
-                <Brain className="h-8 w-8 text-white" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                <Brain className="h-6 w-6 text-white" />
               </div>
-              <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
+              <Badge className="bg-white/20 text-white border-white/30 px-3 py-1 text-sm">
                 AI-Powered Career Intelligence
               </Badge>
             </div>
-            <h1 className="text-5xl font-bold mb-6">Your AI Career Roadmap</h1>
-            <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Navigate your career journey with AI-powered insights, market analysis, and personalized roadmaps.
+            <h1 className="text-3xl font-bold mb-4">Your AI Career Roadmap</h1>
+            <p className="text-lg text-purple-100 mb-6 max-w-xl mx-auto">
+              Navigate your career journey with AI-powered insights and personalized roadmaps.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link to="/career-map/ai-roadmap-builder">
-                <Button size="lg" className="bg-white text-indigo-600 hover:bg-white/90 px-8 py-3">
-                  <Rocket className="h-5 w-5 mr-2" />
+                <Button size="lg" className="bg-white text-indigo-600 hover:bg-white/90 px-6 py-3">
+                  <Rocket className="h-4 w-4 mr-2" />
                   Start AI Roadmap
                 </Button>
               </Link>
               <Link to="/career-map/skills-gap">
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-3">
-                  <Target className="h-5 w-5 mr-2" />
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-6 py-3">
+                  <Target className="h-4 w-4 mr-2" />
                   Analyze Skills Gap
                 </Button>
               </Link>
