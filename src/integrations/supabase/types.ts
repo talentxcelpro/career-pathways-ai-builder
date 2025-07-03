@@ -1870,11 +1870,13 @@ export type Database = {
           applications_count: number | null
           benefits: string[] | null
           category_id: string | null
+          certification_required: string | null
           company_id: string | null
           contact_person_designation: string | null
           contact_person_name: string | null
           created_at: string | null
           description: string
+          educational_qualification: string | null
           employment_type: string | null
           experience_level: string | null
           expires_at: string | null
@@ -1908,11 +1910,13 @@ export type Database = {
           applications_count?: number | null
           benefits?: string[] | null
           category_id?: string | null
+          certification_required?: string | null
           company_id?: string | null
           contact_person_designation?: string | null
           contact_person_name?: string | null
           created_at?: string | null
           description: string
+          educational_qualification?: string | null
           employment_type?: string | null
           experience_level?: string | null
           expires_at?: string | null
@@ -1946,11 +1950,13 @@ export type Database = {
           applications_count?: number | null
           benefits?: string[] | null
           category_id?: string | null
+          certification_required?: string | null
           company_id?: string | null
           contact_person_designation?: string | null
           contact_person_name?: string | null
           created_at?: string | null
           description?: string
+          educational_qualification?: string | null
           employment_type?: string | null
           experience_level?: string | null
           expires_at?: string | null
