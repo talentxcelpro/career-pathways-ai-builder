@@ -2130,6 +2130,100 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string
+          failure_reason: string | null
+          id: string
+          payment_method: string | null
+          processed_at: string | null
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          status: string
+          subscription_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string
+          failure_reason?: string | null
+          id?: string
+          payment_method?: string | null
+          processed_at?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          status: string
+          subscription_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string
+          failure_reason?: string | null
+          id?: string
+          payment_method?: string | null
+          processed_at?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          status?: string
+          subscription_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plan_analytics: {
+        Row: {
+          active_subscribers: number | null
+          created_at: string | null
+          date: string
+          id: string
+          plan_id: string | null
+          plan_name: string
+          total_revenue: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          active_subscribers?: number | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          plan_id?: string | null
+          plan_name: string
+          total_revenue?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          active_subscribers?: number | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          plan_id?: string | null
+          plan_name?: string
+          total_revenue?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_analytics_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "pricing_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_items: {
         Row: {
           created_at: string | null
@@ -2745,6 +2839,48 @@ export type Database = {
         }
         Relationships: []
       }
+      revenue_analytics: {
+        Row: {
+          cancelled_subscribers: number | null
+          created_at: string | null
+          currency: string
+          date: string
+          failed_payments: number | null
+          id: string
+          new_subscribers: number | null
+          total_revenue: number | null
+          total_subscribers: number | null
+          total_transactions: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          cancelled_subscribers?: number | null
+          created_at?: string | null
+          currency?: string
+          date: string
+          failed_payments?: number | null
+          id?: string
+          new_subscribers?: number | null
+          total_revenue?: number | null
+          total_subscribers?: number | null
+          total_transactions?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          cancelled_subscribers?: number | null
+          created_at?: string | null
+          currency?: string
+          date?: string
+          failed_payments?: number | null
+          id?: string
+          new_subscribers?: number | null
+          total_revenue?: number | null
+          total_subscribers?: number | null
+          total_transactions?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       roadmap_milestones: {
         Row: {
           completion_date: string | null
@@ -2993,6 +3129,68 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "collaboration_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          billing_cycle: string
+          created_at: string | null
+          currency: string
+          current_period_end: string | null
+          current_period_start: string | null
+          email: string
+          id: string
+          plan_id: string | null
+          plan_name: string
+          price_amount: number
+          razorpay_customer_id: string | null
+          razorpay_subscription_id: string | null
+          status: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          billing_cycle: string
+          created_at?: string | null
+          currency?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          email: string
+          id?: string
+          plan_id?: string | null
+          plan_name: string
+          price_amount: number
+          razorpay_customer_id?: string | null
+          razorpay_subscription_id?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          billing_cycle?: string
+          created_at?: string | null
+          currency?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          email?: string
+          id?: string
+          plan_id?: string | null
+          plan_name?: string
+          price_amount?: number
+          razorpay_customer_id?: string | null
+          razorpay_subscription_id?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "pricing_plans"
             referencedColumns: ["id"]
           },
         ]

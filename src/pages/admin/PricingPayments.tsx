@@ -23,7 +23,9 @@ import {
   DollarSign,
   Users,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  RefreshCw,
+  Zap
 } from 'lucide-react';
 import { usePricingPayments } from '@/hooks/usePricingPayments';
 
@@ -36,6 +38,7 @@ const PricingPayments = () => {
     paymentStats,
     plans,
     transactions,
+    refreshData,
     isLoading
   } = usePricingPayments();
 
@@ -52,16 +55,33 @@ const PricingPayments = () => {
       description="Manage subscription plans, pricing, and payment processing"
     >
       <div className="space-y-8">
-        {/* Stats Cards */}
+        {/* Real-time Controls */}
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Zap className="h-4 w-4 text-green-500" />
+            <span className="text-sm text-muted-foreground">Real-time data updates</span>
+          </div>
+          <Button onClick={refreshData} variant="outline" size="sm">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh Data
+          </Button>
+        </div>
+        
+        {/* Real-time Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {statsCards.map((stat, index) => (
-            <Card key={index}>
+            <Card key={index} className="relative overflow-hidden">
               <CardContent className="p-6">
                 <div className="flex items-center">
-                  <stat.icon className={`h-8 w-8 ${stat.color}`} />
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                    <p className="text-2xl font-bold text-gray-900">{stat.value.toLocaleString()}</p>
+                  <div className="flex-shrink-0">
+                    <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                    <p className="text-2xl font-bold">{typeof stat.value === 'string' ? stat.value : stat.value.toLocaleString()}</p>
+                  </div>
+                  <div className="absolute top-2 right-2">
+                    <Zap className="h-3 w-3 text-green-500 animate-pulse" />
                   </div>
                 </div>
               </CardContent>
