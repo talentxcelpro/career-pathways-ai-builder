@@ -26,6 +26,7 @@ import {
   Settings
 } from 'lucide-react';
 import { useToolsManagement } from '@/hooks/useToolsManagement';
+import { AddToolDialog } from '@/components/admin/dialogs/AddToolDialog';
 
 const ToolsManagement = () => {
   const {
@@ -93,10 +94,7 @@ const ToolsManagement = () => {
                   <SelectItem value="Salary">Salary</SelectItem>
                 </SelectContent>
               </Select>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Tool
-              </Button>
+              <AddToolDialog onToolAdded={() => window.location.reload()} />
             </div>
           </CardContent>
         </Card>
@@ -217,10 +215,7 @@ const ToolsManagement = () => {
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button className="w-full" variant="outline">
-                <Plus className="h-4 w-4 mr-2" />
-                Create New Tool
-              </Button>
+              <AddToolDialog onToolAdded={() => window.location.reload()} />
               <Button className="w-full" variant="outline">
                 <Settings className="h-4 w-4 mr-2" />
                 Tool Settings

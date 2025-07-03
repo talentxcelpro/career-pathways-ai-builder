@@ -27,6 +27,7 @@ import {
   BarChart3
 } from 'lucide-react';
 import { useResumeManagement } from '@/hooks/useResumeManagement';
+import { AddTemplateDialog } from '@/components/admin/dialogs/AddTemplateDialog';
 
 const ResumeManagement = () => {
   const {
@@ -223,10 +224,7 @@ const ResumeManagement = () => {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Button className="w-full" variant="outline">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Template
-                </Button>
+                <AddTemplateDialog onTemplateAdded={() => window.location.reload()} />
                 <Button className="w-full" variant="outline">
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Usage Analytics
