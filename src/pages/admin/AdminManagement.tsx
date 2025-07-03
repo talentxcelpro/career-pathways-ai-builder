@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { AddAdminDialog } from '@/components/admin/dialogs/AddAdminDialog';
 
 const AdminManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -118,10 +119,7 @@ const AdminManagement = () => {
               </div>
               <Button variant="outline">Filter</Button>
               <Button variant="outline">Export</Button>
-              <Button className="flex items-center gap-2">
-                <UserPlus className="h-4 w-4" />
-                Add New Admin
-              </Button>
+              <AddAdminDialog onAdminAdded={() => window.location.reload()} />
             </div>
           </CardContent>
         </Card>
