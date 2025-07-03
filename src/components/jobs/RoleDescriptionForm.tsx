@@ -5,7 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X, FileText } from "lucide-react";
+import { Plus, X, FileText, Brain, RefreshCw } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface RoleDescriptionFormProps {
   formData: any;
@@ -16,6 +18,7 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
   const [newResponsibility, setNewResponsibility] = useState('');
   const [newRequirement, setNewRequirement] = useState('');
   const [newNiceToHave, setNewNiceToHave] = useState('');
+  const [isGenerating, setIsGenerating] = useState<string | null>(null);
 
   const addListItem = (field: string, value: string, setValue: (value: string) => void) => {
     if (value.trim()) {
@@ -30,6 +33,36 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
     onInputChange(field, current.filter((_: any, i: number) => i !== index));
   };
 
+  const generateAIContent = async (type: 'job_summary' | 'job_description' | 'key_responsibilities', isRegenerate = false) => {
+    setIsGenerating(type);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-job-generator', {
+        body: {
+          type: isRegenerate ? 'regenerate' : type,
+          job_title: formData.job_title,
+          industry_domain: formData.industry_domain,
+          employment_type: formData.employment_type,
+          work_mode: formData.work_mode,
+          location_city: formData.location_city,
+          experience_level: formData.experience_level,
+          required_skills: formData.required_skills || [],
+          company_name: formData.company_name,
+          existing_content: isRegenerate ? formData[type] : ''
+        }
+      });
+
+      if (error) throw error;
+
+      onInputChange(type, data.content);
+      toast.success(`AI-generated ${type.replace('_', ' ')} created successfully!`);
+    } catch (error) {
+      console.error('AI generation error:', error);
+      toast.error('Failed to generate content. Please try again.');
+    } finally {
+      setIsGenerating(null);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -40,7 +73,39 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="job_summary">Job Summary *</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="job_summary">Job Summary *</Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => generateAIContent('job_summary')}
+                disabled={isGenerating === 'job_summary' || !formData.job_title}
+                className="text-xs"
+              >
+                {isGenerating === 'job_summary' ? (
+                  <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                ) : (
+                  <Brain className="h-3 w-3 mr-1" />
+                )}
+                Generate with AI
+              </Button>
+              {formData.job_summary && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => generateAIContent('job_summary', true)}
+                  disabled={isGenerating === 'job_summary'}
+                  className="text-xs"
+                >
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Regenerate
+                </Button>
+              )}
+            </div>
+          </div>
           <Textarea
             id="job_summary"
             placeholder="Brief overview of the role and what the candidate will do..."
@@ -52,7 +117,39 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="job_description">Detailed Job Description *</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="job_description">Detailed Job Description *</Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => generateAIContent('job_description')}
+                disabled={isGenerating === 'job_description' || !formData.job_title}
+                className="text-xs"
+              >
+                {isGenerating === 'job_description' ? (
+                  <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                ) : (
+                  <Brain className="h-3 w-3 mr-1" />
+                )}
+                Generate with AI
+              </Button>
+              {formData.job_description && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => generateAIContent('job_description', true)}
+                  disabled={isGenerating === 'job_description'}
+                  className="text-xs"
+                >
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Regenerate
+                </Button>
+              )}
+            </div>
+          </div>
           <Textarea
             id="job_description"
             placeholder="Comprehensive description of the role, team, company culture, growth opportunities..."
@@ -65,7 +162,39 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
 
         {/* Key Responsibilities */}
         <div className="space-y-2">
-          <Label>Key Responsibilities</Label>
+          <div className="flex items-center justify-between">
+            <Label>Key Responsibilities</Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => generateAIContent('key_responsibilities')}
+                disabled={isGenerating === 'key_responsibilities' || !formData.job_title}
+                className="text-xs"
+              >
+                {isGenerating === 'key_responsibilities' ? (
+                  <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                ) : (
+                  <Brain className="h-3 w-3 mr-1" />
+                )}
+                Generate with AI
+              </Button>
+              {(formData.key_responsibilities || []).length > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => generateAIContent('key_responsibilities', true)}
+                  disabled={isGenerating === 'key_responsibilities'}
+                  className="text-xs"
+                >
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Regenerate
+                </Button>
+              )}
+            </div>
+          </div>
           <div className="flex gap-2">
             <Input
               placeholder="Add a key responsibility..."
