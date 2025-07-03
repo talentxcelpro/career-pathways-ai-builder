@@ -1865,16 +1865,24 @@ export type Database = {
       }
       jobs: {
         Row: {
+          ai_match_enabled: boolean | null
+          ai_priority: boolean | null
+          ai_skill_tags: string[] | null
           application_deadline: string | null
           application_method: string | null
           applications_count: number | null
           benefits: string[] | null
           benefits_offered: string[] | null
+          benefits_policy_url: string | null
           category_id: string | null
           certification_required: string | null
+          certifications: string[] | null
           company_id: string | null
+          company_name: string | null
           company_size: string | null
           company_website: string | null
+          contact_designation: string | null
+          contact_name: string | null
           contact_person_designation: string | null
           contact_person_email: string | null
           contact_person_name: string | null
@@ -1882,6 +1890,7 @@ export type Database = {
           created_at: string | null
           description: string
           detailed_description: string | null
+          education_level: string | null
           education_notes: string | null
           educational_qualification: string | null
           employment_type: string | null
@@ -1899,14 +1908,21 @@ export type Database = {
           is_hiring_fast: boolean | null
           is_remote: boolean | null
           is_urgent: boolean | null
+          jd_flyer_url: string | null
+          job_description: string | null
           job_status: string | null
           job_summary: string | null
+          job_title: string | null
           key_responsibilities: string[] | null
           location: string | null
+          location_city: string | null
+          location_state: string | null
           location_type: string | null
           max_education_gap: number | null
+          max_experience: number | null
           maximum_experience_years: number | null
           maximum_gap_allowed: number | null
+          min_experience: number | null
           minimum_education: string | null
           minimum_experience_years: number | null
           minimum_year_of_passing: number | null
@@ -1917,8 +1933,10 @@ export type Database = {
           preferred_certifications: Json | null
           preferred_certifications_list: string[] | null
           preferred_company_background: string[] | null
+          preferred_company_types: string[] | null
           preferred_experience_in: string[] | null
           preferred_industries: string[] | null
+          preferred_requirements: string[] | null
           relevant_industry_experience: string[] | null
           requirements: string | null
           salary_currency: string | null
@@ -1927,26 +1945,38 @@ export type Database = {
           skills_required: string[] | null
           specialization_fields: string[] | null
           specific_experience_areas: string | null
+          specific_tools: string[] | null
           specific_tools_domains: string | null
           supporting_documents: Json | null
+          team_brochure_url: string | null
           title: string
           updated_at: string | null
           views_count: number | null
           visibility_duration_days: number | null
+          visibility_status: string | null
           work_mode: string | null
           work_schedule: string | null
+          year_of_passing: number | null
         }
         Insert: {
+          ai_match_enabled?: boolean | null
+          ai_priority?: boolean | null
+          ai_skill_tags?: string[] | null
           application_deadline?: string | null
           application_method?: string | null
           applications_count?: number | null
           benefits?: string[] | null
           benefits_offered?: string[] | null
+          benefits_policy_url?: string | null
           category_id?: string | null
           certification_required?: string | null
+          certifications?: string[] | null
           company_id?: string | null
+          company_name?: string | null
           company_size?: string | null
           company_website?: string | null
+          contact_designation?: string | null
+          contact_name?: string | null
           contact_person_designation?: string | null
           contact_person_email?: string | null
           contact_person_name?: string | null
@@ -1954,6 +1984,7 @@ export type Database = {
           created_at?: string | null
           description: string
           detailed_description?: string | null
+          education_level?: string | null
           education_notes?: string | null
           educational_qualification?: string | null
           employment_type?: string | null
@@ -1971,14 +2002,21 @@ export type Database = {
           is_hiring_fast?: boolean | null
           is_remote?: boolean | null
           is_urgent?: boolean | null
+          jd_flyer_url?: string | null
+          job_description?: string | null
           job_status?: string | null
           job_summary?: string | null
+          job_title?: string | null
           key_responsibilities?: string[] | null
           location?: string | null
+          location_city?: string | null
+          location_state?: string | null
           location_type?: string | null
           max_education_gap?: number | null
+          max_experience?: number | null
           maximum_experience_years?: number | null
           maximum_gap_allowed?: number | null
+          min_experience?: number | null
           minimum_education?: string | null
           minimum_experience_years?: number | null
           minimum_year_of_passing?: number | null
@@ -1989,8 +2027,10 @@ export type Database = {
           preferred_certifications?: Json | null
           preferred_certifications_list?: string[] | null
           preferred_company_background?: string[] | null
+          preferred_company_types?: string[] | null
           preferred_experience_in?: string[] | null
           preferred_industries?: string[] | null
+          preferred_requirements?: string[] | null
           relevant_industry_experience?: string[] | null
           requirements?: string | null
           salary_currency?: string | null
@@ -1999,26 +2039,38 @@ export type Database = {
           skills_required?: string[] | null
           specialization_fields?: string[] | null
           specific_experience_areas?: string | null
+          specific_tools?: string[] | null
           specific_tools_domains?: string | null
           supporting_documents?: Json | null
+          team_brochure_url?: string | null
           title: string
           updated_at?: string | null
           views_count?: number | null
           visibility_duration_days?: number | null
+          visibility_status?: string | null
           work_mode?: string | null
           work_schedule?: string | null
+          year_of_passing?: number | null
         }
         Update: {
+          ai_match_enabled?: boolean | null
+          ai_priority?: boolean | null
+          ai_skill_tags?: string[] | null
           application_deadline?: string | null
           application_method?: string | null
           applications_count?: number | null
           benefits?: string[] | null
           benefits_offered?: string[] | null
+          benefits_policy_url?: string | null
           category_id?: string | null
           certification_required?: string | null
+          certifications?: string[] | null
           company_id?: string | null
+          company_name?: string | null
           company_size?: string | null
           company_website?: string | null
+          contact_designation?: string | null
+          contact_name?: string | null
           contact_person_designation?: string | null
           contact_person_email?: string | null
           contact_person_name?: string | null
@@ -2026,6 +2078,7 @@ export type Database = {
           created_at?: string | null
           description?: string
           detailed_description?: string | null
+          education_level?: string | null
           education_notes?: string | null
           educational_qualification?: string | null
           employment_type?: string | null
@@ -2043,14 +2096,21 @@ export type Database = {
           is_hiring_fast?: boolean | null
           is_remote?: boolean | null
           is_urgent?: boolean | null
+          jd_flyer_url?: string | null
+          job_description?: string | null
           job_status?: string | null
           job_summary?: string | null
+          job_title?: string | null
           key_responsibilities?: string[] | null
           location?: string | null
+          location_city?: string | null
+          location_state?: string | null
           location_type?: string | null
           max_education_gap?: number | null
+          max_experience?: number | null
           maximum_experience_years?: number | null
           maximum_gap_allowed?: number | null
+          min_experience?: number | null
           minimum_education?: string | null
           minimum_experience_years?: number | null
           minimum_year_of_passing?: number | null
@@ -2061,8 +2121,10 @@ export type Database = {
           preferred_certifications?: Json | null
           preferred_certifications_list?: string[] | null
           preferred_company_background?: string[] | null
+          preferred_company_types?: string[] | null
           preferred_experience_in?: string[] | null
           preferred_industries?: string[] | null
+          preferred_requirements?: string[] | null
           relevant_industry_experience?: string[] | null
           requirements?: string | null
           salary_currency?: string | null
@@ -2071,14 +2133,18 @@ export type Database = {
           skills_required?: string[] | null
           specialization_fields?: string[] | null
           specific_experience_areas?: string | null
+          specific_tools?: string[] | null
           specific_tools_domains?: string | null
           supporting_documents?: Json | null
+          team_brochure_url?: string | null
           title?: string
           updated_at?: string | null
           views_count?: number | null
           visibility_duration_days?: number | null
+          visibility_status?: string | null
           work_mode?: string | null
           work_schedule?: string | null
+          year_of_passing?: number | null
         }
         Relationships: [
           {
