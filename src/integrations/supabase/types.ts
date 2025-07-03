@@ -1886,6 +1886,7 @@ export type Database = {
           is_urgent: boolean | null
           job_status: string | null
           location: string | null
+          location_type: string | null
           posted_at: string | null
           posted_by: string | null
           requirements: string | null
@@ -1919,6 +1920,7 @@ export type Database = {
           is_urgent?: boolean | null
           job_status?: string | null
           location?: string | null
+          location_type?: string | null
           posted_at?: string | null
           posted_by?: string | null
           requirements?: string | null
@@ -1952,6 +1954,7 @@ export type Database = {
           is_urgent?: boolean | null
           job_status?: string | null
           location?: string | null
+          location_type?: string | null
           posted_at?: string | null
           posted_by?: string | null
           requirements?: string | null
