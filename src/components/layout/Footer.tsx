@@ -10,10 +10,11 @@ export const Footer = () => {
           {/* Company Info */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TX</span>
-              </div>
-              <span className="font-bold text-xl">TalentXcel</span>
+              <img 
+                src="/lovable-uploads/e848f198-701e-4f02-8f98-f57bdbd59a1d.png" 
+                alt="TalentXcel Logo" 
+                className="h-8 w-auto"
+              />
             </div>
             <p className="text-gray-300 mb-4">
               Empowering professionals with AI-powered tools for career growth, job discovery, and skill development.

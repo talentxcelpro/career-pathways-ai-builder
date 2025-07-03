@@ -112,10 +112,11 @@ export const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TX</span>
-              </div>
-              <span className="font-bold text-xl text-gray-900 hidden sm:block">TalentXcel</span>
+              <img 
+                src="/lovable-uploads/e848f198-701e-4f02-8f98-f57bdbd59a1d.png" 
+                alt="TalentXcel Logo" 
+                className="h-8 w-auto"
+              />
             </Link>
           </div>
 
