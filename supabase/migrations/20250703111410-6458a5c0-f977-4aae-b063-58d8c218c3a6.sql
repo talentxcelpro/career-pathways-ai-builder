@@ -1,0 +1,23 @@
+-- Add comprehensive job posting fields to jobs table
+ALTER TABLE public.jobs 
+ADD COLUMN IF NOT EXISTS company_website text,
+ADD COLUMN IF NOT EXISTS industry_domain text,
+ADD COLUMN IF NOT EXISTS company_size text,
+ADD COLUMN IF NOT EXISTS work_mode text,
+ADD COLUMN IF NOT EXISTS work_schedule text,
+ADD COLUMN IF NOT EXISTS job_summary text,
+ADD COLUMN IF NOT EXISTS detailed_description text,
+ADD COLUMN IF NOT EXISTS key_responsibilities text[],
+ADD COLUMN IF NOT EXISTS must_have_requirements text[],
+ADD COLUMN IF NOT EXISTS nice_to_have text[],
+ADD COLUMN IF NOT EXISTS field_of_study text[],
+ADD COLUMN IF NOT EXISTS max_education_gap integer,
+ADD COLUMN IF NOT EXISTS preferred_certifications_list text[],
+ADD COLUMN IF NOT EXISTS experience_preference text,
+ADD COLUMN IF NOT EXISTS preferred_industries text[],
+ADD COLUMN IF NOT EXISTS preferred_company_background text[],
+ADD COLUMN IF NOT EXISTS specific_tools_domains text,
+ADD COLUMN IF NOT EXISTS benefits_offered text[],
+ADD COLUMN IF NOT EXISTS contact_person_email text,
+ADD COLUMN IF NOT EXISTS contact_person_phone text,
+ADD COLUMN IF NOT EXISTS is_draft boolean DEFAULT false;

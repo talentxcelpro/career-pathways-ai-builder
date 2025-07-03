@@ -3,54 +3,91 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Briefcase } from "lucide-react";
+import { ArrowLeft, Briefcase, Eye, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import EnhancedCompanyForm from "@/components/jobs/EnhancedCompanyForm";
-import BasicJobInformation from "@/components/jobs/BasicJobInformation";
-import SkillsBenefitsForm from "@/components/jobs/SkillsBenefitsForm";
-import EducationCertificationForm from "@/components/jobs/EducationCertificationForm";
-import SupportingDocumentsForm from "@/components/jobs/SupportingDocumentsForm";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
+import CompanyInformationForm from "@/components/jobs/CompanyInformationForm";
+import JobOverviewForm from "@/components/jobs/JobOverviewForm";
+import RoleDescriptionForm from "@/components/jobs/RoleDescriptionForm";
+import SkillsQualificationsForm from "@/components/jobs/SkillsQualificationsForm";
+import CompensationBenefitsForm from "@/components/jobs/CompensationBenefitsForm";
+import ContactPersonForm from "@/components/jobs/ContactPersonForm";
+import JobVisibilityForm from "@/components/jobs/JobVisibilityForm";
+import SupportingDocumentsForm from "@/components/jobs/SupportingDocumentsForm";
 
 function JobPostContent() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    requirements: '',
-    location: '',
-    employment_type: '',
-    experience_level: '',
-    is_remote: false,
-    salary_min: '',
-    salary_max: '',
+    // Company Information
     company_id: '',
-    category_id: '',
-    skills_required: [] as string[],
-    benefits: [] as string[],
-    application_deadline: '',
-    location_type: '',
+    company_website: '',
+    industry_domain: '',
+    company_size: '',
+    
+    // Job Overview
+    title: '',
+    employment_type: '',
+    work_mode: '',
+    location: '',
     work_schedule: '',
-    contact_person_name: '',
-    contact_person_designation: '',
-    // Education & Certification fields
+    experience_level: '',
+    application_deadline: '',
+    category_id: '',
+    
+    // Role Description
+    job_summary: '',
+    detailed_description: '',
+    key_responsibilities: [] as string[],
+    must_have_requirements: [] as string[],
+    nice_to_have: [] as string[],
+    
+    // Skills & Qualifications
+    skills_required: [] as string[],
     minimum_education: '',
-    specialization_fields: [] as string[],
-    preferred_certifications: [] as any[],
+    field_of_study: [] as string[],
     minimum_year_of_passing: null as number | null,
-    maximum_gap_allowed: null as number | null,
-    education_notes: '',
-    // Experience fields
-    experience_type: '',
+    max_education_gap: null as number | null,
+    preferred_certifications_list: [] as string[],
+    experience_preference: '',
     minimum_experience_years: null as number | null,
     maximum_experience_years: null as number | null,
+    preferred_industries: [] as string[],
+    preferred_company_background: [] as string[],
+    specific_tools_domains: '',
+    
+    // Compensation & Benefits
+    salary_min: '',
+    salary_max: '',
+    benefits_offered: [] as string[],
+    
+    // Contact Person
+    contact_person_name: '',
+    contact_person_designation: '',
+    contact_person_email: '',
+    contact_person_phone: '',
+    
+    // Supporting Documents
+    supporting_documents: [] as any[],
+    
+    // Legacy fields for backward compatibility
+    description: '',
+    requirements: '',
+    is_remote: false,
+    benefits: [] as string[],
+    location_type: '',
+    specialization_fields: [] as string[],
+    preferred_certifications: [] as any[],
+    maximum_gap_allowed: null as number | null,
+    education_notes: '',
+    experience_type: '',
     relevant_industry_experience: [] as string[],
     specific_experience_areas: '',
     preferred_experience_in: [] as string[],
-    // Supporting documents
-    supporting_documents: [] as any[]
+    
+    // Draft functionality
+    is_draft: false
   });
 
   // Fetch job categories
@@ -117,20 +154,35 @@ function JobPostContent() {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent, isDraft = false) => {
     e.preventDefault();
     
-    if (!formData.title.trim() || !formData.description.trim() || !formData.company_id) {
-      toast.error('Please fill in all required fields (title, description, and company)');
-      return;
+    const submitData = { ...formData, is_draft: isDraft };
+    
+    if (!isDraft) {
+      // Validation for publishing
+      if (!formData.title.trim() || !formData.job_summary.trim() || !formData.company_id) {
+        toast.error('Please fill in all required fields (title, job summary, and company)');
+        return;
+      }
+
+      if (formData.skills_required.length === 0) {
+        toast.error('Please add at least one required skill');
+        return;
+      }
+    } else {
+      // Minimal validation for draft
+      if (!formData.title.trim()) {
+        toast.error('Please add a job title to save as draft');
+        return;
+      }
     }
 
-    if (formData.skills_required.length === 0) {
-      toast.error('Please add at least one required skill');
-      return;
-    }
+    postJobMutation.mutate(submitData);
+  };
 
-    postJobMutation.mutate(formData);
+  const handlePreview = () => {
+    toast.info('Preview functionality coming soon!');
   };
 
   return (
@@ -147,38 +199,40 @@ function JobPostContent() {
           </Button>
           
           <div className="flex items-center space-x-3 mb-2">
-            <Briefcase className="h-8 w-8 text-blue-500" />
-            <h1 className="text-3xl font-bold">Post a Job</h1>
+            <Briefcase className="h-8 w-8 text-primary" />
+            <h1 className="text-3xl font-bold">Post a New Job</h1>
           </div>
-          <p className="text-gray-600">Find the perfect candidate for your open position</p>
+          <p className="text-muted-foreground">Fill in the job details below to find top candidates via AI-powered TalentXcel.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Enhanced Company Form */}
-          <EnhancedCompanyForm
-            value={formData.company_id}
-            onValueChange={(value) => handleInputChange('company_id', value)}
-            onCompanyCreate={(company) => {
-              console.log('New company created:', company);
-              toast.success(`Company "${company.name}" created successfully!`);
-            }}
+        <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-6">
+          {/* Company Information */}
+          <CompanyInformationForm
+            formData={formData}
+            onInputChange={handleInputChange}
           />
 
-          {/* Basic Job Information */}
-          <BasicJobInformation
+          {/* Job Overview */}
+          <JobOverviewForm
             formData={formData}
             categories={categories}
             onInputChange={handleInputChange}
           />
 
-          {/* Skills and Benefits */}
-          <SkillsBenefitsForm
+          {/* Role Description */}
+          <RoleDescriptionForm
             formData={formData}
             onInputChange={handleInputChange}
           />
 
-          {/* Education & Certification Requirements */}
-          <EducationCertificationForm
+          {/* Skills & Qualifications */}
+          <SkillsQualificationsForm
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
+
+          {/* Compensation & Benefits */}
+          <CompensationBenefitsForm
             formData={formData}
             onInputChange={handleInputChange}
           />
@@ -189,19 +243,51 @@ function JobPostContent() {
             onInputChange={handleInputChange}
           />
 
-          {/* Submit */}
+          {/* Contact Person */}
+          <ContactPersonForm
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
+
+          {/* Job Visibility & AI Features */}
+          <JobVisibilityForm />
+
+          {/* Final Actions */}
           <Card>
             <CardContent className="p-6">
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full"
-                disabled={postJobMutation.isPending}
-              >
-                {postJobMutation.isPending ? 'Posting Job...' : 'Post Job'}
-              </Button>
-              <p className="text-xs text-center text-muted-foreground mt-2">
-                By posting, you agree to our terms and the job will be live for 15 days
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  onClick={handlePreview}
+                  className="flex-1"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  Preview Job
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  onClick={(e) => handleSubmit(e, true)}
+                  disabled={postJobMutation.isPending}
+                  className="flex-1"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  {postJobMutation.isPending ? 'Saving...' : 'Save as Draft'}
+                </Button>
+                <Button
+                  type="submit"
+                  size="lg"
+                  disabled={postJobMutation.isPending}
+                  className="flex-1"
+                >
+                  {postJobMutation.isPending ? 'Publishing...' : 'Publish Job Now'}
+                </Button>
+              </div>
+              <p className="text-xs text-center text-muted-foreground mt-3">
+                By publishing, you agree to our terms and the job will be live for 15 days
               </p>
             </CardContent>
           </Card>
