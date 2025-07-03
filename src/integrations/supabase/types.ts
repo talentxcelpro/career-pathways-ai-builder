@@ -1876,9 +1876,11 @@ export type Database = {
           contact_person_name: string | null
           created_at: string | null
           description: string
+          education_notes: string | null
           educational_qualification: string | null
           employment_type: string | null
           experience_level: string | null
+          experience_type: string | null
           expires_at: string | null
           external_url: string | null
           id: string
@@ -1890,13 +1892,23 @@ export type Database = {
           job_status: string | null
           location: string | null
           location_type: string | null
+          maximum_experience_years: number | null
+          maximum_gap_allowed: number | null
+          minimum_education: string | null
+          minimum_experience_years: number | null
+          minimum_year_of_passing: number | null
           posted_at: string | null
           posted_by: string | null
+          preferred_certifications: Json | null
+          preferred_experience_in: string[] | null
+          relevant_industry_experience: string[] | null
           requirements: string | null
           salary_currency: string | null
           salary_max: number | null
           salary_min: number | null
           skills_required: string[] | null
+          specialization_fields: string[] | null
+          specific_experience_areas: string | null
           supporting_documents: Json | null
           title: string
           updated_at: string | null
@@ -1916,9 +1928,11 @@ export type Database = {
           contact_person_name?: string | null
           created_at?: string | null
           description: string
+          education_notes?: string | null
           educational_qualification?: string | null
           employment_type?: string | null
           experience_level?: string | null
+          experience_type?: string | null
           expires_at?: string | null
           external_url?: string | null
           id?: string
@@ -1930,13 +1944,23 @@ export type Database = {
           job_status?: string | null
           location?: string | null
           location_type?: string | null
+          maximum_experience_years?: number | null
+          maximum_gap_allowed?: number | null
+          minimum_education?: string | null
+          minimum_experience_years?: number | null
+          minimum_year_of_passing?: number | null
           posted_at?: string | null
           posted_by?: string | null
+          preferred_certifications?: Json | null
+          preferred_experience_in?: string[] | null
+          relevant_industry_experience?: string[] | null
           requirements?: string | null
           salary_currency?: string | null
           salary_max?: number | null
           salary_min?: number | null
           skills_required?: string[] | null
+          specialization_fields?: string[] | null
+          specific_experience_areas?: string | null
           supporting_documents?: Json | null
           title: string
           updated_at?: string | null
@@ -1956,9 +1980,11 @@ export type Database = {
           contact_person_name?: string | null
           created_at?: string | null
           description?: string
+          education_notes?: string | null
           educational_qualification?: string | null
           employment_type?: string | null
           experience_level?: string | null
+          experience_type?: string | null
           expires_at?: string | null
           external_url?: string | null
           id?: string
@@ -1970,13 +1996,23 @@ export type Database = {
           job_status?: string | null
           location?: string | null
           location_type?: string | null
+          maximum_experience_years?: number | null
+          maximum_gap_allowed?: number | null
+          minimum_education?: string | null
+          minimum_experience_years?: number | null
+          minimum_year_of_passing?: number | null
           posted_at?: string | null
           posted_by?: string | null
+          preferred_certifications?: Json | null
+          preferred_experience_in?: string[] | null
+          relevant_industry_experience?: string[] | null
           requirements?: string | null
           salary_currency?: string | null
           salary_max?: number | null
           salary_min?: number | null
           skills_required?: string[] | null
+          specialization_fields?: string[] | null
+          specific_experience_areas?: string | null
           supporting_documents?: Json | null
           title?: string
           updated_at?: string | null

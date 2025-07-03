@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import EnhancedCompanyForm from "@/components/jobs/EnhancedCompanyForm";
 import BasicJobInformation from "@/components/jobs/BasicJobInformation";
 import SkillsBenefitsForm from "@/components/jobs/SkillsBenefitsForm";
+import EducationCertificationForm from "@/components/jobs/EducationCertificationForm";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
 
 function JobPostContent() {
@@ -32,7 +33,21 @@ function JobPostContent() {
     location_type: '',
     work_schedule: '',
     contact_person_name: '',
-    contact_person_designation: ''
+    contact_person_designation: '',
+    // Education & Certification fields
+    minimum_education: '',
+    specialization_fields: [] as string[],
+    preferred_certifications: [] as any[],
+    minimum_year_of_passing: null as number | null,
+    maximum_gap_allowed: null as number | null,
+    education_notes: '',
+    // Experience fields
+    experience_type: '',
+    minimum_experience_years: null as number | null,
+    maximum_experience_years: null as number | null,
+    relevant_industry_experience: [] as string[],
+    specific_experience_areas: '',
+    preferred_experience_in: [] as string[]
   });
 
   // Fetch job categories
@@ -155,6 +170,12 @@ function JobPostContent() {
 
           {/* Skills and Benefits */}
           <SkillsBenefitsForm
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
+
+          {/* Education & Certification Requirements */}
+          <EducationCertificationForm
             formData={formData}
             onInputChange={handleInputChange}
           />
