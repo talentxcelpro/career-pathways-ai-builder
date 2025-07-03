@@ -3,6 +3,7 @@ import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
@@ -22,9 +23,12 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [courseData, setCourseData] = useState({
     title: '',
     description: '',
@@ -100,13 +104,43 @@ const CreateCourse = () => {
         return;
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!user) {
+        toast.error('You must be logged in to create a course');
+        return;
+      }
+
+      // Insert course into database
+      const { data, error } = await supabase
+        .from('courses')
+        .insert([{
+          title: courseData.title,
+          description: courseData.description,
+          instructor_name: courseData.instructor_name,
+          instructor_bio: courseData.instructor_bio,
+          category: courseData.category,
+          difficulty_level: courseData.difficulty_level,
+          duration_hours: courseData.duration_hours,
+          price: courseData.price,
+          is_free: courseData.is_free,
+          is_active: courseData.is_active,
+          thumbnail_url: courseData.thumbnail_url,
+          video_url: courseData.video_url,
+          skills_taught: courseData.skills_taught,
+          curriculum: courseData.curriculum,
+          created_by: user.id
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
       
       toast.success('Course created successfully!');
       navigate('/admin/learning');
-    } catch (error) {
-      toast.error('Failed to create course');
+    } catch (error: any) {
+      console.error('Error creating course:', error);
+      toast.error(error?.message || 'Failed to create course');
     }
   };
 
@@ -116,10 +150,11 @@ const CreateCourse = () => {
   };
 
   return (
-    <UnifiedAdminLayout 
-      title="Create New Course" 
-      description="Add a new course to the learning platform"
-    >
+    <AdminGuard requiredPermission="canAccessLearning">
+      <UnifiedAdminLayout 
+        title="Create New Course" 
+        description="Add a new course to the learning platform"
+      >
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header Actions */}
         <div className="flex justify-between items-center">
@@ -441,6 +476,7 @@ const CreateCourse = () => {
         </Card>
       </div>
     </UnifiedAdminLayout>
+    </AdminGuard>
   );
 };
 

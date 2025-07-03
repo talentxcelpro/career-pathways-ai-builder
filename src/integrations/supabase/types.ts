@@ -2364,6 +2364,57 @@ export type Database = {
         }
         Relationships: []
       }
+      pricing_plans: {
+        Row: {
+          billing_cycle: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          features: string[] | null
+          id: string
+          is_active: boolean | null
+          is_popular: boolean | null
+          limits: Json | null
+          name: string
+          price: number | null
+          stripe_price_id: string | null
+          trial_days: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          billing_cycle?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          limits?: Json | null
+          name: string
+          price?: number | null
+          stripe_price_id?: string | null
+          trial_days?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          billing_cycle?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          limits?: Json | null
+          name?: string
+          price?: number | null
+          stripe_price_id?: string | null
+          trial_days?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profile_views: {
         Row: {
           id: string

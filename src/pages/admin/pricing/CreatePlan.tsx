@@ -3,6 +3,7 @@ import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
@@ -23,9 +24,12 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const CreatePlan = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [planData, setPlanData] = useState({
     name: '',
     description: '',
@@ -113,13 +117,39 @@ const CreatePlan = () => {
         return;
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!user) {
+        toast.error('You must be logged in to create a pricing plan');
+        return;
+      }
+
+      // Insert pricing plan into database
+      const { data, error } = await supabase
+        .from('pricing_plans')
+        .insert([{
+          name: planData.name,
+          description: planData.description,
+          price: planData.price,
+          billing_cycle: planData.billing_cycle,
+          is_active: planData.is_active,
+          is_popular: planData.is_popular,
+          features: planData.features,
+          limits: planData.limits,
+          stripe_price_id: planData.stripe_price_id,
+          trial_days: planData.trial_days,
+          created_by: user.id
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
       
       toast.success('Pricing plan created successfully!');
       navigate('/admin/payments');
-    } catch (error) {
-      toast.error('Failed to create pricing plan');
+    } catch (error: any) {
+      console.error('Error creating pricing plan:', error);
+      toast.error(error?.message || 'Failed to create pricing plan');
     }
   };
 
@@ -142,10 +172,11 @@ const CreatePlan = () => {
   };
 
   return (
-    <UnifiedAdminLayout 
-      title="Create New Pricing Plan" 
-      description="Add a new subscription plan to the platform"
-    >
+    <AdminGuard requiredPermission="canAccessDashboard">
+      <UnifiedAdminLayout 
+        title="Create New Pricing Plan" 
+        description="Add a new subscription plan to the platform"
+      >
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header Actions */}
         <div className="flex justify-between items-center">
@@ -507,6 +538,7 @@ const CreatePlan = () => {
         </Card>
       </div>
     </UnifiedAdminLayout>
+    </AdminGuard>
   );
 };
 
