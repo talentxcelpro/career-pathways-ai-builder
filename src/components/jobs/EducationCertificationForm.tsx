@@ -69,6 +69,7 @@ const preferredExperienceOptions = [
 ];
 
 export default function EducationCertificationForm({ formData, onInputChange }: EducationCertificationFormProps) {
+  console.log('EducationCertificationForm rendering with formData:', formData);
   const handleSpecializationChange = (field: string, checked: boolean) => {
     const current = formData.specialization_fields || [];
     if (checked) {
