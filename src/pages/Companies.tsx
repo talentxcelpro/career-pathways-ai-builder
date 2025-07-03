@@ -66,63 +66,89 @@ const Companies = () => {
         ) : companies && companies.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {companies.map((company) => (
-              <Card key={company.id} className="group hover:shadow-lg transition-all duration-300">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-3">
-                      {company.logo_url ? (
-                        <img
-                          src={company.logo_url}
-                          alt={`${company.name} logo`}
-                          className="w-12 h-12 rounded-lg object-cover"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                          <Building2 className="h-6 w-6 text-white" />
-                        </div>
-                      )}
-                      <div className="flex-1">
-                        <CardTitle className="text-lg group-hover:text-blue-600 transition-colors">
-                          {company.name}
-                        </CardTitle>
-                        {company.industry && (
-                          <Badge variant="secondary" className="mt-1">
-                            {company.industry}
-                          </Badge>
-                        )}
+              <Card key={company.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
+                {/* Company Banner */}
+                <div className="relative h-32 bg-gradient-to-r from-blue-500 to-purple-500">
+                  {company.cover_image_url ? (
+                    <img
+                      src={company.cover_image_url}
+                      alt={`${company.name} banner`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500" />
+                  )}
+                  <div className="absolute inset-0 bg-black/20" />
+                  
+                  {/* Company Logo - Overlapping the banner */}
+                  <div className="absolute -bottom-6 left-6">
+                    {company.logo_url ? (
+                      <img
+                        src={company.logo_url}
+                        alt={`${company.name} logo`}
+                        className="w-16 h-16 rounded-xl border-4 border-white shadow-lg object-cover bg-white"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-white rounded-xl border-4 border-white shadow-lg flex items-center justify-center">
+                        <Building2 className="h-8 w-8 text-gray-600" />
                       </div>
-                    </div>
-                    <Button variant="ghost" size="icon">
-                      <Heart className="h-4 w-4" />
+                    )}
+                  </div>
+
+                  {/* Follow Button */}
+                  <div className="absolute top-4 right-4">
+                    <Button variant="secondary" size="icon" className="bg-white/20 backdrop-blur-sm border-white/30 hover:bg-white/30">
+                      <Heart className="h-4 w-4 text-white" />
                     </Button>
                   </div>
+                </div>
+
+                <CardHeader className="pt-8">
+                  <div className="space-y-2">
+                    <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
+                      {company.name}
+                    </CardTitle>
+                    <div className="flex flex-wrap gap-2">
+                      {company.industry && (
+                        <Badge variant="secondary" className="text-xs">
+                          {company.industry}
+                        </Badge>
+                      )}
+                      {company.employee_count_range && (
+                        <Badge variant="outline" className="text-xs">
+                          {company.employee_count_range}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
                 </CardHeader>
+
                 <CardContent className="space-y-4">
-                  <CardDescription className="line-clamp-3">
-                    {company.description || 'No description available'}
+                  <CardDescription className="line-clamp-2 text-sm leading-relaxed">
+                    {company.description || 'Innovative company committed to excellence and growth.'}
                   </CardDescription>
                   
-                  <div className="space-y-2 text-sm text-gray-600">
+                  <div className="space-y-2">
                     {company.location && (
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
                         <MapPin className="h-4 w-4" />
                         <span>{company.location}</span>
                       </div>
                     )}
-                    {company.employee_count_range && (
-                      <div className="flex items-center space-x-2">
-                        <Users className="h-4 w-4" />
-                        <span>{company.employee_count_range} employees</span>
+                    {company.founded_year && (
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <Building2 className="h-4 w-4" />
+                        <span>Founded in {company.founded_year}</span>
                       </div>
                     )}
                     {company.website && (
-                      <div className="flex items-center space-x-2">
-                        <Globe className="h-4 w-4" />
+                      <div className="flex items-center space-x-2 text-sm">
+                        <Globe className="h-4 w-4 text-gray-600" />
                         <a 
                           href={company.website} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
+                          className="text-blue-600 hover:underline truncate"
                         >
                           Visit Website
                         </a>
@@ -130,14 +156,14 @@ const Companies = () => {
                     )}
                   </div>
 
-                  <div className="flex justify-between items-center pt-4">
-                    <Link to={`/companies/${company.id}`}>
-                      <Button variant="outline" size="sm">
-                        View Details
+                  <div className="flex gap-2 pt-4">
+                    <Link to={`/companies/${company.id}`} className="flex-1">
+                      <Button variant="outline" size="sm" className="w-full">
+                        View Profile
                       </Button>
                     </Link>
-                    <Link to={`/jobs?company=${company.id}`}>
-                      <Button size="sm">
+                    <Link to={`/jobs?company=${company.id}`} className="flex-1">
+                      <Button size="sm" className="w-full">
                         View Jobs
                       </Button>
                     </Link>

@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from '@/contexts/AuthContext';
+import CompanyImageUpload from '@/components/company/CompanyImageUpload';
 
 const CompanyProfileEdit = () => {
   const navigate = useNavigate();
@@ -406,6 +407,15 @@ const CompanyProfileEdit = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Company Images */}
+        <CompanyImageUpload
+          logoUrl={formData.logo_url}
+          bannerUrl={formData.cover_image_url}
+          onLogoUpload={(url) => handleInputChange('logo_url', url)}
+          onBannerUpload={(url) => handleInputChange('cover_image_url', url)}
+          companyName={formData.name}
+        />
 
         {/* Benefits */}
         <Card>
