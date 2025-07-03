@@ -247,40 +247,83 @@ const Tools = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI-Powered Career Tools</h1>
-          <p className="text-gray-600">
-            Fully functional AI tools with real results to supercharge your career growth
-          </p>
+        {/* Hero Section */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-3xl p-8 mb-12 text-white">
+          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
+                <Brain className="h-8 w-8" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold mb-2">AI-Powered Career Tools</h1>
+                <p className="text-blue-100 text-lg max-w-3xl">
+                  Transform your career with our comprehensive suite of AI-powered tools designed to accelerate your professional growth and success.
+                </p>
+              </div>
+            </div>
+            
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                <div className="text-2xl font-bold">{tools.length}</div>
+                <p className="text-sm text-blue-100">Total Tools</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                <div className="text-2xl font-bold">{freeTools.length}</div>
+                <p className="text-sm text-blue-100">Free Tools</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                <div className="text-2xl font-bold">{tools.filter(t => t.isPremium).length}</div>
+                <p className="text-sm text-blue-100">Premium Tools</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                <div className="text-2xl font-bold">{Object.values(toolUsage).reduce((a, b) => a + b, 0)}</div>
+                <p className="text-sm text-blue-100">Your Usage</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Decorative Elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full translate-y-48 -translate-x-48"></div>
         </div>
 
         {/* Search and Filters */}
         <div className="mb-8">
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <div className="relative mb-6">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
               placeholder="Search tools, features, or keywords..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-12 h-14 text-lg rounded-2xl border-0 bg-white shadow-lg ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {categories.map((category) => (
               <Button
                 key={category.id}
                 variant={selectedCategory === category.id ? "default" : "outline"}
-                size="sm"
+                size="lg"
                 onClick={() => setSelectedCategory(category.id)}
-                className="flex items-center gap-2"
+                className={`flex items-center gap-2 rounded-full px-6 py-3 transition-all duration-200 ${
+                  selectedCategory === category.id 
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105' 
+                    : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-gray-300'
+                }`}
               >
                 {getCategoryIcon(category.id)}
                 {category.name}
-                <Badge variant="secondary" className="ml-1 text-xs">
+                <Badge 
+                  variant="secondary" 
+                  className={`ml-1 text-xs ${
+                    selectedCategory === category.id ? 'bg-white/20 text-white' : 'bg-gray-100'
+                  }`}
+                >
                   {category.count}
                 </Badge>
               </Button>
@@ -288,68 +331,78 @@ const Tools = () => {
           </div>
         </div>
 
-        {/* Tools Content */}
-        <Tabs defaultValue="all" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="all">All Tools</TabsTrigger>
-            <TabsTrigger value="popular">Popular</TabsTrigger>
-            <TabsTrigger value="free">Free Tools</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredTools.map((tool) => (
+        {/* Featured Tools */}
+        {selectedCategory === 'all' && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
+                <Zap className="h-6 w-6 text-white" />
+              </div>
+              Most Popular Tools
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {popularTools.slice(0, 3).map((tool) => (
                 <Card 
                   key={tool.id} 
-                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
+                  className="group cursor-pointer overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-white to-gray-50"
                   onClick={() => handleToolClick(tool)}
                 >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <CardHeader className="pb-4 relative z-10">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl text-white group-hover:scale-110 transition-transform">
                           {tool.icon}
                         </div>
                         <div>
-                          <CardTitle className="text-lg">{tool.name}</CardTitle>
-                          {tool.isPremium && (
-                            <Badge className="mt-1 bg-gradient-to-r from-purple-500 to-pink-500">
-                              <Star className="h-3 w-3 mr-1" />
-                              Premium
+                          <CardTitle className="text-xl font-bold">{tool.name}</CardTitle>
+                          <div className="flex gap-2 mt-2">
+                            <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+                              <Zap className="h-3 w-3 mr-1" />
+                              Trending
                             </Badge>
-                          )}
+                            {tool.isPremium && (
+                              <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                                <Star className="h-3 w-3 mr-1" />
+                                Premium
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-600">{tool.description}</p>
+                    <p className="text-gray-600 leading-relaxed">{tool.description}</p>
                   </CardHeader>
 
-                  <CardContent>
+                  <CardContent className="relative z-10">
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2 text-gray-500">
                           <Clock className="h-4 w-4" />
                           <span>{tool.estimatedTime}</span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2 text-gray-500">
                           <TrendingUp className="h-4 w-4" />
                           <span>{tool.popularity}% popular</span>
                         </div>
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <div className="flex items-center justify-between text-sm">
-                          <span>Popularity</span>
-                          <span>{tool.popularity}%</span>
+                          <span className="font-medium">Popularity</span>
+                          <span className="font-bold text-blue-600">{tool.popularity}%</span>
                         </div>
-                        <Progress value={tool.popularity} className="h-2" />
+                        <div className="relative">
+                          <Progress value={tool.popularity} className="h-3 bg-gray-100" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full" style={{width: `${tool.popularity}%`}}></div>
+                        </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <span className="text-sm font-medium">Features:</span>
-                        <div className="flex flex-wrap gap-1">
+                      <div className="space-y-3">
+                        <span className="text-sm font-medium text-gray-900">Key Features:</span>
+                        <div className="flex flex-wrap gap-2">
                           {tool.features.map((feature, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
+                            <Badge key={index} variant="secondary" className="text-xs bg-blue-50 text-blue-700 hover:bg-blue-100">
                               {feature}
                             </Badge>
                           ))}
@@ -357,8 +410,8 @@ const Tools = () => {
                       </div>
 
                       {toolUsage[tool.id] && (
-                        <div className="pt-2 border-t">
-                          <span className="text-xs text-green-600">
+                        <div className="pt-3 border-t border-gray-100">
+                          <span className="text-sm text-green-600 font-medium">
                             ✓ Used {toolUsage[tool.id]} time{toolUsage[tool.id] > 1 ? 's' : ''}
                           </span>
                         </div>
@@ -368,163 +421,230 @@ const Tools = () => {
                 </Card>
               ))}
             </div>
-          </TabsContent>
+          </div>
+        )}
 
-          <TabsContent value="popular">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {popularTools.map((tool) => (
-                <Card 
-                  key={tool.id} 
-                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
-                  onClick={() => handleToolClick(tool)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                          {tool.icon}
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">{tool.name}</CardTitle>
-                          <Badge className="mt-1 bg-orange-100 text-orange-800">
-                            <Zap className="h-3 w-3 mr-1" />
-                            Trending
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600">{tool.description}</p>
-                  </CardHeader>
-
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          <span>{tool.estimatedTime}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <TrendingUp className="h-4 w-4" />
-                          <span>{tool.popularity}% popular</span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <span className="text-sm font-medium">Features:</span>
-                        <div className="flex flex-wrap gap-1">
-                          {tool.features.map((feature, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {feature}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+        {/* All Tools */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl">
+              <Settings className="h-6 w-6 text-white" />
             </div>
-          </TabsContent>
+            {selectedCategory === 'all' ? 'All Tools' : `${categories.find(c => c.id === selectedCategory)?.name} Tools`}
+          </h2>
+          
+          <Tabs defaultValue="all" className="space-y-8">
+            <TabsList className="grid w-full max-w-md grid-cols-3 h-12 p-1 bg-gray-100 rounded-xl">
+              <TabsTrigger value="all" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">All Tools</TabsTrigger>
+              <TabsTrigger value="popular" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">Popular</TabsTrigger>
+              <TabsTrigger value="free" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">Free Tools</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="free">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {freeTools.map((tool) => (
-                <Card 
-                  key={tool.id} 
-                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
-                  onClick={() => handleToolClick(tool)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
-                          {tool.icon}
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">{tool.name}</CardTitle>
-                          <Badge className="mt-1 bg-green-100 text-green-800">
-                            Free
-                          </Badge>
+            <TabsContent value="all">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredTools.map((tool) => (
+                  <Card 
+                    key={tool.id} 
+                    className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-white"
+                    onClick={() => handleToolClick(tool)}
+                  >
+                    <CardHeader className="pb-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="p-3 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl group-hover:from-blue-500 group-hover:to-purple-600 group-hover:text-white transition-all duration-300">
+                            {tool.icon}
+                          </div>
+                          <div>
+                            <CardTitle className="text-lg font-bold">{tool.name}</CardTitle>
+                            <div className="flex gap-2 mt-1">
+                              {tool.isPremium && (
+                                <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs">
+                                  <Star className="h-3 w-3 mr-1" />
+                                  Premium
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <p className="text-sm text-gray-600">{tool.description}</p>
-                  </CardHeader>
+                      <p className="text-gray-600 text-sm leading-relaxed">{tool.description}</p>
+                    </CardHeader>
 
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          <span>{tool.estimatedTime}</span>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between text-sm text-gray-500">
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{tool.estimatedTime}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <TrendingUp className="h-4 w-4" />
+                            <span>{tool.popularity}%</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <TrendingUp className="h-4 w-4" />
-                          <span>{tool.popularity}% popular</span>
+
+                        <div className="space-y-2">
+                          <Progress value={tool.popularity} className="h-2" />
                         </div>
+
+                        <div className="space-y-2">
+                          <span className="text-sm font-medium">Features:</span>
+                          <div className="flex flex-wrap gap-1">
+                            {tool.features.map((feature, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+
+                        {toolUsage[tool.id] && (
+                          <div className="pt-2 border-t">
+                            <span className="text-xs text-green-600">
+                              ✓ Used {toolUsage[tool.id]} time{toolUsage[tool.id] > 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        )}
                       </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
 
-                      <div className="space-y-2">
-                        <span className="text-sm font-medium">Features:</span>
-                        <div className="flex flex-wrap gap-1">
-                          {tool.features.map((feature, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {feature}
+            <TabsContent value="popular">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {popularTools.map((tool) => (
+                  <Card 
+                    key={tool.id} 
+                    className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-white"
+                    onClick={() => handleToolClick(tool)}
+                  >
+                    <CardHeader className="pb-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="p-3 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl group-hover:from-orange-500 group-hover:to-red-500 group-hover:text-white transition-all duration-300">
+                            {tool.icon}
+                          </div>
+                          <div>
+                            <CardTitle className="text-lg font-bold">{tool.name}</CardTitle>
+                            <Badge className="mt-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs">
+                              <Zap className="h-3 w-3 mr-1" />
+                              Trending
                             </Badge>
-                          ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+                      <p className="text-gray-600 text-sm leading-relaxed">{tool.description}</p>
+                    </CardHeader>
+
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between text-sm text-gray-500">
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{tool.estimatedTime}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <TrendingUp className="h-4 w-4" />
+                            <span>{tool.popularity}% popular</span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <span className="text-sm font-medium">Features:</span>
+                          <div className="flex flex-wrap gap-1">
+                            {tool.features.map((feature, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="free">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {freeTools.map((tool) => (
+                  <Card 
+                    key={tool.id} 
+                    className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-white"
+                    onClick={() => handleToolClick(tool)}
+                  >
+                    <CardHeader className="pb-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="p-3 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl group-hover:from-green-500 group-hover:to-emerald-500 group-hover:text-white transition-all duration-300">
+                            {tool.icon}
+                          </div>
+                          <div>
+                            <CardTitle className="text-lg font-bold">{tool.name}</CardTitle>
+                            <Badge className="mt-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs">
+                              Free
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 text-sm leading-relaxed">{tool.description}</p>
+                    </CardHeader>
+
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between text-sm text-gray-500">
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{tool.estimatedTime}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <TrendingUp className="h-4 w-4" />
+                            <span>{tool.popularity}% popular</span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <span className="text-sm font-medium">Features:</span>
+                          <div className="flex flex-wrap gap-1">
+                            {tool.features.map((feature, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
 
         {/* Empty State */}
         {filteredTools.length === 0 && (
-          <div className="text-center py-12">
-            <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className="text-center py-16">
+            <div className="p-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+              <Brain className="h-12 w-12 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">
               No tools found
             </h3>
-            <p className="text-gray-500 mb-4">
-              Try adjusting your search or filters to find the tools you need.
+            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              Try adjusting your search or filters to find the tools you need. Our AI-powered tools are here to help accelerate your career.
             </p>
-            <Button onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}>
+            <Button 
+              onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-purple-700"
+            >
               Clear Filters
             </Button>
           </div>
         )}
-
-        {/* Quick Stats */}
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-blue-600">{tools.length}</div>
-              <p className="text-sm text-gray-600">Total Tools</p>
-            </CardContent>
-          </Card>
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-green-600">{freeTools.length}</div>
-              <p className="text-sm text-gray-600">Free Tools</p>
-            </CardContent>
-          </Card>
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-purple-600">{tools.filter(t => t.isPremium).length}</div>
-              <p className="text-sm text-gray-600">Premium Tools</p>
-            </CardContent>
-          </Card>
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-orange-600">{Object.values(toolUsage).reduce((a, b) => a + b, 0)}</div>
-              <p className="text-sm text-gray-600">Your Usage</p>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );
