@@ -30,18 +30,29 @@ const JobsManage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const { data: jobs, isLoading } = useQuery({
+  const { data: jobs, isLoading, error } = useQuery({
     queryKey: ['employer-jobs', searchTerm, statusFilter],
     queryFn: async () => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('Not authenticated');
 
-      // First try to get jobs posted directly by the user
+      // Get jobs posted directly by the user
       let query = supabase
         .from('jobs')
         .select(`
-          *,
-          companies(name, logo_url)
+          id,
+          title,
+          location,
+          employment_type,
+          is_active,
+          applications_count,
+          views_count,
+          created_at,
+          company_id,
+          companies!left(
+            name,
+            logo_url
+          )
         `)
         .eq('posted_by', user.user.id);
 
@@ -53,51 +64,15 @@ const JobsManage = () => {
         query = query.eq('is_active', statusFilter === 'active');
       }
 
-      const { data: userJobs, error: userJobsError } = await query.order('created_at', { ascending: false });
+      const { data, error } = await query.order('created_at', { ascending: false });
       
-      if (userJobsError) throw userJobsError;
-
-      // Also try to get jobs from company if user is part of a team
-      let companyJobs = [];
-      try {
-        const { data: teamMember } = await supabase
-          .from('company_team_members')
-          .select('company_id')
-          .eq('user_id', user.user.id)
-          .eq('is_active', true)
-          .single();
-
-        if (teamMember) {
-          let companyQuery = supabase
-            .from('jobs')
-            .select(`
-              *,
-              companies!inner(name, logo_url)
-            `)
-            .eq('company_id', teamMember.company_id);
-
-          if (searchTerm) {
-            companyQuery = companyQuery.ilike('title', `%${searchTerm}%`);
-          }
-
-          if (statusFilter !== 'all') {
-            companyQuery = companyQuery.eq('is_active', statusFilter === 'active');
-          }
-
-          const { data: companyJobsData } = await companyQuery.order('created_at', { ascending: false });
-          companyJobs = companyJobsData || [];
-        }
-      } catch (error) {
-        console.log('No company team membership found');
+      if (error) {
+        console.error('Error fetching jobs:', error);
+        throw error;
       }
 
-      // Combine and deduplicate jobs
-      const allJobs = [...(userJobs || []), ...companyJobs];
-      const uniqueJobs = allJobs.filter((job, index, self) => 
-        index === self.findIndex(j => j.id === job.id)
-      );
-
-      return uniqueJobs as Job[];
+      console.log('Fetched jobs:', data); // Debug log
+      return data as Job[];
     }
   });
 
@@ -127,6 +102,22 @@ const JobsManage = () => {
             <div key={i} className="h-32 bg-gray-200 rounded"></div>
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center py-12">
+              <h3 className="text-xl font-semibold text-red-600 mb-2">Error Loading Jobs</h3>
+              <p className="text-gray-600 mb-4">{error.message}</p>
+              <Button onClick={() => window.location.reload()}>Retry</Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
