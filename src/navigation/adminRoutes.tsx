@@ -1,5 +1,5 @@
 
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus } from "lucide-react";
 import EmployerRequests from "../pages/admin/EmployerRequests";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminManagement from "../pages/admin/AdminManagement";
@@ -15,6 +15,8 @@ import CareerMapManagement from "../pages/admin/CareerMapManagement";
 import PricingPayments from "../pages/admin/PricingPayments";
 import AnalyticsReports from "../pages/admin/AnalyticsReports";
 import SecurityLogs from "../pages/admin/SecurityLogs";
+import CreateCourse from "../pages/admin/learning/CreateCourse";
+import CreatePlan from "../pages/admin/pricing/CreatePlan";
 
 export const adminRoutes = [
   {
@@ -151,5 +153,23 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessAdmins" as const,
     description: "Manage administrator accounts"
+  },
+  {
+    title: "Create Course",
+    to: "/admin/learning/create",
+    icon: <Plus className="h-4 w-4" />,
+    page: <CreateCourse />,
+    requiresAuth: true,
+    permission: "canAccessLearning" as const,
+    description: "Create new learning courses"
+  },
+  {
+    title: "Create Pricing Plan",
+    to: "/admin/pricing/create",
+    icon: <Plus className="h-4 w-4" />,
+    page: <CreatePlan />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Create new subscription plans"
   },
 ];
