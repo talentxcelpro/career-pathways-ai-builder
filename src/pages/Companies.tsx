@@ -8,11 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Building2, MapPin, Users, Globe, Heart, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 
 const Companies = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { data: companies, isLoading } = useQuery({
+  const { data: companies, isLoading, refetch } = useQuery({
     queryKey: ['companies', searchTerm],
     queryFn: async () => {
       let query = supabase
@@ -28,6 +29,11 @@ const Companies = () => {
       return data;
     }
   });
+
+  // Auto-refresh companies data every 30 seconds
+  useSmartAutoRefresh(() => {
+    refetch();
+  }, REFRESH_INTERVALS.COMPANIES);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">

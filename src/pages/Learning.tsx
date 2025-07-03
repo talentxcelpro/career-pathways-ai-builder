@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen, TrendingUp, Award, Sparkles, Target, Users, ArrowRight, Play, Clock, Star } from 'lucide-react';
+import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 
 const Learning = () => {
   const [activeTab, setActiveTab] = useState('courses');
@@ -25,8 +26,14 @@ const Learning = () => {
     setSelectedCategory,
     selectedDifficulty,
     setSelectedDifficulty,
-    isLoading
+    isLoading,
+    refetch
   } = useLearningData();
+
+  // Auto-refresh learning data every 30 seconds
+  useSmartAutoRefresh(() => {
+    if (refetch) refetch();
+  }, REFRESH_INTERVALS.LEARNING);
 
   // Update meta tags for SEO
   useEffect(() => {

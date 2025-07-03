@@ -1,105 +1,231 @@
-
-import { useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
-export const useRealtimeMessages = () => {
-  const queryClient = useQueryClient();
+export type RealtimeEvent = 'INSERT' | 'UPDATE' | 'DELETE' | '*';
 
-  useEffect(() => {
-    const channel = supabase
-      .channel('messages-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['conversations'] });
-          queryClient.invalidateQueries({ queryKey: ['messages'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['notifications'] });
-        }
-      )
-      .subscribe();
+export interface RealtimeSubscription {
+  table: string;
+  event: RealtimeEvent;
+  schema?: string;
+  filter?: string;
+  callback: (payload: RealtimePostgresChangesPayload<any>) => void;
+}
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-};
-
-export const useRealtimeJobs = () => {
-  const queryClient = useQueryClient();
+/**
+ * Global Realtime Manager Hook
+ * Manages Supabase realtime subscriptions for multiple tables
+ */
+export function useRealtimeSubscriptions(subscriptions: RealtimeSubscription[]) {
+  const channelsRef = useRef<RealtimeChannel[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const channel = supabase
-      .channel('jobs-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'jobs'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['jobs'] });
-          queryClient.invalidateQueries({ queryKey: ['featured_jobs'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'job_applications'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['job_applications'] });
-          queryClient.invalidateQueries({ queryKey: ['applied_jobs'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
+    // Cleanup existing channels
+    channelsRef.current.forEach(channel => {
       supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-};
+    });
+    channelsRef.current = [];
 
-export const useRealtimeConnections = () => {
-  const queryClient = useQueryClient();
+    // Create new subscriptions
+    subscriptions.forEach((subscription, index) => {
+      const channelName = `realtime-${subscription.table}-${index}`;
+      const channel = supabase.channel(channelName);
 
-  useEffect(() => {
-    const channel = supabase
-      .channel('connections-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'connections'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['connections'] });
-          queryClient.invalidateQueries({ queryKey: ['connection_requests'] });
-        }
-      )
-      .subscribe();
+      const config: any = {
+        event: subscription.event,
+        schema: subscription.schema || 'public',
+        table: subscription.table,
+      };
 
+      if (subscription.filter) {
+        config.filter = subscription.filter;
+      }
+
+      channel
+        .on('postgres_changes', config, subscription.callback)
+        .on('system', {}, (payload) => {
+          if (payload.status === 'ok') {
+            setIsConnected(true);
+          }
+        })
+        .subscribe();
+
+      channelsRef.current.push(channel);
+    });
+
+    // Cleanup function
     return () => {
-      supabase.removeChannel(channel);
+      channelsRef.current.forEach(channel => {
+        supabase.removeChannel(channel);
+      });
+      channelsRef.current = [];
+      setIsConnected(false);
     };
-  }, [queryClient]);
-};
+  }, [subscriptions]);
+
+  return { isConnected };
+}
+
+/**
+ * Network Module Realtime Hook
+ */
+export function useNetworkRealtime(
+  onPostUpdate: (payload: any) => void,
+  onConnectionUpdate: (payload: any) => void
+) {
+  return useRealtimeSubscriptions([
+    {
+      table: 'posts',
+      event: '*',
+      callback: onPostUpdate
+    },
+    {
+      table: 'post_reactions',
+      event: '*',
+      callback: onPostUpdate
+    },
+    {
+      table: 'connections',
+      event: '*',
+      callback: onConnectionUpdate
+    },
+    {
+      table: 'conversations',
+      event: '*',
+      callback: onConnectionUpdate
+    }
+  ]);
+}
+
+/**
+ * Jobs Module Realtime Hook
+ */
+export function useJobsRealtime(
+  onJobUpdate: (payload: any) => void,
+  onApplicationUpdate: (payload: any) => void
+) {
+  return useRealtimeSubscriptions([
+    {
+      table: 'jobs',
+      event: '*',
+      callback: onJobUpdate
+    },
+    {
+      table: 'job_applications',
+      event: '*',
+      callback: onApplicationUpdate
+    },
+    {
+      table: 'job_views',
+      event: 'INSERT',
+      callback: onJobUpdate
+    }
+  ]);
+}
+
+/**
+ * Learning Module Realtime Hook
+ */
+export function useLearningRealtime(
+  onProgressUpdate: (payload: any) => void,
+  onEnrollmentUpdate: (payload: any) => void
+) {
+  return useRealtimeSubscriptions([
+    {
+      table: 'course_enrollments',
+      event: '*',
+      callback: onEnrollmentUpdate
+    },
+    {
+      table: 'lesson_progress',
+      event: '*',
+      callback: onProgressUpdate
+    },
+    {
+      table: 'course_progress',
+      event: '*',
+      callback: onProgressUpdate
+    }
+  ]);
+}
+
+/**
+ * Employer Module Realtime Hook
+ */
+export function useEmployerRealtime(
+  userId: string,
+  onApplicationUpdate: (payload: any) => void,
+  onJobStatsUpdate: (payload: any) => void
+) {
+  return useRealtimeSubscriptions([
+    {
+      table: 'job_applications',
+      event: '*',
+      filter: `job_id=in.(SELECT id FROM jobs WHERE created_by=${userId})`,
+      callback: onApplicationUpdate
+    },
+    {
+      table: 'job_views',
+      event: 'INSERT',
+      callback: onJobStatsUpdate
+    },
+    {
+      table: 'jobs',
+      event: 'UPDATE',
+      filter: `created_by=eq.${userId}`,
+      callback: onJobStatsUpdate
+    }
+  ]);
+}
+
+/**
+ * Admin Module Realtime Hook
+ */
+export function useAdminRealtime(
+  onUserUpdate: (payload: any) => void,
+  onRequestUpdate: (payload: any) => void,
+  onSystemUpdate: (payload: any) => void
+) {
+  return useRealtimeSubscriptions([
+    {
+      table: 'profiles',
+      event: '*',
+      callback: onUserUpdate
+    },
+    {
+      table: 'employer_requests',
+      event: '*',
+      callback: onRequestUpdate
+    },
+    {
+      table: 'company_access_requests',
+      event: '*',
+      callback: onRequestUpdate
+    },
+    {
+      table: 'admin_activity_log',
+      event: 'INSERT',
+      callback: onSystemUpdate
+    }
+  ]);
+}
+
+/**
+ * Generic table realtime hook
+ */
+export function useTableRealtime<T = any>(
+  table: string,
+  event: RealtimeEvent = '*',
+  onUpdate: (payload: RealtimePostgresChangesPayload<T>) => void,
+  filter?: string
+) {
+  return useRealtimeSubscriptions([
+    {
+      table,
+      event,
+      callback: onUpdate,
+      filter
+    }
+  ]);
+}
