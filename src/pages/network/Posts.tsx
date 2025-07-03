@@ -2,16 +2,15 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, TrendingUp, Bell, UserPlus, Eye, MapPin, Briefcase, ExternalLink, Camera } from "lucide-react";
+import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
-import { MediaUpload } from "@/components/posts/MediaUpload";
+import { CreatePost } from "@/components/posts/CreatePost";
+import { LinkPreview } from "@/components/shared/LinkPreview";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 import { AIPostAssistant } from "@/components/network/AIPostAssistant";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
@@ -21,8 +20,6 @@ import FloatingMessenger from "@/components/network/FloatingMessenger";
 import { Link } from 'react-router-dom';
 
 const Posts = () => {
-  const [newPost, setNewPost] = useState('');
-  const [postMedia, setPostMedia] = useState<string[]>([]);
   const [openComments, setOpenComments] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const queryClient = useQueryClient();
@@ -95,52 +92,14 @@ const Posts = () => {
     }
   });
 
-  const createPostMutation = useMutation({
-    mutationFn: async ({ content, mediaUrls }: { content: string; mediaUrls: string[] }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      // Determine post type based on content and media
-      let postType = 'text';
-      if (mediaUrls.length > 0) {
-        postType = 'image'; // Use 'image' instead of 'media' to match the constraint
-      }
-
-      const { error } = await supabase
-        .from('posts')
-        .insert({
-          author_id: user.id,
-          content,
-          post_type: postType,
-          media_urls: mediaUrls,
-          is_public: true
-        });
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
-      setNewPost('');
-      setPostMedia([]);
-      toast.success('Post created successfully!');
-    },
-    onError: (error) => {
-      toast.error('Failed to create post');
-      console.error('Post creation error:', error);
-    }
-  });
-
-  const handleCreatePost = () => {
-    if (!newPost.trim() && postMedia.length === 0) {
-      toast.error('Please write something or add media before posting');
-      return;
-    }
-    createPostMutation.mutate({ content: newPost, mediaUrls: postMedia });
+  const handlePostCreate = (post: any) => {
+    queryClient.invalidateQueries({ queryKey: ['posts'] });
   };
 
-  const handleAISuggestionApply = (suggestion: string) => {
-    setNewPost(suggestion);
-    toast.success("AI suggestion applied!");
+  // Function to detect URLs in text
+  const extractUrls = (text: string): string[] => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.match(urlRegex) || [];
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -294,52 +253,8 @@ const Posts = () => {
 
           {/* Middle Column - Posts Feed */}
           <div className="lg:col-span-6 space-y-6">
-            {/* AI Post Assistant */}
-            {showAIAssistant && (
-              <AIPostAssistant
-                onSuggestionApply={handleAISuggestionApply}
-                currentContent={newPost}
-              />
-            )}
-
             {/* Create Post */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Avatar className="h-8 w-8 mr-3">
-                    <AvatarImage src={currentUserProfile?.profile_picture_url} />
-                    <AvatarFallback>
-                      {currentUserProfile ? generateInitials(currentUserProfile) : 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  Share an update
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Textarea
-                    placeholder="What's on your mind? Share a professional update, insight, or achievement..."
-                    value={newPost}
-                    onChange={(e) => setNewPost(e.target.value)}
-                    className="min-h-[120px] resize-none"
-                  />
-                  
-                  <MediaUpload 
-                    onMediaUploaded={setPostMedia}
-                    existingMedia={postMedia}
-                  />
-                  
-                  <div className="flex items-center justify-end">
-                    <Button 
-                      onClick={handleCreatePost}
-                      disabled={createPostMutation.isPending || (!newPost.trim() && postMedia.length === 0)}
-                    >
-                      {createPostMutation.isPending ? 'Posting...' : 'Post'}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <CreatePost onPostCreate={handlePostCreate} />
 
             {/* Posts Feed */}
             <div className="space-y-6">
@@ -400,6 +315,18 @@ const Posts = () => {
                       {/* Post Content */}
                       <div className="mb-4">
                         <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
+                        
+                        {/* URL Previews */}
+                        {(() => {
+                          const urls = extractUrls(post.content);
+                          return urls.length > 0 && (
+                            <div className="mt-4 space-y-3">
+                              {urls.slice(0, 2).map((url, index) => (
+                                <LinkPreview key={index} url={url} />
+                              ))}
+                            </div>
+                          );
+                        })()}
                         
                         {/* Post Media */}
                         {post.media_urls && post.media_urls.length > 0 && (

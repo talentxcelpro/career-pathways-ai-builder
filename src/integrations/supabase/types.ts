@@ -2291,6 +2291,7 @@ export type Database = {
           likes_count: number | null
           media_urls: string[] | null
           post_type: string | null
+          preview_url: string | null
           shares_count: number | null
           tags: string[] | null
           updated_at: string | null
@@ -2305,6 +2306,7 @@ export type Database = {
           likes_count?: number | null
           media_urls?: string[] | null
           post_type?: string | null
+          preview_url?: string | null
           shares_count?: number | null
           tags?: string[] | null
           updated_at?: string | null
@@ -2319,6 +2321,7 @@ export type Database = {
           likes_count?: number | null
           media_urls?: string[] | null
           post_type?: string | null
+          preview_url?: string | null
           shares_count?: number | null
           tags?: string[] | null
           updated_at?: string | null
@@ -2931,6 +2934,51 @@ export type Database = {
           tool_name?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      url_previews: {
+        Row: {
+          created_at: string
+          description: string | null
+          domain: string | null
+          expires_at: string | null
+          favicon_url: string | null
+          id: string
+          image_url: string | null
+          is_valid: boolean | null
+          site_name: string | null
+          title: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          domain?: string | null
+          expires_at?: string | null
+          favicon_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_valid?: boolean | null
+          site_name?: string | null
+          title?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          domain?: string | null
+          expires_at?: string | null
+          favicon_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_valid?: boolean | null
+          site_name?: string | null
+          title?: string | null
+          updated_at?: string
+          url?: string
         }
         Relationships: []
       }
