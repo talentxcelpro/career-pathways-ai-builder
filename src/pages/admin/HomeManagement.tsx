@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,355 +6,357 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { 
   Home, 
   Plus, 
   Edit, 
-  Trash2, 
   Eye,
-  EyeOff,
-  Megaphone,
-  BarChart3,
+  Trash2,
   Users,
   Activity,
-  Calendar,
-  Settings
+  TrendingUp,
+  MousePointer,
+  RefreshCw
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 const HomeManagement = () => {
-  const [banners, setBanners] = useState([
-    {
-      id: '1',
-      title: 'Welcome to TalentXcel',
-      content: 'Find your dream job with AI-powered matching and personalized career guidance',
-      type: 'hero',
-      isActive: true,
-      priority: 1,
-      cta_text: 'Get Started',
-      cta_link: '/register'
-    },
-    {
-      id: '2',
-      title: 'New AI Resume Builder',
-      content: 'Create professional resumes with our AI-powered builder tool',
-      type: 'announcement',
-      isActive: true,
-      priority: 2,
-      cta_text: 'Try Now',
-      cta_link: '/tools/resume-builder'
-    },
-    {
-      id: '3',
-      title: 'Career Path Planning',
-      content: 'Discover your ideal career path with our AI career advisor',
-      type: 'feature',
-      isActive: false,
-      priority: 3,
-      cta_text: 'Explore',
-      cta_link: '/career-map'
-    }
-  ]);
+  const [selectedSection, setSelectedSection] = useState<'metrics' | 'announcements' | 'content'>('metrics');
 
-  const [announcements, setAnnouncements] = useState([
-    {
-      id: '1',
-      title: 'Platform Maintenance',
-      message: 'Scheduled maintenance on Sunday 2 AM - 4 AM EST',
-      type: 'warning',
-      isActive: true,
-      expiresAt: '2024-03-15',
-      targetAudience: 'all'
+  // Real-time dashboard metrics
+  const { data: realTimeMetrics, isLoading: metricsLoading } = useQuery({
+    queryKey: ['real-time-metrics'],
+    queryFn: async () => {
+      // Simulate real-time data
+      return {
+        dailyActiveUsers: 8234 + Math.floor(Math.random() * 500),
+        dailyLogins: 12456 + Math.floor(Math.random() * 800),
+        pageViews: 45678 + Math.floor(Math.random() * 2000),
+        conversionRate: 3.2 + (Math.random() * 0.5),
+        lastUpdated: new Date().toLocaleTimeString()
+      };
     },
-    {
-      id: '2',
-      title: 'New Features Released',
-      message: 'Check out our new interview preparation tools and salary calculator',
-      type: 'info',
-      isActive: true,
-      expiresAt: '2024-02-28',
-      targetAudience: 'job_seekers'
-    }
-  ]);
-
-  const platformStats = [
-    { label: 'Daily Active Users', value: '8,234', change: '+12%', icon: Users },
-    { label: 'Daily Logins', value: '12,456', change: '+8%', icon: Activity },
-    { label: 'Page Views', value: '45,678', change: '+15%', icon: Eye },
-    { label: 'Conversion Rate', value: '3.2%', change: '+0.5%', icon: BarChart3 }
-  ];
-
-  const [newBanner, setNewBanner] = useState({
-    title: '',
-    content: '',
-    type: 'announcement',
-    cta_text: '',
-    cta_link: ''
+    refetchInterval: 5000 // Update every 5 seconds
   });
 
-  const [showBannerForm, setShowBannerForm] = useState(false);
-
-  const addBanner = () => {
-    if (newBanner.title && newBanner.content) {
-      setBanners([...banners, {
-        ...newBanner,
-        id: Date.now().toString(),
-        isActive: true,
-        priority: banners.length + 1
-      }]);
-      setNewBanner({ title: '', content: '', type: 'announcement', cta_text: '', cta_link: '' });
-      setShowBannerForm(false);
+  const { data: announcements } = useQuery({
+    queryKey: ['admin-announcements'],
+    queryFn: async () => {
+      return [
+        {
+          id: '1',
+          title: 'Platform Maintenance Scheduled',
+          content: 'We will be performing scheduled maintenance on Saturday night.',
+          type: 'maintenance',
+          is_active: true,
+          priority: 'high',
+          created_at: new Date().toISOString(),
+          views: 1250
+        },
+        {
+          id: '2',
+          title: 'New Features Released',
+          content: 'Check out our latest AI-powered job matching features.',
+          type: 'feature',
+          is_active: true,
+          priority: 'medium',
+          created_at: new Date(Date.now() - 86400000).toISOString(),
+          views: 2340
+        }
+      ];
     }
-  };
+  });
 
-  const toggleBanner = (id: string) => {
-    setBanners(banners.map(banner => 
-      banner.id === id ? { ...banner, isActive: !banner.isActive } : banner
-    ));
-  };
+  const metricsCards = [
+    {
+      title: 'Daily Active Users',
+      value: realTimeMetrics?.dailyActiveUsers?.toLocaleString() || '0',
+      change: '+12%',
+      icon: Users,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50'
+    },
+    {
+      title: 'Daily Logins',
+      value: realTimeMetrics?.dailyLogins?.toLocaleString() || '0',
+      change: '+8%',
+      icon: Activity,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50'
+    },
+    {
+      title: 'Page Views',
+      value: realTimeMetrics?.pageViews?.toLocaleString() || '0',
+      change: '+15%',
+      icon: MousePointer,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50'
+    },
+    {
+      title: 'Conversion Rate',
+      value: `${realTimeMetrics?.conversionRate?.toFixed(1) || '0.0'}%`,
+      change: '+0.5%',
+      icon: TrendingUp,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50'
+    }
+  ];
 
-  const deleteBanner = (id: string) => {
-    setBanners(banners.filter(banner => banner.id !== id));
-  };
+  const renderMetricsSection = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Real-time Platform Metrics</h3>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <RefreshCw className="h-4 w-4 animate-spin" />
+          Last updated: {realTimeMetrics?.lastUpdated || 'Loading...'}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {metricsCards.map((metric, index) => (
+          <Card key={index} className="relative overflow-hidden">
+            <CardContent className="p-6">
+              <div className={`absolute inset-0 ${metric.bgColor} opacity-10`}></div>
+              <div className="relative">
+                <div className="flex items-center justify-between mb-2">
+                  <metric.icon className={`h-6 w-6 ${metric.color}`} />
+                  <Badge variant="outline" className="text-green-600">
+                    {metric.change}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">{metric.title}</p>
+                  <p className="text-2xl font-bold">{metric.value}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Metric Configurations</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h4 className="font-medium">Auto-refresh Dashboard</h4>
+                <p className="text-sm text-muted-foreground">Automatically update metrics every 5 seconds</p>
+              </div>
+              <Switch defaultChecked />
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h4 className="font-medium">Show Growth Indicators</h4>
+                <p className="text-sm text-muted-foreground">Display percentage change indicators</p>
+              </div>
+              <Switch defaultChecked />
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h4 className="font-medium">Public Metrics Display</h4>
+                <p className="text-sm text-muted-foreground">Show selected metrics on homepage</p>
+              </div>
+              <Switch />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderAnnouncementsSection = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Platform Announcements</h3>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Announcement
+        </Button>
+      </div>
+
+      <Card>
+        <CardContent className="p-6">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Views</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {announcements?.map((announcement) => (
+                <TableRow key={announcement.id}>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{announcement.title}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {announcement.content}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      {announcement.type}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={
+                      announcement.priority === 'high' ? 'destructive' :
+                      announcement.priority === 'medium' ? 'default' : 'secondary'
+                    }>
+                      {announcement.priority}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={announcement.is_active ? 'default' : 'secondary'}>
+                      {announcement.is_active ? 'Active' : 'Inactive'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">{announcement.views?.toLocaleString()}</span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderContentSection = () => (
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold">Homepage Content Management</h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Hero Section</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Main Headline</label>
+              <Input defaultValue="Find Your Dream Job Today" />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Subheadline</label>
+              <Textarea defaultValue="Connect with top employers and discover opportunities that match your skills and aspirations." />
+            </div>
+            <Button className="w-full">Update Hero Section</Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Featured Stats</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Jobs Posted</label>
+                <Input defaultValue="10,000+" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Companies</label>
+                <Input defaultValue="500+" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Success Stories</label>
+                <Input defaultValue="5,000+" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Active Users</label>
+                <Input defaultValue="25,000+" />
+              </div>
+            </div>
+            <Button className="w-full">Update Stats</Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>SEO & Meta Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <label className="text-sm font-medium">Page Title</label>
+            <Input defaultValue="TalentXcel Pro - Find Your Dream Job" />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Meta Description</label>
+            <Textarea defaultValue="Discover your next career opportunity with TalentXcel Pro. Connect with top employers, build your professional network, and advance your career." />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Keywords</label>
+            <Input defaultValue="jobs, careers, recruitment, hiring, talent, professional network" />
+          </div>
+          <Button>Update SEO Settings</Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
 
   return (
     <UnifiedAdminLayout 
       title="Home & Dashboard Management" 
       description="Manage homepage content, announcements, and platform metrics"
     >
-      <div className="space-y-8">
-        {/* Platform Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {platformStats.map((stat, index) => (
-            <Card key={index}>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <stat.icon className="h-8 w-8 text-blue-600" />
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                    <div className="flex items-center gap-2">
-                      <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                      <span className="text-sm text-green-600 font-medium">{stat.change}</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+      <div className="space-y-6">
+        {/* Navigation Tabs */}
+        <div className="flex space-x-1 bg-muted p-1 rounded-lg w-fit">
+          {[
+            { key: 'metrics', label: 'Real-time Metrics', icon: TrendingUp },
+            { key: 'announcements', label: 'Announcements', icon: Home },
+            { key: 'content', label: 'Content Management', icon: Edit }
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setSelectedSection(tab.key as any)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                selectedSection === tab.key
+                  ? 'bg-background text-foreground shadow'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.label}
+            </button>
           ))}
         </div>
 
-        {/* Homepage Banners */}
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>Homepage Banners & Hero Sections</CardTitle>
-              <Button onClick={() => setShowBannerForm(!showBannerForm)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Banner
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {showBannerForm && (
-              <div className="mb-6 p-4 border rounded-lg bg-gray-50">
-                <h3 className="font-semibold mb-3">Create New Banner</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    placeholder="Banner title"
-                    value={newBanner.title}
-                    onChange={(e) => setNewBanner({...newBanner, title: e.target.value})}
-                  />
-                  <Select value={newBanner.type} onValueChange={(value) => setNewBanner({...newBanner, type: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="hero">Hero Banner</SelectItem>
-                      <SelectItem value="announcement">Announcement</SelectItem>
-                      <SelectItem value="feature">Feature Highlight</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    placeholder="CTA Button Text"
-                    value={newBanner.cta_text}
-                    onChange={(e) => setNewBanner({...newBanner, cta_text: e.target.value})}
-                  />
-                  <Input
-                    placeholder="CTA Link"
-                    value={newBanner.cta_link}
-                    onChange={(e) => setNewBanner({...newBanner, cta_link: e.target.value})}
-                  />
-                </div>
-                <Textarea
-                  placeholder="Banner content"
-                  className="mt-4"
-                  value={newBanner.content}
-                  onChange={(e) => setNewBanner({...newBanner, content: e.target.value})}
-                />
-                <div className="flex gap-2 mt-4">
-                  <Button onClick={addBanner}>Create Banner</Button>
-                  <Button variant="outline" onClick={() => setShowBannerForm(false)}>Cancel</Button>
-                </div>
-              </div>
-            )}
-            
-            <div className="space-y-4">
-              {banners.map((banner) => (
-                <div key={banner.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold">{banner.title}</h3>
-                      <Badge variant={banner.type === 'hero' ? 'default' : 
-                                    banner.type === 'announcement' ? 'secondary' : 'outline'}>
-                        {banner.type}
-                      </Badge>
-                      <Switch 
-                        checked={banner.isActive} 
-                        onCheckedChange={() => toggleBanner(banner.id)}
-                      />
-                    </div>
-                    <p className="text-gray-600 text-sm mb-2">{banner.content}</p>
-                    {banner.cta_text && (
-                      <div className="text-xs text-blue-600">
-                        CTA: "{banner.cta_text}" → {banner.cta_link}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="text-red-600"
-                      onClick={() => deleteBanner(banner.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Announcements */}
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>Announcements & Alerts</CardTitle>
-              <Button>
-                <Megaphone className="h-4 w-4 mr-2" />
-                Create Announcement
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {announcements.map((announcement) => (
-                <div key={announcement.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold">{announcement.title}</h3>
-                      <Badge variant={announcement.type === 'warning' ? 'destructive' : 
-                                    announcement.type === 'info' ? 'default' : 'secondary'}>
-                        {announcement.type}
-                      </Badge>
-                      <Badge variant="outline">{announcement.targetAudience}</Badge>
-                      <Switch checked={announcement.isActive} />
-                    </div>
-                    <p className="text-gray-600 text-sm mb-2">{announcement.message}</p>
-                    <p className="text-xs text-gray-500">Expires: {announcement.expiresAt}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-red-600">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Quick Settings */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Site Settings</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span>Maintenance Mode</span>
-                <Switch />
-              </div>
-              <div className="flex justify-between items-center">
-                <span>User Registration</span>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Job Posting</span>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex justify-between items-center">
-                <span>AI Features</span>
-                <Switch defaultChecked />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Content Management</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button className="w-full" variant="outline">
-                <Settings className="h-4 w-4 mr-2" />
-                SEO Settings
-              </Button>
-              <Button className="w-full" variant="outline">
-                <Calendar className="h-4 w-4 mr-2" />
-                Schedule Content
-              </Button>
-              <Button className="w-full" variant="outline">
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Analytics Dashboard
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>New banner activated</span>
-                  <span className="text-gray-500 ml-auto">2m ago</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span>Announcement published</span>
-                  <span className="text-gray-500 ml-auto">1h ago</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span>Content updated</span>
-                  <span className="text-gray-500 ml-auto">3h ago</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Content Sections */}
+        {selectedSection === 'metrics' && renderMetricsSection()}
+        {selectedSection === 'announcements' && renderAnnouncementsSection()}
+        {selectedSection === 'content' && renderContentSection()}
       </div>
     </UnifiedAdminLayout>
   );

@@ -70,7 +70,7 @@ export const LearningFilters: React.FC<LearningFiltersProps> = ({
               </select>
             </>
           )}
-          <Button>
+          <Button onClick={() => window.open('/admin/learning/create', '_blank')}>
             <Plus className="h-4 w-4 mr-2" />
             Add {activeTab === 'courses' ? 'Course' : 'Path'}
           </Button>

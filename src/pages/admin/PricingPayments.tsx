@@ -74,7 +74,7 @@ const PricingPayments = () => {
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>Subscription Plans</CardTitle>
-              <Button>
+              <Button onClick={() => window.open('/admin/pricing/create', '_blank')}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Plan
               </Button>
