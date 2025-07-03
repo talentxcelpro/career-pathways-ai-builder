@@ -74,6 +74,9 @@ export function useFileUpload(options?: UseFileUploadOptions) {
           case 'preferences':
             fileName = `${user.id}/preferences-${Date.now()}.${fileExt}`;
             break;
+          case 'post-media':
+            fileName = `${user.id}/post-${Date.now()}.${fileExt}`;
+            break;
           default:
             fileName = `${user.id}/${Date.now()}.${fileExt}`;
         }
