@@ -474,6 +474,88 @@ export type Database = {
         }
         Relationships: []
       }
+      community_activities: {
+        Row: {
+          activity_type: string
+          community_id: string | null
+          content: string | null
+          created_at: string | null
+          id: string
+          points_earned: number | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_type: string
+          community_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          points_earned?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_type?: string
+          community_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          points_earned?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_activities_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "goal_communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_memberships: {
+        Row: {
+          community_id: string | null
+          id: string
+          is_active: boolean | null
+          joined_at: string | null
+          last_activity_at: string | null
+          progress_score: number | null
+          role: string | null
+          streak_days: number | null
+          user_id: string | null
+        }
+        Insert: {
+          community_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          joined_at?: string | null
+          last_activity_at?: string | null
+          progress_score?: number | null
+          role?: string | null
+          streak_days?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          community_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          joined_at?: string | null
+          last_activity_at?: string | null
+          progress_score?: number | null
+          role?: string | null
+          streak_days?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_memberships_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "goal_communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companies: {
         Row: {
           benefits: string[] | null
@@ -1350,6 +1432,57 @@ export type Database = {
           followed_type?: string
           follower_id?: string | null
           id?: string
+        }
+        Relationships: []
+      }
+      goal_communities: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          goal_type: string
+          id: string
+          is_active: boolean | null
+          max_members: number | null
+          member_count: number | null
+          name: string
+          tags: string[] | null
+          target_outcome: string | null
+          timeline_months: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          goal_type: string
+          id?: string
+          is_active?: boolean | null
+          max_members?: number | null
+          member_count?: number | null
+          name: string
+          tags?: string[] | null
+          target_outcome?: string | null
+          timeline_months?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          goal_type?: string
+          id?: string
+          is_active?: boolean | null
+          max_members?: number | null
+          member_count?: number | null
+          name?: string
+          tags?: string[] | null
+          target_outcome?: string | null
+          timeline_months?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -3506,6 +3639,50 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_type: string
+          badge_icon: string | null
+          community_id: string | null
+          description: string | null
+          earned_at: string | null
+          id: string
+          points: number | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          achievement_type: string
+          badge_icon?: string | null
+          community_id?: string | null
+          description?: string | null
+          earned_at?: string | null
+          id?: string
+          points?: number | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          achievement_type?: string
+          badge_icon?: string | null
+          community_id?: string | null
+          description?: string | null
+          earned_at?: string | null
+          id?: string
+          points?: number | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "goal_communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_assessment_attempts: {
         Row: {
           answers: Json | null
@@ -3625,6 +3802,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_progress: {
+        Row: {
+          communities_joined: number | null
+          connections_made: number | null
+          current_streak: number | null
+          id: string
+          last_activity_at: string | null
+          longest_streak: number | null
+          posts_created: number | null
+          total_points: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          communities_joined?: number | null
+          connections_made?: number | null
+          current_streak?: number | null
+          id?: string
+          last_activity_at?: string | null
+          longest_streak?: number | null
+          posts_created?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          communities_joined?: number | null
+          connections_made?: number | null
+          current_streak?: number | null
+          id?: string
+          last_activity_at?: string | null
+          longest_streak?: number | null
+          posts_created?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
