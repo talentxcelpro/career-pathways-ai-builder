@@ -619,6 +619,9 @@ const Posts = () => {
               </CardContent>
             </Card>
 
+            {/* Smart Connect AI */}
+            <SmartConnectAI />
+            
             {/* Recent Activity */}
             <Card>
               <CardHeader>
