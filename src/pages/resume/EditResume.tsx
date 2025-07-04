@@ -26,10 +26,12 @@ const EditResume = () => {
   });
 
   // Fetch resume data
-  const { data: resume, isLoading } = useQuery({
+  const { data: resume, isLoading, error } = useQuery({
     queryKey: ['resume', id],
     queryFn: async () => {
       if (!id || !user) return null;
+      
+      console.log('Fetching resume:', { id, userId: user.id });
       
       const { data, error } = await supabase
         .from('ai_resumes')
@@ -38,7 +40,12 @@ const EditResume = () => {
         .eq('user_id', user.id)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Resume fetch error:', error);
+        throw error;
+      }
+      
+      console.log('Resume data:', data);
       return data;
     },
     enabled: !!id && !!user
@@ -154,12 +161,29 @@ const EditResume = () => {
     );
   }
 
+  if (error) {
+    console.error('Resume query error:', error);
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Error loading resume</h2>
+          <p className="text-gray-600 mb-4">There was a problem loading this resume. Error: {error.message}</p>
+          <p className="text-sm text-gray-500 mb-4">Resume ID: {id} | User ID: {user?.id}</p>
+          <Button onClick={() => navigate('/resume')}>
+            Back to Dashboard
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (!resume) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Resume not found</h2>
           <p className="text-gray-600 mb-4">The resume you're looking for doesn't exist or you don't have access to it.</p>
+          <p className="text-sm text-gray-500 mb-4">Resume ID: {id} | User ID: {user?.id}</p>
           <Button onClick={() => navigate('/resume')}>
             Back to Dashboard
           </Button>
