@@ -185,154 +185,132 @@ const Posts = () => {
   const missingFields = currentUserProfile ? getMissingProfileFields(currentUserProfile) : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Simplified Header */}
-        <div className="mb-6">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto p-2 text-sm">
+        {/* Compact Header */}
+        <div className="mb-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Professional Network</h1>
-              <p className="text-gray-600 mt-1">Stay connected with your professional community</p>
+              <h1 className="text-lg font-semibold text-foreground">Network</h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Button
                 variant={feedFilter === 'all' ? 'default' : 'outline'}
                 size="sm"
+                className="text-xs px-2 py-1 h-7"
                 onClick={() => setFeedFilter('all')}
               >
-                All Posts
+                All
               </Button>
               <Button
                 variant={feedFilter === 'smart' ? 'default' : 'outline'}
                 size="sm"
+                className="text-xs px-2 py-1 h-7"
                 onClick={() => setFeedFilter('smart')}
               >
-                Smart Feed
+                Smart
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Three Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Sidebar - Profile Information */}
-          <div className="lg:col-span-3 space-y-6">
-            {/* Profile Card */}
+        {/* Compact Three Column Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          {/* Left Sidebar - Compact Profile & Actions */}
+          <div className="space-y-2">
+            {/* Compact Profile Card */}
             <Card>
-              <CardContent className="p-6">
-                <div className="flex flex-col items-center text-center">
-                  <div className="relative mb-4">
-                    <Avatar className="w-24 h-24">
-                      <AvatarImage src={currentUserProfile?.profile_picture_url} />
-                      <AvatarFallback className="text-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                        {currentUserProfile ? generateInitials(currentUserProfile) : 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
-                      <Camera className="h-4 w-4 text-gray-600" />
-                    </div>
-                  </div>
-                  
-                  <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                    {formatDisplayName(currentUserProfile)}
-                  </h2>
-                  
-                  <p className="text-gray-600 mb-3 flex items-center">
-                    <Briefcase className="h-4 w-4 mr-1" />
-                    {currentUserProfile?.title || 'Add your job title'}
-                  </p>
-                  
-                  {currentUserProfile?.location && (
-                    <p className="text-sm text-gray-500 mb-3 flex items-center">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      {currentUserProfile.location}
+              <CardContent className="p-2">
+                <div className="flex items-center gap-2">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={currentUserProfile?.profile_picture_url} />
+                    <AvatarFallback className="text-xs bg-primary text-primary-foreground">
+                      {currentUserProfile ? generateInitials(currentUserProfile) : 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-sm truncate">
+                      {formatDisplayName(currentUserProfile)}
+                    </h4>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {currentUserProfile?.title || 'Add job title'} • {currentUserProfile?.location || 'Add location'}
                     </p>
-                  )}
-
-                  <div className="flex items-center space-x-4 mb-4">
-                    <div className="text-center">
-                      <div className="text-sm font-semibold text-gray-900">{stats?.connections || 0}</div>
-                      <div className="text-xs text-gray-500">Connections</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-sm font-semibold text-gray-900">{stats?.profileViews || 0}</div>
-                      <div className="text-xs text-gray-500">Profile Views</div>
-                    </div>
                   </div>
-
-                  <Link to="/profile" className="w-full">
-                    <Button variant="outline" className="w-full">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      View Profile
-                    </Button>
-                  </Link>
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground mt-2 pt-2 border-t">
+                  <span>Connections: {stats?.connections || 0}</span>
+                  <span>Views: {stats?.profileViews || 0}</span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Profile Completion */}
-            {missingFields.length > 0 && (
-              <ProfileCompletionPrompt 
-                missingFields={missingFields}
-              />
-            )}
-
-            {/* Quick Actions */}
+            {/* Compact Quick Actions */}
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Link to="/network/people">
-                  <Button variant="ghost" className="w-full justify-start">
-                    <Users className="h-4 w-4 mr-2" />
-                    Find People
-                  </Button>
-                </Link>
-                <Link to="/network/events">
-                  <Button variant="ghost" className="w-full justify-start">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Upcoming Events
-                  </Button>
-                </Link>
-                <Link to="/network/messages">
-                  <Button variant="ghost" className="w-full justify-start">
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Messages
-                  </Button>
-                </Link>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start"
-                  onClick={() => setShowAIAssistant(!showAIAssistant)}
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  AI Assistant
-                </Button>
+              <CardContent className="p-2">
+                <h5 className="font-medium text-xs mb-2">Quick Actions</h5>
+                <div className="space-y-1 text-xs">
+                  <Link to="/network/people">
+                    <div className="flex items-center gap-2 p-1 hover:bg-accent rounded cursor-pointer">
+                      <Users className="w-3 h-3" />
+                      <span>Find People</span>
+                    </div>
+                  </Link>
+                  <Link to="/network/events">
+                    <div className="flex items-center gap-2 p-1 hover:bg-accent rounded cursor-pointer">
+                      <Calendar className="w-3 h-3" />
+                      <span>Events</span>
+                    </div>
+                  </Link>
+                  <Link to="/network/messages">
+                    <div className="flex items-center gap-2 p-1 hover:bg-accent rounded cursor-pointer">
+                      <MessageCircle className="w-3 h-3" />
+                      <span>Messages</span>
+                    </div>
+                  </Link>
+                  <div 
+                    className="flex items-center gap-2 p-1 hover:bg-accent rounded cursor-pointer"
+                    onClick={() => setShowAIAssistant(!showAIAssistant)}
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>AI Assistant</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Compact Network Overview */}
+            <Card>
+              <CardContent className="p-2">
+                <h5 className="font-medium text-xs mb-2">Network Overview</h5>
+                <div className="space-y-1 text-xs text-muted-foreground">
+                  <div>Connections: {stats?.connections || 0}</div>
+                  <div>Messages: {stats?.messages || 0}</div>
+                  <div>Events: {stats?.events || 0}</div>
+                </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Middle Column - Posts Feed */}
-          <div className="lg:col-span-6 space-y-6">
-            {/* Create Post */}
+          {/* Middle Column - Compact Posts Feed */}
+          <div className="col-span-2 space-y-2">
+            {/* Compact Create Post */}
             <CreatePost onPostCreate={handlePostCreate} />
 
-            {/* Posts Feed */}
-            <div className="space-y-6">
+            {/* Compact Posts Feed */}
+            <div className="space-y-2">
               {postsLoading ? (
-                // Loading skeleton
+                // Compact Loading skeleton
                 [...Array(3)].map((_, i) => (
                   <Card key={i} className="animate-pulse">
-                    <CardContent className="p-6">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
-                        <div className="flex-1 space-y-2">
-                          <div className="h-4 bg-gray-300 rounded w-1/4"></div>
-                          <div className="h-3 bg-gray-300 rounded w-1/6"></div>
-                          <div className="space-y-2 mt-4">
-                            <div className="h-4 bg-gray-300 rounded"></div>
-                            <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                    <CardContent className="p-2">
+                      <div className="flex items-start gap-2">
+                        <div className="w-6 h-6 bg-muted rounded-full"></div>
+                        <div className="flex-1 space-y-1">
+                          <div className="h-3 bg-muted rounded w-1/4"></div>
+                          <div className="h-2 bg-muted rounded w-1/6"></div>
+                          <div className="space-y-1 mt-2">
+                            <div className="h-3 bg-muted rounded"></div>
+                            <div className="h-3 bg-muted rounded w-3/4"></div>
                           </div>
                         </div>
                       </div>
@@ -341,36 +319,35 @@ const Posts = () => {
                 ))
               ) : (
                 posts?.map((post) => (
-                  <Card key={post.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-6">
-                      {/* Post Header - Make user info clickable */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-start space-x-3">
-                          <Link to={`/network/people/${post.author_id}`} className="block hover:scale-105 transition-transform">
-                            <Avatar className="cursor-pointer">
+                  <Card key={post.id} className="hover:shadow-sm transition-shadow">
+                    <CardContent className="p-2">
+                      {/* Compact Post Header */}
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-start gap-2">
+                          <Link to={`/network/people/${post.author_id}`}>
+                            <Avatar className="w-6 h-6 hover:scale-105 transition-transform">
                               <AvatarImage src={post.profiles?.profile_picture_url} />
-                              <AvatarFallback>
+                              <AvatarFallback className="text-xs">
                                 {generateInitials(post.profiles)}
                               </AvatarFallback>
                             </Avatar>
                           </Link>
-                          <div>
+                          <div className="min-w-0 flex-1">
                             <Link 
                               to={`/network/people/${post.author_id}`} 
-                              className="hover:text-blue-600 transition-colors cursor-pointer"
+                              className="hover:text-primary transition-colors"
                             >
-                              <h3 className="font-semibold text-gray-900">
+                              <h3 className="font-medium text-sm truncate">
                                 {formatDisplayName(post.profiles)}
                               </h3>
                             </Link>
-                            <p className="text-sm text-gray-600">
-                              {post.profiles?.title || 'Professional'}
+                            <p className="text-xs text-muted-foreground truncate">
+                              {post.profiles?.title || 'Professional'} • {formatTimeAgo(post.created_at)}
                             </p>
-                            <p className="text-xs text-gray-500">{formatTimeAgo(post.created_at)}</p>
                           </div>
                         </div>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                          <MoreHorizontal className="w-3 h-3" />
                         </Button>
                       </div>
 

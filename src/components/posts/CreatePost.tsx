@@ -186,46 +186,42 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
 
   return (
     <Card className="w-full">
-      <CardHeader className="pb-3">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
+      <CardContent className="p-2">
+        <div className="flex items-center gap-2 mb-2">
+          <Avatar className="w-6 h-6">
             <AvatarImage src={user?.user_metadata?.avatar_url} />
-            <AvatarFallback>
+            <AvatarFallback className="text-xs">
               {user?.user_metadata?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1">
-            <p className="font-medium">{user?.user_metadata?.full_name || 'Your Name'}</p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-6 text-xs"
-                onClick={() => {
-                  const nextIndex = (privacyOptions.findIndex(opt => opt.value === privacy) + 1) % privacyOptions.length;
-                  setPrivacy(privacyOptions[nextIndex].value as any);
-                }}
-              >
-                {currentPrivacy && (
-                  <>
-                    <currentPrivacy.icon className="h-3 w-3 mr-1" />
-                    {currentPrivacy.label}
-                  </>
-                )}
-              </Button>
-            </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-sm truncate">{user?.user_metadata?.full_name || 'Your Name'}</p>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-6 text-xs px-2"
+            onClick={() => {
+              const nextIndex = (privacyOptions.findIndex(opt => opt.value === privacy) + 1) % privacyOptions.length;
+              setPrivacy(privacyOptions[nextIndex].value as any);
+            }}
+          >
+            {currentPrivacy && (
+              <>
+                <currentPrivacy.icon className="w-3 h-3 mr-1" />
+                {currentPrivacy.label}
+              </>
+            )}
+          </Button>
         </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        <div className="space-y-3">
+        
+        <div className="space-y-2">
           <Textarea
             ref={textareaRef}
             placeholder="What's on your mind?"
             value={content}
             onChange={(e) => handleContentChange(e.target.value)}
-            className="min-h-[100px] resize-none border-0 p-0 text-lg placeholder:text-muted-foreground focus-visible:ring-0"
+            className="min-h-[60px] resize-none border border-border p-2 text-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary"
           />
 
           {/* Link Previews */}
@@ -319,72 +315,73 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
           )}
         </div>
 
-        <div className="flex items-center justify-between pt-3 border-t">
+        <div className="flex items-center justify-between pt-2 border-t">
           <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => handleFileUpload('image')}
-              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+              className="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
             >
-              <Image className="h-4 w-4" />
+              <Image className="w-3 h-3" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => handleFileUpload('video')}
-              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
             >
-              <Video className="h-4 w-4" />
+              <Video className="w-3 h-3" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => handleFileUpload('document')}
-              className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+              className="h-6 w-6 p-0 text-orange-600 hover:text-orange-700 hover:bg-orange-50"
             >
-              <FileText className="h-4 w-4" />
+              <FileText className="w-3 h-3" />
             </Button>
             <EmojiPicker onEmojiSelect={handleEmojiSelect}>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+                className="h-6 w-6 p-0 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
               >
-                <Smile className="h-4 w-4" />
+                <Smile className="w-3 h-3" />
               </Button>
             </EmojiPicker>
             <Button
               variant="ghost"
               size="sm"
               onClick={getCurrentLocation}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
             >
-              <MapPin className="h-4 w-4" />
+              <MapPin className="w-3 h-3" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowIntentSelector(!showIntentSelector)}
-              className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+              className="h-6 w-6 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
             >
-              <Target className="h-4 w-4" />
+              <Target className="w-3 h-3" />
             </Button>
           </div>
 
           <Button 
             onClick={handlePost} 
             disabled={!content.trim() || isPosting || uploading}
-            className="animate-fade-in"
+            size="sm"
+            className="text-xs px-2 py-1 h-6"
           >
             {isPosting || uploading ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
+              <div className="flex items-center gap-1">
+                <Loader2 className="w-3 h-3 animate-spin" />
                 {uploading ? 'Uploading...' : 'Posting...'}
               </div>
             ) : (
               <>
-                <Send className="h-4 w-4 mr-2" />
+                <Send className="w-3 h-3 mr-1" />
                 Post
               </>
             )}
