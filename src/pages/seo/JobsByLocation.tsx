@@ -50,7 +50,7 @@ const JobsByLocation = () => {
       <SEOHead
         title={seoMeta?.title || `Jobs in ${location.name} - TalentXcel`}
         description={seoMeta?.description || `Find jobs in ${location.name}`}
-        keywords={seoMeta?.keywords}
+        keywords={seoMeta?.keywords ? seoMeta.keywords.split(',').map(k => k.trim()) : undefined}
       />
       
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
