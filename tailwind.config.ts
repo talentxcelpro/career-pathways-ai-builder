@@ -52,10 +52,6 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				success: {
-					DEFAULT: 'hsl(var(--success))',
-					foreground: 'hsl(var(--success-foreground))'
-				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -67,33 +63,10 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
-			fontFamily: {
-				sans: ['Segoe UI', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
-			},
-			fontSize: {
-				'heading-xl': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
-				'heading-l': ['24px', { lineHeight: '1.3', fontWeight: '700' }],
-				'heading-m': ['20px', { lineHeight: '1.4', fontWeight: '600' }],
-				'body': ['16px', { lineHeight: '1.5', fontWeight: '400' }],
-				'body-medium': ['16px', { lineHeight: '1.5', fontWeight: '500' }],
-				'caption': ['13px', { lineHeight: '1.4', fontWeight: '400' }],
-			},
-			spacing: {
-				'4': '4px',
-				'8': '8px',
-				'16': '16px',
-				'24': '24px',
-				'32': '32px',
-			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
-			},
-			boxShadow: {
-				'card-sm': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-				'card-md': '0 2px 8px rgba(0,0,0,0.05)',
-				'card-lg': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
 			},
 			keyframes: {
 				'accordion-down': {
