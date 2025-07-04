@@ -71,8 +71,8 @@ const CareerMap = () => {
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full translate-y-48 -translate-x-48"></div>
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-          <div className="text-center max-w-xl mx-auto">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5">
+          <div className="text-center max-w-lg mx-auto">
             <div className="flex items-center justify-center gap-1 mb-1">
               <div className="p-1 bg-white/20 rounded-md backdrop-blur-sm">
                 <Brain className="h-3 w-3 text-white" />
@@ -81,12 +81,12 @@ const CareerMap = () => {
                 AI Career
               </Badge>
             </div>
-            <h1 className="text-lg font-bold mb-1">AI Career Roadmap</h1>
-            <p className="text-xs text-purple-100 mb-2 max-w-xs mx-auto">
+            <h1 className="text-base font-bold mb-1">AI Career Roadmap</h1>
+            <p className="text-xs text-purple-100 mb-1.5 max-w-xs mx-auto">
               AI-powered career insights and roadmaps.
             </p>
             
-            <div className="flex gap-2 justify-center">
+            <div className="flex gap-1.5 justify-center">
               <Link to="/career-map/ai-roadmap-builder">
                 <Button size="sm" className="bg-white text-indigo-600 hover:bg-white/90 px-3 py-1.5 text-xs">
                   <Rocket className="h-3 w-3 mr-1" />
@@ -104,12 +104,12 @@ const CareerMap = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* AI-Powered Career Tools */}
-        <div className="mb-12">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">AI-Powered Career Tools</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+        <div className="mb-6">
+          <div className="text-center mb-4">
+            <h2 className="text-lg font-bold text-gray-900 mb-2">AI-Powered Career Tools</h2>
+            <p className="text-sm text-gray-600 max-w-2xl mx-auto">
               Leverage cutting-edge AI to make data-driven career decisions and accelerate your growth.
             </p>
           </div>

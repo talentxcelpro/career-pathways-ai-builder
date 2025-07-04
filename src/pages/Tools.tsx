@@ -292,30 +292,30 @@ const Tools = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto p-2 sm:p-4 lg:p-6">
         {/* Compact Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 mb-8 text-white">
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-3 mb-4 text-white">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                <Brain className="h-6 w-6" />
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
+                <Brain className="h-4 w-4" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">AI-Powered Career Tools</h1>
-                <p className="text-blue-100 text-sm">Transform your career with intelligent tools</p>
+                <h1 className="text-lg font-bold">AI-Powered Career Tools</h1>
+                <p className="text-blue-100 text-xs">Transform your career with intelligent tools</p>
               </div>
             </div>
-            <div className="hidden md:flex items-center gap-6 text-sm">
+            <div className="hidden md:flex items-center gap-4 text-xs">
               <div className="text-center">
-                <div className="font-bold text-lg">{tools.length}</div>
+                <div className="font-bold text-sm">{tools.length}</div>
                 <p className="text-blue-100">Tools</p>
               </div>
               <div className="text-center">
-                <div className="font-bold text-lg">{freeTools.length}</div>
+                <div className="font-bold text-sm">{freeTools.length}</div>
                 <p className="text-blue-100">Free</p>
               </div>
               <div className="text-center">
-                <div className="font-bold text-lg">{Object.values(toolUsage).reduce((a, b) => a + b, 0)}</div>
+                <div className="font-bold text-sm">{Object.values(toolUsage).reduce((a, b) => a + b, 0)}</div>
                 <p className="text-blue-100">Used</p>
               </div>
             </div>
@@ -323,25 +323,25 @@ const Tools = () => {
         </div>
 
         {/* Search and Filters */}
-        <div className="mb-8">
-          <div className="relative mb-6">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+        <div className="mb-4">
+          <div className="relative mb-3">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search tools naturally - try 'find free interview tools' or 'improve my resume'..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-14 text-lg rounded-2xl border-0 bg-white shadow-lg ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-500"
+              className="pl-10 h-10 text-sm rounded-xl border-0 bg-white shadow-lg ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
               <Button
                 key={category.id}
                 variant={selectedCategory === category.id ? "default" : "outline"}
-                size="lg"
+                size="sm"
                 onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center gap-2 rounded-full px-6 py-3 transition-all duration-200 ${
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs transition-all duration-200 ${
                   selectedCategory === category.id 
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105' 
                     : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-gray-300'

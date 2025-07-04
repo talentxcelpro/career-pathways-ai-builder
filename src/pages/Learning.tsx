@@ -90,37 +90,37 @@ const Learning = () => {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-32 -translate-x-32"></div>
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-          <div className="text-center max-w-xl mx-auto">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5">
+          <div className="text-center max-w-lg mx-auto">
             <div className="flex items-center justify-center gap-1 mb-1">
               <Sparkles className="h-3 w-3 text-yellow-300" />
               <Badge className="bg-white/20 text-white border-white/30 px-1.5 py-0.5 text-xs">
                 AI Learning
               </Badge>
             </div>
-            <h1 className="text-lg font-bold mb-1 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+            <h1 className="text-base font-bold mb-1 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
               Accelerate Your Career
             </h1>
-            <p className="text-xs text-blue-100 mb-2 max-w-xs mx-auto">
+            <p className="text-xs text-blue-100 mb-1.5 max-w-xs mx-auto">
               Master skills with AI recommendations.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Modern Tab Navigation */}
-        <div className="mb-8">
+        <div className="mb-4">
           <div className="flex items-center justify-center">
-            <div className="bg-white/80 backdrop-blur-sm p-2 rounded-2xl shadow-lg border border-white/50">
-              <div className="flex space-x-2">
+            <div className="bg-white/80 backdrop-blur-sm p-1.5 rounded-xl shadow-lg border border-white/50">
+              <div className="flex space-x-1.5">
                 {['courses', 'paths', 'my-learning'].map((tab) => {
                   const isActive = activeTab === tab;
                   return (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
                         isActive
                           ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25 scale-105'
                           : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'

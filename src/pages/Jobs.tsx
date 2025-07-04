@@ -278,40 +278,40 @@ const Jobs = () => {
       
       {/* Compact Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="text-center mb-3">
-            <h1 className="text-xl md:text-2xl font-bold mb-1">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+          <div className="text-center mb-2">
+            <h1 className="text-lg md:text-xl font-bold mb-1">
               Find Your Dream Job
             </h1>
-            <p className="text-blue-100 text-sm">
+            <p className="text-blue-100 text-xs">
               Discover thousands of opportunities from top companies
             </p>
           </div>
 
           {/* Compact Search Bar */}
-          <div className="max-w-2xl mx-auto bg-white rounded-lg p-2 shadow-lg">
-            <div className="flex gap-2">
+          <div className="max-w-2xl mx-auto bg-white rounded-lg p-1.5 shadow-lg">
+            <div className="flex gap-1.5">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-2 top-2.5 h-3 w-3 text-gray-400" />
                 <Input
                   placeholder="Job title, keywords, or company"
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                  className="pl-10 h-10 text-gray-900"
+                  className="pl-8 h-8 text-sm text-gray-900"
                 />
               </div>
               <div className="relative">
-                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <MapPin className="absolute left-2 top-2.5 h-3 w-3 text-gray-400" />
                 <Input
                   placeholder="Location"
                   value={filters.location}
                   onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                  className="pl-10 h-10 w-32 text-gray-900"
+                  className="pl-8 h-8 w-28 text-sm text-gray-900"
                 />
               </div>
               <Button 
                 onClick={handleQuickSearch}
-                className="h-10 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="h-8 px-4 text-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 Search
               </Button>
@@ -322,35 +322,35 @@ const Jobs = () => {
 
       {/* Compact Stats Section */}
       <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
             <div className="flex flex-col items-center">
-              <div className="bg-blue-100 p-2 rounded-full mb-1">
-                <Briefcase className="h-5 w-5 text-blue-600" />
+              <div className="bg-blue-100 p-1.5 rounded-full mb-1">
+                <Briefcase className="h-4 w-4 text-blue-600" />
               </div>
-              <div className="text-xl font-bold text-gray-900">{allJobs.length}</div>
-              <div className="text-sm text-gray-600">Total Jobs</div>
+              <div className="text-lg font-bold text-gray-900">{allJobs.length}</div>
+              <div className="text-xs text-gray-600">Total Jobs</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className="bg-green-100 p-2 rounded-full mb-1">
-                <Sparkles className="h-5 w-5 text-green-600" />
+              <div className="bg-green-100 p-1.5 rounded-full mb-1">
+                <Sparkles className="h-4 w-4 text-green-600" />
               </div>
-              <div className="text-xl font-bold text-gray-900">{featuredJobs.length}</div>
-              <div className="text-sm text-gray-600">Featured</div>
+              <div className="text-lg font-bold text-gray-900">{featuredJobs.length}</div>
+              <div className="text-xs text-gray-600">Featured</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className="bg-purple-100 p-2 rounded-full mb-1">
-                <MapPin className="h-5 w-5 text-purple-600" />
+              <div className="bg-purple-100 p-1.5 rounded-full mb-1">
+                <MapPin className="h-4 w-4 text-purple-600" />
               </div>
-              <div className="text-xl font-bold text-gray-900">{remoteJobs.length}</div>
-              <div className="text-sm text-gray-600">Remote</div>
+              <div className="text-lg font-bold text-gray-900">{remoteJobs.length}</div>
+              <div className="text-xs text-gray-600">Remote</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className="bg-orange-100 p-2 rounded-full mb-1">
-                <Briefcase className="h-5 w-5 text-orange-600" />
+              <div className="bg-orange-100 p-1.5 rounded-full mb-1">
+                <Briefcase className="h-4 w-4 text-orange-600" />
               </div>
-              <div className="text-xl font-bold text-gray-900">{categories.length}</div>
-              <div className="text-sm text-gray-600">Categories</div>
+              <div className="text-lg font-bold text-gray-900">{categories.length}</div>
+              <div className="text-xs text-gray-600">Categories</div>
             </div>
           </div>
         </div>
@@ -358,13 +358,13 @@ const Jobs = () => {
 
       <JobsCategories categories={categories} />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Job Opportunities</h2>
-            <p className="text-gray-600 mt-1">Find your perfect match from {allJobs.length} active positions</p>
+            <h2 className="text-lg font-bold text-gray-900">Job Opportunities</h2>
+            <p className="text-sm text-gray-600 mt-0.5">Find your perfect match from {allJobs.length} active positions</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <AutoRefreshIndicator 
               isConnected={isConnected} 
               lastRefresh={lastRefresh}
@@ -379,9 +379,9 @@ const Jobs = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border p-6 sticky top-4">
+            <div className="bg-white rounded-xl shadow-sm border p-3 sticky top-4">
               <EnhancedJobFilters
                 filters={filters}
                 onFiltersChange={setFilters}
