@@ -10,10 +10,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
 import { CreatePost } from "@/components/posts/CreatePost";
+import { CareerIntentBadge } from "@/components/posts/CareerIntentTags";
 import { LinkPreview } from "@/components/shared/LinkPreview";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 import { AIPostAssistant } from "@/components/network/AIPostAssistant";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
+import { SmartConnectAI } from "@/components/network/SmartConnectAI";
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
 import { useNetworkRealtime, useAutoRefreshPosts } from "@/hooks/useRealtimeData";
@@ -23,6 +25,7 @@ import { Link } from 'react-router-dom';
 const Posts = () => {
   const [openComments, setOpenComments] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [feedFilter, setFeedFilter] = useState<'all' | 'smart'>('all');
   const queryClient = useQueryClient();
 
   // Auto-refresh with realtime updates
@@ -42,9 +45,27 @@ const Posts = () => {
   const { connections, stats, isLoading: connectionsLoading } = useRealtimeConnections();
   const { recentActivity, isLoading: activityLoading } = useRealtimeActivity();
 
+  // Get current user profile first for Smart Feed filtering
+  const { data: currentUserProfile } = useQuery({
+    queryKey: ['currentUserProfile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
   // Fetch posts with real-time counts
   const { data: posts, isLoading: postsLoading } = useQuery({
-    queryKey: ['posts'],
+    queryKey: ['posts', feedFilter],
     queryFn: async () => {
       // First get posts with fresh counts
       const { data: postsData, error: postsError } = await supabase
@@ -76,7 +97,7 @@ const Posts = () => {
       const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]));
 
       // Combine posts with their profiles and accurate counts
-      const postsWithProfiles = postsData.map(post => ({
+      let postsWithProfiles = postsData.map(post => ({
         ...post,
         profiles: profilesMap.get(post.author_id) || null,
         // Use actual counts from related tables
@@ -85,24 +106,31 @@ const Posts = () => {
         shares_count: post.post_shares?.length || 0
       }));
 
+      // Apply Smart Feed filtering
+      if (feedFilter === 'smart' && currentUserProfile) {
+        const userInterests = currentUserProfile.career_interests || [];
+        const userGoals = currentUserProfile.career_goals || [];
+        const userStage = currentUserProfile.career_stage || 'early_career';
+        
+        // Filter posts based on user's career interests and intent tags
+        postsWithProfiles = postsWithProfiles.filter(post => {
+          if (!post.intent_tags || post.intent_tags.length === 0) return true;
+          
+          // Match based on career stage
+          if (userStage === 'early_career' && post.intent_tags.includes('mentoring')) return true;
+          if (userStage === 'mid_career' && post.intent_tags.includes('networking')) return true;
+          if (userStage === 'senior_career' && post.intent_tags.includes('showcasing')) return true;
+          
+          // Match based on interests and goals
+          const hasMatchingIntent = post.intent_tags.some(tag => 
+            userInterests.includes(tag) || userGoals.includes(tag)
+          );
+          
+          return hasMatchingIntent;
+        });
+      }
+
       return postsWithProfiles;
-    }
-  });
-
-  const { data: currentUserProfile } = useQuery({
-    queryKey: ['currentUserProfile'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (error) throw error;
-      return data;
     }
   });
 
@@ -161,9 +189,27 @@ const Posts = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Simplified Header */}
         <div className="mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Professional Network</h1>
-            <p className="text-gray-600 mt-1">Stay connected with your professional community</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Professional Network</h1>
+              <p className="text-gray-600 mt-1">Stay connected with your professional community</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={feedFilter === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFeedFilter('all')}
+              >
+                All Posts
+              </Button>
+              <Button
+                variant={feedFilter === 'smart' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFeedFilter('smart')}
+              >
+                Smart Feed
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -331,6 +377,15 @@ const Posts = () => {
                       {/* Post Content */}
                       <div className="mb-4">
                         <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
+                        
+                        {/* Career Intent Tags */}
+                        {post.intent_tags && post.intent_tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {post.intent_tags.map((intentId: string) => (
+                              <CareerIntentBadge key={intentId} intentId={intentId} />
+                            ))}
+                          </div>
+                        )}
                         
                         {/* URL Previews */}
                         {(() => {

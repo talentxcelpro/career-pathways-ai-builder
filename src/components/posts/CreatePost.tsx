@@ -15,7 +15,8 @@ import {
   X,
   Send,
   Smile,
-  Loader2
+  Loader2,
+  Target
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { EmojiPicker } from './EmojiPicker';
@@ -23,6 +24,7 @@ import { LinkPreview } from '@/components/shared/LinkPreview';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { CareerIntentTags } from './CareerIntentTags';
 
 interface CreatePostProps {
   onPostCreate?: (post: any) => void;
@@ -40,6 +42,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
   const [showLocationInput, setShowLocationInput] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [currentUploadType, setCurrentUploadType] = useState<'image' | 'video' | 'document' | null>(null);
+  const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
+  const [showIntentSelector, setShowIntentSelector] = useState(false);
 
   const { uploadFile, uploading } = useFileUpload({
     bucket: 'post-media',
@@ -142,7 +146,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
           author_id: user?.id,
           media_urls: attachments.map(att => att.url),
           location: location || null,
-          is_public: privacy === 'public'
+          is_public: privacy === 'public',
+          intent_tags: selectedIntents
         })
         .select()
         .single();
@@ -158,6 +163,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
       setLocation('');
       setShowLocationInput(false);
       setPrivacy('public');
+      setSelectedIntents([]);
+      setShowIntentSelector(false);
       
       toast.success('Post created successfully!');
     } catch (error) {
@@ -165,6 +172,14 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
     } finally {
       setIsPosting(false);
     }
+  };
+
+  const handleIntentToggle = (intentId: string) => {
+    setSelectedIntents(prev => 
+      prev.includes(intentId) 
+        ? prev.filter(id => id !== intentId)
+        : [...prev, intentId]
+    );
   };
 
   const currentPrivacy = privacyOptions.find(opt => opt.value === privacy);
@@ -268,6 +283,24 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
             </div>
           )}
 
+          {/* Career Intent Tags */}
+          {showIntentSelector && (
+            <CareerIntentTags
+              selectedIntents={selectedIntents}
+              onIntentToggle={handleIntentToggle}
+              showDescription={false}
+            />
+          )}
+
+          {/* Selected Intent Display */}
+          {selectedIntents.length > 0 && (
+            <CareerIntentTags
+              selectedIntents={selectedIntents}
+              onIntentToggle={() => {}} // No-op for display
+              variant="display"
+            />
+          )}
+
           {/* Location Input */}
           {showLocationInput && (
             <div className="flex items-center gap-2">
@@ -328,6 +361,14 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
               className="text-red-600 hover:text-red-700 hover:bg-red-50"
             >
               <MapPin className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowIntentSelector(!showIntentSelector)}
+              className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+            >
+              <Target className="h-4 w-4" />
             </Button>
           </div>
 

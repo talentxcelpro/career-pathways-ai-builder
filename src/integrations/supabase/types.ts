@@ -2638,6 +2638,7 @@ export type Database = {
           content: string
           created_at: string | null
           id: string
+          intent_tags: string[] | null
           is_public: boolean | null
           likes_count: number | null
           location: string | null
@@ -2654,6 +2655,7 @@ export type Database = {
           content: string
           created_at?: string | null
           id?: string
+          intent_tags?: string[] | null
           is_public?: boolean | null
           likes_count?: number | null
           location?: string | null
@@ -2670,6 +2672,7 @@ export type Database = {
           content?: string
           created_at?: string | null
           id?: string
+          intent_tags?: string[] | null
           is_public?: boolean | null
           likes_count?: number | null
           location?: string | null
@@ -2772,6 +2775,9 @@ export type Database = {
         Row: {
           about: string | null
           allow_profile_sharing: boolean | null
+          career_goals: string[] | null
+          career_interests: string[] | null
+          career_stage: string | null
           cover_image_url: string | null
           created_at: string | null
           current_company: string | null
@@ -2818,6 +2824,9 @@ export type Database = {
         Insert: {
           about?: string | null
           allow_profile_sharing?: boolean | null
+          career_goals?: string[] | null
+          career_interests?: string[] | null
+          career_stage?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           current_company?: string | null
@@ -2864,6 +2873,9 @@ export type Database = {
         Update: {
           about?: string | null
           allow_profile_sharing?: boolean | null
+          career_goals?: string[] | null
+          career_interests?: string[] | null
+          career_stage?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           current_company?: string | null
