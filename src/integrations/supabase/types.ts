@@ -42,6 +42,36 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_content_flags: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          entity_id: number
+          entity_type: string
+          expires_at: string | null
+          flag: string
+          id: number
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          entity_id: number
+          entity_type: string
+          expires_at?: string | null
+          flag: string
+          id?: number
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          entity_id?: number
+          entity_type?: string
+          expires_at?: string | null
+          flag?: string
+          id?: number
+        }
+        Relationships: []
+      }
       ai_cover_letters: {
         Row: {
           company_name: string | null
@@ -3494,6 +3524,264 @@ export type Database = {
           tool_name?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      seo_learning_paths: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          duration_weeks: number | null
+          enrollment_count: number | null
+          id: number
+          is_active: boolean | null
+          level: string | null
+          slug: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_weeks?: number | null
+          enrollment_count?: number | null
+          id?: number
+          is_active?: boolean | null
+          level?: string | null
+          slug: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_weeks?: number | null
+          enrollment_count?: number | null
+          id?: number
+          is_active?: boolean | null
+          level?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_locations: {
+        Row: {
+          company_count: number | null
+          country: string | null
+          created_at: string | null
+          id: number
+          is_active: boolean | null
+          job_count: number | null
+          name: string
+          slug: string
+          state: string | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_count?: number | null
+          country?: string | null
+          created_at?: string | null
+          id?: number
+          is_active?: boolean | null
+          job_count?: number | null
+          name: string
+          slug: string
+          state?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_count?: number | null
+          country?: string | null
+          created_at?: string | null
+          id?: number
+          is_active?: boolean | null
+          job_count?: number | null
+          name?: string
+          slug?: string
+          state?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_meta_tags: {
+        Row: {
+          canonical_url: string | null
+          click_count: number | null
+          description: string | null
+          entity_id: number | null
+          entity_type: string | null
+          id: number
+          image_url: string | null
+          is_active: boolean | null
+          keywords: string | null
+          path: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          canonical_url?: string | null
+          click_count?: number | null
+          description?: string | null
+          entity_id?: number | null
+          entity_type?: string | null
+          id?: number
+          image_url?: string | null
+          is_active?: boolean | null
+          keywords?: string | null
+          path: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          canonical_url?: string | null
+          click_count?: number | null
+          description?: string | null
+          entity_id?: number | null
+          entity_type?: string | null
+          id?: number
+          image_url?: string | null
+          is_active?: boolean | null
+          keywords?: string | null
+          path?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_roles: {
+        Row: {
+          avg_salary: number | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: number
+          is_active: boolean | null
+          job_count: number | null
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          avg_salary?: number | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          is_active?: boolean | null
+          job_count?: number | null
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          avg_salary?: number | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          is_active?: boolean | null
+          job_count?: number | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_salary_insights: {
+        Row: {
+          avg_salary: number | null
+          currency: string | null
+          data_points: number | null
+          experience_level: string | null
+          id: number
+          location_id: number | null
+          max_salary: number | null
+          min_salary: number | null
+          role_id: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_salary?: number | null
+          currency?: string | null
+          data_points?: number | null
+          experience_level?: string | null
+          id?: number
+          location_id?: number | null
+          max_salary?: number | null
+          min_salary?: number | null
+          role_id?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_salary?: number | null
+          currency?: string | null
+          data_points?: number | null
+          experience_level?: string | null
+          id?: number
+          location_id?: number | null
+          max_salary?: number | null
+          min_salary?: number | null
+          role_id?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_salary_insights_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "seo_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seo_salary_insights_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "seo_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seo_skills: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          demand_level: string | null
+          id: number
+          is_active: boolean | null
+          job_count: number | null
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          demand_level?: string | null
+          id?: number
+          is_active?: boolean | null
+          job_count?: number | null
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          demand_level?: string | null
+          id?: number
+          is_active?: boolean | null
+          job_count?: number | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
