@@ -54,7 +54,30 @@ const EditResume = () => {
   // Update local state when resume data is loaded
   useEffect(() => {
     if (resume?.content) {
-      setResumeData(resume.content);
+      const content = resume.content as any; // Type cast to handle JSON structure
+      
+      // Handle different data structures and provide defaults
+      const processedData = {
+        personalInfo: {
+          fullName: content.personalInfo?.fullName || '',
+          email: content.personalInfo?.email || '',
+          phone: content.personalInfo?.phone || '',
+          location: content.personalInfo?.location || '',
+          summary: content.personalInfo?.summary || ''
+        },
+        experience: Array.isArray(content.experience) ? content.experience : [],
+        education: Array.isArray(content.education) ? content.education : [],
+        skills: Array.isArray(content.skills) 
+          ? content.skills 
+          : content.skills?.technical 
+            ? [...(content.skills.technical || []), ...(content.skills.soft || []), ...(content.skills.languages || []), ...(content.skills.tools || [])]
+            : [],
+        projects: Array.isArray(content.projects) ? content.projects : [],
+        certifications: Array.isArray(content.certifications) ? content.certifications : []
+      };
+      
+      console.log('Processed resume data:', processedData);
+      setResumeData(processedData);
     }
   }, [resume]);
 
