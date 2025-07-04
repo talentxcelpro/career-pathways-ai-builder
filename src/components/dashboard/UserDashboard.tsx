@@ -9,19 +9,16 @@ import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionP
 
 interface UserDashboardProps {
   currentUserProfile: any;
-  mockUser: {
+  userData: {
     name: string;
     title: string;
-    completedCourses: number;
-    resumeViews: number;
-    appliedJobs: number;
   };
   missingFields: string[];
 }
 
 export const UserDashboard: React.FC<UserDashboardProps> = ({ 
   currentUserProfile, 
-  mockUser, 
+  userData, 
   missingFields 
 }) => {
   const navigate = useNavigate();
@@ -42,7 +39,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Welcome Section */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {mockUser.name}!</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {userData.name}!</h1>
         <p className="text-gray-600">Continue building your career journey</p>
       </div>
 
@@ -59,7 +56,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-100">Courses Completed</p>
-                <p className="text-3xl font-bold">{mockUser.completedCourses}</p>
+                <p className="text-3xl font-bold">{currentUserProfile?.courses_completed || 0}</p>
               </div>
               <GraduationCap className="h-8 w-8 text-blue-200" />
             </div>
@@ -70,8 +67,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100">Resume Views</p>
-                <p className="text-3xl font-bold">{mockUser.resumeViews}</p>
+                <p className="text-green-100">Profile Views</p>
+                <p className="text-3xl font-bold">{currentUserProfile?.profile_views_count || 0}</p>
               </div>
               <FileText className="h-8 w-8 text-green-200" />
             </div>
@@ -83,7 +80,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-100">Jobs Applied</p>
-                <p className="text-3xl font-bold">{mockUser.appliedJobs}</p>
+                <p className="text-3xl font-bold">{currentUserProfile?.jobs_applied_count || 0}</p>
               </div>
               <Briefcase className="h-8 w-8 text-purple-200" />
             </div>

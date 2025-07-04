@@ -42,13 +42,10 @@ const Index = () => {
     enabled: isLoggedIn
   });
 
-  // Mock user data - in real app this would come from Supabase
-  const mockUser = {
+  // Real user data from Supabase
+  const userData = {
     name: currentUserProfile?.full_name || "Professional User",
-    title: currentUserProfile?.title || "Software Engineer",
-    completedCourses: 12,
-    resumeViews: 156,
-    appliedJobs: 8
+    title: currentUserProfile?.title || "Software Engineer"
   };
 
   // Check for missing profile fields
@@ -72,7 +69,7 @@ const Index = () => {
       ) : (
         <UserDashboard 
           currentUserProfile={currentUserProfile}
-          mockUser={mockUser}
+          userData={userData}
           missingFields={missingFields}
         />
       )}
