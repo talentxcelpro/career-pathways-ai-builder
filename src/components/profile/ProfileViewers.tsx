@@ -10,7 +10,7 @@ interface ProfileViewersProps {
 
 export function ProfileViewers({ profileUserId, viewsCount }: ProfileViewersProps) {
   return (
-    <Link to="/profile/analytics">
+    <Link to="/network/profile/analytics">
       <Button variant="ghost" className="text-sm text-gray-500 hover:text-gray-700 p-0 h-auto">
         <Eye className="h-4 w-4 mr-1" />
         {viewsCount} views
