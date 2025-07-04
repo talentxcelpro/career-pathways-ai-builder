@@ -2457,30 +2457,48 @@ export type Database = {
       notifications: {
         Row: {
           created_at: string | null
+          expires_at: string | null
+          icon: string | null
           id: string
           is_read: boolean | null
+          link: string | null
           message: string | null
+          module: string | null
+          priority: string | null
           related_id: string | null
+          sound: boolean | null
           title: string
           type: string
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
+          expires_at?: string | null
+          icon?: string | null
           id?: string
           is_read?: boolean | null
+          link?: string | null
           message?: string | null
+          module?: string | null
+          priority?: string | null
           related_id?: string | null
+          sound?: boolean | null
           title: string
           type: string
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
+          expires_at?: string | null
+          icon?: string | null
           id?: string
           is_read?: boolean | null
+          link?: string | null
           message?: string | null
+          module?: string | null
+          priority?: string | null
           related_id?: string | null
+          sound?: boolean | null
           title?: string
           type?: string
           user_id?: string | null
