@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ProfileLayout from "@/components/profile/ProfileLayout";
-import { MediaUpload } from "@/components/profile/media/MediaUpload";
+import { ProfilePhotoUpload } from "@/components/profile/media/ProfilePhotoUpload";
+import { VideoResumeUpload } from "@/components/profile/media/VideoResumeUpload";
 import { PortfolioForm } from "@/components/profile/media/PortfolioForm";
 import { PortfolioGrid } from "@/components/profile/media/PortfolioGrid";
 import { useFileUpload } from "@/hooks/useFileUpload";
@@ -86,15 +87,9 @@ const ProfileMedia = () => {
               <CardTitle>Profile Media</CardTitle>
               <CardDescription>Upload your professional photo and video resume</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <MediaUpload 
-                type="photo" 
-                onUpload={() => handleMediaUpload(new File([], "photo"), 'photo')} 
-              />
-              <MediaUpload 
-                type="video" 
-                onUpload={() => handleMediaUpload(new File([], "video"), 'video')} 
-              />
+            <CardContent className="space-y-4">
+              <ProfilePhotoUpload onUploadSuccess={(url) => console.log('Photo uploaded:', url)} />
+              <VideoResumeUpload onUploadSuccess={(url) => console.log('Video uploaded:', url)} />
             </CardContent>
           </Card>
 

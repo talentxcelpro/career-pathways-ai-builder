@@ -2960,6 +2960,7 @@ export type Database = {
           preferred_salary_min: number | null
           primary_role: Database["public"]["Enums"]["app_role"] | null
           profile_completed: boolean | null
+          profile_photo_url: string | null
           profile_picture_url: string | null
           profile_views_count: number | null
           profile_visibility: string | null
@@ -2970,6 +2971,7 @@ export type Database = {
           title: string | null
           updated_at: string | null
           user_role: Database["public"]["Enums"]["user_role"] | null
+          video_resume_url: string | null
           website: string | null
         }
         Insert: {
@@ -3009,6 +3011,7 @@ export type Database = {
           preferred_salary_min?: number | null
           primary_role?: Database["public"]["Enums"]["app_role"] | null
           profile_completed?: boolean | null
+          profile_photo_url?: string | null
           profile_picture_url?: string | null
           profile_views_count?: number | null
           profile_visibility?: string | null
@@ -3019,6 +3022,7 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
+          video_resume_url?: string | null
           website?: string | null
         }
         Update: {
@@ -3058,6 +3062,7 @@ export type Database = {
           preferred_salary_min?: number | null
           primary_role?: Database["public"]["Enums"]["app_role"] | null
           profile_completed?: boolean | null
+          profile_photo_url?: string | null
           profile_picture_url?: string | null
           profile_views_count?: number | null
           profile_visibility?: string | null
@@ -3068,6 +3073,7 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
+          video_resume_url?: string | null
           website?: string | null
         }
         Relationships: []
