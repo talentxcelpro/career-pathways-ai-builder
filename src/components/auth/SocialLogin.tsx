@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Chrome, Loader2 } from 'lucide-react';
+import { LogIn, Loader2 } from 'lucide-react';
 
 interface SocialLoginProps {
   variant?: 'default' | 'prominent';
@@ -50,8 +50,8 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
   };
 
   const buttonClass = variant === 'prominent' 
-    ? "h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
-    : "h-10";
+    ? "h-9 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+    : "h-8";
 
   return (
     <div className="space-y-3">
@@ -62,9 +62,9 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
         disabled={loading}
       >
         {loading ? (
-          <Loader2 className="h-5 w-5 mr-3 animate-spin" />
+          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
         ) : (
-          <Chrome className="h-5 w-5 mr-3 text-blue-600 group-hover:text-blue-700" />
+          <LogIn className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
         )}
         {showText && (
           <span className="text-gray-700 group-hover:text-gray-900">
