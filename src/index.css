@@ -7,35 +7,38 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 100%; /* #ffffff */
+    --foreground: 209 17% 8%; /* #14171A - Dark Text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%; /* #ffffff */
+    --card-foreground: 209 17% 8%; /* #14171A */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%; /* #ffffff */
+    --popover-foreground: 209 17% 8%; /* #14171A */
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 203 89% 53%; /* #1DA1F2 - Primary Blue */
+    --primary-foreground: 0 0% 100%; /* #ffffff */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 206 44% 97%; /* #f5f8fa - Light Gray */
+    --secondary-foreground: 209 17% 8%; /* #14171A */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 206 44% 97%; /* #f5f8fa - Light Gray */
+    --muted-foreground: 209 17% 8%; /* #14171A */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 206 44% 97%; /* #f5f8fa - Light Gray */
+    --accent-foreground: 209 17% 8%; /* #14171A */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 338 85% 52%; /* #e0245e - Error */
+    --destructive-foreground: 0 0% 100%; /* #ffffff */
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --success: 145 63% 42%; /* #17bf63 - Success */
+    --success-foreground: 0 0% 100%; /* #ffffff */
 
-    --radius: 0.5rem;
+    --border: 206 25% 90%; /* #e1e8ed - Border Gray */
+    --input: 206 25% 90%; /* #e1e8ed */
+    --ring: 203 89% 53%; /* #1DA1F2 */
+
+    --radius: 0.5rem; /* 8px */
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -48,33 +51,36 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 209 17% 8%; /* #14171A - Dark Text as background */
+    --foreground: 0 0% 100%; /* #ffffff */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 209 17% 8%; /* #14171A */
+    --card-foreground: 0 0% 100%; /* #ffffff */
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 209 17% 8%; /* #14171A */
+    --popover-foreground: 0 0% 100%; /* #ffffff */
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 203 89% 53%; /* #1DA1F2 - Primary Blue */
+    --primary-foreground: 0 0% 100%; /* #ffffff */
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 209 17% 15%; /* Darker version of #14171A */
+    --secondary-foreground: 0 0% 100%; /* #ffffff */
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 209 17% 15%; /* Darker version of #14171A */
+    --muted-foreground: 0 0% 80%; /* Light gray text */
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 209 17% 15%; /* Darker version of #14171A */
+    --accent-foreground: 0 0% 100%; /* #ffffff */
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 338 85% 52%; /* #e0245e - Error */
+    --destructive-foreground: 0 0% 100%; /* #ffffff */
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --success: 145 63% 42%; /* #17bf63 - Success */
+    --success-foreground: 0 0% 100%; /* #ffffff */
+
+    --border: 209 17% 20%; /* Lighter border for dark mode */
+    --input: 209 17% 20%; /* Lighter input for dark mode */
+    --ring: 203 89% 53%; /* #1DA1F2 */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -107,15 +113,17 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 16px;
     font-feature-settings: 'rlig' 1, 'calt' 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Improved font rendering for better performance */
+  /* TalentXcel font system */
   html {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
 
   /* Enhanced scrollbar styling */
@@ -148,7 +156,44 @@
     @apply outline-2 outline-offset-2 outline-blue-500;
   }
 
-  /* Optimized text sizes for better readability */
+  /* TalentXcel Typography Scale */
+  .text-heading-xl {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .text-heading-l {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .text-heading-m {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .text-body {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .text-body-medium {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .text-caption {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  /* Legacy text sizes for compatibility */
   .text-2xs {
     font-size: 0.6875rem;
     line-height: 1rem;
@@ -172,18 +217,25 @@
     will-change: transform;
   }
 
-  /* Enhanced card shadows for depth */
+  /* TalentXcel Card Shadows */
   .card-shadow-sm {
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   }
 
   .card-shadow-md {
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   }
 
   .card-shadow-lg {
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   }
+
+  /* TalentXcel spacing utilities */
+  .space-4 { margin: 4px; }
+  .space-8 { margin: 8px; }
+  .space-16 { margin: 16px; }
+  .space-24 { margin: 24px; }
+  .space-32 { margin: 32px; }
 
   /* Global icon size overrides */
   .lucide {
