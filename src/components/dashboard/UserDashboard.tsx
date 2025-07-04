@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Briefcase, GraduationCap, FileText, TrendingUp, Users, Star } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 
 interface UserDashboardProps {
@@ -63,17 +63,19 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-100">Profile Views</p>
-                <p className="text-3xl font-bold">{currentUserProfile?.profile_views_count || 0}</p>
+        <Link to="/network/profile/analytics">
+          <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 cursor-pointer hover:from-green-600 hover:to-green-700 transition-all">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-100">Profile Views</p>
+                  <p className="text-3xl font-bold">{currentUserProfile?.profile_views_count || 0}</p>
+                </div>
+                <FileText className="h-8 w-8 text-green-200" />
               </div>
-              <FileText className="h-8 w-8 text-green-200" />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </Link>
 
         <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0">
           <CardContent className="p-6">
