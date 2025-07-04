@@ -10,11 +10,14 @@ export default {
 	],
 	prefix: "",
 	theme: {
+		fontFamily: {
+			sans: ['var(--font-primary)', 'ui-sans-serif', 'system-ui'],
+		},
 		container: {
 			center: true,
 			padding: '2rem',
 			screens: {
-				'2xl': '1400px'
+				'2xl': '1280px'
 			}
 		},
 		extend: {
@@ -35,6 +38,10 @@ export default {
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
+				},
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))'
 				},
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
@@ -63,10 +70,24 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			fontSize: {
+				'heading-xl': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
+				'heading-lg': ['24px', { lineHeight: '1.3', fontWeight: '700' }],
+				'heading-md': ['20px', { lineHeight: '1.4', fontWeight: '600' }],
+				'body': ['16px', { lineHeight: '1.5', fontWeight: '400' }],
+				'caption': ['13px', { lineHeight: '1.4', fontWeight: '400' }],
+			},
 			borderRadius: {
+				DEFAULT: 'var(--radius)',
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			boxShadow: {
+				card: 'var(--shadow-card)',
+			},
+			spacing: {
+				'18': '4.5rem',
 			},
 			keyframes: {
 				'accordion-down': {
