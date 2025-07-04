@@ -2943,6 +2943,7 @@ export type Database = {
           industry: string | null
           is_employer: boolean | null
           is_profile_public: boolean | null
+          is_viewing_private: boolean | null
           last_login_at: string | null
           last_profile_view: string | null
           linkedin_url: string | null
@@ -2994,6 +2995,7 @@ export type Database = {
           industry?: string | null
           is_employer?: boolean | null
           is_profile_public?: boolean | null
+          is_viewing_private?: boolean | null
           last_login_at?: string | null
           last_profile_view?: string | null
           linkedin_url?: string | null
@@ -3045,6 +3047,7 @@ export type Database = {
           industry?: string | null
           is_employer?: boolean | null
           is_profile_public?: boolean | null
+          is_viewing_private?: boolean | null
           last_login_at?: string | null
           last_profile_view?: string | null
           linkedin_url?: string | null

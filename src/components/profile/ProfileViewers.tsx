@@ -4,9 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Eye, User } from "lucide-react";
+import { Eye, User, Clock, EyeOff } from "lucide-react";
 import { Link } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
 
 interface ProfileViewersProps {
   profileUserId: string;
@@ -37,7 +39,7 @@ export function ProfileViewers({ profileUserId, viewsCount }: ProfileViewersProp
       // Get profiles for these viewers
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, full_name, title, profile_picture_url')
+        .select('id, full_name, title, profile_picture_url, is_viewing_private')
         .in('id', viewerIds);
 
       if (profilesError) throw profilesError;
@@ -53,16 +55,20 @@ export function ProfileViewers({ profileUserId, viewsCount }: ProfileViewersProp
     enabled: !!profileUserId && isOpen,
   });
 
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
-    return date.toLocaleDateString();
+  const getDisplayName = (profile: any) => {
+    if (!profile || profile.is_viewing_private) return "Anonymous Viewer";
+    return profile.full_name || "Professional User";
+  };
+
+  const getInitials = (profile: any) => {
+    if (!profile || profile.is_viewing_private) return "?";
+    const name = profile.full_name || "Professional User";
+    return name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  const getAvatarUrl = (profile: any) => {
+    if (!profile || profile.is_viewing_private) return null;
+    return profile.profile_picture_url;
   };
 
   return (
@@ -101,41 +107,59 @@ export function ProfileViewers({ profileUserId, viewsCount }: ProfileViewersProp
             </div>
           ) : (
             <div className="space-y-3">
-              {profileViewers.map((view) => (
-                <div key={`${view.viewer_id}-${view.viewed_at}`} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage src={view.profiles?.profile_picture_url} />
-                    <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                      {view.profiles?.full_name 
-                        ? view.profiles.full_name.split(' ').map(n => n[0]).join('').toUpperCase()
-                        : 'U'
-                      }
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Link 
-                          to={`/network/profile/${view.viewer_id}`}
-                          className="font-medium text-gray-900 hover:text-blue-600 transition-colors"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {view.profiles?.full_name || 'Unknown User'}
-                        </Link>
-                        {view.profiles?.title && (
-                          <p className="text-sm text-gray-600 truncate">
-                            {view.profiles.title}
-                          </p>
+              {profileViewers.map((view) => {
+                const profile = view.profiles;
+                const isAnonymous = !profile || profile.is_viewing_private;
+                
+                return (
+                  <div key={`${view.viewer_id}-${view.viewed_at}`} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage src={getAvatarUrl(profile) || undefined} />
+                      <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-xs">
+                        {getInitials(profile)}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        {isAnonymous ? (
+                          <span className="text-sm font-medium text-muted-foreground">
+                            Anonymous Viewer
+                          </span>
+                        ) : (
+                          <Link 
+                            to={`/network/people/${view.viewer_id}`}
+                            className="text-sm font-medium hover:text-primary transition-colors"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            {getDisplayName(profile)}
+                          </Link>
+                        )}
+                        {isAnonymous && (
+                          <Badge variant="outline" className="text-xs">
+                            <EyeOff className="h-2 w-2 mr-1" />
+                            Private
+                          </Badge>
                         )}
                       </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">
-                        {formatTimeAgo(view.viewed_at)}
-                      </span>
+                      
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>
+                          {!isAnonymous && profile?.title 
+                            ? profile.title 
+                            : "Professional"
+                          }
+                        </span>
+                        <span>•</span>
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {formatDistanceToNow(new Date(view.viewed_at), { addSuffix: true })}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
