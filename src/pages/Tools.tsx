@@ -28,6 +28,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
+import { SearchFilters } from '@/services/aiSearchService';
 
 interface Tool {
   id: string;
@@ -224,6 +226,10 @@ const Tools = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const handleUniversalSearch = (query: string, aiFilters?: SearchFilters) => {
+    setSearchQuery(query);
+  };
+
   const popularTools = tools.filter(tool => tool.popularity >= 85).sort((a, b) => b.popularity - a.popularity);
   const freeTools = tools.filter(tool => !tool.isPremium);
 
@@ -322,17 +328,16 @@ const Tools = () => {
           </div>
         </div>
 
-        {/* Search and Filters */}
+        {/* AI-Powered Tools Search */}
         <div className="mb-4">
-          <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search tools naturally - try 'find free interview tools' or 'improve my resume'..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-10 text-sm rounded-xl border-0 bg-white shadow-lg ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <UniversalSearchBar
+            searchType="jobs"
+            onSearch={handleUniversalSearch}
+            placeholder="Try: 'free tools to improve my resume for tech jobs'"
+            showSuggestions={true}
+            showFilters={false}
+            className="mb-3"
+          />
 
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (

@@ -16,6 +16,8 @@ import { toast } from 'sonner';
 import { Search, MapPin, Briefcase, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
+import { SearchFilters } from '@/services/aiSearchService';
 
 const Jobs = () => {
   const [filters, setFilters] = useState({
@@ -265,6 +267,27 @@ const Jobs = () => {
     });
   };
 
+  const handleUniversalSearch = (query: string, aiFilters?: SearchFilters) => {
+    if (aiFilters) {
+      // Convert AI filters to our internal filter format
+      const newFilters = {
+        search: aiFilters.query || query,
+        location: aiFilters.location || '',
+        employment_type: aiFilters.employment_type || [],
+        experience_level: aiFilters.experience_level || [],
+        salary_min: aiFilters.min_salary || 0,
+        salary_max: aiFilters.max_salary || 0,
+        is_remote: aiFilters.remote || false,
+        skills: aiFilters.skills || [],
+      };
+      setFilters(newFilters);
+    } else {
+      // Fallback to basic search
+      setFilters(prev => ({ ...prev, search: query }));
+    }
+    refetch();
+  };
+
   const handleQuickSearch = () => {
     // Process natural language search and apply filters
     const processedFilters = processNaturalLanguageSearch(filters.search);
@@ -288,34 +311,16 @@ const Jobs = () => {
             </p>
           </div>
 
-          {/* Compact Search Bar */}
-          <div className="max-w-2xl mx-auto bg-white rounded-lg p-1.5 shadow-lg">
-            <div className="flex gap-1.5">
-              <div className="relative flex-1">
-                <Search className="absolute left-2 top-2.5 h-3 w-3 text-gray-400" />
-                <Input
-                  placeholder="Job title, keywords, or company"
-                  value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                  className="pl-8 h-8 text-sm text-gray-900"
-                />
-              </div>
-              <div className="relative">
-                <MapPin className="absolute left-2 top-2.5 h-3 w-3 text-gray-400" />
-                <Input
-                  placeholder="Location"
-                  value={filters.location}
-                  onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                  className="pl-8 h-8 w-28 text-sm text-gray-900"
-                />
-              </div>
-              <Button 
-                onClick={handleQuickSearch}
-                className="h-8 px-4 text-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              >
-                Search
-              </Button>
-            </div>
+          {/* AI-Powered Universal Search */}
+          <div className="max-w-2xl mx-auto">
+            <UniversalSearchBar
+              searchType="jobs"
+              onSearch={handleUniversalSearch}
+              placeholder="Try: 'remote React developer jobs in Mumbai above 15 LPA'"
+              className="bg-white rounded-lg shadow-lg"
+              showSuggestions={true}
+              showFilters={true}
+            />
           </div>
         </div>
       </div>

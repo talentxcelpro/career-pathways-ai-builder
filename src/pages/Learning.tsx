@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen, TrendingUp, Award, Sparkles, Target, Users, ArrowRight, Play, Clock, Star } from 'lucide-react';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
+import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
+import { SearchFilters } from '@/services/aiSearchService';
 
 const Learning = () => {
   const [activeTab, setActiveTab] = useState('courses');
@@ -45,6 +47,17 @@ const Learning = () => {
 
   const handleBrowseCourses = () => {
     setActiveTab('courses');
+  };
+
+  const handleUniversalSearch = (query: string, aiFilters?: SearchFilters) => {
+    if (aiFilters) {
+      // Apply AI-parsed filters
+      setSearchTerm(aiFilters.query || query);
+      if (aiFilters.category) setSelectedCategory(aiFilters.category);
+      if (aiFilters.difficulty_level) setSelectedDifficulty(aiFilters.difficulty_level);
+    } else {
+      setSearchTerm(query);
+    }
   };
 
   const getTabIcon = (tab: string) => {
@@ -145,9 +158,17 @@ const Learning = () => {
           </div>
         </div>
 
-        {/* Enhanced Search and Filters */}
+        {/* AI-Powered Learning Search */}
         <Card className="mb-8 border-0 shadow-xl bg-white/80 backdrop-blur-sm">
           <CardContent className="p-6">
+            <UniversalSearchBar
+              searchType="learning"
+              onSearch={handleUniversalSearch}
+              placeholder="Try: 'free Python courses for beginners with certificates'"
+              showSuggestions={true}
+              showFilters={true}
+              className="mb-4"
+            />
             <SearchAndFilters
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}

@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import { PeopleSearch } from "@/components/network/PeopleSearch";
 import { useConversations } from "@/hooks/useConversations";
 import { useNavigate } from 'react-router-dom';
+import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
+import { SearchFilters } from '@/services/aiSearchService';
 
 const People = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,6 +20,11 @@ const People = () => {
   const [industryFilter, setIndustryFilter] = useState('all');
   const navigate = useNavigate();
   const { findOrCreateConversation } = useConversations();
+
+  const handleUniversalSearch = (query: string, aiFilters?: SearchFilters) => {
+    setSearchTerm(query);
+    if (aiFilters?.location) setLocationFilter(aiFilters.location);
+  };
 
   // Get current user
   const { data: currentUser } = useQuery({

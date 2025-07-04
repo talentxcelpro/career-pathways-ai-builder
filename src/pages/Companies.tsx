@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Building2, MapPin, Users, Globe, Heart, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
+import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
+import { SearchFilters } from '@/services/aiSearchService';
 
 const Companies = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,6 +37,14 @@ const Companies = () => {
     refetch();
   }, REFRESH_INTERVALS.COMPANIES);
 
+  const handleUniversalSearch = (query: string, aiFilters?: SearchFilters) => {
+    if (aiFilters && aiFilters.query) {
+      setSearchTerm(aiFilters.query);
+    } else {
+      setSearchTerm(query);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -46,17 +56,15 @@ const Companies = () => {
           </p>
         </div>
 
-        {/* Search */}
+        {/* AI-Powered Company Search */}
         <div className="max-w-2xl mx-auto mb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search companies by name, industry, or location..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-8 text-sm"
-            />
-          </div>
+          <UniversalSearchBar
+            searchType="companies"
+            onSearch={handleUniversalSearch}
+            placeholder="Try: 'fintech startups in Bangalore hiring developers'"
+            showSuggestions={true}
+            showFilters={true}
+          />
         </div>
 
         {/* Companies Grid */}
