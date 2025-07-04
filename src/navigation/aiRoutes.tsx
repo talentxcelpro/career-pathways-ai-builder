@@ -5,6 +5,9 @@ import AIOptimizer from "../pages/ai/AIOptimizer";
 import JobMatch from "../pages/ai/JobMatch";
 import MessageSuggest from "../pages/ai/MessageSuggest";
 import Pathfinder from "../pages/ai/Pathfinder";
+import { AICareerAnalytics } from "../components/ai/AICareerAnalytics";
+import { PredictiveJobRecommendations } from "../components/ai/PredictiveJobRecommendations";
+import { SmartNetworkAnalytics } from "../components/ai/SmartNetworkAnalytics";
 
 export const aiRoutes = [
   {
@@ -37,5 +40,20 @@ export const aiRoutes = [
     title: "AI Pathfinder",
     to: "/ai/pathfinder",
     page: <Pathfinder />,
+  },
+  {
+    title: "Career Analytics",
+    to: "/ai/career-analytics",
+    page: <AICareerAnalytics />,
+  },
+  {
+    title: "Job Predictions",
+    to: "/ai/job-predictions",
+    page: <PredictiveJobRecommendations />,
+  },
+  {
+    title: "Network Analytics",
+    to: "/ai/network-analytics",
+    page: <SmartNetworkAnalytics />,
   },
 ];
