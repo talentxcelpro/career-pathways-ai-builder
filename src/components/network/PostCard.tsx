@@ -65,70 +65,72 @@ export const PostCard: React.FC<PostCardProps> = ({
   };
 
   return (
-    <Card className="hover:shadow-sm transition-shadow">
-      <CardContent className="p-2">
-        {/* Compact Post Header */}
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex items-start gap-2">
+    <Card className="hover:shadow-md transition-shadow">
+      <CardContent className="p-6">
+        {/* Post Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-start space-x-3">
             <Link to={`/network/people/${post.author_id}`} className="block">
-              <Avatar className="w-6 h-6 hover:scale-105 transition-transform">
+              <Avatar className="hover:scale-105 transition-transform">
                 <AvatarImage src={post.profiles?.profile_picture_url} />
-                <AvatarFallback className="text-xs">
+                <AvatarFallback>
                   {generateInitials(post.profiles)}
                 </AvatarFallback>
               </Avatar>
             </Link>
-            <div className="min-w-0 flex-1">
+            <div>
               <Link 
                 to={`/network/people/${post.author_id}`} 
-                className="hover:text-primary transition-colors"
+                className="hover:text-blue-600 transition-colors"
               >
-                <h3 className="font-medium text-sm truncate">
+                <h3 className="font-semibold text-gray-900">
                   {formatDisplayName(post.profiles)}
                 </h3>
               </Link>
-              <p className="text-xs text-muted-foreground truncate">
-                {post.profiles?.title || 'Professional'} • {formatTimeAgo(post.created_at)}
+              <p className="text-sm text-gray-600">
+                {post.profiles?.title || 'Professional'}
               </p>
+              <p className="text-xs text-gray-500">{formatTimeAgo(post.created_at)}</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-            <MoreHorizontal className="w-3 h-3" />
+          <Button variant="ghost" size="sm">
+            <MoreHorizontal className="h-4 w-4" />
           </Button>
         </div>
 
-        {/* Compact Post Content */}
-        <Link to={`/network/posts/${post.id}`} className="block mb-3 hover:bg-accent -mx-1 px-1 py-1 rounded transition-colors">
-          <p className="text-sm text-foreground whitespace-pre-wrap line-clamp-3">{post.content}</p>
+        {/* Post Content - Make clickable to navigate to detail page */}
+        <Link to={`/network/posts/${post.id}`} className="block mb-4 hover:bg-gray-50 -mx-2 px-2 py-2 rounded transition-colors">
+          <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
           
-          {/* Compact Post Media */}
+          {/* Post Media */}
           {post.media_urls && post.media_urls.length > 0 && (
-            <div className="mt-2 grid gap-1" style={{
+            <div className="mt-4 grid gap-2" style={{
               gridTemplateColumns: post.media_urls.length === 1 ? '1fr' : 
                                  post.media_urls.length === 2 ? '1fr 1fr' :
+                                 post.media_urls.length === 3 ? '1fr 1fr 1fr' :
                                  '1fr 1fr'
             }}>
-              {post.media_urls.slice(0, 2).map((url: string, index: number) => {
+              {post.media_urls.slice(0, 4).map((url: string, index: number) => {
                 const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
                 return (
                   <div key={index} className="relative">
                     {isVideo ? (
                       <video 
                         src={url}
-                        className="w-full h-24 object-cover rounded"
+                        className="w-full h-64 object-cover rounded-lg"
                         controls
                       />
                     ) : (
                       <img 
                         src={url}
-                        alt={`Media ${index + 1}`}
-                        className="w-full h-24 object-cover rounded"
+                        alt={`Post media ${index + 1}`}
+                        className="w-full h-64 object-cover rounded-lg"
                       />
                     )}
-                    {index === 1 && post.media_urls.length > 2 && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded flex items-center justify-center">
-                        <span className="text-white text-xs font-semibold">
-                          +{post.media_urls.length - 2}
+                    {index === 3 && post.media_urls.length > 4 && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                        <span className="text-white text-xl font-semibold">
+                          +{post.media_urls.length - 4}
                         </span>
                       </div>
                     )}
@@ -138,11 +140,11 @@ export const PostCard: React.FC<PostCardProps> = ({
             </div>
           )}
           
-          {/* Compact Post Tags */}
+          {/* Post Tags */}
           {post.tags && post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {post.tags.slice(0, 3).map((tag: string, index: number) => (
-                <Badge key={index} variant="secondary" className="text-xs px-1 py-0">
+            <div className="flex flex-wrap gap-2 mt-3">
+              {post.tags.map((tag: string, index: number) => (
+                <Badge key={index} variant="secondary" className="text-xs">
                   #{tag}
                 </Badge>
               ))}
@@ -150,7 +152,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           )}
         </Link>
 
-        {/* Compact Post Actions */}
+        {/* Post Actions */}
         <PostActions
           postId={post.id}
           initialLikes={post.likes_count || 0}
