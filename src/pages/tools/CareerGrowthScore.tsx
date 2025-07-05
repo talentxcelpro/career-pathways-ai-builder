@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToolsData } from '@/hooks/useToolsData';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -37,94 +38,138 @@ const CareerGrowthScore = () => {
   }, [user]);
 
   const handleAnalyze = async () => {
+    if (!user) {
+      toast.error('Please log in to calculate your career growth score');
+      return;
+    }
+
     setIsAnalyzing(true);
 
     try {
-      // Simulate analysis
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const mockResult = {
-        overall_score: 78,
-        growth_trajectory: 'Accelerating',
-        grade: 'B+',
-        components: [
-          {
-            category: 'Resume Strength',
-            score: 82,
-            weight: 25,
-            icon: 'Briefcase',
-            details: 'Well-structured with quantified achievements',
-            improvements: ['Add more technical keywords', 'Include recent certifications']
+      // Fetch user profile and related data
+      const [profileRes, resumesRes, connectionsRes, applicationsRes, toolUsageRes] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', user.id).single(),
+        supabase.from('ai_resumes').select('*').eq('user_id', user.id),
+        supabase.from('connections').select('*').or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`),
+        supabase.from('job_applications').select('*').eq('user_id', user.id),
+        supabase.from('tool_usage_enhanced').select('*').eq('user_id', user.id)
+      ]);
+
+      const profile = profileRes.data;
+      const resumes = resumesRes.data || [];
+      const connections = connectionsRes.data || [];
+      const applications = applicationsRes.data || [];
+      const toolUsage = toolUsageRes.data || [];
+
+      // Calculate component scores based on real data
+      const resumeStrength = Math.min(100, (resumes.length * 20) + (resumes.reduce((sum, r) => sum + (r.ats_score || 0), 0) / Math.max(resumes.length, 1)));
+      const skillsScore = profile?.profile_completed ? 85 : 50;
+      const networkActivity = Math.min(100, connections.length * 5 + toolUsage.length * 2);
+      const careerProgression = applications.length > 0 ? Math.min(100, 60 + applications.filter(a => a.status === 'hired').length * 20) : 40;
+
+      const components = [
+        {
+          category: 'Resume Strength',
+          score: Math.round(resumeStrength),
+          weight: 25,
+          icon: 'Briefcase',
+          details: resumes.length > 0 ? `${resumes.length} resume(s) with avg ATS score ${Math.round(resumes.reduce((sum, r) => sum + (r.ats_score || 0), 0) / resumes.length)}` : 'No resumes uploaded',
+          improvements: resumes.length === 0 ? ['Upload your resume', 'Optimize for ATS'] : ['Add more technical keywords', 'Include recent achievements']
+        },
+        {
+          category: 'Skills Development',
+          score: skillsScore,
+          weight: 30,
+          icon: 'BookOpen',
+          details: profile?.profile_completed ? 'Profile completed with skills listed' : 'Incomplete profile',
+          improvements: profile?.profile_completed ? ['Complete skill assessments', 'Add certifications'] : ['Complete your profile', 'Add your skills']
+        },
+        {
+          category: 'Network Activity',
+          score: Math.round(networkActivity),
+          weight: 20,
+          icon: 'Users',
+          details: `${connections.length} connections, ${toolUsage.length} tool uses`,
+          improvements: connections.length < 10 ? ['Build more connections', 'Use networking tools'] : ['Engage more actively', 'Share knowledge']
+        },
+        {
+          category: 'Career Progression',
+          score: Math.round(careerProgression),
+          weight: 25,
+          icon: 'TrendingUp',
+          details: `${applications.length} applications, ${applications.filter(a => a.status === 'hired').length} hires`,
+          improvements: applications.length === 0 ? ['Start applying for jobs', 'Set career goals'] : ['Apply more strategically', 'Track progress better']
+        }
+      ];
+
+      const overallScore = Math.round(components.reduce((sum, comp) => sum + (comp.score * comp.weight / 100), 0));
+      const growthTrajectory = overallScore > 80 ? 'Accelerating' : overallScore > 60 ? 'Steady' : 'Building';
+      const grade = overallScore >= 85 ? 'A' : overallScore >= 75 ? 'B+' : overallScore >= 65 ? 'B' : overallScore >= 55 ? 'C+' : 'C';
+
+      // Use AI for personalized insights
+      const { data: aiResponse } = await supabase.functions.invoke('ai-tools', {
+        body: {
+          type: 'career-growth-analysis',
+          data: {
+            profile,
+            resumesCount: resumes.length,
+            connectionsCount: connections.length,
+            applicationsCount: applications.length,
+            scores: { resumeStrength, skillsScore, networkActivity, careerProgression }
           },
-          {
-            category: 'Skills Development',
-            score: 75,
-            weight: 30,
-            icon: 'BookOpen',
-            details: 'Good foundation with room for growth',
-            improvements: ['Complete AI/ML certification', 'Learn cloud technologies']
-          },
-          {
-            category: 'Network Activity',
-            score: 68,
-            weight: 20,
-            icon: 'Users',
-            details: 'Moderate engagement levels',
-            improvements: ['Increase LinkedIn posting frequency', 'Attend more industry events']
-          },
-          {
-            category: 'Career Progression',
-            score: 85,
-            weight: 25,
-            icon: 'TrendingUp',
-            details: 'Strong upward trajectory',
-            improvements: ['Seek leadership opportunities', 'Consider strategic role changes']
-          }
-        ],
-        strengths: [
-          'Consistent career progression with clear advancement',
-          'Strong technical foundation with relevant experience',
-          'Good balance of hard and soft skills',
-          'Active professional development mindset'
-        ],
-        growth_opportunities: [
-          'Expand technical skills in emerging technologies (AI, Cloud)',
-          'Build stronger professional network and thought leadership',
-          'Seek mentorship opportunities to accelerate growth',
-          'Consider obtaining industry certifications for credibility'
-        ],
+          userId: user.id
+        }
+      });
+
+      const result = {
+        overall_score: overallScore,
+        growth_trajectory: growthTrajectory,
+        grade,
+        components,
+        strengths: aiResponse?.strengths || [
+          resumeStrength > 70 ? 'Strong resume foundation' : null,
+          connections.length > 10 ? 'Good professional network' : null,
+          applications.length > 5 ? 'Active job seeker' : null,
+          profile?.profile_completed ? 'Complete professional profile' : null
+        ].filter(Boolean),
+        growth_opportunities: aiResponse?.growth_opportunities || [
+          resumeStrength < 70 ? 'Improve resume quality and ATS optimization' : null,
+          connections.length < 10 ? 'Expand professional network' : null,
+          applications.length === 0 ? 'Start applying for suitable positions' : null,
+          !profile?.profile_completed ? 'Complete your professional profile' : null
+        ].filter(Boolean),
         industry_benchmark: {
-          your_score: 78,
+          your_score: overallScore,
           industry_average: 65,
           top_10_percent: 88,
-          percentile: 74
+          percentile: Math.min(95, Math.max(5, Math.round((overallScore / 100) * 100)))
         },
         next_milestones: [
           {
-            title: 'Senior-Level Role',
-            timeline: '6-12 months',
-            probability: 85,
-            requirements: ['Leadership experience', 'Technical depth', 'Team management']
+            title: overallScore < 60 ? 'Profile Completion' : 'Senior-Level Role',
+            timeline: overallScore < 60 ? '1-2 months' : '6-12 months',
+            probability: overallScore < 60 ? 90 : Math.max(30, overallScore - 20),
+            requirements: overallScore < 60 ? ['Complete profile', 'Upload resume', 'Set goals'] : ['Leadership experience', 'Technical depth', 'Network expansion']
           },
           {
             title: 'Industry Recognition',
-            timeline: '12-18 months', 
-            probability: 65,
-            requirements: ['Thought leadership', 'Speaking engagements', 'Content creation']
+            timeline: '12-18 months',
+            probability: Math.max(20, overallScore - 40),
+            requirements: ['Thought leadership', 'Active networking', 'Skill certifications']
           },
           {
             title: 'Executive Position',
             timeline: '2-3 years',
-            probability: 45,
+            probability: Math.max(10, overallScore - 60),
             requirements: ['Strategic thinking', 'Business acumen', 'Large team leadership']
           }
         ]
       };
 
-      setAnalysisResult(mockResult);
+      setAnalysisResult(result);
 
       if (usageId) {
-        await updateToolUsage(usageId, mockResult, 'completed', 120);
+        await updateToolUsage(usageId, result, 'completed', 120);
       }
 
       toast.success('Career growth analysis complete!');

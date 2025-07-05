@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToolsData } from '@/hooks/useToolsData';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -36,42 +37,98 @@ const JobApplicationFunnel = () => {
   }, [user]);
 
   const handleAnalyze = async () => {
+    if (!user) {
+      toast.error('Please log in to analyze your application funnel');
+      return;
+    }
+
     setIsAnalyzing(true);
 
     try {
-      // Simulate analysis
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const mockResult = {
-        totalApplications: 45,
-        interviews: 8,
-        offers: 2,
-        stages: [
-          { name: 'Applications Sent', count: 45, percentage: 100, color: 'bg-blue-500' },
-          { name: 'Profile Viewed', count: 28, percentage: 62, color: 'bg-green-500' },
-          { name: 'Initial Screening', count: 15, percentage: 33, color: 'bg-yellow-500' },
-          { name: 'Interviews', count: 8, percentage: 18, color: 'bg-orange-500' },
-          { name: 'Final Round', count: 4, percentage: 9, color: 'bg-purple-500' },
-          { name: 'Offers', count: 2, percentage: 4, color: 'bg-red-500' }
+      // Fetch user's job applications
+      const { data: applications, error: appsError } = await supabase
+        .from('job_applications')
+        .select(`
+          *,
+          jobs:job_id (
+            title,
+            company:company_id (name)
+          )
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (appsError) throw appsError;
+
+      // Calculate funnel metrics from real data
+      const totalApplications = applications?.length || 0;
+      const profileViewed = applications?.filter(app => app.status !== 'pending').length || 0;
+      const screening = applications?.filter(app => ['screening', 'interview', 'offer', 'hired'].includes(app.status)).length || 0;
+      const interviews = applications?.filter(app => ['interview', 'offer', 'hired'].includes(app.status)).length || 0;
+      const finalRound = applications?.filter(app => ['final_interview', 'offer', 'hired'].includes(app.status)).length || 0;
+      const offers = applications?.filter(app => ['offer', 'hired'].includes(app.status)).length || 0;
+
+      const stages = [
+        { name: 'Applications Sent', count: totalApplications, percentage: 100, color: 'bg-blue-500' },
+        { name: 'Profile Viewed', count: profileViewed, percentage: totalApplications ? Math.round((profileViewed / totalApplications) * 100) : 0, color: 'bg-green-500' },
+        { name: 'Initial Screening', count: screening, percentage: totalApplications ? Math.round((screening / totalApplications) * 100) : 0, color: 'bg-yellow-500' },
+        { name: 'Interviews', count: interviews, percentage: totalApplications ? Math.round((interviews / totalApplications) * 100) : 0, color: 'bg-orange-500' },
+        { name: 'Final Round', count: finalRound, percentage: totalApplications ? Math.round((finalRound / totalApplications) * 100) : 0, color: 'bg-purple-500' },
+        { name: 'Offers', count: offers, percentage: totalApplications ? Math.round((offers / totalApplications) * 100) : 0, color: 'bg-red-500' }
+      ];
+
+      // Generate AI insights using real data
+      const { data: aiResponse, error: aiError } = await supabase.functions.invoke('ai-tools', {
+        body: {
+          type: 'application-funnel-analysis',
+          data: {
+            applications: applications?.slice(0, 10), // Recent applications for context
+            metrics: {
+              totalApplications,
+              profileViewed,
+              screening,
+              interviews,
+              finalRound,
+              offers,
+              conversionRates: {
+                profileView: totalApplications ? Math.round((profileViewed / totalApplications) * 100) : 0,
+                interview: totalApplications ? Math.round((interviews / totalApplications) * 100) : 0,
+                offer: interviews ? Math.round((offers / interviews) * 100) : 0
+              }
+            }
+          },
+          userId: user.id
+        }
+      });
+
+      const result = {
+        totalApplications,
+        interviews,
+        offers,
+        stages,
+        insights: aiResponse?.insights || [
+          totalApplications === 0 
+            ? 'No applications found. Start applying to jobs to see your funnel analysis.'
+            : `You've applied to ${totalApplications} jobs with ${offers} offers received.`,
+          interviews > 0 
+            ? `Your interview conversion rate is ${totalApplications ? Math.round((interviews / totalApplications) * 100) : 0}%.`
+            : 'Focus on improving your application quality to get more interviews.',
+          offers > 0 
+            ? `Great job! You're converting ${interviews ? Math.round((offers / interviews) * 100) : 0}% of interviews to offers.`
+            : 'Keep improving your interview skills to convert more interviews to offers.'
         ],
-        insights: [
-          'Your application-to-interview rate (18%) is above average (12%)',
-          'Profile view rate suggests strong resume optimization',
-          'Interview-to-offer conversion (25%) is excellent',
-          'Consider applying to more positions to increase absolute offers'
-        ],
-        recommendations: [
-          'Target 15-20 applications per week for optimal results',
-          'Focus on companies with 100-500 employees for higher response rates',
-          'Apply within first 3 days of job posting for 3x better visibility',
-          'Customize your application for each role to improve screening rate'
+        recommendations: aiResponse?.recommendations || [
+          'Apply to more positions that match your skill set',
+          'Optimize your resume for better ATS compatibility',
+          'Follow up on pending applications after 1-2 weeks',
+          'Prepare for interviews using company-specific research'
         ]
       };
 
-      setAnalysisResult(mockResult);
+      setAnalysisResult(result);
 
       if (usageId) {
-        await updateToolUsage(usageId, mockResult, 'completed', 120);
+        await updateToolUsage(usageId, result, 'completed', 120);
       }
 
       toast.success('Funnel analysis complete!');
