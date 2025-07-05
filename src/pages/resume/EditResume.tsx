@@ -406,6 +406,24 @@ const EditResume = () => {
     }
   };
 
+  // Check if resume ID is provided
+  if (!id) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Resume Not Found</h2>
+          <p className="text-gray-600 mb-6">
+            No resume ID provided. Please select a resume to edit from your dashboard.
+          </p>
+          <Button onClick={() => navigate('/resume-builder')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Resume Dashboard
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFileUpload } from "@/hooks/useFileUpload";
-import { EnhancedResumeExtractor } from "@/services/enhancedResumeExtractor";
+import { ImprovedResumeExtractor } from "@/services/improvedResumeExtractor";
 import { toast } from "sonner";
 
 export const useResumeUpload = () => {
@@ -56,9 +56,9 @@ export const useResumeUpload = () => {
       const fileUrl = await uploadFile(file, `resume-${Date.now()}.${file.name.split('.').pop()}`);
       console.log('File uploaded successfully:', fileUrl);
       
-      // Step 2: Extract content using Enhanced AI
+      // Step 2: Extract content using Improved AI
       setProcessingStep(2);
-      const extractor = new EnhancedResumeExtractor();
+      const extractor = new ImprovedResumeExtractor();
       const extractedContent = await extractor.extractFromFile(file);
       console.log('Content extracted:', extractedContent);
       
