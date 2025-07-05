@@ -647,25 +647,25 @@ const SkillAssessmentEngine = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-primary/5">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" onClick={() => navigate('/tools')} className="flex items-center gap-2">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="ghost" onClick={() => navigate('/tools')} className="flex items-center gap-2 text-body">
             <ArrowLeft className="h-4 w-4" />
             Back to Tools
           </Button>
         </div>
 
-        <Card className="max-w-4xl mx-auto">
-          <CardContent className="p-8">
+        <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm">
+          <CardContent className="p-6">
             {!isStarted && !assessmentResults ? (
-              <div className="text-center space-y-6">
-                <div className="p-4 bg-primary/10 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
-                  <BookOpen className="h-8 w-8 text-primary" />
+              <div className="text-center space-y-4">
+                <div className="p-3 bg-primary/10 rounded-full w-12 h-12 mx-auto flex items-center justify-center">
+                  <BookOpen className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">Comprehensive Skill Assessment</h2>
-                  <p className="text-muted-foreground mb-6">
+                  <h2 className="text-heading-xl font-bold mb-2 text-slate-900">Comprehensive Skill Assessment</h2>
+                  <p className="text-body text-slate-600 mb-6">
                     Evaluate your skills across multiple dimensions and get personalized development recommendations
                   </p>
                 </div>

@@ -342,44 +342,46 @@ ${user?.email?.split('@')[0] || 'Your Name'}`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-primary/5">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" onClick={() => navigate('/tools')} className="flex items-center gap-2">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="ghost" onClick={() => navigate('/tools')} className="flex items-center gap-2 text-body">
             <ArrowLeft className="h-4 w-4" />
             Back to Tools
           </Button>
         </div>
 
-        <Card className="max-w-6xl mx-auto">
-          <CardContent className="p-8">
+        <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm">
+          <CardContent className="p-6">
             {!generatedLetter ? (
               <div className="space-y-6">
                 <div className="text-center">
-                  <div className="p-4 bg-primary/10 rounded-full w-16 h-16 mx-auto flex items-center justify-center mb-4">
-                    <FileText className="h-8 w-8 text-primary" />
+                  <div className="p-3 bg-primary/10 rounded-full w-12 h-12 mx-auto flex items-center justify-center mb-3">
+                    <FileText className="h-5 w-5 text-primary" />
                   </div>
-                  <h2 className="text-2xl font-bold mb-2">Cover Letter Generator</h2>
-                  <p className="text-muted-foreground mb-6">
+                  <h2 className="text-heading-xl font-bold mb-2 text-slate-900">Cover Letter Generator</h2>
+                  <p className="text-body text-slate-600 mb-6">
                     Create personalized, professional cover letters tailored to specific jobs
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Job Title *</label>
+                    <label className="text-body font-medium mb-2 block text-slate-700">Job Title *</label>
                     <Input
                       placeholder="e.g., Software Engineer"
                       value={jobTitle}
                       onChange={(e) => setJobTitle(e.target.value)}
+                      className="text-body"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Company Name *</label>
+                    <label className="text-body font-medium mb-2 block text-slate-700">Company Name *</label>
                     <Input
                       placeholder="e.g., Google"
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
+                      className="text-body"
                     />
                   </div>
                   <div>

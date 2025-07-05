@@ -65,66 +65,66 @@ const ToolsDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-primary/5">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <Sparkles className="h-8 w-8 text-primary" />
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-3">
+            <div className="p-2 bg-primary/10 rounded-full">
+              <Sparkles className="h-5 w-5 text-primary" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold mb-4">
+          <h1 className="text-heading-xl font-bold mb-2 text-slate-900">
             AI-Powered Career Tools
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-body text-slate-600 max-w-2xl mx-auto">
             Transform your career with intelligent tools designed to accelerate your professional growth
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6 text-center">
-              <TrendingUp className="h-8 w-8 text-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold">{usageStats.totalUsage}</div>
-              <div className="text-sm text-muted-foreground">Tools Used</div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <Card className="border-0 shadow-md bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-4 text-center">
+              <TrendingUp className="h-5 w-5 text-primary mx-auto mb-2" />
+              <div className="text-heading-lg font-bold text-slate-900">{usageStats.totalUsage}</div>
+              <div className="text-caption text-slate-600">Tools Used</div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Clock className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{usageStats.completedUsage}</div>
-              <div className="text-sm text-muted-foreground">Completed</div>
+          <Card className="border-0 shadow-md bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-4 text-center">
+              <Clock className="h-5 w-5 text-success mx-auto mb-2" />
+              <div className="text-heading-lg font-bold text-slate-900">{usageStats.completedUsage}</div>
+              <div className="text-caption text-slate-600">Completed</div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{usageStats.favoriteTools}</div>
-              <div className="text-sm text-muted-foreground">Saved Results</div>
+          <Card className="border-0 shadow-md bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-4 text-center">
+              <Star className="h-5 w-5 text-yellow-600 mx-auto mb-2" />
+              <div className="text-heading-lg font-bold text-slate-900">{usageStats.favoriteTools}</div>
+              <div className="text-caption text-slate-600">Saved Results</div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Sparkles className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{filteredTools.length}</div>
-              <div className="text-sm text-muted-foreground">Available Tools</div>
+          <Card className="border-0 shadow-md bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-4 text-center">
+              <Sparkles className="h-5 w-5 text-purple-600 mx-auto mb-2" />
+              <div className="text-heading-lg font-bold text-slate-900">{filteredTools.length}</div>
+              <div className="text-caption text-slate-600">Available Tools</div>
             </CardContent>
           </Card>
         </div>
 
         {/* Search and Filters */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
+        <Card className="mb-6 border-0 shadow-md bg-white/90 backdrop-blur-sm">
+          <CardContent className="p-4">
+            <div className="flex flex-col md:flex-row gap-3">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search tools by name or description..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 text-body"
                 />
               </div>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -137,9 +137,9 @@ const ToolsDashboard = () => {
                     <SelectItem key={category.value} value={category.value}>
                       <div className="flex items-center gap-2">
                         <category.icon className="h-4 w-4" />
-                        {category.label}
+                        <span className="text-body">{category.label}</span>
                         {category.value !== 'all' && (
-                          <Badge variant="secondary" className="ml-2">
+                          <Badge variant="secondary" className="ml-2 text-xs">
                             {toolCategories[category.value] || 0}
                           </Badge>
                         )}
@@ -153,35 +153,36 @@ const ToolsDashboard = () => {
         </Card>
 
         {/* Tools Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredTools.map((tool) => {
             const IconComponent = getIconComponent(tool.icon_name);
             return (
               <Card 
                 key={tool.id} 
-                className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary/20"
+                className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 shadow-md bg-white/90 backdrop-blur-sm hover:bg-white/95"
                 onClick={() => handleToolClick(tool.slug)}
               >
-                <CardHeader className="pb-4">
+                <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <div className="p-3 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
-                      <IconComponent className="h-6 w-6 text-primary" />
+                    <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
+                      <IconComponent className="h-4 w-4 text-primary" />
                     </div>
                     <Badge variant="outline" className="text-xs">
                       {tool.category}
                     </Badge>
                   </div>
-                  <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                  <CardTitle className="text-heading-md text-slate-900 group-hover:text-primary transition-colors">
                     {tool.name}
                   </CardTitle>
-                  <CardDescription className="text-sm leading-relaxed">
+                  <CardDescription className="text-body text-slate-600 leading-relaxed">
                     {tool.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <Button 
                     variant="ghost" 
-                    className="w-full justify-between group-hover:bg-primary/10 transition-colors"
+                    size="sm"
+                    className="w-full justify-between group-hover:bg-primary/10 transition-colors text-body"
                   >
                     Try Tool
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -216,25 +217,26 @@ const ToolsDashboard = () => {
 
         {/* Recent Activity */}
         {usageStats.recentActivity.length > 0 && (
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
+          <Card className="mt-6 border-0 shadow-md bg-white/90 backdrop-blur-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-heading-md text-slate-900">
+                <Clock className="h-4 w-4" />
                 Recent Activity
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {usageStats.recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <div key={activity.id} className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
                     <div>
-                      <div className="font-medium">{activity.tool_name}</div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="font-medium text-body text-slate-900">{activity.tool_name}</div>
+                      <div className="text-caption text-slate-600">
                         {new Date(activity.created_at).toLocaleDateString()}
                       </div>
                     </div>
                     <Badge 
                       variant={activity.completion_status === 'completed' ? 'default' : 'secondary'}
+                      className="text-xs"
                     >
                       {activity.completion_status}
                     </Badge>
