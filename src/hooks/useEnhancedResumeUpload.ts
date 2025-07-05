@@ -54,19 +54,14 @@ export const useEnhancedResumeUpload = () => {
 
     console.log('Creating upload status for user:', user.id);
     
-    // Test if auth.uid() is working properly
-    const { data: authTest, error: authError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', user.id)
-      .single();
+    // Wait a moment for auth state to stabilize
+    await new Promise(resolve => setTimeout(resolve, 100));
     
-    if (authError) {
-      console.error('Auth test failed:', authError);
-      throw new Error('Authentication verification failed. Please log out and back in.');
+    // Get fresh session to ensure authentication is valid
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session) {
+      throw new Error('Authentication session expired. Please log in again.');
     }
-    
-    console.log('Auth test passed, user exists in profiles:', authTest);
     
     const { data, error } = await supabase
       .from('resume_upload_status')
@@ -83,6 +78,9 @@ export const useEnhancedResumeUpload = () => {
 
     if (error) {
       console.error('Upload status creation error:', error);
+      if (error.message?.includes('row-level security')) {
+        throw new Error('Authentication session expired. Please refresh the page and try again.');
+      }
       throw error;
     }
 

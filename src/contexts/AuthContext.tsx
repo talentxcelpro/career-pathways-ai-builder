@@ -44,26 +44,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         if (!mounted) return;
 
         console.log('Auth state changed:', event, session?.user?.email);
         
+        // Only synchronous state updates here
         setSession(session);
         setUser(session?.user ?? null);
         
         // Handle different auth events
         if (event === 'SIGNED_OUT') {
-          // Clear any cached data
-          localStorage.removeItem('supabase.auth.token');
-          // Force redirect to index page after logout
-          navigate('/', { replace: true });
+          // Use setTimeout to defer navigation to avoid deadlocks
+          setTimeout(() => {
+            navigate('/', { replace: true });
+          }, 0);
         } else if (event === 'SIGNED_IN' && session?.user) {
-          // Fast redirect for successful login
-          const currentPath = window.location.pathname;
-          if (currentPath === '/' || currentPath.startsWith('/auth')) {
-            navigate('/dashboard', { replace: true });
-          }
+          // Use setTimeout to defer navigation
+          setTimeout(() => {
+            const currentPath = window.location.pathname;
+            if (currentPath === '/' || currentPath.startsWith('/auth')) {
+              navigate('/dashboard', { replace: true });
+            }
+          }, 0);
         } else if (event === 'TOKEN_REFRESHED') {
           console.log('Token refreshed successfully');
         }
