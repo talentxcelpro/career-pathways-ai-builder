@@ -96,33 +96,33 @@ const ToolsDashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card className="border-0 shadow-md bg-white/90 backdrop-blur-sm">
-            <CardContent className="p-4 text-center">
-              <TrendingUp className="h-5 w-5 text-primary mx-auto mb-2" />
-              <div className="text-heading-lg font-bold text-slate-900">{usageStats.totalUsage}</div>
-              <div className="text-caption text-slate-600">Tools Used</div>
+        <div className="grid grid-cols-4 gap-2 mb-4">
+          <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-2 text-center">
+              <TrendingUp className="h-3 w-3 text-primary mx-auto mb-1" />
+              <div className="text-sm font-bold text-slate-900">{usageStats.totalUsage}</div>
+              <div className="text-xs text-slate-600">Used</div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md bg-white/90 backdrop-blur-sm">
-            <CardContent className="p-4 text-center">
-              <Clock className="h-5 w-5 text-success mx-auto mb-2" />
-              <div className="text-heading-lg font-bold text-slate-900">{usageStats.completedUsage}</div>
-              <div className="text-caption text-slate-600">Completed</div>
+          <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-2 text-center">
+              <Clock className="h-3 w-3 text-success mx-auto mb-1" />
+              <div className="text-sm font-bold text-slate-900">{usageStats.completedUsage}</div>
+              <div className="text-xs text-slate-600">Done</div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md bg-white/90 backdrop-blur-sm">
-            <CardContent className="p-4 text-center">
-              <Star className="h-5 w-5 text-yellow-600 mx-auto mb-2" />
-              <div className="text-heading-lg font-bold text-slate-900">{usageStats.favoriteTools}</div>
-              <div className="text-caption text-slate-600">Saved Results</div>
+          <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-2 text-center">
+              <Star className="h-3 w-3 text-yellow-600 mx-auto mb-1" />
+              <div className="text-sm font-bold text-slate-900">{usageStats.favoriteTools}</div>
+              <div className="text-xs text-slate-600">Saved</div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md bg-white/90 backdrop-blur-sm">
-            <CardContent className="p-4 text-center">
-              <Sparkles className="h-5 w-5 text-purple-600 mx-auto mb-2" />
-              <div className="text-heading-lg font-bold text-slate-900">{filteredTools.length}</div>
-              <div className="text-caption text-slate-600">Available Tools</div>
+          <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-2 text-center">
+              <Sparkles className="h-3 w-3 text-purple-600 mx-auto mb-1" />
+              <div className="text-sm font-bold text-slate-900">{filteredTools.length}</div>
+              <div className="text-xs text-slate-600">Available</div>
             </CardContent>
           </Card>
         </div>
