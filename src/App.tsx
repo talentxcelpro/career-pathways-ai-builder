@@ -85,7 +85,6 @@ const App = () => (
                             <ProtectedRoute>{item.page}</ProtectedRoute>
                           )
                         }
-                        {...(item.exact && { index: item.to === "/" })}
                       />
                     );
                   })}
