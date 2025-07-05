@@ -76,6 +76,26 @@ export const Navbar = () => {
     enabled: !!user?.id
   });
 
+  // Check if user has company access
+  const { data: hasCompanyAccess = false } = useQuery({
+    queryKey: ['company-access', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return false;
+      
+      const { data, error } = await supabase
+        .from('company_team_members')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .in('role', ['owner', 'admin'])
+        .limit(1);
+      
+      if (error) throw error;
+      return data && data.length > 0;
+    },
+    enabled: !!user?.id
+  });
+
   const handleSignOut = async () => {
     await signOut();
   };
@@ -209,6 +229,14 @@ export const Navbar = () => {
                         <span>Profile</span>
                       </Link>
                     </DropdownMenuItem>
+                    {hasCompanyAccess && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/company/dashboard" className="flex items-center">
+                          <Building2 className="mr-2 h-4 w-4" />
+                          <span>Company Dashboard</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem asChild>
                       <Link to="/profile/settings" className="flex items-center">
                         <Settings className="mr-2 h-4 w-4" />
