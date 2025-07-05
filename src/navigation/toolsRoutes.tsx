@@ -1,7 +1,10 @@
 
-import { Brain, Calculator, MessageSquare, Target, FileText, Users, BookOpen, Briefcase, User, TrendingUp } from "lucide-react";
+import { Brain, Calculator, MessageSquare, Target, FileText, Users, BookOpen, Briefcase, User, TrendingUp, BarChart3, PieChart, Award } from "lucide-react";
 import ToolsDashboard from "../pages/tools/ToolsDashboard";
 import AICareerPathfinder from "../pages/tools/AICareerPathfinder";
+import JobApplicationFunnel from "../pages/tools/JobApplicationFunnel";
+import ResumePerformanceInsights from "../pages/tools/ResumePerformanceInsights";  
+import CareerGrowthScore from "../pages/tools/CareerGrowthScore";
 import SalaryAnalyzer from "../pages/tools/SalaryAnalyzer";
 import InterviewPrep from "../pages/tools/InterviewPrep";
 import CareerPathfinder from "../pages/tools/CareerPathfinder";
@@ -25,6 +28,24 @@ export const toolsRoutes = [
     to: "/tools/ai-career-pathfinder",
     icon: <Target className="h-4 w-4" />,
     page: <AICareerPathfinder />,
+  },
+  {
+    title: "Job Application Funnel",
+    to: "/tools/job-application-funnel",
+    icon: <BarChart3 className="h-4 w-4" />,
+    page: <JobApplicationFunnel />,
+  },
+  {
+    title: "Resume Performance Insights",
+    to: "/tools/resume-performance-insights",
+    icon: <PieChart className="h-4 w-4" />,
+    page: <ResumePerformanceInsights />,
+  },
+  {
+    title: "Career Growth Score",
+    to: "/tools/career-growth-score",
+    icon: <Award className="h-4 w-4" />,
+    page: <CareerGrowthScore />,
   },
   {
     title: "Resume Builder",
