@@ -36,8 +36,8 @@ export const resumeRoutes = [
     page: <EditResume />,
   },
   {
-    title: "Edit Resume (Alternative Path)",
-    to: "/resume/edit/:id",
+    title: "Edit Resume",
+    to: "/resume/edit/:resumeId",
     icon: <Edit className="h-4 w-4" />,
     page: <EditResume />,
   },

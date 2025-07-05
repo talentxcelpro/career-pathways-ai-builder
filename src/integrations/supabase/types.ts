@@ -155,6 +155,116 @@ export type Database = {
           },
         ]
       }
+      ai_cover_letters_enhanced: {
+        Row: {
+          ai_generated: boolean | null
+          ai_prompt: string | null
+          company_name: string | null
+          content: string
+          created_at: string | null
+          id: string
+          job_id: string | null
+          job_title: string | null
+          language: string | null
+          resume_id: string | null
+          template_id: string | null
+          title: string
+          tone: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          ai_prompt?: string | null
+          company_name?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          job_title?: string | null
+          language?: string | null
+          resume_id?: string | null
+          template_id?: string | null
+          title: string
+          tone?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_generated?: boolean | null
+          ai_prompt?: string | null
+          company_name?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          job_title?: string | null
+          language?: string | null
+          resume_id?: string | null
+          template_id?: string | null
+          title?: string
+          tone?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_cover_letters_enhanced_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_resume_suggestions: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          experience_level: string | null
+          id: string
+          industry: string | null
+          is_used: boolean | null
+          job_title: string | null
+          keywords: Json | null
+          original_content: string | null
+          section_type: string
+          suggested_content: string
+          suggestion_type: string
+          user_id: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          experience_level?: string | null
+          id?: string
+          industry?: string | null
+          is_used?: boolean | null
+          job_title?: string | null
+          keywords?: Json | null
+          original_content?: string | null
+          section_type: string
+          suggested_content: string
+          suggestion_type: string
+          user_id?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          experience_level?: string | null
+          id?: string
+          industry?: string | null
+          is_used?: boolean | null
+          job_title?: string | null
+          keywords?: Json | null
+          original_content?: string | null
+          section_type?: string
+          suggested_content?: string
+          suggestion_type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_resumes: {
         Row: {
           ats_score: number | null
@@ -3295,6 +3405,265 @@ export type Database = {
         }
         Relationships: []
       }
+      resume_analytics: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          job_id: string | null
+          metadata: Json | null
+          referrer: string | null
+          resume_id: string
+          user_agent: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          job_id?: string | null
+          metadata?: Json | null
+          referrer?: string | null
+          resume_id: string
+          user_agent?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          job_id?: string | null
+          metadata?: Json | null
+          referrer?: string | null
+          resume_id?: string
+          user_agent?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_analytics_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_ats_analysis: {
+        Row: {
+          analyzed_at: string | null
+          content_score: number | null
+          expires_at: string | null
+          flagged_issues: Json | null
+          formatting_score: number | null
+          id: string
+          job_description_id: string | null
+          keyword_score: number | null
+          missing_keywords: Json | null
+          overall_score: number
+          recommendations: Json | null
+          resume_id: string
+        }
+        Insert: {
+          analyzed_at?: string | null
+          content_score?: number | null
+          expires_at?: string | null
+          flagged_issues?: Json | null
+          formatting_score?: number | null
+          id?: string
+          job_description_id?: string | null
+          keyword_score?: number | null
+          missing_keywords?: Json | null
+          overall_score?: number
+          recommendations?: Json | null
+          resume_id: string
+        }
+        Update: {
+          analyzed_at?: string | null
+          content_score?: number | null
+          expires_at?: string | null
+          flagged_issues?: Json | null
+          formatting_score?: number | null
+          id?: string
+          job_description_id?: string | null
+          keyword_score?: number | null
+          missing_keywords?: Json | null
+          overall_score?: number
+          recommendations?: Json | null
+          resume_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_ats_analysis_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_content_blocks: {
+        Row: {
+          ai_generated: boolean | null
+          ai_prompt: string | null
+          block_type: string
+          company: string | null
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          is_current: boolean | null
+          location: string | null
+          metadata: Json | null
+          position: number
+          resume_id: string
+          section_type: string
+          start_date: string | null
+          subtitle: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          ai_prompt?: string | null
+          block_type: string
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean | null
+          location?: string | null
+          metadata?: Json | null
+          position?: number
+          resume_id: string
+          section_type: string
+          start_date?: string | null
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_generated?: boolean | null
+          ai_prompt?: string | null
+          block_type?: string
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean | null
+          location?: string | null
+          metadata?: Json | null
+          position?: number
+          resume_id?: string
+          section_type?: string
+          start_date?: string | null
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_content_blocks_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_exports: {
+        Row: {
+          created_at: string | null
+          export_format: string
+          export_settings: Json | null
+          file_url: string | null
+          id: string
+          resume_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          export_format: string
+          export_settings?: Json | null
+          file_url?: string | null
+          id?: string
+          resume_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          export_format?: string
+          export_settings?: Json | null
+          file_url?: string | null
+          id?: string
+          resume_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_exports_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_job_matches: {
+        Row: {
+          analyzed_at: string | null
+          expires_at: string | null
+          id: string
+          job_id: string
+          match_score: number
+          matched_keywords: Json | null
+          matched_skills: Json | null
+          missing_keywords: Json | null
+          missing_skills: Json | null
+          recommendations: Json | null
+          resume_id: string
+        }
+        Insert: {
+          analyzed_at?: string | null
+          expires_at?: string | null
+          id?: string
+          job_id: string
+          match_score?: number
+          matched_keywords?: Json | null
+          matched_skills?: Json | null
+          missing_keywords?: Json | null
+          missing_skills?: Json | null
+          recommendations?: Json | null
+          resume_id: string
+        }
+        Update: {
+          analyzed_at?: string | null
+          expires_at?: string | null
+          id?: string
+          job_id?: string
+          match_score?: number
+          matched_keywords?: Json | null
+          matched_skills?: Json | null
+          missing_keywords?: Json | null
+          missing_skills?: Json | null
+          recommendations?: Json | null
+          resume_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_job_matches_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_sections: {
         Row: {
           content: Json
@@ -3332,6 +3701,56 @@ export type Database = {
             columns: ["resume_id"]
             isOneToOne: false
             referencedRelation: "ai_resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_skills: {
+        Row: {
+          ai_suggested: boolean | null
+          category: string | null
+          created_at: string | null
+          display_style: string | null
+          id: string
+          is_verified: boolean | null
+          proficiency: string | null
+          proficiency_score: number | null
+          resume_id: string
+          skill_name: string
+          verification_source: string | null
+        }
+        Insert: {
+          ai_suggested?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          display_style?: string | null
+          id?: string
+          is_verified?: boolean | null
+          proficiency?: string | null
+          proficiency_score?: number | null
+          resume_id: string
+          skill_name: string
+          verification_source?: string | null
+        }
+        Update: {
+          ai_suggested?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          display_style?: string | null
+          id?: string
+          is_verified?: boolean | null
+          proficiency?: string | null
+          proficiency_score?: number | null
+          resume_id?: string
+          skill_name?: string
+          verification_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_skills_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
             referencedColumns: ["id"]
           },
         ]
@@ -3415,6 +3834,8 @@ export type Database = {
       }
       resumes: {
         Row: {
+          ats_score: number | null
+          completion_percentage: number | null
           content: Json
           created_at: string | null
           file_size: number | null
@@ -3422,13 +3843,19 @@ export type Database = {
           id: string
           is_active: boolean | null
           is_primary: boolean | null
+          is_public: boolean | null
+          language: string | null
+          metadata: Json | null
           mime_type: string | null
+          public_url_slug: string | null
           template_id: string | null
           title: string
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          ats_score?: number | null
+          completion_percentage?: number | null
           content: Json
           created_at?: string | null
           file_size?: number | null
@@ -3436,13 +3863,19 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_primary?: boolean | null
+          is_public?: boolean | null
+          language?: string | null
+          metadata?: Json | null
           mime_type?: string | null
+          public_url_slug?: string | null
           template_id?: string | null
           title: string
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          ats_score?: number | null
+          completion_percentage?: number | null
           content?: Json
           created_at?: string | null
           file_size?: number | null
@@ -3450,7 +3883,11 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_primary?: boolean | null
+          is_public?: boolean | null
+          language?: string | null
+          metadata?: Json | null
           mime_type?: string | null
+          public_url_slug?: string | null
           template_id?: string | null
           title?: string
           updated_at?: string | null
@@ -4732,6 +5169,10 @@ export type Database = {
         Args: { request_id: string }
         Returns: undefined
       }
+      calculate_resume_completion_enhanced: {
+        Args: { resume_uuid: string }
+        Returns: number
+      }
       cleanup_old_notifications: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -4765,6 +5206,10 @@ export type Database = {
       }
       generate_company_slug: {
         Args: { company_name: string }
+        Returns: string
+      }
+      generate_resume_slug_enhanced: {
+        Args: { resume_title: string; user_uuid: string }
         Returns: string
       }
       get_email_domain: {

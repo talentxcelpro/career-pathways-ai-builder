@@ -21,18 +21,14 @@ const CreateResume = () => {
     
     try {
       const { data, error } = await supabase
-        .from('ai_resumes')
+        .from('resumes')
         .insert({
           user_id: user.id,
           title: resumeTitle,
-          content: {
-            personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
-            experience: [],
-            education: [],
-            skills: [],
-            projects: [],
-            certifications: []
-          }
+          content: {},
+          template_id: null,
+          is_public: false,
+          is_primary: false
         })
         .select()
         .single();
