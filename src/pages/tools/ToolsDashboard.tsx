@@ -166,52 +166,48 @@ const ToolsDashboard = () => {
         </Card>
 
         {/* Tools Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {filteredTools.map((tool) => {
             const IconComponent = getIconComponent(tool.icon_name);
             const toolTier = getToolTier(tool.name);
             return (
               <Card 
                 key={tool.id} 
-                className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-0 shadow-md bg-white/90 backdrop-blur-sm hover:bg-white/95 relative overflow-hidden"
+                className="group hover:shadow-lg transition-all duration-200 cursor-pointer border-0 shadow-sm bg-white/90 backdrop-blur-sm hover:bg-white/95 relative overflow-hidden"
                 onClick={() => handleToolClick(tool.slug)}
               >
                 {toolTier.tier !== 'free' && (
-                  <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${toolTier.color} opacity-10 rounded-bl-full`}></div>
+                  <div className={`absolute top-0 right-0 w-8 h-8 bg-gradient-to-br ${toolTier.color} opacity-15 rounded-bl-full`}></div>
                 )}
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className={`p-2 bg-gradient-to-br ${toolTier.color} bg-opacity-10 rounded-lg group-hover:scale-110 transition-transform`}>
-                      <IconComponent className="h-3 w-3 text-white" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.3))' }} />
+                <CardHeader className="pb-2 p-3">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className={`p-1.5 bg-gradient-to-br ${toolTier.color} bg-opacity-10 rounded-md group-hover:scale-105 transition-transform`}>
+                      <IconComponent className="h-2.5 w-2.5 text-white" style={{ filter: 'drop-shadow(0 0 1px rgba(0,0,0,0.4))' }} />
                     </div>
-                    <div className="flex flex-col gap-1 items-end">
-                      <Badge className={`text-xs px-2 py-1 ${toolTier.badge} border-0`}>
-                        {toolTier.tier.toUpperCase()}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {tool.category}
-                      </Badge>
-                    </div>
+                    <Badge className={`text-xs px-1.5 py-0.5 ${toolTier.badge} border-0 text-xs`}>
+                      {toolTier.tier.toUpperCase()}
+                    </Badge>
                   </div>
-                  <CardTitle className="text-heading-md text-slate-900 group-hover:text-primary transition-colors">
-                    {tool.name}
-                  </CardTitle>
-                  <CardDescription className="text-body text-slate-600 leading-relaxed">
-                    {tool.description}
-                  </CardDescription>
+                  <div>
+                    <Badge variant="outline" className="text-xs mb-1 px-1.5 py-0">
+                      {tool.category}
+                    </Badge>
+                    <CardTitle className="text-xs font-semibold text-slate-900 group-hover:text-primary transition-colors leading-tight">
+                      {tool.name}
+                    </CardTitle>
+                  </div>
                 </CardHeader>
-                <CardContent className="pt-0">
+                <CardContent className="pt-0 p-3">
                   <Button 
                     variant={toolTier.tier === 'premium' ? 'default' : 'ghost'}
                     size="sm"
-                    className={`w-full justify-between transition-colors text-body ${
+                    className={`w-full text-xs h-7 transition-colors ${
                       toolTier.tier === 'premium' 
                         ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white' 
                         : 'group-hover:bg-primary/10'
                     }`}
                   >
                     {toolTier.tier === 'premium' ? 'Try Premium' : 'Try Tool'}
-                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </CardContent>
               </Card>
