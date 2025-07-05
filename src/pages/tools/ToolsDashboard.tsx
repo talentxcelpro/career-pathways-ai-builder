@@ -81,17 +81,17 @@ const ToolsDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-3">
-            <div className="p-2 bg-primary/10 rounded-full">
-              <Sparkles className="h-5 w-5 text-primary" />
+        <div className="text-center mb-4">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="p-1.5 bg-primary/10 rounded-lg">
+              <Sparkles className="h-4 w-4 text-primary" />
             </div>
+            <h1 className="text-lg font-bold text-slate-900">
+              AI-Powered Career Tools
+            </h1>
           </div>
-          <h1 className="text-heading-xl font-bold mb-2 text-slate-900">
-            AI-Powered Career Tools
-          </h1>
-          <p className="text-body text-slate-600 max-w-2xl mx-auto">
-            Transform your career with intelligent tools designed to accelerate your professional growth
+          <p className="text-xs text-slate-600 max-w-lg mx-auto">
+            Transform your career with intelligent tools designed to accelerate professional growth
           </p>
         </div>
 
