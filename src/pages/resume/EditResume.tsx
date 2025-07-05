@@ -21,6 +21,7 @@ import { validateResumeData, getFieldError, getSectionErrors } from "@/utils/res
 import { analyzeATSCompatibility } from "@/utils/atsOptimization";
 import { ATSOptimizationPanel } from "@/components/resume/ATSOptimizationPanel";
 import { KeywordAnalyzer } from "@/components/resume/KeywordAnalyzer";
+import { TemplateGallery } from "@/components/resume/TemplateGallery";
 import { toast } from 'sonner';
 
 const EditResume = () => {
@@ -490,9 +491,17 @@ const EditResume = () => {
             >
               <Target className="h-4 w-4 inline mr-2" />
               ATS Optimization
+            <button
+              onClick={() => setActiveTab('templates')}
+              className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'templates'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent hover:text-gray-700'
+              }`}
+            >
+              <Palette className="h-4 w-4 inline mr-2" />
+              Templates
             </button>
-          </div>
-        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Editor Panel */}
@@ -1115,6 +1124,17 @@ const EditResume = () => {
               <KeywordAnalyzer 
                 resumeData={resumeData} 
                 onKeywordSuggestion={handleKeywordSuggestion}
+              />
+            </div>
+          )}
+
+          {/* Template Gallery */}
+          {activeTab === 'templates' && (
+            <div className="space-y-6">
+              <TemplateGallery 
+                selectedTemplate={selectedTemplate}
+                onTemplateSelect={setSelectedTemplate}
+                resumeData={resumeData}
               />
             </div>
           )}
