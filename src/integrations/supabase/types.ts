@@ -72,6 +72,39 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_tool_configs: {
+        Row: {
+          ai_settings: Json | null
+          feature_flags: Json | null
+          id: string
+          last_updated: string | null
+          rate_limits: Json | null
+          status: string | null
+          tool_slug: string
+          visibility: string | null
+        }
+        Insert: {
+          ai_settings?: Json | null
+          feature_flags?: Json | null
+          id?: string
+          last_updated?: string | null
+          rate_limits?: Json | null
+          status?: string | null
+          tool_slug: string
+          visibility?: string | null
+        }
+        Update: {
+          ai_settings?: Json | null
+          feature_flags?: Json | null
+          id?: string
+          last_updated?: string | null
+          rate_limits?: Json | null
+          status?: string | null
+          tool_slug?: string
+          visibility?: string | null
+        }
+        Relationships: []
+      }
       ai_cover_letters: {
         Row: {
           company_name: string | null
@@ -3927,9 +3960,161 @@ export type Database = {
           },
         ]
       }
+      tool_feedback: {
+        Row: {
+          comments: string | null
+          created_at: string | null
+          feedback_category: string | null
+          id: string
+          is_anonymous: boolean | null
+          rating: number
+          tool_slug: string
+          user_id: string | null
+        }
+        Insert: {
+          comments?: string | null
+          created_at?: string | null
+          feedback_category?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          rating: number
+          tool_slug: string
+          user_id?: string | null
+        }
+        Update: {
+          comments?: string | null
+          created_at?: string | null
+          feedback_category?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          rating?: number
+          tool_slug?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      tool_prompts: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          language: string | null
+          prompt_template: string
+          prompt_type: string
+          tool_slug: string
+          updated_at: string | null
+          variables: Json | null
+          version: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          language?: string | null
+          prompt_template: string
+          prompt_type: string
+          tool_slug: string
+          updated_at?: string | null
+          variables?: Json | null
+          version?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          language?: string | null
+          prompt_template?: string
+          prompt_type?: string
+          tool_slug?: string
+          updated_at?: string | null
+          variables?: Json | null
+          version?: number | null
+        }
+        Relationships: []
+      }
+      tool_registry: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          icon_name: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          slug: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          slug: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          slug?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      tool_saved_results: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_favorite: boolean | null
+          result_data: Json
+          result_title: string
+          result_type: string | null
+          tags: string[] | null
+          tool_slug: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          result_data?: Json
+          result_title: string
+          result_type?: string | null
+          tags?: string[] | null
+          tool_slug: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          result_data?: Json
+          result_title?: string
+          result_type?: string | null
+          tags?: string[] | null
+          tool_slug?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       tool_usage: {
         Row: {
+          completion_status: string | null
           created_at: string
+          duration_seconds: number | null
           id: string
           results: Json | null
           session_data: Json | null
@@ -3938,7 +4123,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          completion_status?: string | null
           created_at?: string
+          duration_seconds?: number | null
           id?: string
           results?: Json | null
           session_data?: Json | null
@@ -3947,13 +4134,63 @@ export type Database = {
           user_id: string
         }
         Update: {
+          completion_status?: string | null
           created_at?: string
+          duration_seconds?: number | null
           id?: string
           results?: Json | null
           session_data?: Json | null
           tool_name?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      tool_usage_enhanced: {
+        Row: {
+          completion_status: string | null
+          created_at: string | null
+          duration_seconds: number | null
+          feedback_rating: number | null
+          feedback_text: string | null
+          id: string
+          input_data: Json | null
+          output_data: Json | null
+          tool_name: string
+          tool_slug: string
+          updated_at: string | null
+          usage_type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          completion_status?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          feedback_rating?: number | null
+          feedback_text?: string | null
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          tool_name: string
+          tool_slug: string
+          updated_at?: string | null
+          usage_type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          completion_status?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          feedback_rating?: number | null
+          feedback_text?: string | null
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          tool_name?: string
+          tool_slug?: string
+          updated_at?: string | null
+          usage_type?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
