@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, Save, Eye, Download, Plus, Edit3, Palette, Trash2, Award, Briefcase, AlertCircle, Target } from "lucide-react";
+import { ArrowLeft, Save, Eye, Download, Plus, Edit3, Palette, Trash2, Award, Briefcase, AlertCircle, Target, Sparkles } from "lucide-react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,7 @@ import { analyzeATSCompatibility } from "@/utils/atsOptimization";
 import { ATSOptimizationPanel } from "@/components/resume/ATSOptimizationPanel";
 import { KeywordAnalyzer } from "@/components/resume/KeywordAnalyzer";
 import { TemplateGallery } from "@/components/resume/TemplateGallery";
+import { AIContentSuggestions } from "@/components/resume/AIContentSuggestions";
 import { toast } from 'sonner';
 
 const EditResume = () => {
@@ -344,6 +345,54 @@ const EditResume = () => {
     }
   };
 
+  const handleAIContentGenerated = (content: string, type: string, sectionIndex?: number) => {
+    switch (type) {
+      case 'summary':
+        setResumeData((prev: any) => ({
+          ...prev,
+          personalInfo: {
+            ...prev.personalInfo,
+            summary: content
+          }
+        }));
+        break;
+
+      case 'skills':
+        // Parse comma-separated skills and add to existing skills
+        const newSkills = content.split(',').map(skill => skill.trim()).filter(skill => skill);
+        setResumeData((prev: any) => ({
+          ...prev,
+          skills: [...new Set([...prev.skills, ...newSkills])] // Remove duplicates
+        }));
+        break;
+
+      case 'experience':
+        if (sectionIndex !== undefined) {
+          setResumeData((prev: any) => ({
+            ...prev,
+            experience: prev.experience.map((exp: any, index: number) =>
+              index === sectionIndex ? { ...exp, description: content } : exp
+            )
+          }));
+        }
+        break;
+
+      case 'projects':
+        if (sectionIndex !== undefined) {
+          setResumeData((prev: any) => ({
+            ...prev,
+            projects: prev.projects.map((project: any, index: number) =>
+              index === sectionIndex ? { ...project, description: content } : project
+            )
+          }));
+        }
+        break;
+
+      default:
+        console.warn('Unknown AI content type:', type);
+    }
+  };
+
   // Drag and drop functionality
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
@@ -502,6 +551,17 @@ const EditResume = () => {
             >
               <Palette className="h-4 w-4 inline mr-2" />
               Templates
+            </button>
+            <button
+              onClick={() => setActiveTab('ai')}
+              className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'ai'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent hover:text-gray-700'
+              }`}
+            >
+              <Sparkles className="h-4 w-4 inline mr-2" />
+              AI Assistant
             </button>
           </div>
         </div>
@@ -1138,6 +1198,16 @@ const EditResume = () => {
                 selectedTemplate={selectedTemplate}
                 onTemplateSelect={setSelectedTemplate}
                 resumeData={resumeData}
+              />
+            </div>
+          )}
+
+          {/* AI Content Suggestions */}
+          {activeTab === 'ai' && (
+            <div className="space-y-6">
+              <AIContentSuggestions 
+                resumeData={resumeData}
+                onContentGenerated={handleAIContentGenerated}
               />
             </div>
           )}

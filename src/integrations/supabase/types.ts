@@ -172,6 +172,45 @@ export type Database = {
           },
         ]
       }
+      ai_usage_logs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          feature_type: string
+          id: string
+          request_data: Json | null
+          request_type: string
+          response_data: Json | null
+          success: boolean | null
+          tokens_used: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          feature_type: string
+          id?: string
+          request_data?: Json | null
+          request_type: string
+          response_data?: Json | null
+          success?: boolean | null
+          tokens_used?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          feature_type?: string
+          id?: string
+          request_data?: Json | null
+          request_type?: string
+          response_data?: Json | null
+          success?: boolean | null
+          tokens_used?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       candidate_communications: {
         Row: {
           candidate_id: string | null
