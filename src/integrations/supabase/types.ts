@@ -4619,6 +4619,10 @@ export type Database = {
         Args: { company_uuid: string }
         Returns: boolean
       }
+      is_super_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       reject_company_access_request: {
         Args: { request_id: string; reason?: string }
         Returns: undefined

@@ -11,7 +11,7 @@ export const useUserManagement = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading } = useQuery({
+  const { data: users, isLoading, error } = useQuery({
     queryKey: ['admin-users', searchTerm, roleFilter, statusFilter],
     queryFn: async () => {
       let query = supabase
@@ -19,18 +19,29 @@ export const useUserManagement = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (searchTerm) {
+      if (searchTerm.trim()) {
         query = query.or(`full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
       }
 
-      if (roleFilter !== 'all' && (roleFilter === 'admin' || roleFilter === 'job_seeker' || roleFilter === 'employer' || roleFilter === 'candidate')) {
+      if (roleFilter !== 'all') {
         query = query.eq('user_role', roleFilter as UserRole);
       }
 
-      const { data, error } = await query;
-      if (error) throw error;
-      return data;
-    }
+      if (statusFilter === 'active') {
+        query = query.eq('profile_completed', true);
+      } else if (statusFilter === 'inactive') {
+        query = query.eq('profile_completed', false);
+      }
+
+      const { data, error } = await query.limit(100);
+      if (error) {
+        console.error('Error fetching users:', error);
+        throw error;
+      }
+      return data || [];
+    },
+    retry: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const { data: userStats } = useQuery({
