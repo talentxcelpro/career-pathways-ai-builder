@@ -222,7 +222,7 @@ export const RegisterForm = () => {
             Terms of Service
           </Link>{' '}
           and{' '}
-          <Link to="/privacy-policy" className="text-blue-600 hover:underline">
+          <Link to="/privacypolicy" className="text-blue-600 hover:underline">
             Privacy Policy
           </Link>
         </p>

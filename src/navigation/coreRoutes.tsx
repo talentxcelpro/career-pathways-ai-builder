@@ -50,7 +50,7 @@ export const coreRoutes = [
   },
   {
     title: "Privacy Policy",
-    to: "/privacy",
+    to: "/privacypolicy",
     page: <PrivacyPolicy />,
   },
   {
