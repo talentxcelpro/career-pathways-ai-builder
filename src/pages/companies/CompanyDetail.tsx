@@ -44,6 +44,7 @@ import {
   Building2
  } from 'lucide-react';
 import { CompanyFollowButton } from '@/components/company/CompanyFollowButton';
+import { CompanyPostsList } from '@/components/company/CompanyPostsList';
 import { toast } from 'sonner';
 
 const CompanyDetail = () => {
@@ -723,159 +724,8 @@ const CompanyDetail = () => {
                 <CardTitle className="text-xl">Company Activity</CardTitle>
                 <CardDescription>Recent updates, posts, and company news</CardDescription>
               </CardHeader>
-              <CardContent className="p-6">
-                {/* Sample Activity Posts */}
-                <div className="space-y-6">
-                  {/* Sample Post 1 */}
-                  <div className="border-b pb-6 last:border-b-0">
-                    <div className="flex items-start space-x-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={company.logo_url} alt={company.name} />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                          {company.name.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <span className="font-semibold text-sm">{company.name}</span>
-                          <span className="text-gray-500 text-sm">•</span>
-                          <span className="text-gray-500 text-sm flex items-center">
-                            <Clock className="h-3 w-3 mr-1" />
-                            2 days ago
-                          </span>
-                        </div>
-                        <p className="text-gray-700 mb-3 leading-relaxed">
-                          🎉 We're excited to announce our Q4 achievements! Thanks to our amazing team, 
-                          we've grown by 25% and launched 3 new products. Looking forward to what 2024 brings!
-                        </p>
-                        <div className="flex items-center space-x-6 text-sm text-gray-500">
-                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
-                            <ThumbsUp className="h-4 w-4" />
-                            <span>24 likes</span>
-                          </button>
-                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
-                            <MessageSquare className="h-4 w-4" />
-                            <span>5 comments</span>
-                          </button>
-                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
-                            <Share2 className="h-4 w-4" />
-                            <span>Share</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Sample Post 2 */}
-                  <div className="border-b pb-6 last:border-b-0">
-                    <div className="flex items-start space-x-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={company.logo_url} alt={company.name} />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                          {company.name.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <span className="font-semibold text-sm">{company.name}</span>
-                          <span className="text-gray-500 text-sm">•</span>
-                          <span className="text-gray-500 text-sm flex items-center">
-                            <Clock className="h-3 w-3 mr-1" />
-                            1 week ago
-                          </span>
-                        </div>
-                        <p className="text-gray-700 mb-4 leading-relaxed">
-                          🚀 We're hiring! Join our growing team of talented professionals. 
-                          Check out our latest job openings and be part of something amazing.
-                        </p>
-                        <div className="bg-gray-50 rounded-lg p-4 mb-3">
-                          <div className="flex items-center space-x-3">
-                            <div className="bg-blue-100 p-2 rounded">
-                              <Briefcase className="h-5 w-5 text-blue-600" />
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-sm">We're Hiring!</h4>
-                              <p className="text-xs text-gray-600">{company.jobs?.length || 0} open positions available</p>
-                            </div>
-                            <Link to={`/companies/${company.id}?tab=jobs`} className="ml-auto">
-                              <Button size="sm" variant="outline">
-                                View Jobs
-                              </Button>
-                            </Link>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-6 text-sm text-gray-500">
-                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
-                            <ThumbsUp className="h-4 w-4" />
-                            <span>18 likes</span>
-                          </button>
-                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
-                            <MessageSquare className="h-4 w-4" />
-                            <span>3 comments</span>
-                          </button>
-                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
-                            <Share2 className="h-4 w-4" />
-                            <span>Share</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Sample Post 3 */}
-                  <div className="border-b pb-6 last:border-b-0">
-                    <div className="flex items-start space-x-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={company.logo_url} alt={company.name} />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                          {company.name.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <span className="font-semibold text-sm">{company.name}</span>
-                          <span className="text-gray-500 text-sm">•</span>
-                          <span className="text-gray-500 text-sm flex items-center">
-                            <Clock className="h-3 w-3 mr-1" />
-                            2 weeks ago
-                          </span>
-                        </div>
-                        <p className="text-gray-700 mb-3 leading-relaxed">
-                          🎯 Innovation is at the heart of everything we do. Our latest product update 
-                          brings cutting-edge features that our customers have been requesting.
-                        </p>
-                        {/* Sample image placeholder */}
-                        <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg h-48 flex items-center justify-center mb-3">
-                          <div className="text-center">
-                            <Building2 className="h-12 w-12 text-blue-500 mx-auto mb-2" />
-                            <p className="text-sm text-gray-600">Product Update Image</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-6 text-sm text-gray-500">
-                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
-                            <ThumbsUp className="h-4 w-4" />
-                            <span>42 likes</span>
-                          </button>
-                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
-                            <MessageSquare className="h-4 w-4" />
-                            <span>8 comments</span>
-                          </button>
-                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
-                            <Share2 className="h-4 w-4" />
-                            <span>Share</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Load More Button */}
-                <div className="text-center pt-6">
-                  <Button variant="outline" className="w-full">
-                    Load More Activity
-                  </Button>
-                </div>
+              <CardContent className="p-0">
+                <CompanyPostsList companyId={company.id} />
               </CardContent>
             </Card>
           </TabsContent>
