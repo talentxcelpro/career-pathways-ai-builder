@@ -76,7 +76,7 @@ const CompanyDetail = () => {
         .from('companies')
         .select(`
           *,
-          jobs!inner(
+          jobs(
             id,
             title,
             location,
@@ -96,8 +96,7 @@ const CompanyDetail = () => {
             id,
             user_id
           )
-        `)
-        .eq('is_verified', true);
+        `);
 
       // If it looks like a UUID, search by ID, otherwise by slug
       if (identifier.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
@@ -267,7 +266,7 @@ const CompanyDetail = () => {
         <div className="text-center">
           <Building className="h-16 w-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-xl font-medium text-gray-900 mb-2">Company Not Found</h3>
-          <p className="text-gray-600 mb-4">The company you're looking for doesn't exist or is not verified.</p>
+          <p className="text-gray-600 mb-4">The company you're looking for doesn't exist.</p>
           <Link to="/companies">
             <Button>Browse All Companies</Button>
           </Link>
