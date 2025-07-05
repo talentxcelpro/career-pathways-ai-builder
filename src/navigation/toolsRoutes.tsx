@@ -5,6 +5,9 @@ import MockInterviewSimulator from "../pages/tools/MockInterviewSimulator";
 import AIOutreachGenerator from "../pages/tools/AIOutreachGenerator";
 import ResumeTailorTool from "../pages/tools/ResumeTailorTool";
 import SkillGapAnalyzer from "../pages/tools/SkillGapAnalyzer";
+import InterviewQABank from "../pages/tools/InterviewQABank";  
+import STARAnswerGenerator from "../pages/tools/STARAnswerGenerator";
+import ProfessionalBioWriter from "../pages/tools/ProfessionalBioWriter";
 import ToolsDashboard from "../pages/tools/ToolsDashboard";
 import AICareerPathfinder from "../pages/tools/AICareerPathfinder";
 import JobApplicationFunnel from "../pages/tools/JobApplicationFunnel";
@@ -83,13 +86,13 @@ export const toolsRoutes = [
     title: "Interview Q&A Bank",
     to: "/tools/interview-qa-bank",
     icon: <MessageSquare className="h-4 w-4" />,
-    page: <InterviewPrep />, // Temporary - similar functionality
+    page: <InterviewQABank />,
   },
   {
     title: "STAR Answer Generator",
     to: "/tools/star-answer-generator",
     icon: <Star className="h-4 w-4" />,
-    page: <InterviewPrep />, // Temporary - similar functionality
+    page: <STARAnswerGenerator />,
   },
   {
     title: "Interview Readiness Score",
