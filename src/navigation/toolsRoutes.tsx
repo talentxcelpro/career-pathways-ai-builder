@@ -14,6 +14,8 @@ import CareerChangeNavigator from "../pages/tools/CareerChangeNavigator";
 import InterviewReadinessScore from "../pages/tools/InterviewReadinessScore";
 import SmartApplyTool from "../pages/tools/SmartApplyTool";
 import SalaryBenchmarkTool from "../pages/tools/SalaryBenchmarkTool";
+import CoverLetterGenerator from "../pages/tools/CoverLetterGenerator";
+import SkillAssessmentEngine from "../pages/tools/SkillAssessmentEngine";
 import ToolsDashboard from "../pages/tools/ToolsDashboard";
 import AICareerPathfinder from "../pages/tools/AICareerPathfinder";
 import JobApplicationFunnel from "../pages/tools/JobApplicationFunnel";
@@ -184,5 +186,23 @@ export const toolsRoutes = [
     to: "/tools/market-insights",
     icon: <TrendingUp className="h-4 w-4" />,
     page: <MarketInsights />,
+  },
+  {
+    title: "AI Learning Path Generator",
+    to: "/tools/ai-learning-path-generator",
+    icon: <BookOpen className="h-4 w-4" />,
+    page: <AILearningPathGenerator />,
+  },
+  {
+    title: "Cover Letter Generator",
+    to: "/tools/cover-letter-generator",
+    icon: <FileText className="h-4 w-4" />,
+    page: <CoverLetterGenerator />,
+  },
+  {
+    title: "Skill Assessment Engine",
+    to: "/tools/skill-assessment-engine",
+    icon: <BookOpen className="h-4 w-4" />,
+    page: <SkillAssessmentEngine />,
   },
 ];
