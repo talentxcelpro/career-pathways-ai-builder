@@ -47,74 +47,101 @@ export const useEnhancedResumeUpload = () => {
     };
   };
 
-  const createUploadStatus = async (fileName: string, fileUrl: string) => {
+  const createUploadStatus = async (fileName: string, fileUrl: string, retryAttempt = 0): Promise<string> => {
     if (!user) {
       throw new Error('User not authenticated');
     }
 
-    console.log('Creating upload status for user:', user.id);
+    console.log(`Creating upload status for user: ${user.id} (attempt ${retryAttempt + 1})`);
     
-    // Check if we have a valid authentication context
-    const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
-    
-    if (userError || !currentUser) {
-      console.error('Failed to get current user:', userError);
-      throw new Error('Authentication failed. Please refresh the page and log in again.');
-    }
-    
-    console.log('Current authenticated user:', currentUser.id);
-    
-    // Ensure the user has a profile (required for RLS policies)
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', currentUser.id)
-      .single();
-    
-    if (profileError && profileError.code === 'PGRST116') {
-      console.log('Profile not found, creating one...');
-      // Create profile if it doesn't exist
-      const { error: createProfileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: currentUser.id,
-          email: currentUser.email,
-          full_name: currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || '',
-          user_role: 'candidate'
-        });
+    try {
+      // Step 1: Validate current session
+      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
       
-      if (createProfileError) {
-        console.error('Failed to create profile:', createProfileError);
-        throw new Error('Failed to set up user profile. Please contact support.');
+      if (userError || !currentUser) {
+        console.error('Failed to get current user:', userError);
+        throw new Error(`Session validation failed: ${userError?.message || 'No user found'}`);
       }
-    } else if (profileError) {
-      console.error('Profile query error:', profileError);
-      throw new Error('Profile verification failed. Please try again.');
-    }
-    
-    const { data, error } = await supabase
-      .from('resume_upload_status')
-      .insert({
-        user_id: currentUser.id,
-        file_name: fileName,
-        file_url: fileUrl,
-        upload_status: 'uploading',
-        current_step: 'upload',
-        progress_percentage: 10
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Upload status creation error:', error);
-      if (error.message?.includes('row-level security')) {
-        throw new Error('Database access denied. Please refresh the page and try again.');
+      
+      console.log('Current authenticated user:', currentUser.id);
+      
+      // Step 2: Ensure profile exists (required for RLS)
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', currentUser.id)
+        .single();
+      
+      if (profileError && profileError.code === 'PGRST116') {
+        console.log('Profile not found, creating one...');
+        const { error: createProfileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: currentUser.id,
+            email: currentUser.email,
+            full_name: currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || '',
+            user_role: 'candidate'
+          });
+        
+        if (createProfileError) {
+          console.error('Failed to create profile:', createProfileError);
+          throw new Error(`Profile creation failed: ${createProfileError.message}`);
+        }
+        
+        // Wait for profile creation to propagate
+        await new Promise(resolve => setTimeout(resolve, 200));
+      } else if (profileError) {
+        console.error('Profile query error:', profileError);
+        throw new Error(`Profile verification failed: ${profileError.message}`);
       }
-      throw error;
-    }
+      
+      // Step 3: Create upload status with retry logic
+      const { data, error } = await supabase
+        .from('resume_upload_status')
+        .insert({
+          user_id: currentUser.id,
+          file_name: fileName,
+          file_url: fileUrl,
+          upload_status: 'uploading',
+          current_step: 'upload',
+          progress_percentage: 10
+        })
+        .select()
+        .single();
 
-    console.log('Upload status created successfully:', data.id);
-    return data.id;
+      if (error) {
+        console.error('Upload status creation error:', error);
+        
+        // Check if it's an RLS error and we should retry
+        if (error.message?.includes('row-level security') && retryAttempt < 2) {
+          console.log(`RLS error detected, retrying in ${(retryAttempt + 1) * 500}ms...`);
+          await new Promise(resolve => setTimeout(resolve, (retryAttempt + 1) * 500));
+          return createUploadStatus(fileName, fileUrl, retryAttempt + 1);
+        }
+        
+        // Provide specific error messages
+        if (error.message?.includes('row-level security')) {
+          throw new Error('Database access denied. Your session may have expired. Please refresh the page and try again.');
+        }
+        
+        throw new Error(`Database operation failed: ${error.message}`);
+      }
+
+      console.log('Upload status created successfully:', data.id);
+      return data.id;
+      
+    } catch (error: any) {
+      // If it's our custom error, re-throw it
+      if (error.message?.includes('Session validation failed') || 
+          error.message?.includes('Profile creation failed') ||
+          error.message?.includes('Database access denied')) {
+        throw error;
+      }
+      
+      // For unexpected errors, provide context
+      console.error('Unexpected error in createUploadStatus:', error);
+      throw new Error(`Upload initialization failed: ${error.message}`);
+    }
   };
 
   const updateProgress = async (statusId: string, step: string, progress: number, status: string = 'processing') => {
@@ -300,9 +327,13 @@ export const useEnhancedResumeUpload = () => {
         error: error.message
       }));
       
-      // Check if it's an RLS error and provide helpful message
-      if (error.message?.includes('row-level security')) {
-        toast.error('Authentication error. Please try logging out and back in.');
+      // Provide specific error feedback
+      if (error.message?.includes('Database access denied') || 
+          error.message?.includes('Session validation failed') ||
+          error.message?.includes('Profile creation failed')) {
+        toast.error(error.message);
+      } else if (error.message?.includes('row-level security')) {
+        toast.error('Database access error. Please refresh the page and try again.');
       } else {
         toast.error(`Upload failed: ${error.message}`);
       }
