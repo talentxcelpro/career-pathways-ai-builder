@@ -1,6 +1,7 @@
 
 import { Brain, Calculator, MessageSquare, Target, FileText, Users, BookOpen, Briefcase, User, TrendingUp } from "lucide-react";
-import Tools from "../pages/Tools";
+import ToolsDashboard from "../pages/tools/ToolsDashboard";
+import AICareerPathfinder from "../pages/tools/AICareerPathfinder";
 import SalaryAnalyzer from "../pages/tools/SalaryAnalyzer";
 import InterviewPrep from "../pages/tools/InterviewPrep";
 import CareerPathfinder from "../pages/tools/CareerPathfinder";
@@ -17,7 +18,13 @@ export const toolsRoutes = [
     title: "Tools",
     to: "/tools",
     icon: <Brain className="h-4 w-4" />,
-    page: <Tools />,
+    page: <ToolsDashboard />,
+  },
+  {
+    title: "AI Career Pathfinder",
+    to: "/tools/ai-career-pathfinder",
+    icon: <Target className="h-4 w-4" />,
+    page: <AICareerPathfinder />,
   },
   {
     title: "Resume Builder",
