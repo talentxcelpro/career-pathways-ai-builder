@@ -54,19 +54,48 @@ export const useEnhancedResumeUpload = () => {
 
     console.log('Creating upload status for user:', user.id);
     
-    // Wait a moment for auth state to stabilize
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Check if we have a valid authentication context
+    const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
     
-    // Get fresh session to ensure authentication is valid
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !session) {
-      throw new Error('Authentication session expired. Please log in again.');
+    if (userError || !currentUser) {
+      console.error('Failed to get current user:', userError);
+      throw new Error('Authentication failed. Please refresh the page and log in again.');
+    }
+    
+    console.log('Current authenticated user:', currentUser.id);
+    
+    // Ensure the user has a profile (required for RLS policies)
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', currentUser.id)
+      .single();
+    
+    if (profileError && profileError.code === 'PGRST116') {
+      console.log('Profile not found, creating one...');
+      // Create profile if it doesn't exist
+      const { error: createProfileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: currentUser.id,
+          email: currentUser.email,
+          full_name: currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || '',
+          user_role: 'candidate'
+        });
+      
+      if (createProfileError) {
+        console.error('Failed to create profile:', createProfileError);
+        throw new Error('Failed to set up user profile. Please contact support.');
+      }
+    } else if (profileError) {
+      console.error('Profile query error:', profileError);
+      throw new Error('Profile verification failed. Please try again.');
     }
     
     const { data, error } = await supabase
       .from('resume_upload_status')
       .insert({
-        user_id: user.id,
+        user_id: currentUser.id,
         file_name: fileName,
         file_url: fileUrl,
         upload_status: 'uploading',
@@ -79,7 +108,7 @@ export const useEnhancedResumeUpload = () => {
     if (error) {
       console.error('Upload status creation error:', error);
       if (error.message?.includes('row-level security')) {
-        throw new Error('Authentication session expired. Please refresh the page and try again.');
+        throw new Error('Database access denied. Please refresh the page and try again.');
       }
       throw error;
     }
