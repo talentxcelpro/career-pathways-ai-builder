@@ -4,6 +4,7 @@ import { employerJobRoutes } from "./employer/jobRoutes";
 import { employerProfileRoutes } from "./employer/profileRoutes";
 import { employerCRMRoutes } from "./employer/crmRoutes";
 import RequestAccess from "../pages/employer/RequestAccess";
+import CompanyDashboard from "../pages/companies/CompanyDashboard";
 
 export const employerRoutes = [
   // Employer Access Request (public route)
@@ -12,6 +13,13 @@ export const employerRoutes = [
     to: "/employer/request-access",
     page: <RequestAccess />,
     requiresAuth: false,
+  },
+  
+  // Company Dashboard
+  {
+    title: "Company Dashboard",
+    to: "/company/dashboard",
+    page: <CompanyDashboard />,
   },
   
   // Core employer functionality
