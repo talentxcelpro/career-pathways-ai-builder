@@ -69,7 +69,7 @@ const UploadResume = () => {
         <div className="flex items-center mb-8">
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/resume')}
+            onClick={() => navigate('/resume-builder')}
             className="flex items-center mr-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />

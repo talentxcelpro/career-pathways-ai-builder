@@ -40,7 +40,7 @@ const CreateResume = () => {
       if (error) throw error;
       
       // Navigate to editor
-      navigate(`/resume/edit/${data.id}`);
+      navigate(`/resume-builder/edit/${data.id}`);
     } catch (error) {
       console.error('Error creating resume:', error);
     } finally {
@@ -55,7 +55,7 @@ const CreateResume = () => {
         <div className="flex items-center mb-8">
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/resume')}
+            onClick={() => navigate('/resume-builder')}
             className="flex items-center mr-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
