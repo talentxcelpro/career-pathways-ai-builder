@@ -55,21 +55,50 @@ export const useEnhancedResumeUpload = () => {
     console.log(`Creating upload status for user: ${user.id} (attempt ${retryAttempt + 1})`);
     
     try {
-      // Step 1: Get fresh session and validate authentication 
+      // Step 1: Get fresh session and validate authentication with explicit token check
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (sessionError || !session || !session.user) {
+      if (sessionError || !session || !session.user || !session.access_token) {
         console.error('Session validation failed:', sessionError);
-        throw new Error(`Session invalid: ${sessionError?.message || 'No active session'}`);
+        
+        // Try to refresh session if it's invalid
+        if (retryAttempt === 0) {
+          console.log('Attempting session refresh...');
+          const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession();
+          if (!refreshError && refreshedSession) {
+            return createUploadStatus(fileName, fileUrl, 1);
+          }
+        }
+        
+        throw new Error('Session expired or invalid. Please refresh the page and log in again.');
       }
       
       console.log('Session validated:', {
         userId: session.user.id,
-        accessToken: session.access_token ? 'present' : 'missing',
-        refreshToken: session.refresh_token ? 'present' : 'missing'
+        hasAccessToken: !!session.access_token,
+        tokenExpiry: session.expires_at ? new Date(session.expires_at * 1000).toISOString() : 'unknown'
       });
       
-      // Step 2: Ensure profile exists (required for RLS)
+      // Step 2: Session warm-up - verify database recognizes our session
+      const { data: sessionTest, error: sessionTestError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', session.user.id)
+        .limit(1);
+        
+      if (sessionTestError) {
+        console.log('Database session not recognized, waiting for propagation...');
+        // Exponential backoff: 100ms, 300ms, 800ms
+        const delay = Math.min(100 * Math.pow(2.5, retryAttempt), 1000);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        
+        if (retryAttempt < 3) {
+          return createUploadStatus(fileName, fileUrl, retryAttempt + 1);
+        }
+        throw new Error('Database session synchronization failed. Please refresh the page.');
+      }
+      
+      // Step 3: Ensure profile exists (required for RLS)
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id')
@@ -89,7 +118,7 @@ export const useEnhancedResumeUpload = () => {
         
         if (createProfileError) {
           console.error('Failed to create profile:', createProfileError);
-          throw new Error(`Profile creation failed: ${createProfileError.message}`);
+          throw new Error(`Profile setup failed: ${createProfileError.message}`);
         }
         
         // Wait for profile creation to propagate
@@ -99,21 +128,7 @@ export const useEnhancedResumeUpload = () => {
         throw new Error(`Profile verification failed: ${profileError.message}`);
       }
       
-      console.log('Profile verified for user:', session.user.id);
-      
-      // Step 3: Test auth context before main operation
-      const { data: authTest, error: authTestError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', session.user.id)
-        .limit(1);
-      
-      if (authTestError) {
-        console.error('Auth context test failed:', authTestError);
-        throw new Error(`Authentication context not available: ${authTestError.message}`);
-      }
-      
-      console.log('Auth context test passed, proceeding with upload status creation...');
+      console.log('Profile verified, proceeding with upload status creation...');
       
       // Step 4: Create upload status with explicit user_id
       const uploadStatusData = {
@@ -125,7 +140,7 @@ export const useEnhancedResumeUpload = () => {
         progress_percentage: 10
       };
       
-      console.log('Inserting upload status with data:', uploadStatusData);
+      console.log('Inserting upload status...');
       
       const { data, error } = await supabase
         .from('resume_upload_status')
@@ -135,43 +150,41 @@ export const useEnhancedResumeUpload = () => {
 
       if (error) {
         console.error('Upload status creation error:', error);
-        console.error('Error details:', {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint
-        });
         
-        // Check if it's an RLS error and we should retry
-        if (error.message?.includes('row-level security') && retryAttempt < 2) {
-          console.log(`RLS error detected, retrying in ${(retryAttempt + 1) * 1000}ms...`);
-          await new Promise(resolve => setTimeout(resolve, (retryAttempt + 1) * 1000));
+        // Handle RLS policy violations with intelligent retry
+        if (error.message?.includes('row-level security') && retryAttempt < 3) {
+          console.log(`RLS policy violation, retrying after ${100 * (retryAttempt + 1)}ms...`);
+          await new Promise(resolve => setTimeout(resolve, 100 * (retryAttempt + 1)));
           return createUploadStatus(fileName, fileUrl, retryAttempt + 1);
         }
         
-        // Provide specific error messages
+        // Provide specific error messages based on error type
         if (error.message?.includes('row-level security')) {
-          throw new Error('Database access denied. Your session may have expired. Please refresh the page and log in again.');
+          throw new Error('Permission denied. Please refresh the page and try again.');
         }
         
-        throw new Error(`Database operation failed: ${error.message}`);
+        if (error.code === '23505') {
+          throw new Error('Upload already in progress. Please wait or refresh the page.');
+        }
+        
+        throw new Error(`Upload failed: ${error.message}`);
       }
 
       console.log('Upload status created successfully:', data.id);
       return data.id;
       
     } catch (error: any) {
-      // If it's our custom error, re-throw it
-      if (error.message?.includes('Session invalid') || 
-          error.message?.includes('Profile creation failed') ||
-          error.message?.includes('Database access denied') ||
-          error.message?.includes('Authentication context not available')) {
-        throw error;
+      // Enhanced error handling with specific recovery suggestions
+      console.error('createUploadStatus error:', error);
+      
+      if (error.message?.includes('Session expired') || 
+          error.message?.includes('Permission denied') ||
+          error.message?.includes('Database session synchronization failed')) {
+        throw error; // Re-throw user-friendly errors as-is
       }
       
-      // For unexpected errors, provide context
-      console.error('Unexpected error in createUploadStatus:', error);
-      throw new Error(`Upload initialization failed: ${error.message}`);
+      // For unexpected errors, provide helpful context
+      throw new Error(`Upload initialization failed. Please refresh the page and try again. (${error.message})`);
     }
   };
 
