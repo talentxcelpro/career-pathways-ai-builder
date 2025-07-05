@@ -3155,34 +3155,43 @@ export type Database = {
       resume_templates: {
         Row: {
           category: string
+          component_name: string
           created_at: string | null
           css_config: Json | null
+          description: string | null
           id: string
           is_active: boolean | null
           name: string
           preview_url: string | null
+          status: boolean | null
           thumbnail_url: string | null
           updated_at: string | null
         }
         Insert: {
           category?: string
+          component_name?: string
           created_at?: string | null
           css_config?: Json | null
+          description?: string | null
           id?: string
           is_active?: boolean | null
           name: string
           preview_url?: string | null
+          status?: boolean | null
           thumbnail_url?: string | null
           updated_at?: string | null
         }
         Update: {
           category?: string
+          component_name?: string
           created_at?: string | null
           css_config?: Json | null
+          description?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
           preview_url?: string | null
+          status?: boolean | null
           thumbnail_url?: string | null
           updated_at?: string | null
         }

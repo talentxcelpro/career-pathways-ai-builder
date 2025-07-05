@@ -75,12 +75,12 @@ const ResumeDashboard = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">AI Resume Builder</h1>
-            <p className="text-gray-600">Create, manage, and optimize your professional resumes</p>
+            <h1 className="text-3xl font-bold text-gray-900">Resume Builder Dashboard</h1>
+            <p className="text-gray-600">Create, manage, and optimize your professional resumes with AI</p>
           </div>
           <div className="flex space-x-3">
             <Button 
-              onClick={() => navigate('/resume/upload')}
+              onClick={() => navigate('/resume-builder/upload')}
               variant="outline"
               className="flex items-center"
             >
@@ -88,7 +88,7 @@ const ResumeDashboard = () => {
               Upload Resume
             </Button>
             <Button 
-              onClick={() => navigate('/resume/new')}
+              onClick={() => navigate('/resume-builder/new')}
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -171,7 +171,7 @@ const ResumeDashboard = () => {
                     <FileText className="h-12 w-12 mx-auto text-gray-300 mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No resumes yet</h3>
                     <p className="text-gray-600 mb-4">Create your first AI-powered resume to get started</p>
-                    <Button onClick={() => navigate('/resume/new')}>
+                    <Button onClick={() => navigate('/resume-builder/new')}>
                       <Plus className="h-4 w-4 mr-2" />
                       Create Resume
                     </Button>
@@ -197,14 +197,14 @@ const ResumeDashboard = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => navigate(`/resume/edit/${resume.id}`)}
+                              onClick={() => navigate(`/resume-builder/edit/${resume.id}`)}
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => navigate(`/resume/export/${resume.id}`)}
+                              onClick={() => navigate(`/resume-builder/export/${resume.id}`)}
                             >
                               <Download className="h-4 w-4" />
                             </Button>
@@ -242,7 +242,7 @@ const ResumeDashboard = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button 
-                  onClick={() => navigate('/resume/new')} 
+                  onClick={() => navigate('/resume-builder/new')} 
                   className="w-full justify-start"
                   variant="outline"
                 >
@@ -250,7 +250,7 @@ const ResumeDashboard = () => {
                   Start from Scratch
                 </Button>
                 <Button 
-                  onClick={() => navigate('/resume/upload')} 
+                  onClick={() => navigate('/resume-builder/upload')} 
                   className="w-full justify-start"
                   variant="outline"
                 >
@@ -258,7 +258,7 @@ const ResumeDashboard = () => {
                   Upload Existing Resume
                 </Button>
                 <Button 
-                  onClick={() => navigate('/resume/templates')} 
+                  onClick={() => navigate('/resume-builder/templates')} 
                   className="w-full justify-start"
                   variant="outline"
                 >
@@ -266,7 +266,7 @@ const ResumeDashboard = () => {
                   Browse Templates
                 </Button>
                 <Button 
-                  onClick={() => navigate('/resume/cover-letter')} 
+                  onClick={() => navigate('/resume-builder/cover-letter')} 
                   className="w-full justify-start"
                   variant="outline"
                 >
@@ -288,7 +288,7 @@ const ResumeDashboard = () => {
                     <div 
                       key={template.id}
                       className="border rounded-lg p-3 hover:shadow-md transition-shadow cursor-pointer"
-                      onClick={() => navigate('/resume/templates')}
+                      onClick={() => navigate('/resume-builder/templates')}
                     >
                       <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded mb-2 flex items-center justify-center">
                         <FileText className="h-8 w-8 text-gray-500" />
@@ -299,7 +299,7 @@ const ResumeDashboard = () => {
                   ))}
                 </div>
                 <Button 
-                  onClick={() => navigate('/resume/templates')} 
+                  onClick={() => navigate('/resume-builder/templates')} 
                   variant="outline" 
                   className="w-full mt-4"
                 >

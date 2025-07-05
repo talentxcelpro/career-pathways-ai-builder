@@ -226,14 +226,14 @@ const EditResume = () => {
           <div className="flex items-center">
             <Button 
               variant="ghost" 
-              onClick={() => navigate('/resume')}
+              onClick={() => navigate('/resume-builder')}
               className="flex items-center mr-4"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Edit Resume</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Resume Builder Editor</h1>
               <p className="text-gray-600">AI-powered resume editor with real-time preview</p>
             </div>
           </div>

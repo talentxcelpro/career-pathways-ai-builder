@@ -59,6 +59,12 @@ interface ResumeData {
     date: string;
     description?: string;
   }>;
+  publications?: Array<{
+    title: string;
+    publisher: string;
+    date: string;
+    url?: string;
+  }>;
   volunteer?: Array<{
     organization: string;
     role: string;
@@ -449,6 +455,339 @@ export const CreativeTemplate: React.FC<TemplateProps> = ({ data }) => {
   );
 };
 
+export const ExecutiveTemplate: React.FC<TemplateProps> = ({ data }) => {
+  const skills = Array.isArray(data.skills) 
+    ? data.skills 
+    : [...(data.skills.technical || []), ...(data.skills.soft || []), ...(data.skills.tools || [])];
+
+  return (
+    <div className="max-w-4xl mx-auto p-8 bg-white text-gray-900 font-serif">
+      {/* Header */}
+      <header className="text-center border-b-2 border-gray-800 pb-6 mb-8">
+        <h1 className="text-5xl font-bold text-gray-900 mb-2">{data.personalInfo?.fullName || 'Your Name'}</h1>
+        <div className="text-lg text-gray-700 space-x-6">
+          {data.personalInfo?.email && <span>{data.personalInfo.email}</span>}
+          {data.personalInfo?.phone && <span>{data.personalInfo.phone}</span>}
+          {data.personalInfo?.location && <span>{data.personalInfo.location}</span>}
+        </div>
+      </header>
+
+      {/* Executive Summary */}
+      {data.personalInfo?.summary && (
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">Executive Summary</h2>
+          <p className="text-gray-700 leading-relaxed text-lg">{data.personalInfo.summary}</p>
+        </section>
+      )}
+
+      {/* Professional Experience */}
+      {data.experience?.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 uppercase tracking-wide">Professional Experience</h2>
+          <div className="space-y-8">
+            {data.experience.map((exp, index) => (
+              <div key={index}>
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">{exp.title}</h3>
+                    <h4 className="text-lg font-semibold text-gray-700">{exp.company} • {exp.location}</h4>
+                  </div>
+                  <span className="text-gray-600 font-medium">{exp.startDate} - {exp.endDate}</span>
+                </div>
+                <p className="text-gray-700 mb-3">{exp.description}</p>
+                {exp.achievements && exp.achievements.length > 0 && (
+                  <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
+                    {exp.achievements.map((achievement, i) => (
+                      <li key={i}>{achievement}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Core Competencies */}
+      {skills.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">Core Competencies</h2>
+          <div className="text-gray-700 leading-relaxed">
+            {skills.filter(skill => skill).join(' • ')}
+          </div>
+        </section>
+      )}
+
+      {/* Education */}
+      {data.education?.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">Education</h2>
+          <div className="space-y-4">
+            {data.education.map((edu, index) => (
+              <div key={index}>
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-bold text-gray-900">{edu.degree}</h3>
+                  <span className="text-gray-600 font-medium">{edu.startDate} - {edu.endDate}</span>
+                </div>
+                <div className="text-lg font-medium text-gray-700">{edu.school}, {edu.location}</div>
+                {edu.gpa && <div className="text-gray-700">GPA: {edu.gpa}</div>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+};
+
+export const TechnicalTemplate: React.FC<TemplateProps> = ({ data }) => {
+  const skills = Array.isArray(data.skills) 
+    ? data.skills 
+    : [...(data.skills.technical || []), ...(data.skills.soft || []), ...(data.skills.tools || [])];
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-white text-gray-900 font-mono">
+      {/* Header */}
+      <header className="border-2 border-gray-300 p-4 mb-6">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{data.personalInfo?.fullName || 'Your Name'}</h1>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-gray-700">
+          {data.personalInfo?.email && <div>Email: {data.personalInfo.email}</div>}
+          {data.personalInfo?.phone && <div>Phone: {data.personalInfo.phone}</div>}
+          {data.personalInfo?.location && <div>Location: {data.personalInfo.location}</div>}
+        </div>
+      </header>
+
+      {/* Summary */}
+      {data.personalInfo?.summary && (
+        <section className="mb-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-2 bg-gray-100 px-2 py-1">// SUMMARY</h2>
+          <p className="text-gray-700 leading-relaxed pl-4">{data.personalInfo.summary}</p>
+        </section>
+      )}
+
+      {/* Technical Skills */}
+      {skills.length > 0 && (
+        <section className="mb-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-2 bg-gray-100 px-2 py-1">// TECHNICAL SKILLS</h2>
+          <div className="pl-4 grid grid-cols-2 gap-2">
+            {skills.map((skill, index) => (
+              skill && (
+                <div key={index} className="text-gray-700">
+                  • {skill}
+                </div>
+              )
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Experience */}
+      {data.experience?.length > 0 && (
+        <section className="mb-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-2 bg-gray-100 px-2 py-1">// PROFESSIONAL EXPERIENCE</h2>
+          <div className="space-y-4">
+            {data.experience.map((exp, index) => (
+              <div key={index} className="pl-4">
+                <div className="flex justify-between items-start mb-1">
+                  <h3 className="font-bold text-gray-900">{exp.title} @ {exp.company}</h3>
+                  <span className="text-sm text-gray-600">{exp.startDate} - {exp.endDate}</span>
+                </div>
+                <div className="text-sm text-gray-600 mb-2">{exp.location}</div>
+                <p className="text-gray-700 mb-2">{exp.description}</p>
+                {exp.achievements && exp.achievements.length > 0 && (
+                  <ul className="text-gray-700 space-y-1">
+                    {exp.achievements.map((achievement, i) => (
+                      <li key={i} className="text-sm">- {achievement}</li>
+                    ))}
+                  </ul>
+                )}
+                {exp.technologies && exp.technologies.length > 0 && (
+                  <div className="mt-2 text-sm text-gray-600">
+                    Tech Stack: {exp.technologies.join(', ')}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Projects */}
+      {data.projects?.length > 0 && (
+        <section className="mb-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-2 bg-gray-100 px-2 py-1">// PROJECTS</h2>
+          <div className="space-y-3">
+            {data.projects.map((project, index) => (
+              <div key={index} className="pl-4">
+                <h3 className="font-bold text-gray-900">{project.title}</h3>
+                <p className="text-gray-700 text-sm">{project.description}</p>
+                {project.technologies && (
+                  <div className="text-sm text-gray-600 mt-1">
+                    Technologies: {project.technologies.join(', ')}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Education */}
+      {data.education?.length > 0 && (
+        <section>
+          <h2 className="text-lg font-bold text-gray-900 mb-2 bg-gray-100 px-2 py-1">// EDUCATION</h2>
+          <div className="space-y-2">
+            {data.education.map((edu, index) => (
+              <div key={index} className="pl-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-bold text-gray-900">{edu.degree}</h3>
+                  <span className="text-sm text-gray-600">{edu.startDate} - {edu.endDate}</span>
+                </div>
+                <div className="text-gray-700">{edu.school} • {edu.location}</div>
+                {edu.gpa && <div className="text-sm text-gray-600">GPA: {edu.gpa}</div>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+};
+
+export const AcademicTemplate: React.FC<TemplateProps> = ({ data }) => {
+  const skills = Array.isArray(data.skills) 
+    ? data.skills 
+    : [...(data.skills.technical || []), ...(data.skills.soft || []), ...(data.skills.tools || [])];
+
+  return (
+    <div className="max-w-4xl mx-auto p-8 bg-white text-gray-900">
+      {/* Header */}
+      <header className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">{data.personalInfo?.fullName || 'Your Name'}</h1>
+        <div className="text-gray-700 space-x-4">
+          {data.personalInfo?.email && <span>{data.personalInfo.email}</span>}
+          {data.personalInfo?.phone && <span>{data.personalInfo.phone}</span>}
+          {data.personalInfo?.location && <span>{data.personalInfo.location}</span>}
+        </div>
+        {data.personalInfo?.linkedin && (
+          <div className="mt-2 text-blue-600">
+            <span>{data.personalInfo.linkedin}</span>
+          </div>
+        )}
+      </header>
+
+      {/* Research Interests */}
+      {data.personalInfo?.summary && (
+        <section className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1">Research Interests</h2>
+          <p className="text-gray-700 leading-relaxed">{data.personalInfo.summary}</p>
+        </section>
+      )}
+
+      {/* Education */}
+      {data.education?.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-300 pb-1">Education</h2>
+          <div className="space-y-4">
+            {data.education.map((edu, index) => (
+              <div key={index}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">{edu.degree}</h3>
+                    <div className="text-gray-700">{edu.school}, {edu.location}</div>
+                    {edu.gpa && <div className="text-gray-600">GPA: {edu.gpa}</div>}
+                    {edu.honors && <div className="text-gray-600 italic">{edu.honors}</div>}
+                  </div>
+                  <span className="text-gray-600">{edu.startDate} - {edu.endDate}</span>
+                </div>
+                {edu.relevantCoursework && edu.relevantCoursework.length > 0 && (
+                  <div className="mt-2 text-sm text-gray-600">
+                    <strong>Relevant Coursework:</strong> {edu.relevantCoursework.join(', ')}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Academic Experience */}
+      {data.experience?.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-300 pb-1">Academic & Professional Experience</h2>
+          <div className="space-y-6">
+            {data.experience.map((exp, index) => (
+              <div key={index}>
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">{exp.title}</h3>
+                    <div className="text-gray-700">{exp.company}, {exp.location}</div>
+                  </div>
+                  <span className="text-gray-600">{exp.startDate} - {exp.endDate}</span>
+                </div>
+                <p className="text-gray-700 mb-2">{exp.description}</p>
+                {exp.achievements && exp.achievements.length > 0 && (
+                  <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
+                    {exp.achievements.map((achievement, i) => (
+                      <li key={i}>{achievement}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Publications */}
+      {data.publications?.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-300 pb-1">Publications</h2>
+          <div className="space-y-3">
+            {data.publications.map((pub, index) => (
+              <div key={index}>
+                <div className="text-gray-900 font-medium">{pub.title}</div>
+                <div className="text-gray-700">{pub.publisher} ({pub.date})</div>
+                {pub.url && (
+                  <div className="text-blue-600 text-sm">{pub.url}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Skills */}
+      {skills.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-300 pb-1">Skills & Competencies</h2>
+          <div className="text-gray-700">
+            {skills.filter(skill => skill).join(' • ')}
+          </div>
+        </section>
+      )}
+
+      {/* Awards & Honors */}
+      {data.awards?.length > 0 && (
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-300 pb-1">Awards & Honors</h2>
+          <div className="space-y-2">
+            {data.awards.map((award, index) => (
+              <div key={index} className="flex justify-between">
+                <div>
+                  <span className="font-semibold text-gray-900">{award.name}</span>
+                  <span className="text-gray-700"> - {award.issuer}</span>
+                </div>
+                <span className="text-gray-600">{award.date}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+};
+
 export const resumeTemplates = [
   {
     id: 'modern',
@@ -467,5 +806,23 @@ export const resumeTemplates = [
     name: 'Creative Gradient',
     component: CreativeTemplate,
     description: 'Eye-catching design with gradients and colors'
+  },
+  {
+    id: 'executive',
+    name: 'Executive Corporate',
+    component: ExecutiveTemplate,
+    description: 'Formal design ideal for senior executive roles'
+  },
+  {
+    id: 'technical',
+    name: 'Technical Grid',
+    component: TechnicalTemplate,
+    description: 'Clean, structured layout for technical professionals'
+  },
+  {
+    id: 'academic',
+    name: 'Academic Scholar',
+    component: AcademicTemplate,
+    description: 'Research-focused design emphasizing publications and education'
   }
 ];
