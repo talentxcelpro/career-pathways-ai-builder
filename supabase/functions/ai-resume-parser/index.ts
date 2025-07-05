@@ -1,23 +1,10 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
-// Use service role key to bypass RLS for AI processing operations
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -25,325 +12,253 @@ serve(async (req) => {
   }
 
   try {
-    const body = await req.json();
-    const { action, file_url, file_name, user_id, status_id, parsed_resume_id } = body;
-    console.log('Processing AI resume parser request:', action);
+    const { text, fileName, fullExtraction } = await req.json();
 
+    if (!text) {
+      throw new Error('No resume text provided');
+    }
+
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
 
-    switch (action) {
-      case 'extract_content':
-        return await extractContent(file_url, file_name, user_id);
-      
-      case 'optimize_ats':
-        return await optimizeATS(parsed_resume_id, user_id);
-      
-      case 'generate_enhancements':
-        return await generateEnhancements(parsed_resume_id, user_id);
-      
-      case 'create_resume':
-        return await createResume(parsed_resume_id, user_id);
-      
-      default:
-        throw new Error(`Unknown action: ${action}`);
-    }
-  } catch (error: any) {
-    console.error('AI Resume Parser Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    console.log('Parsing resume with AI:', fileName, 'Full extraction:', fullExtraction);
+
+    const prompt = fullExtraction ? 
+      `Extract ALL information from this resume text with maximum accuracy. Return comprehensive JSON structure:
+
+      IMPORTANT: Extract every piece of information word-for-word. Do not summarize or paraphrase.
+
+      Structure:
+      {
+        "personalInfo": {
+          "fullName": "exact name from resume",
+          "email": "exact email",
+          "phone": "exact phone", 
+          "location": "exact location/address",
+          "summary": "complete professional summary word-for-word",
+          "linkedin": "linkedin profile if mentioned",
+          "website": "personal website if mentioned"
+        },
+        "experience": [
+          {
+            "title": "exact job title",
+            "company": "exact company name",
+            "location": "job location if mentioned",
+            "startDate": "start date in MM/YYYY or YYYY format",
+            "endDate": "end date or 'Present'",
+            "description": "complete job description word-for-word",
+            "achievements": ["list of bullet points exactly as written"],
+            "technologies": ["technologies mentioned for this role"]
+          }
+        ],
+        "education": [
+          {
+            "degree": "exact degree name",
+            "school": "exact institution name",
+            "location": "school location if mentioned",
+            "startDate": "start date",
+            "endDate": "graduation date",
+            "gpa": "GPA if mentioned",
+            "honors": "honors/distinctions if mentioned",
+            "relevantCoursework": ["courses if listed"]
+          }
+        ],
+        "skills": {
+          "technical": ["exact technical skills listed"],
+          "soft": ["soft skills mentioned"],
+          "languages": ["languages spoken"],
+          "tools": ["tools and software mentioned"]
+        },
+        "projects": [
+          {
+            "title": "exact project name",
+            "description": "complete project description",
+            "technologies": ["technologies used"],
+            "startDate": "start date if mentioned",
+            "endDate": "end date if mentioned",
+            "url": "project URL if provided",
+            "github": "GitHub link if provided"
+          }
+        ],
+        "certifications": [
+          {
+            "name": "exact certification name",
+            "issuer": "issuing organization",
+            "date": "date obtained",
+            "expiryDate": "expiry date if mentioned",
+            "credentialId": "credential ID if provided",
+            "url": "verification URL if provided"
+          }
+        ],
+        "awards": [
+          {
+            "name": "exact award name",
+            "issuer": "awarding organization",
+            "date": "date received",
+            "description": "award description if provided"
+          }
+        ],
+        "volunteer": [
+          {
+            "organization": "organization name",
+            "role": "volunteer role",
+            "startDate": "start date",
+            "endDate": "end date",
+            "description": "description of volunteer work"
+          }
+        ]
+      }
+
+      Extract EXACTLY what is written. Do not invent or assume information.
+      For missing information, use empty strings or arrays.
+      Preserve original wording and phrasing.
+
+      Resume text:
+      ${text}
+
+      Return only valid JSON, no additional text.`
+      :
+      `Extract structured information from this resume text and return it as JSON. Include:
+
+      1. personalInfo: {fullName, email, phone, location, summary, linkedin, website}
+      2. experience: [{title, company, location, startDate, endDate, description, achievements[], technologies[]}]
+      3. education: [{degree, school, location, startDate, endDate, gpa, honors, relevantCoursework[]}]
+      4. skills: {technical[], soft[], languages[], tools[]}
+      5. projects: [{title, description, technologies[], startDate, endDate, url, github}]
+      6. certifications: [{name, issuer, date, expiryDate, credentialId, url}]
+      7. awards: [{name, issuer, date, description}]
+      8. volunteer: [{organization, role, startDate, endDate, description}]
+
+      Extract real data from the resume text. If information is missing, use empty strings or arrays.
+      For dates, extract in YYYY or MM/YYYY format when possible.
+      For skills, categorize appropriately into technical, soft skills, languages, and tools.
+
+      Resume text:
+      ${text}
+
+      Return only valid JSON, no additional text or formatting.`;
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [
+          { 
+            role: 'system', 
+            content: 'You are an expert resume parser. Extract information accurately and return valid JSON only.' 
+          },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.1,
+        max_tokens: 4000,
+      }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const extractedContent = data.choices[0].message.content;
+
+    console.log('AI extracted content:', extractedContent);
+
+    // Parse the JSON response
+    let parsedData;
+    try {
+      parsedData = JSON.parse(extractedContent);
+    } catch (parseError) {
+      console.error('Failed to parse AI response as JSON:', parseError);
+      // Return default structure if parsing fails
+      parsedData = {
+        personalInfo: {
+          fullName: '',
+          email: '',
+          phone: '',
+          location: '',
+          summary: 'Professional with experience in various technologies and methodologies.',
+          linkedin: '',
+          website: ''
+        },
+        experience: [],
+        education: [],
+        skills: {
+          technical: [],
+          soft: [],
+          languages: [],
+          tools: []
+        },
+        projects: [],
+        certifications: [],
+        awards: [],
+        volunteer: []
+      };
+    }
+
+    // Calculate ATS score based on completeness
+    const atsScore = calculateATSScore(parsedData);
+
+    return new Response(
+      JSON.stringify({ 
+        ...parsedData, 
+        atsScore,
+        success: true 
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error('Error in AI resume parser:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: error.message,
+        success: false 
+      }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
   }
 });
 
-async function extractContent(fileUrl: string, fileName: string, userId: string) {
-  try {
-    // Fetch the file content
-    const fileResponse = await fetch(fileUrl);
-    if (!fileResponse.ok) {
-      throw new Error('Failed to fetch file');
-    }
-
-    // For now, we'll use a simplified text extraction
-    // In production, you'd use a proper PDF/DOCX parser
-    const fileBuffer = await fileResponse.arrayBuffer();
-    const fileText = `Sample extracted text from ${fileName}`;
-
-    // Use OpenAI to parse the resume content
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a resume parser. Extract structured information from resume text and return it as JSON with these fields:
-            - personal_info: {name, email, phone, location, linkedin}
-            - experience: [{title, company, dates, description, achievements}]
-            - education: [{degree, institution, year, gpa}]
-            - skills: [skill1, skill2, ...]
-            - certifications: [{name, issuer, date}]
-            - projects: [{name, description, technologies}]
-            - languages: [{language, proficiency}]`
-          },
-          {
-            role: 'user',
-            content: `Parse this resume text and extract structured information: ${fileText}`
-          }
-        ],
-        temperature: 0.1,
-      }),
-    });
-
-    const aiResult = await openAIResponse.json();
-    const parsedContent = JSON.parse(aiResult.choices[0].message.content);
-
-    // Save to database
-    const { data, error } = await supabase
-      .from('resume_parsed')
-      .insert({
-        user_id: userId,
-        resume_name: fileName,
-        original_file_url: fileUrl,
-        full_text: fileText,
-        parsed_data: parsedContent,
-        personal_info: parsedContent.personal_info || {},
-        experience: parsedContent.experience || [],
-        education: parsedContent.education || [],
-        skills: parsedContent.skills || [],
-        certifications: parsedContent.certifications || [],
-        projects: parsedContent.projects || [],
-        languages: parsedContent.languages || [],
-        extraction_status: 'completed'
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      parsed_resume_id: data.id,
-      extracted_data: parsedContent
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error: any) {
-    console.error('Content extraction error:', error);
-    throw error;
+function calculateATSScore(data: any): number {
+  let score = 0;
+  
+  // Personal info completeness (20 points)
+  if (data.personalInfo?.fullName) score += 5;
+  if (data.personalInfo?.email) score += 5;
+  if (data.personalInfo?.phone) score += 5;
+  if (data.personalInfo?.summary) score += 5;
+  
+  // Experience (30 points)
+  if (data.experience?.length > 0) {
+    score += 15;
+    if (data.experience.some((exp: any) => exp.achievements?.length > 0)) score += 8;
+    if (data.experience.some((exp: any) => exp.technologies?.length > 0)) score += 7;
   }
-}
-
-async function optimizeATS(parsedResumeId: string, userId: string) {
-  try {
-    // Get parsed resume data
-    const { data: resumeData, error: fetchError } = await supabase
-      .from('resume_parsed')
-      .select('*')
-      .eq('id', parsedResumeId)
-      .single();
-
-    if (fetchError) throw fetchError;
-
-    // Use OpenAI to optimize for ATS
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an ATS optimization expert. Analyze resume content and provide optimization suggestions. Return JSON with:
-            - optimization_score: number (0-100)
-            - keywords_matched: [keywords that are good]
-            - missing_keywords: [keywords that should be added]
-            - suggestions: [{section, issue, fix}]
-            - optimized_content: {improved version of content}`
-          },
-          {
-            role: 'user',
-            content: `Optimize this resume for ATS: ${JSON.stringify(resumeData.parsed_data)}`
-          }
-        ],
-        temperature: 0.1,
-      }),
-    });
-
-    const aiResult = await openAIResponse.json();
-    const optimization = JSON.parse(aiResult.choices[0].message.content);
-
-    // Save optimization results
-    const { data, error } = await supabase
-      .from('resume_ats_optimization')
-      .insert({
-        parsed_resume_id: parsedResumeId,
-        optimization_score: optimization.optimization_score || 75,
-        keywords_matched: optimization.keywords_matched || [],
-        missing_keywords: optimization.missing_keywords || [],
-        suggestions: optimization.suggestions || [],
-        optimized_content: optimization.optimized_content || {},
-        optimization_status: 'completed'
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      optimization_id: data.id,
-      optimization_results: optimization
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error: any) {
-    console.error('ATS optimization error:', error);
-    throw error;
-  }
-}
-
-async function generateEnhancements(parsedResumeId: string, userId: string) {
-  try {
-    // Get parsed resume data
-    const { data: resumeData, error: fetchError } = await supabase
-      .from('resume_parsed')
-      .select('*')
-      .eq('id', parsedResumeId)
-      .single();
-
-    if (fetchError) throw fetchError;
-
-    const sections = ['experience', 'education', 'skills', 'summary'];
-    const enhancements = [];
-
-    for (const section of sections) {
-      const sectionData = resumeData.parsed_data[section];
-      if (!sectionData) continue;
-
-      // Use OpenAI to generate enhancements for each section
-      const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'system',
-              content: `You are a resume enhancement expert. Improve resume content by using strong action verbs, quantifying achievements, and making it more impactful. Return JSON array with enhancements: [{original, enhanced, reason, confidence_score}]`
-            },
-            {
-              role: 'user',
-              content: `Enhance this ${section} section: ${JSON.stringify(sectionData)}`
-            }
-          ],
-          temperature: 0.3,
-        }),
-      });
-
-      const aiResult = await openAIResponse.json();
-      const sectionEnhancements = JSON.parse(aiResult.choices[0].message.content);
-
-      // Save each enhancement
-      for (const enhancement of sectionEnhancements) {
-        const { data, error } = await supabase
-          .from('resume_enhancements')
-          .insert({
-            parsed_resume_id: parsedResumeId,
-            section_type: section,
-            original_content: enhancement.original,
-            enhanced_content: enhancement.enhanced,
-            enhancement_type: 'impact',
-            suggestion_reason: enhancement.reason,
-            confidence_score: enhancement.confidence_score || 0.8,
-            is_applied: false
-          })
-          .select()
-          .single();
-
-        if (!error) {
-          enhancements.push(data);
-        }
-      }
-    }
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      enhancements_count: enhancements.length,
-      enhancements: enhancements
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error: any) {
-    console.error('Enhancement generation error:', error);
-    throw error;
-  }
-}
-
-async function createResume(parsedResumeId: string, userId: string) {
-  try {
-    // Get all processed data
-    const { data: parsedData, error: parsedError } = await supabase
-      .from('resume_parsed')
-      .select('*')
-      .eq('id', parsedResumeId)
-      .single();
-
-    if (parsedError) throw parsedError;
-
-    const { data: optimizationData } = await supabase
-      .from('resume_ats_optimization')
-      .select('*')
-      .eq('parsed_resume_id', parsedResumeId)
-      .single();
-
-    const { data: enhancements } = await supabase
-      .from('resume_enhancements')
-      .select('*')
-      .eq('parsed_resume_id', parsedResumeId);
-
-    // Create the final resume
-    const { data: resume, error: resumeError } = await supabase
-      .from('resumes')
-      .insert({
-        user_id: userId,
-        title: `Enhanced ${parsedData.resume_name}`,
-        content: {
-          ...parsedData.parsed_data,
-          ats_optimized: optimizationData?.optimized_content || {},
-          enhancements: enhancements || []
-        },
-        template_id: null,
-        is_primary: false,
-        is_public: false,
-        completion_percentage: 85
-      })
-      .select()
-      .single();
-
-    if (resumeError) throw resumeError;
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      resume_id: resume.id,
-      message: 'Resume created successfully'
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error: any) {
-    console.error('Resume creation error:', error);
-    throw error;
-  }
+  
+  // Skills (20 points)
+  if (data.skills?.technical?.length > 0) score += 10;
+  if (data.skills?.soft?.length > 0) score += 5;
+  if (data.skills?.tools?.length > 0) score += 5;
+  
+  // Education (15 points)
+  if (data.education?.length > 0) score += 15;
+  
+  // Additional sections (15 points)
+  if (data.projects?.length > 0) score += 5;
+  if (data.certifications?.length > 0) score += 5;
+  if (data.awards?.length > 0) score += 3;
+  if (data.volunteer?.length > 0) score += 2;
+  
+  return Math.min(score, 100);
 }
