@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import { FileUploadZone } from "@/components/resume/upload/FileUploadZone";
-import { ProcessingStatus } from "@/components/resume/upload/ProcessingStatus";
-import { FeaturesPreview } from "@/components/resume/upload/FeaturesPreview";
+import { FileUploadZone, ProcessingStatus, FeaturesPreview } from "@/components/resume/upload";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 import { useResumeUpload } from "@/hooks/useResumeUpload";
 
