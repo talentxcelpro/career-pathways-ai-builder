@@ -48,6 +48,19 @@ const ToolsDashboard = () => {
     return IconComponent && typeof IconComponent === 'function' ? IconComponent : Icons.Wrench;
   };
 
+  const getToolTier = (toolName: string) => {
+    const premiumTools = ['ai-career-pathfinder', 'ai-job-match-gpt', 'smart-apply-tool'];
+    const featuredTools = ['resume-builder', 'interview-prep', 'career-pathfinder', 'cover-letter-generator'];
+    
+    if (premiumTools.some(tool => toolName.toLowerCase().includes(tool.replace(/-/g, ' ')))) {
+      return { tier: 'premium', color: 'from-purple-500 via-pink-500 to-red-500', badge: 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' };
+    }
+    if (featuredTools.some(tool => toolName.toLowerCase().includes(tool.replace(/-/g, ' ')))) {
+      return { tier: 'featured', color: 'from-blue-500 via-cyan-500 to-teal-500', badge: 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white' };
+    }
+    return { tier: 'free', color: 'from-green-500 to-emerald-500', badge: 'bg-green-100 text-green-700' };
+  };
+
   const handleToolClick = (toolSlug: string) => {
     navigate(`/tools/${toolSlug}`);
   };
@@ -156,20 +169,29 @@ const ToolsDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredTools.map((tool) => {
             const IconComponent = getIconComponent(tool.icon_name);
+            const toolTier = getToolTier(tool.name);
             return (
               <Card 
                 key={tool.id} 
-                className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 shadow-md bg-white/90 backdrop-blur-sm hover:bg-white/95"
+                className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-0 shadow-md bg-white/90 backdrop-blur-sm hover:bg-white/95 relative overflow-hidden"
                 onClick={() => handleToolClick(tool.slug)}
               >
+                {toolTier.tier !== 'free' && (
+                  <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${toolTier.color} opacity-10 rounded-bl-full`}></div>
+                )}
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
-                      <IconComponent className="h-4 w-4 text-primary" />
+                    <div className={`p-2 bg-gradient-to-br ${toolTier.color} bg-opacity-10 rounded-lg group-hover:scale-110 transition-transform`}>
+                      <IconComponent className="h-3 w-3 text-white" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.3))' }} />
                     </div>
-                    <Badge variant="outline" className="text-xs">
-                      {tool.category}
-                    </Badge>
+                    <div className="flex flex-col gap-1 items-end">
+                      <Badge className={`text-xs px-2 py-1 ${toolTier.badge} border-0`}>
+                        {toolTier.tier.toUpperCase()}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        {tool.category}
+                      </Badge>
+                    </div>
                   </div>
                   <CardTitle className="text-heading-md text-slate-900 group-hover:text-primary transition-colors">
                     {tool.name}
@@ -180,12 +202,16 @@ const ToolsDashboard = () => {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <Button 
-                    variant="ghost" 
+                    variant={toolTier.tier === 'premium' ? 'default' : 'ghost'}
                     size="sm"
-                    className="w-full justify-between group-hover:bg-primary/10 transition-colors text-body"
+                    className={`w-full justify-between transition-colors text-body ${
+                      toolTier.tier === 'premium' 
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white' 
+                        : 'group-hover:bg-primary/10'
+                    }`}
                   >
-                    Try Tool
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    {toolTier.tier === 'premium' ? 'Try Premium' : 'Try Tool'}
+                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </CardContent>
               </Card>
