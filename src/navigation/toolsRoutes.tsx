@@ -1,5 +1,10 @@
 
 import { Brain, Calculator, MessageSquare, Target, FileText, Users, BookOpen, Briefcase, User, TrendingUp, BarChart3, PieChart, Award, Shield, Search, ArrowRightLeft, Video, Star, Send, DollarSign, Network, UserCheck, Mail, Edit3, Scissors } from "lucide-react";
+import RoleFitEvaluator from "../pages/tools/RoleFitEvaluator";
+import MockInterviewSimulator from "../pages/tools/MockInterviewSimulator";
+import AIOutreachGenerator from "../pages/tools/AIOutreachGenerator";
+import ResumeTailorTool from "../pages/tools/ResumeTailorTool";
+import SkillGapAnalyzer from "../pages/tools/SkillGapAnalyzer";
 import ToolsDashboard from "../pages/tools/ToolsDashboard";
 import AICareerPathfinder from "../pages/tools/AICareerPathfinder";
 import JobApplicationFunnel from "../pages/tools/JobApplicationFunnel";
@@ -59,7 +64,7 @@ export const toolsRoutes = [
     title: "Role Fit Evaluator",
     to: "/tools/role-fit-evaluator",
     icon: <Search className="h-4 w-4" />,
-    page: <ProfileScore />, // Temporary - similar functionality
+    page: <RoleFitEvaluator />,
   },
   {
     title: "Career Change Navigator", 
@@ -72,7 +77,7 @@ export const toolsRoutes = [
     title: "Mock Interview Simulator",
     to: "/tools/mock-interview-simulator", 
     icon: <Video className="h-4 w-4" />,
-    page: <InterviewPrep />, // Temporary - similar functionality
+    page: <MockInterviewSimulator />,
   },
   {
     title: "Interview Q&A Bank",
