@@ -107,7 +107,7 @@ const EmployerTeam = () => {
           
           return {
             ...member,
-            user_profile: profile || { full_name: 'Unknown User', email: 'No email' }
+            user_profile: profile || { full_name: 'Unknown User', email: 'No email', profile_picture_url: null }
           };
         })
       );
