@@ -118,8 +118,8 @@ const Contact = () => {
                   <Mail className="h-6 w-6 text-blue-600 mt-1" />
                   <div>
                     <h3 className="font-semibold">Email</h3>
-                    <p className="text-gray-600">support@talentxcel.in</p>
-                    <p className="text-sm text-gray-500">We typically respond within 24 hours</p>
+                    <p className="text-gray-600">info@talentxcel.co.in</p>
+                    <p className="text-sm text-gray-500">Typically responds within 24 hours</p>
                   </div>
                 </div>
                 
@@ -128,7 +128,7 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold">Address</h3>
                     <p className="text-gray-600">TalentXcel Services</p>
-                    <p className="text-gray-600">Bengaluru, India</p>
+                    <p className="text-gray-600">Noida, India</p>
                   </div>
                 </div>
                 
@@ -149,14 +149,25 @@ const Contact = () => {
                 <CardTitle className="text-xl">Quick Support</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button className="w-full justify-start" variant="outline">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => {
+                    // You can integrate with your preferred live chat solution here
+                    toast.info("Live chat will be available during support hours (10:00 AM - 6:00 PM IST)");
+                  }}
+                >
                   <MessageCircle className="h-4 w-4 mr-2" />
-                  Live Chat Support
+                  Start Live Chat
                 </Button>
                 
-                <Button className="w-full justify-start" variant="outline">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => window.open('https://wa.me/919717161809', '_blank')}
+                >
                   <Phone className="h-4 w-4 mr-2" />
-                  WhatsApp Support
+                  Chat on WhatsApp (+91 9717161809)
                 </Button>
                 
                 <div className="text-center pt-4">
