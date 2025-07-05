@@ -73,10 +73,20 @@ const ProfileEdit = () => {
     profile_visibility: 'public' as 'public' | 'private' | 'connections_only',
     allow_profile_sharing: true,
     custom_profile_url: '',
-    resume_url: ''
+    resume_url: '',
+    work_experiences: [] as Array<{
+      id: string;
+      company: string;
+      position: string;
+      startDate: string;
+      endDate: string;
+      isCurrent: boolean;
+      description: string;
+      location: string;
+    }>
   });
 
-  const handleFieldChange = (field: string, value: string | number) => {
+  const handleFieldChange = (field: string, value: string | number | Array<any>) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -104,7 +114,8 @@ const ProfileEdit = () => {
           : 'public',
         allow_profile_sharing: profile.allow_profile_sharing ?? true,
         custom_profile_url: profile.custom_profile_url || generateCustomProfileUrl(profile.full_name || ''),
-        resume_url: profile.resume_url || ''
+        resume_url: profile.resume_url || '',
+        work_experiences: profile.work_experiences || []
       });
     }
   }, [profile]);
@@ -252,6 +263,7 @@ const ProfileEdit = () => {
             industry: formData.industry,
             experience_years: formData.experience_years,
             current_company: formData.current_company,
+            work_experiences: formData.work_experiences,
           }}
           onFieldChange={handleFieldChange}
         />
