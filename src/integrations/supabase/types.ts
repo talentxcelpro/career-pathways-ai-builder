@@ -675,6 +675,7 @@ export type Database = {
           logo_url: string | null
           name: string
           size_range: string | null
+          slug: string | null
           social_links: Json | null
           tech_stack: string[] | null
           updated_at: string | null
@@ -696,6 +697,7 @@ export type Database = {
           logo_url?: string | null
           name: string
           size_range?: string | null
+          slug?: string | null
           social_links?: Json | null
           tech_stack?: string[] | null
           updated_at?: string | null
@@ -717,6 +719,7 @@ export type Database = {
           logo_url?: string | null
           name?: string
           size_range?: string | null
+          slug?: string | null
           social_links?: Json | null
           tech_stack?: string[] | null
           updated_at?: string | null
@@ -4754,6 +4757,14 @@ export type Database = {
           p_priority?: string
           p_icon?: string
         }
+        Returns: string
+      }
+      ensure_unique_slug: {
+        Args: { base_slug: string; company_id?: string }
+        Returns: string
+      }
+      generate_company_slug: {
+        Args: { company_name: string }
         Returns: string
       }
       get_email_domain: {

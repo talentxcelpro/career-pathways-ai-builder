@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useFileUpload } from '@/hooks/useFileUpload';
+import { generateCompanySEO, generateCompanyStructuredData } from '@/utils/companySEO';
 import { 
   MapPin, 
   Users, 
@@ -46,11 +47,14 @@ import { CompanyFollowButton } from '@/components/company/CompanyFollowButton';
 import { toast } from 'sonner';
 
 const CompanyDetail = () => {
-  const { id } = useParams();
+  const { id, slug } = useParams();
   const [isFollowing, setIsFollowing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const { uploadFile, uploading } = useFileUpload({ bucket: 'companies' });
+  
+  // Determine if we're using slug or ID
+  const identifier = slug || id;
 
   // Get current user
   React.useEffect(() => {
@@ -63,11 +67,12 @@ const CompanyDetail = () => {
 
   // Fetch company data with real relationships
   const { data: company, isLoading, refetch } = useQuery({
-    queryKey: ['company-detail', id],
+    queryKey: ['company-detail', identifier],
     queryFn: async () => {
-      if (!id) return null;
+      if (!identifier) return null;
 
-      const { data, error } = await supabase
+      // Build query - try by slug first, then by ID
+      let query = supabase
         .from('companies')
         .select(`
           *,
@@ -92,29 +97,36 @@ const CompanyDetail = () => {
             user_id
           )
         `)
-        .eq('id', id)
-        .eq('is_verified', true)
-        .single();
+        .eq('is_verified', true);
+
+      // If it looks like a UUID, search by ID, otherwise by slug
+      if (identifier.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
+        query = query.eq('id', identifier);
+      } else {
+        query = query.eq('slug', identifier);
+      }
+
+      const { data, error } = await query.single();
 
       if (error) throw error;
       return data;
     },
-    enabled: !!id
+    enabled: !!identifier
   });
 
   // Check if current user can edit this company
   const { data: canEdit } = useQuery({
-    queryKey: ['can-edit-company', id, currentUser?.id],
+    queryKey: ['can-edit-company', company?.id, currentUser?.id],
     queryFn: async () => {
-      if (!currentUser || !id) return false;
+      if (!currentUser || !company?.id) return false;
 
       // Check if user is company owner
       const { data: profile } = await supabase
         .from('company_profiles')
         .select('id')
-        .eq('company_id', id)
+        .eq('company_id', company.id)
         .eq('owner_id', currentUser.id)
-        .single();
+        .maybeSingle();
 
       if (profile) return true;
 
@@ -122,50 +134,50 @@ const CompanyDetail = () => {
       const { data: teamMember } = await supabase
         .from('company_team_members')
         .select('id')
-        .eq('company_id', id)
+        .eq('company_id', company.id)
         .eq('user_id', currentUser.id)
         .in('role', ['admin', 'owner'])
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
       return !!teamMember;
     },
-    enabled: !!currentUser && !!id
+    enabled: !!currentUser && !!company?.id
   });
 
   // Get company followers count
   const { data: followersCount } = useQuery({
-    queryKey: ['company-followers', id],
+    queryKey: ['company-followers', company?.id],
     queryFn: async () => {
-      if (!id) return 0;
+      if (!company?.id) return 0;
       
       const { count } = await supabase
         .from('company_follows')
         .select('*', { count: 'exact', head: true })
-        .eq('company_id', id);
+        .eq('company_id', company.id);
       
       return count || 0;
     },
-    enabled: !!id
+    enabled: !!company?.id
   });
 
   // Check if current user follows this company
   React.useEffect(() => {
     const checkFollowing = async () => {
-      if (!currentUser || !id) return;
+      if (!currentUser || !company?.id) return;
       
       const { data } = await supabase
         .from('company_follows')
         .select('id')
-        .eq('company_id', id)
+        .eq('company_id', company.id)
         .eq('user_id', currentUser.id)
-        .single();
+        .maybeSingle();
       
       setIsFollowing(!!data);
     };
     
     checkFollowing();
-  }, [currentUser, id]);
+  }, [currentUser, company?.id]);
 
   const handleImageUpload = async (file: File, type: 'logo' | 'cover') => {
     if (!company || !canEdit) {

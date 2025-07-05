@@ -46,6 +46,7 @@ const publicRoutes = [
   '/jobs/:id',
   '/companies',
   '/companies/:id',
+  '/:slug', // Company slug route
   '/profile/:id',
   '/employer/request-access'
 ];
@@ -65,14 +66,14 @@ const App = () => (
               <main className="flex-1">
                 <Routes>
                   {navItems.map((item: NavItem) => {
-                    const isPublicRoute = publicRoutes.some(route => {
-                      // Handle dynamic routes like /companies/:id, /profile/:id, and /jobs/:id
-                      if (route.includes(':')) {
-                        const routePattern = route.replace(':id', '[^/]+');
-                        return new RegExp(`^${routePattern}$`).test(item.to);
-                      }
-                      return route === item.to;
-                    });
+                     const isPublicRoute = publicRoutes.some(route => {
+                       // Handle dynamic routes like /companies/:id, /profile/:id, /:slug, and /jobs/:id
+                       if (route.includes(':')) {
+                         const routePattern = route.replace(':id', '[^/]+').replace(':slug', '[^/]+');
+                         return new RegExp(`^${routePattern}$`).test(item.to);
+                       }
+                       return route === item.to;
+                     });
                     
                     return (
                       <Route 

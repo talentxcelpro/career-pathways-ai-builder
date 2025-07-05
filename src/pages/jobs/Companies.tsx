@@ -304,7 +304,7 @@ const Companies = () => {
 
                   <div className="flex gap-2 pt-2">
                     <Button asChild variant="outline" size="sm" className="flex-1">
-                      <Link to={`/companies/${company.id}`}>View Company</Link>
+                      <Link to={`/${company.slug}`}>View Company</Link>
                     </Button>
                     
                     <Button asChild size="sm" className="flex-1">
