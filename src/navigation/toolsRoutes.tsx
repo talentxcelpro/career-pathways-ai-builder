@@ -7,7 +7,9 @@ import ResumeTailorTool from "../pages/tools/ResumeTailorTool";
 import SkillGapAnalyzer from "../pages/tools/SkillGapAnalyzer";
 import InterviewQABank from "../pages/tools/InterviewQABank";  
 import STARAnswerGenerator from "../pages/tools/STARAnswerGenerator";
-import ProfessionalBioWriter from "../pages/tools/ProfessionalBioWriter";
+import AIJobMatchGPT from "../pages/tools/AIJobMatchGPT";
+import NetworkGrowthTracker from "../pages/tools/NetworkGrowthTracker";
+import AILearningPathGenerator from "../pages/tools/AILearningPathGenerator";
 import ToolsDashboard from "../pages/tools/ToolsDashboard";
 import AICareerPathfinder from "../pages/tools/AICareerPathfinder";
 import JobApplicationFunnel from "../pages/tools/JobApplicationFunnel";
@@ -105,7 +107,7 @@ export const toolsRoutes = [
     title: "AI Job Match GPT",
     to: "/tools/ai-job-match-gpt", 
     icon: <Briefcase className="h-4 w-4" />,
-    page: <JobMatcher />, // Temporary - similar functionality
+    page: <AIJobMatchGPT />,
   },
   {
     title: "Smart Apply Tool",
