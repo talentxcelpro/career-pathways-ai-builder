@@ -1,0 +1,169 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const { text, fileName } = await req.json();
+
+    if (!text) {
+      throw new Error('No resume text provided');
+    }
+
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key not configured');
+    }
+
+    console.log('Parsing resume with AI:', fileName);
+
+    const prompt = `Extract structured information from this resume text and return it as JSON. Include:
+
+    1. personalInfo: {fullName, email, phone, location, summary, linkedin, website}
+    2. experience: [{title, company, location, startDate, endDate, description, achievements[], technologies[]}]
+    3. education: [{degree, school, location, startDate, endDate, gpa, honors, relevantCoursework[]}]
+    4. skills: {technical[], soft[], languages[], tools[]}
+    5. projects: [{title, description, technologies[], startDate, endDate, url, github}]
+    6. certifications: [{name, issuer, date, expiryDate, credentialId, url}]
+    7. awards: [{name, issuer, date, description}]
+    8. volunteer: [{organization, role, startDate, endDate, description}]
+
+    Extract real data from the resume text. If information is missing, use empty strings or arrays.
+    For dates, extract in YYYY or MM/YYYY format when possible.
+    For skills, categorize appropriately into technical, soft skills, languages, and tools.
+
+    Resume text:
+    ${text}
+
+    Return only valid JSON, no additional text or formatting.`;
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [
+          { 
+            role: 'system', 
+            content: 'You are an expert resume parser. Extract information accurately and return valid JSON only.' 
+          },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.1,
+        max_tokens: 4000,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const extractedContent = data.choices[0].message.content;
+
+    console.log('AI extracted content:', extractedContent);
+
+    // Parse the JSON response
+    let parsedData;
+    try {
+      parsedData = JSON.parse(extractedContent);
+    } catch (parseError) {
+      console.error('Failed to parse AI response as JSON:', parseError);
+      // Return default structure if parsing fails
+      parsedData = {
+        personalInfo: {
+          fullName: '',
+          email: '',
+          phone: '',
+          location: '',
+          summary: 'Professional with experience in various technologies and methodologies.',
+          linkedin: '',
+          website: ''
+        },
+        experience: [],
+        education: [],
+        skills: {
+          technical: [],
+          soft: [],
+          languages: [],
+          tools: []
+        },
+        projects: [],
+        certifications: [],
+        awards: [],
+        volunteer: []
+      };
+    }
+
+    // Calculate ATS score based on completeness
+    const atsScore = calculateATSScore(parsedData);
+
+    return new Response(
+      JSON.stringify({ 
+        ...parsedData, 
+        atsScore,
+        success: true 
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error('Error in AI resume parser:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: error.message,
+        success: false 
+      }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
+  }
+});
+
+function calculateATSScore(data: any): number {
+  let score = 0;
+  
+  // Personal info completeness (20 points)
+  if (data.personalInfo?.fullName) score += 5;
+  if (data.personalInfo?.email) score += 5;
+  if (data.personalInfo?.phone) score += 5;
+  if (data.personalInfo?.summary) score += 5;
+  
+  // Experience (30 points)
+  if (data.experience?.length > 0) {
+    score += 15;
+    if (data.experience.some((exp: any) => exp.achievements?.length > 0)) score += 8;
+    if (data.experience.some((exp: any) => exp.technologies?.length > 0)) score += 7;
+  }
+  
+  // Skills (20 points)
+  if (data.skills?.technical?.length > 0) score += 10;
+  if (data.skills?.soft?.length > 0) score += 5;
+  if (data.skills?.tools?.length > 0) score += 5;
+  
+  // Education (15 points)
+  if (data.education?.length > 0) score += 15;
+  
+  // Additional sections (15 points)
+  if (data.projects?.length > 0) score += 5;
+  if (data.certifications?.length > 0) score += 5;
+  if (data.awards?.length > 0) score += 3;
+  if (data.volunteer?.length > 0) score += 2;
+  
+  return Math.min(score, 100);
+}

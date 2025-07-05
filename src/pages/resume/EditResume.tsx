@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save, Eye, Download, Plus, Edit3 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, Save, Eye, Download, Plus, Edit3, Palette } from "lucide-react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { resumeTemplates } from "@/components/resume/ResumeTemplates";
 
 const EditResume = () => {
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ const EditResume = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState('modern');
   const [resumeData, setResumeData] = useState<any>({
     personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
     experience: [],
@@ -257,6 +260,33 @@ const EditResume = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Editor Panel */}
           <div className="space-y-6">
+            {/* Template Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5" />
+                  Resume Template
+                </CardTitle>
+                <CardDescription>Choose a template that best represents your style</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a template" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {resumeTemplates.map((template) => (
+                      <SelectItem key={template.id} value={template.id}>
+                        <div>
+                          <div className="font-medium">{template.name}</div>
+                          <div className="text-sm text-gray-500">{template.description}</div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </CardContent>
+            </Card>
             {/* Personal Information */}
             <Card>
               <CardHeader>
@@ -425,71 +455,18 @@ const EditResume = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Live Preview</CardTitle>
-                <CardDescription>See how your resume looks in real-time</CardDescription>
+                <CardDescription>See how your resume looks with the selected template</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="aspect-[3/4] border rounded-lg bg-white p-6 overflow-auto">
-                  <div className="space-y-4">
-                    {/* Header */}
-                    <div className="text-center border-b pb-4">
-                      <h1 className="text-2xl font-bold text-gray-900">
-                        {resumeData.personalInfo?.fullName || 'Your Name'}
-                      </h1>
-                      <div className="flex justify-center space-x-4 text-sm text-gray-600 mt-2">
-                        {resumeData.personalInfo?.email && <span>{resumeData.personalInfo.email}</span>}
-                        {resumeData.personalInfo?.phone && <span>{resumeData.personalInfo.phone}</span>}
-                        {resumeData.personalInfo?.location && <span>{resumeData.personalInfo.location}</span>}
-                      </div>
-                    </div>
-
-                    {/* Summary */}
-                    {resumeData.personalInfo?.summary && (
-                      <div>
-                        <h2 className="text-lg font-semibold text-gray-900 mb-2">Professional Summary</h2>
-                        <p className="text-sm text-gray-700">{resumeData.personalInfo.summary}</p>
-                      </div>
-                    )}
-
-                    {/* Experience */}
-                    {resumeData.experience?.length > 0 && (
-                      <div>
-                        <h2 className="text-lg font-semibold text-gray-900 mb-2">Work Experience</h2>
-                        <div className="space-y-3">
-                          {resumeData.experience.map((exp: any, index: number) => (
-                            <div key={index} className="text-sm">
-                              <div className="font-medium text-gray-900">
-                                {exp.position} {exp.company && `at ${exp.company}`}
-                              </div>
-                              {(exp.startDate || exp.endDate) && (
-                                <div className="text-gray-600 text-xs">
-                                  {exp.startDate} - {exp.endDate || 'Present'}
-                                </div>
-                              )}
-                              {exp.description && (
-                                <p className="text-gray-700 mt-1">{exp.description}</p>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Skills */}
-                    {resumeData.skills?.length > 0 && (
-                      <div>
-                        <h2 className="text-lg font-semibold text-gray-900 mb-2">Skills</h2>
-                        <div className="flex flex-wrap gap-2">
-                          {resumeData.skills.map((skill: string, index: number) => (
-                            skill && (
-                              <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                                {skill}
-                              </span>
-                            )
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                <div className="border rounded-lg bg-white overflow-auto max-h-[800px]">
+                  {(() => {
+                    const selectedTemplateData = resumeTemplates.find(t => t.id === selectedTemplate);
+                    if (selectedTemplateData) {
+                      const TemplateComponent = selectedTemplateData.component;
+                      return <TemplateComponent data={resumeData} />;
+                    }
+                    return <div className="p-8 text-center text-gray-500">Template not found</div>;
+                  })()}
                 </div>
               </CardContent>
             </Card>

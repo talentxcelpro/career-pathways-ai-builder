@@ -85,7 +85,7 @@ export const useResumeUpload = () => {
           user_id: user.id,
           title: `Resume from ${file.name}`,
           content: extractedContent as any, // Convert to Json type
-          ats_score: Math.floor(Math.random() * 30) + 70,
+          ats_score: (extractedContent as any).atsScore || Math.floor(Math.random() * 30) + 70,
           template_id: null
         })
         .select()

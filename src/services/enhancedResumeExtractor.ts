@@ -73,31 +73,32 @@ interface ExtractedContent {
 }
 
 export class EnhancedResumeExtractor {
-  private async callAIExtraction(text: string): Promise<ExtractedContent> {
-    // Simulated AI extraction with more comprehensive parsing
-    console.log('Enhanced AI extraction processing...');
+  private async callAIExtraction(text: string, fileName: string): Promise<ExtractedContent> {
+    console.log('Using AI-powered extraction for:', fileName);
     
-    const personalInfo = this.extractPersonalInfo(text);
-    const experience = this.extractExperience(text);
-    const education = this.extractEducation(text);
-    const skills = this.extractSkills(text);
-    const projects = this.extractProjects(text);
-    const certifications = this.extractCertifications(text);
-    const awards = this.extractAwards(text);
-    const publications = this.extractPublications(text);
-    const volunteer = this.extractVolunteer(text);
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      
+      const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
+        body: { text, fileName }
+      });
 
-    return {
-      personalInfo,
-      experience,
-      education,
-      skills,
-      projects,
-      certifications,
-      awards,
-      publications,
-      volunteer
-    };
+      if (error) {
+        console.error('AI parsing error:', error);
+        return this.getDefaultContent();
+      }
+
+      if (data.success) {
+        console.log('AI extraction successful:', data);
+        return data;
+      } else {
+        console.error('AI parsing failed:', data.error);
+        return this.getDefaultContent();
+      }
+    } catch (error) {
+      console.error('Failed to call AI parser:', error);
+      return this.getDefaultContent();
+    }
   }
 
   async extractFromFile(file: File): Promise<ExtractedContent> {
@@ -118,7 +119,7 @@ export class EnhancedResumeExtractor {
       }
 
       console.log('Raw text extracted, length:', text.length);
-      return this.callAIExtraction(text);
+      return this.callAIExtraction(text, file.name);
     } catch (error) {
       console.error('Enhanced content extraction failed:', error);
       return this.getDefaultContent();
@@ -126,68 +127,57 @@ export class EnhancedResumeExtractor {
   }
 
   private async extractFromPDF(file: File): Promise<string> {
-    return new Promise((resolve) => {
+    // For production, implement proper PDF text extraction using pdf-parse or similar
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => {
-        // Enhanced PDF extraction would use pdf-parse library
-        resolve(`Sample PDF content for: ${file.name}
-        
-        John Doe
-        Software Engineer
-        john.doe@email.com
-        +1-555-0123
-        San Francisco, CA
-        LinkedIn: linkedin.com/in/johndoe
-        
-        PROFESSIONAL SUMMARY
-        Experienced Full Stack Developer with 5+ years of expertise in React, Node.js, and cloud technologies.
-        
-        EXPERIENCE
-        Senior Software Engineer | TechCorp Inc. | San Francisco, CA | 2021 - Present
-        • Led development of microservices architecture serving 1M+ users
-        • Implemented CI/CD pipelines reducing deployment time by 70%
-        • Technologies: React, Node.js, AWS, Docker, Kubernetes
-        
-        Software Engineer | StartupXYZ | Remote | 2019 - 2021
-        • Built scalable web applications using React and Express.js
-        • Optimized database queries improving performance by 50%
-        
-        EDUCATION
-        Bachelor of Computer Science | University of California | Berkeley, CA | 2015 - 2019
-        GPA: 3.8/4.0
-        Relevant Coursework: Data Structures, Algorithms, Software Engineering
-        
-        SKILLS
-        Technical: JavaScript, TypeScript, React, Node.js, Python, AWS, Docker
-        Tools: Git, Jenkins, Jira, Figma
-        Languages: English (Native), Spanish (Conversational)
-        
-        PROJECTS
-        E-commerce Platform | 2022
-        • Built full-stack e-commerce platform with React and Node.js
-        • Integrated payment processing with Stripe
-        • GitHub: github.com/johndoe/ecommerce
-        
-        CERTIFICATIONS
-        AWS Certified Solutions Architect | Amazon Web Services | 2022
-        Credential ID: AWS-SAA-123456
-        
-        AWARDS
-        Employee of the Month | TechCorp Inc. | March 2023
-        Outstanding Innovation Award | StartupXYZ | 2020`);
+      reader.onload = (event) => {
+        try {
+          // This is a simplified implementation
+          // In production, you would use a proper PDF parser
+          const arrayBuffer = event.target?.result as ArrayBuffer;
+          
+          // For now, we'll attempt basic text extraction
+          // Note: This won't work well for complex PDFs and should be replaced
+          // with a proper PDF parsing library like pdf-parse
+          const text = new TextDecoder().decode(arrayBuffer);
+          resolve(text);
+        } catch (error) {
+          console.error('PDF extraction error:', error);
+          // Return a minimal text structure for the AI to work with
+          resolve(`PDF file: ${file.name}\nPlease upload a text-readable PDF or Word document for better extraction.`);
+        }
       };
-      reader.readAsText(file);
+      reader.onerror = () => {
+        console.error('Failed to read PDF file');
+        resolve(`PDF file: ${file.name}\nUnable to extract text from this PDF file.`);
+      };
+      reader.readAsArrayBuffer(file);
     });
   }
 
   private async extractFromDOCX(file: File): Promise<string> {
+    // For production, implement proper DOCX text extraction using mammoth.js or similar
     return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onload = () => {
-        // Enhanced DOCX extraction would use mammoth.js
-        resolve(`Enhanced DOCX content extraction for: ${file.name}`);
+      reader.onload = (event) => {
+        try {
+          // This is a simplified implementation
+          // In production, you would use mammoth.js for proper DOCX parsing
+          const arrayBuffer = event.target?.result as ArrayBuffer;
+          
+          // Basic text extraction attempt
+          const text = new TextDecoder().decode(arrayBuffer);
+          resolve(text);
+        } catch (error) {
+          console.error('DOCX extraction error:', error);
+          resolve(`DOCX file: ${file.name}\nPlease ensure the document is readable.`);
+        }
       };
-      reader.readAsText(file);
+      reader.onerror = () => {
+        console.error('Failed to read DOCX file');
+        resolve(`DOCX file: ${file.name}\nUnable to extract text from this document.`);
+      };
+      reader.readAsArrayBuffer(file);
     });
   }
 
