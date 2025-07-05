@@ -28,6 +28,8 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { CreatePostDialog } from '@/components/company/CreatePostDialog';
+import { CompanyPostsList } from '@/components/company/CompanyPostsList';
 
 const CompanyDashboard = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -370,23 +372,19 @@ const CompanyDashboard = () => {
           </TabsContent>
 
           <TabsContent value="content">
-            <Card>
-              <CardHeader>
-                <CardTitle>Content Management</CardTitle>
-                <CardDescription>Create and manage your company content</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-medium text-gray-900 mb-2">Content Publishing Coming Soon</h3>
-                  <p className="text-gray-600 mb-6">Create and schedule posts, announcements, and company updates</p>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create First Post
-                  </Button>
+            <div className="space-y-6">
+              {/* Content Header */}
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold">Content Management</h3>
+                  <p className="text-gray-600">Create and manage your company posts and updates</p>
                 </div>
-              </CardContent>
-            </Card>
+                <CreatePostDialog companyId={selectedCompany.id} />
+              </div>
+
+              {/* Posts List */}
+              <CompanyPostsList companyId={selectedCompany.id} />
+            </div>
           </TabsContent>
 
           <TabsContent value="analytics">

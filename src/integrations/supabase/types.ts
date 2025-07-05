@@ -838,6 +838,112 @@ export type Database = {
           },
         ]
       }
+      company_post_interactions: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          interaction_type: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_type: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_type?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_post_interactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "company_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_posts: {
+        Row: {
+          author_id: string
+          comments_count: number | null
+          company_id: string
+          content: string
+          created_at: string | null
+          id: string
+          is_featured: boolean | null
+          likes_count: number | null
+          media_urls: Json | null
+          post_type: string
+          published_at: string | null
+          scheduled_at: string | null
+          shares_count: number | null
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          views_count: number | null
+        }
+        Insert: {
+          author_id: string
+          comments_count?: number | null
+          company_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          is_featured?: boolean | null
+          likes_count?: number | null
+          media_urls?: Json | null
+          post_type?: string
+          published_at?: string | null
+          scheduled_at?: string | null
+          shares_count?: number | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          author_id?: string
+          comments_count?: number | null
+          company_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_featured?: boolean | null
+          likes_count?: number | null
+          media_urls?: Json | null
+          post_type?: string
+          published_at?: string | null
+          scheduled_at?: string | null
+          shares_count?: number | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_posts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_profiles: {
         Row: {
           active_jobs_count: number | null
