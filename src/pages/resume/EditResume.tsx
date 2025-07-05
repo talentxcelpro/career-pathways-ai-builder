@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -162,7 +163,7 @@ const EditResume = () => {
         }
 
         if (data.content) {
-          setResumeData(data.content as ResumeData);
+          setResumeData(data.content as unknown as ResumeData);
         }
         if (data.template_id) {
           setSelectedTemplate(data.template_id);
@@ -208,7 +209,7 @@ const EditResume = () => {
       const { error } = await supabase
         .from('ai_resumes')
         .update({
-          content: resumeData,
+          content: resumeData as unknown as Json,
           template_id: selectedTemplate,
           updated_at: new Date().toISOString()
         })
@@ -1495,7 +1496,10 @@ const EditResume = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <AIContentSuggestions resumeData={resumeData} />
+                <AIContentSuggestions 
+                  resumeData={resumeData} 
+                  onContentGenerated={(newContent) => setResumeData(newContent as unknown as ResumeData)}
+                />
               </CardContent>
             </Card>
           )}
