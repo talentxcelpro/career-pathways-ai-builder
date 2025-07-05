@@ -3076,6 +3076,7 @@ export type Database = {
           user_role: Database["public"]["Enums"]["user_role"] | null
           video_resume_url: string | null
           website: string | null
+          work_experiences: Json | null
         }
         Insert: {
           about?: string | null
@@ -3128,6 +3129,7 @@ export type Database = {
           user_role?: Database["public"]["Enums"]["user_role"] | null
           video_resume_url?: string | null
           website?: string | null
+          work_experiences?: Json | null
         }
         Update: {
           about?: string | null
@@ -3180,6 +3182,7 @@ export type Database = {
           user_role?: Database["public"]["Enums"]["user_role"] | null
           video_resume_url?: string | null
           website?: string | null
+          work_experiences?: Json | null
         }
         Relationships: []
       }

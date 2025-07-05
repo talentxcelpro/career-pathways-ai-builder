@@ -115,7 +115,7 @@ const ProfileEdit = () => {
         allow_profile_sharing: profile.allow_profile_sharing ?? true,
         custom_profile_url: profile.custom_profile_url || generateCustomProfileUrl(profile.full_name || ''),
         resume_url: profile.resume_url || '',
-        work_experiences: profile.work_experiences || []
+        work_experiences: (profile.work_experiences as any) || []
       });
     }
   }, [profile]);
