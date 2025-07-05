@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, Save, Eye, Download, Plus, Edit3, Palette, Trash2, Award, Briefcase, AlertCircle } from "lucide-react";
+import { ArrowLeft, Save, Eye, Download, Plus, Edit3, Palette, Trash2, Award, Briefcase, AlertCircle, Target } from "lucide-react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,9 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { DraggableSection } from "@/components/resume/DraggableSection";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { validateResumeData, getFieldError, getSectionErrors } from "@/utils/resumeValidation";
+import { analyzeATSCompatibility } from "@/utils/atsOptimization";
+import { ATSOptimizationPanel } from "@/components/resume/ATSOptimizationPanel";
+import { KeywordAnalyzer } from "@/components/resume/KeywordAnalyzer";
 import { toast } from 'sonner';
 
 const EditResume = () => {
@@ -46,6 +49,7 @@ const EditResume = () => {
     'awards'
   ]);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const [activeTab, setActiveTab] = useState('editor');
   
   // Form validation
   const validation = validateResumeData(resumeData);
@@ -120,10 +124,14 @@ const EditResume = () => {
     mutationFn: async (data: any) => {
       if (!id || !user) throw new Error('Missing required data');
       
+      // Calculate ATS score before saving
+      const atsAnalysis = analyzeATSCompatibility(data);
+      
       const { error } = await supabase
         .from('ai_resumes')
         .update({ 
           content: data,
+          ats_score: atsAnalysis.overall,
           updated_at: new Date().toISOString()
         })
         .eq('id', id)
@@ -321,6 +329,20 @@ const EditResume = () => {
     }));
   };
 
+  const handleKeywordSuggestion = (keyword: string) => {
+    // Add keyword to skills if not already present
+    const currentSkills = resumeData.skills || [];
+    if (!currentSkills.includes(keyword)) {
+      setResumeData((prev: any) => ({
+        ...prev,
+        skills: [...currentSkills, keyword]
+      }));
+      toast.success(`Added "${keyword}" to your skills`);
+    } else {
+      toast.info(`"${keyword}" is already in your skills`);
+    }
+  };
+
   // Drag and drop functionality
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
@@ -444,9 +466,38 @@ const EditResume = () => {
           </Alert>
         )}
 
+        {/* Tabs Navigation */}
+        <div className="bg-white rounded-lg shadow-sm border mb-6">
+          <div className="flex border-b">
+            <button
+              onClick={() => setActiveTab('editor')}
+              className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'editor'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent hover:text-gray-700'
+              }`}
+            >
+              <Edit3 className="h-4 w-4 inline mr-2" />
+              Resume Editor
+            </button>
+            <button
+              onClick={() => setActiveTab('ats')}
+              className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'ats'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent hover:text-gray-700'
+              }`}
+            >
+              <Target className="h-4 w-4 inline mr-2" />
+              ATS Optimization
+            </button>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Editor Panel */}
-          <div className="space-y-6">
+          {activeTab === 'editor' && (
+            <div className="space-y-6">
             {/* Template Selection & Settings */}
             <Card>
               <CardHeader>
@@ -1054,7 +1105,19 @@ const EditResume = () => {
                 </div>
               </SortableContext>
             </DndContext>
-          </div>
+            </div>
+          )}
+
+          {/* ATS Optimization Panel */}
+          {activeTab === 'ats' && (
+            <div className="space-y-6">
+              <ATSOptimizationPanel resumeData={resumeData} />
+              <KeywordAnalyzer 
+                resumeData={resumeData} 
+                onKeywordSuggestion={handleKeywordSuggestion}
+              />
+            </div>
+          )}
 
           {/* Preview Panel */}
           <div className="lg:sticky lg:top-8">
