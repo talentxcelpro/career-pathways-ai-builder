@@ -491,6 +491,7 @@ const EditResume = () => {
             >
               <Target className="h-4 w-4 inline mr-2" />
               ATS Optimization
+            </button>
             <button
               onClick={() => setActiveTab('templates')}
               className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
@@ -502,6 +503,8 @@ const EditResume = () => {
               <Palette className="h-4 w-4 inline mr-2" />
               Templates
             </button>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Editor Panel */}
