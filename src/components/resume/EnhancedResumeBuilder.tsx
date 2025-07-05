@@ -73,8 +73,11 @@ const EnhancedResumeBuilder = () => {
   useEffect(() => {
     if (resumeId) {
       loadResumeData();
+    } else {
+      // No resume ID provided, redirect to resume dashboard
+      navigate('/resume-builder');
     }
-  }, [resumeId]);
+  }, [resumeId, navigate]);
 
   // Helper functions to convert ai_resumes content to expected format
   const convertContentToSections = (content: any) => {
