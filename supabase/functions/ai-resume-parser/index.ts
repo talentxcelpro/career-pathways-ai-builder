@@ -26,14 +26,9 @@ serve(async (req) => {
     console.log('Parsing resume with AI:', fileName, 'Full extraction:', fullExtraction);
 
     const prompt = fullExtraction ? 
-      `Extract ALL information from this resume text with maximum accuracy and completeness. Return comprehensive JSON structure:
+      `Extract ALL information from this resume text with maximum accuracy. Return comprehensive JSON structure:
 
-      CRITICAL REQUIREMENTS:
-      1. Extract every piece of information word-for-word. Do not summarize or paraphrase.
-      2. Preserve exact formatting, bullet points, and structure from the original document.
-      3. Extract ALL sections present in the resume, even if they seem minor.
-      4. Maintain original language and terminology used by the candidate.
-      5. Include ALL contact information, social links, and professional details.
+      IMPORTANT: Extract every piece of information word-for-word. Do not summarize or paraphrase.
 
       Structure:
       {
@@ -152,7 +147,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: 'gpt-4o',
         messages: [
           { 
             role: 'system', 
