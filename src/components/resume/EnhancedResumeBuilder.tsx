@@ -76,20 +76,144 @@ const EnhancedResumeBuilder = () => {
     }
   }, [resumeId]);
 
+  // Helper functions to convert ai_resumes content to expected format
+  const convertContentToSections = (content: any) => {
+    const sections = [];
+    let order = 0;
+
+    if (content.personalInfo) {
+      sections.push({
+        id: 'personal-info',
+        section_type: 'personal_info',
+        display_order: order++,
+        is_visible: true,
+        content: content.personalInfo
+      });
+    }
+
+    if (content.experience && content.experience.length > 0) {
+      sections.push({
+        id: 'experience',
+        section_type: 'experience',
+        display_order: order++,
+        is_visible: true,
+        content: content.experience
+      });
+    }
+
+    if (content.education && content.education.length > 0) {
+      sections.push({
+        id: 'education',
+        section_type: 'education',
+        display_order: order++,
+        is_visible: true,
+        content: content.education
+      });
+    }
+
+    if (content.projects && content.projects.length > 0) {
+      sections.push({
+        id: 'projects',
+        section_type: 'projects',
+        display_order: order++,
+        is_visible: true,
+        content: content.projects
+      });
+    }
+
+    if (content.certifications && content.certifications.length > 0) {
+      sections.push({
+        id: 'certifications',
+        section_type: 'certifications',
+        display_order: order++,
+        is_visible: true,
+        content: content.certifications
+      });
+    }
+
+    return sections;
+  };
+
+  const convertContentToSkills = (content: any) => {
+    const skills = [];
+    
+    if (content.skills) {
+      // Handle different skill formats
+      if (Array.isArray(content.skills)) {
+        content.skills.forEach((skill: string, index: number) => {
+          skills.push({
+            id: `skill-${index}`,
+            skill_name: skill,
+            category: 'general',
+            proficiency: 'intermediate',
+            proficiency_score: 3
+          });
+        });
+      } else if (typeof content.skills === 'object') {
+        // Handle categorized skills
+        Object.entries(content.skills).forEach(([category, skillList]: [string, any]) => {
+          if (Array.isArray(skillList)) {
+            skillList.forEach((skill: string, index: number) => {
+              skills.push({
+                id: `${category}-${index}`,
+                skill_name: skill,
+                category: category,
+                proficiency: 'intermediate',
+                proficiency_score: 3
+              });
+            });
+          }
+        });
+      }
+    }
+
+    return skills;
+  };
+
   const loadResumeData = async () => {
     try {
       setLoading(true);
+      console.log('Loading resume data for ID:', resumeId);
       
-      // Load resume basic info
+      // First try to load from new resumes table
       const { data: resumeInfo, error: resumeError } = await supabase
         .from('resumes')
         .select('*')
         .eq('id', resumeId)
         .single();
 
-      if (resumeError) throw resumeError;
+      console.log('Resumes table query result:', { resumeInfo, resumeError });
 
-      // Load sections with content blocks
+      if (resumeError) {
+        console.log('Resume not found in resumes table, trying ai_resumes...');
+        // If not found, try ai_resumes table (for uploaded resumes)
+        const { data: aiResumeInfo, error: aiResumeError } = await supabase
+          .from('ai_resumes')
+          .select('*')
+          .eq('id', resumeId)
+          .single();
+
+        console.log('AI resumes table query result:', { aiResumeInfo, aiResumeError });
+
+        if (aiResumeError) throw aiResumeError;
+
+        console.log('Converting ai_resumes data structure...');
+        // Convert ai_resumes data structure to expected format
+        const convertedData = {
+          id: aiResumeInfo.id,
+          title: aiResumeInfo.title || 'Untitled Resume',
+          completion_percentage: 85, // Default completion for uploaded resumes
+          sections: convertContentToSections(aiResumeInfo.content),
+          skills: convertContentToSkills(aiResumeInfo.content)
+        };
+
+        console.log('Converted data:', convertedData);
+        setResumeData(convertedData);
+        return;
+      }
+
+      console.log('Loading sections and skills for new format...');
+      // Load sections and skills for new format
       const { data: sections, error: sectionsError } = await supabase
         .from('resume_sections')
         .select('*')
@@ -98,7 +222,6 @@ const EnhancedResumeBuilder = () => {
 
       if (sectionsError) throw sectionsError;
 
-      // Load skills
       const { data: skills, error: skillsError } = await supabase
         .from('resume_skills')
         .select('*')
@@ -115,6 +238,7 @@ const EnhancedResumeBuilder = () => {
       console.error('Error loading resume:', error);
       toast.error('Failed to load resume');
     } finally {
+      console.log('Loading complete, setting loading to false');
       setLoading(false);
     }
   };
