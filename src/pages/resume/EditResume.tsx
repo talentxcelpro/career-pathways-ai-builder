@@ -443,7 +443,7 @@ const EditResume = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Error loading resume</h2>
           <p className="text-gray-600 mb-4">There was a problem loading this resume. Error: {error.message}</p>
           <p className="text-sm text-gray-500 mb-4">Resume ID: {id} | User ID: {user?.id}</p>
-          <Button onClick={() => navigate('/resume')}>
+          <Button onClick={() => navigate('/resume-builder')}>
             Back to Dashboard
           </Button>
         </div>
@@ -458,7 +458,7 @@ const EditResume = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Resume not found</h2>
           <p className="text-gray-600 mb-4">The resume you're looking for doesn't exist or you don't have access to it.</p>
           <p className="text-sm text-gray-500 mb-4">Resume ID: {id} | User ID: {user?.id}</p>
-          <Button onClick={() => navigate('/resume')}>
+          <Button onClick={() => navigate('/resume-builder')}>
             Back to Dashboard
           </Button>
         </div>

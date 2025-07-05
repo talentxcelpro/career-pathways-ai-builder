@@ -292,7 +292,7 @@ const ResumeTemplates = () => {
       
       if (error) throw error;
       
-      navigate(`/resume/edit/${data.id}`);
+      navigate(`/resume-builder/edit/${data.id}`);
     } catch (error) {
       console.error('Error creating resume with template:', error);
     } finally {

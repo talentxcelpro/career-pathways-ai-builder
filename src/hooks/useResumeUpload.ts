@@ -102,7 +102,7 @@ export const useResumeUpload = () => {
       
       // Navigate to edit mode after a short delay
       setTimeout(() => {
-        navigate(`/resume/edit/${data.id}`);
+        navigate(`/resume-builder/edit/${data.id}`);
       }, 2000);
     } catch (error) {
       console.error('Error processing resume:', error);

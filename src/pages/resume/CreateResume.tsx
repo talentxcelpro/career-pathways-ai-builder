@@ -40,7 +40,7 @@ const CreateResume = () => {
       if (error) throw error;
       
       // Navigate to editor
-      navigate(`/resume/edit/${data.id}`);
+      navigate(`/resume-builder/edit/${data.id}`);
     } catch (error) {
       console.error('Error creating resume:', error);
     } finally {
