@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CompanyFollowButton } from '@/components/company/CompanyFollowButton';
 import { Loader2, Building, MapPin, Users, Briefcase, Star, Search, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -223,16 +224,13 @@ const Companies = () => {
                         <CardTitle className="text-lg line-clamp-2">
                           {company.name}
                         </CardTitle>
-                        <Button
-                          variant={isFollowing ? "default" : "outline"}
+                        <CompanyFollowButton 
+                          companyId={company.id}
                           size="sm"
-                          onClick={() => handleFollowToggle(company.id, isFollowing)}
-                          disabled={followMutation.isPending}
-                          className="ml-2 flex items-center gap-1"
-                        >
-                          <Heart className={`h-4 w-4 ${isFollowing ? 'fill-current' : ''}`} />
-                          {isFollowing ? 'Following' : 'Follow'}
-                        </Button>
+                          variant="outline"
+                          showFollowersCount={false}
+                          className="ml-2"
+                        />
                       </div>
                       <CardDescription className="flex items-center gap-1 mt-1">
                         {company.industry && (

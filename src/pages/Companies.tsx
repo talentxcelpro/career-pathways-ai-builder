@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { CompanyFollowButton } from '@/components/company/CompanyFollowButton';
 import { Building2, MapPin, Users, Globe, Heart, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
@@ -169,17 +170,25 @@ const Companies = () => {
                     )}
                   </div>
 
-                  <div className="flex gap-2 pt-4">
-                    <Link to={`/companies/${company.id}`} className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        View Profile
-                      </Button>
-                    </Link>
-                    <Link to={`/jobs?company=${company.id}`} className="flex-1">
-                      <Button size="sm" className="w-full">
-                        View Jobs
-                      </Button>
-                    </Link>
+                  <div className="flex items-center justify-between pt-4">
+                    <CompanyFollowButton 
+                      companyId={company.id}
+                      size="sm"
+                      variant="outline"
+                      showFollowersCount={false}
+                    />
+                    <div className="flex gap-2">
+                      <Link to={`/companies/${company.id}`}>
+                        <Button variant="outline" size="sm">
+                          View Profile
+                        </Button>
+                      </Link>
+                      <Link to={`/jobs?company=${company.id}`}>
+                        <Button size="sm">
+                          View Jobs
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
