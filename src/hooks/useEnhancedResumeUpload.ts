@@ -54,6 +54,20 @@ export const useEnhancedResumeUpload = () => {
 
     console.log('Creating upload status for user:', user.id);
     
+    // Test if auth.uid() is working properly
+    const { data: authTest, error: authError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .single();
+    
+    if (authError) {
+      console.error('Auth test failed:', authError);
+      throw new Error('Authentication verification failed. Please log out and back in.');
+    }
+    
+    console.log('Auth test passed, user exists in profiles:', authTest);
+    
     const { data, error } = await supabase
       .from('resume_upload_status')
       .insert({
@@ -206,6 +220,8 @@ export const useEnhancedResumeUpload = () => {
       return;
     }
 
+    console.log('User authenticated:', { userId: user.id, userEmail: user.email });
+
     const file = files[0];
     
     // Validate file
@@ -256,7 +272,13 @@ export const useEnhancedResumeUpload = () => {
         isProcessing: false,
         error: error.message
       }));
-      toast.error(`Upload failed: ${error.message}`);
+      
+      // Check if it's an RLS error and provide helpful message
+      if (error.message?.includes('row-level security')) {
+        toast.error('Authentication error. Please try logging out and back in.');
+      } else {
+        toast.error(`Upload failed: ${error.message}`);
+      }
     }
   }, [user, navigate]);
 
