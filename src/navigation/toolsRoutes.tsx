@@ -1,10 +1,11 @@
 
-import { Brain, Calculator, MessageSquare, Target, FileText, Users, BookOpen, Briefcase, User, TrendingUp, BarChart3, PieChart, Award } from "lucide-react";
+import { Brain, Calculator, MessageSquare, Target, FileText, Users, BookOpen, Briefcase, User, TrendingUp, BarChart3, PieChart, Award, Shield, Search, ArrowRightLeft, Video, Star, Send, DollarSign, Network, UserCheck, Mail, Edit3, Scissors } from "lucide-react";
 import ToolsDashboard from "../pages/tools/ToolsDashboard";
 import AICareerPathfinder from "../pages/tools/AICareerPathfinder";
 import JobApplicationFunnel from "../pages/tools/JobApplicationFunnel";
 import ResumePerformanceInsights from "../pages/tools/ResumePerformanceInsights";  
 import CareerGrowthScore from "../pages/tools/CareerGrowthScore";
+import CareerSWOTAnalysis from "../pages/tools/CareerSWOTAnalysis";
 import SalaryAnalyzer from "../pages/tools/SalaryAnalyzer";
 import InterviewPrep from "../pages/tools/InterviewPrep";
 import CareerPathfinder from "../pages/tools/CareerPathfinder";
@@ -46,6 +47,69 @@ export const toolsRoutes = [
     to: "/tools/career-growth-score",
     icon: <Award className="h-4 w-4" />,
     page: <CareerGrowthScore />,
+  },
+  {
+    title: "Career SWOT Analysis",
+    to: "/tools/career-swot-analysis",
+    icon: <Shield className="h-4 w-4" />,
+    page: <CareerSWOTAnalysis />,
+  },
+  // Career Tools
+  {
+    title: "Role Fit Evaluator",
+    to: "/tools/role-fit-evaluator",
+    icon: <Search className="h-4 w-4" />,
+    page: <ProfileScore />, // Temporary - similar functionality
+  },
+  {
+    title: "Career Change Navigator", 
+    to: "/tools/career-change-navigator",
+    icon: <ArrowRightLeft className="h-4 w-4" />,
+    page: <CareerPathfinder />, // Temporary - similar functionality
+  },
+  // Interview Tools
+  {
+    title: "Mock Interview Simulator",
+    to: "/tools/mock-interview-simulator", 
+    icon: <Video className="h-4 w-4" />,
+    page: <InterviewPrep />, // Temporary - similar functionality
+  },
+  {
+    title: "Interview Q&A Bank",
+    to: "/tools/interview-qa-bank",
+    icon: <MessageSquare className="h-4 w-4" />,
+    page: <InterviewPrep />, // Temporary - similar functionality
+  },
+  {
+    title: "STAR Answer Generator",
+    to: "/tools/star-answer-generator",
+    icon: <Star className="h-4 w-4" />,
+    page: <InterviewPrep />, // Temporary - similar functionality
+  },
+  {
+    title: "Interview Readiness Score",
+    to: "/tools/interview-readiness-score",
+    icon: <Award className="h-4 w-4" />,
+    page: <ProfileScore />, // Temporary - similar functionality
+  },
+  // Job Search Tools
+  {
+    title: "AI Job Match GPT",
+    to: "/tools/ai-job-match-gpt", 
+    icon: <Briefcase className="h-4 w-4" />,
+    page: <JobMatcher />, // Temporary - similar functionality
+  },
+  {
+    title: "Smart Apply Tool",
+    to: "/tools/smart-apply-tool",
+    icon: <Send className="h-4 w-4" />,
+    page: <JobMatcher />, // Temporary - similar functionality
+  },
+  {
+    title: "Salary Benchmark Tool",
+    to: "/tools/salary-benchmark-tool",
+    icon: <DollarSign className="h-4 w-4" />,
+    page: <SalaryAnalyzer />, // Temporary - similar functionality
   },
   {
     title: "Resume Builder",
