@@ -3505,6 +3505,66 @@ export type Database = {
           },
         ]
       }
+      resume_ats_optimization: {
+        Row: {
+          created_at: string | null
+          id: string
+          issues_found: Json | null
+          keywords_matched: string[] | null
+          missing_keywords: string[] | null
+          optimization_score: number | null
+          optimization_status: string | null
+          optimized_content: Json | null
+          parsed_resume_id: string | null
+          resume_id: string | null
+          suggestions: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          issues_found?: Json | null
+          keywords_matched?: string[] | null
+          missing_keywords?: string[] | null
+          optimization_score?: number | null
+          optimization_status?: string | null
+          optimized_content?: Json | null
+          parsed_resume_id?: string | null
+          resume_id?: string | null
+          suggestions?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          issues_found?: Json | null
+          keywords_matched?: string[] | null
+          missing_keywords?: string[] | null
+          optimization_score?: number | null
+          optimization_status?: string | null
+          optimized_content?: Json | null
+          parsed_resume_id?: string | null
+          resume_id?: string | null
+          suggestions?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_ats_optimization_parsed_resume_id_fkey"
+            columns: ["parsed_resume_id"]
+            isOneToOne: false
+            referencedRelation: "resume_parsed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resume_ats_optimization_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_content_blocks: {
         Row: {
           ai_generated: boolean | null
@@ -3569,6 +3629,66 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "resume_content_blocks_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_enhancements: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          enhanced_content: string | null
+          enhancement_type: string | null
+          id: string
+          is_applied: boolean | null
+          original_content: string | null
+          parsed_resume_id: string | null
+          resume_id: string | null
+          section_type: string
+          suggestion_reason: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          enhanced_content?: string | null
+          enhancement_type?: string | null
+          id?: string
+          is_applied?: boolean | null
+          original_content?: string | null
+          parsed_resume_id?: string | null
+          resume_id?: string | null
+          section_type: string
+          suggestion_reason?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          enhanced_content?: string | null
+          enhancement_type?: string | null
+          id?: string
+          is_applied?: boolean | null
+          original_content?: string | null
+          parsed_resume_id?: string | null
+          resume_id?: string | null
+          section_type?: string
+          suggestion_reason?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_enhancements_parsed_resume_id_fkey"
+            columns: ["parsed_resume_id"]
+            isOneToOne: false
+            referencedRelation: "resume_parsed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resume_enhancements_resume_id_fkey"
             columns: ["resume_id"]
             isOneToOne: false
             referencedRelation: "resumes"
@@ -3663,6 +3783,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      resume_parsed: {
+        Row: {
+          certifications: Json | null
+          created_at: string | null
+          education: Json | null
+          experience: Json | null
+          extraction_status: string | null
+          file_size: number | null
+          file_type: string | null
+          full_text: string | null
+          id: string
+          languages: Json | null
+          original_file_url: string | null
+          parsed_data: Json | null
+          personal_info: Json | null
+          projects: Json | null
+          resume_name: string
+          skills: string[] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          certifications?: Json | null
+          created_at?: string | null
+          education?: Json | null
+          experience?: Json | null
+          extraction_status?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          full_text?: string | null
+          id?: string
+          languages?: Json | null
+          original_file_url?: string | null
+          parsed_data?: Json | null
+          personal_info?: Json | null
+          projects?: Json | null
+          resume_name: string
+          skills?: string[] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          certifications?: Json | null
+          created_at?: string | null
+          education?: Json | null
+          experience?: Json | null
+          extraction_status?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          full_text?: string | null
+          id?: string
+          languages?: Json | null
+          original_file_url?: string | null
+          parsed_data?: Json | null
+          personal_info?: Json | null
+          projects?: Json | null
+          resume_name?: string
+          skills?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       resume_sections: {
         Row: {
@@ -3799,6 +3982,66 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      resume_upload_status: {
+        Row: {
+          created_at: string | null
+          current_step: string | null
+          error_message: string | null
+          file_name: string
+          file_url: string | null
+          id: string
+          parsed_resume_id: string | null
+          progress_percentage: number | null
+          resume_id: string | null
+          updated_at: string | null
+          upload_status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_step?: string | null
+          error_message?: string | null
+          file_name: string
+          file_url?: string | null
+          id?: string
+          parsed_resume_id?: string | null
+          progress_percentage?: number | null
+          resume_id?: string | null
+          updated_at?: string | null
+          upload_status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_step?: string | null
+          error_message?: string | null
+          file_name?: string
+          file_url?: string | null
+          id?: string
+          parsed_resume_id?: string | null
+          progress_percentage?: number | null
+          resume_id?: string | null
+          updated_at?: string | null
+          upload_status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_upload_status_parsed_resume_id_fkey"
+            columns: ["parsed_resume_id"]
+            isOneToOne: false
+            referencedRelation: "resume_parsed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resume_upload_status_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resume_versions: {
         Row: {
@@ -5281,6 +5524,16 @@ export type Database = {
           p_link?: string
         }
         Returns: number
+      }
+      update_upload_progress: {
+        Args: {
+          status_id: string
+          new_status: string
+          new_step: string
+          new_progress: number
+          error_msg?: string
+        }
+        Returns: undefined
       }
       update_user_login: {
         Args: { user_uuid: string }

@@ -4,24 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import { FileUploadZone } from "@/components/resume/upload/FileUploadZone";
-import { ProcessingStatus } from "@/components/resume/upload/ProcessingStatus";
-import { FeaturesPreview } from "@/components/resume/upload/FeaturesPreview";
+import { EnhancedFileUploadZone } from "@/components/resume/upload/EnhancedFileUploadZone";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
-import { useResumeUpload } from "@/hooks/useResumeUpload";
+import { useEnhancedResumeUpload } from "@/hooks/useEnhancedResumeUpload";
 
 const UploadResume = () => {
   const navigate = useNavigate();
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   
   const {
-    isProcessing,
-    uploadSuccess,
-    processingStep,
-    processingSteps,
+    processingStatus,
     processResume,
     resetUpload
-  } = useResumeUpload();
+  } = useEnhancedResumeUpload();
 
   const { dragActive, handleDrag, handleDrop } = useDragAndDrop((files) => {
     if (files && files[0]) {
@@ -65,79 +60,49 @@ const UploadResume = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center mb-8">
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/resume')}
+            onClick={() => navigate('/resume-builder')}
             className="flex items-center mr-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Dashboard
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Upload Resume</h1>
-            <p className="text-gray-600">Upload your existing resume for AI enhancement</p>
+            <h1 className="text-3xl font-bold text-gray-900">AI Resume Upload & Enhancement</h1>
+            <p className="text-gray-600">Upload your existing resume for intelligent AI analysis and optimization</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Upload Section */}
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle>Upload Your Resume</CardTitle>
-                <CardDescription>
-                  Support for PDF and DOCX files. Our AI will extract and enhance your content.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ProcessingStatus
-                  isProcessing={isProcessing}
-                  uploadSuccess={uploadSuccess}
-                  processingStep={processingStep}
-                  processingSteps={processingSteps}
-                  uploadedFile={uploadedFile}
-                />
-                
-                {!uploadSuccess && !isProcessing && (
-                  <div className="space-y-4">
-                    <FileUploadZone
-                      onFileSelect={handleFileSelect}
-                      uploadedFile={uploadedFile}
-                      onRemoveFile={removeFile}
-                      onProcessResume={handleProcessResume}
-                      isProcessing={isProcessing}
-                      dragActive={dragActive}
-                      onDragEnter={handleDrag}
-                      onDragLeave={handleDrag}
-                      onDragOver={handleDrag}
-                      onDrop={handleDrop}
-                    />
-                    
-                    {isProcessing && (
-                      <div className="mt-4">
-                        <Button 
-                          variant="outline" 
-                          onClick={handleResetUpload}
-                          className="w-full"
-                        >
-                          Cancel Processing
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Features Preview */}
-          <div>
-            <FeaturesPreview />
-          </div>
+        <div className="max-w-4xl mx-auto">
+          <EnhancedFileUploadZone
+            onFileSelect={handleFileSelect}
+            uploadedFile={uploadedFile}
+            onRemoveFile={removeFile}
+            onProcessResume={handleProcessResume}
+            processingStatus={processingStatus}
+            dragActive={dragActive}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+          />
+          
+          {(processingStatus.isProcessing || processingStatus.error) && (
+            <div className="mt-6 text-center">
+              <Button 
+                variant="outline" 
+                onClick={handleResetUpload}
+                disabled={processingStatus.completed}
+              >
+                {processingStatus.completed ? 'Processing Complete' : 'Cancel & Start Over'}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

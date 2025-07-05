@@ -1,0 +1,259 @@
+import { useState, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+
+interface ProcessingStatus {
+  isProcessing: boolean;
+  currentStep: string;
+  progress: number;
+  error?: string;
+  completed: boolean;
+  statusId?: string;
+  resumeId?: string;
+}
+
+export const useEnhancedResumeUpload = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>({
+    isProcessing: false,
+    currentStep: 'upload',
+    progress: 0,
+    completed: false
+  });
+
+  const uploadFile = async (file: File) => {
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}/${Date.now()}_${file.name}`;
+    const filePath = `resumes/${fileName}`;
+
+    const { data, error } = await supabase.storage
+      .from('resumes')
+      .upload(filePath, file);
+
+    if (error) {
+      throw error;
+    }
+
+    return {
+      path: data.path,
+      url: supabase.storage.from('resumes').getPublicUrl(data.path).data.publicUrl
+    };
+  };
+
+  const createUploadStatus = async (fileName: string, fileUrl: string) => {
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    const { data, error } = await supabase
+      .from('resume_upload_status')
+      .insert({
+        user_id: user.id,
+        file_name: fileName,
+        file_url: fileUrl,
+        upload_status: 'uploading',
+        current_step: 'upload',
+        progress_percentage: 10
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data.id;
+  };
+
+  const updateProgress = async (statusId: string, step: string, progress: number, status: string = 'processing') => {
+    await supabase.rpc('update_upload_progress', {
+      status_id: statusId,
+      new_status: status,
+      new_step: step,
+      new_progress: progress
+    });
+
+    setProcessingStatus(prev => ({
+      ...prev,
+      currentStep: step,
+      progress,
+      isProcessing: status === 'processing'
+    }));
+  };
+
+  const processWithAI = async (statusId: string, fileUrl: string, fileName: string) => {
+    try {
+      // Step 1: Extract content
+      await updateProgress(statusId, 'extract', 25);
+      
+      const extractResponse = await supabase.functions.invoke('ai-resume-parser', {
+        body: {
+          action: 'extract_content',
+          file_url: fileUrl,
+          file_name: fileName,
+          user_id: user?.id,
+          status_id: statusId
+        }
+      });
+
+      if (extractResponse.error) {
+        throw new Error(`Extraction failed: ${extractResponse.error.message}`);
+      }
+
+      const parsedResumeId = extractResponse.data.parsed_resume_id;
+      await updateProgress(statusId, 'optimize', 50);
+
+      // Step 2: ATS Optimization
+      const optimizeResponse = await supabase.functions.invoke('ai-resume-parser', {
+        body: {
+          action: 'optimize_ats',
+          parsed_resume_id: parsedResumeId,
+          user_id: user?.id,
+          status_id: statusId
+        }
+      });
+
+      if (optimizeResponse.error) {
+        throw new Error(`ATS optimization failed: ${optimizeResponse.error.message}`);
+      }
+
+      await updateProgress(statusId, 'enhance', 75);
+
+      // Step 3: Enhancement suggestions
+      const enhanceResponse = await supabase.functions.invoke('ai-resume-parser', {
+        body: {
+          action: 'generate_enhancements',
+          parsed_resume_id: parsedResumeId,
+          user_id: user?.id,
+          status_id: statusId
+        }
+      });
+
+      if (enhanceResponse.error) {
+        throw new Error(`Enhancement failed: ${enhanceResponse.error.message}`);
+      }
+
+      await updateProgress(statusId, 'complete', 100, 'completed');
+
+      // Create final resume
+      const resumeResponse = await supabase.functions.invoke('ai-resume-parser', {
+        body: {
+          action: 'create_resume',
+          parsed_resume_id: parsedResumeId,
+          user_id: user?.id,
+          status_id: statusId
+        }
+      });
+
+      if (resumeResponse.error) {
+        throw new Error(`Resume creation failed: ${resumeResponse.error.message}`);
+      }
+
+      setProcessingStatus(prev => ({
+        ...prev,
+        completed: true,
+        resumeId: resumeResponse.data.resume_id
+      }));
+
+      toast.success('Resume processed successfully!');
+      
+      // Navigate to editor after a short delay
+      setTimeout(() => {
+        navigate(`/resume/edit/${resumeResponse.data.resume_id}`);
+      }, 2000);
+
+    } catch (error: any) {
+      console.error('AI processing error:', error);
+      
+      await supabase.rpc('update_upload_progress', {
+        status_id: statusId,
+        new_status: 'failed',
+        new_step: processingStatus.currentStep,
+        new_progress: processingStatus.progress,
+        error_msg: error.message
+      });
+
+      setProcessingStatus(prev => ({
+        ...prev,
+        isProcessing: false,
+        error: error.message
+      }));
+
+      toast.error(`Processing failed: ${error.message}`);
+    }
+  };
+
+  const processResume = useCallback(async (files: FileList) => {
+    if (!files || files.length === 0 || !user) {
+      return;
+    }
+
+    const file = files[0];
+    
+    // Validate file
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File size must be less than 10MB');
+      return;
+    }
+
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Only PDF and DOCX files are supported');
+      return;
+    }
+
+    setProcessingStatus({
+      isProcessing: true,
+      currentStep: 'upload',
+      progress: 5,
+      completed: false
+    });
+
+    try {
+      // Upload file
+      const { url: fileUrl } = await uploadFile(file);
+      
+      // Create upload status record
+      const statusId = await createUploadStatus(file.name, fileUrl);
+      
+      setProcessingStatus(prev => ({
+        ...prev,
+        statusId
+      }));
+
+      // Process with AI
+      await processWithAI(statusId, fileUrl, file.name);
+
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      setProcessingStatus(prev => ({
+        ...prev,
+        isProcessing: false,
+        error: error.message
+      }));
+      toast.error(`Upload failed: ${error.message}`);
+    }
+  }, [user, navigate]);
+
+  const resetUpload = useCallback(() => {
+    setProcessingStatus({
+      isProcessing: false,
+      currentStep: 'upload',
+      progress: 0,
+      completed: false
+    });
+  }, []);
+
+  return {
+    processingStatus,
+    processResume,
+    resetUpload
+  };
+};
