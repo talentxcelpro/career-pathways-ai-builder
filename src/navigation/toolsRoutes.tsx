@@ -75,7 +75,7 @@ export const toolsRoutes = [
     title: "Career Change Navigator", 
     to: "/tools/career-change-navigator",
     icon: <ArrowRightLeft className="h-4 w-4" />,
-    page: <CareerPathfinder />, // Temporary - similar functionality
+    page: <CareerChangeNavigator />,
   },
   // Interview Tools
   {
@@ -100,7 +100,7 @@ export const toolsRoutes = [
     title: "Interview Readiness Score",
     to: "/tools/interview-readiness-score",
     icon: <Award className="h-4 w-4" />,
-    page: <ProfileScore />, // Temporary - similar functionality
+    page: <InterviewReadinessScore />,
   },
   // Job Search Tools
   {
@@ -113,13 +113,13 @@ export const toolsRoutes = [
     title: "Smart Apply Tool",
     to: "/tools/smart-apply-tool",
     icon: <Send className="h-4 w-4" />,
-    page: <JobMatcher />, // Temporary - similar functionality
+    page: <SmartApplyTool />,
   },
   {
     title: "Salary Benchmark Tool",
     to: "/tools/salary-benchmark-tool",
     icon: <DollarSign className="h-4 w-4" />,
-    page: <SalaryAnalyzer />, // Temporary - similar functionality
+    page: <SalaryBenchmarkTool />,
   },
   {
     title: "Resume Builder",
