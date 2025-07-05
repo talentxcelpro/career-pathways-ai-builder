@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { ATSOptimizationPanel } from '@/components/resume/ATSOptimizationPanel';
 import { TemplateGallery } from '@/components/resume/TemplateGallery';
 import { AIContentSuggestions } from '@/components/resume/AIContentSuggestions';
+import { ResumePreview } from '@/components/resume/ResumePreview';
 
 interface ValidationError {
   field: string;
@@ -1525,15 +1526,27 @@ const EditResume = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Eye className="h-5 w-5" />
-                  Templates
+                  Templates & Preview
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-6">
                 <TemplateGallery
                   resumeData={resumeData}
                   onTemplateSelect={setSelectedTemplate}
                   selectedTemplate={selectedTemplate}
                 />
+                {/* Live Preview */}
+                <div className="border-t pt-6">
+                  <h4 className="font-semibold mb-4">Live Preview</h4>
+                  <div className="bg-white border rounded-lg p-4 max-h-96 overflow-y-auto">
+                    <div className="transform scale-50 origin-top-left">
+                      <ResumePreview 
+                        resumeData={resumeData}
+                        template={selectedTemplate}
+                      />
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}
