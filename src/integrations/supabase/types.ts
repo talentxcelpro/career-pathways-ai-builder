@@ -4623,6 +4623,10 @@ export type Database = {
         Args: { request_id: string }
         Returns: undefined
       }
+      cleanup_old_notifications: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       complete_onboarding: {
         Args: {
           user_uuid: string
@@ -4631,6 +4635,20 @@ export type Database = {
           user_preferences?: Json
         }
         Returns: undefined
+      }
+      create_notification: {
+        Args: {
+          p_user_id: string
+          p_type: string
+          p_title: string
+          p_message: string
+          p_module: string
+          p_related_id?: string
+          p_link?: string
+          p_priority?: string
+          p_icon?: string
+        }
+        Returns: string
       }
       get_email_domain: {
         Args: { email_address: string }
@@ -4690,6 +4708,17 @@ export type Database = {
       reject_employer_request: {
         Args: { request_id: string; reason?: string }
         Returns: undefined
+      }
+      send_system_notification: {
+        Args: {
+          p_user_ids: string[]
+          p_title: string
+          p_message: string
+          p_module?: string
+          p_priority?: string
+          p_link?: string
+        }
+        Returns: number
       }
       update_user_login: {
         Args: { user_uuid: string }

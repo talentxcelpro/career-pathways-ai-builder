@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { 
   MapPin, 
@@ -26,7 +27,20 @@ import {
   TrendingUp,
   Upload,
   Camera,
-  Edit3
+  Edit3,
+  ExternalLink,
+  Mail,
+  Phone,
+  Linkedin,
+  Twitter,
+  Facebook,
+  Instagram,
+  Youtube,
+  MessageSquare,
+  Eye,
+  ThumbsUp,
+  Clock,
+  Building2
  } from 'lucide-react';
 import { CompanyFollowButton } from '@/components/company/CompanyFollowButton';
 import { toast } from 'sonner';
@@ -401,12 +415,15 @@ const CompanyDetail = () => {
 
         {/* Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-white shadow-sm">
+          <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm">
             <TabsTrigger value="overview" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
               Overview
             </TabsTrigger>
             <TabsTrigger value="jobs" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
               Jobs ({company.jobs?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+              Activity
             </TabsTrigger>
             <TabsTrigger value="culture" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
               Culture
@@ -451,7 +468,7 @@ const CompanyDetail = () => {
               </div>
 
               <div className="space-y-6">
-                <Card className="shadow-lg border-0">
+                 <Card className="shadow-lg border-0">
                   <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50">
                     <CardTitle className="text-xl">Company Info</CardTitle>
                   </CardHeader>
@@ -476,6 +493,122 @@ const CompanyDetail = () => {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Company Stats */}
+                <Card className="shadow-lg border-0">
+                  <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50">
+                    <CardTitle className="text-xl">Company Stats</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 flex items-center">
+                        <Eye className="h-4 w-4 mr-2" />
+                        Profile Views
+                      </span>
+                      <span className="font-medium text-blue-600">1.2K</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 flex items-center">
+                        <Heart className="h-4 w-4 mr-2" />
+                        Followers
+                      </span>
+                      <span className="font-medium text-red-600">{followersCount || 0}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 flex items-center">
+                        <Briefcase className="h-4 w-4 mr-2" />
+                        Open Jobs
+                      </span>
+                      <span className="font-medium text-green-600">{company.jobs?.length || 0}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 flex items-center">
+                        <TrendingUp className="h-4 w-4 mr-2" />
+                        Growth Rate
+                      </span>
+                      <span className="font-medium text-purple-600">+15%</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Social Links */}
+                {company.social_links && typeof company.social_links === 'object' && (
+                  <Card className="shadow-lg border-0">
+                    <CardHeader className="bg-gradient-to-r from-pink-50 to-rose-50">
+                      <CardTitle className="text-xl">Connect With Us</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                      <div className="grid grid-cols-2 gap-3">
+                        {(company.social_links as any)?.linkedin && (
+                          <a
+                            href={(company.social_links as any).linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center space-x-2 p-3 rounded-lg border hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                          >
+                            <Linkedin className="h-5 w-5 text-blue-600" />
+                            <span className="text-sm font-medium">LinkedIn</span>
+                          </a>
+                        )}
+                        {(company.social_links as any)?.twitter && (
+                          <a
+                            href={(company.social_links as any).twitter}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center space-x-2 p-3 rounded-lg border hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                          >
+                            <Twitter className="h-5 w-5 text-blue-400" />
+                            <span className="text-sm font-medium">Twitter</span>
+                          </a>
+                        )}
+                        {(company.social_links as any)?.facebook && (
+                          <a
+                            href={(company.social_links as any).facebook}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center space-x-2 p-3 rounded-lg border hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                          >
+                            <Facebook className="h-5 w-5 text-blue-600" />
+                            <span className="text-sm font-medium">Facebook</span>
+                          </a>
+                        )}
+                        {(company.social_links as any)?.instagram && (
+                          <a
+                            href={(company.social_links as any).instagram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center space-x-2 p-3 rounded-lg border hover:bg-pink-50 hover:border-pink-200 transition-colors"
+                          >
+                            <Instagram className="h-5 w-5 text-pink-600" />
+                            <span className="text-sm font-medium">Instagram</span>
+                          </a>
+                        )}
+                        {(company.social_links as any)?.youtube && (
+                          <a
+                            href={(company.social_links as any).youtube}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center space-x-2 p-3 rounded-lg border hover:bg-red-50 hover:border-red-200 transition-colors"
+                          >
+                            <Youtube className="h-5 w-5 text-red-600" />
+                            <span className="text-sm font-medium">YouTube</span>
+                          </a>
+                        )}
+                        {company.website && (
+                          <a
+                            href={company.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center space-x-2 p-3 rounded-lg border hover:bg-gray-50 hover:border-gray-200 transition-colors"
+                          >
+                            <ExternalLink className="h-5 w-5 text-gray-600" />
+                            <span className="text-sm font-medium">Website</span>
+                          </a>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {company.benefits && company.benefits.length > 0 && (
                   <Card className="shadow-lg border-0">
@@ -571,6 +704,169 @@ const CompanyDetail = () => {
                 </div>
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="activity" className="space-y-6">
+            <Card className="shadow-lg border-0">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                <CardTitle className="text-xl">Company Activity</CardTitle>
+                <CardDescription>Recent updates, posts, and company news</CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {/* Sample Activity Posts */}
+                <div className="space-y-6">
+                  {/* Sample Post 1 */}
+                  <div className="border-b pb-6 last:border-b-0">
+                    <div className="flex items-start space-x-4">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={company.logo_url} alt={company.name} />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                          {company.name.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className="font-semibold text-sm">{company.name}</span>
+                          <span className="text-gray-500 text-sm">•</span>
+                          <span className="text-gray-500 text-sm flex items-center">
+                            <Clock className="h-3 w-3 mr-1" />
+                            2 days ago
+                          </span>
+                        </div>
+                        <p className="text-gray-700 mb-3 leading-relaxed">
+                          🎉 We're excited to announce our Q4 achievements! Thanks to our amazing team, 
+                          we've grown by 25% and launched 3 new products. Looking forward to what 2024 brings!
+                        </p>
+                        <div className="flex items-center space-x-6 text-sm text-gray-500">
+                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+                            <ThumbsUp className="h-4 w-4" />
+                            <span>24 likes</span>
+                          </button>
+                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+                            <MessageSquare className="h-4 w-4" />
+                            <span>5 comments</span>
+                          </button>
+                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+                            <Share2 className="h-4 w-4" />
+                            <span>Share</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sample Post 2 */}
+                  <div className="border-b pb-6 last:border-b-0">
+                    <div className="flex items-start space-x-4">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={company.logo_url} alt={company.name} />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                          {company.name.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className="font-semibold text-sm">{company.name}</span>
+                          <span className="text-gray-500 text-sm">•</span>
+                          <span className="text-gray-500 text-sm flex items-center">
+                            <Clock className="h-3 w-3 mr-1" />
+                            1 week ago
+                          </span>
+                        </div>
+                        <p className="text-gray-700 mb-4 leading-relaxed">
+                          🚀 We're hiring! Join our growing team of talented professionals. 
+                          Check out our latest job openings and be part of something amazing.
+                        </p>
+                        <div className="bg-gray-50 rounded-lg p-4 mb-3">
+                          <div className="flex items-center space-x-3">
+                            <div className="bg-blue-100 p-2 rounded">
+                              <Briefcase className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-sm">We're Hiring!</h4>
+                              <p className="text-xs text-gray-600">{company.jobs?.length || 0} open positions available</p>
+                            </div>
+                            <Link to={`/companies/${company.id}?tab=jobs`} className="ml-auto">
+                              <Button size="sm" variant="outline">
+                                View Jobs
+                              </Button>
+                            </Link>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-6 text-sm text-gray-500">
+                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+                            <ThumbsUp className="h-4 w-4" />
+                            <span>18 likes</span>
+                          </button>
+                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+                            <MessageSquare className="h-4 w-4" />
+                            <span>3 comments</span>
+                          </button>
+                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+                            <Share2 className="h-4 w-4" />
+                            <span>Share</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sample Post 3 */}
+                  <div className="border-b pb-6 last:border-b-0">
+                    <div className="flex items-start space-x-4">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={company.logo_url} alt={company.name} />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                          {company.name.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className="font-semibold text-sm">{company.name}</span>
+                          <span className="text-gray-500 text-sm">•</span>
+                          <span className="text-gray-500 text-sm flex items-center">
+                            <Clock className="h-3 w-3 mr-1" />
+                            2 weeks ago
+                          </span>
+                        </div>
+                        <p className="text-gray-700 mb-3 leading-relaxed">
+                          🎯 Innovation is at the heart of everything we do. Our latest product update 
+                          brings cutting-edge features that our customers have been requesting.
+                        </p>
+                        {/* Sample image placeholder */}
+                        <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg h-48 flex items-center justify-center mb-3">
+                          <div className="text-center">
+                            <Building2 className="h-12 w-12 text-blue-500 mx-auto mb-2" />
+                            <p className="text-sm text-gray-600">Product Update Image</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-6 text-sm text-gray-500">
+                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+                            <ThumbsUp className="h-4 w-4" />
+                            <span>42 likes</span>
+                          </button>
+                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+                            <MessageSquare className="h-4 w-4" />
+                            <span>8 comments</span>
+                          </button>
+                          <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+                            <Share2 className="h-4 w-4" />
+                            <span>Share</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Load More Button */}
+                <div className="text-center pt-6">
+                  <Button variant="outline" className="w-full">
+                    Load More Activity
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="culture" className="space-y-6">
