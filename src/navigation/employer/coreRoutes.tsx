@@ -7,6 +7,7 @@ import EmployerProfile from "../../pages/employer/Profile";
 import EmployerSettings from "../../pages/employer/Settings";
 import EmployerTeam from "../../pages/employer/Team";
 import EmployerAnalytics from "../../pages/employer/analytics/EmployerAnalytics";
+import CompanyAccessRequestPage from "../../pages/employer/CompanyAccessRequest";
 
 export const employerCoreRoutes = [
   // Main Employer Routes
@@ -30,6 +31,11 @@ export const employerCoreRoutes = [
     title: "Employer Team",
     to: "/employer/team",
     page: <EmployerTeam />,
+  },
+  {
+    title: "Company Access Requests",
+    to: "/employer/company-access",
+    page: <CompanyAccessRequestPage />,
   },
   {
     title: "Employer Analytics",

@@ -71,7 +71,7 @@ export const useCompanyAccessRequests = () => {
       const { data, error } = await supabase
         .from('companies')
         .select('id, name, website')
-        .eq('is_verified', true);
+        .order('name');
 
       if (error) throw error;
       return data;

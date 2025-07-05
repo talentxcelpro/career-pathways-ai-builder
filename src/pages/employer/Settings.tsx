@@ -143,7 +143,51 @@ const EmployerSettings = () => {
         </TabsContent>
 
         <TabsContent value="team">
-          <CompanyAccessRequests />
+          <div className="space-y-6">
+            {/* Company Access Requests */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="h-5 w-5" />
+                  Company Access Requests
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  Request access to join existing companies or review pending requests for your company.
+                </p>
+                <Button 
+                  onClick={() => window.location.href = '/employer/company-access'}
+                  className="w-full mb-4"
+                >
+                  <Building2 className="h-4 w-4 mr-2" />
+                  Manage Company Access
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Team Management Link */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Team Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  Manage your existing team members, send invitations, and control team permissions.
+                </p>
+                <Button 
+                  onClick={() => window.location.href = '/employer/team'}
+                  className="w-full"
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  Go to Team Management
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="security">

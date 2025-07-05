@@ -37,6 +37,13 @@ export const CompanyAccessRequests = () => {
       companyId: selectedCompanyId,
       requestedRole,
       message: requestMessage
+    }, {
+      onSuccess: () => {
+        // Reset form after successful submission
+        setSelectedCompanyId('');
+        setRequestMessage('');
+        setRequestedRole('recruiter');
+      }
     });
   };
 
@@ -81,7 +88,10 @@ export const CompanyAccessRequests = () => {
               <SelectContent>
                 {availableCompanies?.map((company) => (
                   <SelectItem key={company.id} value={company.id}>
-                    {company.name}
+                    <div className="flex items-center gap-2">
+                      <Building2 className="h-4 w-4" />
+                      <span>{company.name}</span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -147,6 +157,11 @@ export const CompanyAccessRequests = () => {
                       <p className="text-sm text-gray-600">
                         Role: {request.requested_role}
                       </p>
+                      {availableCompanies?.find(c => c.id === request.company_id)?.name && (
+                        <p className="text-sm text-gray-600">
+                          Company: {availableCompanies.find(c => c.id === request.company_id)?.name}
+                        </p>
+                      )}
                     </div>
                     <Badge className={getStatusColor(request.status)}>
                       {request.status}
@@ -169,7 +184,11 @@ export const CompanyAccessRequests = () => {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-8">No requests found</p>
+            <div className="text-center py-8">
+              <Mail className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500 mb-2">No access requests found</p>
+              <p className="text-sm text-gray-400">Submit a request above to join a company's team</p>
+            </div>
           )}
         </CardContent>
       </Card>
