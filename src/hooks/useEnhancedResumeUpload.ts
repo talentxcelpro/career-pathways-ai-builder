@@ -55,21 +55,25 @@ export const useEnhancedResumeUpload = () => {
     console.log(`Creating upload status for user: ${user.id} (attempt ${retryAttempt + 1})`);
     
     try {
-      // Step 1: Validate current session
-      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+      // Step 1: Get fresh session and validate authentication 
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (userError || !currentUser) {
-        console.error('Failed to get current user:', userError);
-        throw new Error(`Session validation failed: ${userError?.message || 'No user found'}`);
+      if (sessionError || !session || !session.user) {
+        console.error('Session validation failed:', sessionError);
+        throw new Error(`Session invalid: ${sessionError?.message || 'No active session'}`);
       }
       
-      console.log('Current authenticated user:', currentUser.id);
+      console.log('Session validated:', {
+        userId: session.user.id,
+        accessToken: session.access_token ? 'present' : 'missing',
+        refreshToken: session.refresh_token ? 'present' : 'missing'
+      });
       
       // Step 2: Ensure profile exists (required for RLS)
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id')
-        .eq('id', currentUser.id)
+        .eq('id', session.user.id)
         .single();
       
       if (profileError && profileError.code === 'PGRST116') {
@@ -77,9 +81,9 @@ export const useEnhancedResumeUpload = () => {
         const { error: createProfileError } = await supabase
           .from('profiles')
           .insert({
-            id: currentUser.id,
-            email: currentUser.email,
-            full_name: currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || '',
+            id: session.user.id,
+            email: session.user.email,
+            full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || '',
             user_role: 'candidate'
           });
         
@@ -89,39 +93,65 @@ export const useEnhancedResumeUpload = () => {
         }
         
         // Wait for profile creation to propagate
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 500));
       } else if (profileError) {
         console.error('Profile query error:', profileError);
         throw new Error(`Profile verification failed: ${profileError.message}`);
       }
       
-      // Step 3: Create upload status with retry logic
+      console.log('Profile verified for user:', session.user.id);
+      
+      // Step 3: Test auth context before main operation
+      const { data: authTest, error: authTestError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', session.user.id)
+        .limit(1);
+      
+      if (authTestError) {
+        console.error('Auth context test failed:', authTestError);
+        throw new Error(`Authentication context not available: ${authTestError.message}`);
+      }
+      
+      console.log('Auth context test passed, proceeding with upload status creation...');
+      
+      // Step 4: Create upload status with explicit user_id
+      const uploadStatusData = {
+        user_id: session.user.id,
+        file_name: fileName,
+        file_url: fileUrl,
+        upload_status: 'uploading' as const,
+        current_step: 'upload' as const,
+        progress_percentage: 10
+      };
+      
+      console.log('Inserting upload status with data:', uploadStatusData);
+      
       const { data, error } = await supabase
         .from('resume_upload_status')
-        .insert({
-          user_id: currentUser.id,
-          file_name: fileName,
-          file_url: fileUrl,
-          upload_status: 'uploading',
-          current_step: 'upload',
-          progress_percentage: 10
-        })
+        .insert(uploadStatusData)
         .select()
         .single();
 
       if (error) {
         console.error('Upload status creation error:', error);
+        console.error('Error details:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
         
         // Check if it's an RLS error and we should retry
         if (error.message?.includes('row-level security') && retryAttempt < 2) {
-          console.log(`RLS error detected, retrying in ${(retryAttempt + 1) * 500}ms...`);
-          await new Promise(resolve => setTimeout(resolve, (retryAttempt + 1) * 500));
+          console.log(`RLS error detected, retrying in ${(retryAttempt + 1) * 1000}ms...`);
+          await new Promise(resolve => setTimeout(resolve, (retryAttempt + 1) * 1000));
           return createUploadStatus(fileName, fileUrl, retryAttempt + 1);
         }
         
         // Provide specific error messages
         if (error.message?.includes('row-level security')) {
-          throw new Error('Database access denied. Your session may have expired. Please refresh the page and try again.');
+          throw new Error('Database access denied. Your session may have expired. Please refresh the page and log in again.');
         }
         
         throw new Error(`Database operation failed: ${error.message}`);
@@ -132,9 +162,10 @@ export const useEnhancedResumeUpload = () => {
       
     } catch (error: any) {
       // If it's our custom error, re-throw it
-      if (error.message?.includes('Session validation failed') || 
+      if (error.message?.includes('Session invalid') || 
           error.message?.includes('Profile creation failed') ||
-          error.message?.includes('Database access denied')) {
+          error.message?.includes('Database access denied') ||
+          error.message?.includes('Authentication context not available')) {
         throw error;
       }
       
