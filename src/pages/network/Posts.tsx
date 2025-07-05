@@ -301,6 +301,12 @@ const Posts = () => {
                     Messages
                   </Button>
                 </Link>
+                <Link to="/companies">
+                  <Button variant="ghost" className="w-full justify-start">
+                    <Briefcase className="h-4 w-4 mr-2" />
+                    Companies I Follow
+                  </Button>
+                </Link>
                 <Button 
                   variant="ghost" 
                   className="w-full justify-start"
@@ -317,6 +323,18 @@ const Posts = () => {
           <div className="lg:col-span-6 space-y-6">
             {/* Create Post */}
             <CreatePost onPostCreate={handlePostCreate} />
+
+            {/* AI Assistant */}
+            {showAIAssistant && (
+              <AIPostAssistant
+                onSuggestionApply={(suggestion) => {
+                  // Handle suggestion application - could pass to CreatePost if needed
+                  console.log('AI Suggestion:', suggestion);
+                  // You could also use a state or callback to pass this to CreatePost
+                }}
+                currentContent=""
+              />
+            )}
 
             {/* Posts Feed */}
             <div className="space-y-6">
