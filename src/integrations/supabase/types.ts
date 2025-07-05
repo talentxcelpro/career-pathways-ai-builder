@@ -3963,6 +3963,59 @@ export type Database = {
           },
         ]
       }
+      team_invitations: {
+        Row: {
+          accepted_at: string | null
+          company_id: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          invitation_token: string
+          invited_at: string | null
+          invited_by: string
+          invited_email: string
+          role: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          company_id: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          invitation_token?: string
+          invited_at?: string | null
+          invited_by: string
+          invited_email: string
+          role?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          company_id?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          invitation_token?: string
+          invited_at?: string | null
+          invited_by?: string
+          invited_email?: string
+          role?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_invitations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tool_feedback: {
         Row: {
           comments: string | null
@@ -4558,6 +4611,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_team_invitation: {
+        Args: { invitation_token: string }
+        Returns: Json
+      }
       approve_company_access_request: {
         Args: { request_id: string }
         Returns: undefined
