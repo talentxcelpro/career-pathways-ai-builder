@@ -52,6 +52,8 @@ export const useEnhancedResumeUpload = () => {
       throw new Error('User not authenticated');
     }
 
+    console.log('Creating upload status for user:', user.id);
+    
     const { data, error } = await supabase
       .from('resume_upload_status')
       .insert({
@@ -66,9 +68,11 @@ export const useEnhancedResumeUpload = () => {
       .single();
 
     if (error) {
+      console.error('Upload status creation error:', error);
       throw error;
     }
 
+    console.log('Upload status created successfully:', data.id);
     return data.id;
   };
 
@@ -172,13 +176,19 @@ export const useEnhancedResumeUpload = () => {
     } catch (error: any) {
       console.error('AI processing error:', error);
       
-      await supabase.rpc('update_upload_progress', {
-        status_id: statusId,
-        new_status: 'failed',
-        new_step: processingStatus.currentStep,
-        new_progress: processingStatus.progress,
-        error_msg: error.message
-      });
+      // Try to update status, but don't fail if it doesn't work
+      try {
+        await supabase.rpc('update_upload_progress', {
+          status_id: statusId,
+          new_status: 'failed',
+          new_step: processingStatus.currentStep,
+          new_progress: processingStatus.progress,
+          error_msg: error.message
+        });
+      } catch (updateError: any) {
+        console.error('Failed to update progress status:', updateError);
+        // Don't throw this error, just log it
+      }
 
       setProcessingStatus(prev => ({
         ...prev,
@@ -192,6 +202,7 @@ export const useEnhancedResumeUpload = () => {
 
   const processResume = useCallback(async (files: FileList) => {
     if (!files || files.length === 0 || !user) {
+      console.error('No files or user not authenticated:', { files: !!files, user: !!user });
       return;
     }
 
@@ -209,6 +220,8 @@ export const useEnhancedResumeUpload = () => {
       return;
     }
 
+    console.log('Starting resume processing for user:', user.id);
+
     setProcessingStatus({
       isProcessing: true,
       currentStep: 'upload',
@@ -218,10 +231,14 @@ export const useEnhancedResumeUpload = () => {
 
     try {
       // Upload file
+      console.log('Uploading file...');
       const { url: fileUrl } = await uploadFile(file);
+      console.log('File uploaded successfully:', fileUrl);
       
       // Create upload status record
+      console.log('Creating upload status...');
       const statusId = await createUploadStatus(file.name, fileUrl);
+      console.log('Upload status created:', statusId);
       
       setProcessingStatus(prev => ({
         ...prev,
@@ -229,6 +246,7 @@ export const useEnhancedResumeUpload = () => {
       }));
 
       // Process with AI
+      console.log('Starting AI processing...');
       await processWithAI(statusId, fileUrl, file.name);
 
     } catch (error: any) {
