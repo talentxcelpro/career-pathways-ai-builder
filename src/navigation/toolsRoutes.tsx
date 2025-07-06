@@ -32,6 +32,11 @@ import SkillAssessor from "../pages/tools/SkillAssessor";
 import JobMatcher from "../pages/tools/JobMatcher";
 import ProfileScore from "../pages/tools/ProfileScore";
 import MarketInsights from "../pages/tools/MarketInsights";
+import ProfessionalBioWriter from "../pages/tools/ProfessionalBioWriter";
+import AIProfileOptimizer from "../pages/tools/AIProfileOptimizer";
+import MentorConnectTool from "../pages/tools/MentorConnectTool";
+import ResumeGapAnalyzer from "../pages/tools/ResumeGapAnalyzer";
+import AIResumeBuilder from "../pages/tools/AIResumeBuilder";
 
 export const toolsRoutes = [
   {
@@ -204,5 +209,35 @@ export const toolsRoutes = [
     to: "/tools/skill-assessment-engine",
     icon: <BookOpen className="h-4 w-4" />,
     page: <SkillAssessmentEngine />,
+  },
+  {
+    title: "Professional Bio Writer",
+    to: "/tools/professional-bio-writer",
+    icon: <Edit3 className="h-4 w-4" />,
+    page: <ProfessionalBioWriter />,
+  },
+  {
+    title: "AI Profile Optimizer", 
+    to: "/tools/ai-profile-optimizer",
+    icon: <User className="h-4 w-4" />,
+    page: <AIProfileOptimizer />,
+  },
+  {
+    title: "Mentor Connect Tool",
+    to: "/tools/mentor-connect-tool", 
+    icon: <Users className="h-4 w-4" />,
+    page: <MentorConnectTool />,
+  },
+  {
+    title: "Resume Gap Analyzer",
+    to: "/tools/resume-gap-analyzer",
+    icon: <Target className="h-4 w-4" />,
+    page: <ResumeGapAnalyzer />,
+  },
+  {
+    title: "AI Resume Builder",
+    to: "/tools/ai-resume-builder",
+    icon: <FileText className="h-4 w-4" />,
+    page: <AIResumeBuilder />,
   },
 ];
