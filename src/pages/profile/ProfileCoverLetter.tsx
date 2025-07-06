@@ -11,24 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 const ProfileCoverLetter = () => {
   const { toast } = useToast();
   
-  const [savedLetters] = useState([
-    {
-      id: 1,
-      title: "Software Engineer - Tech Startup",
-      targetCompany: "TechCorp",
-      targetRole: "Senior Software Engineer",
-      lastUpdated: "2024-01-15",
-      wordCount: 320
-    },
-    {
-      id: 2,
-      title: "Full Stack Developer - Enterprise",
-      targetCompany: "BigTech Inc",
-      targetRole: "Full Stack Developer",
-      lastUpdated: "2024-01-10",
-      wordCount: 285
-    }
-  ]);
+  const [savedLetters] = useState([]);
 
   const handleEdit = (letterId: number) => {
     toast({
@@ -68,7 +51,7 @@ const ProfileCoverLetter = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {savedLetters.map((letter) => (
+              {savedLetters.length > 0 ? savedLetters.map((letter) => (
                 <div key={letter.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="flex items-center space-x-4">
                     <div className="h-12 w-10 bg-gradient-to-r from-green-500 to-blue-500 rounded flex items-center justify-center">
@@ -102,7 +85,13 @@ const ProfileCoverLetter = () => {
                     </Button>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="text-center py-8">
+                  <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Cover Letters Yet</h3>
+                  <p className="text-gray-600">Create your first cover letter to get started</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

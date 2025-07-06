@@ -23,26 +23,7 @@ const ProfileResume = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadTitle, setUploadTitle] = useState('');
   
-  const [resumes] = useState([
-    {
-      id: 1,
-      title: "Software Engineer Resume",
-      template: "Modern",
-      isPrimary: true,
-      lastUpdated: "2024-01-15",
-      fileUrl: "/resumes/software-engineer.pdf",
-      status: "active"
-    },
-    {
-      id: 2,
-      title: "Full Stack Developer Resume",
-      template: "Professional",
-      isPrimary: false,
-      lastUpdated: "2024-01-10",
-      fileUrl: "/resumes/fullstack-dev.pdf",
-      status: "draft"
-    }
-  ]);
+  const [resumes] = useState([]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -210,19 +191,19 @@ const ProfileResume = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">87</div>
+                <div className="text-2xl font-bold text-blue-600">0</div>
                 <div className="text-sm text-gray-600">Profile Views</div>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">23</div>
+                <div className="text-2xl font-bold text-green-600">0</div>
                 <div className="text-sm text-gray-600">Resume Downloads</div>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">12</div>
+                <div className="text-2xl font-bold text-purple-600">0</div>
                 <div className="text-sm text-gray-600">Applications Sent</div>
               </div>
               <div className="text-center p-4 bg-orange-50 rounded-lg">
-                <div className="text-2xl font-bold text-orange-600">95%</div>
+                <div className="text-2xl font-bold text-orange-600">0%</div>
                 <div className="text-sm text-gray-600">ATS Score</div>
               </div>
             </div>
@@ -237,7 +218,7 @@ const ProfileResume = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {resumes.map((resume, index) => (
+              {resumes.length > 0 ? resumes.map((resume, index) => (
                 <div key={resume.id}>
                   <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                     <div className="flex items-center space-x-4">
@@ -285,7 +266,20 @@ const ProfileResume = () => {
                   </div>
                   {index < resumes.length - 1 && <Separator className="my-4" />}
                 </div>
-              ))}
+              )) : (
+                <div className="text-center py-8">
+                  <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Resumes Yet</h3>
+                  <p className="text-gray-600 mb-4">Create or upload your first resume to get started</p>
+                  <Link 
+                    to="/tools/resume-builder" 
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Resume
+                  </Link>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

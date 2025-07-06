@@ -19,35 +19,7 @@ const ProfileDocuments = () => {
   });
   
   const [showUploadForm, setShowUploadForm] = useState(false);
-  const [documents] = useState([
-    {
-      id: 1,
-      name: "Software Engineering Certificate",
-      type: "certification",
-      fileName: "cert-software-eng.pdf",
-      uploadDate: "2024-01-15",
-      size: "2.3 MB",
-      verified: true
-    },
-    {
-      id: 2,
-      name: "Bachelor's Degree Transcript",
-      type: "education",
-      fileName: "transcript-bachelor.pdf",
-      uploadDate: "2024-01-10",
-      size: "1.8 MB",
-      verified: true
-    },
-    {
-      id: 3,
-      name: "Driver's License",
-      type: "identification",
-      fileName: "drivers-license.jpg",
-      uploadDate: "2024-01-08",
-      size: "0.5 MB",
-      verified: false
-    }
-  ]);
+  const [documents] = useState([]);
 
   const [formData, setFormData] = useState({
     name: '',

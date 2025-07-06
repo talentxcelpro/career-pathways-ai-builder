@@ -20,26 +20,7 @@ const ProfileMedia = () => {
   });
   
   const [showPortfolioForm, setShowPortfolioForm] = useState(false);
-  const [portfolioItems] = useState([
-    {
-      id: 1,
-      title: "E-commerce Platform",
-      type: "Web Development",
-      description: "A full-stack e-commerce solution built with React and Node.js",
-      imageUrl: "",
-      projectUrl: "https://github.com/user/ecommerce",
-      tags: ["React", "Node.js", "MongoDB", "Stripe"]
-    },
-    {
-      id: 2,
-      title: "Mobile Banking App",
-      type: "Mobile Development",
-      description: "iOS and Android banking application with biometric authentication",
-      imageUrl: "",
-      projectUrl: "https://github.com/user/banking-app",
-      tags: ["React Native", "Firebase", "Biometrics"]
-    }
-  ]);
+  const [portfolioItems] = useState([]);
 
   const [portfolioFormData, setPortfolioFormData] = useState({
     title: '',
