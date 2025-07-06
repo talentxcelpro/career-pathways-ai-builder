@@ -240,4 +240,28 @@ export const toolsRoutes = [
     icon: <FileText className="h-4 w-4" />,
     page: <AIResumeBuilder />,
   },
+  {
+    title: "Resume Tailor Tool",
+    to: "/tools/resume-tailor-tool",
+    icon: <Scissors className="h-4 w-4" />,
+    page: <ResumeTailorTool />,
+  },
+  {
+    title: "Skill Gap Analyzer",
+    to: "/tools/skill-gap-analyzer",
+    icon: <Target className="h-4 w-4" />,
+    page: <SkillGapAnalyzer />,
+  },
+  {
+    title: "Network Growth Tracker",
+    to: "/tools/network-growth-tracker",
+    icon: <Network className="h-4 w-4" />,
+    page: <NetworkGrowthTracker />,
+  },
+  {
+    title: "AI Outreach Generator",
+    to: "/tools/ai-outreach-generator",
+    icon: <Send className="h-4 w-4" />,
+    page: <AIOutreachGenerator />,
+  },
 ];
