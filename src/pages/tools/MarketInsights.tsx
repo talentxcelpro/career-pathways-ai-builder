@@ -74,58 +74,41 @@ const MarketInsights = () => {
 
     setIsAnalyzing(true);
     
-    // Simulate AI market analysis
+    // TODO: Replace with real AI market analysis API
     setTimeout(() => {
-      const mockData: MarketData = {
+      const emptyData: MarketData = {
         industry,
         location,
         trends: {
-          jobGrowth: 23,
-          salaryTrend: 8.5,
-          demandScore: 85,
-          competitionLevel: 'High'
+          jobGrowth: 0,
+          salaryTrend: 0,
+          demandScore: 0,
+          competitionLevel: 'Unknown'
         },
-        topSkills: [
-          { skill: 'React', demand: 95, growth: '+15%' },
-          { skill: 'Python', demand: 88, growth: '+22%' },
-          { skill: 'AWS', demand: 82, growth: '+18%' },
-          { skill: 'TypeScript', demand: 79, growth: '+12%' },
-          { skill: 'Node.js', demand: 75, growth: '+8%' }
-        ],
+        topSkills: [],
         salaryData: {
-          average: 120000,
-          range: { min: 85000, max: 180000 },
-          byExperience: [
-            { level: 'Entry (0-2 years)', salary: 85000 },
-            { level: 'Mid (3-5 years)', salary: 120000 },
-            { level: 'Senior (6-10 years)', salary: 160000 },
-            { level: 'Lead (10+ years)', salary: 200000 }
-          ]
+          average: 0,
+          range: { min: 0, max: 0 },
+          byExperience: []
         },
         jobOpportunities: {
-          total: 12450,
-          remote: 4980,
-          hybrid: 3735,
-          onsite: 3735
+          total: 0,
+          remote: 0,
+          hybrid: 0,
+          onsite: 0
         },
         forecast: {
-          nextQuarter: 'Strong growth expected with 15% increase in job postings',
-          yearEnd: 'Market projected to expand by 25% by end of year',
-          longTerm: 'Sustained growth with emerging technologies driving demand'
+          nextQuarter: 'Market analysis coming soon',
+          yearEnd: 'Real-time data integration in progress',
+          longTerm: 'Enhanced analytics will be available soon'
         },
-        insights: [
-          'Remote work opportunities have increased by 40% in the past year',
-          'Companies are prioritizing full-stack developers with cloud experience',
-          'AI/ML skills are becoming increasingly valuable with 35% salary premium',
-          'Startup ecosystem is expanding rapidly, creating new opportunities',
-          'Competition is high but demand consistently exceeds supply'
-        ]
+        insights: []
       };
 
-      setMarketData(mockData);
+      setMarketData(emptyData);
       setIsAnalyzing(false);
-      toast.success('Market analysis completed!');
-    }, 3500);
+      toast.success('Market analysis completed - real data integration coming soon');
+    }, 2000);
   };
 
   const getTrendColor = (value: number) => {

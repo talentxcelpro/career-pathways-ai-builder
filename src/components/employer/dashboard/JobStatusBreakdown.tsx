@@ -19,28 +19,28 @@ export const JobStatusBreakdown = () => {
   const jobStatuses: JobStatus[] = [
     { 
       status: "Active", 
-      count: 8, 
+      count: 0, 
       color: "bg-green-500", 
       icon: Play,
       description: "Currently accepting applications"
     },
     { 
       status: "Draft", 
-      count: 3, 
+      count: 0, 
       color: "bg-gray-500", 
       icon: FileText,
       description: "Not yet published"
     },
     { 
       status: "Paused", 
-      count: 2, 
+      count: 0, 
       color: "bg-yellow-500", 
       icon: Pause,
       description: "Temporarily stopped"
     },
     { 
       status: "Closed", 
-      count: 12, 
+      count: 0, 
       color: "bg-red-500", 
       icon: Archive,
       description: "No longer accepting applications"

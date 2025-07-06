@@ -308,11 +308,11 @@ const ResumeTemplates = () => {
   const generateSampleResume = (template: any) => {
     const sampleData = {
       personalInfo: {
-        fullName: "John Smith",
-        email: "john.smith@email.com",
-        phone: "(555) 123-4567",
-        location: "New York, NY",
-        summary: "Experienced professional with 8+ years in software development and team leadership. Proven track record of delivering scalable solutions and driving innovation in fast-paced environments."
+        fullName: "Your Name",
+        email: "your.email@example.com",
+        phone: "Your Phone",
+        location: "Your Location",
+        summary: "Your professional summary will appear here."
       },
       experience: [
         {
