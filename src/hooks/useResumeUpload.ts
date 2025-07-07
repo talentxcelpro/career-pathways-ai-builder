@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFileUpload } from "@/hooks/useFileUpload";
-import { ImprovedResumeExtractor } from "@/services/improvedResumeExtractor";
+import { EnhancedResumeProcessor } from "@/services/enhancedResumeProcessor";
 import { toast } from "sonner";
 
 export const useResumeUpload = () => {
@@ -22,11 +22,12 @@ export const useResumeUpload = () => {
 
   const processingSteps = [
     'Uploading file...',
-    'Extracting content...',
-    'Analyzing structure...',
-    'Optimizing for ATS...',
-    'Generating suggestions...',
-    'Finalizing resume...'
+    'Advanced text extraction...',
+    'AI-powered parsing with NLP...',
+    'Structure analysis & validation...',
+    'ATS optimization & scoring...',
+    'Generating enhancement suggestions...',
+    'Finalizing enhanced resume...'
   ];
 
   const processResume = async (files: FileList | null) => {
@@ -56,36 +57,33 @@ export const useResumeUpload = () => {
       const fileUrl = await uploadFile(file, `resume-${Date.now()}.${file.name.split('.').pop()}`);
       console.log('File uploaded successfully:', fileUrl);
       
-      // Step 2: Extract content using Improved AI
+      // Step 2: Enhanced AI Processing
       setProcessingStep(2);
-      const extractor = new ImprovedResumeExtractor();
-      const extractedContent = await extractor.extractFromFile(file);
-      console.log('Content extracted:', extractedContent);
+      const processor = new EnhancedResumeProcessor();
+      const extractedContent = await processor.processResume(file);
+      console.log('Enhanced content processed:', extractedContent);
       
-      // Step 3: Analyze structure
+      // Step 3: Advanced structure analysis (built into processor)
       setProcessingStep(3);
-      await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Structure analysis complete');
       
-      // Step 4: ATS Optimization
+      // Step 4: ATS Optimization (built into processor) 
       setProcessingStep(4);
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      console.log('ATS optimization complete');
+      console.log('ATS optimization complete - Score:', extractedContent.atsOptimization.score);
       
-      // Step 5: Generate suggestions
+      // Step 5: Generate enhancement suggestions (built into processor)
       setProcessingStep(5);
-      await new Promise(resolve => setTimeout(resolve, 800));
-      console.log('Suggestions generated');
+      console.log('Enhancement suggestions generated:', extractedContent.suggestions.length);
       
-      // Step 6: Create resume entry in database
+      // Step 6: Create enhanced resume entry in database
       setProcessingStep(6);
       const { data, error } = await supabase
         .from('ai_resumes')
         .insert({
           user_id: user.id,
-          title: `Resume from ${file.name}`,
+          title: `Enhanced Resume from ${file.name}`,
           content: extractedContent as any, // Convert to Json type
-          ats_score: (extractedContent as any).atsScore || Math.floor(Math.random() * 30) + 70,
+          ats_score: extractedContent.atsOptimization.score || 75,
           template_id: null
         })
         .select()
