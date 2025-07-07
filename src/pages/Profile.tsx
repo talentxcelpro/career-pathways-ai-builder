@@ -6,21 +6,19 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Plus, 
-  Eye, 
-  Building, 
-  MapPin, 
-  Users, 
-  Briefcase, 
   Bookmark, 
-  Calendar, 
-  Newspaper, 
-  UserCheck,
-  Edit,
-  ExternalLink
+  Hash, 
+  FileText,
+  TrendingUp
 } from 'lucide-react';
 import { incrementProfileView } from '@/utils/profileHelpers';
+import { ProfileBanner } from '@/components/profile/ProfileBanner';
+import { CreatePost } from '@/components/posts/CreatePost';
+import { PostCard } from '@/components/network/PostCard';
+import { SavedItems } from '@/components/profile/SavedItems';
+import { HashtagsManager } from '@/components/profile/HashtagsManager';
 import { useState } from 'react';
 
 const Profile = () => {
@@ -101,236 +99,173 @@ const Profile = () => {
     return null; // Will redirect to login
   }
 
-  const formatDisplayName = (profile: any) => {
-    if (profile?.full_name && profile.full_name.trim()) {
-      return profile.full_name;
-    }
-    if (currentUser?.email) {
-      return currentUser.email.split('@')[0];
-    }
-    return 'Professional User';
-  };
-
-  const generateInitials = (profile: any) => {
-    const displayName = formatDisplayName(profile);
-    if (displayName === 'Professional User') return 'PU';
-    
-    const names = displayName.split(' ');
-    if (names.length === 1) {
-      return names[0].charAt(0).toUpperCase();
-    }
-    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
-  };
+  const { data: userPosts, isLoading: postsLoading } = useQuery({
+    queryKey: ['user-posts', currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('posts')
+        .select(`
+          *,
+          profiles!posts_author_id_fkey(
+            full_name,
+            title,
+            profile_picture_url
+          )
+        `)
+        .eq('author_id', currentUser.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!currentUser?.id
+  });
 
   return (
-    <div className="min-h-screen bg-[hsl(var(--background))]">
-      <div className="max-w-6xl mx-auto px-4 py-5">
-        {/* Banner Section */}
-        <div className="h-[300px] bg-gradient-to-r from-[hsl(213,63%,27%)] to-[hsl(210,64%,41%)] rounded-t-xl relative overflow-hidden shadow-lg">
-          {profile?.banner_url && (
-            <img
-              src={profile.banner_url}
-              alt="Profile Banner"
-              className="w-full h-full object-cover"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
-        </div>
-        
-        {/* Profile Header */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-end -mt-24 px-8 pb-8 relative z-10">
-          {/* Profile Picture */}
-          <div className="w-[180px] h-[180px] rounded-full border-4 border-white shadow-xl bg-[hsl(var(--primary))] flex items-center justify-center text-white font-bold text-6xl mb-6 lg:mb-0">
-            {profile?.profile_picture_url ? (
-              <img
-                src={profile.profile_picture_url}
-                alt={formatDisplayName(profile)}
-                className="w-full h-full object-cover rounded-full"
-              />
-            ) : (
-              generateInitials(profile)
-            )}
-          </div>
+    <div className="min-h-screen bg-[hsl(var(--background))] pb-8">
+      {/* Profile Banner */}
+      <ProfileBanner 
+        profile={profile}
+        isOwnProfile={true}
+        stats={{
+          connections: 500,
+          profileViews: profile?.profile_views_count || 644,
+          postsCount: userPosts?.length || 0
+        }}
+      />
+      
+      {/* Main Content Tabs */}
+      <div className="max-w-6xl mx-auto px-4 mt-6">
+        <Tabs defaultValue="posts" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsTrigger value="posts" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Posts
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Activity
+            </TabsTrigger>
+            <TabsTrigger value="saved" className="flex items-center gap-2">
+              <Bookmark className="h-4 w-4" />
+              Saved Items
+            </TabsTrigger>
+            <TabsTrigger value="hashtags" className="flex items-center gap-2">
+              <Hash className="h-4 w-4" />
+              Hashtags
+            </TabsTrigger>
+          </TabsList>
           
-          {/* Profile Info */}
-          <div className="flex-1 lg:ml-8 lg:pt-16 text-center lg:text-left">
-            <div className="mb-2">
-              <h1 className="text-4xl font-bold text-[hsl(var(--foreground))] inline-block">
-                {formatDisplayName(profile)}
-              </h1>
-              <Badge variant="secondary" className="ml-3 px-3 py-1">
-                He/Him
-              </Badge>
-            </div>
-            
-            {profile?.title && (
-              <p className="text-xl text-[hsl(var(--muted-foreground))] font-medium mb-4">
-                {profile.title}
-              </p>
-            )}
-            
-            <div className="flex flex-wrap gap-6 justify-center lg:justify-start mb-6 text-[hsl(var(--muted-foreground))]">
-              {profile?.current_company && (
-                <div className="flex items-center">
-                  <Building className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
-                  <span>{profile.current_company}</span>
-                </div>
-              )}
-              {profile?.location && (
-                <div className="flex items-center">
-                  <MapPin className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
-                  <span>{profile.location}</span>
-                </div>
-              )}
-              <div className="flex items-center">
-                <Users className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
-                <Badge className="bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] px-3 py-1">
-                  500+
-                </Badge>
-                <span className="ml-1">connections</span>
-              </div>
-              <div className="flex items-center">
-                <Briefcase className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
-                <span>Open to opportunities</span>
-              </div>
-            </div>
-            
-            <div className="flex gap-4 justify-center lg:justify-start">
-              <Button 
-                className="bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.9)] text-white"
-                onClick={() => navigate('/profile/edit')}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add profile section
-              </Button>
-              <Button variant="outline">
-                <Eye className="h-4 w-4 mr-2" />
-                View my services
-              </Button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-          {/* Left Column - Resources */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-6 pb-4 border-b">
-                  <h2 className="text-xl font-semibold">Resources</h2>
-                </div>
+          {/* Posts Tab */}
+          <TabsContent value="posts" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Column - Create Post & Posts Feed */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Create Post */}
+                <CreatePost 
+                  onPostCreate={(newPost) => {
+                    // Refresh posts query
+                    window.location.reload();
+                  }}
+                />
                 
-                <div className="space-y-4">
-                  <div className="p-5 bg-[hsl(var(--muted))] rounded-lg border-l-4 border-[hsl(var(--primary))]">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-semibold text-lg">Open to work</h3>
-                      <Button variant="ghost" className="text-[hsl(var(--primary))] p-0 h-auto">
-                        Show details
-                      </Button>
-                    </div>
-                    <p className="text-[hsl(var(--muted-foreground))]">
-                      Vice President, Director of Operations, Director of Partnerships, Vice President of Sales and Country Manager roles
-                    </p>
+                {/* Posts Feed */}
+                {postsLoading ? (
+                  <div className="space-y-4">
+                    {[1, 2, 3].map(i => (
+                      <Card key={i}>
+                        <CardContent className="p-6">
+                          <div className="animate-pulse space-y-4">
+                            <div className="flex gap-3">
+                              <div className="w-10 h-10 bg-muted rounded-full" />
+                              <div className="space-y-2 flex-1">
+                                <div className="h-4 bg-muted rounded w-1/3" />
+                                <div className="h-3 bg-muted rounded w-1/4" />
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="h-4 bg-muted rounded" />
+                              <div className="h-4 bg-muted rounded w-3/4" />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
-                  
-                  <div className="p-5 bg-[hsl(var(--muted))] rounded-lg border-l-4 border-[hsl(var(--primary))]">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-semibold text-lg">Hiring: Service Desk Engineer</h3>
-                      <Button variant="ghost" className="text-[hsl(var(--primary))] p-0 h-auto">
-                        Show job
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-4 text-sm text-[hsl(var(--muted-foreground))]">
-                      <div className="flex items-center">
-                        <Building className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
-                        Savantis Solutions
-                      </div>
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
-                        Noida, Uttar Pradesh, India (On-site)
-                      </div>
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
-                        66 days ago
-                      </div>
-                    </div>
+                ) : userPosts && userPosts.length > 0 ? (
+                  <div className="space-y-6">
+                    {userPosts.map((post: any) => (
+                      <PostCard
+                        key={post.id}
+                        post={post}
+                      />
+                    ))}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                ) : (
+                  <Card>
+                    <CardContent className="p-8 text-center">
+                      <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <h3 className="font-medium text-lg mb-2">No posts yet</h3>
+                      <p className="text-muted-foreground">
+                        Share your first post to connect with your network!
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+              
+              {/* Right Column - Quick Stats */}
+              <div className="space-y-6">
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold mb-4">Your Activity</h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Posts this month</span>
+                        <Badge variant="secondary">{userPosts?.length || 0}</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Profile views</span>
+                        <Badge variant="secondary">{profile?.profile_views_count || 644}</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Connections</span>
+                        <Badge variant="secondary">500+</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
           
-          {/* Right Column */}
-          <div className="space-y-6">
-            {/* Activity & Insights */}
+          {/* Activity Tab */}
+          <TabsContent value="activity">
             <Card>
               <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-6 pb-4 border-b">
-                  <h2 className="text-xl font-semibold">Activity & Insights</h2>
-                  <Button variant="ghost" className="text-[hsl(var(--primary))] p-0 h-auto">
-                    <Edit className="h-4 w-4 mr-1" />
-                    Edit
-                  </Button>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-5 bg-[hsl(var(--muted))] rounded-lg text-center hover:shadow-md transition-shadow">
-                    <div className="text-3xl font-bold text-[hsl(var(--primary))] mb-1">
-                      {profile?.profile_views_count || 644}
-                    </div>
-                    <div className="text-sm text-[hsl(var(--muted-foreground))]">Profile viewers</div>
-                  </div>
-                  
-                  <div className="p-5 bg-[hsl(var(--muted))] rounded-lg text-center hover:shadow-md transition-shadow">
-                    <div className="text-3xl font-bold text-orange-600 mb-1">198</div>
-                    <div className="text-sm text-[hsl(var(--muted-foreground))]">Post impressions</div>
-                  </div>
-                  
-                  <div className="p-5 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg text-center hover:shadow-md transition-shadow col-span-2">
-                    <div className="text-3xl font-bold text-yellow-700 mb-1">5</div>
-                    <div className="text-sm text-yellow-600">Your Premium features</div>
-                  </div>
+                <div className="text-center py-8">
+                  <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="font-medium text-lg mb-2">Activity Overview</h3>
+                  <p className="text-muted-foreground">
+                    Your professional activity and engagement metrics will appear here.
+                  </p>
                 </div>
               </CardContent>
             </Card>
-            
-            {/* Quick Actions */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-6 pb-4 border-b">
-                  <h2 className="text-xl font-semibold">Quick Actions</h2>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-4 bg-[hsl(var(--muted))] rounded-lg cursor-pointer hover:bg-[hsl(var(--muted)/0.8)] transition-colors">
-                    <Bookmark className="h-6 w-6 text-[hsl(var(--primary))] mb-2" />
-                    <h3 className="font-medium text-sm">Saved items</h3>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">Your bookmarked content</p>
-                  </div>
-                  
-                  <div className="p-4 bg-[hsl(var(--muted))] rounded-lg cursor-pointer hover:bg-[hsl(var(--muted)/0.8)] transition-colors">
-                    <UserCheck className="h-6 w-6 text-[hsl(var(--primary))] mb-2" />
-                    <h3 className="font-medium text-sm">Groups</h3>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">Join professional groups</p>
-                  </div>
-                  
-                  <div className="p-4 bg-[hsl(var(--muted))] rounded-lg cursor-pointer hover:bg-[hsl(var(--muted)/0.8)] transition-colors">
-                    <Newspaper className="h-6 w-6 text-[hsl(var(--primary))] mb-2" />
-                    <h3 className="font-medium text-sm">Newsletters</h3>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">Subscribe to updates</p>
-                  </div>
-                  
-                  <div className="p-4 bg-[hsl(var(--muted))] rounded-lg cursor-pointer hover:bg-[hsl(var(--muted)/0.8)] transition-colors">
-                    <Calendar className="h-6 w-6 text-[hsl(var(--primary))] mb-2" />
-                    <h3 className="font-medium text-sm">Events</h3>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">Find upcoming events</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+          </TabsContent>
+          
+          {/* Saved Items Tab */}
+          <TabsContent value="saved">
+            {currentUser?.id && <SavedItems userId={currentUser.id} />}
+          </TabsContent>
+          
+          {/* Hashtags Tab */}
+          <TabsContent value="hashtags">
+            {currentUser?.id && <HashtagsManager userId={currentUser.id} />}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
