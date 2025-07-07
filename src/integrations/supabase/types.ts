@@ -3018,6 +3018,50 @@ export type Database = {
           },
         ]
       }
+      post_hashtag_suggestions: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_content: string | null
+          post_id: string | null
+          suggested_hashtags: Json | null
+          updated_at: string | null
+          user_id: string
+          user_role: string | null
+          user_skills: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_content?: string | null
+          post_id?: string | null
+          suggested_hashtags?: Json | null
+          updated_at?: string | null
+          user_id: string
+          user_role?: string | null
+          user_skills?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_content?: string | null
+          post_id?: string | null
+          suggested_hashtags?: Json | null
+          updated_at?: string | null
+          user_id?: string
+          user_role?: string | null
+          user_skills?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_hashtag_suggestions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_likes: {
         Row: {
           created_at: string
@@ -3161,6 +3205,53 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      posts_ai_scores: {
+        Row: {
+          created_at: string | null
+          cta_strength: number | null
+          hashtag_relevance: number | null
+          id: string
+          post_id: string | null
+          score: number | null
+          tone: string | null
+          updated_at: string | null
+          user_id: string
+          virality_potential: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          cta_strength?: number | null
+          hashtag_relevance?: number | null
+          id?: string
+          post_id?: string | null
+          score?: number | null
+          tone?: string | null
+          updated_at?: string | null
+          user_id: string
+          virality_potential?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          cta_strength?: number | null
+          hashtag_relevance?: number | null
+          id?: string
+          post_id?: string | null
+          score?: number | null
+          tone?: string | null
+          updated_at?: string | null
+          user_id?: string
+          virality_potential?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_ai_scores_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pricing_plans: {
         Row: {
@@ -5047,6 +5138,36 @@ export type Database = {
         }
         Relationships: []
       }
+      trending_topics_by_role: {
+        Row: {
+          created_at: string | null
+          engagement_score: number | null
+          id: string
+          role: string
+          trending_topics: Json | null
+          updated_at: string | null
+          week_start: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          role: string
+          trending_topics?: Json | null
+          updated_at?: string | null
+          week_start?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          role?: string
+          trending_topics?: Json | null
+          updated_at?: string | null
+          week_start?: string | null
+        }
+        Relationships: []
+      }
       url_previews: {
         Row: {
           created_at: string
@@ -5217,6 +5338,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_engagement_metrics: {
+        Row: {
+          content_quality_avg: number | null
+          created_at: string | null
+          engagement_rate: number | null
+          id: string
+          influence_score: number | null
+          network_reach: number | null
+          updated_at: string | null
+          user_id: string
+          weekly_growth: number | null
+        }
+        Insert: {
+          content_quality_avg?: number | null
+          created_at?: string | null
+          engagement_rate?: number | null
+          id?: string
+          influence_score?: number | null
+          network_reach?: number | null
+          updated_at?: string | null
+          user_id: string
+          weekly_growth?: number | null
+        }
+        Update: {
+          content_quality_avg?: number | null
+          created_at?: string | null
+          engagement_rate?: number | null
+          id?: string
+          influence_score?: number | null
+          network_reach?: number | null
+          updated_at?: string | null
+          user_id?: string
+          weekly_growth?: number | null
+        }
+        Relationships: []
       }
       user_lesson_progress: {
         Row: {

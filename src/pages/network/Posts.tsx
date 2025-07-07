@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
-import { CreatePost } from "@/components/posts/CreatePost";
+import { EnhancedCreatePost } from "@/components/posts/EnhancedCreatePost";
 import { CareerIntentBadge } from "@/components/posts/CareerIntentTags";
 import { LinkPreview } from "@/components/shared/LinkPreview";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
@@ -321,8 +321,8 @@ const Posts = () => {
 
           {/* Middle Column - Posts Feed */}
           <div className="lg:col-span-6 space-y-6">
-            {/* Create Post */}
-            <CreatePost onPostCreate={handlePostCreate} />
+            {/* Enhanced Create Post with AI Features */}
+            <EnhancedCreatePost onPostCreate={handlePostCreate} />
 
             {/* AI Assistant */}
             {showAIAssistant && (

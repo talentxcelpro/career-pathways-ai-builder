@@ -121,7 +121,7 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
             <div className="flex items-start gap-3">
               {/* Enhanced Profile Picture */}
               <div className="relative">
-                <Avatar className="w-16 h-16 border-3 border-white shadow-xl bg-white ring-2 ring-blue-100">
+                <Avatar className="w-20 h-20 border-4 border-white shadow-2xl bg-white ring-4 ring-primary/20">
                   <AvatarImage src={profile?.profile_picture_url} className="object-cover" />
                   <AvatarFallback className="text-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold">
                     {generateInitials(profile)}
