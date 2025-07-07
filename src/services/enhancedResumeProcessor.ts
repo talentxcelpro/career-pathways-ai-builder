@@ -161,45 +161,20 @@ export class EnhancedResumeProcessor {
     console.log('Performing advanced text extraction...');
     
     try {
-      // Multi-step extraction process with validation
+      // Multi-step extraction process
       let extractedText = '';
       
-      // Primary extraction with file type specific handling
-      if (file.type.includes('pdf')) {
-        console.log('Processing PDF file with enhanced extraction');
-        extractedText = await this.textExtractor.extractText(file);
-      } else if (file.type.includes('doc')) {
-        console.log('Processing DOC/DOCX file with enhanced extraction');
-        extractedText = await this.textExtractor.extractText(file);
-      } else if (file.type.includes('text')) {
-        console.log('Processing text file with encoding validation');
-        extractedText = await this.textExtractor.extractText(file);
-      } else {
-        console.warn('Unsupported file type, attempting generic extraction');
-        extractedText = await this.textExtractor.extractText(file);
-      }
+      // Primary extraction
+      extractedText = await this.textExtractor.extractText(file);
       
-      // Enhanced validation and cleaning
+      // Clean and validate
       extractedText = this.textExtractor.cleanText(extractedText);
-      
-      // Check for minimum expected content length
-      const MIN_EXPECTED_LENGTH = 200; // Minimum characters for a valid resume
-      if (extractedText.length < MIN_EXPECTED_LENGTH) {
-        console.warn(`Extracted text too short (${extractedText.length} chars), may be incomplete`);
-        // Don't throw error, but flag for AI processing with metadata
-      }
-      
-      // Check for common extraction artifacts
-      if (this.hasExtractionArtifacts(extractedText)) {
-        console.warn('Extraction artifacts detected, will be cleaned in preprocessing');
-      }
       
       // Enhanced cleaning for better AI processing
       extractedText = this.enhanceTextForAI(extractedText);
       
       console.log('Text extraction complete. Length:', extractedText.length);
       
-      // Final validation
       if (!this.textExtractor.isValidText(extractedText)) {
         console.warn('Text quality is poor, providing file metadata for AI processing');
         extractedText = this.generateFileMetadataPrompt(file, extractedText);
@@ -209,77 +184,26 @@ export class EnhancedResumeProcessor {
       
     } catch (error) {
       console.error('Text extraction failed:', error);
-      
-      // Enhanced error handling with specific messages
-      if (error.message.includes('password')) {
-        throw new Error('Password-protected files are not supported. Please provide an unprotected version.');
-      } else if (error.message.includes('corrupted')) {
-        throw new Error('File appears to be corrupted. Please try uploading a different version.');
-      } else if (error.message.includes('unsupported')) {
-        throw new Error('Unsupported file format. Please upload PDF, DOC, DOCX, or TXT files only.');
-      }
-      
-      // Fallback to file metadata with error context
-      return this.generateFileMetadataPrompt(file, `Error: ${error.message}`);
+      // Fallback to file metadata
+      return this.generateFileMetadataPrompt(file, '');
     }
   }
 
-  private hasExtractionArtifacts(text: string): boolean {
-    const artifacts = [
-      /File Name:|File Type:|File Size:/i,
-      /RESUME FILE ANALYSIS/i,
-      /Page \d+ of \d+/i,
-      /^\s*\d+\s*$/m, // Lines with only numbers (page numbers)
-      /CONFIDENTIAL|PROPRIETARY/i,
-    ];
-    
-    return artifacts.some(pattern => pattern.test(text));
-  }
-
   private enhanceTextForAI(text: string): string {
-    // First, clean metadata artifacts
-    const cleanedText = this.cleanResumeMetadata(text);
-    
-    return cleanedText
-      // Preserve section headers with better detection
-      .replace(/^([A-Z][A-Z\s]{2,})$/gm, '\n=== $1 ===\n')
+    return text
+      // Preserve section headers
+      .replace(/^([A-Z\s]+)$/gm, '\n=== $1 ===\n')
       // Enhance bullet points
       .replace(/^\s*[•·\-\*]\s*/gm, '\n• ')
       // Preserve email patterns
       .replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '\nEMAIL: $1\n')
       // Preserve phone patterns
       .replace(/(\+?[\d\s\-\(\)]{10,})/g, '\nPHONE: $1\n')
-      // Preserve dates with better patterns
-      .replace(/(\d{1,2}\/\d{2,4}|\d{4}[\-\/]\d{2,4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{2,4})/gi, '\nDATE: $1\n')
+      // Preserve dates
+      .replace(/(\d{1,2}\/\d{4}|\d{4}[\-\/]\d{4}|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/gi, '\nDATE: $1\n')
       // Clean up multiple newlines
       .replace(/\n{3,}/g, '\n\n')
       .trim();
-  }
-
-  private cleanResumeMetadata(text: string): string {
-    const metadataPatterns = [
-      // Remove file analysis headers
-      /={10,}.*?={10,}/gs,
-      /RESUME FILE ANALYSIS REQUEST.*?(?=\n[A-Z])/gs,
-      /File Name:.*$/gm,
-      /File Type:.*$/gm,
-      /File Size:.*$/gm,
-      /Last Modified:.*$/gm,
-      /EXTRACTED TEXT CONTENT:.*$/gm,
-      /PROCESSING INSTRUCTIONS:.*$/gm,
-      // Remove page numbers and headers/footers
-      /^Page \d+ of \d+.*$/gm,
-      /^.*CONFIDENTIAL.*$/gm,
-      // Remove common PDF artifacts
-      /\s+\d+\s*$/gm, // trailing page numbers
-    ];
-
-    let cleanedText = text;
-    metadataPatterns.forEach(pattern => {
-      cleanedText = cleanedText.replace(pattern, '');
-    });
-
-    return cleanedText.trim();
   }
 
   private generateFileMetadataPrompt(file: File, extractedText: string): string {

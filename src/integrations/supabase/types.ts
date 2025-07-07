@@ -359,36 +359,6 @@ export type Database = {
         }
         Relationships: []
       }
-      awards: {
-        Row: {
-          award_date: string | null
-          award_description: string | null
-          award_title: string | null
-          created_at: string | null
-          id: string
-          issued_by: string | null
-          user_id: string
-        }
-        Insert: {
-          award_date?: string | null
-          award_description?: string | null
-          award_title?: string | null
-          created_at?: string | null
-          id?: string
-          issued_by?: string | null
-          user_id: string
-        }
-        Update: {
-          award_date?: string | null
-          award_description?: string | null
-          award_title?: string | null
-          created_at?: string | null
-          id?: string
-          issued_by?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       candidate_communications: {
         Row: {
           candidate_id: string | null
@@ -687,36 +657,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      certifications: {
-        Row: {
-          certificate_name: string | null
-          certificate_url: string | null
-          created_at: string | null
-          date_earned: string | null
-          id: string
-          issuer: string | null
-          user_id: string
-        }
-        Insert: {
-          certificate_name?: string | null
-          certificate_url?: string | null
-          created_at?: string | null
-          date_earned?: string | null
-          id?: string
-          issuer?: string | null
-          user_id: string
-        }
-        Update: {
-          certificate_name?: string | null
-          certificate_url?: string | null
-          created_at?: string | null
-          date_earned?: string | null
-          id?: string
-          issuer?: string | null
-          user_id?: string
-        }
-        Relationships: []
       }
       collaboration_sessions: {
         Row: {
@@ -1557,66 +1497,6 @@ export type Database = {
         }
         Relationships: []
       }
-      custom_sections: {
-        Row: {
-          content: string | null
-          created_at: string | null
-          id: string
-          section_title: string | null
-          user_id: string
-        }
-        Insert: {
-          content?: string | null
-          created_at?: string | null
-          id?: string
-          section_title?: string | null
-          user_id: string
-        }
-        Update: {
-          content?: string | null
-          created_at?: string | null
-          id?: string
-          section_title?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      education: {
-        Row: {
-          academic_projects: string[] | null
-          created_at: string | null
-          degree: string | null
-          gpa_honors: string | null
-          graduation_date: string | null
-          id: string
-          institution: string | null
-          relevant_coursework: string[] | null
-          user_id: string
-        }
-        Insert: {
-          academic_projects?: string[] | null
-          created_at?: string | null
-          degree?: string | null
-          gpa_honors?: string | null
-          graduation_date?: string | null
-          id?: string
-          institution?: string | null
-          relevant_coursework?: string[] | null
-          user_id: string
-        }
-        Update: {
-          academic_projects?: string[] | null
-          created_at?: string | null
-          degree?: string | null
-          gpa_honors?: string | null
-          graduation_date?: string | null
-          id?: string
-          institution?: string | null
-          relevant_coursework?: string[] | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       email_templates: {
         Row: {
           company_id: string | null
@@ -2003,27 +1883,6 @@ export type Database = {
           name?: string
           rules?: string | null
           updated_at?: string | null
-        }
-        Relationships: []
-      }
-      interests: {
-        Row: {
-          created_at: string | null
-          id: string
-          interest_items: string[] | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          interest_items?: string[] | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          interest_items?: string[] | null
-          user_id?: string
         }
         Relationships: []
       }
@@ -3645,93 +3504,6 @@ export type Database = {
         }
         Relationships: []
       }
-      projects: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          github_link: string | null
-          id: string
-          project_title: string | null
-          technologies_used: string[] | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          github_link?: string | null
-          id?: string
-          project_title?: string | null
-          technologies_used?: string[] | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          github_link?: string | null
-          id?: string
-          project_title?: string | null
-          technologies_used?: string[] | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      publications: {
-        Row: {
-          created_at: string | null
-          id: string
-          link: string | null
-          publication_date: string | null
-          publication_source: string | null
-          title: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          link?: string | null
-          publication_date?: string | null
-          publication_source?: string | null
-          title?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          link?: string | null
-          publication_date?: string | null
-          publication_source?: string | null
-          title?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      references_info: {
-        Row: {
-          contact_info: string | null
-          created_at: string | null
-          id: string
-          reference_name: string | null
-          title: string | null
-          user_id: string
-        }
-        Insert: {
-          contact_info?: string | null
-          created_at?: string | null
-          id?: string
-          reference_name?: string | null
-          title?: string | null
-          user_id: string
-        }
-        Update: {
-          contact_info?: string | null
-          created_at?: string | null
-          id?: string
-          reference_name?: string | null
-          title?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       resume_analytics: {
         Row: {
           created_at: string | null
@@ -4307,42 +4079,6 @@ export type Database = {
           status?: boolean | null
           thumbnail_url?: string | null
           updated_at?: string | null
-        }
-        Relationships: []
-      }
-      resume_upload_logs: {
-        Row: {
-          confidence_score: number | null
-          created_at: string | null
-          error_message: string | null
-          extraction_status: string | null
-          file_size: number | null
-          filename: string
-          id: string
-          processing_time_ms: number | null
-          user_id: string
-        }
-        Insert: {
-          confidence_score?: number | null
-          created_at?: string | null
-          error_message?: string | null
-          extraction_status?: string | null
-          file_size?: number | null
-          filename: string
-          id?: string
-          processing_time_ms?: number | null
-          user_id: string
-        }
-        Update: {
-          confidence_score?: number | null
-          created_at?: string | null
-          error_message?: string | null
-          extraction_status?: string | null
-          file_size?: number | null
-          filename?: string
-          id?: string
-          processing_time_ms?: number | null
-          user_id?: string
         }
         Relationships: []
       }
@@ -5052,39 +4788,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      skills: {
-        Row: {
-          created_at: string | null
-          id: string
-          languages_spoken: string[] | null
-          programming_languages: string[] | null
-          soft_skills: string[] | null
-          technical_skills: string[] | null
-          tools_software: string[] | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          languages_spoken?: string[] | null
-          programming_languages?: string[] | null
-          soft_skills?: string[] | null
-          technical_skills?: string[] | null
-          tools_software?: string[] | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          languages_spoken?: string[] | null
-          programming_languages?: string[] | null
-          soft_skills?: string[] | null
-          technical_skills?: string[] | null
-          tools_software?: string[] | null
-          user_id?: string
-        }
-        Relationships: []
       }
       subscriptions: {
         Row: {
@@ -5853,117 +5556,6 @@ export type Database = {
           id?: string
           preferences?: Json
           updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      users_profile: {
-        Row: {
-          created_at: string | null
-          email: string | null
-          full_name: string | null
-          id: string
-          linkedin_url: string | null
-          location: string | null
-          phone: string | null
-          professional_summary: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          email?: string | null
-          full_name?: string | null
-          id: string
-          linkedin_url?: string | null
-          location?: string | null
-          phone?: string | null
-          professional_summary?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          email?: string | null
-          full_name?: string | null
-          id?: string
-          linkedin_url?: string | null
-          location?: string | null
-          phone?: string | null
-          professional_summary?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      volunteer_experience: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          end_date: string | null
-          id: string
-          organization: string | null
-          role: string | null
-          start_date: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          organization?: string | null
-          role?: string | null
-          start_date?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          organization?: string | null
-          role?: string | null
-          start_date?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      work_experience: {
-        Row: {
-          company_name: string | null
-          created_at: string | null
-          end_date: string | null
-          id: string
-          job_title: string | null
-          key_achievements: string[] | null
-          location: string | null
-          responsibilities: string[] | null
-          start_date: string | null
-          technologies_used: string[] | null
-          user_id: string
-        }
-        Insert: {
-          company_name?: string | null
-          created_at?: string | null
-          end_date?: string | null
-          id?: string
-          job_title?: string | null
-          key_achievements?: string[] | null
-          location?: string | null
-          responsibilities?: string[] | null
-          start_date?: string | null
-          technologies_used?: string[] | null
-          user_id: string
-        }
-        Update: {
-          company_name?: string | null
-          created_at?: string | null
-          end_date?: string | null
-          id?: string
-          job_title?: string | null
-          key_achievements?: string[] | null
-          location?: string | null
-          responsibilities?: string[] | null
-          start_date?: string | null
-          technologies_used?: string[] | null
           user_id?: string
         }
         Relationships: []

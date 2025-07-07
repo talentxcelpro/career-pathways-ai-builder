@@ -4,7 +4,6 @@ import ResumeDashboard from "../pages/resume/ResumeDashboard";
 import CreateResume from "../pages/resume/CreateResume";
 import UploadResume from "../pages/resume/UploadResume";
 import EditResume from "../pages/resume/EditResume";
-import ResumeEditor from "../pages/resume/ResumeEditor";
 import ResumeTemplates from "../pages/resume/ResumeTemplates";
 import ExportResume from "../pages/resume/ExportResume";
 import CoverLetterGenerator from "../pages/resume/CoverLetterGenerator";
@@ -29,12 +28,6 @@ export const resumeRoutes = [
     to: "/resume-builder/upload",
     icon: <Upload className="h-4 w-4" />,
     page: <UploadResume />,
-  },
-  {
-    title: "Resume Editor",
-    to: "/resume-builder/editor",
-    icon: <Edit className="h-4 w-4" />,
-    page: <ResumeEditor />,
   },
   {
     title: "Edit Resume",

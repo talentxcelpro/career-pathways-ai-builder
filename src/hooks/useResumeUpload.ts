@@ -5,7 +5,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { EnhancedResumeProcessor } from "@/services/enhancedResumeProcessor";
-import { ResumeDataService } from "@/services/resumeDataService";
 import { toast } from "sonner";
 
 export const useResumeUpload = () => {
@@ -58,42 +57,10 @@ export const useResumeUpload = () => {
       const fileUrl = await uploadFile(file, `resume-${Date.now()}.${file.name.split('.').pop()}`);
       console.log('File uploaded successfully:', fileUrl);
       
-      // Step 2: Enhanced AI Processing with direct file upload
+      // Step 2: Enhanced AI Processing
       setProcessingStep(2);
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('fileName', file.name);
-      formData.append('fileType', file.type);
-      formData.append('extractionLevel', 'comprehensive');
-
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-resume-extraction', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        console.error('Resume extraction failed:', response.status, response.statusText);
-        let errorMessage = 'Failed to process resume';
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorMessage;
-        } catch (e) {
-          console.error('Could not parse error response as JSON:', e);
-          errorMessage = `Server error: ${response.status} ${response.statusText}`;
-        }
-        throw new Error(errorMessage);
-      }
-
-      let extractedContent;
-      try {
-        extractedContent = await response.json();
-      } catch (e) {
-        console.error('Could not parse response as JSON:', e);
-        throw new Error('Invalid response from server. Please try again.');
-      }
+      const processor = new EnhancedResumeProcessor();
+      const extractedContent = await processor.processResume(file);
       console.log('Enhanced content processed:', extractedContent);
       
       // Step 3: Advanced structure analysis (built into processor)
@@ -108,22 +75,32 @@ export const useResumeUpload = () => {
       setProcessingStep(5);
       console.log('Enhancement suggestions generated:', extractedContent.suggestions.length);
       
-      // Step 6: Save to normalized database tables
+      // Step 6: Create enhanced resume entry in database
       setProcessingStep(6);
-      await ResumeDataService.saveExtractedData(
-        user.id,
-        extractedContent as any,
-        extractedContent.atsOptimization?.score || 75,
-        file.name
-      );
+      const { data, error } = await supabase
+        .from('ai_resumes')
+        .insert({
+          user_id: user.id,
+          title: `Enhanced Resume from ${file.name}`,
+          content: extractedContent as any, // Convert to Json type
+          ats_score: extractedContent.atsOptimization.score || 75,
+          template_id: null
+        })
+        .select()
+        .single();
       
-      console.log('Resume data saved to normalized tables');
+      if (error) {
+        console.error('Database insert error:', error);
+        throw error;
+      }
+      
+      console.log('Resume created in database:', data);
       setUploadSuccess(true);
       toast.success('Resume processed successfully!');
       
-      // Navigate to editor after a short delay
+      // Navigate to edit mode after a short delay
       setTimeout(() => {
-        navigate('/resume-builder/editor');
+        navigate(`/resume-builder/edit/${data.id}`);
       }, 2000);
     } catch (error) {
       console.error('Error processing resume:', error);
