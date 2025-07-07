@@ -19,6 +19,7 @@ import ContactPersonForm from "@/components/jobs/ContactPersonForm";
 import JobVisibilityForm from "@/components/jobs/JobVisibilityForm";
 import SupportingDocumentsForm from "@/components/jobs/SupportingDocumentsForm";
 import AIJobGenerator from "@/components/jobs/AIJobGenerator";
+import AITestButton from "@/components/jobs/AITestButton";
 
 function JobPostContent() {
   const navigate = useNavigate();
@@ -515,6 +516,9 @@ function JobPostContent() {
             onClose={() => setShowAIGenerator(false)}
           />
         )}
+
+        {/* AI Test Button - Remove after testing */}
+        <AITestButton />
       </div>
     </div>
   );

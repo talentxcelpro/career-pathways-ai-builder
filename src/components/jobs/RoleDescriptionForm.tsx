@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, X, FileText, Brain, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import AIJobGeneratorButton from "./AIJobGeneratorButton";
 
 interface RoleDescriptionFormProps {
   formData: any;
