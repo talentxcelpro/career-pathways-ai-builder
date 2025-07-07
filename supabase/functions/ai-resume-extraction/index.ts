@@ -48,8 +48,30 @@ serve(async (req) => {
 
     console.log('Processing resume with advanced AI extraction:', fileName, 'Type:', fileType);
 
-    // Enhanced prompt with NLP-style instructions
+    // Enhanced prompt with NLP-style instructions and improved section detection
     const enhancedPrompt = `You are an expert resume parser with advanced NLP capabilities. Analyze this resume text with maximum accuracy using modern extraction techniques.
+
+CRITICAL PREPROCESSING RULES:
+1. IGNORE AND FILTER OUT any lines containing:
+   - "RESUME FILE ANALYSIS REQUEST"
+   - "File Name:", "File Type:", "File Size:", "Last Modified:"
+   - "EXTRACTED TEXT CONTENT:", "PROCESSING INSTRUCTIONS:"
+   - Page numbers, headers/footers like "CONFIDENTIAL"
+   - Any metadata artifacts or system-generated content
+
+2. FOCUS ONLY ON ACTUAL RESUME CONTENT
+
+ENHANCED SECTION DETECTION:
+Use this hybrid approach to identify sections:
+
+Primary Keywords (case-insensitive):
+- Work Experience: ["work experience", "work history", "employment", "professional experience", "career history"]
+- Education: ["education", "academic background", "academic", "schooling", "degrees"]
+- Skills: ["skills", "competencies", "technical skills", "core competencies", "proficiencies"]
+- Projects: ["projects", "portfolio", "personal projects", "key projects"]
+- Certifications: ["certifications", "licenses", "credentials", "professional certifications"]
+- Awards: ["awards", "honors", "achievements", "recognition"]
+- Summary: ["summary", "profile", "objective", "professional summary", "about"]
 
 EXTRACTION REQUIREMENTS:
 1. Use Named Entity Recognition (NER) principles to identify:
@@ -66,7 +88,11 @@ EXTRACTION REQUIREMENTS:
 
 3. Implement confidence scoring for each extracted field (0.0-1.0)
 
-4. Preserve original formatting and structure metadata
+4. REQUIRED FIELD VALIDATION - Flag if missing:
+   - Personal Info: name, email, phone (minimum required)
+   - Work Experience: at least one position with title, company, dates
+   - Education: at least one entry
+   - Skills: at least 3 technical or professional skills
 
 RETURN COMPREHENSIVE JSON:
 {
@@ -193,6 +219,7 @@ EXTRACTION RULES:
 - Detect industry-specific keywords and technologies
 - Assign confidence scores based on text clarity and context
 - Preserve formatting cues (bullets, indentation, sections)
+- MINIMUM LENGTH CHECK: If extracted content is too short, flag for manual review
 
 Resume text to analyze:
 ${text}
@@ -317,90 +344,186 @@ function calculateAdvancedATSScore(data: any): ATSOptimization {
   let readabilityScore = 0;
   const suggestions = [];
 
-  // Personal Info Score (25 points)
+  // Enhanced scoring weights
+  const SCORE_WEIGHTS = {
+    work_experience: 0.30,
+    education: 0.20,
+    skills: 0.15,
+    personal_info: 0.15,
+    projects: 0.10,
+    certifications: 0.05,
+    awards: 0.03,
+    volunteer: 0.02
+  };
+
+  // Required fields validation
+  const REQUIRED_FIELDS = {
+    personalInfo: ['fullName', 'email'],
+    experience: ['title', 'company', 'startDate'],
+    education: ['degree', 'school'],
+    skills: ['technical', 'soft']
+  };
+
+  let baseScore = 70; // Starting ATS score
+
+  // 1. Personal Info Score (Enhanced validation)
   const personalInfo = data.personalInfo || {};
   let personalScore = 0;
-  if (personalInfo.fullName) personalScore += 8;
-  if (personalInfo.email) personalScore += 6;
-  if (personalInfo.phone) personalScore += 6;
-  if (personalInfo.location) personalScore += 3;
-  if (personalInfo.summary && personalInfo.summary.length > 50) personalScore += 2;
   
-  if (personalScore < 20) {
+  if (personalInfo.fullName?.trim()) personalScore += 25;
+  if (personalInfo.email?.includes('@')) personalScore += 20;
+  if (personalInfo.phone?.replace(/\D/g, '').length >= 10) personalScore += 15;
+  if (personalInfo.location?.trim()) personalScore += 10;
+  if (personalInfo.summary?.length > 50) personalScore += 15;
+  if (personalInfo.linkedin?.includes('linkedin')) personalScore += 10;
+  if (personalInfo.website?.includes('http')) personalScore += 5;
+
+  // Check for missing required personal info
+  const missingPersonalFields = REQUIRED_FIELDS.personalInfo.filter(field => !personalInfo[field]?.trim());
+  if (missingPersonalFields.length > 0) {
     suggestions.push({
       category: 'content',
       priority: 'high',
-      issue: 'Incomplete contact information',
-      suggestion: 'Add missing contact details (phone, email, location)',
-      impact: 20 - personalScore
+      issue: `Missing required personal information: ${missingPersonalFields.join(', ')}`,
+      suggestion: 'Add all required contact details for ATS compatibility',
+      impact: 25
     });
   }
 
-  // Experience Score (35 points)
+  // 2. Experience Score (More detailed validation)
   const experience = data.experience || [];
   let experienceScore = 0;
-  if (experience.length > 0) {
-    experienceScore += 15;
-    const hasQuantifiedAchievements = experience.some(exp => 
-      exp.achievements && exp.achievements.some(ach => /\d+/.test(ach))
-    );
-    if (hasQuantifiedAchievements) experienceScore += 10;
+  
+  if (experience.length === 0) {
+    suggestions.push({
+      category: 'content',
+      priority: 'high',
+      issue: 'No work experience found',
+      suggestion: 'Add at least one work experience entry with job title, company, and dates',
+      impact: 40
+    });
+  } else {
+    experienceScore += Math.min(experience.length * 15, 60); // Up to 4 experiences
     
-    const hasTechnologies = experience.some(exp => exp.technologies && exp.technologies.length > 0);
-    if (hasTechnologies) experienceScore += 10;
+    // Check for quantified achievements
+    const hasQuantifiedAchievements = experience.some(exp => 
+      exp.achievements?.some(ach => /\d+(\.\d+)?%|\$\d+|\d+\+/.test(ach))
+    );
+    if (hasQuantifiedAchievements) experienceScore += 20;
+    
+    // Check for technology mentions
+    const hasTechnologies = experience.some(exp => exp.technologies?.length > 0);
+    if (hasTechnologies) experienceScore += 15;
+    
+    // Check for action verbs
+    const actionVerbs = ['managed', 'led', 'developed', 'created', 'implemented', 'improved', 'increased', 'reduced'];
+    const hasActionVerbs = experience.some(exp => 
+      actionVerbs.some(verb => exp.description?.toLowerCase().includes(verb))
+    );
+    if (hasActionVerbs) experienceScore += 10;
+    
+    // Validate required fields for each experience
+    experience.forEach((exp, index) => {
+      const missingFields = REQUIRED_FIELDS.experience.filter(field => !exp[field]);
+      if (missingFields.length > 0) {
+        suggestions.push({
+          category: 'structure',
+          priority: 'medium',
+          issue: `Experience ${index + 1} missing: ${missingFields.join(', ')}`,
+          suggestion: 'Complete all required fields for each work experience',
+          impact: 10
+        });
+      }
+    });
+  }
+
+  // 3. Skills Score (Enhanced validation)
+  const skills = data.skills || {};
+  let skillsScore = 0;
+  
+  const technicalSkillsCount = skills.technical ? 
+    Object.values(skills.technical).flat().filter(Boolean).length : 0;
+  const softSkillsCount = skills.soft?.length || 0;
+  const totalSkills = technicalSkillsCount + softSkillsCount;
+  
+  if (totalSkills >= 10) skillsScore += 30;
+  else if (totalSkills >= 5) skillsScore += 20;
+  else if (totalSkills >= 3) skillsScore += 10;
+  
+  if (skills.certifications?.length > 0) skillsScore += 10;
+  if (skills.languages?.length > 0) skillsScore += 5;
+  
+  if (totalSkills < 3) {
+    suggestions.push({
+      category: 'content',
+      priority: 'high',
+      issue: 'Insufficient skills listed',
+      suggestion: 'Add at least 5-10 relevant technical and soft skills',
+      impact: 20
+    });
+  }
+
+  // 4. Education Score
+  const education = data.education || [];
+  let educationScore = 0;
+  
+  if (education.length > 0) {
+    educationScore += 20;
+    if (education.some(edu => edu.gpa)) educationScore += 5;
+    if (education.some(edu => edu.honors)) educationScore += 5;
   } else {
     suggestions.push({
       category: 'content',
-      priority: 'high',
-      issue: 'No work experience listed',
-      suggestion: 'Add detailed work experience with quantified achievements',
-      impact: 35
+      priority: 'medium',
+      issue: 'No education information found',
+      suggestion: 'Add at least one education entry',
+      impact: 15
     });
   }
 
-  // Skills Score (20 points)
-  const skills = data.skills || {};
-  let skillsScore = 0;
-  if (skills.technical && Object.keys(skills.technical).length > 0) skillsScore += 12;
-  if (skills.soft && skills.soft.length > 0) skillsScore += 4;
-  if (skills.certifications && skills.certifications.length > 0) skillsScore += 4;
-
-  // Education Score (10 points)
-  const education = data.education || [];
-  let educationScore = education.length > 0 ? 10 : 0;
-
-  // Additional Sections Score (10 points)
+  // 5. Additional Sections Score
   let additionalScore = 0;
-  if (data.projects && data.projects.length > 0) additionalScore += 4;
-  if (data.certifications && data.certifications.length > 0) additionalScore += 3;
-  if (data.awards && data.awards.length > 0) additionalScore += 2;
-  if (data.volunteer && data.volunteer.length > 0) additionalScore += 1;
+  if (data.projects?.length > 0) additionalScore += 15;
+  if (data.certifications?.length > 0) additionalScore += 10;
+  if (data.awards?.length > 0) additionalScore += 5;
+  if (data.volunteer?.length > 0) additionalScore += 5;
 
-  score = personalScore + experienceScore + skillsScore + educationScore + additionalScore;
-  sectionCompleteness = (score / 100) * 100;
+  // Calculate final scores
+  score = Math.min(baseScore + (personalScore * 0.15) + (experienceScore * 0.30) + 
+                   (skillsScore * 0.15) + (educationScore * 0.20) + (additionalScore * 0.20), 100);
 
-  // Calculate keyword density
+  sectionCompleteness = Math.round((score / 100) * 100);
+
+  // Enhanced keyword density calculation
   const allText = JSON.stringify(data).toLowerCase();
-  const commonKeywords = [
+  const industryKeywords = [
+    // Action verbs
     'managed', 'developed', 'implemented', 'led', 'created', 'improved',
-    'increased', 'reduced', 'optimized', 'collaborated', 'designed'
+    'increased', 'reduced', 'optimized', 'collaborated', 'designed',
+    // Technical terms
+    'project', 'team', 'client', 'customer', 'analysis', 'strategy',
+    'solution', 'process', 'system', 'technology', 'business', 'data'
   ];
   
-  const keywordCount = commonKeywords.filter(keyword => allText.includes(keyword)).length;
-  keywordDensity = (keywordCount / commonKeywords.length) * 100;
+  const keywordCount = industryKeywords.filter(keyword => allText.includes(keyword)).length;
+  keywordDensity = Math.round((keywordCount / industryKeywords.length) * 100);
 
-  // Calculate readability score
-  const summaryLength = personalInfo.summary ? personalInfo.summary.length : 0;
+  // Enhanced readability calculation
+  const summaryLength = personalInfo.summary?.length || 0;
   const avgDescriptionLength = experience.length > 0 
-    ? experience.reduce((sum, exp) => sum + (exp.description ? exp.description.length : 0), 0) / experience.length
+    ? experience.reduce((sum, exp) => sum + (exp.description?.length || 0), 0) / experience.length
     : 0;
   
-  readabilityScore = Math.min(100, (summaryLength / 200) * 50 + (avgDescriptionLength / 300) * 50);
+  readabilityScore = Math.min(100, 
+    (summaryLength > 100 ? 30 : summaryLength * 0.3) +
+    (avgDescriptionLength > 200 ? 40 : avgDescriptionLength * 0.2) +
+    (experience.length * 10) // Bonus for multiple experiences
+  );
 
   return {
     score: Math.round(score),
-    keywordDensity: Math.round(keywordDensity),
-    sectionCompleteness: Math.round(sectionCompleteness),
+    keywordDensity,
+    sectionCompleteness,
     readabilityScore: Math.round(readabilityScore),
     suggestions
   };
