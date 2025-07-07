@@ -1,13 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Briefcase, Eye, FileText, Sparkles } from "lucide-react";
+import { ArrowLeft, Briefcase, Eye, FileText, Sparkles, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 import JobOverviewForm from "@/components/jobs/JobOverviewForm";
 import RoleDescriptionForm from "@/components/jobs/RoleDescriptionForm";
@@ -20,6 +21,7 @@ import SupportingDocumentsForm from "@/components/jobs/SupportingDocumentsForm";
 
 function JobPostContent() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     // Company Information
     company_id: '',
@@ -126,6 +128,35 @@ function JobPostContent() {
     }
   });
 
+  // Auto-save functionality
+  const autoSaveFunction = async (data: any) => {
+    if (!data.job_title?.trim()) return; // Don't save empty forms
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !userCompany?.company_id) return;
+
+    const saveData = {
+      ...data,
+      posted_by: user.id,
+      company_id: userCompany.company_id,
+      visibility_status: 'draft',
+      is_active: false
+    };
+
+    const { error } = await supabase
+      .from('jobs')
+      .upsert(saveData, { onConflict: 'id' });
+
+    if (error) throw error;
+  };
+
+  const { triggerSave, isSaving } = useAutoSave({
+    data: formData,
+    saveFunction: autoSaveFunction,
+    delay: 3000,
+    enabled: !!userCompany?.company_id && !!formData.job_title?.trim()
+  });
+
   // Post job mutation
   const postJobMutation = useMutation({
     mutationFn: async (jobData: any) => {
@@ -139,6 +170,7 @@ function JobPostContent() {
         ...jobData,
         posted_by: user.id,
         company_id: userCompany?.company_id || null,
+        is_active: jobData.visibility_status === 'active',
         // Convert string numbers to integers
         min_salary: jobData.min_salary || null,
         max_salary: jobData.max_salary || null,
@@ -161,18 +193,25 @@ function JobPostContent() {
         benefits: jobData.benefits || []
       };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('jobs')
-        .insert(insertData);
+        .insert(insertData)
+        .select();
 
       if (error) {
         console.error('Job posting error:', error);
         throw error;
       }
+
+      return data;
     },
     onSuccess: () => {
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['employer-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      
       toast.success('Job posted successfully!');
-      navigate('/jobs');
+      navigate('/employer');
     },
     onError: (error: any) => {
       console.error('Job posting failed:', error);
@@ -256,9 +295,17 @@ function JobPostContent() {
             Back to Jobs
           </Button>
           
-          <div className="flex items-center space-x-3 mb-2">
-            <Briefcase className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">Post a New Job</h1>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-3">
+              <Briefcase className="h-8 w-8 text-primary" />
+              <h1 className="text-3xl font-bold">Post a New Job</h1>
+            </div>
+            {isSaving && (
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Save className="h-4 w-4 mr-1 animate-pulse" />
+                Auto-saving...
+              </div>
+            )}
           </div>
           <p className="text-muted-foreground">Fill in the job details below to find top candidates via AI-powered TalentXcel.</p>
         </div>

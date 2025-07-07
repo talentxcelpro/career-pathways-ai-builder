@@ -27,7 +27,7 @@ export const useAutoSave = ({ data, saveFunction, delay = 2000, enabled = true }
       lastSavedDataRef.current = currentDataString;
       
       // Show subtle save confirmation
-      toast.success('Resume auto-saved', {
+      toast.success('Draft auto-saved', {
         duration: 1500,
         position: 'bottom-right',
       });
