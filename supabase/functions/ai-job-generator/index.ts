@@ -15,6 +15,17 @@ serve(async (req) => {
   }
 
   try {
+    if (!openAIApiKey) {
+      console.error('OpenAI API key is not configured');
+      return new Response(JSON.stringify({ error: 'OpenAI API key is not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const requestBody = await req.json();
+    console.log('Received request body:', requestBody);
+    
     const { 
       type, 
       job_title, 
@@ -26,7 +37,24 @@ serve(async (req) => {
       required_skills = [], 
       company_name = '',
       existing_content = ''
-    } = await req.json();
+    } = requestBody;
+
+    // Validate required fields
+    if (!job_title || !job_title.trim()) {
+      console.error('Job title is missing or empty');
+      return new Response(JSON.stringify({ error: 'Job title is required for AI generation' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!type) {
+      console.error('Type is missing');
+      return new Response(JSON.stringify({ error: 'Content type is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     let prompt = '';
     

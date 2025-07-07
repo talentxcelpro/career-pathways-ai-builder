@@ -42,6 +42,17 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
 
     setIsGenerating(type);
     try {
+      console.log('Generating AI content for:', type, 'with formData:', {
+        job_title: formData.job_title,
+        industry_domain: formData.industry_domain,
+        employment_type: formData.employment_type,
+        work_mode: formData.work_mode,
+        location_city: formData.location_city,
+        experience_level: formData.experience_level,
+        required_skills: formData.required_skills,
+        company_name: formData.company_name
+      });
+
       const { data, error } = await supabase.functions.invoke('ai-job-generator', {
         body: {
           type: isRegenerate ? 'regenerate' : type,
@@ -57,20 +68,32 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
         }
       });
 
+      console.log('Supabase function response:', { data, error });
+
       if (error) {
         console.error('Supabase function error:', error);
-        throw error;
+        throw new Error(error.message || 'Failed to generate content');
       }
 
       if (!data?.content) {
-        throw new Error('No content received from AI');
+        throw new Error('No content received from AI service');
       }
 
       onInputChange(type, data.content);
       toast.success(`AI-generated ${type.replace('_', ' ')} created successfully!`);
     } catch (error) {
       console.error('AI generation error:', error);
-      toast.error('Failed to generate content. Please ensure you have a job title and try again.');
+      
+      // Provide more specific error messages
+      if (error.message?.includes('API key')) {
+        toast.error('AI service is not properly configured. Please contact support.');
+      } else if (error.message?.includes('Job title is required')) {
+        toast.error('Please enter a job title to use AI generation.');
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        toast.error('Network error. Please check your connection and try again.');
+      } else {
+        toast.error(error.message || 'Failed to generate content. Please try again.');
+      }
     } finally {
       setIsGenerating(null);
     }
