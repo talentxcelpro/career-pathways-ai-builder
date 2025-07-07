@@ -18,10 +18,12 @@ import CompanyInformationForm from "@/components/jobs/CompanyInformationForm";
 import ContactPersonForm from "@/components/jobs/ContactPersonForm";
 import JobVisibilityForm from "@/components/jobs/JobVisibilityForm";
 import SupportingDocumentsForm from "@/components/jobs/SupportingDocumentsForm";
+import AIJobGenerator from "@/components/jobs/AIJobGenerator";
 
 function JobPostContent() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [formData, setFormData] = useState({
     // Company Information
     company_id: '',
@@ -135,12 +137,45 @@ function JobPostContent() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user || !userCompany?.company_id) return;
 
+    // Map form data to database format for auto-save
     const saveData = {
-      ...data,
+      title: data.job_title,
+      description: data.job_description || data.job_summary,
+      job_title: data.job_title,
+      company_name: data.company_name,
+      job_summary: data.job_summary,
+      job_description: data.job_description,
+      location_city: data.location_city,
+      location_state: data.location_state,
+      employment_type: data.employment_type,
+      work_mode: data.work_mode,
+      work_schedule: data.work_schedule,
+      experience_level: data.experience_level,
       posted_by: user.id,
       company_id: userCompany.company_id,
       visibility_status: 'draft',
-      is_active: false
+      is_active: false,
+      // Handle arrays properly
+      key_responsibilities: data.key_responsibilities || [],
+      must_have_requirements: data.must_have_requirements || [],
+      preferred_requirements: data.preferred_requirements || [],
+      skills_required: data.required_skills || [],
+      // Contact info
+      contact_name: data.contact_name,
+      contact_designation: data.contact_designation,
+      contact_person_email: data.contact_email,
+      contact_person_phone: data.contact_phone,
+      // Company info
+      company_website: data.company_website,
+      industry_domain: data.industry_domain,
+      company_size: data.company_size,
+      // Salary
+      salary_min: data.min_salary || null,
+      salary_max: data.max_salary || null,
+      // Benefits
+      benefits: data.benefits || [],
+      // Application deadline
+      application_deadline: data.application_deadline ? new Date(data.application_deadline).toISOString().split('T')[0] : null
     };
 
     const { error } = await supabase
@@ -271,14 +306,34 @@ function JobPostContent() {
     };
     
     if (!isDraft) {
-      // Validation for publishing
-      if (!formData.job_title.trim() || !formData.job_summary.trim()) {
-        toast.error('Please fill in all required fields (job title and job summary)');
+      // Enhanced validation for publishing
+      if (!formData.job_title?.trim()) {
+        toast.error('Job title is required');
         return;
       }
 
-      if (formData.required_skills.length === 0) {
-        toast.error('Please add at least one required skill');
+      if (!formData.job_summary?.trim()) {
+        toast.error('Job summary is required');
+        return;
+      }
+
+      if (!formData.employment_type) {
+        toast.error('Please select an employment type');
+        return;
+      }
+
+      if (!formData.experience_level) {
+        toast.error('Please select an experience level');
+        return;
+      }
+
+      if (!formData.location_city?.trim()) {
+        toast.error('City location is required');
+        return;
+      }
+
+      if (!formData.work_mode) {
+        toast.error('Please select a work mode');
         return;
       }
 
@@ -288,7 +343,7 @@ function JobPostContent() {
       }
     } else {
       // Minimal validation for draft
-      if (!formData.job_title.trim()) {
+      if (!formData.job_title?.trim()) {
         toast.error('Please add a job title to save as draft');
         return;
       }
@@ -318,7 +373,12 @@ function JobPostContent() {
   };
 
   const handleGenerateAI = () => {
-    navigate('/jobs/post/ai');
+    setShowAIGenerator(true);
+  };
+
+  const handleAIDataGenerated = (aiData: any) => {
+    setFormData(aiData);
+    setShowAIGenerator(false);
   };
 
   return (
@@ -446,6 +506,15 @@ function JobPostContent() {
             </CardContent>
           </Card>
         </form>
+
+        {/* AI Job Generator Modal */}
+        {showAIGenerator && (
+          <AIJobGenerator
+            formData={formData}
+            onDataGenerated={handleAIDataGenerated}
+            onClose={() => setShowAIGenerator(false)}
+          />
+        )}
       </div>
     </div>
   );

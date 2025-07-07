@@ -58,10 +58,10 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
           type: isRegenerate ? 'regenerate' : type,
           job_title: formData.job_title,
           industry_domain: formData.industry_domain || 'Technology',
-          employment_type: formData.employment_type || 'Full-Time',
+          employment_type: formData.employment_type || 'full-time',
           work_mode: formData.work_mode || 'On-site',
           location_city: formData.location_city || 'Remote',
-          experience_level: formData.experience_level || '2-5 Years',
+          experience_level: formData.experience_level || 'mid-level',
           required_skills: formData.required_skills || [],
           company_name: formData.company_name || 'Our Company',
           existing_content: isRegenerate ? formData[type] : ''

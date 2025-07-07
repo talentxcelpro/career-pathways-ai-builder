@@ -71,6 +71,7 @@ export const useAutoSave = ({ data, saveFunction, delay = 2000, enabled = true }
 
   return {
     triggerSave: debouncedSave,
-    isSaving: isSavingRef.current
+    isSaving: isSavingRef.current,
+    lastSavedData: lastSavedDataRef.current
   };
 };
