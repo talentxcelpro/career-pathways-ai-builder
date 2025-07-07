@@ -33,6 +33,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { TeamAccessInstructions } from "@/components/employer/TeamAccessInstructions";
 
 interface TeamMember {
   id: string;
@@ -357,6 +358,9 @@ const EmployerTeam = () => {
           </div>
         )}
       </div>
+
+      {/* Team Access Instructions */}
+      <TeamAccessInstructions />
 
       {/* Team Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

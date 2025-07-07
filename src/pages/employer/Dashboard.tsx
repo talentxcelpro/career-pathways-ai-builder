@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
+import { CRMWidget } from "@/components/employer/CRMWidget";
 
 function DashboardContent() {
   const navigate = useNavigate();
@@ -167,8 +168,11 @@ function DashboardContent() {
         </CardContent>
       </Card>
 
+      {/* Mini CRM Section */}
+      <CRMWidget />
+
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/jobs/manage')}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -176,6 +180,16 @@ function DashboardContent() {
               Manage Jobs
             </CardTitle>
             <CardDescription>View and edit your job postings</CardDescription>
+          </CardHeader>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/employer/crm/candidates')}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-purple-600" />
+              CRM
+            </CardTitle>
+            <CardDescription>Manage candidate relationships</CardDescription>
           </CardHeader>
         </Card>
 

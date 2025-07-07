@@ -109,39 +109,77 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Auto-fill from Smart Template */}
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 className="font-semibold text-blue-900 mb-2">Smart Template Assistant</h4>
+          <p className="text-sm text-blue-700 mb-3">
+            Fill in basic details and we'll generate comprehensive job descriptions using AI
+          </p>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => generateAIContent('job_summary')}
+              disabled={isGenerating === 'job_summary' || !formData.job_title}
+              className="text-xs"
+            >
+              {isGenerating === 'job_summary' ? (
+                <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+              ) : (
+                <Brain className="h-3 w-3 mr-1" />
+              )}
+              Auto-Fill Job Summary
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => generateAIContent('job_description')}
+              disabled={isGenerating === 'job_description' || !formData.job_title}
+              className="text-xs"
+            >
+              {isGenerating === 'job_description' ? (
+                <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+              ) : (
+                <Brain className="h-3 w-3 mr-1" />
+              )}
+              Auto-Fill Description
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => generateAIContent('key_responsibilities')}
+              disabled={isGenerating === 'key_responsibilities' || !formData.job_title}
+              className="text-xs"
+            >
+              {isGenerating === 'key_responsibilities' ? (
+                <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+              ) : (
+                <Brain className="h-3 w-3 mr-1" />
+              )}
+              Auto-Fill Responsibilities
+            </Button>
+          </div>
+        </div>
+
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="job_summary">Job Summary *</Label>
-            <div className="flex gap-2">
+            {formData.job_summary && (
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => generateAIContent('job_summary')}
-                disabled={isGenerating === 'job_summary' || !formData.job_title}
+                onClick={() => generateAIContent('job_summary', true)}
+                disabled={isGenerating === 'job_summary'}
                 className="text-xs"
               >
-                {isGenerating === 'job_summary' ? (
-                  <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
-                ) : (
-                  <Brain className="h-3 w-3 mr-1" />
-                )}
-                Generate with AI
+                <RefreshCw className="h-3 w-3 mr-1" />
+                Regenerate
               </Button>
-              {formData.job_summary && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => generateAIContent('job_summary', true)}
-                  disabled={isGenerating === 'job_summary'}
-                  className="text-xs"
-                >
-                  <RefreshCw className="h-3 w-3 mr-1" />
-                  Regenerate
-                </Button>
-              )}
-            </div>
+            )}
           </div>
           <Textarea
             id="job_summary"
