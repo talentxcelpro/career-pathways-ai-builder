@@ -100,7 +100,7 @@ export class ResumeDataService {
         const { error: profileError } = await supabase
           .from('users_profile')
           .upsert({
-            user_id: userId,
+            id: userId,
             full_name: data.personal_information.full_name,
             email: data.personal_information.email,
             phone: data.personal_information.phone,

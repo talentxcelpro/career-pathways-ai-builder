@@ -361,33 +361,30 @@ export type Database = {
       }
       awards: {
         Row: {
-          award_name: string
+          award_date: string | null
+          award_description: string | null
+          award_title: string | null
           created_at: string | null
-          date_received: string | null
-          description: string | null
           id: string
-          issuing_organization: string
-          updated_at: string | null
+          issued_by: string | null
           user_id: string
         }
         Insert: {
-          award_name: string
+          award_date?: string | null
+          award_description?: string | null
+          award_title?: string | null
           created_at?: string | null
-          date_received?: string | null
-          description?: string | null
           id?: string
-          issuing_organization: string
-          updated_at?: string | null
+          issued_by?: string | null
           user_id: string
         }
         Update: {
-          award_name?: string
+          award_date?: string | null
+          award_description?: string | null
+          award_title?: string | null
           created_at?: string | null
-          date_received?: string | null
-          description?: string | null
           id?: string
-          issuing_organization?: string
-          updated_at?: string | null
+          issued_by?: string | null
           user_id?: string
         }
         Relationships: []
@@ -693,39 +690,30 @@ export type Database = {
       }
       certifications: {
         Row: {
-          certification_name: string
+          certificate_name: string | null
+          certificate_url: string | null
           created_at: string | null
-          credential_id: string | null
-          credential_url: string | null
-          expiry_date: string | null
+          date_earned: string | null
           id: string
-          issue_date: string | null
-          issuing_organization: string
-          updated_at: string | null
+          issuer: string | null
           user_id: string
         }
         Insert: {
-          certification_name: string
+          certificate_name?: string | null
+          certificate_url?: string | null
           created_at?: string | null
-          credential_id?: string | null
-          credential_url?: string | null
-          expiry_date?: string | null
+          date_earned?: string | null
           id?: string
-          issue_date?: string | null
-          issuing_organization: string
-          updated_at?: string | null
+          issuer?: string | null
           user_id: string
         }
         Update: {
-          certification_name?: string
+          certificate_name?: string | null
+          certificate_url?: string | null
           created_at?: string | null
-          credential_id?: string | null
-          credential_url?: string | null
-          expiry_date?: string | null
+          date_earned?: string | null
           id?: string
-          issue_date?: string | null
-          issuing_organization?: string
-          updated_at?: string | null
+          issuer?: string | null
           user_id?: string
         }
         Relationships: []
@@ -1569,47 +1557,62 @@ export type Database = {
         }
         Relationships: []
       }
-      education: {
+      custom_sections: {
         Row: {
+          content: string | null
           created_at: string | null
-          degree: string
-          end_date: string | null
-          gpa: string | null
-          honors: string | null
           id: string
-          institution: string
-          location: string | null
-          relevant_coursework: string[] | null
-          start_date: string | null
-          updated_at: string | null
+          section_title: string | null
           user_id: string
         }
         Insert: {
+          content?: string | null
           created_at?: string | null
-          degree: string
-          end_date?: string | null
-          gpa?: string | null
-          honors?: string | null
           id?: string
-          institution: string
-          location?: string | null
-          relevant_coursework?: string[] | null
-          start_date?: string | null
-          updated_at?: string | null
+          section_title?: string | null
           user_id: string
         }
         Update: {
+          content?: string | null
           created_at?: string | null
-          degree?: string
-          end_date?: string | null
-          gpa?: string | null
-          honors?: string | null
           id?: string
-          institution?: string
-          location?: string | null
+          section_title?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      education: {
+        Row: {
+          academic_projects: string[] | null
+          created_at: string | null
+          degree: string | null
+          gpa_honors: string | null
+          graduation_date: string | null
+          id: string
+          institution: string | null
+          relevant_coursework: string[] | null
+          user_id: string
+        }
+        Insert: {
+          academic_projects?: string[] | null
+          created_at?: string | null
+          degree?: string | null
+          gpa_honors?: string | null
+          graduation_date?: string | null
+          id?: string
+          institution?: string | null
           relevant_coursework?: string[] | null
-          start_date?: string | null
-          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          academic_projects?: string[] | null
+          created_at?: string | null
+          degree?: string | null
+          gpa_honors?: string | null
+          graduation_date?: string | null
+          id?: string
+          institution?: string | null
+          relevant_coursework?: string[] | null
           user_id?: string
         }
         Relationships: []
@@ -2007,22 +2010,19 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          interest_list: string[] | null
-          updated_at: string | null
+          interest_items: string[] | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
           id?: string
-          interest_list?: string[] | null
-          updated_at?: string | null
+          interest_items?: string[] | null
           user_id: string
         }
         Update: {
           created_at?: string | null
           id?: string
-          interest_list?: string[] | null
-          updated_at?: string | null
+          interest_items?: string[] | null
           user_id?: string
         }
         Relationships: []
@@ -3649,43 +3649,28 @@ export type Database = {
         Row: {
           created_at: string | null
           description: string | null
-          end_date: string | null
-          github_url: string | null
+          github_link: string | null
           id: string
-          key_achievements: string[] | null
-          project_name: string
-          project_url: string | null
-          start_date: string | null
+          project_title: string | null
           technologies_used: string[] | null
-          updated_at: string | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
           description?: string | null
-          end_date?: string | null
-          github_url?: string | null
+          github_link?: string | null
           id?: string
-          key_achievements?: string[] | null
-          project_name: string
-          project_url?: string | null
-          start_date?: string | null
+          project_title?: string | null
           technologies_used?: string[] | null
-          updated_at?: string | null
           user_id: string
         }
         Update: {
           created_at?: string | null
           description?: string | null
-          end_date?: string | null
-          github_url?: string | null
+          github_link?: string | null
           id?: string
-          key_achievements?: string[] | null
-          project_name?: string
-          project_url?: string | null
-          start_date?: string | null
+          project_title?: string | null
           technologies_used?: string[] | null
-          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -3693,74 +3678,56 @@ export type Database = {
       publications: {
         Row: {
           created_at: string | null
-          description: string | null
           id: string
+          link: string | null
           publication_date: string | null
-          publisher: string | null
-          title: string
-          updated_at: string | null
-          url: string | null
+          publication_source: string | null
+          title: string | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
-          description?: string | null
           id?: string
+          link?: string | null
           publication_date?: string | null
-          publisher?: string | null
-          title: string
-          updated_at?: string | null
-          url?: string | null
+          publication_source?: string | null
+          title?: string | null
           user_id: string
         }
         Update: {
           created_at?: string | null
-          description?: string | null
           id?: string
+          link?: string | null
           publication_date?: string | null
-          publisher?: string | null
-          title?: string
-          updated_at?: string | null
-          url?: string | null
+          publication_source?: string | null
+          title?: string | null
           user_id?: string
         }
         Relationships: []
       }
-      references: {
+      references_info: {
         Row: {
-          company: string | null
+          contact_info: string | null
           created_at: string | null
-          email: string | null
           id: string
-          phone: string | null
-          reference_name: string
-          relationship: string | null
+          reference_name: string | null
           title: string | null
-          updated_at: string | null
           user_id: string
         }
         Insert: {
-          company?: string | null
+          contact_info?: string | null
           created_at?: string | null
-          email?: string | null
           id?: string
-          phone?: string | null
-          reference_name: string
-          relationship?: string | null
+          reference_name?: string | null
           title?: string | null
-          updated_at?: string | null
           user_id: string
         }
         Update: {
-          company?: string | null
+          contact_info?: string | null
           created_at?: string | null
-          email?: string | null
           id?: string
-          phone?: string | null
-          reference_name?: string
-          relationship?: string | null
+          reference_name?: string | null
           title?: string | null
-          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -5095,7 +5062,6 @@ export type Database = {
           soft_skills: string[] | null
           technical_skills: string[] | null
           tools_software: string[] | null
-          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -5106,7 +5072,6 @@ export type Database = {
           soft_skills?: string[] | null
           technical_skills?: string[] | null
           tools_software?: string[] | null
-          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -5117,7 +5082,6 @@ export type Database = {
           soft_skills?: string[] | null
           technical_skills?: string[] | null
           tools_software?: string[] | null
-          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -5904,19 +5868,17 @@ export type Database = {
           phone: string | null
           professional_summary: string | null
           updated_at: string | null
-          user_id: string
         }
         Insert: {
           created_at?: string | null
           email?: string | null
           full_name?: string | null
-          id?: string
+          id: string
           linkedin_url?: string | null
           location?: string | null
           phone?: string | null
           professional_summary?: string | null
           updated_at?: string | null
-          user_id: string
         }
         Update: {
           created_at?: string | null
@@ -5928,7 +5890,6 @@ export type Database = {
           phone?: string | null
           professional_summary?: string | null
           updated_at?: string | null
-          user_id?: string
         }
         Relationships: []
       }
@@ -5938,10 +5899,9 @@ export type Database = {
           description: string | null
           end_date: string | null
           id: string
-          organization: string
-          role: string
+          organization: string | null
+          role: string | null
           start_date: string | null
-          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -5949,10 +5909,9 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           id?: string
-          organization: string
-          role: string
+          organization?: string | null
+          role?: string | null
           start_date?: string | null
-          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -5960,55 +5919,51 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           id?: string
-          organization?: string
-          role?: string
+          organization?: string | null
+          role?: string | null
           start_date?: string | null
-          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
       }
       work_experience: {
         Row: {
-          company_name: string
+          company_name: string | null
           created_at: string | null
           end_date: string | null
           id: string
-          job_title: string
+          job_title: string | null
           key_achievements: string[] | null
           location: string | null
           responsibilities: string[] | null
           start_date: string | null
           technologies_used: string[] | null
-          updated_at: string | null
           user_id: string
         }
         Insert: {
-          company_name: string
+          company_name?: string | null
           created_at?: string | null
           end_date?: string | null
           id?: string
-          job_title: string
+          job_title?: string | null
           key_achievements?: string[] | null
           location?: string | null
           responsibilities?: string[] | null
           start_date?: string | null
           technologies_used?: string[] | null
-          updated_at?: string | null
           user_id: string
         }
         Update: {
-          company_name?: string
+          company_name?: string | null
           created_at?: string | null
           end_date?: string | null
           id?: string
-          job_title?: string
+          job_title?: string | null
           key_achievements?: string[] | null
           location?: string | null
           responsibilities?: string[] | null
           start_date?: string | null
           technologies_used?: string[] | null
-          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
