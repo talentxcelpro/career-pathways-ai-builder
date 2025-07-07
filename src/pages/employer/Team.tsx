@@ -27,7 +27,8 @@ import {
   CheckCircle,
   XCircle,
   Copy,
-  Send
+  Send,
+  Building2
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -74,27 +75,46 @@ const EmployerTeam = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
 
   // Fetch team data with optimized queries
-  const { data: teamData, isLoading } = useQuery({
+  const { data: teamData, isLoading, error: teamError } = useQuery({
     queryKey: ['company-team'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Single optimized query to get user's company and role
-      const { data: userTeamMember } = await supabase
-        .from('company_team_members')
-        .select('company_id, role')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
+      // First check if user has a company as owner
+      const { data: ownedCompany } = await supabase
+        .from('company_profiles')
+        .select('company_id')
+        .eq('owner_id', user.id)
         .maybeSingle();
 
-      if (!userTeamMember) {
-        // Return empty state instead of throwing error
+      let companyId = ownedCompany?.company_id;
+      let userRole = ownedCompany ? 'owner' : null;
+
+      // If not an owner, check if they're a team member
+      if (!companyId) {
+        const { data: userTeamMember } = await supabase
+          .from('company_team_members')
+          .select('company_id, role')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .maybeSingle();
+
+        if (userTeamMember) {
+          companyId = userTeamMember.company_id;
+          userRole = userTeamMember.role;
+        }
+      }
+
+      if (!companyId) {
+        // Check if user needs to create a company first
+        console.log('No company found for user, they may need to create one');
         return {
           companyId: null,
           userRole: null,
           members: [],
-          invitations: []
+          invitations: [],
+          needsCompanySetup: true
         };
       }
 
@@ -104,7 +124,7 @@ const EmployerTeam = () => {
         supabase
           .from('company_team_members')
           .select('*')
-          .eq('company_id', userTeamMember.company_id)
+          .eq('company_id', companyId)
           .eq('is_active', true)
           .order('joined_at', { ascending: false }),
         
@@ -112,7 +132,7 @@ const EmployerTeam = () => {
         supabase
           .from('team_invitations')
           .select('*')
-          .eq('company_id', userTeamMember.company_id)
+          .eq('company_id', companyId)
           .order('invited_at', { ascending: false })
       ]);
 
@@ -147,8 +167,8 @@ const EmployerTeam = () => {
       }));
 
       return {
-        companyId: userTeamMember.company_id,
-        userRole: userTeamMember.role,
+        companyId: companyId,
+        userRole: userRole,
         members: membersWithProfiles,
         invitations: invitationsResult.data || []
       };
@@ -351,6 +371,62 @@ const EmployerTeam = () => {
           <div className="h-32 bg-gray-200 rounded"></div>
           <div className="h-64 bg-gray-200 rounded"></div>
         </div>
+      </div>
+    );
+  }
+
+  // Show company setup prompt if needed
+  if (teamData?.needsCompanySetup) {
+    return (
+      <div className="p-6 max-w-6xl mx-auto space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" onClick={() => navigate('/employer')}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <Users className="h-8 w-8 text-blue-600" />
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Team Management</h1>
+              <p className="text-gray-600">First, let's set up your company profile</p>
+            </div>
+          </div>
+        </div>
+
+        <Card className="border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-orange-800">
+              <div className="p-2 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-lg">
+                <Building2 className="h-5 w-5 text-white" />
+              </div>
+              Company Setup Required
+            </CardTitle>
+            <CardDescription className="text-orange-700">
+              To manage your team, you need to set up your company profile first
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-orange-700">
+              Create your company profile to start inviting team members and managing job applications.
+            </p>
+            <div className="flex gap-3">
+              <Button 
+                onClick={() => navigate('/employer/profile')}
+                className="bg-orange-600 hover:bg-orange-700"
+              >
+                <Building2 className="h-4 w-4 mr-2" />
+                Set Up Company Profile
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => navigate('/employer/request-access')}
+                className="border-orange-200 text-orange-700 hover:bg-orange-50"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Request Access to Existing Company
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

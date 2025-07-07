@@ -19,16 +19,41 @@ export const CRMWidget = () => {
       if (!user) return null;
 
       try {
-        // Get stats for jobs posted by this user
+        // First check if user owns a company
+        const { data: ownedCompany } = await supabase
+          .from('company_profiles')
+          .select('company_id')
+          .eq('owner_id', user.id)
+          .maybeSingle();
+
+        let companyId = ownedCompany?.company_id;
+
+        // If not owner, check if they're a team member
+        if (!companyId) {
+          const { data: userTeamMember } = await supabase
+            .from('company_team_members')
+            .select('company_id')
+            .eq('user_id', user.id)
+            .eq('is_active', true)
+            .maybeSingle();
+
+          companyId = userTeamMember?.company_id;
+        }
+
+        if (!companyId) {
+          return { newApplications: 0, inReview: 0, shortlisted: 0 };
+        }
+
+        // Get stats for company jobs
         const { data: stats } = await supabase
           .from('job_applications')
           .select(`
             status,
             jobs!inner (
-              posted_by
+              company_id
             )
           `)
-          .eq('jobs.posted_by', user.id);
+          .eq('jobs.company_id', companyId);
 
         if (!stats) return { newApplications: 0, inReview: 0, shortlisted: 0 };
 
@@ -49,7 +74,9 @@ export const CRMWidget = () => {
         console.error('Error fetching pipeline stats:', error);
         return { newApplications: 0, inReview: 0, shortlisted: 0 };
       }
-    }
+    },
+    staleTime: 30000,
+    refetchOnWindowFocus: false
   });
   
   // Fetch recent applications for CRM
@@ -60,44 +87,34 @@ export const CRMWidget = () => {
       if (!user) return [];
 
       try {
-        // First try to get applications for jobs posted by this user directly
-        const { data: directApplications } = await supabase
-          .from('job_applications')
-          .select(`
-            id,
-            status,
-            applied_at,
-            user_id,
-            job_id,
-            jobs (
-              title,
-              posted_by
-            ),
-            profiles (
-              full_name,
-              email,
-              profile_picture_url
-            )
-          `)
-          .eq('jobs.posted_by', user.id)
-          .order('applied_at', { ascending: false })
-          .limit(5);
-
-        if (directApplications && directApplications.length > 0) {
-          return directApplications;
-        }
-
-        // If no direct applications, try to get applications for company jobs
-        const { data: userTeamMember } = await supabase
-          .from('company_team_members')
+        // First check if user owns a company
+        const { data: ownedCompany } = await supabase
+          .from('company_profiles')
           .select('company_id')
-          .eq('user_id', user.id)
-          .eq('is_active', true)
+          .eq('owner_id', user.id)
           .maybeSingle();
 
-        if (!userTeamMember) return [];
+        let companyId = ownedCompany?.company_id;
 
-        const { data: companyApplications } = await supabase
+        // If not owner, check if they're a team member
+        if (!companyId) {
+          const { data: userTeamMember } = await supabase
+            .from('company_team_members')
+            .select('company_id')
+            .eq('user_id', user.id)
+            .eq('is_active', true)
+            .maybeSingle();
+
+          companyId = userTeamMember?.company_id;
+        }
+
+        if (!companyId) {
+          console.log('No company found for CRM applications');
+          return [];
+        }
+
+        // Get applications for company jobs
+        const { data: applications, error } = await supabase
           .from('job_applications')
           .select(`
             id,
@@ -105,7 +122,7 @@ export const CRMWidget = () => {
             applied_at,
             user_id,
             job_id,
-            jobs (
+            jobs!inner (
               title,
               company_id
             ),
@@ -115,16 +132,23 @@ export const CRMWidget = () => {
               profile_picture_url
             )
           `)
-          .eq('jobs.company_id', userTeamMember.company_id)
+          .eq('jobs.company_id', companyId)
           .order('applied_at', { ascending: false })
           .limit(5);
 
-        return companyApplications || [];
+        if (error) {
+          console.error('Error fetching applications:', error);
+          return [];
+        }
+
+        return applications || [];
       } catch (error) {
         console.error('Error fetching recent applications:', error);
         return [];
       }
-    }
+    },
+    staleTime: 30000,
+    refetchOnWindowFocus: false
   });
 
   const getStatusColor = (status: string) => {
