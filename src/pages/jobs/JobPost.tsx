@@ -13,6 +13,7 @@ import JobOverviewForm from "@/components/jobs/JobOverviewForm";
 import RoleDescriptionForm from "@/components/jobs/RoleDescriptionForm";
 import SkillsQualificationsForm from "@/components/jobs/SkillsQualificationsForm";
 import CompensationBenefitsForm from "@/components/jobs/CompensationBenefitsForm";
+import CompanyInformationForm from "@/components/jobs/CompanyInformationForm";
 import ContactPersonForm from "@/components/jobs/ContactPersonForm";
 import JobVisibilityForm from "@/components/jobs/JobVisibilityForm";
 import SupportingDocumentsForm from "@/components/jobs/SupportingDocumentsForm";
@@ -20,6 +21,12 @@ import SupportingDocumentsForm from "@/components/jobs/SupportingDocumentsForm";
 function JobPostContent() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    // Company Information
+    company_id: '',
+    company_name: '',
+    company_website: '',
+    industry_domain: '',
+    company_size: '',
     
     // Job Overview
     job_title: '',
@@ -257,6 +264,12 @@ function JobPostContent() {
         </div>
 
         <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-6">
+          {/* Company Information */}
+          <CompanyInformationForm
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
+
           {/* Job Overview */}
           <JobOverviewForm
             formData={formData}
