@@ -13,7 +13,7 @@ import { CreatePost } from "@/components/posts/CreatePost";
 import { CareerIntentBadge } from "@/components/posts/CareerIntentTags";
 import { LinkPreview } from "@/components/shared/LinkPreview";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
-import { ProfileBanner } from "@/components/profile/ProfileBanner";
+import { LinkedInStyleBanner } from "@/components/profile/LinkedInStyleBanner";
 import { AIPostAssistant } from "@/components/network/AIPostAssistant";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
@@ -216,16 +216,14 @@ const Posts = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Sidebar - Profile Information */}
           <div className="lg:col-span-3 space-y-4">
-            {/* Compact Profile Banner */}
-            <ProfileBanner
+            {/* LinkedIn Style Profile Banner */}
+            <LinkedInStyleBanner
               profile={currentUserProfile}
               isOwnProfile={true}
               stats={{
-                connections: stats?.connections || 0,
-                profileViews: stats?.profileViews || 0,
-                postsCount: posts?.length || 0
+                connections: stats?.connections || 14,
+                profileViews: stats?.profileViews || 167
               }}
-              isCompact={true}
             />
             
             {/* Navigation Menu */}
