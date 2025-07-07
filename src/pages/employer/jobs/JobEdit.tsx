@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Edit, ArrowLeft, Save, Loader2, Plus, X } from "lucide-react";
+import { Edit, ArrowLeft, Save, Loader2, Plus, X, Globe, Eye } from "lucide-react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -68,9 +68,44 @@ const JobEdit = () => {
     }
   });
 
+  const publishMutation = useMutation({
+    mutationFn: async (shouldPublish: boolean) => {
+      const updateData = {
+        is_active: shouldPublish,
+        visibility_status: shouldPublish ? 'active' : 'draft'
+      };
+      
+      const { data, error } = await supabase
+        .from('jobs')
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      const action = data.is_active ? 'published' : 'unpublished';
+      toast.success(`Job ${action} successfully`);
+      queryClient.invalidateQueries({ queryKey: ['job', id] });
+      queryClient.invalidateQueries({ queryKey: ['employer-jobs'] });
+      setFormData(prev => ({ ...prev, is_active: data.is_active, visibility_status: data.visibility_status }));
+    },
+    onError: (error) => {
+      toast.error('Failed to update job status');
+      console.error('Error updating job status:', error);
+    }
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateMutation.mutate(formData);
+  };
+
+  const handlePublishToggle = () => {
+    const shouldPublish = !formData.is_active;
+    publishMutation.mutate(shouldPublish);
   };
 
   const handleInputChange = (field: keyof Job, value: any) => {
@@ -459,11 +494,32 @@ const JobEdit = () => {
           <Button type="button" variant="outline" onClick={() => navigate('/jobs/manage')}>
             Cancel
           </Button>
-          <Button type="submit" disabled={updateMutation.isPending}>
-            {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            <Save className="h-4 w-4 mr-2" />
-            Save Changes
-          </Button>
+          <div className="flex gap-3">
+            <Button 
+              type="button" 
+              variant={formData.is_active ? "outline" : "default"}
+              onClick={handlePublishToggle}
+              disabled={publishMutation.isPending}
+            >
+              {publishMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {formData.is_active ? (
+                <>
+                  <Eye className="h-4 w-4 mr-2" />
+                  Unpublish
+                </>
+              ) : (
+                <>
+                  <Globe className="h-4 w-4 mr-2" />
+                  Publish Job
+                </>
+              )}
+            </Button>
+            <Button type="submit" disabled={updateMutation.isPending}>
+              {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              <Save className="h-4 w-4 mr-2" />
+              Save Changes
+            </Button>
+          </div>
         </div>
       </form>
     </div>
