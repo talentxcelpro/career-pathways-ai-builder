@@ -20,7 +20,7 @@ import {
   Sparkles,
   Wand2,
   Hash,
-  Eye,
+  Mic,
   TrendingUp,
   Upload
 } from 'lucide-react';
@@ -57,6 +57,8 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
   const [showTrendingTopics, setShowTrendingTopics] = useState(false);
   const [selectedHashtags, setSelectedHashtags] = useState<string[]>([]);
   const [mediaFiles, setMediaFiles] = useState<any[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
   // AI Quality Score calculation
@@ -157,19 +159,24 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     try {
       toast.info('AI is rewriting your post...', { duration: 2000 });
       
-      const { data, error } = await supabase.functions.invoke('ai-post-rewriter', {
-        body: {
+      const response = await fetch('/api/ai-post-rewriter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           content: content.trim(),
           tone,
           userRole: user?.user_metadata?.role || user?.user_metadata?.user_role,
           targetAudience: 'Professional network'
-        }
+        }),
       });
 
-      if (error) {
-        throw error;
+      if (!response.ok) {
+        throw new Error('Failed to rewrite post');
       }
 
+      const data = await response.json();
       setContent(data.rewrittenContent);
       toast.success(`Post rewritten in ${tone} tone! ${data.newLength} characters.`);
       
@@ -179,6 +186,41 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     }
   };
 
+  const handleVoiceToText = async () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      toast.error('Voice recognition not supported in this browser');
+      return;
+    }
+
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+      toast.info('Listening... Speak now');
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setContent(prev => prev + (prev ? ' ' : '') + transcript);
+      toast.success('Voice converted to text');
+    };
+
+    recognition.onerror = (event) => {
+      toast.error('Voice recognition error');
+      setIsRecording(false);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognition.start();
+  };
 
   const handlePost = async () => {
     if (!content.trim()) {
@@ -447,29 +489,23 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
                   <div className="grid gap-2">
                     {mediaFiles.map((media, index) => (
                       <div key={media.id} className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg animate-fade-in">
-                        {/* Enhanced Preview */}
-                        <div className="flex-shrink-0 cursor-pointer group">
+                        {/* Preview */}
+                        <div className="flex-shrink-0">
                           {media.type === 'image' && (
-                            <div className="relative">
-                              <img
-                                src={media.url}
-                                alt={media.name}
-                                className="w-16 h-16 object-cover rounded-lg hover:scale-105 transition-transform"
-                                onClick={() => window.open(media.url, '_blank')}
-                              />
-                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-lg transition-colors flex items-center justify-center">
-                                <Eye className="h-4 w-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                              </div>
-                            </div>
+                            <img
+                              src={media.url}
+                              alt={media.name}
+                              className="w-10 h-10 object-cover rounded"
+                            />
                           )}
                           {media.type === 'video' && (
-                            <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center hover:scale-105 transition-transform">
-                              <Video className="h-6 w-6 text-white" />
+                            <div className="w-10 h-10 bg-muted rounded flex items-center justify-center">
+                              <Video className="h-4 w-4 text-muted-foreground" />
                             </div>
                           )}
                           {media.type === 'document' && (
-                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center hover:scale-105 transition-transform">
-                              <FileText className="h-6 w-6 text-white" />
+                            <div className="w-10 h-10 bg-muted rounded flex items-center justify-center">
+                              <FileText className="h-4 w-4 text-muted-foreground" />
                             </div>
                           )}
                         </div>
@@ -582,6 +618,14 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
                   <Smile className="h-4 w-4" />
                 </Button>
               </EmojiPicker>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleVoiceToText}
+                className={`${isRecording ? 'text-red-600 animate-pulse' : 'text-green-600'} hover:text-green-700 hover:bg-green-50`}
+              >
+                <Mic className="h-4 w-4" />
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
