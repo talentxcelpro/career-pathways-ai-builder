@@ -430,15 +430,16 @@ const Posts = () => {
                               const isDocument = url.includes('.pdf') || url.includes('.doc') || url.includes('document');
                               
                               return (
-                                <div key={index} className="relative">
+                                <div key={index} className="relative group">
                                   {isVideo ? (
                                     <video 
                                       src={url}
-                                      className="w-full h-64 object-cover rounded-lg"
+                                      className="w-full h-64 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
                                       controls
+                                      onClick={() => window.open(url, '_blank')}
                                     />
                                   ) : isDocument ? (
-                                    <div className="flex items-center justify-center h-32 bg-gray-100 rounded-lg">
+                                    <div className="flex items-center justify-center h-32 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
                                       <div className="text-center">
                                         <FileText className="h-8 w-8 mx-auto mb-2 text-gray-600" />
                                         <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
@@ -447,11 +448,44 @@ const Posts = () => {
                                       </div>
                                     </div>
                                   ) : (
-                                    <img 
-                                      src={url}
-                                      alt={`Post media ${index + 1}`}
-                                      className="w-full h-64 object-cover rounded-lg"
-                                    />
+                                    <div className="relative overflow-hidden rounded-lg cursor-pointer" onClick={() => window.open(url, '_blank')}>
+                                      <img 
+                                        src={url}
+                                        alt={`Shared by ${formatDisplayName(post.profiles)}`}
+                                        className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
+                                        onError={(e) => {
+                                          console.error('Image failed to load:', url);
+                                          (e.target as HTMLImageElement).style.display = 'none';
+                                          const parent = (e.target as HTMLImageElement).parentElement;
+                                          if (parent) {
+                                            parent.innerHTML = `
+                                              <div class="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
+                                                <div class="text-center">
+                                                  <div class="w-16 h-16 bg-gray-300 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                                    <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                  </div>
+                                                  <p class="text-sm text-gray-500">Image unavailable</p>
+                                                  <a href="${url}" target="_blank" class="text-blue-600 hover:underline text-xs">View original</a>
+                                                </div>
+                                              </div>
+                                            `;
+                                          }
+                                        }}
+                                        onLoad={() => {
+                                          console.log('Image loaded successfully:', url);
+                                        }}
+                                      />
+                                      {/* Overlay for hover effect */}
+                                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                          <div className="bg-white/90 rounded-full p-2">
+                                            <ExternalLink className="h-4 w-4 text-gray-800" />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
                                   )}
                                   {index === 3 && post.media_urls.length > 4 && (
                                     <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">

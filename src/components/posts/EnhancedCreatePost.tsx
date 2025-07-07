@@ -57,8 +57,6 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
   const [showTrendingTopics, setShowTrendingTopics] = useState(false);
   const [selectedHashtags, setSelectedHashtags] = useState<string[]>([]);
   const [mediaFiles, setMediaFiles] = useState<any[]>([]);
-  const [isRecording, setIsRecording] = useState(false);
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
   // AI Quality Score calculation
@@ -159,26 +157,23 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     try {
       toast.info('AI is rewriting your post...', { duration: 2000 });
       
-      const response = await fetch('/api/ai-post-rewriter', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('ai-post-rewriter', {
+        body: {
           content: content.trim(),
           tone,
           userRole: user?.user_metadata?.role || user?.user_metadata?.user_role,
           targetAudience: 'Professional network'
-        }),
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to rewrite post');
-      }
+      if (error) throw error;
 
-      const data = await response.json();
-      setContent(data.rewrittenContent);
-      toast.success(`Post rewritten in ${tone} tone! ${data.newLength} characters.`);
+      if (data?.rewrittenContent) {
+        setContent(data.rewrittenContent);
+        toast.success(`Post rewritten in ${tone} tone! ${data.newLength} characters.`);
+      } else {
+        throw new Error('No rewritten content received');
+      }
       
     } catch (error) {
       console.error('AI rewrite error:', error);
@@ -187,39 +182,8 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
   };
 
   const handleVoiceToText = async () => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      toast.error('Voice recognition not supported in this browser');
-      return;
-    }
-
-    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-    const recognition = new SpeechRecognition();
-    
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = 'en-US';
-
-    recognition.onstart = () => {
-      setIsRecording(true);
-      toast.info('Listening... Speak now');
-    };
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setContent(prev => prev + (prev ? ' ' : '') + transcript);
-      toast.success('Voice converted to text');
-    };
-
-    recognition.onerror = (event) => {
-      toast.error('Voice recognition error');
-      setIsRecording(false);
-    };
-
-    recognition.onend = () => {
-      setIsRecording(false);
-    };
-
-    recognition.start();
+    // Voice recognition disabled
+    toast.info('Voice feature temporarily disabled');
   };
 
   const handlePost = async () => {
@@ -341,10 +305,27 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         else if (file.type.startsWith('video/')) type = 'video';
         else type = 'document';
 
-        // Create media file object (simplified for inline upload)
+        // Upload file to Supabase Storage
+        const fileName = `${user?.id}/${Date.now()}-${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('post-media')
+          .upload(fileName, file);
+
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          toast.error(`Failed to upload ${file.name}`);
+          continue;
+        }
+
+        // Get public URL
+        const { data } = supabase.storage
+          .from('post-media')
+          .getPublicUrl(fileName);
+
+        // Create media file object
         const mediaFile = {
           id: fileId,
-          url: URL.createObjectURL(file),
+          url: data.publicUrl,
           type,
           name: file.name,
           size: file.size,
@@ -352,11 +333,11 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         };
 
         setMediaFiles(prev => [...prev, mediaFile]);
-        toast.success(`${file.name} added successfully`);
+        toast.success(`${file.name} uploaded successfully`);
         
       } catch (error) {
-        toast.error(`Failed to add ${file.name}`);
-        console.error('File error:', error);
+        toast.error(`Failed to upload ${file.name}`);
+        console.error('File upload error:', error);
       }
     }
   };
@@ -622,7 +603,8 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
                 variant="ghost"
                 size="sm"
                 onClick={handleVoiceToText}
-                className={`${isRecording ? 'text-red-600 animate-pulse' : 'text-green-600'} hover:text-green-700 hover:bg-green-50`}
+                className="text-muted-foreground hover:text-gray-700 hover:bg-gray-50"
+                disabled
               >
                 <Mic className="h-4 w-4" />
               </Button>
