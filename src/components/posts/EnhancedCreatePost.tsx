@@ -21,7 +21,8 @@ import {
   Wand2,
   Hash,
   Mic,
-  TrendingUp
+  TrendingUp,
+  Upload
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { EmojiPicker } from './EmojiPicker';
@@ -58,6 +59,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
   const [mediaFiles, setMediaFiles] = useState<any[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [dragActive, setDragActive] = useState(false);
 
   // AI Quality Score calculation
   const [aiScore, setAiScore] = useState<{
@@ -295,6 +297,78 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     setShowTrendingTopics(false);
   };
 
+  // File upload handlers
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      handleFiles(e.target.files);
+    }
+  };
+
+  const handleFiles = async (files: FileList) => {
+    if (mediaFiles.length + files.length > 5) {
+      toast.error('Maximum 5 files allowed');
+      return;
+    }
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileId = `${Date.now()}-${i}`;
+      
+      try {
+        // Determine file type
+        let type: 'image' | 'video' | 'document';
+        if (file.type.startsWith('image/')) type = 'image';
+        else if (file.type.startsWith('video/')) type = 'video';
+        else type = 'document';
+
+        // Create media file object (simplified for inline upload)
+        const mediaFile = {
+          id: fileId,
+          url: URL.createObjectURL(file),
+          type,
+          name: file.name,
+          size: file.size,
+          metadata: {}
+        };
+
+        setMediaFiles(prev => [...prev, mediaFile]);
+        toast.success(`${file.name} added successfully`);
+        
+      } catch (error) {
+        toast.error(`Failed to add ${file.name}`);
+        console.error('File error:', error);
+      }
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   const currentPrivacy = privacyOptions.find(opt => opt.value === privacy);
 
   return (
@@ -363,13 +437,113 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
               </div>
             )}
 
-            {/* Enhanced Media Upload */}
-            <EnhancedMediaUpload
-              onMediaAdd={(media) => setMediaFiles(prev => [...prev, media])}
-              onMediaRemove={(mediaId) => setMediaFiles(prev => prev.filter(m => m.id !== mediaId))}
-              mediaFiles={mediaFiles}
-              maxFiles={5}
-              allowedTypes={['image', 'video', 'document']}
+            {/* Inline Media Upload */}
+            {(mediaFiles.length > 0 || dragActive) && (
+              <div className="space-y-3 animate-fade-in">
+                {/* Compact Upload Area */}
+                <div 
+                  className={`border-2 border-dashed rounded-lg p-4 transition-all duration-300 ${
+                    dragActive 
+                      ? 'border-primary bg-primary/5 scale-[1.02]' 
+                      : 'border-border hover:border-primary/50 hover:bg-muted/30'
+                  }`}
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <div className="flex items-center gap-3 cursor-pointer">
+                    <div className={`p-2 rounded-full transition-colors ${
+                      dragActive ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                    }`}>
+                      <Upload className={`h-4 w-4 ${dragActive ? 'animate-bounce' : ''}`} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">
+                        {dragActive ? 'Drop files here!' : 'Drop files or click to upload'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Images, videos, documents up to 100MB
+                      </p>
+                    </div>
+                    <div className="flex gap-1">
+                      <Badge variant="secondary" className="text-xs">
+                        <Image className="h-3 w-3 mr-1" />
+                        IMG
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        <Video className="h-3 w-3 mr-1" />
+                        VID
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        <FileText className="h-3 w-3 mr-1" />
+                        DOC
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Media Files Grid */}
+                {mediaFiles.length > 0 && (
+                  <div className="grid gap-2">
+                    {mediaFiles.map((media, index) => (
+                      <div key={media.id} className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg animate-fade-in">
+                        {/* Preview */}
+                        <div className="flex-shrink-0">
+                          {media.type === 'image' && (
+                            <img
+                              src={media.url}
+                              alt={media.name}
+                              className="w-10 h-10 object-cover rounded"
+                            />
+                          )}
+                          {media.type === 'video' && (
+                            <div className="w-10 h-10 bg-muted rounded flex items-center justify-center">
+                              <Video className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                          )}
+                          {media.type === 'document' && (
+                            <div className="w-10 h-10 bg-muted rounded flex items-center justify-center">
+                              <FileText className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* File Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{media.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatFileSize(media.size)}
+                            {media.metadata?.width && media.metadata?.height && (
+                              <span> • {media.metadata.width}×{media.metadata.height}</span>
+                            )}
+                          </p>
+                        </div>
+
+                        {/* Remove Button */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setMediaFiles(prev => prev.filter(m => m.id !== media.id))}
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+              onChange={handleFileInput}
+              className="hidden"
             />
 
             {/* Career Intent Tags */}
@@ -459,6 +633,14 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
               >
                 <MapPin className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+              >
+                <Image className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
