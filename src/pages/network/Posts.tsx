@@ -213,9 +213,9 @@ const Posts = () => {
 
 
         {/* Three Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Sidebar - Profile Information */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="lg:col-span-3 space-y-4">
             {/* Compact Profile Banner */}
             <ProfileBanner
               profile={currentUserProfile}
@@ -227,45 +227,88 @@ const Posts = () => {
               }}
               isCompact={true}
             />
-            {/* Quick Actions Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Link to="/network/people">
-                  <Button variant="ghost" className="w-full justify-start">
-                    <Users className="h-4 w-4 mr-2" />
-                    Find People
+            
+            {/* Navigation Menu */}
+            <Card className="p-3">
+              <div className="space-y-1">
+                <h3 className="font-semibold text-sm mb-2 px-2">Navigation</h3>
+                <Link to="/network" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <MessageCircle className="h-3 w-3 mr-2" />
+                    Feed
                   </Button>
                 </Link>
-                <Link to="/network/events">
-                  <Button variant="ghost" className="w-full justify-start">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Upcoming Events
+                <Link to="/network/people" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <Users className="h-3 w-3 mr-2" />
+                    My Network
                   </Button>
                 </Link>
-                <Link to="/network/messages">
-                  <Button variant="ghost" className="w-full justify-start">
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Messages
+                <Link to="/jobs" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <Briefcase className="h-3 w-3 mr-2" />
+                    Jobs
                   </Button>
                 </Link>
-                <Link to="/companies">
-                  <Button variant="ghost" className="w-full justify-start">
-                    <Briefcase className="h-4 w-4 mr-2" />
-                    Companies I Follow
+                <Link to="/network/messages" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <MessageCircle className="h-3 w-3 mr-2" />
+                    Messaging
                   </Button>
                 </Link>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start"
-                  onClick={() => setShowAIAssistant(!showAIAssistant)}
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  AI Assistant
+                <Link to="/network/notifications" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <Bell className="h-3 w-3 mr-2" />
+                    Notifications
+                  </Button>
+                </Link>
+              </div>
+              
+              <div className="space-y-1 mt-3">
+                <h3 className="font-semibold text-sm mb-2 px-2">Discover</h3>
+                <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                  <FileText className="h-3 w-3 mr-2" />
+                  Saved Items
                 </Button>
-              </CardContent>
+                <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                  <span className="h-3 w-3 mr-2">#</span>
+                  Hashtags
+                </Button>
+                <Link to="/network/events" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <Calendar className="h-3 w-3 mr-2" />
+                    Events
+                  </Button>
+                </Link>
+                <Link to="/learning" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <span className="h-3 w-3 mr-2">📚</span>
+                    Courses
+                  </Button>
+                </Link>
+              </div>
+              
+              <div className="space-y-1 mt-3">
+                <h3 className="font-semibold text-sm mb-2 px-2">Settings</h3>
+                <Link to="/profile/edit" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <span className="h-3 w-3 mr-2">✏️</span>
+                    Edit Profile
+                  </Button>
+                </Link>
+                <Link to="/profile/analytics" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <Eye className="h-3 w-3 mr-2" />
+                    Edit Views
+                  </Button>
+                </Link>
+                <Link to="/profile/settings" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <span className="h-3 w-3 mr-2">🔒</span>
+                    Privacy
+                  </Button>
+                </Link>
+              </div>
             </Card>
           </div>
 
@@ -468,177 +511,151 @@ const Posts = () => {
           </div>
 
           {/* Right Sidebar - Network Activity */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="lg:col-span-3 space-y-4">
             {/* Connection Requests */}
             <ConnectionRequests />
 
+            {/* Quick Actions */}
+            <Card className="p-3">
+              <h3 className="font-semibold text-sm mb-3">Quick Actions</h3>
+              <div className="space-y-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start h-8 text-xs"
+                  onClick={() => setShowAIAssistant(!showAIAssistant)}
+                >
+                  <Sparkles className="h-3 w-3 mr-2" />
+                  AI Assistant
+                </Button>
+                <Link to="/network/people" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <Users className="h-3 w-3 mr-2" />
+                    Find People
+                  </Button>
+                </Link>
+                <Link to="/network/events" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <Calendar className="h-3 w-3 mr-2" />
+                    Events
+                  </Button>
+                </Link>
+                <Link to="/companies" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <Briefcase className="h-3 w-3 mr-2" />
+                    Companies
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
             {/* Network Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Network Overview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Link to="/network/people" className="flex items-center justify-between hover:bg-gray-50 p-2 rounded transition-colors">
-                    <div className="flex items-center space-x-3">
-                      <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Users className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-700">Connections</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">{stats?.connections || 0}</span>
-                  </Link>
-                  
-                  <Link to="/network/messages" className="flex items-center justify-between hover:bg-gray-50 p-2 rounded transition-colors">
-                    <div className="flex items-center space-x-3">
-                      <div className="h-8 w-8 bg-green-100 rounded-lg flex items-center justify-center">
-                        <MessageCircle className="h-4 w-4 text-green-600" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-700">Messages</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">{stats?.messages || 0}</span>
-                  </Link>
-                  
-                  <Link to="/network/events" className="flex items-center justify-between hover:bg-gray-50 p-2 rounded transition-colors">
-                    <div className="flex items-center space-x-3">
-                      <div className="h-8 w-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Calendar className="h-4 w-4 text-purple-600" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-700">Events</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">{stats?.events || 0}</span>
-                  </Link>
-                  
-                  <div className="flex items-center justify-between p-2">
-                    <div className="flex items-center space-x-3">
-                      <div className="h-8 w-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <Eye className="h-4 w-4 text-orange-600" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-700">Profile Views</span>
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">{stats?.profileViews || 0}</span>
-                  </div>
+            <Card className="p-3">
+              <h3 className="font-semibold text-sm mb-3">Network Stats</h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Connections</span>
+                  <span className="text-sm font-bold">{stats?.connections || 0}</span>
                 </div>
-              </CardContent>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Messages</span>
+                  <span className="text-sm font-bold">{stats?.messages || 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Profile Views</span>
+                  <span className="text-sm font-bold">{stats?.profileViews || 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Events</span>
+                  <span className="text-sm font-bold">{stats?.events || 0}</span>
+                </div>
+              </div>
             </Card>
 
             {/* Recent Connections */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Users className="h-5 w-5 mr-2" />
-                  Recent Connections
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {connectionsLoading ? (
-                    [...Array(3)].map((_, index) => (
-                      <div key={index} className="flex items-center space-x-3 animate-pulse">
-                        <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-                        <div className="flex-1">
-                          <div className="h-4 bg-gray-300 rounded w-3/4 mb-1"></div>
-                          <div className="h-3 bg-gray-300 rounded w-1/2"></div>
-                        </div>
+            <Card className="p-3">
+              <h3 className="font-semibold text-sm mb-3">Recent Connections</h3>
+              <div className="space-y-2">
+                {connectionsLoading ? (
+                  [...Array(2)].map((_, index) => (
+                    <div key={index} className="flex items-center space-x-2 animate-pulse">
+                      <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                      <div className="flex-1">
+                        <div className="h-3 bg-gray-300 rounded w-3/4 mb-1"></div>
+                        <div className="h-2 bg-gray-300 rounded w-1/2"></div>
                       </div>
-                    ))
-                  ) : connections && connections.length > 0 ? (
-                    connections.slice(0, 3).map((connection, index) => (
-                      <div key={connection.id} className="flex items-center space-x-3">
-                        <Link to={`/network/people/${connection.otherUser?.id}`} className="block hover:scale-105 transition-transform">
-                          <Avatar className="w-10 h-10 cursor-pointer">
-                            <AvatarImage src={connection.otherUser?.profile_picture_url} />
-                            <AvatarFallback>
-                              {generateInitials(connection.otherUser)}
-                            </AvatarFallback>
-                          </Avatar>
-                        </Link>
-                        <div className="flex-1">
-                          <Link 
-                            to={`/network/people/${connection.otherUser?.id}`}
-                            className="hover:text-blue-600 transition-colors"
-                          >
-                            <p className="font-medium text-gray-900 text-sm cursor-pointer">
-                              {formatDisplayName(connection.otherUser)}
-                            </p>
-                          </Link>
-                          <p className="text-xs text-gray-500">
-                            {connection.otherUser?.title || 'Professional'}
-                          </p>
-                        </div>
-                        <Link to={`/network/messages/${connection.otherUser?.id}`}>
-                          <Button variant="outline" size="sm">
-                            Message
-                          </Button>
-                        </Link>
+                    </div>
+                  ))
+                ) : connections && connections.length > 0 ? (
+                  connections.slice(0, 2).map((connection, index) => (
+                    <div key={connection.id} className="flex items-center space-x-2">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={connection.otherUser?.profile_picture_url} />
+                        <AvatarFallback className="text-xs">
+                          {generateInitials(connection.otherUser)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-xs truncate">
+                          {formatDisplayName(connection.otherUser)}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {connection.otherUser?.title || 'Professional'}
+                        </p>
                       </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500 text-center py-4">No connections yet</p>
-                  )}
-                </div>
-                <div className="mt-4 pt-4 border-t">
-                  <Link to="/network/people">
-                    <Button variant="ghost" className="w-full">
-                      View All Connections
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-xs text-gray-500 text-center py-2">No connections yet</p>
+                )}
+              </div>
+              <Link to="/network/people" className="block mt-2">
+                <Button variant="ghost" size="sm" className="w-full text-xs h-7">
+                  View All
+                </Button>
+              </Link>
             </Card>
 
-            {/* Smart Connect AI */}
-            <SmartConnectAI />
-            
             {/* Recent Activity */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Bell className="h-5 w-5 mr-2" />
-                  Recent Activity
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {activityLoading ? (
-                    [...Array(3)].map((_, index) => (
-                      <div key={index} className="flex items-start space-x-3 animate-pulse">
-                        <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-                        <div className="flex-1">
-                          <div className="h-3 bg-gray-300 rounded w-full mb-1"></div>
-                          <div className="h-2 bg-gray-300 rounded w-1/2"></div>
-                        </div>
+            <Card className="p-3">
+              <h3 className="font-semibold text-sm mb-3">Recent Activity</h3>
+              <div className="space-y-2">
+                {activityLoading ? (
+                  [...Array(2)].map((_, index) => (
+                    <div key={index} className="flex items-start space-x-2 animate-pulse">
+                      <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
+                      <div className="flex-1">
+                        <div className="h-2 bg-gray-300 rounded w-full mb-1"></div>
+                        <div className="h-2 bg-gray-300 rounded w-1/2"></div>
                       </div>
-                    ))
-                  ) : recentActivity && recentActivity.length > 0 ? (
-                    recentActivity.slice(0, 5).map((activity) => (
-                      <div key={activity.id} className="flex items-start space-x-3">
-                        <Avatar className="w-8 h-8">
-                          <AvatarImage src={activity.avatar} />
-                          <AvatarFallback className="text-xs">
-                            {activity.user.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <p className="text-sm">
-                            <span className="font-medium">{activity.user}</span> {activity.action}
-                          </p>
-                          <p className="text-xs text-gray-500">{formatTimeAgo(activity.time)}</p>
-                        </div>
+                    </div>
+                  ))
+                ) : recentActivity && recentActivity.length > 0 ? (
+                  recentActivity.slice(0, 3).map((activity) => (
+                    <div key={activity.id} className="flex items-start space-x-2">
+                      <Avatar className="w-6 h-6">
+                        <AvatarImage src={activity.avatar} />
+                        <AvatarFallback className="text-xs">
+                          {activity.user.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs">
+                          <span className="font-medium">{activity.user}</span> {activity.action}
+                        </p>
+                        <p className="text-xs text-gray-500">{formatTimeAgo(activity.time)}</p>
                       </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500 text-center py-4">No recent activity</p>
-                  )}
-                </div>
-                <div className="mt-4 pt-4 border-t">
-                  <Link to="/network/notifications">
-                    <Button variant="ghost" className="w-full">
-                      View All Notifications
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-xs text-gray-500 text-center py-2">No recent activity</p>
+                )}
+              </div>
+              <Link to="/network/notifications" className="block mt-2">
+                <Button variant="ghost" size="sm" className="w-full text-xs h-7">
+                  View All
+                </Button>
+              </Link>
             </Card>
           </div>
         </div>
