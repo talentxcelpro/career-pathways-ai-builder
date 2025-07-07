@@ -13,7 +13,14 @@ export function useFileUpload(options?: UseFileUploadOptions) {
   const defaultOptions: UseFileUploadOptions = {
     bucket: 'avatars',
     maxSize: 5 * 1024 * 1024, // 5MB
-    allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']
+    allowedTypes: [
+      // Image formats
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 
+      'image/webp', 'image/svg+xml', 'image/bmp', 'image/tiff',
+      // Video formats  
+      'video/mp4', 'video/quicktime', 'video/avi', 'video/x-msvideo',
+      'video/x-ms-wmv', 'video/x-matroska', 'video/webm', 'video/x-flv'
+    ]
   };
   
   const config = { ...defaultOptions, ...options };
