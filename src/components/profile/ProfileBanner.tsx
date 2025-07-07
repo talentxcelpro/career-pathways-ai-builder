@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 interface ProfileBannerProps {
   profile: any;
   isOwnProfile?: boolean;
+  isCompact?: boolean;
   stats?: {
     connections: number;
     profileViews: number;
@@ -32,6 +33,7 @@ interface ProfileBannerProps {
 export const ProfileBanner: React.FC<ProfileBannerProps> = ({
   profile,
   isOwnProfile = false,
+  isCompact = false,
   stats = { connections: 0, profileViews: 0, postsCount: 0 }
 }) => {
   const [uploading, setUploading] = useState<'banner' | 'avatar' | null>(null);
@@ -51,13 +53,17 @@ export const ProfileBanner: React.FC<ProfileBannerProps> = ({
       const { error } = await supabase
         .from('profiles')
         .update({ [updateField]: uploadedUrl })
-        .eq('id', profile.id);
+        .eq('id', profile?.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Update error:', error);
+        throw error;
+      }
       
       toast.success(`${type} updated successfully!`);
-      window.location.reload(); // Refresh to show new image
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
+      console.error('Upload error:', error);
       toast.error(`Failed to update ${type}`);
     } finally {
       setUploading(null);
@@ -89,6 +95,70 @@ export const ProfileBanner: React.FC<ProfileBannerProps> = ({
       month: 'long' 
     });
   };
+
+  if (isCompact) {
+    return (
+      <Card className="overflow-hidden border-0 shadow-sm">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            {/* Compact Avatar */}
+            <div className="relative">
+              <Avatar className="w-16 h-16 border-2 border-white shadow-sm">
+                <AvatarImage src={profile?.profile_picture_url} />
+                <AvatarFallback className="text-sm bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                  {generateInitials(profile)}
+                </AvatarFallback>
+              </Avatar>
+              {isOwnProfile && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute -bottom-1 -right-1 h-6 w-6 p-0 bg-white border shadow-sm hover:bg-gray-50"
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.onchange = (e) => {
+                      const file = (e.target as HTMLInputElement).files?.[0];
+                      if (file) handleImageUpload('avatar', file);
+                    };
+                    input.click();
+                  }}
+                  disabled={uploading === 'avatar'}
+                >
+                  <Camera className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+
+            {/* Compact Profile Info */}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 text-sm truncate">
+                {formatDisplayName(profile)}
+              </h3>
+              {profile?.title && (
+                <p className="text-xs text-gray-600 truncate">{profile.title}</p>
+              )}
+              <div className="flex gap-4 mt-2 text-xs text-gray-500">
+                <span>{stats.connections} connections</span>
+                <span>{stats.profileViews} views</span>
+              </div>
+            </div>
+
+            {/* Compact Actions */}
+            {isOwnProfile && (
+              <Link to="/profile/edit">
+                <Button size="sm" variant="outline" className="text-xs h-7">
+                  <Edit className="h-3 w-3 mr-1" />
+                  Edit
+                </Button>
+              </Link>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="overflow-hidden border-0 shadow-xl">

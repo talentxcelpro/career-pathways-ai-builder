@@ -192,10 +192,6 @@ const Posts = () => {
         {/* Simplified Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Professional Network</h1>
-              <p className="text-gray-600 mt-1">Stay connected with your professional community</p>
-            </div>
             <div className="flex items-center gap-2">
               <Button
                 variant={feedFilter === 'all' ? 'default' : 'outline'}
@@ -215,23 +211,22 @@ const Posts = () => {
           </div>
         </div>
 
-        {/* Profile Banner */}
-        <div className="mb-8">
-          <ProfileBanner
-            profile={currentUserProfile}
-            isOwnProfile={true}
-            stats={{
-              connections: stats?.connections || 0,
-              profileViews: stats?.profileViews || 0,
-              postsCount: posts?.length || 0
-            }}
-          />
-        </div>
 
         {/* Three Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Sidebar - Profile Information */}
           <div className="lg:col-span-3 space-y-6">
+            {/* Compact Profile Banner */}
+            <ProfileBanner
+              profile={currentUserProfile}
+              isOwnProfile={true}
+              stats={{
+                connections: stats?.connections || 0,
+                profileViews: stats?.profileViews || 0,
+                postsCount: posts?.length || 0
+              }}
+              isCompact={true}
+            />
             {/* Quick Actions Card */}
             <Card>
               <CardHeader>
