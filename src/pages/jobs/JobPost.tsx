@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Briefcase, Eye, FileText } from "lucide-react";
+import { ArrowLeft, Briefcase, Eye, FileText, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
-import CompanyInformationForm from "@/components/jobs/CompanyInformationForm";
+
 import JobOverviewForm from "@/components/jobs/JobOverviewForm";
 import RoleDescriptionForm from "@/components/jobs/RoleDescriptionForm";
 import SkillsQualificationsForm from "@/components/jobs/SkillsQualificationsForm";
@@ -20,12 +20,6 @@ import SupportingDocumentsForm from "@/components/jobs/SupportingDocumentsForm";
 function JobPostContent() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    // Company Information
-    company_id: '',
-    company_name: '',
-    company_website: '',
-    industry_domain: '',
-    company_size: '',
     
     // Job Overview
     job_title: '',
@@ -82,6 +76,34 @@ function JobPostContent() {
     ai_priority: false
   });
 
+  // Fetch user's company info
+  const { data: userCompany } = useQuery({
+    queryKey: ['user-company'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      
+      const { data, error } = await supabase
+        .from('company_team_members')
+        .select(`
+          company_id,
+          companies (
+            id,
+            name,
+            website,
+            industry,
+            size_range
+          )
+        `)
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .single();
+      
+      if (error) return null;
+      return data;
+    }
+  });
+
   // Fetch job categories
   const { data: categories = [] } = useQuery({
     queryKey: ['job-categories'],
@@ -109,6 +131,7 @@ function JobPostContent() {
       const insertData = {
         ...jobData,
         posted_by: user.id,
+        company_id: userCompany?.company_id || null,
         // Convert string numbers to integers
         min_salary: jobData.min_salary || null,
         max_salary: jobData.max_salary || null,
@@ -164,8 +187,8 @@ function JobPostContent() {
     
     if (!isDraft) {
       // Validation for publishing
-      if (!formData.job_title.trim() || !formData.job_summary.trim() || !formData.company_id) {
-        toast.error('Please fill in all required fields (job title, job summary, and company)');
+      if (!formData.job_title.trim() || !formData.job_summary.trim()) {
+        toast.error('Please fill in all required fields (job title and job summary)');
         return;
       }
 
@@ -174,8 +197,8 @@ function JobPostContent() {
         return;
       }
 
-      if (!formData.company_name.trim()) {
-        toast.error('Please select or create a company');
+      if (!userCompany?.company_id) {
+        toast.error('Please join a company first to post jobs');
         return;
       }
     } else {
@@ -190,7 +213,27 @@ function JobPostContent() {
   };
 
   const handlePreview = () => {
-    toast.info('Preview functionality coming soon!');
+    if (!formData.job_title.trim()) {
+      toast.error('Please add a job title to preview');
+      return;
+    }
+    
+    // Navigate to preview with current form data
+    navigate('/jobs/post/preview', { 
+      state: { 
+        formData: {
+          ...formData,
+          company_name: userCompany?.companies?.name || 'Your Company',
+          company_website: userCompany?.companies?.website || '',
+          industry_domain: userCompany?.companies?.industry || '',
+          company_size: userCompany?.companies?.size_range || ''
+        }
+      } 
+    });
+  };
+
+  const handleGenerateAI = () => {
+    navigate('/jobs/post/ai');
   };
 
   return (
@@ -214,12 +257,6 @@ function JobPostContent() {
         </div>
 
         <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-6">
-          {/* Company Information */}
-          <CompanyInformationForm
-            formData={formData}
-            onInputChange={handleInputChange}
-          />
-
           {/* Job Overview */}
           <JobOverviewForm
             formData={formData}
@@ -264,6 +301,16 @@ function JobPostContent() {
           <Card>
             <CardContent className="p-6">
               <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  onClick={handleGenerateAI}
+                  className="flex-1"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate with AI
+                </Button>
                 <Button
                   type="button"
                   variant="outline"

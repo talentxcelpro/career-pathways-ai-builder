@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -63,46 +64,32 @@ export default function CompensationBenefitsForm({ formData, onInputChange }: Co
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Minimum Salary</Label>
-              <Select
-                value={formData.min_salary?.toString() || ''}
-                onValueChange={(value) => onInputChange('min_salary', parseInt(value))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select minimum salary" />
-                </SelectTrigger>
-                <SelectContent>
-                  {salaryOptions.map((amount) => (
-                    <SelectItem key={amount} value={amount.toString()}>
-                      {formatSalary(amount)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Minimum Salary (Monthly INR)</Label>
+              <Input
+                type="number"
+                placeholder="e.g., 50000"
+                value={formData.min_salary || ''}
+                onChange={(e) => onInputChange('min_salary', e.target.value ? parseInt(e.target.value) : null)}
+                min="0"
+                step="1000"
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>Maximum Salary</Label>
-              <Select
-                value={formData.max_salary?.toString() || ''}
-                onValueChange={(value) => onInputChange('max_salary', parseInt(value))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select maximum salary" />
-                </SelectTrigger>
-                <SelectContent>
-                  {salaryOptions.filter(amount => !formData.min_salary || amount >= formData.min_salary).map((amount) => (
-                    <SelectItem key={amount} value={amount.toString()}>
-                      {formatSalary(amount)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Maximum Salary (Monthly INR)</Label>
+              <Input
+                type="number"
+                placeholder="e.g., 80000"
+                value={formData.max_salary || ''}
+                onChange={(e) => onInputChange('max_salary', e.target.value ? parseInt(e.target.value) : null)}
+                min={formData.min_salary || 0}
+                step="1000"
+              />
             </div>
           </div>
           
           <p className="text-xs text-muted-foreground">
-            Salary range will be shown on job card publicly.
+            Enter salary range in Indian Rupees. This will be shown publicly on the job listing.
           </p>
         </div>
 
