@@ -8,6 +8,7 @@ import { MoreHorizontal } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
+import { PostMenu } from "@/components/posts/PostMenu";
 
 interface PostCardProps {
   post: {
@@ -93,9 +94,13 @@ export const PostCard: React.FC<PostCardProps> = ({
               <p className="text-xs text-gray-500">{formatTimeAgo(post.created_at)}</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
+          <PostMenu
+            postId={post.id}
+            authorId={post.author_id || ''}
+            currentUserId={post.author_id}
+            postContent={post.content}
+            isOwnPost={true}
+          />
         </div>
 
         {/* Post Content - Make clickable to navigate to detail page */}

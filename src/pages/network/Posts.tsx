@@ -13,9 +13,11 @@ import { CreatePost } from "@/components/posts/CreatePost";
 import { CareerIntentBadge } from "@/components/posts/CareerIntentTags";
 import { LinkPreview } from "@/components/shared/LinkPreview";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
+import { ProfileBanner } from "@/components/profile/ProfileBanner";
 import { AIPostAssistant } from "@/components/network/AIPostAssistant";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
+import { CompanyNetworkActivity } from "@/components/network/CompanyNetworkActivity";
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
 import { useNetworkRealtime, useAutoRefreshPosts } from "@/hooks/useRealtimeData";
@@ -213,71 +215,24 @@ const Posts = () => {
           </div>
         </div>
 
+        {/* Profile Banner */}
+        <div className="mb-8">
+          <ProfileBanner
+            profile={currentUserProfile}
+            isOwnProfile={true}
+            stats={{
+              connections: stats?.connections || 0,
+              profileViews: stats?.profileViews || 0,
+              postsCount: posts?.length || 0
+            }}
+          />
+        </div>
+
         {/* Three Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Sidebar - Profile Information */}
           <div className="lg:col-span-3 space-y-6">
-            {/* Profile Card */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex flex-col items-center text-center">
-                  <div className="relative mb-4">
-                    <Avatar className="w-24 h-24">
-                      <AvatarImage src={currentUserProfile?.profile_picture_url} />
-                      <AvatarFallback className="text-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                        {currentUserProfile ? generateInitials(currentUserProfile) : 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
-                      <Camera className="h-4 w-4 text-gray-600" />
-                    </div>
-                  </div>
-                  
-                  <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                    {formatDisplayName(currentUserProfile)}
-                  </h2>
-                  
-                  <p className="text-gray-600 mb-3 flex items-center">
-                    <Briefcase className="h-4 w-4 mr-1" />
-                    {currentUserProfile?.title || 'Add your job title'}
-                  </p>
-                  
-                  {currentUserProfile?.location && (
-                    <p className="text-sm text-gray-500 mb-3 flex items-center">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      {currentUserProfile.location}
-                    </p>
-                  )}
-
-                  <div className="flex items-center space-x-4 mb-4">
-                    <div className="text-center">
-                      <div className="text-sm font-semibold text-gray-900">{stats?.connections || 0}</div>
-                      <div className="text-xs text-gray-500">Connections</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-sm font-semibold text-gray-900">{stats?.profileViews || 0}</div>
-                      <div className="text-xs text-gray-500">Profile Views</div>
-                    </div>
-                  </div>
-
-                  <Link to="/profile" className="w-full">
-                    <Button variant="outline" className="w-full">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      View Profile
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Profile Completion */}
-            {missingFields.length > 0 && (
-              <ProfileCompletionPrompt 
-                missingFields={missingFields}
-              />
-            )}
-
-            {/* Quick Actions */}
+            {/* Quick Actions Card */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Quick Actions</CardTitle>
