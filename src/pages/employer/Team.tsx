@@ -73,60 +73,88 @@ const EmployerTeam = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
 
-  // Fetch team data
+  // Fetch team data with optimized queries
   const { data: teamData, isLoading } = useQuery({
     queryKey: ['company-team'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Get user's company
+      // Single optimized query to get user's company and role
       const { data: userTeamMember } = await supabase
         .from('company_team_members')
         .select('company_id, role')
         .eq('user_id', user.id)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
-      if (!userTeamMember) throw new Error('No company found');
+      if (!userTeamMember) {
+        // Return empty state instead of throwing error
+        return {
+          companyId: null,
+          userRole: null,
+          members: [],
+          invitations: []
+        };
+      }
 
-      // Get all team members
-      const { data: teamMembers } = await supabase
-        .from('company_team_members')
-        .select('*')
-        .eq('company_id', userTeamMember.company_id)
-        .order('joined_at', { ascending: false });
+      // Parallel queries for better performance
+      const [teamMembersResult, invitationsResult] = await Promise.all([
+        // Get team members first
+        supabase
+          .from('company_team_members')
+          .select('*')
+          .eq('company_id', userTeamMember.company_id)
+          .eq('is_active', true)
+          .order('joined_at', { ascending: false }),
+        
+        // Get team invitations
+        supabase
+          .from('team_invitations')
+          .select('*')
+          .eq('company_id', userTeamMember.company_id)
+          .order('invited_at', { ascending: false })
+      ]);
 
-      // Get profile data for each team member
-      const membersWithProfiles = await Promise.all(
-        (teamMembers || []).map(async (member) => {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('full_name, email, profile_picture_url')
-            .eq('id', member.user_id)
-            .single();
-          
-          return {
-            ...member,
-            user_profile: profile || { full_name: 'Unknown User', email: 'No email', profile_picture_url: null }
-          };
-        })
-      );
+      const teamMembers = teamMembersResult.data || [];
+      
+      // Get all user profiles in one query for better performance
+      const userIds = teamMembers.map(member => member.user_id);
+      let profiles: any[] = [];
+      
+      if (userIds.length > 0) {
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, full_name, email, profile_picture_url')
+          .in('id', userIds);
+        profiles = profilesData || [];
+      }
 
-      // Get team invitations
-      const { data: invitations } = await supabase
-        .from('team_invitations')
-        .select('*')
-        .eq('company_id', userTeamMember.company_id)
-        .order('invited_at', { ascending: false });
+      // Create a profiles lookup map for O(1) access
+      const profilesMap = profiles.reduce((map, profile) => {
+        map[profile.id] = profile;
+        return map;
+      }, {} as Record<string, any>);
+
+      // Transform data to match expected format
+      const membersWithProfiles = teamMembers.map(member => ({
+        ...member,
+        user_profile: profilesMap[member.user_id] || { 
+          full_name: 'Unknown User', 
+          email: 'No email', 
+          profile_picture_url: null 
+        }
+      }));
 
       return {
         companyId: userTeamMember.company_id,
         userRole: userTeamMember.role,
-        members: membersWithProfiles || [],
-        invitations: invitations || []
+        members: membersWithProfiles,
+        invitations: invitationsResult.data || []
       };
-    }
+    },
+    staleTime: 30000, // Cache for 30 seconds
+    refetchOnWindowFocus: false
   });
 
   // Send invitation mutation
