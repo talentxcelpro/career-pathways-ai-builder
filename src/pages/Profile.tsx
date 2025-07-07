@@ -2,23 +2,17 @@
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import ProfileLayout from '@/components/profile/ProfileLayout';
+import { ProfileCompletionBanner } from '@/components/profile/ProfileCompletionBanner';
+import { ProfileShareDialog } from '@/components/profile/ProfileShareDialog';
+import { PortfolioManager } from '@/components/profile/PortfolioManager';
+import { FollowedCompanies } from '@/components/profile/FollowedCompanies';
+import { ProfileViewers } from '@/components/profile/ProfileViewers';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Bookmark, 
-  Hash, 
-  FileText,
-  TrendingUp
-} from 'lucide-react';
+import { Share2, Eye, Download, ExternalLink } from 'lucide-react';
 import { incrementProfileView } from '@/utils/profileHelpers';
-import { ProfileBanner } from '@/components/profile/ProfileBanner';
-import { CreatePost } from '@/components/posts/CreatePost';
-import { PostCard } from '@/components/network/PostCard';
-import { SavedItems } from '@/components/profile/SavedItems';
-import { HashtagsManager } from '@/components/profile/HashtagsManager';
 import { useState } from 'react';
 
 const Profile = () => {
@@ -99,175 +93,225 @@ const Profile = () => {
     return null; // Will redirect to login
   }
 
-  const { data: userPosts, isLoading: postsLoading } = useQuery({
-    queryKey: ['user-posts', currentUser?.id],
-    queryFn: async () => {
-      if (!currentUser?.id) return [];
-      
-      const { data, error } = await supabase
-        .from('posts')
-        .select(`
-          *,
-          profiles!posts_author_id_fkey(
-            full_name,
-            title,
-            profile_picture_url
-          )
-        `)
-        .eq('author_id', currentUser.id)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!currentUser?.id
-  });
+  const profileUrl = profile?.custom_profile_url 
+    ? `${window.location.origin}/profile/${profile.custom_profile_url}`
+    : `${window.location.origin}/profile/${currentUser.id}`;
+
+  const socialPlatforms = {
+    linkedin: 'LinkedIn',
+    github: 'GitHub', 
+    twitter: 'Twitter',
+    website: 'Website'
+  };
 
   return (
-    <div className="min-h-screen bg-[hsl(var(--background))] pb-8">
-      {/* Profile Banner */}
-      <ProfileBanner 
-        profile={profile}
-        isOwnProfile={true}
-        stats={{
-          connections: 500,
-          profileViews: profile?.profile_views_count || 644,
-          postsCount: userPosts?.length || 0
-        }}
-      />
-      
-      {/* Main Content Tabs */}
-      <div className="max-w-6xl mx-auto px-4 mt-6">
-        <Tabs defaultValue="posts" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
-            <TabsTrigger value="posts" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Posts
-            </TabsTrigger>
-            <TabsTrigger value="activity" className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              Activity
-            </TabsTrigger>
-            <TabsTrigger value="saved" className="flex items-center gap-2">
-              <Bookmark className="h-4 w-4" />
-              Saved Items
-            </TabsTrigger>
-            <TabsTrigger value="hashtags" className="flex items-center gap-2">
-              <Hash className="h-4 w-4" />
-              Hashtags
-            </TabsTrigger>
-          </TabsList>
-          
-          {/* Posts Tab */}
-          <TabsContent value="posts" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left Column - Create Post & Posts Feed */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* Create Post */}
-                <CreatePost 
-                  onPostCreate={(newPost) => {
-                    // Refresh posts query
-                    window.location.reload();
-                  }}
+    <ProfileLayout title="Profile" description="View and manage your professional profile">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Profile Completion Banner */}
+        <ProfileCompletionBanner profile={profile} />
+        
+        {/* Profile Header */}
+        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              {profile?.profile_picture_url ? (
+                <img
+                  src={profile.profile_picture_url}
+                  alt={profile.full_name || 'Profile'}
+                  className="w-20 h-20 rounded-full object-cover"
                 />
-                
-                {/* Posts Feed */}
-                {postsLoading ? (
-                  <div className="space-y-4">
-                    {[1, 2, 3].map(i => (
-                      <Card key={i}>
-                        <CardContent className="p-6">
-                          <div className="animate-pulse space-y-4">
-                            <div className="flex gap-3">
-                              <div className="w-10 h-10 bg-muted rounded-full" />
-                              <div className="space-y-2 flex-1">
-                                <div className="h-4 bg-muted rounded w-1/3" />
-                                <div className="h-3 bg-muted rounded w-1/4" />
-                              </div>
-                            </div>
-                            <div className="space-y-2">
-                              <div className="h-4 bg-muted rounded" />
-                              <div className="h-4 bg-muted rounded w-3/4" />
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                ) : userPosts && userPosts.length > 0 ? (
-                  <div className="space-y-6">
-                    {userPosts.map((post: any) => (
-                      <PostCard
-                        key={post.id}
-                        post={post}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <Card>
-                    <CardContent className="p-8 text-center">
-                      <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                      <h3 className="font-medium text-lg mb-2">No posts yet</h3>
-                      <p className="text-muted-foreground">
-                        Share your first post to connect with your network!
-                      </p>
-                    </CardContent>
-                  </Card>
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
+                  {profile?.full_name 
+                    ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase()
+                    : currentUser.email?.[0]?.toUpperCase() || 'U'
+                  }
+                </div>
+              )}
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {profile?.full_name || currentUser.email || 'Your Profile'}
+                </h1>
+                {profile?.title && (
+                  <p className="text-xl text-gray-600">{profile.title}</p>
                 )}
-              </div>
-              
-              {/* Right Column - Quick Stats */}
-              <div className="space-y-6">
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold mb-4">Your Activity</h3>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Posts this month</span>
-                        <Badge variant="secondary">{userPosts?.length || 0}</Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Profile views</span>
-                        <Badge variant="secondary">{profile?.profile_views_count || 644}</Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Connections</span>
-                        <Badge variant="secondary">500+</Badge>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                {profile?.location && (
+                  <p className="text-gray-500">{profile.location}</p>
+                )}
+                
+                 {/* Profile Stats */}
+                 <div className="flex items-center space-x-4 mt-2">
+                   <ProfileViewers 
+                     profileUserId={currentUser.id} 
+                     viewsCount={profile?.profile_views_count || 0} 
+                   />
+                  <Badge variant="outline" className="capitalize">
+                    {profile?.profile_visibility || 'public'} profile
+                  </Badge>
+                </div>
               </div>
             </div>
-          </TabsContent>
+            
+            {/* Action Buttons */}
+            <div className="flex space-x-2">
+              <Button variant="outline" onClick={() => navigate('/profile/edit')}>
+                Edit Profile
+              </Button>
+              <Button variant="outline" onClick={() => setShowShareDialog(true)}>
+                <Share2 className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+              {profile?.resume_url && (
+                <Button variant="outline" asChild>
+                  <a href={profile.resume_url} target="_blank" rel="noopener noreferrer">
+                    <Download className="h-4 w-4 mr-2" />
+                    Resume
+                  </a>
+                </Button>
+              )}
+            </div>
+          </div>
           
-          {/* Activity Tab */}
-          <TabsContent value="activity">
-            <Card>
-              <CardContent className="p-6">
-                <div className="text-center py-8">
-                  <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="font-medium text-lg mb-2">Activity Overview</h3>
-                  <p className="text-muted-foreground">
-                    Your professional activity and engagement metrics will appear here.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          {/* About Section */}
+          {profile?.about && (
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">About</h2>
+              <p className="text-gray-700 whitespace-pre-wrap">{profile.about}</p>
+            </div>
+          )}
           
-          {/* Saved Items Tab */}
-          <TabsContent value="saved">
-            {currentUser?.id && <SavedItems userId={currentUser.id} />}
-          </TabsContent>
+          {/* Skills */}
+          {profile?.skills && profile.skills.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Skills</h2>
+              <div className="flex flex-wrap gap-2">
+                {profile.skills.map((skill, index) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className="px-3 py-1"
+                  >
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
           
-          {/* Hashtags Tab */}
-          <TabsContent value="hashtags">
-            {currentUser?.id && <HashtagsManager userId={currentUser.id} />}
-          </TabsContent>
-        </Tabs>
+          {/* Contact & Social Info */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            {profile?.email && (
+              <div>
+                <span className="font-medium">Email:</span> {profile.email}
+              </div>
+            )}
+            {profile?.phone && (
+              <div>
+                <span className="font-medium">Phone:</span> {profile.phone}
+              </div>
+            )}
+            {profile?.current_company && (
+              <div>
+                <span className="font-medium">Company:</span> {profile.current_company}
+              </div>
+            )}
+            {profile?.industry && (
+              <div>
+                <span className="font-medium">Industry:</span> {profile.industry}
+              </div>
+            )}
+            {profile?.experience_years && (
+              <div>
+                <span className="font-medium">Experience:</span> {profile.experience_years} years
+              </div>
+            )}
+            {profile?.website && (
+              <div>
+                <span className="font-medium">Website:</span>
+                <a 
+                  href={profile.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 ml-1"
+                >
+                  {profile.website} <ExternalLink className="h-3 w-3 inline" />
+                </a>
+              </div>
+            )}
+          </div>
+
+          {/* Social Links */}
+          {profile?.social_links && Object.keys(profile.social_links).length > 0 && (
+            <div className="mt-4 pt-4 border-t">
+              <h3 className="font-medium text-gray-900 mb-2">Connect with me</h3>
+              <div className="flex flex-wrap gap-3">
+                {Object.entries(profile.social_links).map(([platform, url]) => (
+                  <a
+                    key={platform}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
+                  >
+                    {socialPlatforms[platform as keyof typeof socialPlatforms] || platform}
+                    <ExternalLink className="h-3 w-3 ml-1" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Public Profile Link */}
+          <div className="mt-4 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium text-gray-900">Public Profile</h3>
+                <p className="text-sm text-gray-600">Share your profile with others</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <code className="text-sm bg-gray-100 px-2 py-1 rounded">
+                  {profileUrl}
+                </code>
+                <Button size="sm" variant="outline" onClick={() => setShowShareDialog(true)}>
+                  <Share2 className="h-4 w-4 mr-1" />
+                  Share
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Empty State */}
+          {!profile && (
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-4">Complete your profile to get started</p>
+              <Button onClick={() => navigate('/profile/edit')}>
+                Set Up Profile
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Portfolio Section */}
+        {currentUser?.id && (
+          <PortfolioManager userId={currentUser.id} />
+        )}
+
+        {/* Followed Companies Section */}
+        {currentUser?.id && (
+          <div className="mb-6">
+            <FollowedCompanies userId={currentUser.id} />
+          </div>
+        )}
+
+        {/* Share Dialog */}
+        <ProfileShareDialog
+          isOpen={showShareDialog}
+          onClose={() => setShowShareDialog(false)}
+          profileUrl={profileUrl}
+          userName={profile?.full_name || 'User'}
+        />
       </div>
-    </div>
+    </ProfileLayout>
   );
 };
 

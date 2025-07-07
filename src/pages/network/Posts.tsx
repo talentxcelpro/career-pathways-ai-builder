@@ -4,36 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { 
-  MoreHorizontal, 
-  MessageCircle, 
-  Sparkles, 
-  Users, 
-  Calendar, 
-  Bell, 
-  Eye, 
-  MapPin, 
-  Briefcase, 
-  ExternalLink, 
-  Camera, 
-  FileText,
-  Home,
-  User,
-  Compass,
-  Bookmark,
-  Hash,
-  GraduationCap,
-  Settings,
-  Edit,
-  Shield,
-  Search,
-  Building,
-  Bot,
-  Mail,
-  UserCheck,
-  Image,
-  BarChart3
-} from "lucide-react";
+import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostActions } from "@/components/posts/PostActions";
@@ -216,411 +187,459 @@ const Posts = () => {
   const missingFields = currentUserProfile ? getMissingProfileFields(currentUserProfile) : [];
 
   return (
-    <div className="min-h-screen bg-muted/20">
-      {/* Hero Banner */}
-      <div className="w-full bg-gradient-to-r from-primary via-primary/90 to-blue-600 text-primary-foreground">
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-4xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Talentxcel Pro Network</h1>
-            <p className="text-lg md:text-xl opacity-90 max-w-2xl">
-              Connect with professionals, share insights, and grow your career
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-7xl mx-auto">
-          {/* Left Sidebar */}
-          <div className="lg:col-span-3">
-            <div className="space-y-4">
-              {/* Navigation Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5 text-primary" />
-                    Your Profile
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-1">
-                  <Link to="/network/posts" className="flex items-center gap-3 p-3 rounded-lg bg-primary/10 text-primary transition-colors">
-                    <Home className="h-4 w-4" />
-                    <span className="text-sm font-medium">Feed</span>
-                  </Link>
-                  <Link to="/network/people" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">My Network</span>
-                  </Link>
-                  <Link to="/jobs" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <Briefcase className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Jobs</span>
-                  </Link>
-                  <Link to="/network/messages" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <MessageCircle className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Messaging</span>
-                  </Link>
-                  <Link to="/network/notifications" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <Bell className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Notifications</span>
-                  </Link>
-                </CardContent>
-              </Card>
-
-              {/* Discover Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Compass className="h-5 w-5 text-primary" />
-                    Discover
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-1">
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                    <Bookmark className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Saved Items</span>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                    <Hash className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Hashtags</span>
-                  </div>
-                  <Link to="/network/events" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Events</span>
-                  </Link>
-                  <Link to="/learning" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Courses</span>
-                  </Link>
-                </CardContent>
-              </Card>
-
-              {/* Settings Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="h-5 w-5 text-primary" />
-                    Settings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-1">
-                  <Link to="/profile/edit" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <Edit className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Edit Profile</span>
-                  </Link>
-                  <Link to="/profile/analytics" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Edit Views</span>
-                  </Link>
-                  <Link to="/profile/settings" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <Shield className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Privacy</span>
-                  </Link>
-                </CardContent>
-              </Card>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Simplified Header */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Button
+                variant={feedFilter === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFeedFilter('all')}
+              >
+                All Posts
+              </Button>
+              <Button
+                variant={feedFilter === 'smart' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFeedFilter('smart')}
+              >
+                Smart Feed
+              </Button>
             </div>
           </div>
+        </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-6">
+
+        {/* Three Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Sidebar - Profile Information */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Compact Profile Banner */}
+            <ProfileBanner
+              profile={currentUserProfile}
+              isOwnProfile={true}
+              stats={{
+                connections: stats?.connections || 0,
+                profileViews: stats?.profileViews || 0,
+                postsCount: posts?.length || 0
+              }}
+              isCompact={true}
+            />
+            {/* Quick Actions Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Link to="/network/people">
+                  <Button variant="ghost" className="w-full justify-start">
+                    <Users className="h-4 w-4 mr-2" />
+                    Find People
+                  </Button>
+                </Link>
+                <Link to="/network/events">
+                  <Button variant="ghost" className="w-full justify-start">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Upcoming Events
+                  </Button>
+                </Link>
+                <Link to="/network/messages">
+                  <Button variant="ghost" className="w-full justify-start">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Messages
+                  </Button>
+                </Link>
+                <Link to="/companies">
+                  <Button variant="ghost" className="w-full justify-start">
+                    <Briefcase className="h-4 w-4 mr-2" />
+                    Companies I Follow
+                  </Button>
+                </Link>
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-start"
+                  onClick={() => setShowAIAssistant(!showAIAssistant)}
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  AI Assistant
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Middle Column - Posts Feed */}
+          <div className="lg:col-span-6 space-y-6">
+            {/* Create Post */}
+            <CreatePost onPostCreate={handlePostCreate} />
+
+            {/* AI Assistant */}
+            {showAIAssistant && (
+              <AIPostAssistant
+                onSuggestionApply={(suggestion) => {
+                  // Handle suggestion application - could pass to CreatePost if needed
+                  console.log('AI Suggestion:', suggestion);
+                  // You could also use a state or callback to pass this to CreatePost
+                }}
+                currentContent=""
+              />
+            )}
+
+            {/* Posts Feed */}
             <div className="space-y-6">
-              {/* Create Post */}
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4 mb-4">
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={currentUserProfile?.profile_picture_url} />
-                      <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-                        {generateInitials(currentUserProfile)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 bg-muted/50 rounded-full px-4 py-3 cursor-pointer hover:bg-muted/70 transition-colors">
-                      <span className="text-muted-foreground">What's on your mind?</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-around border-t pt-4">
-                    <Button variant="ghost" className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:bg-green-50">
-                      <Image className="h-5 w-5" />
-                      <span>Photo</span>
-                    </Button>
-                    <Button variant="ghost" className="flex items-center gap-2 text-orange-600 hover:text-orange-700 hover:bg-orange-50">
-                      <Calendar className="h-5 w-5" />
-                      <span>Event</span>
-                    </Button>
-                    <Button variant="ghost" className="flex items-center gap-2 text-primary hover:bg-primary/10">
-                      <Briefcase className="h-5 w-5" />
-                      <span>Job</span>
-                    </Button>
-                    <Button variant="ghost" className="flex items-center gap-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50">
-                      <BarChart3 className="h-5 w-5" />
-                      <span>Poll</span>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* AI Assistant */}
-              {showAIAssistant && (
-                <AIPostAssistant
-                  onSuggestionApply={(suggestion) => {
-                    console.log('AI Suggestion:', suggestion);
-                  }}
-                  currentContent=""
-                />
-              )}
-
-              {/* Posts Feed */}
-              <div className="space-y-4">
-                {postsLoading ? (
-                  [...Array(3)].map((_, i) => (
-                    <Card key={i} className="animate-pulse">
-                      <CardContent className="p-6">
-                        <div className="flex items-start space-x-3">
-                          <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
-                          <div className="flex-1 space-y-2">
-                            <div className="h-4 bg-gray-300 rounded w-1/4"></div>
-                            <div className="h-3 bg-gray-300 rounded w-1/6"></div>
-                            <div className="space-y-2 mt-4">
-                              <div className="h-4 bg-gray-300 rounded"></div>
-                              <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                            </div>
+              {postsLoading ? (
+                // Loading skeleton
+                [...Array(3)].map((_, i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardContent className="p-6">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 bg-gray-300 rounded w-1/4"></div>
+                          <div className="h-3 bg-gray-300 rounded w-1/6"></div>
+                          <div className="space-y-2 mt-4">
+                            <div className="h-4 bg-gray-300 rounded"></div>
+                            <div className="h-4 bg-gray-300 rounded w-3/4"></div>
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                ) : (
-                  posts?.map((post) => (
-                    <Card key={post.id} className="hover:shadow-md transition-shadow">
-                      <CardContent className="p-6">
-                        {/* Post Header */}
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex items-start space-x-3">
-                            <Link to={`/network/people/${post.author_id}`} className="block hover:scale-105 transition-transform">
-                              <Avatar className="cursor-pointer">
-                                <AvatarImage src={post.profiles?.profile_picture_url} />
-                                <AvatarFallback className="bg-primary text-primary-foreground">
-                                  {generateInitials(post.profiles)}
-                                </AvatarFallback>
-                              </Avatar>
-                            </Link>
-                            <div>
-                              <Link 
-                                to={`/network/people/${post.author_id}`} 
-                                className="hover:text-primary transition-colors cursor-pointer"
-                              >
-                                <h3 className="font-semibold text-foreground">
-                                  {formatDisplayName(post.profiles)}
-                                </h3>
-                              </Link>
-                              <p className="text-sm text-muted-foreground">
-                                {post.profiles?.title || 'Professional'}
-                              </p>
-                              <p className="text-xs text-muted-foreground">{formatTimeAgo(post.created_at)}</p>
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </div>
-
-                        {/* Post Content */}
-                        <div className="mb-4">
-                          <p className="text-foreground whitespace-pre-wrap">{post.content}</p>
-                          
-                          {/* Career Intent Tags */}
-                          {post.intent_tags && post.intent_tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-3">
-                              {post.intent_tags.map((intentId: string) => (
-                                <CareerIntentBadge key={intentId} intentId={intentId} />
-                              ))}
-                            </div>
-                          )}
-                          
-                          {/* URL Previews */}
-                          {(() => {
-                            const urls = extractUrls(post.content);
-                            return urls.length > 0 && (
-                              <div className="mt-4 space-y-3">
-                                {urls.slice(0, 2).map((url, index) => (
-                                  <LinkPreview key={index} url={url} />
-                                ))}
-                              </div>
-                            );
-                          })()}
-                          
-                          {/* Post Media */}
-                          {post.media_urls && post.media_urls.length > 0 && (
-                            <div className="mt-4 grid gap-2" style={{
-                              gridTemplateColumns: post.media_urls.length === 1 ? '1fr' : 
-                                                 post.media_urls.length === 2 ? '1fr 1fr' :
-                                                 post.media_urls.length === 3 ? '1fr 1fr 1fr' :
-                                                 '1fr 1fr'
-                            }}>
-                              {post.media_urls.slice(0, 4).map((url: string, index: number) => {
-                                const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('video');
-                                const isDocument = url.includes('.pdf') || url.includes('.doc') || url.includes('document');
-                                
-                                return (
-                                  <div key={index} className="relative">
-                                    {isVideo ? (
-                                      <video 
-                                        src={url}
-                                        className="w-full h-64 object-cover rounded-lg"
-                                        controls
-                                      />
-                                    ) : isDocument ? (
-                                      <div className="flex items-center justify-center h-32 bg-muted rounded-lg">
-                                        <div className="text-center">
-                                          <FileText className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                                          <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-sm">
-                                            View Document
-                                          </a>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <img 
-                                        src={url}
-                                        alt={`Post media ${index + 1}`}
-                                        className="w-full h-64 object-cover rounded-lg"
-                                      />
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Post Actions */}
-                        <PostActions
-                          postId={post.id}
-                          initialLikes={post.likes_count || 0}
-                          initialComments={post.comments_count || 0}
-                          initialShares={post.shares_count || 0}
-                          onCommentClick={() => setOpenComments(openComments === post.id ? null : post.id)}
-                        />
-
-                        {/* Comments Section */}
-                        <CommentsSection
-                          postId={post.id}
-                          isOpen={openComments === post.id}
-                        />
-                      </CardContent>
-                    </Card>
-                  ))
-                )}
-                
-                {posts && posts.length === 0 && !postsLoading && (
-                  <Card>
-                    <CardContent className="p-12 text-center">
-                      <div className="text-muted-foreground">
-                        <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <h3 className="text-lg font-medium mb-2">No posts yet</h3>
-                        <p>Be the first to share something with your network!</p>
                       </div>
                     </CardContent>
                   </Card>
-                )}
-              </div>
+                ))
+              ) : (
+                posts?.map((post) => (
+                  <Card key={post.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-6">
+                      {/* Post Header - Make user info clickable */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-start space-x-3">
+                          <Link to={`/network/people/${post.author_id}`} className="block hover:scale-105 transition-transform">
+                            <Avatar className="cursor-pointer">
+                              <AvatarImage src={post.profiles?.profile_picture_url} />
+                              <AvatarFallback>
+                                {generateInitials(post.profiles)}
+                              </AvatarFallback>
+                            </Avatar>
+                          </Link>
+                          <div>
+                            <Link 
+                              to={`/network/people/${post.author_id}`} 
+                              className="hover:text-blue-600 transition-colors cursor-pointer"
+                            >
+                              <h3 className="font-semibold text-gray-900">
+                                {formatDisplayName(post.profiles)}
+                              </h3>
+                            </Link>
+                            <p className="text-sm text-gray-600">
+                              {post.profiles?.title || 'Professional'}
+                            </p>
+                            <p className="text-xs text-gray-500">{formatTimeAgo(post.created_at)}</p>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="sm">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      {/* Post Content */}
+                      <div className="mb-4">
+                        <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
+                        
+                        {/* Career Intent Tags */}
+                        {post.intent_tags && post.intent_tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {post.intent_tags.map((intentId: string) => (
+                              <CareerIntentBadge key={intentId} intentId={intentId} />
+                            ))}
+                          </div>
+                        )}
+                        
+                        {/* URL Previews */}
+                        {(() => {
+                          const urls = extractUrls(post.content);
+                          return urls.length > 0 && (
+                            <div className="mt-4 space-y-3">
+                              {urls.slice(0, 2).map((url, index) => (
+                                <LinkPreview key={index} url={url} />
+                              ))}
+                            </div>
+                          );
+                        })()}
+                        
+                        {/* Post Media */}
+                        {post.media_urls && post.media_urls.length > 0 && (
+                          <div className="mt-4 grid gap-2" style={{
+                            gridTemplateColumns: post.media_urls.length === 1 ? '1fr' : 
+                                               post.media_urls.length === 2 ? '1fr 1fr' :
+                                               post.media_urls.length === 3 ? '1fr 1fr 1fr' :
+                                               '1fr 1fr'
+                          }}>
+                            {post.media_urls.slice(0, 4).map((url: string, index: number) => {
+                              const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('video');
+                              const isDocument = url.includes('.pdf') || url.includes('.doc') || url.includes('document');
+                              
+                              return (
+                                <div key={index} className="relative">
+                                  {isVideo ? (
+                                    <video 
+                                      src={url}
+                                      className="w-full h-64 object-cover rounded-lg"
+                                      controls
+                                    />
+                                  ) : isDocument ? (
+                                    <div className="flex items-center justify-center h-32 bg-gray-100 rounded-lg">
+                                      <div className="text-center">
+                                        <FileText className="h-8 w-8 mx-auto mb-2 text-gray-600" />
+                                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
+                                          View Document
+                                        </a>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <img 
+                                      src={url}
+                                      alt={`Post media ${index + 1}`}
+                                      className="w-full h-64 object-cover rounded-lg"
+                                    />
+                                  )}
+                                  {index === 3 && post.media_urls.length > 4 && (
+                                    <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                                      <span className="text-white text-xl font-semibold">
+                                        +{post.media_urls.length - 4}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        
+                        {/* Location */}
+                        {post.location && (
+                          <div className="flex items-center gap-1 mt-3 text-sm text-gray-500">
+                            <MapPin className="h-4 w-4" />
+                            <span>{post.location}</span>
+                          </div>
+                        )}
+                        
+                        {/* Post Tags */}
+                        {post.tags && post.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {post.tags.map((tag: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                #{tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Post Actions */}
+                      <PostActions
+                        postId={post.id}
+                        initialLikes={post.likes_count || 0}
+                        initialComments={post.comments_count || 0}
+                        initialShares={post.shares_count || 0}
+                        onCommentClick={() => setOpenComments(openComments === post.id ? null : post.id)}
+                      />
+
+                      {/* Comments Section */}
+                      <CommentsSection
+                        postId={post.id}
+                        isOpen={openComments === post.id}
+                      />
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
+
+            {posts && posts.length === 0 && !postsLoading && (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No posts yet</h3>
+                  <p className="text-gray-600">Be the first to share something with your network!</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
-          {/* Right Sidebar */}
-          <div className="lg:col-span-3">
-            <div className="space-y-4">
-              {/* Connection Requests */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <UserCheck className="h-5 w-5" />
-                    Connection Requests
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-center py-8 text-muted-foreground">
-                    <UserCheck className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No pending requests</p>
-                  </div>
-                </CardContent>
-              </Card>
+          {/* Right Sidebar - Network Activity */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Connection Requests */}
+            <ConnectionRequests />
 
-              {/* Network Overview */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Network Overview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-primary/5 rounded-lg hover:bg-primary/10 transition-all hover:-translate-y-1 cursor-pointer">
-                      <div className="text-2xl font-bold text-primary mb-1">{stats?.connections || 0}</div>
-                      <div className="text-sm text-muted-foreground">Connections</div>
+            {/* Network Stats */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Network Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <Link to="/network/people" className="flex items-center justify-between hover:bg-gray-50 p-2 rounded transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Users className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Connections</span>
                     </div>
-                    <div className="text-center p-4 bg-secondary/5 rounded-lg hover:bg-secondary/10 transition-all hover:-translate-y-1 cursor-pointer">
-                      <div className="text-2xl font-bold text-secondary mb-1">0</div>
-                      <div className="text-sm text-muted-foreground">Messages</div>
+                    <span className="text-lg font-bold text-gray-900">{stats?.connections || 0}</span>
+                  </Link>
+                  
+                  <Link to="/network/messages" className="flex items-center justify-between hover:bg-gray-50 p-2 rounded transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-8 w-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <MessageCircle className="h-4 w-4 text-green-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Messages</span>
                     </div>
-                    <div className="text-center p-4 bg-green-500/5 rounded-lg hover:bg-green-500/10 transition-all hover:-translate-y-1 cursor-pointer">
-                      <div className="text-2xl font-bold text-green-600 mb-1">0</div>
-                      <div className="text-sm text-muted-foreground">Events</div>
+                    <span className="text-lg font-bold text-gray-900">{stats?.messages || 0}</span>
+                  </Link>
+                  
+                  <Link to="/network/events" className="flex items-center justify-between hover:bg-gray-50 p-2 rounded transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-8 w-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <Calendar className="h-4 w-4 text-purple-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Events</span>
                     </div>
-                    <div className="text-center p-4 bg-purple-500/5 rounded-lg hover:bg-purple-500/10 transition-all hover:-translate-y-1 cursor-pointer">
-                      <div className="text-2xl font-bold text-purple-600 mb-1">{stats?.profileViews || 161}</div>
-                      <div className="text-sm text-muted-foreground">Profile Views</div>
+                    <span className="text-lg font-bold text-gray-900">{stats?.events || 0}</span>
+                  </Link>
+                  
+                  <div className="flex items-center justify-between p-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-8 w-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <Eye className="h-4 w-4 text-orange-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Profile Views</span>
                     </div>
+                    <span className="text-lg font-bold text-gray-900">{stats?.profileViews || 0}</span>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Quick Actions */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <Link to="/network/people" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <Search className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">Find People</span>
-                    </Link>
-                    <Link to="/network/events" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">Upcoming Events</span>
-                    </Link>
-                    <Link to="/network/messages" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">Messages</span>
-                    </Link>
-                    <Link to="/companies" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <Building className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">Companies | Follow</span>
-                    </Link>
-                    <Button 
-                      variant="ghost" 
-                      className="w-full justify-start"
-                      onClick={() => setShowAIAssistant(!showAIAssistant)}
-                    >
-                      <Bot className="h-4 w-4 text-muted-foreground mr-3" />
-                      <span className="text-sm">AI Assistant</span>
+            {/* Recent Connections */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center text-lg">
+                  <Users className="h-5 w-5 mr-2" />
+                  Recent Connections
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {connectionsLoading ? (
+                    [...Array(3)].map((_, index) => (
+                      <div key={index} className="flex items-center space-x-3 animate-pulse">
+                        <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                        <div className="flex-1">
+                          <div className="h-4 bg-gray-300 rounded w-3/4 mb-1"></div>
+                          <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                        </div>
+                      </div>
+                    ))
+                  ) : connections && connections.length > 0 ? (
+                    connections.slice(0, 3).map((connection, index) => (
+                      <div key={connection.id} className="flex items-center space-x-3">
+                        <Link to={`/network/people/${connection.otherUser?.id}`} className="block hover:scale-105 transition-transform">
+                          <Avatar className="w-10 h-10 cursor-pointer">
+                            <AvatarImage src={connection.otherUser?.profile_picture_url} />
+                            <AvatarFallback>
+                              {generateInitials(connection.otherUser)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </Link>
+                        <div className="flex-1">
+                          <Link 
+                            to={`/network/people/${connection.otherUser?.id}`}
+                            className="hover:text-blue-600 transition-colors"
+                          >
+                            <p className="font-medium text-gray-900 text-sm cursor-pointer">
+                              {formatDisplayName(connection.otherUser)}
+                            </p>
+                          </Link>
+                          <p className="text-xs text-gray-500">
+                            {connection.otherUser?.title || 'Professional'}
+                          </p>
+                        </div>
+                        <Link to={`/network/messages/${connection.otherUser?.id}`}>
+                          <Button variant="outline" size="sm">
+                            Message
+                          </Button>
+                        </Link>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500 text-center py-4">No connections yet</p>
+                  )}
+                </div>
+                <div className="mt-4 pt-4 border-t">
+                  <Link to="/network/people">
+                    <Button variant="ghost" className="w-full">
+                      View All Connections
                     </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Talentxcel Link */}
-              <Card className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground border-primary">
-                <CardContent className="p-6 text-center">
-                  <a 
-                    href="https://talentxcel.in" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="block font-semibold hover:opacity-90 transition-opacity"
-                  >
-                    Visit talentxcel.in for more information
-                  </a>
-                </CardContent>
-              </Card>
-            </div>
+            {/* Smart Connect AI */}
+            <SmartConnectAI />
+            
+            {/* Recent Activity */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center text-lg">
+                  <Bell className="h-5 w-5 mr-2" />
+                  Recent Activity
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {activityLoading ? (
+                    [...Array(3)].map((_, index) => (
+                      <div key={index} className="flex items-start space-x-3 animate-pulse">
+                        <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                        <div className="flex-1">
+                          <div className="h-3 bg-gray-300 rounded w-full mb-1"></div>
+                          <div className="h-2 bg-gray-300 rounded w-1/2"></div>
+                        </div>
+                      </div>
+                    ))
+                  ) : recentActivity && recentActivity.length > 0 ? (
+                    recentActivity.slice(0, 5).map((activity) => (
+                      <div key={activity.id} className="flex items-start space-x-3">
+                        <Avatar className="w-8 h-8">
+                          <AvatarImage src={activity.avatar} />
+                          <AvatarFallback className="text-xs">
+                            {activity.user.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <p className="text-sm">
+                            <span className="font-medium">{activity.user}</span> {activity.action}
+                          </p>
+                          <p className="text-xs text-gray-500">{formatTimeAgo(activity.time)}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500 text-center py-4">No recent activity</p>
+                  )}
+                </div>
+                <div className="mt-4 pt-4 border-t">
+                  <Link to="/network/notifications">
+                    <Button variant="ghost" className="w-full">
+                      View All Notifications
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

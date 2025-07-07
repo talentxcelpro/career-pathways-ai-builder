@@ -41,42 +41,30 @@ export const ProfileBanner: React.FC<ProfileBannerProps> = ({
   const { uploadFile } = useFileUpload({
     bucket: 'avatars',
     maxSize: 5 * 1024 * 1024, // 5MB
-    allowedTypes: [
-      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 
-      'image/webp', 'image/svg+xml', 'image/bmp', 'image/tiff'
-    ]
+    allowedTypes: ['image/*']
   });
 
   const handleImageUpload = async (type: 'banner' | 'avatar', file: File) => {
-    if (!profile?.id) {
-      toast.error('Profile not found');
-      return;
-    }
-
     setUploading(type);
     try {
-      const customPath = type === 'banner' 
-        ? `${profile.id}/banner-${Date.now()}.${file.name.split('.').pop()}`
-        : `${profile.id}/avatar-${Date.now()}.${file.name.split('.').pop()}`;
-        
-      const uploadedUrl = await uploadFile(file, customPath);
+      const uploadedUrl = await uploadFile(file);
       
       const updateField = type === 'banner' ? 'banner_url' : 'profile_picture_url';
       const { error } = await supabase
         .from('profiles')
         .update({ [updateField]: uploadedUrl })
-        .eq('id', profile.id);
+        .eq('id', profile?.id);
 
       if (error) {
         console.error('Update error:', error);
         throw error;
       }
       
-      toast.success(`${type === 'banner' ? 'Banner' : 'Profile picture'} updated successfully!`);
-      setTimeout(() => window.location.reload(), 1500);
-    } catch (error: any) {
+      toast.success(`${type} updated successfully!`);
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error) {
       console.error('Upload error:', error);
-      toast.error(`Failed to update ${type === 'banner' ? 'banner' : 'profile picture'}: ${error.message}`);
+      toast.error(`Failed to update ${type}`);
     } finally {
       setUploading(null);
     }

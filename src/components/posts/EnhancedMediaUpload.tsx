@@ -54,14 +54,8 @@ export const EnhancedMediaUpload: React.FC<EnhancedMediaUploadProps> = ({
     bucket: 'post-media',
     maxSize: 100 * 1024 * 1024, // 100MB
     allowedTypes: [
-      ...(allowedTypes.includes('image') ? [
-        'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 
-        'image/webp', 'image/svg+xml', 'image/bmp', 'image/tiff'
-      ] : []),
-      ...(allowedTypes.includes('video') ? [
-        'video/mp4', 'video/quicktime', 'video/avi', 'video/x-msvideo',
-        'video/x-ms-wmv', 'video/x-matroska', 'video/webm', 'video/x-flv'
-      ] : []),
+      ...(allowedTypes.includes('image') ? ['image/*'] : []),
+      ...(allowedTypes.includes('video') ? ['video/*'] : []),
       ...(allowedTypes.includes('document') ? [
         'application/pdf',
         'application/msword',
@@ -254,12 +248,8 @@ export const EnhancedMediaUpload: React.FC<EnhancedMediaUploadProps> = ({
               type="file"
               multiple
               accept={[
-                ...(allowedTypes.includes('image') ? [
-                  '.jpeg', '.jpg', '.png', '.gif', '.webp', '.svg', '.bmp', '.tiff'
-                ] : []),
-                ...(allowedTypes.includes('video') ? [
-                  '.mp4', '.mov', '.avi', '.wmv', '.mkv', '.webm', '.flv'
-                ] : []),
+                ...(allowedTypes.includes('image') ? ['image/*'] : []),
+                ...(allowedTypes.includes('video') ? ['video/*'] : []),
                 ...(allowedTypes.includes('document') ? [
                   '.pdf', '.doc', '.docx', '.txt'
                 ] : [])
