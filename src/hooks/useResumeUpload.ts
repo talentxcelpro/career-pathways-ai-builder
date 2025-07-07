@@ -75,11 +75,25 @@ export const useResumeUpload = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to process resume');
+        console.error('Resume extraction failed:', response.status, response.statusText);
+        let errorMessage = 'Failed to process resume';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch (e) {
+          console.error('Could not parse error response as JSON:', e);
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
-      const extractedContent = await response.json();
+      let extractedContent;
+      try {
+        extractedContent = await response.json();
+      } catch (e) {
+        console.error('Could not parse response as JSON:', e);
+        throw new Error('Invalid response from server. Please try again.');
+      }
       console.log('Enhanced content processed:', extractedContent);
       
       // Step 3: Advanced structure analysis (built into processor)
