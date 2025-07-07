@@ -165,32 +165,71 @@ function JobPostContent() {
 
       console.log('Posting job with data:', jobData);
 
-      // Prepare data with proper null handling
+      // Prepare data with proper null handling and correct column names
       const insertData = {
-        ...jobData,
+        // Required fields for database
+        title: jobData.job_title, // Map job_title to title
+        description: jobData.job_description || jobData.job_summary, // Map to description
+        
+        // Map form fields to correct database columns
+        job_title: jobData.job_title,
+        company_name: jobData.company_name,
+        job_summary: jobData.job_summary,
+        job_description: jobData.job_description,
+        location_city: jobData.location_city,
+        location_state: jobData.location_state,
+        employment_type: jobData.employment_type,
+        work_mode: jobData.work_mode,
+        work_schedule: jobData.work_schedule,
+        experience_level: jobData.experience_level,
+        
+        // Contact information
+        contact_name: jobData.contact_name,
+        contact_designation: jobData.contact_designation,
+        contact_person_email: jobData.contact_email, // Map to correct column
+        contact_person_phone: jobData.contact_phone, // Map to correct column
+        
+        // Company info
+        company_website: jobData.company_website,
+        industry_domain: jobData.industry_domain,
+        company_size: jobData.company_size,
+        
+        // System fields
         posted_by: user.id,
         company_id: userCompany?.company_id || null,
         is_active: jobData.visibility_status === 'active',
-        // Convert string numbers to integers
-        min_salary: jobData.min_salary || null,
-        max_salary: jobData.max_salary || null,
-        min_experience: jobData.min_experience || null,
-        max_experience: jobData.max_experience || null,
-        year_of_passing: jobData.year_of_passing || null,
-        max_education_gap: jobData.max_education_gap || null,
-        // Convert date string to date
-        application_deadline: jobData.application_deadline ? new Date(jobData.application_deadline).toISOString().split('T')[0] : null,
-        // Ensure arrays are properly formatted
-        required_skills: jobData.required_skills || [],
+        visibility_status: jobData.visibility_status,
+        ai_match_enabled: jobData.ai_match_enabled,
+        ai_priority: jobData.ai_priority,
+        
+        // Convert arrays and handle nulls
         key_responsibilities: jobData.key_responsibilities || [],
         must_have_requirements: jobData.must_have_requirements || [],
         preferred_requirements: jobData.preferred_requirements || [],
+        skills_required: jobData.required_skills || [],
         field_of_study: jobData.field_of_study || [],
         certifications: jobData.certifications || [],
         preferred_industries: jobData.preferred_industries || [],
         preferred_company_types: jobData.preferred_company_types || [],
         specific_tools: jobData.specific_tools || [],
-        benefits: jobData.benefits || []
+        benefits: jobData.benefits || [],
+        
+        // Numeric fields
+        salary_min: jobData.min_salary || null,
+        salary_max: jobData.max_salary || null,
+        min_experience: jobData.min_experience || null,
+        max_experience: jobData.max_experience || null,
+        year_of_passing: jobData.year_of_passing || null,
+        max_education_gap: jobData.max_education_gap || null,
+        education_level: jobData.education_level,
+        
+        // Supporting documents
+        jd_flyer_url: jobData.jd_flyer_url,
+        team_brochure_url: jobData.team_brochure_url,
+        benefits_policy_url: jobData.benefits_policy_url,
+        
+        // Date handling
+        application_deadline: jobData.application_deadline ? new Date(jobData.application_deadline).toISOString().split('T')[0] : null
       };
 
       const { data, error } = await supabase
