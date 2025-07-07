@@ -11,46 +11,119 @@ import { supabase } from "@/integrations/supabase/client";
 export const CRMWidget = () => {
   const navigate = useNavigate();
   
+  // Fetch pipeline stats
+  const { data: pipelineStats } = useQuery({
+    queryKey: ['pipeline-stats'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      try {
+        // Get stats for jobs posted by this user
+        const { data: stats } = await supabase
+          .from('job_applications')
+          .select(`
+            status,
+            jobs!inner (
+              posted_by
+            )
+          `)
+          .eq('jobs.posted_by', user.id);
+
+        if (!stats) return { newApplications: 0, inReview: 0, shortlisted: 0 };
+
+        const newApplications = stats.filter(app => 
+          ['applied', 'pending'].includes(app.status)
+        ).length;
+        
+        const inReview = stats.filter(app => 
+          ['reviewing', 'under_review'].includes(app.status)
+        ).length;
+        
+        const shortlisted = stats.filter(app => 
+          ['shortlisted', 'interviewed'].includes(app.status)
+        ).length;
+
+        return { newApplications, inReview, shortlisted };
+      } catch (error) {
+        console.error('Error fetching pipeline stats:', error);
+        return { newApplications: 0, inReview: 0, shortlisted: 0 };
+      }
+    }
+  });
+  
   // Fetch recent applications for CRM
-  const { data: recentApplications } = useQuery({
+  const { data: recentApplications, isLoading: applicationsLoading } = useQuery({
     queryKey: ['recent-applications'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      // Get user's company jobs and recent applications
-      const { data: userTeamMember } = await supabase
-        .from('company_team_members')
-        .select('company_id')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .single();
+      try {
+        // First try to get applications for jobs posted by this user directly
+        const { data: directApplications } = await supabase
+          .from('job_applications')
+          .select(`
+            id,
+            status,
+            applied_at,
+            user_id,
+            job_id,
+            jobs (
+              title,
+              posted_by
+            ),
+            profiles (
+              full_name,
+              email,
+              profile_picture_url
+            )
+          `)
+          .eq('jobs.posted_by', user.id)
+          .order('applied_at', { ascending: false })
+          .limit(5);
 
-      if (!userTeamMember) return [];
+        if (directApplications && directApplications.length > 0) {
+          return directApplications;
+        }
 
-      const { data: applications } = await supabase
-        .from('job_applications')
-        .select(`
-          id,
-          status,
-          applied_at,
-          user_id,
-          job_id,
-          jobs (
-            title,
-            company_id
-          ),
-          profiles (
-            full_name,
-            email,
-            profile_picture_url
-          )
-        `)
-        .eq('jobs.company_id', userTeamMember.company_id)
-        .order('applied_at', { ascending: false })
-        .limit(5);
+        // If no direct applications, try to get applications for company jobs
+        const { data: userTeamMember } = await supabase
+          .from('company_team_members')
+          .select('company_id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .maybeSingle();
 
-      return applications || [];
+        if (!userTeamMember) return [];
+
+        const { data: companyApplications } = await supabase
+          .from('job_applications')
+          .select(`
+            id,
+            status,
+            applied_at,
+            user_id,
+            job_id,
+            jobs (
+              title,
+              company_id
+            ),
+            profiles (
+              full_name,
+              email,
+              profile_picture_url
+            )
+          `)
+          .eq('jobs.company_id', userTeamMember.company_id)
+          .order('applied_at', { ascending: false })
+          .limit(5);
+
+        return companyApplications || [];
+      } catch (error) {
+        console.error('Error fetching recent applications:', error);
+        return [];
+      }
     }
   });
 
@@ -96,7 +169,19 @@ export const CRMWidget = () => {
         </CardHeader>
         
         <CardContent className="space-y-3">
-          {recentApplications && recentApplications.length > 0 ? (
+          {applicationsLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-lg animate-pulse">
+                  <div className="h-8 w-8 bg-slate-200 rounded-full"></div>
+                  <div className="flex-1">
+                    <div className="h-4 bg-slate-200 rounded w-3/4 mb-1"></div>
+                    <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : recentApplications && recentApplications.length > 0 ? (
             recentApplications.map((application: any) => (
               <div 
                 key={application.id}
@@ -178,15 +263,21 @@ export const CRMWidget = () => {
           {/* Pipeline Stats */}
           <div className="grid grid-cols-3 gap-3">
             <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <div className="text-lg font-bold text-blue-700">12</div>
+              <div className="text-lg font-bold text-blue-700">
+                {pipelineStats?.newApplications || 0}
+              </div>
               <div className="text-xs text-blue-600">New Applications</div>
             </div>
             <div className="text-center p-3 bg-yellow-50 rounded-lg">
-              <div className="text-lg font-bold text-yellow-700">8</div>
+              <div className="text-lg font-bold text-yellow-700">
+                {pipelineStats?.inReview || 0}
+              </div>
               <div className="text-xs text-yellow-600">In Review</div>
             </div>
             <div className="text-center p-3 bg-green-50 rounded-lg">
-              <div className="text-lg font-bold text-green-700">3</div>
+              <div className="text-lg font-bold text-green-700">
+                {pipelineStats?.shortlisted || 0}
+              </div>
               <div className="text-xs text-green-600">Shortlisted</div>
             </div>
           </div>
