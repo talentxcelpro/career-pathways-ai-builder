@@ -24,11 +24,15 @@ import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
 import { useNetworkRealtime, useAutoRefreshPosts } from "@/hooks/useRealtimeData";
 import FloatingMessenger from "@/components/network/FloatingMessenger";
 import { Link } from 'react-router-dom';
+import { AICommentGenerator } from "@/components/network/AICommentGenerator";
+import { EnhancedTrendingTopics } from "@/components/network/EnhancedTrendingTopics";
 
 const Posts = () => {
   const [openComments, setOpenComments] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [feedFilter, setFeedFilter] = useState<'all' | 'smart'>('all');
+  const [showCommentGenerator, setShowCommentGenerator] = useState<string | null>(null);
+  const [activePost, setActivePost] = useState<any>(null);
   const queryClient = useQueryClient();
 
   // Auto-refresh with realtime updates
@@ -139,6 +143,36 @@ const Posts = () => {
 
   const handlePostCreate = (post: any) => {
     queryClient.invalidateQueries({ queryKey: ['posts'] });
+  };
+
+  const handleCommentGeneration = (postId: string, post: any) => {
+    setActivePost(post);
+    setShowCommentGenerator(postId);
+  };
+
+  const handleCommentPost = async (comment: string) => {
+    if (!activePost) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { error } = await supabase
+        .from('post_comments')
+        .insert({
+          post_id: activePost.id,
+          user_id: user?.id,
+          content: comment
+        });
+
+      if (error) throw error;
+      
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      setShowCommentGenerator(null);
+      setActivePost(null);
+      
+    } catch (error) {
+      console.error('Failed to post comment:', error);
+    }
   };
 
   // Function to detect URLs in text
@@ -308,6 +342,18 @@ const Posts = () => {
               </div>
             </Card>
             
+            {/* Enhanced Trending Topics */}
+            <EnhancedTrendingTopics
+              onTopicSelect={(topic) => {
+                console.log('Selected topic:', topic);
+              }}
+              onHashtagSelect={(hashtag) => {
+                console.log('Selected hashtag:', hashtag);
+              }}
+              userInterests={currentUserProfile?.career_interests || []}
+              industry={currentUserProfile?.industry || 'Technology'}
+            />
+
             {/* Network Stats */}
             <NetworkStats
               stats={{
@@ -528,6 +574,34 @@ const Posts = () => {
                         initialShares={post.shares_count || 0}
                         onCommentClick={() => setOpenComments(openComments === post.id ? null : post.id)}
                       />
+                      
+                      {/* AI Comment Generator Button */}
+                      <div className="flex justify-end mt-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCommentGeneration(post.id, post)}
+                          className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                        >
+                          <Sparkles className="h-4 w-4 mr-1" />
+                          AI Comment
+                        </Button>
+                      </div>
+
+                      {/* AI Comment Generator */}
+                      {showCommentGenerator === post.id && (
+                        <div className="mt-4">
+                          <AICommentGenerator
+                            postContent={post.content}
+                            postAuthor={{
+                              name: formatDisplayName(post.profiles),
+                              title: post.profiles?.title
+                            }}
+                            onCommentGenerated={(comment) => console.log('Generated:', comment)}
+                            onCommentPost={handleCommentPost}
+                          />
+                        </div>
+                      )}
 
                       {/* Comments Section */}
                       <CommentsSection
