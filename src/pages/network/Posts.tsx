@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,6 @@ import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionP
 import { LinkedInStyleBanner } from "@/components/profile/LinkedInStyleBanner";
 import { NetworkStats } from "@/components/network/NetworkStats";
 import { AIPostAssistant } from "@/components/network/AIPostAssistant";
-import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
 import { CompanyNetworkActivity } from "@/components/network/CompanyNetworkActivity";
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
@@ -211,7 +209,6 @@ const Posts = () => {
             </div>
           </div>
         </div>
-
 
         {/* Three Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -417,9 +414,9 @@ const Posts = () => {
                           );
                         })()}
                         
-                        {/* Post Media */}
+                        {/* Post Media - Enhanced */}
                         {post.media_urls && post.media_urls.length > 0 && (
-                          <div className="mt-4 grid gap-2" style={{
+                          <div className="mt-4 grid gap-3" style={{
                             gridTemplateColumns: post.media_urls.length === 1 ? '1fr' : 
                                                post.media_urls.length === 2 ? '1fr 1fr' :
                                                post.media_urls.length === 3 ? '1fr 1fr 1fr' :
@@ -430,18 +427,18 @@ const Posts = () => {
                               const isDocument = url.includes('.pdf') || url.includes('.doc') || url.includes('document');
                               
                               return (
-                                <div key={index} className="relative">
+                                <div key={index} className="relative group cursor-pointer">
                                   {isVideo ? (
                                     <video 
                                       src={url}
-                                      className="w-full h-64 object-cover rounded-lg"
+                                      className="w-full h-64 object-cover rounded-lg hover:scale-[1.02] transition-transform"
                                       controls
                                     />
                                   ) : isDocument ? (
-                                    <div className="flex items-center justify-center h-32 bg-gray-100 rounded-lg">
+                                    <div className="flex items-center justify-center h-32 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg hover:scale-[1.02] transition-transform">
                                       <div className="text-center">
-                                        <FileText className="h-8 w-8 mx-auto mb-2 text-gray-600" />
-                                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
+                                        <FileText className="h-8 w-8 mx-auto mb-2 text-white" />
+                                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-white hover:underline text-sm font-medium">
                                           View Document
                                         </a>
                                       </div>
@@ -450,11 +447,12 @@ const Posts = () => {
                                     <img 
                                       src={url}
                                       alt={`Post media ${index + 1}`}
-                                      className="w-full h-64 object-cover rounded-lg"
+                                      className="w-full h-64 object-cover rounded-lg hover:scale-[1.02] transition-transform cursor-pointer"
+                                      onClick={() => window.open(url, '_blank')}
                                     />
                                   )}
                                   {index === 3 && post.media_urls.length > 4 && (
-                                    <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                                    <div className="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center">
                                       <span className="text-white text-xl font-semibold">
                                         +{post.media_urls.length - 4}
                                       </span>
@@ -517,11 +515,14 @@ const Posts = () => {
             )}
           </div>
 
-          {/* Right Sidebar - Network Activity */}
+          {/* Right Sidebar - Company Activity */}
           <div className="lg:col-span-3 space-y-4">
-            {/* Connection Requests */}
-            <ConnectionRequests />
-
+            {/* Company Activity */}
+            <CompanyNetworkActivity />
+            
+            {/* Smart Connect AI */}
+            <SmartConnectAI />
+            
             {/* Quick Actions */}
             <Card className="p-3">
               <h3 className="font-semibold text-sm mb-3">Quick Actions</h3>
@@ -553,25 +554,6 @@ const Posts = () => {
                     Companies
                   </Button>
                 </Link>
-              </div>
-            </Card>
-
-            {/* Network Stats */}
-            <Card className="p-3">
-              <h3 className="font-semibold text-sm mb-3">Activity</h3>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">Posts Shared</span>
-                  <span className="text-sm font-bold">12</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">Comments</span>
-                  <span className="text-sm font-bold">8</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">Likes Given</span>
-                  <span className="text-sm font-bold">24</span>
-                </div>
               </div>
             </Card>
 
@@ -613,48 +595,6 @@ const Posts = () => {
                 )}
               </div>
               <Link to="/network/people" className="block mt-2">
-                <Button variant="ghost" size="sm" className="w-full text-xs h-7">
-                  View All
-                </Button>
-              </Link>
-            </Card>
-
-            {/* Recent Activity */}
-            <Card className="p-3">
-              <h3 className="font-semibold text-sm mb-3">Recent Activity</h3>
-              <div className="space-y-2">
-                {activityLoading ? (
-                  [...Array(2)].map((_, index) => (
-                    <div key={index} className="flex items-start space-x-2 animate-pulse">
-                      <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
-                      <div className="flex-1">
-                        <div className="h-2 bg-gray-300 rounded w-full mb-1"></div>
-                        <div className="h-2 bg-gray-300 rounded w-1/2"></div>
-                      </div>
-                    </div>
-                  ))
-                ) : recentActivity && recentActivity.length > 0 ? (
-                  recentActivity.slice(0, 3).map((activity) => (
-                    <div key={activity.id} className="flex items-start space-x-2">
-                      <Avatar className="w-6 h-6">
-                        <AvatarImage src={activity.avatar} />
-                        <AvatarFallback className="text-xs">
-                          {activity.user.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs">
-                          <span className="font-medium">{activity.user}</span> {activity.action}
-                        </p>
-                        <p className="text-xs text-gray-500">{formatTimeAgo(activity.time)}</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-xs text-gray-500 text-center py-2">No recent activity</p>
-                )}
-              </div>
-              <Link to="/network/notifications" className="block mt-2">
                 <Button variant="ghost" size="sm" className="w-full text-xs h-7">
                   View All
                 </Button>
