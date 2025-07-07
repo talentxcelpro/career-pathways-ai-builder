@@ -109,7 +109,18 @@ const EditResume = () => {
         skills: Array.isArray(content.skills) 
           ? content.skills 
           : content.skills?.technical 
-            ? [...(content.skills.technical || []), ...(content.skills.soft || []), ...(content.skills.languages || []), ...(content.skills.tools || [])]
+            ? [
+                ...(Array.isArray(content.skills.technical) ? content.skills.technical : [
+                  ...(content.skills.technical?.programming || []),
+                  ...(content.skills.technical?.frameworks || []),
+                  ...(content.skills.technical?.databases || []),
+                  ...(content.skills.technical?.tools || []),
+                  ...(content.skills.technical?.cloud || [])
+                ]),
+                ...(content.skills.soft || []), 
+                ...(content.skills.languages?.map((lang: any) => typeof lang === 'string' ? lang : lang.language) || []),
+                ...(content.skills.certifications || [])
+              ]
             : [],
         projects: Array.isArray(content.projects) ? content.projects : [],
         certifications: Array.isArray(content.certifications) ? content.certifications : [],
