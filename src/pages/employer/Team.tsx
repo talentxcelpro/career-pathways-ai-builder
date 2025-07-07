@@ -387,6 +387,45 @@ const EmployerTeam = () => {
         )}
       </div>
 
+      {/* Direct Invitation CTA */}
+      {canManageTeam && (
+        <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
+                <Users className="h-5 w-5 text-white" />
+              </div>
+              Method 1: Direct Team Invitation
+            </CardTitle>
+            <CardDescription>
+              Invite colleagues who are already on TalentXcel platform
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-gray-600">
+              Search for existing users on the platform and send them instant invitations to join your team.
+            </p>
+            <div className="flex gap-3">
+              <Button 
+                onClick={() => setShowUserSearch(true)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Search className="h-4 w-4 mr-2" />
+                Find & Invite Users
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => setShowInviteDialog(true)}
+                className="border-blue-200 text-blue-700 hover:bg-blue-50"
+              >
+                <Mail className="h-4 w-4 mr-2" />
+                Invite by Email
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Team Access Instructions */}
       <TeamAccessInstructions />
 
