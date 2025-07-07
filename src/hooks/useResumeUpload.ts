@@ -58,10 +58,28 @@ export const useResumeUpload = () => {
       const fileUrl = await uploadFile(file, `resume-${Date.now()}.${file.name.split('.').pop()}`);
       console.log('File uploaded successfully:', fileUrl);
       
-      // Step 2: Enhanced AI Processing
+      // Step 2: Enhanced AI Processing with direct file upload
       setProcessingStep(2);
-      const processor = new EnhancedResumeProcessor();
-      const extractedContent = await processor.processResume(file);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('fileName', file.name);
+      formData.append('fileType', file.type);
+      formData.append('extractionLevel', 'comprehensive');
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-resume-extraction`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to process resume');
+      }
+
+      const extractedContent = await response.json();
       console.log('Enhanced content processed:', extractedContent);
       
       // Step 3: Advanced structure analysis (built into processor)

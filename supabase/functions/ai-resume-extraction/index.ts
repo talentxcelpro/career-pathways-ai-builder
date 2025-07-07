@@ -1,6 +1,10 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+// Import text extraction libraries
+const { PDFExtract } = await import('https://esm.sh/pdf-parse@1.1.1');
+const mammoth = await import('https://esm.sh/mammoth@1.6.0');
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -35,11 +39,77 @@ serve(async (req) => {
   }
 
   try {
-    const { text, fileName, fileType, extractionLevel = 'comprehensive' } = await req.json();
+    const formData = await req.formData();
+    const file = formData.get('file') as File;
+    const fileName = formData.get('fileName') as string || file?.name || 'resume';
+    const fileType = formData.get('fileType') as string || file?.type || '';
+    const extractionLevel = formData.get('extractionLevel') as string || 'comprehensive';
 
-    if (!text) {
-      throw new Error('No resume text provided');
+    if (!file) {
+      throw new Error('No file provided');
     }
+
+    console.log('Processing file:', fileName, 'Type:', fileType, 'Size:', file.size);
+
+    // Extract text from PDF or DOCX
+    let extractedText = '';
+    
+    if (file.type === 'application/pdf' || fileName.toLowerCase().endsWith('.pdf')) {
+      console.log('Extracting PDF text...');
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = new Uint8Array(arrayBuffer);
+      
+      try {
+        // Use pdf-parse equivalent for Deno
+        const response = await fetch('https://api.pdf.co/v1/pdf/convert/to/text', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            'x-api-key': Deno.env.get('PDF_CO_API_KEY') || 'demo' // Free tier available
+          },
+          body: buffer
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          extractedText = result.body || '';
+        } else {
+          // Fallback: Basic text extraction attempt
+          const decoder = new TextDecoder();
+          const pdfText = decoder.decode(buffer);
+          // Very basic PDF text extraction (not ideal but works for simple PDFs)
+          extractedText = pdfText.replace(/[^\x20-\x7E\n\r\t]/g, ' ').trim();
+        }
+      } catch (pdfError) {
+        console.error('PDF extraction failed:', pdfError);
+        throw new Error('Failed to extract text from PDF file');
+      }
+      
+    } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
+               fileName.toLowerCase().endsWith('.docx')) {
+      console.log('Extracting DOCX text...');
+      const arrayBuffer = await file.arrayBuffer();
+      
+      try {
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        extractedText = result.value;
+      } catch (docxError) {
+        console.error('DOCX extraction failed:', docxError);
+        throw new Error('Failed to extract text from DOCX file');
+      }
+      
+    } else if (file.type === 'application/msword' || fileName.toLowerCase().endsWith('.doc')) {
+      // For .doc files, we need a different approach or conversion service
+      throw new Error('Legacy .doc files are not supported. Please convert to .docx or .pdf');
+    } else {
+      throw new Error('Unsupported file type. Please upload PDF or DOCX files only.');
+    }
+
+    if (!extractedText || extractedText.trim().length < 50) {
+      throw new Error('Could not extract meaningful text from the file. Please ensure the file contains readable text.');
+    }
+
+    console.log('Extracted text length:', extractedText.length);
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
@@ -171,7 +241,7 @@ EXTRACTION REQUIREMENTS:
 - Return valid JSON only
 
 Resume Content:
-${text}
+${extractedText}
 
 Return ONLY the JSON object with extracted data.`;
 
