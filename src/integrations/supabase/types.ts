@@ -3247,6 +3247,7 @@ export type Database = {
         Row: {
           about: string | null
           allow_profile_sharing: boolean | null
+          banner_url: string | null
           career_goals: string[] | null
           career_interests: string[] | null
           career_stage: string | null
@@ -3300,6 +3301,7 @@ export type Database = {
         Insert: {
           about?: string | null
           allow_profile_sharing?: boolean | null
+          banner_url?: string | null
           career_goals?: string[] | null
           career_interests?: string[] | null
           career_stage?: string | null
@@ -3353,6 +3355,7 @@ export type Database = {
         Update: {
           about?: string | null
           allow_profile_sharing?: boolean | null
+          banner_url?: string | null
           career_goals?: string[] | null
           career_interests?: string[] | null
           career_stage?: string | null
