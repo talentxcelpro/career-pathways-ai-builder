@@ -160,12 +160,10 @@ export class ResumeDataService {
               user_id: userId,
               degree: edu.degree,
               institution: edu.institution,
-              location: edu.location,
-              start_date: edu.start_date,
-              end_date: edu.end_date,
-              gpa: edu.gpa,
-              honors: edu.honors,
+              graduation_date: edu.end_date,
+              gpa_honors: edu.gpa || edu.honors,
               relevant_coursework: edu.relevant_coursework,
+              academic_projects: [],
             }))
           );
 
@@ -207,14 +205,10 @@ export class ResumeDataService {
           .insert(
             data.projects.map(project => ({
               user_id: userId,
-              project_name: project.project_name,
+              project_title: project.project_name,
               description: project.description,
               technologies_used: project.technologies_used,
-              start_date: project.start_date,
-              end_date: project.end_date,
-              project_url: project.project_url,
-              github_url: project.github_url,
-              key_achievements: project.key_achievements,
+              github_link: project.project_url || project.github_url,
             }))
           );
 
@@ -237,12 +231,10 @@ export class ResumeDataService {
           .insert(
             data.certifications.map(cert => ({
               user_id: userId,
-              certification_name: cert.certification_name,
-              issuing_organization: cert.issuing_organization,
-              issue_date: cert.issue_date,
-              expiry_date: cert.expiry_date,
-              credential_id: cert.credential_id,
-              credential_url: cert.credential_url,
+              certificate_name: cert.certification_name,
+              issuer: cert.issuing_organization,
+              date_earned: cert.issue_date,
+              certificate_url: cert.credential_url,
             }))
           );
 
@@ -265,10 +257,10 @@ export class ResumeDataService {
           .insert(
             data.awards.map(award => ({
               user_id: userId,
-              award_name: award.award_name,
-              issuing_organization: award.issuing_organization,
-              date_received: award.date_received,
-              description: award.description,
+              award_title: award.award_name,
+              issued_by: award.issuing_organization,
+              award_date: award.date_received,
+              award_description: award.description,
             }))
           );
 
@@ -316,14 +308,13 @@ export class ResumeDataService {
         const { error: pubsError } = await supabase
           .from('publications')
           .insert(
-            data.publications.map(pub => ({
-              user_id: userId,
-              title: pub.title,
-              publisher: pub.publisher,
-              publication_date: pub.publication_date,
-              url: pub.url,
-              description: pub.description,
-            }))
+             data.publications.map(pub => ({
+               user_id: userId,
+               title: pub.title,
+               publication_source: pub.publisher,
+               publication_date: pub.publication_date,
+               link: pub.url,
+             }))
           );
 
         if (pubsError) {
@@ -338,7 +329,7 @@ export class ResumeDataService {
           .from('interests')
           .upsert({
             user_id: userId,
-            interest_list: data.interests,
+            interest_items: data.interests,
           });
 
         if (interestsError) {
@@ -351,21 +342,18 @@ export class ResumeDataService {
       if (data.references?.length > 0) {
         // Clear existing references
         await supabase
-          .from('references')
+          .from('references_info')
           .delete()
           .eq('user_id', userId);
 
         const { error: refsError } = await supabase
-          .from('references')
+          .from('references_info')
           .insert(
             data.references.map(ref => ({
               user_id: userId,
               reference_name: ref.reference_name,
               title: ref.title,
-              company: ref.company,
-              email: ref.email,
-              phone: ref.phone,
-              relationship: ref.relationship,
+              contact_info: `${ref.email} | ${ref.phone}`,
             }))
           );
 
@@ -429,7 +417,7 @@ export class ResumeDataService {
         { data: interests },
         { data: references }
       ] = await Promise.all([
-        supabase.from('users_profile').select('*').eq('user_id', userId).single(),
+        supabase.from('users_profile').select('*').eq('id', userId).single(),
         supabase.from('work_experience').select('*').eq('user_id', userId),
         supabase.from('education').select('*').eq('user_id', userId),
         supabase.from('skills').select('*').eq('user_id', userId).single(),
@@ -439,7 +427,7 @@ export class ResumeDataService {
         supabase.from('volunteer_experience').select('*').eq('user_id', userId),
         supabase.from('publications').select('*').eq('user_id', userId),
         supabase.from('interests').select('*').eq('user_id', userId).single(),
-        supabase.from('references').select('*').eq('user_id', userId)
+        supabase.from('references_info').select('*').eq('user_id', userId)
       ]);
 
       if (!profile) {
@@ -468,11 +456,11 @@ export class ResumeDataService {
         education: education?.map(edu => ({
           degree: edu.degree,
           institution: edu.institution,
-          location: edu.location || '',
-          start_date: edu.start_date || '',
-          end_date: edu.end_date || '',
-          gpa: edu.gpa || '',
-          honors: edu.honors || '',
+          location: '',
+          start_date: '',
+          end_date: edu.graduation_date || '',
+          gpa: edu.gpa_honors || '',
+          honors: '',
           relevant_coursework: edu.relevant_coursework || [],
         })) || [],
         skills: {
@@ -483,28 +471,28 @@ export class ResumeDataService {
           languages_spoken: skills?.languages_spoken || [],
         },
         projects: projects?.map(proj => ({
-          project_name: proj.project_name,
+          project_name: proj.project_title,
           description: proj.description || '',
           technologies_used: proj.technologies_used || [],
-          start_date: proj.start_date || '',
-          end_date: proj.end_date || '',
-          project_url: proj.project_url || '',
-          github_url: proj.github_url || '',
-          key_achievements: proj.key_achievements || [],
+          start_date: '',
+          end_date: '',
+          project_url: proj.github_link || '',
+          github_url: proj.github_link || '',
+          key_achievements: [],
         })) || [],
         certifications: certifications?.map(cert => ({
-          certification_name: cert.certification_name,
-          issuing_organization: cert.issuing_organization,
-          issue_date: cert.issue_date || '',
-          expiry_date: cert.expiry_date || '',
-          credential_id: cert.credential_id || '',
-          credential_url: cert.credential_url || '',
+          certification_name: cert.certificate_name,
+          issuing_organization: cert.issuer,
+          issue_date: cert.date_earned || '',
+          expiry_date: '',
+          credential_id: '',
+          credential_url: cert.certificate_url || '',
         })) || [],
         awards: awards?.map(award => ({
-          award_name: award.award_name,
-          issuing_organization: award.issuing_organization,
-          date_received: award.date_received || '',
-          description: award.description || '',
+          award_name: award.award_title,
+          issuing_organization: award.issued_by,
+          date_received: award.award_date || '',
+          description: award.award_description || '',
         })) || [],
         volunteer_experience: volunteerExperience?.map(vol => ({
           organization: vol.organization,
@@ -515,19 +503,19 @@ export class ResumeDataService {
         })) || [],
         publications: publications?.map(pub => ({
           title: pub.title,
-          publisher: pub.publisher || '',
+          publisher: pub.publication_source || '',
           publication_date: pub.publication_date || '',
-          url: pub.url || '',
-          description: pub.description || '',
+          url: pub.link || '',
+          description: '',
         })) || [],
-        interests: interests?.interest_list || [],
+        interests: interests?.interest_items || [],
         references: references?.map(ref => ({
           reference_name: ref.reference_name,
           title: ref.title || '',
-          company: ref.company || '',
-          email: ref.email || '',
-          phone: ref.phone || '',
-          relationship: ref.relationship || '',
+          company: '',
+          email: ref.contact_info || '',
+          phone: '',
+          relationship: '',
         })) || [],
       };
 

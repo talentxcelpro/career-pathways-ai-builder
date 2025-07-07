@@ -54,17 +54,17 @@ const ResumeEditor = () => {
 
       return {
         profile: profile || { full_name: '', email: '', phone: '', location: '', linkedin_url: '', professional_summary: '' },
-        workExperience: workExperience || [],
+        work_experience: workExperience || [],
         education: education || [],
         skills: skills || { technical_skills: [], programming_languages: [], tools_software: [], soft_skills: [], languages_spoken: [] },
         projects: projects || [],
         certifications: certifications || [],
         awards: awards || [],
-        volunteerExperience: volunteerExperience || [],
+        volunteer_experience: volunteerExperience || [],
         publications: publications || [],
         interests: interests || { interest_items: [] },
         references: references || [],
-        customSections: customSections || []
+        custom_sections: customSections || []
       };
     },
     enabled: !!user
@@ -138,7 +138,7 @@ const ResumeEditor = () => {
     try {
       await Promise.all([
         saveProfileMutation.mutateAsync(resumeData.profile),
-        saveWorkExperienceMutation.mutateAsync(resumeData.workExperience),
+        saveWorkExperienceMutation.mutateAsync(resumeData.work_experience),
         saveEducationMutation.mutateAsync(resumeData.education),
         saveSkillsMutation.mutateAsync(resumeData.skills),
         saveProjectsMutation.mutateAsync(resumeData.projects)
@@ -313,8 +313,9 @@ const ResumeEditor = () => {
                   size="sm" 
                 onClick={() => {
                   const newData = { ...resumeData };
-                  newData.workExperience.push({
-                    id: Date.now().toString(),
+                  newData.work_experience.push({
+                    id: `temp-${Date.now()}`,
+                    user_id: user?.id || '',
                     job_title: '',
                     company_name: '',
                     location: '',
@@ -322,7 +323,8 @@ const ResumeEditor = () => {
                     end_date: '',
                     responsibilities: [],
                     key_achievements: [],
-                    technologies_used: []
+                    technologies_used: [],
+                    created_at: new Date().toISOString()
                   });
                   queryClient.setQueryData(['user-resume-data', user?.id], newData);
                 }}
@@ -332,7 +334,7 @@ const ResumeEditor = () => {
                 </Button>
               </CardHeader>
               <CardContent className="space-y-4">
-                {resumeData?.workExperience?.map((exp: any, index: number) => (
+                {resumeData?.work_experience?.map((exp: any, index: number) => (
                   <div key={index} className="p-4 border rounded-lg space-y-3">
                     <div className="flex justify-between items-start">
                       <h4 className="font-semibold">Experience {index + 1}</h4>
@@ -341,7 +343,7 @@ const ResumeEditor = () => {
                         variant="outline"
                         onClick={() => {
                           const newData = { ...resumeData };
-                          newData.workExperience.splice(index, 1);
+                          newData.work_experience.splice(index, 1);
                           queryClient.setQueryData(['user-resume-data', user?.id], newData);
                         }}
                       >
@@ -355,7 +357,7 @@ const ResumeEditor = () => {
                         value={exp.job_title || ''}
                         onChange={(e) => {
                           const newData = { ...resumeData };
-                          newData.workExperience[index].job_title = e.target.value;
+                          newData.work_experience[index].job_title = e.target.value;
                           queryClient.setQueryData(['user-resume-data', user?.id], newData);
                         }}
                       />
@@ -364,7 +366,7 @@ const ResumeEditor = () => {
                         value={exp.company_name || ''}
                         onChange={(e) => {
                           const newData = { ...resumeData };
-                          newData.workExperience[index].company_name = e.target.value;
+                          newData.work_experience[index].company_name = e.target.value;
                           queryClient.setQueryData(['user-resume-data', user?.id], newData);
                         }}
                       />
@@ -376,7 +378,7 @@ const ResumeEditor = () => {
                         value={exp.location || ''}
                         onChange={(e) => {
                           const newData = { ...resumeData };
-                          newData.workExperience[index].location = e.target.value;
+                          newData.work_experience[index].location = e.target.value;
                           queryClient.setQueryData(['user-resume-data', user?.id], newData);
                         }}
                       />
@@ -386,7 +388,7 @@ const ResumeEditor = () => {
                         value={exp.start_date || ''}
                         onChange={(e) => {
                           const newData = { ...resumeData };
-                          newData.workExperience[index].start_date = e.target.value;
+                          newData.work_experience[index].start_date = e.target.value;
                           queryClient.setQueryData(['user-resume-data', user?.id], newData);
                         }}
                       />
@@ -396,7 +398,7 @@ const ResumeEditor = () => {
                         value={exp.end_date || ''}
                         onChange={(e) => {
                           const newData = { ...resumeData };
-                          newData.workExperience[index].end_date = e.target.value;
+                          newData.work_experience[index].end_date = e.target.value;
                           queryClient.setQueryData(['user-resume-data', user?.id], newData);
                         }}
                       />
@@ -528,13 +530,13 @@ const ResumeEditor = () => {
                     )}
 
                     {/* Work Experience */}
-                    {resumeData?.workExperience?.length > 0 && (
+                    {resumeData?.work_experience?.length > 0 && (
                       <div>
                         <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-1 mb-3">
                           Work Experience
                         </h2>
                         <div className="space-y-4">
-                          {resumeData.workExperience.map((exp: any, index: number) => (
+                          {resumeData.work_experience.map((exp: any, index: number) => (
                             <div key={index} className="space-y-1">
                               <div className="flex justify-between items-start">
                                 <div>
