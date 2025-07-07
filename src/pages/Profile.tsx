@@ -2,16 +2,24 @@
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import ProfileLayout from '@/components/profile/ProfileLayout';
-import { ProfileCompletionBanner } from '@/components/profile/ProfileCompletionBanner';
-import { ProfileShareDialog } from '@/components/profile/ProfileShareDialog';
-import { PortfolioManager } from '@/components/profile/PortfolioManager';
-import { FollowedCompanies } from '@/components/profile/FollowedCompanies';
-import { ProfileViewers } from '@/components/profile/ProfileViewers';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Share2, Eye, Download, ExternalLink } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { 
+  Plus, 
+  Eye, 
+  Building, 
+  MapPin, 
+  Users, 
+  Briefcase, 
+  Bookmark, 
+  Calendar, 
+  Newspaper, 
+  UserCheck,
+  Edit,
+  ExternalLink
+} from 'lucide-react';
 import { incrementProfileView } from '@/utils/profileHelpers';
 import { useState } from 'react';
 
@@ -93,225 +101,238 @@ const Profile = () => {
     return null; // Will redirect to login
   }
 
-  const profileUrl = profile?.custom_profile_url 
-    ? `${window.location.origin}/profile/${profile.custom_profile_url}`
-    : `${window.location.origin}/profile/${currentUser.id}`;
+  const formatDisplayName = (profile: any) => {
+    if (profile?.full_name && profile.full_name.trim()) {
+      return profile.full_name;
+    }
+    if (currentUser?.email) {
+      return currentUser.email.split('@')[0];
+    }
+    return 'Professional User';
+  };
 
-  const socialPlatforms = {
-    linkedin: 'LinkedIn',
-    github: 'GitHub', 
-    twitter: 'Twitter',
-    website: 'Website'
+  const generateInitials = (profile: any) => {
+    const displayName = formatDisplayName(profile);
+    if (displayName === 'Professional User') return 'PU';
+    
+    const names = displayName.split(' ');
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    }
+    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
   };
 
   return (
-    <ProfileLayout title="Profile" description="View and manage your professional profile">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Profile Completion Banner */}
-        <ProfileCompletionBanner profile={profile} />
+    <div className="min-h-screen bg-[hsl(var(--background))]">
+      <div className="max-w-6xl mx-auto px-4 py-5">
+        {/* Banner Section */}
+        <div className="h-[300px] bg-gradient-to-r from-[hsl(213,63%,27%)] to-[hsl(210,64%,41%)] rounded-t-xl relative overflow-hidden shadow-lg">
+          {profile?.banner_url && (
+            <img
+              src={profile.banner_url}
+              alt="Profile Banner"
+              className="w-full h-full object-cover"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
+        </div>
         
         {/* Profile Header */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              {profile?.profile_picture_url ? (
-                <img
-                  src={profile.profile_picture_url}
-                  alt={profile.full_name || 'Profile'}
-                  className="w-20 h-20 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
-                  {profile?.full_name 
-                    ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase()
-                    : currentUser.email?.[0]?.toUpperCase() || 'U'
-                  }
+        <div className="flex flex-col lg:flex-row items-start lg:items-end -mt-24 px-8 pb-8 relative z-10">
+          {/* Profile Picture */}
+          <div className="w-[180px] h-[180px] rounded-full border-4 border-white shadow-xl bg-[hsl(var(--primary))] flex items-center justify-center text-white font-bold text-6xl mb-6 lg:mb-0">
+            {profile?.profile_picture_url ? (
+              <img
+                src={profile.profile_picture_url}
+                alt={formatDisplayName(profile)}
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              generateInitials(profile)
+            )}
+          </div>
+          
+          {/* Profile Info */}
+          <div className="flex-1 lg:ml-8 lg:pt-16 text-center lg:text-left">
+            <div className="mb-2">
+              <h1 className="text-4xl font-bold text-[hsl(var(--foreground))] inline-block">
+                {formatDisplayName(profile)}
+              </h1>
+              <Badge variant="secondary" className="ml-3 px-3 py-1">
+                He/Him
+              </Badge>
+            </div>
+            
+            {profile?.title && (
+              <p className="text-xl text-[hsl(var(--muted-foreground))] font-medium mb-4">
+                {profile.title}
+              </p>
+            )}
+            
+            <div className="flex flex-wrap gap-6 justify-center lg:justify-start mb-6 text-[hsl(var(--muted-foreground))]">
+              {profile?.current_company && (
+                <div className="flex items-center">
+                  <Building className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
+                  <span>{profile.current_company}</span>
                 </div>
               )}
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {profile?.full_name || currentUser.email || 'Your Profile'}
-                </h1>
-                {profile?.title && (
-                  <p className="text-xl text-gray-600">{profile.title}</p>
-                )}
-                {profile?.location && (
-                  <p className="text-gray-500">{profile.location}</p>
-                )}
-                
-                 {/* Profile Stats */}
-                 <div className="flex items-center space-x-4 mt-2">
-                   <ProfileViewers 
-                     profileUserId={currentUser.id} 
-                     viewsCount={profile?.profile_views_count || 0} 
-                   />
-                  <Badge variant="outline" className="capitalize">
-                    {profile?.profile_visibility || 'public'} profile
-                  </Badge>
+              {profile?.location && (
+                <div className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
+                  <span>{profile.location}</span>
                 </div>
+              )}
+              <div className="flex items-center">
+                <Users className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
+                <Badge className="bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] px-3 py-1">
+                  500+
+                </Badge>
+                <span className="ml-1">connections</span>
+              </div>
+              <div className="flex items-center">
+                <Briefcase className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
+                <span>Open to opportunities</span>
               </div>
             </div>
             
-            {/* Action Buttons */}
-            <div className="flex space-x-2">
-              <Button variant="outline" onClick={() => navigate('/profile/edit')}>
-                Edit Profile
+            <div className="flex gap-4 justify-center lg:justify-start">
+              <Button 
+                className="bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.9)] text-white"
+                onClick={() => navigate('/profile/edit')}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add profile section
               </Button>
-              <Button variant="outline" onClick={() => setShowShareDialog(true)}>
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-              {profile?.resume_url && (
-                <Button variant="outline" asChild>
-                  <a href={profile.resume_url} target="_blank" rel="noopener noreferrer">
-                    <Download className="h-4 w-4 mr-2" />
-                    Resume
-                  </a>
-                </Button>
-              )}
-            </div>
-          </div>
-          
-          {/* About Section */}
-          {profile?.about && (
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">About</h2>
-              <p className="text-gray-700 whitespace-pre-wrap">{profile.about}</p>
-            </div>
-          )}
-          
-          {/* Skills */}
-          {profile?.skills && profile.skills.length > 0 && (
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Skills</h2>
-              <div className="flex flex-wrap gap-2">
-                {profile.skills.map((skill, index) => (
-                  <Badge
-                    key={index}
-                    variant="secondary"
-                    className="px-3 py-1"
-                  >
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Contact & Social Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            {profile?.email && (
-              <div>
-                <span className="font-medium">Email:</span> {profile.email}
-              </div>
-            )}
-            {profile?.phone && (
-              <div>
-                <span className="font-medium">Phone:</span> {profile.phone}
-              </div>
-            )}
-            {profile?.current_company && (
-              <div>
-                <span className="font-medium">Company:</span> {profile.current_company}
-              </div>
-            )}
-            {profile?.industry && (
-              <div>
-                <span className="font-medium">Industry:</span> {profile.industry}
-              </div>
-            )}
-            {profile?.experience_years && (
-              <div>
-                <span className="font-medium">Experience:</span> {profile.experience_years} years
-              </div>
-            )}
-            {profile?.website && (
-              <div>
-                <span className="font-medium">Website:</span>
-                <a 
-                  href={profile.website} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 ml-1"
-                >
-                  {profile.website} <ExternalLink className="h-3 w-3 inline" />
-                </a>
-              </div>
-            )}
-          </div>
-
-          {/* Social Links */}
-          {profile?.social_links && Object.keys(profile.social_links).length > 0 && (
-            <div className="mt-4 pt-4 border-t">
-              <h3 className="font-medium text-gray-900 mb-2">Connect with me</h3>
-              <div className="flex flex-wrap gap-3">
-                {Object.entries(profile.social_links).map(([platform, url]) => (
-                  <a
-                    key={platform}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
-                  >
-                    {socialPlatforms[platform as keyof typeof socialPlatforms] || platform}
-                    <ExternalLink className="h-3 w-3 ml-1" />
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Public Profile Link */}
-          <div className="mt-4 pt-4 border-t">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-medium text-gray-900">Public Profile</h3>
-                <p className="text-sm text-gray-600">Share your profile with others</p>
-              </div>
-              <div className="flex items-center space-x-2">
-                <code className="text-sm bg-gray-100 px-2 py-1 rounded">
-                  {profileUrl}
-                </code>
-                <Button size="sm" variant="outline" onClick={() => setShowShareDialog(true)}>
-                  <Share2 className="h-4 w-4 mr-1" />
-                  Share
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Empty State */}
-          {!profile && (
-            <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">Complete your profile to get started</p>
-              <Button onClick={() => navigate('/profile/edit')}>
-                Set Up Profile
+              <Button variant="outline">
+                <Eye className="h-4 w-4 mr-2" />
+                View my services
               </Button>
             </div>
-          )}
+          </div>
         </div>
-
-        {/* Portfolio Section */}
-        {currentUser?.id && (
-          <PortfolioManager userId={currentUser.id} />
-        )}
-
-        {/* Followed Companies Section */}
-        {currentUser?.id && (
-          <div className="mb-6">
-            <FollowedCompanies userId={currentUser.id} />
+        
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          {/* Left Column - Resources */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-6 pb-4 border-b">
+                  <h2 className="text-xl font-semibold">Resources</h2>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="p-5 bg-[hsl(var(--muted))] rounded-lg border-l-4 border-[hsl(var(--primary))]">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="font-semibold text-lg">Open to work</h3>
+                      <Button variant="ghost" className="text-[hsl(var(--primary))] p-0 h-auto">
+                        Show details
+                      </Button>
+                    </div>
+                    <p className="text-[hsl(var(--muted-foreground))]">
+                      Vice President, Director of Operations, Director of Partnerships, Vice President of Sales and Country Manager roles
+                    </p>
+                  </div>
+                  
+                  <div className="p-5 bg-[hsl(var(--muted))] rounded-lg border-l-4 border-[hsl(var(--primary))]">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="font-semibold text-lg">Hiring: Service Desk Engineer</h3>
+                      <Button variant="ghost" className="text-[hsl(var(--primary))] p-0 h-auto">
+                        Show job
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-4 text-sm text-[hsl(var(--muted-foreground))]">
+                      <div className="flex items-center">
+                        <Building className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
+                        Savantis Solutions
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
+                        Noida, Uttar Pradesh, India (On-site)
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2 text-[hsl(var(--primary))]" />
+                        66 days ago
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        )}
-
-        {/* Share Dialog */}
-        <ProfileShareDialog
-          isOpen={showShareDialog}
-          onClose={() => setShowShareDialog(false)}
-          profileUrl={profileUrl}
-          userName={profile?.full_name || 'User'}
-        />
+          
+          {/* Right Column */}
+          <div className="space-y-6">
+            {/* Activity & Insights */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-6 pb-4 border-b">
+                  <h2 className="text-xl font-semibold">Activity & Insights</h2>
+                  <Button variant="ghost" className="text-[hsl(var(--primary))] p-0 h-auto">
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-5 bg-[hsl(var(--muted))] rounded-lg text-center hover:shadow-md transition-shadow">
+                    <div className="text-3xl font-bold text-[hsl(var(--primary))] mb-1">
+                      {profile?.profile_views_count || 644}
+                    </div>
+                    <div className="text-sm text-[hsl(var(--muted-foreground))]">Profile viewers</div>
+                  </div>
+                  
+                  <div className="p-5 bg-[hsl(var(--muted))] rounded-lg text-center hover:shadow-md transition-shadow">
+                    <div className="text-3xl font-bold text-orange-600 mb-1">198</div>
+                    <div className="text-sm text-[hsl(var(--muted-foreground))]">Post impressions</div>
+                  </div>
+                  
+                  <div className="p-5 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg text-center hover:shadow-md transition-shadow col-span-2">
+                    <div className="text-3xl font-bold text-yellow-700 mb-1">5</div>
+                    <div className="text-sm text-yellow-600">Your Premium features</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Quick Actions */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-6 pb-4 border-b">
+                  <h2 className="text-xl font-semibold">Quick Actions</h2>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-4 bg-[hsl(var(--muted))] rounded-lg cursor-pointer hover:bg-[hsl(var(--muted)/0.8)] transition-colors">
+                    <Bookmark className="h-6 w-6 text-[hsl(var(--primary))] mb-2" />
+                    <h3 className="font-medium text-sm">Saved items</h3>
+                    <p className="text-xs text-[hsl(var(--muted-foreground))]">Your bookmarked content</p>
+                  </div>
+                  
+                  <div className="p-4 bg-[hsl(var(--muted))] rounded-lg cursor-pointer hover:bg-[hsl(var(--muted)/0.8)] transition-colors">
+                    <UserCheck className="h-6 w-6 text-[hsl(var(--primary))] mb-2" />
+                    <h3 className="font-medium text-sm">Groups</h3>
+                    <p className="text-xs text-[hsl(var(--muted-foreground))]">Join professional groups</p>
+                  </div>
+                  
+                  <div className="p-4 bg-[hsl(var(--muted))] rounded-lg cursor-pointer hover:bg-[hsl(var(--muted)/0.8)] transition-colors">
+                    <Newspaper className="h-6 w-6 text-[hsl(var(--primary))] mb-2" />
+                    <h3 className="font-medium text-sm">Newsletters</h3>
+                    <p className="text-xs text-[hsl(var(--muted-foreground))]">Subscribe to updates</p>
+                  </div>
+                  
+                  <div className="p-4 bg-[hsl(var(--muted))] rounded-lg cursor-pointer hover:bg-[hsl(var(--muted)/0.8)] transition-colors">
+                    <Calendar className="h-6 w-6 text-[hsl(var(--primary))] mb-2" />
+                    <h3 className="font-medium text-sm">Events</h3>
+                    <p className="text-xs text-[hsl(var(--muted-foreground))]">Find upcoming events</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
-    </ProfileLayout>
+    </div>
   );
 };
 
