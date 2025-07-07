@@ -17,12 +17,11 @@ interface JobOverviewFormProps {
 }
 
 const employmentTypeOptions = [
-  'Full-Time',
-  'Part-Time',
-  'Contract',
-  'Internship',
-  'Freelance',
-  'Temporary'
+  { value: 'full-time', label: 'Full-Time' },
+  { value: 'part-time', label: 'Part-Time' },
+  { value: 'contract', label: 'Contract' },
+  { value: 'internship', label: 'Internship' },
+  { value: 'freelance', label: 'Freelance' }
 ];
 
 const workModeOptions = [
@@ -41,11 +40,10 @@ const workScheduleOptions = [
 ];
 
 const experienceLevelOptions = [
-  'Fresher',
-  '0–2 Years',
-  '2–5 Years',
-  '5–10 Years',
-  '10+ Years'
+  { value: 'fresher', label: 'Fresher' },
+  { value: 'mid-level', label: '2–5 Years' },
+  { value: 'senior-level', label: '5–10 Years' },
+  { value: 'executive', label: '10+ Years' }
 ];
 
 export default function JobOverviewForm({ formData, onInputChange, categories }: JobOverviewFormProps) {
@@ -87,8 +85,8 @@ export default function JobOverviewForm({ formData, onInputChange, categories }:
               </SelectTrigger>
               <SelectContent>
                 {employmentTypeOptions.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -172,8 +170,8 @@ export default function JobOverviewForm({ formData, onInputChange, categories }:
               </SelectTrigger>
               <SelectContent>
                 {experienceLevelOptions.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
