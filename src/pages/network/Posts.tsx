@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText } from "lucide-react";
+import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostActions } from "@/components/posts/PostActions";
@@ -14,6 +14,7 @@ import { CareerIntentBadge } from "@/components/posts/CareerIntentTags";
 import { LinkPreview } from "@/components/shared/LinkPreview";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 import { LinkedInStyleBanner } from "@/components/profile/LinkedInStyleBanner";
+import { NetworkStats } from "@/components/network/NetworkStats";
 import { AIPostAssistant } from "@/components/network/AIPostAssistant";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
@@ -264,14 +265,12 @@ const Posts = () => {
               
               <div className="space-y-1 mt-3">
                 <h3 className="font-semibold text-sm mb-2 px-2">Discover</h3>
-                <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                  <FileText className="h-3 w-3 mr-2" />
-                  Saved Items
-                </Button>
-                <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                  <span className="h-3 w-3 mr-2">#</span>
-                  Hashtags
-                </Button>
+                <Link to="/career-map" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <MapPin className="h-3 w-3 mr-2" />
+                    Career mapping
+                  </Button>
+                </Link>
                 <Link to="/network/events" className="block">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
                     <Calendar className="h-3 w-3 mr-2" />
@@ -308,6 +307,16 @@ const Posts = () => {
                 </Link>
               </div>
             </Card>
+            
+            {/* Network Stats */}
+            <NetworkStats
+              stats={{
+                connections: stats?.connections || 14,
+                messages: 0,
+                profileViews: stats?.profileViews || 167,
+                events: 0
+              }}
+            />
           </div>
 
           {/* Middle Column - Posts Feed */}
@@ -549,23 +558,19 @@ const Posts = () => {
 
             {/* Network Stats */}
             <Card className="p-3">
-              <h3 className="font-semibold text-sm mb-3">Network Stats</h3>
+              <h3 className="font-semibold text-sm mb-3">Activity</h3>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">Connections</span>
-                  <span className="text-sm font-bold">{stats?.connections || 0}</span>
+                  <span className="text-xs text-gray-600">Posts Shared</span>
+                  <span className="text-sm font-bold">12</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">Messages</span>
-                  <span className="text-sm font-bold">{stats?.messages || 0}</span>
+                  <span className="text-xs text-gray-600">Comments</span>
+                  <span className="text-sm font-bold">8</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">Profile Views</span>
-                  <span className="text-sm font-bold">{stats?.profileViews || 0}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">Events</span>
-                  <span className="text-sm font-bold">{stats?.events || 0}</span>
+                  <span className="text-xs text-gray-600">Likes Given</span>
+                  <span className="text-sm font-bold">24</span>
                 </div>
               </div>
             </Card>

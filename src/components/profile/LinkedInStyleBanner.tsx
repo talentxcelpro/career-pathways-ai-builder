@@ -73,23 +73,26 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   };
 
   return (
-    <Card className="overflow-hidden border-0 shadow-lg mb-4">
-      {/* Banner Section */}
+    <Card className="overflow-hidden border-0 shadow-xl bg-white">
+      {/* Enhanced Banner Section */}
       <div className="relative">
         <div 
-          className="h-32 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800"
+          className="h-28 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700"
           style={{
             backgroundImage: profile?.banner_url ? `url(${profile.banner_url})` : undefined,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
         >
+          {/* Subtle overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-black/20" />
+          
           {isOwnProfile && (
             <div className="absolute top-2 right-2">
               <Button
                 variant="ghost"
                 size="sm"
-                className="bg-black/30 text-white hover:bg-black/50 h-8 px-2 text-xs"
+                className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 h-7 px-2 text-xs border border-white/20"
                 onClick={() => {
                   const input = document.createElement('input');
                   input.type = 'file';
@@ -103,81 +106,82 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
                 disabled={uploading === 'banner'}
               >
                 <Camera className="h-3 w-3 mr-1" />
-                {uploading === 'banner' ? 'Uploading...' : 'Edit'}
+                {uploading === 'banner' ? 'Uploading...' : 'Edit Cover'}
               </Button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Profile Section */}
-      <CardContent className="p-4 -mt-8 relative">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start gap-4">
-            {/* Profile Picture */}
-            <div className="relative">
-              <Avatar className="w-20 h-20 border-4 border-white shadow-lg bg-white">
-                <AvatarImage src={profile?.profile_picture_url} />
-                <AvatarFallback className="text-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold">
-                  {generateInitials(profile)}
-                </AvatarFallback>
-              </Avatar>
-              {isOwnProfile && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="absolute -bottom-1 -right-1 h-6 w-6 p-0 bg-white border-2 border-white shadow-sm hover:bg-gray-50 rounded-full"
-                  onClick={() => {
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = 'image/*';
-                    input.onchange = (e) => {
-                      const file = (e.target as HTMLInputElement).files?.[0];
-                      if (file) handleImageUpload('avatar', file);
-                    };
-                    input.click();
-                  }}
-                  disabled={uploading === 'avatar'}
-                >
-                  <Camera className="h-3 w-3" />
-                </Button>
-              )}
-            </div>
+      {/* Enhanced Profile Section */}
+      <CardContent className="p-3 -mt-6 relative">
+        <div className="flex flex-col">
+          {/* Profile Picture and Basic Info */}
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start gap-3">
+              {/* Enhanced Profile Picture */}
+              <div className="relative">
+                <Avatar className="w-16 h-16 border-3 border-white shadow-xl bg-white ring-2 ring-blue-100">
+                  <AvatarImage src={profile?.profile_picture_url} className="object-cover" />
+                  <AvatarFallback className="text-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold">
+                    {generateInitials(profile)}
+                  </AvatarFallback>
+                </Avatar>
+                {isOwnProfile && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute -bottom-0.5 -right-0.5 h-5 w-5 p-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-md border-2 border-white"
+                    onClick={() => {
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = 'image/*';
+                      input.onchange = (e) => {
+                        const file = (e.target as HTMLInputElement).files?.[0];
+                        if (file) handleImageUpload('avatar', file);
+                      };
+                      input.click();
+                    }}
+                    disabled={uploading === 'avatar'}
+                  >
+                    <Camera className="h-2.5 w-2.5" />
+                  </Button>
+                )}
+              </div>
 
-            {/* Profile Info */}
-            <div className="pt-4">
-              <h2 className="text-xl font-bold text-gray-900">
-                {formatDisplayName(profile)}
-              </h2>
-              <p className="text-gray-600 text-sm mb-2">
-                {profile?.title || 'Director'}
-              </p>
-              
-              {/* Stats */}
-              <div className="flex items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-1">
-                  <Users className="h-4 w-4" />
-                  <span className="font-medium text-blue-600">{stats.connections}</span>
-                  <span>connections</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Eye className="h-4 w-4" />
-                  <span className="font-medium text-blue-600">{stats.profileViews}</span>
-                  <span>views</span>
+              {/* Profile Info */}
+              <div className="pt-2 flex-1">
+                <h2 className="text-lg font-bold text-gray-900 leading-tight">
+                  {formatDisplayName(profile)}
+                </h2>
+                <p className="text-gray-600 text-xs mb-2 leading-tight">
+                  {profile?.title || 'Director'}
+                </p>
+                
+                {/* Compact Stats */}
+                <div className="flex items-center gap-3 text-xs text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    <span className="font-semibold text-blue-600">{stats.connections}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Eye className="h-3 w-3" />
+                    <span className="font-semibold text-blue-600">{stats.profileViews}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Edit Button */}
-          {isOwnProfile && (
-            <Link to="/profile/edit">
-              <Button variant="outline" size="sm" className="mt-4">
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-            </Link>
-          )}
+            {/* Edit Button */}
+            {isOwnProfile && (
+              <Link to="/profile/edit">
+                <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
+                  <Edit className="h-3 w-3 mr-1" />
+                  Edit
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
