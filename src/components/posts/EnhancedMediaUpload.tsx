@@ -201,47 +201,58 @@ export const EnhancedMediaUpload: React.FC<EnhancedMediaUploadProps> = ({
   return (
     <div className="space-y-4">
       {/* Upload Area */}
-      <Card className={`border-2 border-dashed transition-colors ${
-        dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+      <Card className={`border-2 border-dashed transition-all duration-300 ${
+        dragActive 
+          ? 'border-primary bg-primary/5 scale-105' 
+          : 'border-border hover:border-primary/50 hover:bg-muted/30'
       }`}>
         <CardContent className="p-6">
           <div
-            className="flex flex-col items-center justify-center space-y-4 text-center"
+            className="flex flex-col items-center justify-center space-y-4 text-center cursor-pointer"
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
           >
-            <div className="p-3 bg-gray-100 rounded-full">
-              <Upload className="h-6 w-6 text-gray-600" />
+            <div className={`p-4 rounded-full transition-colors ${
+              dragActive ? 'bg-primary text-primary-foreground' : 'bg-muted'
+            }`}>
+              <Upload className={`h-8 w-8 ${dragActive ? 'animate-bounce' : ''}`} />
             </div>
             
             <div>
-              <p className="text-lg font-medium text-gray-900">
-                Drop files here or click to upload
+              <p className="text-lg font-medium">
+                {dragActive ? 'Drop files here!' : 'Drop files here or click to upload'}
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Supports images, videos, and documents up to 100MB
               </p>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap justify-center">
               {allowedTypes.map(type => (
-                <Badge key={type} variant="outline" className="flex items-center gap-1">
+                <Badge key={type} variant="secondary" className="flex items-center gap-1">
                   {getTypeIcon(type)}
                   {type}
                 </Badge>
               ))}
             </div>
 
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading || mediaFiles.length >= maxFiles}
-              className="flex items-center gap-2"
-            >
-              <Camera className="h-4 w-4" />
-              Choose Files
-            </Button>
+            {!dragActive && (
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+                disabled={uploading || mediaFiles.length >= maxFiles}
+                className="flex items-center gap-2 mt-2"
+                variant="outline"
+              >
+                <Camera className="h-4 w-4" />
+                Choose Files
+              </Button>
+            )}
 
             <input
               ref={fileInputRef}

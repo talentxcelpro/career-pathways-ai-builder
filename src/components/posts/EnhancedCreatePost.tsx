@@ -155,18 +155,32 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     if (!content.trim()) return;
     
     try {
-      // Simulate AI rewrite - in production, this would call an AI service
-      const rewritePrompts = {
-        professional: `Rewrite this in a professional tone: "${content}"`,
-        casual: `Rewrite this in a casual, friendly tone: "${content}"`,
-        engaging: `Make this more engaging and compelling: "${content}"`,
-        concise: `Make this more concise while keeping the key message: "${content}"`
-      };
+      toast.info('AI is rewriting your post...', { duration: 2000 });
       
-      // This would be replaced with actual AI API call
-      toast.success(`AI rewrite applied in ${tone} tone`);
+      const response = await fetch('/api/ai-post-rewriter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: content.trim(),
+          tone,
+          userRole: user?.user_metadata?.role || user?.user_metadata?.user_role,
+          targetAudience: 'Professional network'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to rewrite post');
+      }
+
+      const data = await response.json();
+      setContent(data.rewrittenContent);
+      toast.success(`Post rewritten in ${tone} tone! ${data.newLength} characters.`);
+      
     } catch (error) {
-      toast.error('Failed to rewrite with AI');
+      console.error('AI rewrite error:', error);
+      toast.error('Failed to rewrite with AI. Please try again.');
     }
   };
 
@@ -459,12 +473,21 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
             <div className="flex items-center gap-2">
               {/* AI Tone Buttons */}
               {showAIAssistant && (
-                <div className="flex gap-1">
+                <div className="flex gap-1 flex-wrap">
                   <Button size="sm" variant="outline" onClick={() => handleAIRewrite('professional')}>
-                    Professional
+                    ✨ Professional
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => handleAIRewrite('engaging')}>
-                    Engaging
+                    🔥 Engaging
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => handleAIRewrite('casual')}>
+                    😊 Casual
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => handleAIRewrite('concise')}>
+                    ⚡ Concise
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => handleAIRewrite('thoughtful')}>
+                    🧠 Thoughtful
                   </Button>
                 </div>
               )}

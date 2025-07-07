@@ -195,22 +195,42 @@ export const useNotifications = (filters: NotificationFilters = {}) => {
     if (!soundEnabled) return;
 
     try {
-      const audio = new Audio();
+      // Create a simple notification sound using Web Audio API
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Different frequencies for different priorities
       switch (priority) {
         case 'high':
-          audio.src = '/sounds/notification-high.mp3';
+          oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
           break;
         case 'medium':
-          audio.src = '/sounds/notification-medium.mp3';
+          oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+          gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
           break;
         case 'low':
-          audio.src = '/sounds/notification-low.mp3';
+          oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+          gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
           break;
         default:
-          audio.src = '/sounds/notification-default.mp3';
+          oscillator.frequency.setValueAtTime(500, audioContext.currentTime);
+          gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
       }
-      audio.volume = 0.6;
-      audio.play().catch(console.error);
+      
+      oscillator.type = 'sine';
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.2);
+      
+      // Cleanup
+      setTimeout(() => {
+        oscillator.disconnect();
+        gainNode.disconnect();
+      }, 300);
     } catch (error) {
       console.error('Error playing notification sound:', error);
     }

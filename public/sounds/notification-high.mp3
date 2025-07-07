@@ -1,0 +1,3 @@
+// Note: This is a placeholder for the actual sound file
+// In production, you would add actual MP3 files here
+// For now, we'll use the Web Audio API to generate simple notification sounds
