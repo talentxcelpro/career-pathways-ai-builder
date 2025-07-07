@@ -48,8 +48,109 @@ serve(async (req) => {
 
     console.log('Processing resume with advanced AI extraction:', fileName, 'Type:', fileType);
 
-    // Enhanced prompt with NLP-style instructions and improved section detection
-    const enhancedPrompt = `You are an expert resume parser with advanced NLP capabilities. Analyze this resume text with maximum accuracy using modern extraction techniques.
+    // Updated prompt with exact JSON schema specification
+    const enhancedPrompt = `Extract the following details from this resume and return a JSON object structured exactly as:
+
+{
+  "personal_information": {
+    "full_name": "",
+    "email": "",
+    "phone": "",
+    "location": "",
+    "linkedin_url": "",
+    "professional_summary": ""
+  },
+  "work_experience": [
+    {
+      "job_title": "",
+      "company_name": "",
+      "location": "",
+      "start_date": "",
+      "end_date": "",
+      "responsibilities": [],
+      "key_achievements": [],
+      "technologies_used": []
+    }
+  ],
+  "education": [
+    {
+      "degree": "",
+      "institution": "",
+      "location": "",
+      "start_date": "",
+      "end_date": "",
+      "gpa": "",
+      "honors": "",
+      "relevant_coursework": []
+    }
+  ],
+  "skills": {
+    "technical_skills": [],
+    "programming_languages": [],
+    "tools_software": [],
+    "soft_skills": [],
+    "languages_spoken": []
+  },
+  "projects": [
+    {
+      "project_name": "",
+      "description": "",
+      "technologies_used": [],
+      "start_date": "",
+      "end_date": "",
+      "project_url": "",
+      "github_url": "",
+      "key_achievements": []
+    }
+  ],
+  "certifications": [
+    {
+      "certification_name": "",
+      "issuing_organization": "",
+      "issue_date": "",
+      "expiry_date": "",
+      "credential_id": "",
+      "credential_url": ""
+    }
+  ],
+  "awards": [
+    {
+      "award_name": "",
+      "issuing_organization": "",
+      "date_received": "",
+      "description": ""
+    }
+  ],
+  "volunteer_experience": [
+    {
+      "organization": "",
+      "role": "",
+      "start_date": "",
+      "end_date": "",
+      "description": ""
+    }
+  ],
+  "publications": [
+    {
+      "title": "",
+      "publisher": "",
+      "publication_date": "",
+      "url": "",
+      "description": ""
+    }
+  ],
+  "interests": [],
+  "references": [
+    {
+      "reference_name": "",
+      "title": "",
+      "company": "",
+      "email": "",
+      "phone": "",
+      "relationship": ""
+    }
+  ]
+}
 
 CRITICAL PREPROCESSING RULES:
 1. IGNORE AND FILTER OUT any lines containing:
@@ -61,170 +162,18 @@ CRITICAL PREPROCESSING RULES:
 
 2. FOCUS ONLY ON ACTUAL RESUME CONTENT
 
-ENHANCED SECTION DETECTION:
-Use this hybrid approach to identify sections:
-
-Primary Keywords (case-insensitive):
-- Work Experience: ["work experience", "work history", "employment", "professional experience", "career history"]
-- Education: ["education", "academic background", "academic", "schooling", "degrees"]
-- Skills: ["skills", "competencies", "technical skills", "core competencies", "proficiencies"]
-- Projects: ["projects", "portfolio", "personal projects", "key projects"]
-- Certifications: ["certifications", "licenses", "credentials", "professional certifications"]
-- Awards: ["awards", "honors", "achievements", "recognition"]
-- Summary: ["summary", "profile", "objective", "professional summary", "about"]
-
 EXTRACTION REQUIREMENTS:
-1. Use Named Entity Recognition (NER) principles to identify:
-   - PERSON (names, titles)
-   - ORG (companies, institutions) 
-   - DATE (employment dates, education dates)
-   - SKILL (technical and soft skills)
-   - LOCATION (addresses, work locations)
-
-2. Apply section detection using:
-   - Header pattern matching (e.g., "Work Experience", "Education")
-   - Layout analysis cues (bullet points, indentation)
-   - Context-aware boundary detection
-
-3. Implement confidence scoring for each extracted field (0.0-1.0)
-
-4. REQUIRED FIELD VALIDATION - Flag if missing:
-   - Personal Info: name, email, phone (minimum required)
-   - Work Experience: at least one position with title, company, dates
-   - Education: at least one entry
-   - Skills: at least 3 technical or professional skills
-
-RETURN COMPREHENSIVE JSON:
-{
-  "personalInfo": {
-    "fullName": "exact name with confidence",
-    "email": "exact email",
-    "phone": "standardized phone format",
-    "location": "full address/location",
-    "summary": "complete professional summary word-for-word",
-    "linkedin": "linkedin profile URL",
-    "website": "personal website URL",
-    "confidence": 0.95
-  },
-  "experience": [
-    {
-      "title": "exact job title",
-      "company": "exact company name", 
-      "location": "job location",
-      "startDate": "MM/YYYY format",
-      "endDate": "MM/YYYY or Present",
-      "duration": "calculated duration",
-      "description": "complete job description",
-      "achievements": ["quantified achievements with metrics"],
-      "technologies": ["specific technologies mentioned"],
-      "keywords": ["relevant industry keywords"],
-      "confidence": 0.90
-    }
-  ],
-  "education": [
-    {
-      "degree": "exact degree name",
-      "school": "exact institution name",
-      "location": "school location",
-      "startDate": "start date",
-      "endDate": "graduation date",
-      "gpa": "GPA if mentioned",
-      "honors": "honors/distinctions",
-      "relevantCoursework": ["specific courses"],
-      "confidence": 0.88
-    }
-  ],
-  "skills": {
-    "technical": {
-      "programming": ["languages with proficiency levels"],
-      "frameworks": ["frameworks and libraries"],
-      "databases": ["database technologies"],
-      "tools": ["development tools"],
-      "cloud": ["cloud platforms"],
-      "confidence": 0.92
-    },
-    "soft": ["leadership", "communication", "etc"],
-    "languages": [{"language": "English", "proficiency": "Native"}],
-    "certifications": ["active certifications"]
-  },
-  "projects": [
-    {
-      "title": "project name",
-      "description": "detailed description",
-      "technologies": ["tech stack used"],
-      "startDate": "start date",
-      "endDate": "end date", 
-      "url": "project URL",
-      "github": "repository link",
-      "achievements": ["measurable outcomes"],
-      "confidence": 0.85
-    }
-  ],
-  "certifications": [
-    {
-      "name": "certification name",
-      "issuer": "issuing organization",
-      "date": "date obtained",
-      "expiryDate": "expiry if applicable",
-      "credentialId": "credential ID",
-      "url": "verification URL",
-      "confidence": 0.90
-    }
-  ],
-  "awards": [
-    {
-      "name": "award name",
-      "issuer": "organization",
-      "date": "date received",
-      "description": "award details",
-      "confidence": 0.87
-    }
-  ],
-  "volunteer": [
-    {
-      "organization": "organization name",
-      "role": "volunteer position",
-      "startDate": "start date",
-      "endDate": "end date",
-      "description": "volunteer activities",
-      "confidence": 0.85
-    }
-  ],
-  "sectionStructure": {
-    "detectedSections": ["list of identified sections"],
-    "sectionBoundaries": {"section": "line_numbers"},
-    "formatMetadata": {
-      "hasBulletPoints": true,
-      "indentationLevel": 2,
-      "fontHints": ["bold headers detected"],
-      "layoutType": "traditional/modern/creative"
-    }
-  },
-  "confidenceMetrics": {
-    "overall": 0.89,
-    "personalInfo": 0.95,
-    "experience": 0.88,
-    "education": 0.92,
-    "skills": 0.85,
-    "sections": {"experience": 0.90, "education": 0.88}
-  }
-}
-
-EXTRACTION RULES:
 - Extract EXACTLY what is written - no interpretation
 - Maintain original wording and phrasing
 - For dates, standardize to MM/YYYY format when possible
-- Calculate durations for experience entries
 - Identify and preserve quantified achievements (numbers, percentages)
 - Detect industry-specific keywords and technologies
-- Assign confidence scores based on text clarity and context
-- Preserve formatting cues (bullets, indentation, sections)
-- MINIMUM LENGTH CHECK: If extracted content is too short, flag for manual review
+- Return valid JSON only
 
-Resume text to analyze:
+Resume Content:
 ${text}
 
-Return ONLY valid JSON with comprehensive extraction and confidence metrics.`;
+Return ONLY the JSON object with extracted data.`;
 
     // Use advanced model for better NLP capabilities
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

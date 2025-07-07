@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { EnhancedResumeProcessor } from "@/services/enhancedResumeProcessor";
+import { ResumeDataService } from "@/services/resumeDataService";
 import { toast } from "sonner";
 
 export const useResumeUpload = () => {
@@ -75,32 +76,22 @@ export const useResumeUpload = () => {
       setProcessingStep(5);
       console.log('Enhancement suggestions generated:', extractedContent.suggestions.length);
       
-      // Step 6: Create enhanced resume entry in database
+      // Step 6: Save to normalized database tables
       setProcessingStep(6);
-      const { data, error } = await supabase
-        .from('ai_resumes')
-        .insert({
-          user_id: user.id,
-          title: `Enhanced Resume from ${file.name}`,
-          content: extractedContent as any, // Convert to Json type
-          ats_score: extractedContent.atsOptimization.score || 75,
-          template_id: null
-        })
-        .select()
-        .single();
+      await ResumeDataService.saveExtractedData(
+        user.id,
+        extractedContent as any,
+        extractedContent.atsOptimization?.score || 75,
+        file.name
+      );
       
-      if (error) {
-        console.error('Database insert error:', error);
-        throw error;
-      }
-      
-      console.log('Resume created in database:', data);
+      console.log('Resume data saved to normalized tables');
       setUploadSuccess(true);
       toast.success('Resume processed successfully!');
       
-      // Navigate to edit mode after a short delay
+      // Navigate to editor after a short delay
       setTimeout(() => {
-        navigate(`/resume-builder/edit/${data.id}`);
+        navigate('/resume-builder/editor');
       }, 2000);
     } catch (error) {
       console.error('Error processing resume:', error);
