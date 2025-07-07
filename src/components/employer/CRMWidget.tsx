@@ -12,40 +12,83 @@ export const CRMWidget = () => {
   const navigate = useNavigate();
   
   // Fetch pipeline stats
-  const { data: pipelineStats } = useQuery({
+  const { data: pipelineStats, error: pipelineError } = useQuery({
     queryKey: ['pipeline-stats'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!user) {
+        console.log('Pipeline: No authenticated user');
+        return null;
+      }
 
       try {
+        console.log('Pipeline: Fetching stats for user:', user.id);
+
         // First check if user owns a company
-        const { data: ownedCompany } = await supabase
+        const { data: ownedCompany, error: companyError } = await supabase
           .from('company_profiles')
           .select('company_id')
           .eq('owner_id', user.id)
           .maybeSingle();
 
+        console.log('Pipeline: Owned company check:', ownedCompany, companyError);
+
         let companyId = ownedCompany?.company_id;
 
         // If not owner, check if they're a team member
         if (!companyId) {
-          const { data: userTeamMember } = await supabase
+          const { data: userTeamMember, error: teamError } = await supabase
             .from('company_team_members')
             .select('company_id')
             .eq('user_id', user.id)
             .eq('is_active', true)
             .maybeSingle();
 
+          console.log('Pipeline: Team member check:', userTeamMember, teamError);
           companyId = userTeamMember?.company_id;
         }
 
         if (!companyId) {
-          return { newApplications: 0, inReview: 0, shortlisted: 0 };
+          console.log('Pipeline: No company found, trying direct job posts');
+          
+          // Fallback: Check for applications on jobs posted directly by this user
+          const { data: directStats, error: directError } = await supabase
+            .from('job_applications')
+            .select(`
+              status,
+              jobs!inner (
+                posted_by
+              )
+            `)
+            .eq('jobs.posted_by', user.id);
+
+          console.log('Pipeline: Direct stats result:', directStats, directError);
+
+          if (!directStats || directStats.length === 0) {
+            console.log('Pipeline: No applications found for direct jobs either');
+            return { newApplications: 0, inReview: 0, shortlisted: 0 };
+          }
+
+          const newApplications = directStats.filter(app => 
+            ['applied', 'pending'].includes(app.status)
+          ).length;
+          
+          const inReview = directStats.filter(app => 
+            ['reviewing', 'under_review'].includes(app.status)
+          ).length;
+          
+          const shortlisted = directStats.filter(app => 
+            ['shortlisted', 'interviewed'].includes(app.status)
+          ).length;
+
+          console.log('Pipeline: Direct stats summary:', { newApplications, inReview, shortlisted });
+          return { newApplications, inReview, shortlisted };
         }
 
+        console.log('Pipeline: Fetching company stats for company ID:', companyId);
+
         // Get stats for company jobs
-        const { data: stats } = await supabase
+        const { data: stats, error } = await supabase
           .from('job_applications')
           .select(`
             status,
@@ -55,7 +98,12 @@ export const CRMWidget = () => {
           `)
           .eq('jobs.company_id', companyId);
 
-        if (!stats) return { newApplications: 0, inReview: 0, shortlisted: 0 };
+        console.log('Pipeline: Company stats result:', stats, error);
+
+        if (!stats) {
+          console.log('Pipeline: No stats returned');
+          return { newApplications: 0, inReview: 0, shortlisted: 0 };
+        }
 
         const newApplications = stats.filter(app => 
           ['applied', 'pending'].includes(app.status)
@@ -69,9 +117,10 @@ export const CRMWidget = () => {
           ['shortlisted', 'interviewed'].includes(app.status)
         ).length;
 
+        console.log('Pipeline: Company stats summary:', { newApplications, inReview, shortlisted });
         return { newApplications, inReview, shortlisted };
       } catch (error) {
-        console.error('Error fetching pipeline stats:', error);
+        console.error('Pipeline: Exception in stats fetch:', error);
         return { newApplications: 0, inReview: 0, shortlisted: 0 };
       }
     },
@@ -80,38 +129,73 @@ export const CRMWidget = () => {
   });
   
   // Fetch recent applications for CRM
-  const { data: recentApplications, isLoading: applicationsLoading } = useQuery({
+  const { data: recentApplications, isLoading: applicationsLoading, error: applicationsError } = useQuery({
     queryKey: ['recent-applications'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+      if (!user) {
+        console.log('CRM: No authenticated user');
+        return [];
+      }
 
       try {
+        console.log('CRM: Fetching applications for user:', user.id);
+
         // First check if user owns a company
-        const { data: ownedCompany } = await supabase
+        const { data: ownedCompany, error: companyError } = await supabase
           .from('company_profiles')
           .select('company_id')
           .eq('owner_id', user.id)
           .maybeSingle();
 
+        console.log('CRM: Owned company check:', ownedCompany, companyError);
+
         let companyId = ownedCompany?.company_id;
 
         // If not owner, check if they're a team member
         if (!companyId) {
-          const { data: userTeamMember } = await supabase
+          const { data: userTeamMember, error: teamError } = await supabase
             .from('company_team_members')
             .select('company_id')
             .eq('user_id', user.id)
             .eq('is_active', true)
             .maybeSingle();
 
+          console.log('CRM: Team member check:', userTeamMember, teamError);
           companyId = userTeamMember?.company_id;
         }
 
         if (!companyId) {
-          console.log('No company found for CRM applications');
-          return [];
+          console.log('CRM: No company found for user, checking direct job posts');
+          
+          // Fallback: Check for jobs posted directly by this user
+          const { data: directApplications, error: directError } = await supabase
+            .from('job_applications')
+            .select(`
+              id,
+              status,
+              applied_at,
+              user_id,
+              job_id,
+              jobs!inner (
+                title,
+                posted_by
+              ),
+              profiles (
+                full_name,
+                email,
+                profile_picture_url
+              )
+            `)
+            .eq('jobs.posted_by', user.id)
+            .order('applied_at', { ascending: false })
+            .limit(5);
+
+          console.log('CRM: Direct applications result:', directApplications, directError);
+          return directApplications || [];
         }
+
+        console.log('CRM: Fetching company applications for company ID:', companyId);
 
         // Get applications for company jobs
         const { data: applications, error } = await supabase
@@ -136,14 +220,16 @@ export const CRMWidget = () => {
           .order('applied_at', { ascending: false })
           .limit(5);
 
+        console.log('CRM: Company applications result:', applications, error);
+
         if (error) {
-          console.error('Error fetching applications:', error);
+          console.error('CRM: Error fetching applications:', error);
           return [];
         }
 
         return applications || [];
       } catch (error) {
-        console.error('Error fetching recent applications:', error);
+        console.error('CRM: Exception in applications fetch:', error);
         return [];
       }
     },
