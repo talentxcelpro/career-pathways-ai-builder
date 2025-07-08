@@ -14,6 +14,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { templateList } from "./templates";
 import { toast } from 'sonner';
 
+// Import file processing libraries
+import mammoth from 'mammoth';
+import * as pdfParse from 'pdf-parse';
+
 interface SectionEnhancerProps {
   title: string;
   icon: React.ReactNode;
@@ -481,17 +485,35 @@ export const StreamlinedResumeBuilder = () => {
     }
   }, [id, saveMutation]);
 
-  // Helper function to read file content
-  const readFileContent = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        resolve(content);
-      };
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsText(file);
-    });
+  // Helper function to read file content based on file type
+  const readFileContent = async (file: File): Promise<string> => {
+    try {
+      if (file.type === 'application/pdf') {
+        // Handle PDF files
+        const arrayBuffer = await file.arrayBuffer();
+        const text = await pdfParse(arrayBuffer);
+        return text.text;
+      } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
+                 file.type === 'application/msword') {
+        // Handle DOCX and DOC files
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        return result.value;
+      } else {
+        // Handle text files
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const content = e.target?.result as string;
+            resolve(content);
+          };
+          reader.onerror = () => reject(new Error('Failed to read file'));
+          reader.readAsText(file);
+        });
+      }
+    } catch (error) {
+      throw new Error(`Failed to read ${file.type} file: ${error}`);
+    }
   };
 
   if (isLoading) {
