@@ -1,6 +1,10 @@
+// @ts-ignore
 import jsPDF from 'jspdf';
+// @ts-ignore
 import html2canvas from 'html2canvas';
+// @ts-ignore
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
+// @ts-ignore
 import { saveAs } from 'file-saver';
 
 export const exportToPDF = async (elementId: string, filename: string = 'resume.pdf') => {

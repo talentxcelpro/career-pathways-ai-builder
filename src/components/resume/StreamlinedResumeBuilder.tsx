@@ -11,7 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { resumeTemplates } from "./ResumeTemplates";
+import { templateList } from "./templates";
 import { toast } from 'sonner';
 
 interface SectionEnhancerProps {
@@ -299,20 +299,26 @@ export const StreamlinedResumeBuilder = () => {
 
   // Export functions
   const exportPDF = useCallback(async () => {
-    toast.loading('Generating PDF...', { id: 'pdf-export' });
-    // TODO: Implement actual PDF generation
-    setTimeout(() => {
-      toast.success('PDF generated!', { id: 'pdf-export' });
-    }, 2000);
-  }, []);
+    try {
+      toast.loading('Generating PDF...', { id: 'pdf-export' });
+      const { exportToPDF } = await import('@/utils/exportResume');
+      await exportToPDF('resume-preview', `${resumeData.personalInfo.fullName || 'resume'}.pdf`);
+      toast.success('PDF downloaded!', { id: 'pdf-export' });
+    } catch (error) {
+      toast.error('Failed to generate PDF', { id: 'pdf-export' });
+    }
+  }, [resumeData.personalInfo.fullName]);
 
   const exportDOCX = useCallback(async () => {
-    toast.loading('Generating DOCX...', { id: 'docx-export' });
-    // TODO: Implement actual DOCX generation
-    setTimeout(() => {
-      toast.success('DOCX generated!', { id: 'docx-export' });
-    }, 2000);
-  }, []);
+    try {
+      toast.loading('Generating DOCX...', { id: 'docx-export' });
+      const { exportToDOCX } = await import('@/utils/exportResume');
+      await exportToDOCX(resumeData, `${resumeData.personalInfo.fullName || 'resume'}.docx`);
+      toast.success('DOCX downloaded!', { id: 'docx-export' });
+    } catch (error) {
+      toast.error('Failed to generate DOCX', { id: 'docx-export' });
+    }
+  }, [resumeData]);
 
   // Auto-save
   useEffect(() => {
@@ -347,7 +353,7 @@ export const StreamlinedResumeBuilder = () => {
     return <div className="flex items-center justify-center h-64">Loading...</div>;
   }
 
-  const SelectedTemplate = resumeTemplates.find(t => t.id === selectedTemplate)?.component;
+  const SelectedTemplate = templateList.find(t => t.id === selectedTemplate)?.component;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -429,9 +435,9 @@ export const StreamlinedResumeBuilder = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {resumeTemplates.map((template) => (
+                    {templateList.map((template) => (
                       <SelectItem key={template.id} value={template.id}>
-                        {template.name} - {template.description}
+                        {template.name} - {template.category}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -563,7 +569,7 @@ export const StreamlinedResumeBuilder = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="bg-white border rounded-lg overflow-hidden" style={{ transform: 'scale(0.7)', transformOrigin: 'top left', width: '142.86%', height: '142.86%' }}>
+                <div id="resume-preview" className="bg-white border rounded-lg overflow-hidden" style={{ transform: 'scale(0.7)', transformOrigin: 'top left', width: '142.86%', height: '142.86%' }}>
                   {SelectedTemplate && <SelectedTemplate data={resumeData} />}
                 </div>
               </CardContent>
