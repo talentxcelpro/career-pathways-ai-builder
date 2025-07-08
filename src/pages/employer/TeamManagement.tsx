@@ -30,6 +30,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTeamPermissions } from '@/hooks/useTeamPermissions';
+import { PendingAccessRequests } from '@/components/employer/PendingAccessRequests';
+import { useEmployerAccess } from '@/hooks/useEmployerAccess';
 
 interface TeamMember {
   id: string;
@@ -64,10 +66,8 @@ const TeamManagement = () => {
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [selectedInvitation, setSelectedInvitation] = useState<string | null>(null);
 
-  // Get team permissions
-  const { hasPermission, role: userRole } = useTeamPermissions();
-  const canManageTeam = hasPermission('manage_team');
-  const canInviteMembers = hasPermission('invite_team_members');
+  // Get employer access
+  const { hasEmployerAccess } = useEmployerAccess();
 
   // Fetch current user and company data
   const { data: userData } = useQuery({
@@ -91,6 +91,11 @@ const TeamManagement = () => {
       };
     }
   });
+
+  // Get team permissions (after userData is available)
+  const { hasPermission, role: userRole, companyId } = useTeamPermissions(userData?.companyId);
+  const canManageTeam = hasPermission('manage_team');
+  const canInviteMembers = hasPermission('invite_team_members');
 
   // Fetch team members
   const { data: teamMembers, isLoading: membersLoading } = useQuery({
@@ -322,6 +327,21 @@ const TeamManagement = () => {
     );
   }
 
+  // Show access requests if user doesn't have employer access
+  if (!hasEmployerAccess) {
+    return (
+      <div className="p-6 max-w-4xl mx-auto space-y-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-2">Team Management</h1>
+          <p className="text-muted-foreground mb-6">
+            You need employer access to manage team members
+          </p>
+        </div>
+        <PendingAccessRequests />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
@@ -333,7 +353,7 @@ const TeamManagement = () => {
           </p>
         </div>
         
-        {canInviteMembers && (
+        {(canInviteMembers || userRole === 'owner') && (
           <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
             <DialogTrigger asChild>
               <Button>
