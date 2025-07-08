@@ -47,6 +47,8 @@ export const useEmployerAccess = () => {
   // User has employer access if they're approved OR have active team membership
   const hasEmployerAccess = (isEmployer && isApproved) || hasTeamMembership;
 
+  console.log('useEmployerAccess debug:', { isEmployer, isApproved, hasTeamMembership, hasEmployerAccess });
+
   return {
     isEmployer,
     isApproved,
