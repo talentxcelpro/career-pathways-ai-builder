@@ -39,6 +39,8 @@ function DashboardContent() {
       console.log('Team data retrieved:', data);
       return data && data.length > 0 ? data[0] : null;
     },
+    staleTime: 0, // Force fresh data
+    gcTime: 0, // Don't cache data
   });
 
   const companyId = teamData?.company_id;
