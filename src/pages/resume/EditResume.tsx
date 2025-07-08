@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, Save, Eye, Download, Plus, Edit3, Palette, Trash2, Award, Briefcase, AlertCircle, Target, Sparkles, RefreshCw } from "lucide-react";
+import { ArrowLeft, Save, Eye, Download, Plus, Edit3, Palette, Trash2, Award, Briefcase, AlertCircle, Target, Sparkles, RefreshCw, Wand2 } from "lucide-react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +23,7 @@ import { ATSOptimizationPanel } from "@/components/resume/ATSOptimizationPanel";
 import { KeywordAnalyzer } from "@/components/resume/KeywordAnalyzer";
 import { TemplateGallery } from "@/components/resume/TemplateGallery";
 import { AIContentSuggestions } from "@/components/resume/AIContentSuggestions";
+import { AIResumeEnhancer } from "@/components/resume/AIResumeEnhancer";
 import { toast } from 'sonner';
 
 const EditResume = () => {
@@ -775,6 +776,17 @@ Make it comprehensive and technically accurate for an engineering professional.`
               <Sparkles className="h-4 w-4 inline mr-2" />
               AI Assistant
             </button>
+            <button
+              onClick={() => setActiveTab('enhance')}
+              className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'enhance'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent hover:text-gray-700'
+              }`}
+            >
+              <Wand2 className="h-4 w-4 inline mr-2" />
+              AI Enhance
+            </button>
           </div>
         </div>
 
@@ -1420,6 +1432,20 @@ Make it comprehensive and technically accurate for an engineering professional.`
               <AIContentSuggestions 
                 resumeData={resumeData}
                 onContentGenerated={handleAIContentGenerated}
+              />
+            </div>
+          )}
+
+          {/* AI Resume Enhancement */}
+          {activeTab === 'enhance' && (
+            <div className="space-y-6">
+              <AIResumeEnhancer 
+                resumeData={resumeData} 
+                onEnhancementApplied={(enhancedData) => {
+                  console.log('Enhancement applied:', enhancedData);
+                  setResumeData(enhancedData);
+                  toast.success('Resume enhancement applied successfully!');
+                }} 
               />
             </div>
           )}
