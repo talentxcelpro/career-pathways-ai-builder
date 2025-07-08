@@ -28,12 +28,16 @@ serve(async (req) => {
     const prompt = fullExtraction ? 
       `Extract ALL information from this resume text with maximum accuracy. Return comprehensive JSON structure:
 
-      IMPORTANT: Extract every piece of information word-for-word. Do not summarize or paraphrase.
+      IMPORTANT: 
+      - Extract every piece of information word-for-word. Do not summarize or paraphrase.
+      - IGNORE any metadata like "Resume File: [filename]" - these are NOT part of the resume content
+      - If you see patterns like "Resume File: FILENAME" or "File Type:" these are system metadata, not resume data
+      - Focus ONLY on actual resume content (personal info, experience, education, skills, etc.)
 
       Structure:
       {
         "personalInfo": {
-          "fullName": "exact name from resume",
+          "fullName": "exact name from resume (NOT filename)",
           "email": "exact email",
           "phone": "exact phone", 
           "location": "exact location/address",
@@ -114,6 +118,7 @@ serve(async (req) => {
       Extract EXACTLY what is written. Do not invent or assume information.
       For missing information, use empty strings or arrays.
       Preserve original wording and phrasing.
+      IGNORE file metadata lines that start with "Resume File:", "File Type:", "File Size:" etc.
 
       Resume text:
       ${text}

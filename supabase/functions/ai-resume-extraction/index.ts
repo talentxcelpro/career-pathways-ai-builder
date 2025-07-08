@@ -51,9 +51,14 @@ serve(async (req) => {
     // Enhanced prompt with NLP-style instructions
     const enhancedPrompt = `You are an expert resume parser with advanced NLP capabilities. Analyze this resume text with maximum accuracy using modern extraction techniques.
 
+CRITICAL INSTRUCTIONS:
+- IGNORE any system metadata like "Resume File:", "File Type:", "File Size:", etc.
+- These are NOT part of the resume content - focus only on actual resume data
+- Do NOT use filenames as personal names - extract the actual person's name from resume content
+
 EXTRACTION REQUIREMENTS:
 1. Use Named Entity Recognition (NER) principles to identify:
-   - PERSON (names, titles)
+   - PERSON (names, titles) - EXCLUDE filenames and system metadata
    - ORG (companies, institutions) 
    - DATE (employment dates, education dates)
    - SKILL (technical and soft skills)
@@ -71,7 +76,7 @@ EXTRACTION REQUIREMENTS:
 RETURN COMPREHENSIVE JSON:
 {
   "personalInfo": {
-    "fullName": "exact name with confidence",
+    "fullName": "actual person's name from resume content (NOT filename)",
     "email": "exact email",
     "phone": "standardized phone format",
     "location": "full address/location",
@@ -193,6 +198,7 @@ EXTRACTION RULES:
 - Detect industry-specific keywords and technologies
 - Assign confidence scores based on text clarity and context
 - Preserve formatting cues (bullets, indentation, sections)
+- IGNORE system metadata and filenames completely
 
 Resume text to analyze:
 ${text}

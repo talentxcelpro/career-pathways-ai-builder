@@ -87,8 +87,23 @@ export class ImprovedResumeExtractor {
 
       // Validate text quality
       if (!this.textExtractor.isValidText(extractedText)) {
-        console.warn('Poor text extraction quality, using file info for AI processing');
-        extractedText = `Resume File: ${file.name}\nFile Type: ${file.type}\nFile Size: ${(file.size / 1024).toFixed(1)}KB\n\nThis file requires advanced AI processing for content extraction. Please analyze the document structure and extract all resume sections including personal information, experience, education, skills, projects, and certifications.`;
+        console.warn('Poor text extraction quality, using advanced AI processing');
+        extractedText = `This document requires advanced AI processing for content extraction.
+
+Please analyze the uploaded resume file and extract all relevant information including:
+- Personal Information (Name, Email, Phone, Address)
+- Professional Summary or Objective
+- Work Experience with dates, companies, and responsibilities
+- Education details with institutions and degrees
+- Technical and soft skills
+- Projects, certifications, awards, and volunteer work
+
+File Details for Reference:
+- Filename: ${file.name}
+- File Type: ${file.type}
+- File Size: ${(file.size / 1024).toFixed(1)}KB
+
+Extract all resume content accurately and structure it properly.`;
       }
 
       // Use AI parsing for structured extraction
