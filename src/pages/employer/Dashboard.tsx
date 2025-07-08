@@ -12,6 +12,7 @@ import { CRMWidget } from "@/components/employer/CRMWidget";
 import { RoleBasedAccess, PermissionRequestsManager } from "@/components/employer/RoleBasedAccess";
 import { ActivityMonitor } from "@/components/employer/ActivityMonitor";
 import { useTeamPermissions } from "@/hooks/useTeamPermissions";
+import { PendingAccessRequests } from "@/components/employer/PendingAccessRequests";
 
 function DashboardContent() {
   const navigate = useNavigate();
@@ -95,7 +96,10 @@ function DashboardContent() {
 
   if (!companyId) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-6 max-w-7xl mx-auto space-y-6">
+        {/* Show pending access requests if user has no company access */}
+        <PendingAccessRequests />
+        
         <Card className="p-8 text-center">
           <h2 className="text-xl font-semibold mb-2">No Company Access</h2>
           <p className="text-gray-600">You don't appear to be a member of any company. Please contact your administrator.</p>
