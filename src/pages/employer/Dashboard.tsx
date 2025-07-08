@@ -17,7 +17,7 @@ function DashboardContent() {
   const navigate = useNavigate();
 
   // Get company ID from team membership
-  const { data: teamData } = useQuery({
+  const { data: teamData, isLoading: teamLoading } = useQuery({
     queryKey: ['user-team-membership'],
     queryFn: async () => {
       const { data: user } = await supabase.auth.getUser();
@@ -28,15 +28,22 @@ function DashboardContent() {
         .select('company_id, role')
         .eq('user_id', user.user.id)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching team data:', error);
+        return null;
+      }
+      
+      console.log('Team data retrieved:', data);
       return data;
     },
   });
 
   const companyId = teamData?.company_id;
-  const { hasPermission, role } = useTeamPermissions(companyId);
+  const { hasPermission, role, isLoading: permissionsLoading } = useTeamPermissions(companyId);
+
+  console.log('Dashboard state:', { companyId, role, teamData });
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ['employer-stats'],
@@ -68,7 +75,7 @@ function DashboardContent() {
     }
   });
 
-  if (isLoading) {
+  if (isLoading || teamLoading || permissionsLoading) {
     return (
       <div className="p-6 max-w-7xl mx-auto">
         <div className="animate-pulse space-y-4">
@@ -79,6 +86,17 @@ function DashboardContent() {
             ))}
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (!companyId) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <Card className="p-8 text-center">
+          <h2 className="text-xl font-semibold mb-2">No Company Access</h2>
+          <p className="text-gray-600">You don't appear to be a member of any company. Please contact your administrator.</p>
+        </Card>
       </div>
     );
   }

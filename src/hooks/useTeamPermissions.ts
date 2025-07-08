@@ -1,3 +1,4 @@
+import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -59,6 +60,14 @@ export const useTeamPermissions = (companyId?: string) => {
     const permission = permissions.find(p => p.permission_type === permissionType);
     return permission?.requires_approval || false;
   };
+
+  // Log current state for debugging
+  React.useEffect(() => {
+    if (roleData && permissions) {
+      console.log('Role Data:', roleData);
+      console.log('Permissions:', permissions);
+    }
+  }, [roleData, permissions]);
 
   // Create permission request
   const requestPermission = useMutation({
