@@ -35,7 +35,7 @@ export const useEmployerAccess = () => {
     },
     enabled: !!user?.id,
     staleTime: 0, // Always refetch to get latest status
-    gcTime: 0 // Don't cache
+    gcTime: 0, // Don't cache
   });
 
   const profile = accessData?.profile;
