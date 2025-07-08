@@ -5148,6 +5148,62 @@ export type Database = {
           },
         ]
       }
+      team_invitation_requests: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          company_id: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          invited_email: string
+          rejection_reason: string | null
+          request_message: string | null
+          requested_by: string
+          requested_role: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          invited_email: string
+          rejection_reason?: string | null
+          request_message?: string | null
+          requested_by: string
+          requested_role?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          invited_email?: string
+          rejection_reason?: string | null
+          request_message?: string | null
+          requested_by?: string
+          requested_role?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_invitation_requests_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       team_invitations: {
         Row: {
           accepted_at: string | null
@@ -5985,6 +6041,10 @@ export type Database = {
         Args: { request_id: string }
         Returns: undefined
       }
+      approve_team_invitation_request: {
+        Args: { request_id: string }
+        Returns: Json
+      }
       calculate_resume_completion_enhanced: {
         Args: { resume_uuid: string }
         Returns: number
@@ -6086,6 +6146,10 @@ export type Database = {
       reject_employer_request: {
         Args: { request_id: string; reason?: string }
         Returns: undefined
+      }
+      reject_team_invitation_request: {
+        Args: { request_id: string; reason?: string }
+        Returns: Json
       }
       send_system_notification: {
         Args: {

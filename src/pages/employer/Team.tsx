@@ -61,6 +61,24 @@ interface TeamInvitation {
   invitation_token: string;
 }
 
+interface TeamInvitationRequest {
+  id: string;
+  invited_email: string;
+  requested_role: string;
+  status: string;
+  request_message: string;
+  requested_by: string;
+  approved_by?: string;
+  created_at: string;
+  updated_at: string;
+  approved_at?: string;
+  rejection_reason?: string;
+  requester_profile?: {
+    full_name: string;
+    email: string;
+  };
+}
+
 const EmployerTeam = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -123,7 +141,7 @@ const EmployerTeam = () => {
       }
 
       // Parallel queries for better performance
-      const [teamMembersResult, invitationsResult] = await Promise.all([
+      const [teamMembersResult, invitationsResult, invitationRequestsResult] = await Promise.all([
         // Get team members first
         supabase
           .from('company_team_members')
@@ -137,10 +155,42 @@ const EmployerTeam = () => {
           .from('team_invitations')
           .select('*')
           .eq('company_id', companyId)
-          .order('invited_at', { ascending: false })
+          .order('invited_at', { ascending: false }),
+
+        // Get invitation requests (for approval workflow)
+        supabase
+          .from('team_invitation_requests')
+          .select('*')
+          .eq('company_id', companyId)
+          .order('created_at', { ascending: false })
       ]);
 
       const teamMembers = teamMembersResult.data || [];
+      const invitationRequests = invitationRequestsResult.data || [];
+      
+      // Get requester profiles for invitation requests
+      const requesterIds = invitationRequests.map(req => req.requested_by);
+      let requesterProfiles: any[] = [];
+      
+      if (requesterIds.length > 0) {
+        const { data: requesterProfilesData } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', requesterIds);
+        requesterProfiles = requesterProfilesData || [];
+      }
+
+      // Create requester profiles lookup
+      const requesterProfilesMap = requesterProfiles.reduce((map, profile) => {
+        map[profile.id] = profile;
+        return map;
+      }, {} as Record<string, any>);
+
+      // Add requester profiles to requests
+      const requestsWithProfiles = invitationRequests.map(req => ({
+        ...req,
+        requester_profile: requesterProfilesMap[req.requested_by] || null
+      }));
       
       // Get all user profiles in one query for better performance
       const userIds = teamMembers.map(member => member.user_id);
@@ -174,14 +224,15 @@ const EmployerTeam = () => {
         companyId: companyId,
         userRole: userRole,
         members: membersWithProfiles,
-        invitations: invitationsResult.data || []
+        invitations: invitationsResult.data || [],
+        invitationRequests: requestsWithProfiles
       };
     },
     staleTime: 30000, // Cache for 30 seconds
     refetchOnWindowFocus: false
   });
 
-  // Send invitation mutation
+  // Send invitation request mutation (requires approval)
   const inviteMutation = useMutation({
     mutationFn: async ({ email, role, message }: { email: string; role: string; message?: string }) => {
       if (!teamData?.companyId) throw new Error('No company found');
@@ -190,22 +241,49 @@ const EmployerTeam = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
       
-      const { data, error } = await supabase
-        .from('team_invitations')
-        .insert({
-          company_id: teamData.companyId,
-          invited_email: email,
-          role: role,
-          invited_by: user.id
-        })
-        .select()
-        .single();
+      // For owners and admins, create direct invitation
+      // For other roles, create invitation request that needs approval
+      const isOwnerOrAdmin = teamData.userRole === 'owner' || teamData.userRole === 'admin';
+      
+      if (isOwnerOrAdmin) {
+        // Direct invitation (existing flow)
+        const { data, error } = await supabase
+          .from('team_invitations')
+          .insert({
+            company_id: teamData.companyId,
+            invited_email: email,
+            role: role,
+            invited_by: user.id
+          })
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return { type: 'direct', data };
+      } else {
+        // Create invitation request for approval
+        const { data, error } = await supabase
+          .from('team_invitation_requests')
+          .insert({
+            company_id: teamData.companyId,
+            invited_email: email,
+            requested_role: role,
+            request_message: message,
+            requested_by: user.id
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        return { type: 'request', data };
+      }
     },
-    onSuccess: () => {
-      toast.success('Invitation sent successfully');
+    onSuccess: (result) => {
+      if (result.type === 'direct') {
+        toast.success('Invitation sent successfully');
+      } else {
+        toast.success('Invitation request submitted for approval');
+      }
       setShowInviteDialog(false);
       setInviteEmail('');
       setInviteRole('recruiter');
@@ -273,6 +351,53 @@ const EmployerTeam = () => {
     },
     onError: (error: any) => {
       toast.error('Failed to cancel invitation: ' + error.message);
+    }
+  });
+
+  // Approve invitation request mutation
+  const approveRequestMutation = useMutation({
+    mutationFn: async (requestId: string) => {
+      const { data, error } = await supabase.rpc('approve_team_invitation_request', {
+        request_id: requestId
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (result: any) => {
+      if (result.success) {
+        toast.success(result.message);
+        queryClient.invalidateQueries({ queryKey: ['company-team'] });
+      } else {
+        toast.error(result.error);
+      }
+    },
+    onError: (error: any) => {
+      toast.error('Failed to approve request: ' + error.message);
+    }
+  });
+
+  // Reject invitation request mutation
+  const rejectRequestMutation = useMutation({
+    mutationFn: async ({ requestId, reason }: { requestId: string; reason?: string }) => {
+      const { data, error } = await supabase.rpc('reject_team_invitation_request', {
+        request_id: requestId,
+        reason: reason
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (result: any) => {
+      if (result.success) {
+        toast.success(result.message);
+        queryClient.invalidateQueries({ queryKey: ['company-team'] });
+      } else {
+        toast.error(result.error);
+      }
+    },
+    onError: (error: any) => {
+      toast.error('Failed to reject request: ' + error.message);
     }
   });
 
@@ -449,6 +574,8 @@ const EmployerTeam = () => {
   const activeMembers = teamMembers.filter(m => m.is_active);
   const teamInvitations = teamData?.invitations || [];
   const pendingInvitations = teamInvitations.filter(inv => inv.status === 'pending');
+  const invitationRequests = teamData?.invitationRequests || [];
+  const pendingRequests = invitationRequests.filter(req => req.status === 'pending');
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -745,9 +872,15 @@ const EmployerTeam = () => {
 
       {/* Main Content with Tabs */}
       <Tabs defaultValue="members" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="members">Team Members ({activeMembers.length})</TabsTrigger>
           <TabsTrigger value="invitations">Invitations ({pendingInvitations.length})</TabsTrigger>
+          <TabsTrigger value="requests">
+            Approval Requests ({pendingRequests.length})
+            {pendingRequests.length > 0 && (
+              <Badge className="ml-1 bg-orange-100 text-orange-800">{pendingRequests.length}</Badge>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="members">
@@ -912,6 +1045,106 @@ const EmployerTeam = () => {
                   <Mail className="h-12 w-12 mx-auto mb-3 opacity-50" />
                   <p className="text-sm">No invitations sent</p>
                   <p className="text-xs mt-1">Send invitations to build your team</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="requests">
+          <Card>
+            <CardHeader>
+              <CardTitle>Invitation Requests</CardTitle>
+              <CardDescription>Pending invitation requests that need approval</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {invitationRequests.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Requested By</TableHead>
+                      <TableHead>Email to Invite</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Requested</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {invitationRequests.map((request) => (
+                      <TableRow key={request.id}>
+                        <TableCell>
+                           <div className="font-medium">
+                             {request.requester_profile?.full_name || 'Unknown User'}
+                           </div>
+                           <div className="text-sm text-gray-600">
+                             {request.requester_profile?.email || 'No email'}
+                           </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium">{request.invited_email}</div>
+                          {request.request_message && (
+                            <div className="text-sm text-gray-600 mt-1 max-w-xs truncate">
+                              "{request.request_message}"
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getRoleColor(request.requested_role)}>
+                            {request.requested_role.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(request.status)}>
+                            {request.status.toUpperCase()}
+                          </Badge>
+                          {request.status === 'rejected' && request.rejection_reason && (
+                            <div className="text-xs text-red-600 mt-1">
+                              {request.rejection_reason}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-gray-600">
+                          {new Date(request.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {canManageTeam && request.status === 'pending' && (
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-green-600 border-green-200 hover:bg-green-50"
+                                onClick={() => approveRequestMutation.mutate(request.id)}
+                                disabled={approveRequestMutation.isPending}
+                              >
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Approve
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-red-600 border-red-200 hover:bg-red-50"
+                                onClick={() => rejectRequestMutation.mutate({ 
+                                  requestId: request.id, 
+                                  reason: 'Not approved at this time'
+                                })}
+                                disabled={rejectRequestMutation.isPending}
+                              >
+                                <XCircle className="h-4 w-4 mr-1" />
+                                Reject
+                              </Button>
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Clock className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p className="text-sm">No pending invitation requests</p>
+                  <p className="text-xs mt-1">Invitation requests will appear here for approval</p>
                 </div>
               )}
             </CardContent>
