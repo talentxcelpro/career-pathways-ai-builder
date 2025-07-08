@@ -60,7 +60,6 @@ export const EnhancedTrendingTopics: React.FC<EnhancedTrendingTopicsProps> = ({
       if (response?.topics && response.topics.length > 0) {
         setTopics(response.topics);
         setLastUpdated(response.generatedAt);
-        toast.success('Trending topics updated!');
       } else {
         throw new Error('No topics received');
       }
@@ -114,7 +113,6 @@ export const EnhancedTrendingTopics: React.FC<EnhancedTrendingTopicsProps> = ({
       
       setTopics(fallbackTopics);
       setLastUpdated(new Date().toISOString());
-      toast.success('Trending topics loaded!');
     } finally {
       setIsLoading(false);
     }

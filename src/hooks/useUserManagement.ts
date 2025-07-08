@@ -33,7 +33,7 @@ export const useUserManagement = () => {
         query = query.eq('profile_completed', false);
       }
 
-      const { data, error } = await query.limit(100);
+      const { data, error } = await query.limit(50);
       if (error) {
         console.error('Error fetching users:', error);
         throw error;
