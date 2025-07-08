@@ -6,6 +6,7 @@ import EmployerDashboard from "../../pages/employer/Dashboard";
 import EmployerProfile from "../../pages/employer/Profile";
 import EmployerSettings from "../../pages/employer/Settings";
 import EmployerTeam from "../../pages/employer/Team";
+import TeamManagement from "../../pages/employer/TeamManagement";
 import EmployerAnalytics from "../../pages/employer/analytics/EmployerAnalytics";
 import CompanyAccessRequestPage from "../../pages/employer/CompanyAccessRequest";
 import AcceptInvitation from "../../pages/employer/AcceptInvitation";
@@ -29,8 +30,13 @@ export const employerCoreRoutes = [
     page: <EmployerSettings />,
   },
   {
-    title: "Employer Team",
+    title: "Team Management",
     to: "/employer/team",
+    page: <TeamManagement />,
+  },
+  {
+    title: "Legacy Team Management",
+    to: "/employer/team/legacy",
     page: <EmployerTeam />,
   },
   {
