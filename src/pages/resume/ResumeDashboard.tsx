@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Upload, FileText, Eye, Download, Edit, Star, Share2, Copy, Trash2 } from "lucide-react";
+import { Plus, Upload, FileText, Eye, Download, Edit, Star, Share2, Copy, Trash2, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -47,6 +48,29 @@ const ResumeDashboard = () => {
     if (!error) {
       // Refetch resumes after deletion
       window.location.reload();
+    }
+  };
+
+  const handleReprocessResume = async (resumeId: string) => {
+    try {
+      toast.loading('Reprocessing resume with AI...', { id: 'reprocess' });
+      
+      const { data, error } = await supabase.functions.invoke('ai-resume-reprocessor', {
+        body: { resumeId }
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success('Resume reprocessed successfully!', { id: 'reprocess' });
+        // Refresh the page to show updated data
+        window.location.reload();
+      } else {
+        throw new Error(data.error || 'Reprocessing failed');
+      }
+    } catch (error) {
+      console.error('Error reprocessing resume:', error);
+      toast.error('Failed to reprocess resume', { id: 'reprocess' });
     }
   };
 
@@ -194,6 +218,20 @@ const ResumeDashboard = () => {
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
+                            {/* Show reprocess button for problematic resumes */}
+                            {(resume.ats_score < 50 || 
+                              !(resume.content as any)?.personalInfo?.fullName || 
+                              (resume.content as any)?.personalInfo?.summary?.includes('RESUME FILE ANALYSIS')) && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleReprocessResume(resume.id)}
+                                className="text-blue-600 hover:text-blue-700"
+                                title="Reprocess with AI"
+                              >
+                                <RefreshCw className="h-4 w-4" />
+                              </Button>
+                            )}
                             <Button
                               variant="ghost"
                               size="sm"
