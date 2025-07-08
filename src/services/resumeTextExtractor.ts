@@ -1,7 +1,13 @@
 /**
  * Enhanced resume text extraction service
- * Handles PDF, DOCX, and TXT files with better text extraction
+ * Handles PDF, DOCX, and TXT files with better text extraction using proper libraries
  */
+
+import * as pdfjsLib from 'pdfjs-dist';
+import mammoth from 'mammoth';
+
+// Configure PDF worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
 
 export class ResumeTextExtractor {
   /**
@@ -30,137 +36,92 @@ export class ResumeTextExtractor {
 
   /**
    * Extract text from PDF files
-   * Uses FileReader to get basic text content
+   * Uses pdfjs-dist for proper PDF text extraction
    */
   private async extractFromPDF(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+    try {
+      console.log('Starting PDF extraction with pdfjs-dist...');
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let text = '';
       
-      reader.onload = (event) => {
-        try {
-          const arrayBuffer = event.target?.result as ArrayBuffer;
-          const text = this.extractTextFromPDFBuffer(arrayBuffer);
-          
-          if (text.length < 20) {
-            // If extraction is poor, return file info for AI to process
-            resolve(`PDF Document: ${file.name}\nThis PDF requires AI processing for text extraction.`);
-          } else {
-            resolve(text);
-          }
-        } catch (error) {
-          console.error('PDF reading error:', error);
-          resolve(`PDF Document: ${file.name}\nSize: ${(file.size / 1024).toFixed(1)}KB\nContent requires AI processing.`);
+      console.log(`PDF has ${pdf.numPages} pages`);
+      
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => {
+            // Handle different item types that might have text
+            if (typeof item === 'string') return item;
+            if (item && typeof item.str === 'string') return item.str;
+            if (item && typeof item.text === 'string') return item.text;
+            return '';
+          })
+          .filter(str => str.trim().length > 0)
+          .join(' ');
+        
+        if (pageText.trim()) {
+          text += pageText + '\n\n';
         }
-      };
+      }
       
-      reader.onerror = () => reject(new Error('Failed to read PDF file'));
-      reader.readAsArrayBuffer(file);
-    });
+      const cleanedText = text.trim();
+      console.log(`PDF extraction complete. Extracted ${cleanedText.length} characters`);
+      
+      if (cleanedText.length < 50) {
+        console.warn('PDF extraction yielded minimal text, using fallback message');
+        return `PDF Document: ${file.name}\nSize: ${(file.size / 1024).toFixed(1)}KB\nThis PDF may contain images or complex formatting. Please verify extracted content.`;
+      }
+      
+      return cleanedText;
+      
+    } catch (error) {
+      console.error('PDF extraction failed:', error);
+      throw new Error(`Failed to extract text from PDF: ${error.message}`);
+    }
   }
 
-  /**
-   * Basic PDF text extraction from buffer
-   */
-  private extractTextFromPDFBuffer(buffer: ArrayBuffer): string {
-    const uint8Array = new Uint8Array(buffer);
-    let text = '';
-    
-    // Convert to string and look for text patterns
-    const str = new TextDecoder('latin1').decode(uint8Array);
-    
-    // Basic PDF text extraction - look for text between parentheses and brackets
-    const textRegex = /\(([^)]+)\)/g;
-    let match;
-    
-    while ((match = textRegex.exec(str)) !== null) {
-      text += match[1] + ' ';
-    }
-    
-    // Also try to find plain text patterns
-    const plainTextRegex = /[A-Za-z0-9@.\-\s]{10,}/g;
-    const plainMatches = str.match(plainTextRegex);
-    
-    if (plainMatches) {
-      text += plainMatches.join(' ');
-    }
-    
-    return text.trim();
-  }
 
   /**
-   * Extract text from DOCX files
+   * Extract text from DOCX files using mammoth library
    */
   private async extractFromDOCX(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+    try {
+      console.log('Starting DOCX extraction with mammoth...');
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
       
-      reader.onload = (event) => {
-        try {
-          const arrayBuffer = event.target?.result as ArrayBuffer;
-          const text = this.extractTextFromDOCXBuffer(arrayBuffer);
-          resolve(text || `DOCX Document: ${file.name}\nRequires AI processing for text extraction.`);
-        } catch (error) {
-          console.error('DOCX reading error:', error);
-          resolve(`DOCX Document: ${file.name}\nSize: ${(file.size / 1024).toFixed(1)}KB`);
-        }
-      };
+      const extractedText = result.value.trim();
+      console.log(`DOCX extraction complete. Extracted ${extractedText.length} characters`);
       
-      reader.onerror = () => reject(new Error('Failed to read DOCX file'));
-      reader.readAsArrayBuffer(file);
-    });
+      if (extractedText.length < 50) {
+        console.warn('DOCX extraction yielded minimal text');
+        return `DOCX Document: ${file.name}\nSize: ${(file.size / 1024).toFixed(1)}KB\nDocument may be empty or contain primarily images.`;
+      }
+      
+      return extractedText;
+      
+    } catch (error) {
+      console.error('DOCX extraction failed:', error);
+      throw new Error(`Failed to extract text from DOCX: ${error.message}`);
+    }
   }
 
-  /**
-   * Basic DOCX text extraction
-   */
-  private extractTextFromDOCXBuffer(buffer: ArrayBuffer): string {
-    const uint8Array = new Uint8Array(buffer);
-    let text = '';
-    
-    // Convert to string for text pattern matching
-    const str = new TextDecoder('utf-8', { ignoreBOM: true }).decode(uint8Array);
-    
-    // Look for XML text content patterns typical in DOCX
-    const xmlTextRegex = /<w:t[^>]*>([^<]+)<\/w:t>/g;
-    let match;
-    
-    while ((match = xmlTextRegex.exec(str)) !== null) {
-      text += match[1] + ' ';
-    }
-    
-    // Also try simpler text patterns
-    if (text.length < 50) {
-      const simpleTextRegex = /[A-Za-z0-9@.\s\-,()]{15,}/g;
-      const matches = str.match(simpleTextRegex);
-      if (matches) {
-        text = matches.join(' ');
-      }
-    }
-    
-    // Clean up extracted text
-    text = text
-      .replace(/\s+/g, ' ')
-      .replace(/[^\x20-\x7E\n]/g, ' ')
-      .trim();
-    
-    return text;
-  }
 
   /**
    * Extract text from TXT files
    */
   private async extractFromTXT(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      
-      reader.onload = (event) => {
-        const text = event.target?.result as string;
-        resolve(text || '');
-      };
-      
-      reader.onerror = () => reject(new Error('Failed to read text file'));
-      reader.readAsText(file);
-    });
+    try {
+      console.log('Starting TXT extraction...');
+      const text = await file.text();
+      console.log(`TXT extraction complete. Extracted ${text.length} characters`);
+      return text.trim();
+    } catch (error) {
+      console.error('TXT extraction failed:', error);
+      throw new Error(`Failed to extract text from TXT: ${error.message}`);
+    }
   }
 
   /**

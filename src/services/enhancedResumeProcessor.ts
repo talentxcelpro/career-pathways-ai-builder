@@ -158,33 +158,43 @@ export class EnhancedResumeProcessor {
   }
 
   private async performAdvancedTextExtraction(file: File): Promise<string> {
-    console.log('Performing advanced text extraction...');
+    console.log('Performing advanced text extraction for:', file.name, 'Type:', file.type);
     
     try {
       // Multi-step extraction process
       let extractedText = '';
       
-      // Primary extraction
-      extractedText = await this.textExtractor.extractText(file);
-      
-      // Clean and validate
-      extractedText = this.textExtractor.cleanText(extractedText);
-      
-      // Enhanced cleaning for better AI processing
-      extractedText = this.enhanceTextForAI(extractedText);
-      
-      console.log('Text extraction complete. Length:', extractedText.length);
-      
-      if (!this.textExtractor.isValidText(extractedText)) {
-        console.warn('Text quality is poor, providing file metadata for AI processing');
-        extractedText = this.generateFileMetadataPrompt(file, extractedText);
+      // Primary extraction with better error handling
+      try {
+        extractedText = await this.textExtractor.extractText(file);
+        console.log('Primary extraction successful. Length:', extractedText.length);
+      } catch (extractionError) {
+        console.warn('Primary extraction failed:', extractionError.message);
+        // Don't fail completely, continue with fallback
+        extractedText = '';
       }
       
-      return extractedText;
+      // Clean and validate if we have text
+      if (extractedText) {
+        extractedText = this.textExtractor.cleanText(extractedText);
+        extractedText = this.enhanceTextForAI(extractedText);
+        
+        // Check text quality
+        if (this.textExtractor.isValidText(extractedText)) {
+          console.log('High quality text extracted, proceeding with AI processing');
+          return extractedText;
+        } else {
+          console.warn('Text quality is low, but will still attempt processing');
+        }
+      }
+      
+      // If extraction failed or quality is poor, generate enhanced prompt
+      console.log('Generating enhanced file metadata prompt for AI processing');
+      return this.generateFileMetadataPrompt(file, extractedText);
       
     } catch (error) {
-      console.error('Text extraction failed:', error);
-      // Fallback to file metadata
+      console.error('Text extraction completely failed:', error);
+      // Final fallback - generate basic file info for AI
       return this.generateFileMetadataPrompt(file, '');
     }
   }
@@ -247,9 +257,16 @@ Please provide a complete, accurate extraction of this professional's resume con
   }
 
   private async performAIExtraction(text: string, fileName: string, fileType: string): Promise<any> {
-    console.log('Performing AI-powered extraction...');
+    console.log('Performing AI-powered extraction with', text.length, 'characters of text...');
+    
+    // Ensure we have reasonable text length for AI processing
+    if (text.length < 20) {
+      console.warn('Very short text provided, enhancing with file metadata');
+      text = this.generateFileMetadataPrompt({ name: fileName, type: fileType } as File, text);
+    }
     
     try {
+      console.log('Calling AI extraction edge function...');
       const { data, error } = await supabase.functions.invoke('ai-resume-extraction', {
         body: { 
           text,
@@ -261,20 +278,31 @@ Please provide a complete, accurate extraction of this professional's resume con
 
       if (error) {
         console.error('AI extraction error:', error);
-        throw new Error(`AI extraction failed: ${error.message}`);
+        throw new Error(`AI extraction failed: ${error.message || 'Unknown error'}`);
+      }
+
+      if (!data) {
+        console.error('No data returned from AI extraction');
+        throw new Error('AI extraction returned no data');
+      }
+
+      if (data.error) {
+        console.error('AI extraction returned error:', data.error);
+        throw new Error(`AI extraction error: ${data.error}`);
       }
 
       if (!data.success) {
-        console.error('AI extraction unsuccessful:', data.error);
-        throw new Error(`AI extraction unsuccessful: ${data.error}`);
+        console.error('AI extraction unsuccessful:', data);
+        throw new Error(`AI extraction unsuccessful: ${data.error || 'Unknown error'}`);
       }
 
-      console.log('AI extraction successful with confidence:', data.confidenceMetrics?.overall);
+      console.log('AI extraction successful with confidence:', data.confidenceMetrics?.overall || 'unknown');
       return data;
 
     } catch (error) {
-      console.error('AI extraction failed:', error);
-      // Fallback to basic extraction
+      console.error('AI extraction completely failed:', error);
+      console.log('Falling back to basic extraction...');
+      // Fallback to basic extraction with improved default data
       return this.performFallbackExtraction(text, fileName);
     }
   }
@@ -495,47 +523,168 @@ Please provide a complete, accurate extraction of this professional's resume con
   }
 
   private performFallbackExtraction(text: string, fileName: string): any {
-    console.log('Using fallback extraction...');
+    console.log('Using fallback extraction with enhanced data extraction...');
     
-    // Return minimal structure
+    // Try to extract basic information from the text
+    const personalInfo = this.extractBasicPersonalInfo(text);
+    const experience = this.extractBasicExperience(text);
+    const education = this.extractBasicEducation(text);
+    const skills = this.extractBasicSkills(text);
+    
     return {
       personalInfo: {
-        fullName: '',
-        email: '',
-        phone: '',
-        location: '',
-        summary: text.substring(0, 200) + '...',
-        confidence: 0.3
+        fullName: personalInfo.name || '',
+        email: personalInfo.email || '',
+        phone: personalInfo.phone || '',
+        location: personalInfo.location || '',
+        summary: personalInfo.summary || text.substring(0, 200) + '...',
+        confidence: 0.5
       },
-      experience: [],
-      education: [],
-      skills: { technical: {}, soft: [], languages: [], certifications: [] },
+      experience: experience,
+      education: education,
+      skills: {
+        technical: {
+          programming: skills.technical,
+          frameworks: [],
+          databases: [],
+          tools: [],
+          cloud: [],
+          confidence: 0.5
+        },
+        soft: skills.soft,
+        languages: [],
+        certifications: []
+      },
       projects: [],
       certifications: [],
       awards: [],
       volunteer: [],
       atsOptimization: {
-        score: 40,
-        keywordDensity: 30,
-        sectionCompleteness: 20,
-        readabilityScore: 50,
+        score: 60,
+        keywordDensity: 40,
+        sectionCompleteness: 30,
+        readabilityScore: 60,
         suggestions: [{
           category: 'content',
-          priority: 'high',
-          issue: 'Incomplete extraction',
-          suggestion: 'Manual review required for accurate information',
-          impact: 50
+          priority: 'medium',
+          issue: 'Basic extraction used',
+          suggestion: 'Consider re-uploading the file or manually reviewing extracted information',
+          impact: 30
         }]
       },
       confidenceMetrics: {
-        overall: 0.3,
-        personalInfo: 0.3,
-        experience: 0.3,
-        education: 0.3,
-        skills: 0.3,
+        overall: 0.5,
+        personalInfo: 0.5,
+        experience: 0.4,
+        education: 0.4,
+        skills: 0.4,
         sections: {}
+      },
+      suggestions: [{
+        category: 'quality',
+        priority: 'medium',
+        issue: 'Fallback extraction used',
+        suggestion: 'Please review and verify all extracted information',
+        impact: 20
+      }],
+      metadata: {
+        fileName,
+        extractionTimestamp: new Date().toISOString(),
+        extractionMethod: 'fallback-basic',
+        processingVersion: '2.0'
       },
       success: true
     };
+  }
+
+  private extractBasicPersonalInfo(text: string) {
+    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+    const phoneRegex = /(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})/;
+    const nameRegex = /^([A-Z][a-z]+ [A-Z][a-z]+)/m;
+    
+    const email = text.match(emailRegex)?.[0] || '';
+    const phone = text.match(phoneRegex)?.[0] || '';
+    const name = text.match(nameRegex)?.[1] || '';
+    
+    // Try to extract summary from first paragraph
+    const lines = text.split('\n').filter(line => line.trim().length > 0);
+    const summary = lines.find(line => line.length > 50 && !line.includes('@') && !line.includes('http')) || '';
+    
+    return { name, email, phone, location: '', summary };
+  }
+
+  private extractBasicExperience(text: string) {
+    const experiences = [];
+    const jobTitleRegex = /(Software Engineer|Developer|Manager|Analyst|Designer|Consultant|Director|Specialist)/gi;
+    const companyRegex = /(at|@)\s+([A-Z][a-zA-Z\s&.,]+)/g;
+    
+    const jobTitles = text.match(jobTitleRegex) || [];
+    const companies = text.match(companyRegex) || [];
+    
+    for (let i = 0; i < Math.min(jobTitles.length, 3); i++) {
+      experiences.push({
+        title: jobTitles[i] || 'Professional',
+        company: companies[i]?.replace(/^(at|@)\s+/, '') || 'Company',
+        location: '',
+        startDate: '',
+        endDate: '',
+        description: 'Professional experience in the field',
+        achievements: [],
+        technologies: [],
+        keywords: [],
+        confidence: 0.3
+      });
+    }
+    
+    return experiences;
+  }
+
+  private extractBasicEducation(text: string) {
+    const education = [];
+    const degreeRegex = /(Bachelor|Master|PhD|Associate|Diploma)/gi;
+    const schoolRegex = /(University|College|School|Institute)/gi;
+    
+    const degrees = text.match(degreeRegex) || [];
+    const schools = text.match(schoolRegex) || [];
+    
+    if (degrees.length > 0 || schools.length > 0) {
+      education.push({
+        degree: degrees[0] || 'Degree',
+        school: schools[0] || 'Educational Institution',
+        location: '',
+        startDate: '',
+        endDate: '',
+        relevantCoursework: [],
+        confidence: 0.3
+      });
+    }
+    
+    return education;
+  }
+
+  private extractBasicSkills(text: string) {
+    const techSkills = [];
+    const softSkills = [];
+    
+    const techRegex = /(JavaScript|Python|Java|React|Node|SQL|HTML|CSS|AWS|Docker|Git)/gi;
+    const softRegex = /(Leadership|Communication|Problem Solving|Team Work|Management)/gi;
+    
+    const techMatches = text.match(techRegex) || [];
+    const softMatches = text.match(softRegex) || [];
+    
+    // Remove duplicates
+    techMatches.forEach(skill => {
+      if (!techSkills.includes(skill.toLowerCase())) {
+        techSkills.push(skill);
+      }
+    });
+    
+    softMatches.forEach(skill => {
+      if (!softSkills.includes(skill.toLowerCase())) {
+        softSkills.push(skill);
+      }
+    });
+    
+    return { technical: techSkills, soft: softSkills };
   }
 }
