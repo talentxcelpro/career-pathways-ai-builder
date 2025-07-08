@@ -428,7 +428,7 @@ const EmployerTeam = () => {
               </Button>
               <Button 
                 variant="outline"
-                onClick={() => navigate('/employer/request-access')}
+                onClick={() => navigate('/employer/company-access')}
                 className="border-orange-200 text-orange-700 hover:bg-orange-50"
               >
                 <UserPlus className="h-4 w-4 mr-2" />
