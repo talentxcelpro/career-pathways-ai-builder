@@ -23,14 +23,14 @@ export const useEmployerAccess = () => {
       // Also check if user has active team membership (alternative path to employer access)
       const { data: teamMembership } = await supabase
         .from('company_team_members')
-        .select('role, is_active')
+        .select('role, is_active, company_id')
         .eq('user_id', user.id)
         .eq('is_active', true)
-        .maybeSingle();
+        .limit(1);
       
       return {
         profile,
-        hasTeamMembership: !!teamMembership
+        hasTeamMembership: teamMembership && teamMembership.length > 0
       };
     },
     enabled: !!user?.id,
