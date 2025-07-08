@@ -262,17 +262,17 @@ const CompanyDashboard = () => {
             </div>
             
             {/* Quick Actions */}
-            <div className="flex space-x-3">
-              <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg">
-                <Plus className="h-4 w-4 mr-2" />
-                New Post
+            <div className="flex space-x-2">
+              <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
+                <Plus className="h-3 w-3 mr-1" />
+                <span className="text-xs">New Post</span>
               </Button>
-              <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
-                <Briefcase className="h-4 w-4 mr-2" />
+              <Button size="sm" variant="outline" className="border-border hover:bg-accent text-xs">
+                <Briefcase className="h-3 w-3 mr-1" />
                 Post Job
               </Button>
-              <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
-                <BarChart3 className="h-4 w-4 mr-2" />
+              <Button size="sm" variant="outline" className="border-border hover:bg-accent text-xs">
+                <BarChart3 className="h-3 w-3 mr-1" />
                 Analytics
               </Button>
             </div>
@@ -280,88 +280,88 @@ const CompanyDashboard = () => {
         </div>
 
         {/* Metrics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-xl">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+          <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-blue-100">Followers</CardTitle>
-              <Users className="h-5 w-5 text-blue-200" />
+              <CardTitle className="text-xs font-medium text-muted-foreground">Followers</CardTitle>
+              <Users className="h-3 w-3 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{companyMetrics?.followers_count || 0}</div>
-              <p className="text-xs text-blue-200">+12% from last month</p>
+              <div className="text-lg font-bold text-primary">{companyMetrics?.followers_count || 0}</div>
+              <p className="text-xs text-muted-foreground">+12% from last month</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-xl">
+          <Card className="bg-gradient-to-r from-success/10 to-success/5 border-success/20 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-green-100">Active Jobs</CardTitle>
-              <Briefcase className="h-5 w-5 text-green-200" />
+              <CardTitle className="text-xs font-medium text-muted-foreground">Active Jobs</CardTitle>
+              <Briefcase className="h-3 w-3 text-success" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{companyMetrics?.active_jobs_count || 0}</div>
-              <p className="text-xs text-green-200">Currently hiring</p>
+              <div className="text-lg font-bold text-success">{companyMetrics?.active_jobs_count || 0}</div>
+              <p className="text-xs text-muted-foreground">Currently hiring</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 shadow-xl">
+          <Card className="bg-gradient-to-r from-accent/10 to-accent/5 border-accent/20 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-purple-100">Applications</CardTitle>
-              <FileText className="h-5 w-5 text-purple-200" />
+              <CardTitle className="text-xs font-medium text-muted-foreground">Applications</CardTitle>
+              <FileText className="h-3 w-3 text-accent-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{companyMetrics?.total_applications_count || 0}</div>
-              <p className="text-xs text-purple-200">Total received</p>
+              <div className="text-lg font-bold text-accent-foreground">{companyMetrics?.total_applications_count || 0}</div>
+              <p className="text-xs text-muted-foreground">Total received</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-xl">
+          <Card className="bg-gradient-to-r from-secondary/20 to-secondary/10 border-secondary/30 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-orange-100">Brand Reach</CardTitle>
-              <Target className="h-5 w-5 text-orange-200" />
+              <CardTitle className="text-xs font-medium text-muted-foreground">Brand Reach</CardTitle>
+              <Target className="h-3 w-3 text-secondary-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{companyMetrics?.brand_reach || 0}</div>
-              <p className="text-xs text-orange-200">Monthly impressions</p>
+              <div className="text-lg font-bold text-secondary-foreground">{companyMetrics?.brand_reach || 0}</div>
+              <p className="text-xs text-muted-foreground">Monthly impressions</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-pink-500 to-pink-600 text-white border-0 shadow-xl">
+          <Card className="bg-gradient-to-r from-muted/20 to-muted/10 border-muted/30 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-pink-100">Success Rate</CardTitle>
-              <TrendingUp className="h-5 w-5 text-pink-200" />
+              <CardTitle className="text-xs font-medium text-muted-foreground">Success Rate</CardTitle>
+              <TrendingUp className="h-3 w-3 text-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{companyMetrics?.success_rate || 0}%</div>
-              <p className="text-xs text-pink-200">Hire rate</p>
+              <div className="text-lg font-bold text-foreground">{companyMetrics?.success_rate || 0}%</div>
+              <p className="text-xs text-muted-foreground">Hire rate</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Main Dashboard Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-white shadow-sm rounded-xl p-1">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <Activity className="h-4 w-4" />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <TabsList className="grid w-full grid-cols-6 bg-card shadow-sm rounded-lg p-1 border">
+            <TabsTrigger value="overview" className="flex items-center gap-1 text-xs">
+              <Activity className="h-3 w-3" />
               Overview
             </TabsTrigger>
-            <TabsTrigger value="content" className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
+            <TabsTrigger value="content" className="flex items-center gap-1 text-xs">
+              <MessageSquare className="h-3 w-3" />
               Content
             </TabsTrigger>
-            <TabsTrigger value="jobs" className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
+            <TabsTrigger value="jobs" className="flex items-center gap-1 text-xs">
+              <Briefcase className="h-3 w-3" />
               Jobs
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
+            <TabsTrigger value="analytics" className="flex items-center gap-1 text-xs">
+              <BarChart3 className="h-3 w-3" />
               Analytics
             </TabsTrigger>
-            <TabsTrigger value="insights" className="flex items-center gap-2">
-              <Brain className="h-4 w-4" />
+            <TabsTrigger value="insights" className="flex items-center gap-1 text-xs">
+              <Brain className="h-3 w-3" />
               AI Insights
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
+            <TabsTrigger value="settings" className="flex items-center gap-1 text-xs">
+              <Settings className="h-3 w-3" />
               Settings
             </TabsTrigger>
           </TabsList>

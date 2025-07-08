@@ -105,33 +105,33 @@ export const CompanyContent: React.FC<CompanyContentProps> = ({ company, userRol
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Content Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">Content Management</h3>
-          <p className="text-gray-600">Create and manage your company's content strategy</p>
+          <h3 className="text-lg font-bold text-foreground">Content Management</h3>
+          <p className="text-sm text-muted-foreground">Create and manage your company's content strategy</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <CreatePostDialog companyId={company?.id} />
-          <Button variant="outline">
-            <Calendar className="h-4 w-4 mr-2" />
-            Schedule Event
+          <Button size="sm" variant="outline">
+            <Calendar className="h-3 w-3 mr-1" />
+            <span className="text-xs">Schedule Event</span>
           </Button>
-          <Button variant="outline">
-            <Upload className="h-4 w-4 mr-2" />
-            Upload Media
+          <Button size="sm" variant="outline">
+            <Upload className="h-3 w-3 mr-1" />
+            <span className="text-xs">Upload Media</span>
           </Button>
         </div>
       </div>
 
       {/* Content Tabs */}
-      <Tabs value={activeContentTab} onValueChange={setActiveContentTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm">
-          <TabsTrigger value="posts">Posts & Announcements</TabsTrigger>
-          <TabsTrigger value="events">Events</TabsTrigger>
-          <TabsTrigger value="media">Media Library</TabsTrigger>
-          <TabsTrigger value="analytics">Content Analytics</TabsTrigger>
+      <Tabs value={activeContentTab} onValueChange={setActiveContentTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4 bg-card shadow-sm border">
+          <TabsTrigger value="posts" className="text-xs">Posts & Announcements</TabsTrigger>
+          <TabsTrigger value="events" className="text-xs">Events</TabsTrigger>
+          <TabsTrigger value="media" className="text-xs">Media Library</TabsTrigger>
+          <TabsTrigger value="analytics" className="text-xs">Content Analytics</TabsTrigger>
         </TabsList>
 
         {/* Posts Tab */}
@@ -146,12 +146,12 @@ export const CompanyContent: React.FC<CompanyContentProps> = ({ company, userRol
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
-                    <CardTitle>Company Events</CardTitle>
-                    <CardDescription>Manage your company events and webinars</CardDescription>
+                    <CardTitle className="text-base">Company Events</CardTitle>
+                    <CardDescription className="text-sm">Manage your company events and webinars</CardDescription>
                   </div>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Event
+                  <Button size="sm">
+                    <Plus className="h-3 w-3 mr-1" />
+                    <span className="text-xs">Create Event</span>
                   </Button>
                 </div>
               </CardHeader>
@@ -181,12 +181,12 @@ export const CompanyContent: React.FC<CompanyContentProps> = ({ company, userRol
                             )}
                           </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-1">
                           <Button size="sm" variant="outline">
-                            <Edit3 className="h-4 w-4" />
+                            <Edit3 className="h-3 w-3" />
                           </Button>
                           <Button size="sm" variant="outline">
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>
@@ -273,25 +273,25 @@ export const CompanyContent: React.FC<CompanyContentProps> = ({ company, userRol
         <TabsContent value="analytics">
           <div className="space-y-6">
             {/* Content Performance Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
-                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-xs font-medium text-muted-foreground">Total Posts</CardTitle>
+                  <MessageSquare className="h-3 w-3 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{companyPosts?.length || 0}</div>
+                  <div className="text-lg font-bold text-foreground">{companyPosts?.length || 0}</div>
                   <p className="text-xs text-muted-foreground">Published this month</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Views</CardTitle>
-                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-xs font-medium text-muted-foreground">Total Views</CardTitle>
+                  <Eye className="h-3 w-3 text-success" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-lg font-bold text-foreground">
                     {companyPosts?.reduce((sum, post) => sum + (post.views_count || 0), 0) || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">Across all posts</p>
@@ -300,11 +300,11 @@ export const CompanyContent: React.FC<CompanyContentProps> = ({ company, userRol
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Likes</CardTitle>
-                  <Heart className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-xs font-medium text-muted-foreground">Total Likes</CardTitle>
+                  <Heart className="h-3 w-3 text-destructive" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-lg font-bold text-foreground">
                     {companyPosts?.reduce((sum, post) => sum + (post.likes_count || 0), 0) || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">Engagement metric</p>
@@ -313,11 +313,11 @@ export const CompanyContent: React.FC<CompanyContentProps> = ({ company, userRol
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Shares</CardTitle>
-                  <Share2 className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-xs font-medium text-muted-foreground">Total Shares</CardTitle>
+                  <Share2 className="h-3 w-3 text-accent-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-lg font-bold text-foreground">
                     {companyPosts?.reduce((sum, post) => sum + (post.shares_count || 0), 0) || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">Content reach</p>
