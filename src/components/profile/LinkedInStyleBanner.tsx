@@ -60,7 +60,7 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     if (profile?.full_name && profile.full_name.trim()) {
       return profile.full_name;
     }
-    return 'Hussain';
+    return 'Professional User';
   };
 
   const generateInitials = (profile: any) => {
