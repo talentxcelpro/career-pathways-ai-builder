@@ -24,11 +24,12 @@ serve(async (req) => {
     }
 
     const commentTypes = {
-      thoughtful: "Generate a thoughtful, insightful comment that adds value to the discussion. Ask a follow-up question or share a related perspective.",
-      supportive: "Generate a supportive, encouraging comment that celebrates the author's achievement or perspective.",
-      professional: "Generate a professional comment that demonstrates expertise and adds to the conversation in a meaningful way.",
-      engaging: "Generate an engaging comment that's likely to spark further discussion and interaction.",
-      question: "Generate a thoughtful question that encourages the author to share more details or insights."
+      appreciative: "Generate an appreciative comment that congratulates or shows support for the author's achievement, milestone, or perspective.",
+      engaging: "Generate an engaging comment that invites conversation and encourages the author to share more details or insights.",
+      question: "Generate a thoughtful question that sparks a reply by asking about specific aspects, challenges, or experiences related to the post.",
+      domain_smart: "Generate a domain-smart comment that adds industry-specific insight, mentions relevant trends, or provides expert context.",
+      networking: "Generate a networking-focused comment that encourages connection, collaboration, or professional relationship building.",
+      reflective: "Generate a reflective comment that shares a related personal experience, draws parallels, or offers deeper thought on the topic."
     };
 
     const userContext = userProfile ? `
@@ -41,22 +42,27 @@ serve(async (req) => {
 
     const systemPrompt = `You are an AI assistant helping professionals write engaging comments on LinkedIn-style posts.
 
-    ${commentTypes[commentType as keyof typeof commentTypes] || commentTypes.professional}
+    Generate 5-6 smart, diverse comments that follow these styles:
+    1. Appreciative: Congratulates or shows support
+    2. Engaging: Invites conversation and encourages sharing
+    3. Question-Based: Asks thoughtful questions to spark replies
+    4. Domain-Smart: Adds industry-specific insights or trends
+    5. Networking: Encourages connection or collaboration
+    6. Reflective: Shares related experience or deeper thoughts
 
     ${userContext}
 
     Guidelines:
-    1. Keep comments professional but personable
-    2. Length: 20-100 words
-    3. Add value to the conversation
-    4. Be authentic and avoid generic responses
-    5. Use emojis sparingly (max 1-2)
-    6. Don't be overly promotional
-    7. Show genuine interest in the topic
-    8. Relate to the user's background when appropriate
+    1. Keep comments professional but personable (20-100 words each)
+    2. Add genuine value to the conversation
+    3. Be authentic and avoid generic responses
+    4. Use emojis sparingly (max 1-2 per comment)
+    5. Show genuine interest in the topic
+    6. Relate to the user's background when appropriate
+    7. Make each comment distinctly different in approach
 
-    Generate 3 different comment variations, each with a slightly different approach.
-    Return as JSON array with objects containing 'comment' and 'tone' fields.`;
+    Return as JSON array with objects containing 'comment' and 'tone' fields.
+    Ensure each comment represents a different style from the list above.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -100,14 +106,14 @@ serve(async (req) => {
       // If JSON parsing fails, create simple suggestions from text
       const content = data.choices[0].message.content;
       const lines = content.split('\n').filter(line => line.trim());
-      suggestions = lines.slice(0, 3).map((line, index) => ({
+      suggestions = lines.slice(0, 6).map((line, index) => ({
         comment: line.replace(/^\d+\.\s*/, '').trim(),
-        tone: ['thoughtful', 'supportive', 'engaging'][index] || 'professional'
+        tone: ['appreciative', 'engaging', 'question', 'domain_smart', 'networking', 'reflective'][index] || 'appreciative'
       }));
     }
 
     return new Response(JSON.stringify({ 
-      suggestions: suggestions.slice(0, 3),
+      suggestions: suggestions.slice(0, 6),
       postExcerpt: postContent.substring(0, 100) + '...'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

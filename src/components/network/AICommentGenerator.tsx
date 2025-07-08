@@ -31,11 +31,12 @@ export const AICommentGenerator: React.FC<AICommentGeneratorProps> = ({
   const [customizedComment, setCustomizedComment] = useState('');
 
   const commentTypes = [
-    { value: 'thoughtful', label: 'Thoughtful', description: 'Adds valuable insights' },
-    { value: 'supportive', label: 'Supportive', description: 'Encouraging and positive' },
-    { value: 'professional', label: 'Professional', description: 'Formal and expertise-based' },
-    { value: 'engaging', label: 'Engaging', description: 'Sparks conversation' },
-    { value: 'question', label: 'Question', description: 'Asks for more details' }
+    { value: 'appreciative', label: 'Appreciative', description: 'Congratulates or shows support' },
+    { value: 'engaging', label: 'Engaging', description: 'Invites conversation' },
+    { value: 'question', label: 'Question-Based', description: 'Sparks a reply through relevant questions' },
+    { value: 'domain_smart', label: 'Domain-Smart', description: 'Adds insight based on industry context' },
+    { value: 'networking', label: 'Networking', description: 'Encourages connection or collaboration' },
+    { value: 'reflective', label: 'Reflective/Thoughtful', description: 'Shares related experience or deeper thought' }
   ];
 
   const generateComments = async () => {
@@ -72,19 +73,31 @@ export const AICommentGenerator: React.FC<AICommentGeneratorProps> = ({
     } catch (error) {
       console.error('Comment generation error:', error);
       
-      // Fallback suggestions
+      // Enhanced fallback suggestions matching your specifications
       const fallbackSuggestions = [
         {
-          comment: "Great insights! This really resonates with my experience in the field. Thanks for sharing your perspective.",
-          tone: "thoughtful"
+          comment: "Congratulations! This is a fantastic achievement and well-deserved recognition of your hard work.",
+          tone: "appreciative"
         },
         {
-          comment: "This is such valuable information. I'd love to hear more about your approach to this challenge.",
+          comment: "This is really interesting! I'd love to hear more about your experience and what led to this insight.",
           tone: "engaging"
         },
         {
-          comment: "Excellent point! Have you found any specific strategies that work particularly well in this area?",
+          comment: "What was the biggest challenge you faced during this journey, and how did you overcome it?",
           tone: "question"
+        },
+        {
+          comment: "This reflects a major trend we're seeing in the industry right now — great timing and execution!",
+          tone: "domain_smart"
+        },
+        {
+          comment: "Would love to connect and learn more about your work in this space. Let's stay in touch!",
+          tone: "networking"
+        },
+        {
+          comment: "Reading this took me back to when I made a similar transition — your approach really resonates with me.",
+          tone: "reflective"
         }
       ];
       
