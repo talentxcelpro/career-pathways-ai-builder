@@ -32,6 +32,7 @@ import {
   Lightbulb
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useCompanyRealtime } from '@/hooks/useCompanyRealtime';
 
 // Import module components
 import { CompanyOverview } from '@/components/company/dashboard/CompanyOverview';
@@ -93,6 +94,9 @@ const CompanyDashboard = () => {
 
   const selectedCompany = userCompanies?.[0]?.companies;
   const userRole = userCompanies?.[0]?.role;
+
+  // Real-time data hook
+  const realtimeData = useCompanyRealtime(selectedCompany?.id);
 
   // Get comprehensive company metrics
   const { data: companyMetrics } = useQuery({
@@ -261,8 +265,14 @@ const CompanyDashboard = () => {
               </div>
             </div>
             
-            {/* Quick Actions */}
-            <div className="flex space-x-2">
+      {/* Quick Actions & Real-time Status */}
+            <div className="flex space-x-2 items-center">
+              {realtimeData.isConnected && (
+                <Badge variant="secondary" className="bg-success/10 text-success border-success/20 text-xs">
+                  <Activity className="h-2 w-2 mr-1 animate-pulse" />
+                  Live
+                </Badge>
+              )}
               <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
                 <Plus className="h-3 w-3 mr-1" />
                 <span className="text-xs">New Post</span>
@@ -287,8 +297,8 @@ const CompanyDashboard = () => {
               <Users className="h-3 w-3 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg font-bold text-primary">{companyMetrics?.followers_count || 0}</div>
-              <p className="text-xs text-muted-foreground">+12% from last month</p>
+            <div className="text-lg font-bold text-primary">{realtimeData.follows?.length || companyMetrics?.followers_count || 0}</div>
+            <p className="text-xs text-muted-foreground">+{realtimeData.follows?.length > (companyMetrics?.followers_count || 0) ? Math.round(((realtimeData.follows.length - (companyMetrics?.followers_count || 0)) / Math.max(companyMetrics?.followers_count || 1, 1)) * 100) : 12}% from last month</p>
             </CardContent>
           </Card>
 

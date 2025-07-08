@@ -1207,6 +1207,109 @@ export type Database = {
           },
         ]
       }
+      company_ai_recommendations: {
+        Row: {
+          action_items: Json | null
+          company_id: string | null
+          created_at: string | null
+          description: string
+          expected_outcome: string | null
+          expires_at: string | null
+          id: string
+          impact_score: number | null
+          implementation_effort: string | null
+          is_implemented: boolean | null
+          recommendation_type: string
+          title: string
+        }
+        Insert: {
+          action_items?: Json | null
+          company_id?: string | null
+          created_at?: string | null
+          description: string
+          expected_outcome?: string | null
+          expires_at?: string | null
+          id?: string
+          impact_score?: number | null
+          implementation_effort?: string | null
+          is_implemented?: boolean | null
+          recommendation_type: string
+          title: string
+        }
+        Update: {
+          action_items?: Json | null
+          company_id?: string | null
+          created_at?: string | null
+          description?: string
+          expected_outcome?: string | null
+          expires_at?: string | null
+          id?: string
+          impact_score?: number | null
+          implementation_effort?: string | null
+          is_implemented?: boolean | null
+          recommendation_type?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_ai_recommendations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_analytics_sessions: {
+        Row: {
+          application_completions: number | null
+          application_starts: number | null
+          bounce_rate: number | null
+          company_id: string | null
+          id: string
+          job_page_views: number | null
+          page_views: number | null
+          profile_engagement_time: unknown | null
+          session_date: string | null
+          traffic_sources: Json | null
+          unique_visitors: number | null
+        }
+        Insert: {
+          application_completions?: number | null
+          application_starts?: number | null
+          bounce_rate?: number | null
+          company_id?: string | null
+          id?: string
+          job_page_views?: number | null
+          page_views?: number | null
+          profile_engagement_time?: unknown | null
+          session_date?: string | null
+          traffic_sources?: Json | null
+          unique_visitors?: number | null
+        }
+        Update: {
+          application_completions?: number | null
+          application_starts?: number | null
+          bounce_rate?: number | null
+          company_id?: string | null
+          id?: string
+          job_page_views?: number | null
+          page_views?: number | null
+          profile_engagement_time?: unknown | null
+          session_date?: string | null
+          traffic_sources?: Json | null
+          unique_visitors?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_analytics_sessions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_benchmarks: {
         Row: {
           benchmark_date: string | null
@@ -1241,6 +1344,53 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "company_benchmarks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_content_calendar: {
+        Row: {
+          company_id: string | null
+          content_data: Json | null
+          content_type: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          scheduled_date: string
+          status: string | null
+          title: string
+        }
+        Insert: {
+          company_id?: string | null
+          content_data?: Json | null
+          content_type: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          scheduled_date: string
+          status?: string | null
+          title: string
+        }
+        Update: {
+          company_id?: string | null
+          content_data?: Json | null
+          content_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          scheduled_date?: string
+          status?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_content_calendar_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -1339,6 +1489,56 @@ export type Database = {
           },
         ]
       }
+      company_integrations: {
+        Row: {
+          api_credentials: Json | null
+          company_id: string | null
+          configuration: Json | null
+          created_at: string | null
+          id: string
+          integration_name: string
+          integration_type: string
+          is_active: boolean | null
+          last_sync: string | null
+          sync_status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          api_credentials?: Json | null
+          company_id?: string | null
+          configuration?: Json | null
+          created_at?: string | null
+          id?: string
+          integration_name: string
+          integration_type: string
+          is_active?: boolean | null
+          last_sync?: string | null
+          sync_status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          api_credentials?: Json | null
+          company_id?: string | null
+          configuration?: Json | null
+          created_at?: string | null
+          id?: string
+          integration_name?: string
+          integration_type?: string
+          is_active?: boolean | null
+          last_sync?: string | null
+          sync_status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_integrations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_media_library: {
         Row: {
           alt_text: string | null
@@ -1398,13 +1598,16 @@ export type Database = {
           avg_engagement: number | null
           brand_reach: number | null
           company_id: string | null
+          content_performance_score: number | null
           created_at: string | null
           engagement_rate: number | null
+          engagement_score: number | null
           followers_count: number | null
           id: string
           month_year: string | null
           profile_views_count: number | null
           success_rate: number | null
+          talent_attraction_score: number | null
           total_applications_count: number | null
           updated_at: string | null
         }
@@ -1413,13 +1616,16 @@ export type Database = {
           avg_engagement?: number | null
           brand_reach?: number | null
           company_id?: string | null
+          content_performance_score?: number | null
           created_at?: string | null
           engagement_rate?: number | null
+          engagement_score?: number | null
           followers_count?: number | null
           id?: string
           month_year?: string | null
           profile_views_count?: number | null
           success_rate?: number | null
+          talent_attraction_score?: number | null
           total_applications_count?: number | null
           updated_at?: string | null
         }
@@ -1428,13 +1634,16 @@ export type Database = {
           avg_engagement?: number | null
           brand_reach?: number | null
           company_id?: string | null
+          content_performance_score?: number | null
           created_at?: string | null
           engagement_rate?: number | null
+          engagement_score?: number | null
           followers_count?: number | null
           id?: string
           month_year?: string | null
           profile_views_count?: number | null
           success_rate?: number | null
+          talent_attraction_score?: number | null
           total_applications_count?: number | null
           updated_at?: string | null
         }
@@ -1443,6 +1652,50 @@ export type Database = {
             foreignKeyName: "company_metrics_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_notification_settings: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          email_notifications: Json | null
+          id: string
+          notification_frequency: string | null
+          push_notifications: Json | null
+          slack_webhook: string | null
+          teams_webhook: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          email_notifications?: Json | null
+          id?: string
+          notification_frequency?: string | null
+          push_notifications?: Json | null
+          slack_webhook?: string | null
+          teams_webhook?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          email_notifications?: Json | null
+          id?: string
+          notification_frequency?: string | null
+          push_notifications?: Json | null
+          slack_webhook?: string | null
+          teams_webhook?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_notification_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
@@ -1593,6 +1846,41 @@ export type Database = {
             foreignKeyName: "company_profiles_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_realtime_metrics: {
+        Row: {
+          company_id: string | null
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          timestamp: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          timestamp?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_realtime_metrics_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
@@ -5792,6 +6080,53 @@ export type Database = {
           },
         ]
       }
+      team_collaboration_logs: {
+        Row: {
+          action_details: Json | null
+          action_type: string
+          company_id: string | null
+          id: string
+          ip_address: unknown | null
+          resource_id: string | null
+          resource_type: string | null
+          timestamp: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_details?: Json | null
+          action_type: string
+          company_id?: string | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type?: string | null
+          timestamp?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_details?: Json | null
+          action_type?: string
+          company_id?: string | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type?: string | null
+          timestamp?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_collaboration_logs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       team_invitation_requests: {
         Row: {
           approved_at: string | null
@@ -6688,6 +7023,10 @@ export type Database = {
       approve_team_invitation_request: {
         Args: { request_id: string }
         Returns: Json
+      }
+      calculate_company_engagement_score: {
+        Args: { company_uuid: string }
+        Returns: number
       }
       calculate_resume_completion_enhanced: {
         Args: { resume_uuid: string }
