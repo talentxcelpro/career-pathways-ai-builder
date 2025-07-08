@@ -219,7 +219,7 @@ Return ONLY valid JSON with comprehensive extraction and confidence metrics.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14', // Use latest model for resume parsing
+        model: 'gpt-4o-mini', // Use latest available model for resume parsing
         messages: [
           { 
             role: 'system', 
@@ -244,7 +244,7 @@ Return ONLY valid JSON with comprehensive extraction and confidence metrics.`;
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: 'gpt-4o-mini',
           messages: [
             { 
               role: 'system', 

@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Save, Download, Wand2, Sparkles, Target, FileText, Globe, Briefcase, Eye, Plus, Trash2, Palette, User } from "lucide-react";
+import { ArrowLeft, Save, Download, Wand2, Sparkles, Target, FileText, Globe, Briefcase, Eye, Plus, Trash2, Palette, User, Upload } from "lucide-react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -99,6 +99,7 @@ export const StreamlinedResumeBuilder = () => {
   const queryClient = useQueryClient();
   
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
+  const [isUploading, setIsUploading] = useState(false);
   const [resumeData, setResumeData] = useState<any>({
     personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
     experience: [],
@@ -245,6 +246,26 @@ export const StreamlinedResumeBuilder = () => {
             summary: data.enhancement
           }
         }));
+      } else if (sectionType === 'experience') {
+        try {
+          const enhancedExperience = JSON.parse(data.enhancement);
+          if (Array.isArray(enhancedExperience)) {
+            setResumeData(prev => ({
+              ...prev,
+              experience: enhancedExperience
+            }));
+          }
+        } catch (parseError) {
+          // If parsing fails, treat as description text for first experience
+          if (resumeData.experience.length > 0) {
+            setResumeData(prev => ({
+              ...prev,
+              experience: prev.experience.map((exp, index) => 
+                index === 0 ? { ...exp, description: data.enhancement } : exp
+              )
+            }));
+          }
+        }
       } else if (sectionType === 'skills') {
         const enhancedSkills = data.enhancement.split(',').map((skill: string) => skill.trim()).filter((skill: string) => skill);
         setResumeData(prev => ({
@@ -263,20 +284,22 @@ export const StreamlinedResumeBuilder = () => {
   // Global enhancement functions
   const handleGlobalEnhancement = useCallback(async (type: string) => {
     try {
+      toast.loading(`Applying ${type} enhancement...`, { id: 'global-enhance' });
+      
       let promptText = '';
       
       switch (type) {
         case 'ats':
-          promptText = 'Optimize this entire resume for ATS systems with proper keywords, formatting, and structure';
+          promptText = 'Optimize this entire resume for ATS systems with proper keywords, formatting, and structure. Return the complete enhanced resume in JSON format with the same structure.';
           break;
         case 'achievements':
-          promptText = 'Rewrite this resume to focus on quantifiable achievements, metrics, and impact across all sections';
+          promptText = 'Rewrite this resume to focus on quantifiable achievements, metrics, and impact across all sections. Return the complete enhanced resume in JSON format with the same structure.';
           break;
         case 'professional':
-          promptText = 'Enhance this resume for professional tone, clarity, and modern language across all sections';
+          promptText = 'Enhance this resume for professional tone, clarity, and modern language across all sections. Return the complete enhanced resume in JSON format with the same structure.';
           break;
         case 'job-specific':
-          promptText = 'Tailor this resume for maximum job relevance and keyword optimization';
+          promptText = 'Tailor this resume for maximum job relevance and keyword optimization. Return the complete enhanced resume in JSON format with the same structure.';
           break;
       }
 
@@ -290,10 +313,39 @@ export const StreamlinedResumeBuilder = () => {
 
       if (error) throw error;
 
-      toast.success(`Resume enhanced globally for ${type}!`);
+      // Try to parse the enhanced resume data
+      try {
+        const enhancedData = JSON.parse(data.enhancement);
+        if (enhancedData.personalInfo || enhancedData.experience || enhancedData.skills) {
+          setResumeData(prev => ({
+            ...prev,
+            ...enhancedData,
+            personalInfo: { ...prev.personalInfo, ...enhancedData.personalInfo },
+            experience: enhancedData.experience || prev.experience,
+            education: enhancedData.education || prev.education,
+            skills: enhancedData.skills || prev.skills,
+            projects: enhancedData.projects || prev.projects,
+            certifications: enhancedData.certifications || prev.certifications,
+            awards: enhancedData.awards || prev.awards
+          }));
+        } else {
+          throw new Error('Invalid enhancement format');
+        }
+      } catch (parseError) {
+        // If parsing fails, apply text improvements to summary
+        setResumeData(prev => ({
+          ...prev,
+          personalInfo: {
+            ...prev.personalInfo,
+            summary: data.enhancement
+          }
+        }));
+      }
+
+      toast.success(`Resume enhanced globally for ${type}!`, { id: 'global-enhance' });
     } catch (error) {
       console.error('Global enhancement error:', error);
-      toast.error('Failed to enhance resume');
+      toast.error('Failed to enhance resume', { id: 'global-enhance' });
     }
   }, [resumeData]);
 
@@ -347,6 +399,99 @@ export const StreamlinedResumeBuilder = () => {
       ...prev,
       skills: skillsArray
     }));
+  };
+
+  // Quick Upload & Extract function
+  const handleQuickUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      toast.loading('Extracting resume content...', { id: 'upload-extract' });
+
+      // Read file content
+      const fileContent = await readFileContent(file);
+      
+      // Extract content with AI
+      const { data, error } = await supabase.functions.invoke('ai-resume-extraction', {
+        body: {
+          text: fileContent,
+          fileName: file.name,
+          fileType: file.type,
+          extractionLevel: 'comprehensive'
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        // Apply extracted data to resume
+        const extractedData = {
+          personalInfo: {
+            fullName: data.personalInfo?.fullName || '',
+            email: data.personalInfo?.email || '',
+            phone: data.personalInfo?.phone || '',
+            location: data.personalInfo?.location || '',
+            summary: data.personalInfo?.summary || ''
+          },
+          experience: Array.isArray(data.experience) ? data.experience.map((exp: any) => ({
+            id: Date.now().toString() + Math.random(),
+            company: exp.company || '',
+            position: exp.title || exp.position || '',
+            startDate: exp.startDate || '',
+            endDate: exp.endDate || '',
+            description: exp.description || '',
+            achievements: exp.achievements || []
+          })) : [],
+          education: Array.isArray(data.education) ? data.education : [],
+          skills: Array.isArray(data.skills?.technical?.programming) 
+            ? [
+                ...(data.skills.technical.programming || []),
+                ...(data.skills.technical.frameworks || []),
+                ...(data.skills.technical.databases || []),
+                ...(data.skills.technical.tools || []),
+                ...(data.skills.technical.cloud || []),
+                ...(data.skills.soft || [])
+              ]
+            : Array.isArray(data.skills) ? data.skills : [],
+          projects: Array.isArray(data.projects) ? data.projects : [],
+          certifications: Array.isArray(data.certifications) ? data.certifications : [],
+          awards: Array.isArray(data.awards) ? data.awards : []
+        };
+
+        setResumeData(extractedData);
+        
+        // Save to database
+        if (id) {
+          await saveMutation.mutateAsync(extractedData);
+        }
+
+        toast.success('Resume extracted and loaded successfully!', { id: 'upload-extract' });
+      } else {
+        throw new Error('Failed to extract resume content');
+      }
+    } catch (error) {
+      console.error('Upload & extract error:', error);
+      toast.error('Failed to extract resume content', { id: 'upload-extract' });
+    } finally {
+      setIsUploading(false);
+      // Clear file input
+      event.target.value = '';
+    }
+  }, [id, saveMutation]);
+
+  // Helper function to read file content
+  const readFileContent = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        resolve(content);
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
+    });
   };
 
   if (isLoading) {
@@ -421,7 +566,46 @@ export const StreamlinedResumeBuilder = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Editor Panel */}
           <div className="space-y-6">
-            {/* Template Selector */}
+            {/* Quick Upload & Extract - ChatGPT Style */}
+            <Card className="border-dashed border-2 border-blue-300 bg-blue-50/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-blue-700">
+                  <Upload className="h-5 w-5" />
+                  Quick Upload & Extract
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center space-y-4">
+                  <p className="text-sm text-blue-600">
+                    Upload your existing resume for instant AI extraction and enhancement
+                  </p>
+                  <input
+                    type="file"
+                    id="quick-upload"
+                    accept=".pdf,.doc,.docx,.txt"
+                    className="hidden"
+                    onChange={handleQuickUpload}
+                  />
+                  <Button
+                    onClick={() => document.getElementById('quick-upload')?.click()}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <>
+                        <Wand2 className="h-4 w-4 mr-2 animate-spin" />
+                        Extracting...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload & Extract Resume
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -509,28 +693,32 @@ export const StreamlinedResumeBuilder = () => {
               ]}
             />
 
-            {/* Experience Section */}
+            {/* Experience Section - Enhanced */}
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Briefcase className="h-5 w-5" />
-                    Experience
+                    Work Experience  
                   </CardTitle>
                   <div className="flex gap-2">
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => enhanceSection('experience', 'achievements')}
+                      className="text-xs"
                     >
-                      🚀 Focus Results
+                      <span className="mr-1">🚀</span>
+                      Results Focus
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => enhanceSection('experience', 'ats')}
+                      className="text-xs"
                     >
-                      🎯 ATS Optimize
+                      <span className="mr-1">🎯</span>
+                      ATS Optimize
                     </Button>
                   </div>
                 </div>
@@ -540,7 +728,20 @@ export const StreamlinedResumeBuilder = () => {
                   <div className="text-center py-8 text-gray-500">
                     <Briefcase className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                     <p>No experience added yet</p>
-                    <Button className="mt-4" onClick={() => {}}>
+                    <Button className="mt-4" onClick={() => {
+                      setResumeData(prev => ({
+                        ...prev,
+                        experience: [...prev.experience, {
+                          id: Date.now().toString(),
+                          company: '',
+                          position: '',
+                          startDate: '',
+                          endDate: '',
+                          description: '',
+                          achievements: []
+                        }]
+                      }));
+                    }}>
                       <Plus className="h-4 w-4 mr-2" />
                       Add Experience
                     </Button>
@@ -548,11 +749,92 @@ export const StreamlinedResumeBuilder = () => {
                 ) : (
                   <div className="space-y-4">
                     {resumeData.experience.map((exp, index) => (
-                      <div key={index} className="p-4 border rounded-lg">
-                        <h4 className="font-medium">{exp.position} at {exp.company}</h4>
-                        <p className="text-sm text-gray-600">{exp.startDate} - {exp.endDate}</p>
+                      <div key={index} className="p-4 border rounded-lg space-y-3">
+                        <div className="grid grid-cols-2 gap-4">
+                          <Input
+                            placeholder="Job Title"
+                            value={exp.position || exp.title || ''}
+                            onChange={(e) => {
+                              const newExperience = [...resumeData.experience];
+                              newExperience[index] = { ...newExperience[index], position: e.target.value, title: e.target.value };
+                              setResumeData(prev => ({ ...prev, experience: newExperience }));
+                            }}
+                          />
+                          <Input
+                            placeholder="Company"
+                            value={exp.company || ''}
+                            onChange={(e) => {
+                              const newExperience = [...resumeData.experience];
+                              newExperience[index] = { ...newExperience[index], company: e.target.value };
+                              setResumeData(prev => ({ ...prev, experience: newExperience }));
+                            }}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <Input
+                            placeholder="Start Date"
+                            value={exp.startDate || ''}
+                            onChange={(e) => {
+                              const newExperience = [...resumeData.experience];
+                              newExperience[index] = { ...newExperience[index], startDate: e.target.value };
+                              setResumeData(prev => ({ ...prev, experience: newExperience }));
+                            }}
+                          />
+                          <Input
+                            placeholder="End Date"
+                            value={exp.endDate || ''}
+                            onChange={(e) => {
+                              const newExperience = [...resumeData.experience];
+                              newExperience[index] = { ...newExperience[index], endDate: e.target.value };
+                              setResumeData(prev => ({ ...prev, experience: newExperience }));
+                            }}
+                          />
+                        </div>
+                        <Textarea
+                          placeholder="Job description and achievements..."
+                          value={exp.description || ''}
+                          onChange={(e) => {
+                            const newExperience = [...resumeData.experience];
+                            newExperience[index] = { ...newExperience[index], description: e.target.value };
+                            setResumeData(prev => ({ ...prev, experience: newExperience }));
+                          }}
+                          rows={3}
+                        />
+                        <div className="flex justify-end">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const newExperience = resumeData.experience.filter((_, i) => i !== index);
+                              setResumeData(prev => ({ ...prev, experience: newExperience }));
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Remove
+                          </Button>
+                        </div>
                       </div>
                     ))}
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setResumeData(prev => ({
+                          ...prev,
+                          experience: [...prev.experience, {
+                            id: Date.now().toString(),
+                            company: '',
+                            position: '',
+                            startDate: '',
+                            endDate: '',
+                            description: '',
+                            achievements: []
+                          }]
+                        }));
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Experience
+                    </Button>
                   </div>
                 )}
               </CardContent>
