@@ -101,14 +101,30 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
         .from('company_team_members')
         .select(`
           *,
-          profiles!inner(full_name, email)
+          user_id
         `)
         .eq('company_id', company.id)
         .eq('is_active', true)
         .order('role', { ascending: true });
 
       if (error) throw error;
-      return data || [];
+      
+      // Get user profiles separately
+      const userIds = data?.map(member => member.user_id) || [];
+      if (userIds.length === 0) return [];
+      
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .in('id', userIds);
+
+      // Combine the data
+      const membersWithProfiles = data?.map(member => ({
+        ...member,
+        profile: profiles?.find(profile => profile.id === member.user_id)
+      })) || [];
+
+      return membersWithProfiles;
     },
     enabled: !!company
   });
@@ -161,6 +177,20 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
       [settingType]: newValue
     };
     updateSettingsMutation.mutate(updatedSettings);
+  };
+
+  // Type-safe getter for notification preferences
+  const getNotificationPrefs = () => {
+    const prefs = companySettings?.notification_preferences;
+    if (typeof prefs === 'object' && prefs !== null) {
+      return prefs as Record<string, boolean>;
+    }
+    return {
+      new_applications: true,
+      post_engagement: true,
+      follower_milestones: true,
+      weekly_reports: true
+    };
   };
 
   const getRoleColor = (role: string) => {
@@ -369,8 +399,8 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
                           <Users className="h-5 w-5 text-gray-600" />
                         </div>
                         <div>
-                          <h4 className="font-semibold text-gray-900">{member.profiles?.full_name}</h4>
-                          <p className="text-sm text-gray-600">{member.profiles?.email}</p>
+                          <h4 className="font-semibold text-gray-900">{member.profile?.full_name || 'Unknown User'}</h4>
+                          <p className="text-sm text-gray-600">{member.profile?.email || 'No email'}</p>
                         </div>
                       </div>
                       
@@ -426,10 +456,10 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
                   </div>
                   <Switch 
                     id="new-applications"
-                    checked={companySettings?.notification_preferences?.new_applications ?? true}
+                    checked={getNotificationPrefs().new_applications ?? true}
                     onCheckedChange={(checked) => 
                       handleSettingsUpdate('notification_preferences', {
-                        ...companySettings?.notification_preferences,
+                        ...getNotificationPrefs(),
                         new_applications: checked
                       })
                     }
@@ -444,10 +474,10 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
                   </div>
                   <Switch 
                     id="post-engagement"
-                    checked={companySettings?.notification_preferences?.post_engagement ?? true}
+                    checked={getNotificationPrefs().post_engagement ?? true}
                     onCheckedChange={(checked) => 
                       handleSettingsUpdate('notification_preferences', {
-                        ...companySettings?.notification_preferences,
+                        ...getNotificationPrefs(),
                         post_engagement: checked
                       })
                     }
@@ -462,10 +492,10 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
                   </div>
                   <Switch 
                     id="follower-milestones"
-                    checked={companySettings?.notification_preferences?.follower_milestones ?? true}
+                    checked={getNotificationPrefs().follower_milestones ?? true}
                     onCheckedChange={(checked) => 
                       handleSettingsUpdate('notification_preferences', {
-                        ...companySettings?.notification_preferences,
+                        ...getNotificationPrefs(),
                         follower_milestones: checked
                       })
                     }
@@ -480,10 +510,10 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
                   </div>
                   <Switch 
                     id="weekly-reports"
-                    checked={companySettings?.notification_preferences?.weekly_reports ?? true}
+                    checked={getNotificationPrefs().weekly_reports ?? true}
                     onCheckedChange={(checked) => 
                       handleSettingsUpdate('notification_preferences', {
-                        ...companySettings?.notification_preferences,
+                        ...getNotificationPrefs(),
                         weekly_reports: checked
                       })
                     }

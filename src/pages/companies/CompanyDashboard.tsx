@@ -130,10 +130,11 @@ const CompanyDashboard = () => {
             .eq('is_active', true),
           supabase
             .from('job_applications')
-            .select('job_applications.id')
+            .select(`
+              id,
+              jobs!inner(company_id)
+            `, { count: 'exact', head: true })
             .eq('jobs.company_id', selectedCompany.id)
-            .innerJoin('jobs', 'job_applications.job_id', 'jobs.id')
-            .select('*', { count: 'exact', head: true })
         ]);
 
         const calculatedMetrics = {
