@@ -16,7 +16,10 @@ import { toast } from 'sonner';
 
 // Import file processing libraries
 import mammoth from 'mammoth';
-import * as pdfParse from 'pdf-parse';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Configure PDF worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
 
 interface SectionEnhancerProps {
   title: string;
@@ -489,10 +492,21 @@ export const StreamlinedResumeBuilder = () => {
   const readFileContent = async (file: File): Promise<string> => {
     try {
       if (file.type === 'application/pdf') {
-        // Handle PDF files
+        // Handle PDF files using pdfjs-dist
         const arrayBuffer = await file.arrayBuffer();
-        const text = await pdfParse(arrayBuffer);
-        return text.text;
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let text = '';
+        
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items
+            .map((item: any) => item.str)
+            .join(' ');
+          text += pageText + ' ';
+        }
+        
+        return text.trim();
       } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
                  file.type === 'application/msword') {
         // Handle DOCX and DOC files
