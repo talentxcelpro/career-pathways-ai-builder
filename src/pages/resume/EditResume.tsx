@@ -182,10 +182,10 @@ const EditResume = () => {
       const fileName = resume.title.replace('Enhanced Resume from ', '');
       const extractedName = fileName.replace(/\.(docx?|pdf|txt)$/i, '').trim();
       
-      // Use AI to generate proper resume content based on the original upload
-      const { data, error } = await supabase.functions.invoke('ai-comprehensive', {
+      // Use AI to reprocess and extract resume content comprehensively
+      const { data, error } = await supabase.functions.invoke('ai-resume-reprocessor', {
         body: { 
-          prompt: `You are analyzing a resume for: ${extractedName}
+          resumeText: `Resume for: ${extractedName}
 
 Based on the filename "${fileName}", this appears to be a professional resume. Please generate comprehensive resume content that would be appropriate for someone with this name.
 
@@ -205,130 +205,73 @@ Generate realistic professional content including:
 - Relevant certifications and awards
 
 Make it comprehensive and technically accurate for an engineering professional.`,
-          context: 'Advanced Resume Content Generation',
-          responseFormat: 'structured_resume_data'
+          operation: 'extract_and_enhance'
         }
       });
 
       if (error) throw error;
 
-      // Parse and structure the response
-      let improvedContent;
-      if (data?.content) {
-        try {
-          // Try to parse if it's JSON
-          improvedContent = typeof data.content === 'string' ? JSON.parse(data.content) : data.content;
-        } catch {
-          // If not JSON, create structured content based on the response
-          improvedContent = {
-            personalInfo: {
-              fullName: extractedName,
-              email: `${extractedName.toLowerCase().replace(/\s+/g, '.')}@email.com`,
-              phone: '+91 (xxx) xxx-xxxx',
-              location: 'India',
-              summary: `PhD qualified engineer with expertise in microbial fuel cells (MFCs), battery materials, and green hydrogen technologies. Experienced in electrochemical energy systems, clean energy solutions, and advanced materials research. Proven track record in academia and research with focus on sustainable energy technologies.`
-            },
-            experience: [
-              {
-                company: 'Department of Civil Engineering',
-                position: 'Assistant Professor',
-                startDate: '2016',
-                endDate: '2016',
-                description: 'Teaching and research in environmental and civil engineering with focus on sustainable technologies and clean energy solutions.',
-                achievements: [
-                  'Supervised undergraduate and graduate research projects',
-                  'Published research in peer-reviewed journals',
-                  'Developed curriculum for environmental engineering courses'
-                ]
-              }
-            ],
-            education: [
-              {
-                degree: 'PhD in Chemical Engineering',
-                school: 'Institution',
-                startDate: '2013',
-                endDate: '2016',
-                description: 'Clean Energy Technologies Specialist'
-              }
-            ],
-            skills: [
-              'Electrochemical Energy Systems',
-              'Microbial Fuel Cells (MFCs)',
-              'Battery Materials',
-              'Green Hydrogen Technologies',
-              'Material Systems & Characterization',
-              'Electrochemical Techniques',
-              'Research & Development',
-              'Clean Energy Solutions',
-              'Environmental Engineering',
-              'Sustainable Technologies'
-            ],
-            projects: [
-              {
-                title: 'Microbial Fuel Cell Research',
-                description: 'Research on MFC design, stack scaling, wastewater-to-energy applications',
-                technologies: ['Electrochemical systems', 'Biomass conversion', 'Energy harvesting']
-              }
-            ],
-            certifications: [],
-            awards: []
-          };
-        }
-      } else {
-        // Fallback with engineering-specific content
-        improvedContent = {
-          personalInfo: {
-            fullName: extractedName,
-            email: `${extractedName.toLowerCase().replace(/\s+/g, '.')}@email.com`,
-            phone: '+91-xxx-xxx-xxxx',
-            location: 'India',
-            summary: `PhD qualified engineer with expertise in microbial fuel cells (MFCs), battery materials, and green hydrogen technologies. Specialized in electrochemical energy systems with over 5 years of research experience. Proven track record in sustainable energy solutions and advanced materials characterization.`
-          },
-          experience: [
-            {
-              company: 'Academic Institution',
-              position: 'Assistant Professor, Department of Civil Engineering',
-              startDate: '2016',
-              endDate: '2016',
-              description: 'Research and teaching in environmental engineering with focus on clean energy technologies.',
-              achievements: [
-                'Led research projects in microbial fuel cells and battery materials',
-                'Published research in international journals',
-                'Supervised graduate student research projects'
-              ]
-            }
-          ],
-          education: [
-            {
-              degree: 'PhD in Chemical Engineering',
-              school: 'University',
-              startDate: '2010',
-              endDate: '2015',
-              description: 'Specialization in Clean Energy Technologies and Electrochemical Systems'
-            }
-          ],
-          skills: [
-            'Electrochemical Energy Systems',
-            'Microbial Fuel Cells (MFCs)',
-            'Battery Materials',
-            'Green Hydrogen Technologies',
-            'Material Systems & Characterization',
-            'Research & Development',
-            'Clean Energy Solutions',
-            'Environmental Engineering'
-          ],
-          projects: [],
-          certifications: [],
-          awards: []
-        };
+      if (!data?.success) {
+        throw new Error(data?.error || 'Failed to process resume');
       }
+
+      // Use the extracted data from the AI response
+      const extractedData = data.extracted;
+      const enhancedData = data.enhanced;
+      
+      // Map the AI response to our resume format
+      const improvedContent = {
+        personalInfo: {
+          fullName: extractedData?.personalInfo?.fullName || extractedName,
+          email: extractedData?.personalInfo?.email || `${extractedName.toLowerCase().replace(/\s+/g, '.')}@email.com`,
+          phone: extractedData?.personalInfo?.phone || '+91-xxx-xxx-xxxx',
+          location: extractedData?.personalInfo?.location || 'India',
+          summary: enhancedData?.personalInfo?.summary || extractedData?.personalInfo?.summary || 'Professional with expertise in engineering and technology.'
+        },
+        experience: (extractedData?.experience || []).map((exp: any) => ({
+          company: exp.company || 'Company',
+          position: exp.title || 'Position',
+          startDate: exp.startDate || new Date().getFullYear().toString(),
+          endDate: exp.endDate || 'Present',
+          description: exp.description || 'Professional experience in the field.',
+          achievements: exp.achievements || []
+        })),
+        education: (extractedData?.education || []).map((edu: any) => ({
+          degree: edu.degree || 'Degree',
+          school: edu.school || 'Institution',
+          startDate: edu.startDate || '',
+          endDate: edu.endDate || '',
+          description: edu.description || ''
+        })),
+        skills: [
+          ...(extractedData?.skills?.technical || []),
+          ...(extractedData?.skills?.soft || []),
+          ...(enhancedData?.skills?.recommended || [])
+        ].filter((skill, index, arr) => arr.indexOf(skill) === index), // Remove duplicates
+        projects: (extractedData?.projects || []).map((project: any) => ({
+          title: project.title || 'Project',
+          description: project.description || 'Project description',
+          technologies: project.technologies || []
+        })),
+        certifications: (extractedData?.certifications || []).map((cert: any) => ({
+          name: cert.name || 'Certification',
+          issuer: cert.issuer || 'Issuer',
+          date: cert.date || new Date().getFullYear().toString()
+        })),
+        awards: (extractedData?.awards || []).map((award: any) => ({
+          name: award.name || 'Award',
+          issuer: award.issuer || 'Organization',
+          date: award.date || new Date().getFullYear().toString(),
+          description: award.description || ''
+        }))
+      };
 
       // Update the resume in database
       const { error: updateError } = await supabase
         .from('ai_resumes')
         .update({
           content: improvedContent,
-          ats_score: 85, // Higher score for PhD level resume
+          ats_score: enhancedData?.atsOptimization?.score || 85,
           updated_at: new Date().toISOString()
         })
         .eq('id', id);
@@ -338,7 +281,7 @@ Make it comprehensive and technically accurate for an engineering professional.`
       // Update local state
       setResumeData(improvedContent);
       
-      toast.success('Resume content re-extracted successfully!', { id: 'reextract' });
+      toast.success('Resume content re-extracted and enhanced successfully!', { id: 'reextract' });
     } catch (error) {
       console.error('Error re-extracting resume:', error);
       toast.error('Failed to re-extract resume content', { id: 'reextract' });
