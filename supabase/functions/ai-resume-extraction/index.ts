@@ -49,29 +49,35 @@ serve(async (req) => {
     console.log('Processing resume with advanced AI extraction:', fileName, 'Type:', fileType);
 
     // Enhanced prompt with NLP-style instructions
-    const enhancedPrompt = `You are an expert resume parser with advanced NLP capabilities. Analyze this resume text with maximum accuracy using modern extraction techniques.
+    const enhancedPrompt = `You are an expert resume parser with advanced NLP capabilities. Analyze this resume text with maximum accuracy.
 
 CRITICAL INSTRUCTIONS:
-- IGNORE any system metadata like "Resume File:", "File Type:", "File Size:", etc.
-- These are NOT part of the resume content - focus only on actual resume data
-- Do NOT use filenames as personal names - extract the actual person's name from resume content
+- IGNORE system metadata like "Resume File:", "File Type:", "COMPREHENSIVE RESUME PROCESSING", etc.
+- These are NOT resume content - focus ONLY on actual professional information
+- Do NOT use filenames as names - extract the real person's name from resume content
+- For technical/engineering resumes, pay special attention to:
+  * PhD qualifications and research experience
+  * Technical specializations (e.g., Clean Energy, Chemical Engineering, Microbial Fuel Cells)
+  * Research publications, projects, and achievements
+  * Academic positions and teaching experience
+  * Industry-specific terminology and skills
 
 EXTRACTION REQUIREMENTS:
-1. Use Named Entity Recognition (NER) principles to identify:
-   - PERSON (names, titles) - EXCLUDE filenames and system metadata
-   - ORG (companies, institutions) 
-   - DATE (employment dates, education dates)
-   - SKILL (technical and soft skills)
+1. Use Named Entity Recognition (NER) to identify:
+   - PERSON (actual names from resume content, NOT filenames)
+   - ORG (companies, institutions, universities)
+   - DATE (employment/education dates)
+   - SKILL (technical skills, research areas, specializations)
    - LOCATION (addresses, work locations)
 
-2. Apply section detection using:
-   - Header pattern matching (e.g., "Work Experience", "Education")
-   - Layout analysis cues (bullet points, indentation)
-   - Context-aware boundary detection
+2. For academic/research backgrounds, extract:
+   - PhD qualifications and specializations
+   - Research areas and expertise
+   - Academic positions (Professor, Researcher, etc.)
+   - Publications and research projects
+   - Technical skills and methodologies
 
-3. Implement confidence scoring for each extracted field (0.0-1.0)
-
-4. Preserve original formatting and structure metadata
+3. Implement confidence scoring for each field (0.0-1.0)
 
 RETURN COMPREHENSIVE JSON:
 {
@@ -213,7 +219,7 @@ Return ONLY valid JSON with comprehensive extraction and confidence metrics.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o', // Use most capable model for resume parsing
+        model: 'gpt-4.1-2025-04-14', // Use latest model for resume parsing
         messages: [
           { 
             role: 'system', 
