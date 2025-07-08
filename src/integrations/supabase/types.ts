@@ -3025,6 +3025,62 @@ export type Database = {
           },
         ]
       }
+      permission_requests: {
+        Row: {
+          approved_by: string | null
+          company_id: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          permission_type: string
+          reason: string | null
+          requested_at: string | null
+          requester_id: string
+          resource_id: string | null
+          responded_at: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          approved_by?: string | null
+          company_id: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          permission_type: string
+          reason?: string | null
+          requested_at?: string | null
+          requester_id: string
+          resource_id?: string | null
+          responded_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          permission_type?: string
+          reason?: string | null
+          requested_at?: string | null
+          requester_id?: string
+          resource_id?: string | null
+          responded_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permission_requests_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plan_analytics: {
         Row: {
           active_subscribers: number | null
@@ -4656,6 +4712,33 @@ export type Database = {
         }
         Relationships: []
       }
+      role_permissions: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_allowed: boolean | null
+          permission_type: string
+          requires_approval: boolean | null
+          role: Database["public"]["Enums"]["team_role"]
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_allowed?: boolean | null
+          permission_type: string
+          requires_approval?: boolean | null
+          role: Database["public"]["Enums"]["team_role"]
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_allowed?: boolean | null
+          permission_type?: string
+          requires_approval?: boolean | null
+          role?: Database["public"]["Enums"]["team_role"]
+        }
+        Relationships: []
+      }
       salary_data: {
         Row: {
           created_at: string
@@ -5144,6 +5227,53 @@ export type Database = {
             columns: ["plan_id"]
             isOneToOne: false
             referencedRelation: "pricing_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_activity_logs: {
+        Row: {
+          action_type: string
+          company_id: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          ip_address: unknown | null
+          resource_id: string | null
+          resource_type: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          company_id: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          company_id?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_activity_logs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
@@ -6076,6 +6206,15 @@ export type Database = {
         }
         Returns: string
       }
+      create_permission_request: {
+        Args: {
+          _company_id: string
+          _permission_type: string
+          _reason: string
+          _resource_id?: string
+        }
+        Returns: string
+      }
       ensure_unique_slug: {
         Args: { base_slug: string; company_id?: string }
         Returns: string
@@ -6111,6 +6250,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_team_permission: {
+        Args: {
+          _user_id: string
+          _company_id: string
+          _permission_type: string
+        }
+        Returns: boolean
+      }
       increment_job_applications: {
         Args: { job_id: string }
         Returns: undefined
@@ -6138,6 +6285,17 @@ export type Database = {
       is_super_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      log_team_activity: {
+        Args: {
+          _company_id: string
+          _user_id: string
+          _action_type: string
+          _resource_type?: string
+          _resource_id?: string
+          _details?: Json
+        }
+        Returns: undefined
       }
       reject_company_access_request: {
         Args: { request_id: string; reason?: string }

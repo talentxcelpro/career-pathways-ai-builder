@@ -9,9 +9,34 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
 import { CRMWidget } from "@/components/employer/CRMWidget";
+import { RoleBasedAccess, PermissionRequestsManager } from "@/components/employer/RoleBasedAccess";
+import { ActivityMonitor } from "@/components/employer/ActivityMonitor";
+import { useTeamPermissions } from "@/hooks/useTeamPermissions";
 
 function DashboardContent() {
   const navigate = useNavigate();
+
+  // Get company ID from team membership
+  const { data: teamData } = useQuery({
+    queryKey: ['user-team-membership'],
+    queryFn: async () => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) return null;
+
+      const { data, error } = await supabase
+        .from('company_team_members')
+        .select('company_id, role')
+        .eq('user_id', user.user.id)
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const companyId = teamData?.company_id;
+  const { hasPermission, role } = useTeamPermissions(companyId);
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ['employer-stats'],
@@ -65,12 +90,25 @@ function DashboardContent() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Employer Dashboard</h1>
           <p className="text-gray-600 mt-1">Manage your job postings and track applications</p>
+          <div className="flex items-center gap-2 mt-2">
+            <Badge variant="outline">Role: {role?.toUpperCase()}</Badge>
+            {companyId && <Badge variant="secondary">Company Access Active</Badge>}
+          </div>
         </div>
-        <Button onClick={() => navigate('/jobs/post')} className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="h-4 w-4 mr-2" />
-          Post New Job
-        </Button>
+        <RoleBasedAccess 
+          requiredPermission="manage_jobs" 
+          companyId={companyId || ''}
+          fallbackMessage="You need job management permission to post jobs."
+        >
+          <Button onClick={() => navigate('/jobs/post')} className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="h-4 w-4 mr-2" />
+            Post New Job
+          </Button>
+        </RoleBasedAccess>
       </div>
+
+      {/* Permission Requests for Owners/Admins */}
+      {companyId && <PermissionRequestsManager companyId={companyId} />}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -169,50 +207,85 @@ function DashboardContent() {
       </Card>
 
       {/* Mini CRM Section */}
-      <CRMWidget />
+      <RoleBasedAccess 
+        requiredPermission="access_crm_basic" 
+        companyId={companyId || ''}
+        fallbackMessage="You need CRM access to view candidate management features."
+      >
+        <CRMWidget />
+      </RoleBasedAccess>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/jobs/manage')}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-blue-600" />
-              Manage Jobs
-            </CardTitle>
-            <CardDescription>View and edit your job postings</CardDescription>
-          </CardHeader>
-        </Card>
+        <RoleBasedAccess 
+          requiredPermission="manage_jobs" 
+          companyId={companyId || ''}
+          showRequestOption={false}
+        >
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/jobs/manage')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Briefcase className="h-5 w-5 text-blue-600" />
+                Manage Jobs
+              </CardTitle>
+              <CardDescription>View and edit your job postings</CardDescription>
+            </CardHeader>
+          </Card>
+        </RoleBasedAccess>
 
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/employer/crm/candidates')}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-purple-600" />
-              CRM
-            </CardTitle>
-            <CardDescription>Manage candidate relationships</CardDescription>
-          </CardHeader>
-        </Card>
+        <RoleBasedAccess 
+          requiredPermission="access_crm_full" 
+          companyId={companyId || ''}
+          fallbackMessage="You need full CRM access to manage candidates."
+        >
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/employer/crm/candidates')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-purple-600" />
+                Advanced CRM
+              </CardTitle>
+              <CardDescription>Full candidate relationship management</CardDescription>
+            </CardHeader>
+          </Card>
+        </RoleBasedAccess>
 
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/employer/profile')}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-blue-600" />
-              Company Profile
-            </CardTitle>
-            <CardDescription>Update your company information</CardDescription>
-          </CardHeader>
-        </Card>
+        <RoleBasedAccess 
+          requiredPermission="manage_company" 
+          companyId={companyId || ''}
+          fallbackMessage="You need company management permission to edit profile."
+        >
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/employer/profile')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-blue-600" />
+                Company Profile
+              </CardTitle>
+              <CardDescription>Update your company information</CardDescription>
+            </CardHeader>
+          </Card>
+        </RoleBasedAccess>
 
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/employer/analytics')}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
-              Analytics
-            </CardTitle>
-            <CardDescription>Track your hiring performance</CardDescription>
-          </CardHeader>
-        </Card>
+        <RoleBasedAccess 
+          requiredPermission="view_analytics" 
+          companyId={companyId || ''}
+          fallbackMessage="You need analytics permission to view performance data."
+        >
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/employer/analytics')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-blue-600" />
+                Analytics
+              </CardTitle>
+              <CardDescription>Track your hiring performance</CardDescription>
+            </CardHeader>
+          </Card>
+        </RoleBasedAccess>
       </div>
+
+      {/* Activity Monitor for Owners */}
+      {companyId && (
+        <ActivityMonitor companyId={companyId} />
+      )}
     </div>
   );
 }
