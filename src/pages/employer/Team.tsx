@@ -182,13 +182,17 @@ const EmployerTeam = () => {
     mutationFn: async ({ email, role, message }: { email: string; role: string; message?: string }) => {
       if (!teamData?.companyId) throw new Error('No company found');
       
+      // Get current user first
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      
       const { data, error } = await supabase
         .from('team_invitations')
         .insert({
           company_id: teamData.companyId,
           invited_email: email,
           role: role,
-          invited_by: (await supabase.auth.getUser()).data.user?.id
+          invited_by: user.id
         })
         .select()
         .single();
@@ -313,13 +317,19 @@ const EmployerTeam = () => {
 
   const handleDirectAdd = async (user: any) => {
     try {
+      if (!teamData?.companyId) throw new Error('No company found');
+      
+      // Get current user first
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) throw new Error('Not authenticated');
+      
       const { error } = await supabase
         .from('team_invitations')
         .insert({
-          company_id: teamData?.companyId,
+          company_id: teamData.companyId,
           invited_email: user.email,
           role: 'recruiter',
-          invited_by: (await supabase.auth.getUser()).data.user?.id
+          invited_by: currentUser.id
         });
 
       if (error) throw error;
@@ -418,7 +428,7 @@ const EmployerTeam = () => {
               </Button>
               <Button 
                 variant="outline"
-                onClick={() => navigate('/employer/request-access')}
+                onClick={() => navigate('/employer/company-access')}
                 className="border-orange-200 text-orange-700 hover:bg-orange-50"
               >
                 <UserPlus className="h-4 w-4 mr-2" />
