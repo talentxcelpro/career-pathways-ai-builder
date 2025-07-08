@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 // Import file processing libraries
 import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
+import { EnhancedResumeProcessor } from '@/services/enhancedResumeProcessor';
 
 // Configure PDF worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
@@ -417,32 +418,21 @@ export const StreamlinedResumeBuilder = () => {
     try {
       toast.loading('Extracting resume content...', { id: 'upload-extract' });
 
-      // Read file content
-      const fileContent = await readFileContent(file);
-      
-      // Extract content with AI
-      const { data, error } = await supabase.functions.invoke('ai-resume-extraction', {
-        body: {
-          text: fileContent,
-          fileName: file.name,
-          fileType: file.type,
-          extractionLevel: 'comprehensive'
-        }
-      });
+      // Use EnhancedResumeProcessor for reliable extraction
+      const processor = new EnhancedResumeProcessor();
+      const extractedContent = await processor.processResume(file);
 
-      if (error) throw error;
-
-      if (data?.success) {
+      if (extractedContent && extractedContent.personalInfo) {
         // Apply extracted data to resume
         const extractedData = {
           personalInfo: {
-            fullName: data.personalInfo?.fullName || '',
-            email: data.personalInfo?.email || '',
-            phone: data.personalInfo?.phone || '',
-            location: data.personalInfo?.location || '',
-            summary: data.personalInfo?.summary || ''
+            fullName: extractedContent.personalInfo.fullName || '',
+            email: extractedContent.personalInfo.email || '',
+            phone: extractedContent.personalInfo.phone || '',
+            location: extractedContent.personalInfo.location || '',
+            summary: extractedContent.personalInfo.summary || ''
           },
-          experience: Array.isArray(data.experience) ? data.experience.map((exp: any) => ({
+          experience: Array.isArray(extractedContent.experience) ? extractedContent.experience.map((exp: any) => ({
             id: Date.now().toString() + Math.random(),
             company: exp.company || '',
             position: exp.title || exp.position || '',
@@ -451,20 +441,49 @@ export const StreamlinedResumeBuilder = () => {
             description: exp.description || '',
             achievements: exp.achievements || []
           })) : [],
-          education: Array.isArray(data.education) ? data.education : [],
-          skills: Array.isArray(data.skills?.technical?.programming) 
+          education: Array.isArray(extractedContent.education) ? extractedContent.education.map((edu: any) => ({
+            id: Date.now().toString() + Math.random(),
+            institution: edu.school || edu.institution || '',
+            degree: edu.degree || '',
+            field: edu.field || '',
+            startDate: edu.startDate || '',
+            endDate: edu.endDate || '',
+            gpa: edu.gpa || ''
+          })) : [],
+          skills: Array.isArray(extractedContent.skills?.technical?.programming) 
             ? [
-                ...(data.skills.technical.programming || []),
-                ...(data.skills.technical.frameworks || []),
-                ...(data.skills.technical.databases || []),
-                ...(data.skills.technical.tools || []),
-                ...(data.skills.technical.cloud || []),
-                ...(data.skills.soft || [])
+                ...(extractedContent.skills.technical.programming || []),
+                ...(extractedContent.skills.technical.frameworks || []),
+                ...(extractedContent.skills.technical.databases || []),
+                ...(extractedContent.skills.technical.tools || []),
+                ...(extractedContent.skills.technical.cloud || []),
+                ...(extractedContent.skills.soft || [])
               ]
-            : Array.isArray(data.skills) ? data.skills : [],
-          projects: Array.isArray(data.projects) ? data.projects : [],
-          certifications: Array.isArray(data.certifications) ? data.certifications : [],
-          awards: Array.isArray(data.awards) ? data.awards : []
+            : Array.isArray(extractedContent.skills) ? extractedContent.skills : [],
+          projects: Array.isArray(extractedContent.projects) ? extractedContent.projects.map((proj: any) => ({
+            id: Date.now().toString() + Math.random(),
+            title: proj.title || '',
+            description: proj.description || '',
+            technologies: proj.technologies || [],
+            startDate: proj.startDate || '',
+            endDate: proj.endDate || '',
+            url: proj.url || '',
+            github: proj.github || ''
+          })) : [],
+          certifications: Array.isArray(extractedContent.certifications) ? extractedContent.certifications.map((cert: any) => ({
+            id: Date.now().toString() + Math.random(),
+            name: cert.name || '',
+            issuer: cert.issuer || '',
+            date: cert.date || '',
+            url: cert.url || ''
+          })) : [],
+          awards: Array.isArray(extractedContent.awards) ? extractedContent.awards.map((award: any) => ({
+            id: Date.now().toString() + Math.random(),
+            name: award.name || '',
+            issuer: award.issuer || '',
+            date: award.date || '',
+            description: award.description || ''
+          })) : []
         };
 
         setResumeData(extractedData);
