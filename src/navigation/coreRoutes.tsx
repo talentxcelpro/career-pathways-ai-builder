@@ -12,6 +12,7 @@ import SEOAdmin from "../pages/admin/SEOAdmin";
 import AdvancedSEOAdmin from "../pages/admin/AdvancedSEOAdmin";
 import Phase5SEOAdmin from "../pages/admin/Phase5SEOAdmin";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import InvitationFlow from "../pages/InvitationFlow";
 
 export const coreRoutes = [
   {
@@ -80,6 +81,11 @@ export const coreRoutes = [
     to: "/admin/seo/phase5",
     icon: <Settings className="h-4 w-4" />,
     page: <Phase5SEOAdmin />,
+  },
+  {
+    title: "Invitation Flow Demo",
+    to: "/invitation-flow",
+    page: <InvitationFlow />,
   },
   {
     title: "Not Found",
