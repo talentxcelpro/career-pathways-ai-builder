@@ -49,8 +49,25 @@ export const useTeamPermissions = (companyId?: string) => {
   const hasPermission = (permissionType: string): boolean => {
     if (!permissions || !roleData) return false;
     
+    // Check direct permission
     const permission = permissions.find(p => p.permission_type === permissionType);
-    return permission?.is_allowed || false;
+    if (permission?.is_allowed) return true;
+    
+    // Check permission hierarchies - higher level permissions include lower level ones
+    const permissionHierarchies: Record<string, string[]> = {
+      'access_crm_basic': ['access_crm_full'],
+      'manage_jobs_basic': ['manage_jobs', 'manage_jobs_full'],
+      'view_analytics_basic': ['view_analytics', 'view_analytics_full'],
+    };
+    
+    const higherPermissions = permissionHierarchies[permissionType];
+    if (higherPermissions) {
+      return higherPermissions.some(higherPerm => 
+        permissions.find(p => p.permission_type === higherPerm)?.is_allowed
+      );
+    }
+    
+    return false;
   };
 
   // Check if permission requires approval
