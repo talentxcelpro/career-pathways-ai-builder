@@ -8,6 +8,7 @@ import EmployerSettings from "../../pages/employer/Settings";
 import EmployerTeam from "../../pages/employer/Team";
 import EmployerAnalytics from "../../pages/employer/analytics/EmployerAnalytics";
 import CompanyAccessRequestPage from "../../pages/employer/CompanyAccessRequest";
+import AcceptInvitation from "../../pages/employer/AcceptInvitation";
 
 export const employerCoreRoutes = [
   // Main Employer Routes
@@ -42,5 +43,11 @@ export const employerCoreRoutes = [
     to: "/employer/analytics",
     icon: <BarChart3 className="h-4 w-4" />,
     page: <EmployerAnalytics />,
+  },
+  {
+    title: "Accept Team Invitation",
+    to: "/employer/team/accept/:token",
+    page: <AcceptInvitation />,
+    requiresAuth: false, // Users might not be logged in when clicking invitation links
   },
 ];
