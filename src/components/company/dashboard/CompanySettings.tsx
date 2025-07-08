@@ -35,8 +35,9 @@ interface CompanySettingsProps {
 export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userRole }) => {
   const [settingsTab, setSettingsTab] = useState('profile');
   const queryClient = useQueryClient();
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  // Get company settings
+  // Get company settings with proper fallback
   const { data: companySettings, isLoading: settingsLoading } = useQuery({
     queryKey: ['company-settings', company?.id],
     queryFn: async () => {
@@ -46,14 +47,11 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
         .from('company_settings')
         .select('*')
         .eq('company_id', company.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching settings:', error);
-        return null;
-      }
-
-      // If no settings exist, create default ones
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      // If no settings exist, create default settings
       if (!data) {
         const defaultSettings = {
           company_id: company.id,
@@ -77,486 +75,553 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
           }
         };
 
-        const { data: newSettings } = await supabase
+        const { data: newSettings, error: insertError } = await supabase
           .from('company_settings')
           .insert(defaultSettings)
           .select()
           .single();
 
-        return newSettings || defaultSettings;
+        if (insertError) throw insertError;
+        return newSettings;
       }
-
+      
       return data;
     },
     enabled: !!company
   });
 
-  // Get team members
+  // Get team members with proper query
   const { data: teamMembers, isLoading: teamLoading } = useQuery({
     queryKey: ['company-team-members', company?.id],
     queryFn: async () => {
       if (!company) return [];
 
-      const { data, error } = await supabase
+      // Get team members first
+      const { data: members, error: membersError } = await supabase
         .from('company_team_members')
-        .select(`
-          *,
-          user_id
-        `)
+        .select('*')
         .eq('company_id', company.id)
-        .eq('is_active', true)
-        .order('role', { ascending: true });
+        .eq('is_active', true);
 
-      if (error) throw error;
-      
-      // Get user profiles separately
-      const userIds = data?.map(member => member.user_id) || [];
-      if (userIds.length === 0) return [];
-      
-      const { data: profiles } = await supabase
+      if (membersError) throw membersError;
+
+      // Get profiles for each member
+      const memberIds = members?.map(m => m.user_id) || [];
+      if (memberIds.length === 0) return [];
+
+      const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('id, full_name, email')
-        .in('id', userIds);
+        .in('id', memberIds);
+
+      if (profilesError) throw profilesError;
 
       // Combine the data
-      const membersWithProfiles = data?.map(member => ({
+      return members?.map(member => ({
         ...member,
-        profile: profiles?.find(profile => profile.id === member.user_id)
+        profile: profiles?.find(p => p.id === member.user_id) || { full_name: 'Unknown', email: 'unknown@email.com' }
       })) || [];
-
-      return membersWithProfiles;
     },
     enabled: !!company
-  });
-
-  // Update company settings mutation
-  const updateSettingsMutation = useMutation({
-    mutationFn: async (settings: any) => {
-      const { error } = await supabase
-        .from('company_settings')
-        .upsert({
-          company_id: company.id,
-          ...settings,
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success('Settings updated successfully');
-      queryClient.invalidateQueries({ queryKey: ['company-settings', company?.id] });
-    },
-    onError: (error: any) => {
-      toast.error('Failed to update settings: ' + error.message);
-    }
   });
 
   // Update company profile mutation
   const updateCompanyMutation = useMutation({
     mutationFn: async (updates: any) => {
-      const { error } = await supabase
+      setIsUpdating(true);
+      const { data, error } = await supabase
         .from('companies')
         .update(updates)
-        .eq('id', company.id);
+        .eq('id', company.id)
+        .select()
+        .single();
 
       if (error) throw error;
+      return data;
     },
     onSuccess: () => {
-      toast.success('Company profile updated successfully');
       queryClient.invalidateQueries({ queryKey: ['user-companies-dashboard'] });
+      toast.success('Company profile updated successfully');
+      setIsUpdating(false);
     },
-    onError: (error: any) => {
-      toast.error('Failed to update company profile: ' + error.message);
+    onError: (error) => {
+      toast.error('Failed to update company profile');
+      console.error('Update error:', error);
+      setIsUpdating(false);
     }
   });
 
-  const handleSettingsUpdate = (settingType: string, newValue: any) => {
-    const currentSettings = companySettings || {};
-    const updatedSettings = {
-      ...currentSettings,
-      [settingType]: newValue
+  // Update company settings mutation
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (updates: any) => {
+      setIsUpdating(true);
+      const { data, error } = await supabase
+        .from('company_settings')
+        .update(updates)
+        .eq('company_id', company.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['company-settings'] });
+      toast.success('Settings updated successfully');
+      setIsUpdating(false);
+    },
+    onError: (error) => {
+      toast.error('Failed to update settings');
+      console.error('Settings update error:', error);
+      setIsUpdating(false);
+    }
+  });
+
+  const handleNotificationChange = (key: string, value: boolean) => {
+    if (!companySettings?.notification_preferences) return;
+    
+    // Ensure notification_preferences is an object
+    const currentPrefs = typeof companySettings.notification_preferences === 'object' 
+      ? companySettings.notification_preferences as { [key: string]: boolean }
+      : {};
+    
+    const updatedPrefs = {
+      ...currentPrefs,
+      [key]: value
     };
-    updateSettingsMutation.mutate(updatedSettings);
+
+    updateSettingsMutation.mutate({
+      notification_preferences: updatedPrefs
+    });
   };
 
-  // Type-safe getter for notification preferences
-  const getNotificationPrefs = () => {
-    const prefs = companySettings?.notification_preferences;
-    if (typeof prefs === 'object' && prefs !== null) {
-      return prefs as Record<string, boolean>;
-    }
-    return {
-      new_applications: true,
-      post_engagement: true,
-      follower_milestones: true,
-      weekly_reports: true
-    };
+  const handleSettingsUpdate = (section: string, updates: any) => {
+    updateSettingsMutation.mutate({
+      [section]: updates
+    });
   };
-
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case 'owner': return 'bg-purple-100 text-purple-800';
-      case 'admin': return 'bg-red-100 text-red-800';
-      case 'recruiter': return 'bg-blue-100 text-blue-800';
-      case 'hiring_manager': return 'bg-green-100 text-green-800';
-      case 'viewer': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getRoleIcon = (role: string) => {
-    switch (role) {
-      case 'owner': return <Crown className="h-4 w-4" />;
-      case 'admin': return <Shield className="h-4 w-4" />;
-      case 'recruiter': return <UserPlus className="h-4 w-4" />;
-      case 'hiring_manager': return <UserCheck className="h-4 w-4" />;
-      case 'viewer': return <Users className="h-4 w-4" />;
-      default: return <Users className="h-4 w-4" />;
-    }
-  };
-
-  const canManageSettings = userRole === 'owner' || userRole === 'admin';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Settings Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">Company Settings</h3>
-          <p className="text-gray-600">Manage your company profile, team, and preferences</p>
+          <h3 className="text-lg font-bold text-foreground">Company Settings</h3>
+          <p className="text-sm text-muted-foreground">Manage your company profile, team, and preferences</p>
         </div>
-        <Badge variant="outline" className="flex items-center gap-1">
-          {getRoleIcon(userRole)}
+        <Badge variant="outline" className="flex items-center gap-1 text-xs">
+          <Crown className="h-2 w-2" />
           {userRole?.toUpperCase()}
         </Badge>
       </div>
 
       {/* Settings Tabs */}
-      <Tabs value={settingsTab} onValueChange={setSettingsTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm">
-          <TabsTrigger value="profile">
-            <Building2 className="h-4 w-4 mr-2" />
-            Profile
+      <Tabs value={settingsTab} onValueChange={setSettingsTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-5 bg-card shadow-sm border">
+          <TabsTrigger value="profile" className="flex items-center gap-1 text-xs py-1 px-2">
+            <Building2 className="h-2 w-2" />
+            <span className="text-xs">Profile</span>
           </TabsTrigger>
-          <TabsTrigger value="team">
-            <Users className="h-4 w-4 mr-2" />
-            Team
+          <TabsTrigger value="team" className="flex items-center gap-1 text-xs py-1 px-2">
+            <Users className="h-2 w-2" />
+            <span className="text-xs">Team</span>
           </TabsTrigger>
-          <TabsTrigger value="notifications">
-            <Bell className="h-4 w-4 mr-2" />
-            Notifications
+          <TabsTrigger value="notifications" className="flex items-center gap-1 text-xs py-1 px-2">
+            <Bell className="h-2 w-2" />
+            <span className="text-xs">Notifications</span>
           </TabsTrigger>
-          <TabsTrigger value="branding">
-            <Palette className="h-4 w-4 mr-2" />
-            Branding
+          <TabsTrigger value="branding" className="flex items-center gap-1 text-xs py-1 px-2">
+            <Palette className="h-2 w-2" />
+            <span className="text-xs">Branding</span>
           </TabsTrigger>
-          <TabsTrigger value="integrations">
-            <Key className="h-4 w-4 mr-2" />
-            Integrations
+          <TabsTrigger value="integrations" className="flex items-center gap-1 text-xs py-1 px-2">
+            <Key className="h-2 w-2" />
+            <span className="text-xs">Integrations</span>
           </TabsTrigger>
         </TabsList>
 
         {/* Company Profile Tab */}
         <TabsContent value="profile">
-          <Card>
-            <CardHeader>
-              <CardTitle>Company Profile</CardTitle>
-              <CardDescription>Update your company information and branding</CardDescription>
+          <Card className="border-border">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-1">
+                <Building2 className="h-3 w-3 text-primary" />
+                Company Information
+              </CardTitle>
+              <CardDescription className="text-xs">Update your company's basic information and details</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="company-name">Company Name</Label>
+                  <Label htmlFor="company-name" className="text-xs text-muted-foreground">Company Name</Label>
                   <Input 
                     id="company-name" 
                     defaultValue={company?.name}
-                    disabled={!canManageSettings}
+                    className="text-xs h-8"
+                    disabled={isUpdating}
+                    onBlur={(e) => {
+                      if (e.target.value !== company?.name) {
+                        updateCompanyMutation.mutate({ name: e.target.value });
+                      }
+                    }}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="industry">Industry</Label>
+                  <Label htmlFor="industry" className="text-xs text-muted-foreground">Industry</Label>
                   <Input 
                     id="industry" 
                     defaultValue={company?.industry}
-                    disabled={!canManageSettings}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="website">Website</Label>
-                  <Input 
-                    id="website" 
-                    defaultValue={company?.website}
-                    disabled={!canManageSettings}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="location">Location</Label>
-                  <Input 
-                    id="location" 
-                    defaultValue={company?.location}
-                    disabled={!canManageSettings}
+                    className="text-xs h-8"
+                    disabled={isUpdating}
+                    onBlur={(e) => {
+                      if (e.target.value !== company?.industry) {
+                        updateCompanyMutation.mutate({ industry: e.target.value });
+                      }
+                    }}
                   />
                 </div>
               </div>
-              
+
               <div>
-                <Label htmlFor="description">Company Description</Label>
+                <Label htmlFor="description" className="text-xs text-muted-foreground">Company Description</Label>
                 <Textarea 
                   id="description" 
                   defaultValue={company?.description}
-                  rows={4}
-                  disabled={!canManageSettings}
+                  rows={2}
+                  className="text-xs"
+                  disabled={isUpdating}
+                  onBlur={(e) => {
+                    if (e.target.value !== company?.description) {
+                      updateCompanyMutation.mutate({ description: e.target.value });
+                    }
+                  }}
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <Label>Company Logo</Label>
-                  <div className="mt-2 flex items-center gap-4">
-                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                      {company?.logo_url ? (
-                        <img src={company.logo_url} alt="Logo" className="w-full h-full object-cover rounded-lg" />
-                      ) : (
-                        <Building2 className="h-8 w-8 text-gray-400" />
-                      )}
-                    </div>
-                    <Button variant="outline" disabled={!canManageSettings}>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload Logo
-                    </Button>
-                  </div>
+                  <Label htmlFor="website" className="text-xs text-muted-foreground">Website</Label>
+                  <Input 
+                    id="website" 
+                    defaultValue={company?.website}
+                    type="url"
+                    className="text-xs h-8"
+                    disabled={isUpdating}
+                    onBlur={(e) => {
+                      if (e.target.value !== company?.website) {
+                        updateCompanyMutation.mutate({ website: e.target.value });
+                      }
+                    }}
+                  />
                 </div>
-                
                 <div>
-                  <Label>Cover Image</Label>
-                  <div className="mt-2 flex items-center gap-4">
-                    <div className="w-24 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                      {company?.cover_image_url ? (
-                        <img src={company.cover_image_url} alt="Cover" className="w-full h-full object-cover rounded-lg" />
-                      ) : (
-                        <Upload className="h-6 w-6 text-gray-400" />
-                      )}
-                    </div>
-                    <Button variant="outline" disabled={!canManageSettings}>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload Cover
-                    </Button>
-                  </div>
+                  <Label htmlFor="location" className="text-xs text-muted-foreground">Location</Label>
+                  <Input 
+                    id="location" 
+                    defaultValue={company?.location}
+                    className="text-xs h-8"
+                    disabled={isUpdating}
+                    onBlur={(e) => {
+                      if (e.target.value !== company?.location) {
+                        updateCompanyMutation.mutate({ location: e.target.value });
+                      }
+                    }}
+                  />
                 </div>
               </div>
 
-              {canManageSettings && (
-                <div className="flex justify-end">
-                  <Button 
-                    onClick={() => updateCompanyMutation.mutate({
-                      name: (document.getElementById('company-name') as HTMLInputElement)?.value,
-                      industry: (document.getElementById('industry') as HTMLInputElement)?.value,
-                      website: (document.getElementById('website') as HTMLInputElement)?.value,
-                      location: (document.getElementById('location') as HTMLInputElement)?.value,
-                      description: (document.getElementById('description') as HTMLTextAreaElement)?.value,
-                    })}
-                    disabled={updateCompanyMutation.isPending}
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Changes
-                  </Button>
-                </div>
-              )}
+              <div className="flex justify-end pt-2">
+                <Button size="sm" disabled={isUpdating} className="h-7 px-3">
+                  <Save className="h-2 w-2 mr-1" />
+                  <span className="text-xs">{isUpdating ? 'Saving...' : 'Save Changes'}</span>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* Team Management Tab */}
         <TabsContent value="team">
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle>Team Members</CardTitle>
-                  <CardDescription>Manage your company team access and permissions</CardDescription>
-                </div>
-                {canManageSettings && (
-                  <Button>
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Invite Member
+          <div className="space-y-4">
+            <Card className="border-border">
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="text-sm flex items-center gap-1">
+                      <Users className="h-3 w-3 text-primary" />
+                      Team Members
+                    </CardTitle>
+                    <CardDescription className="text-xs">Manage your company team and permissions</CardDescription>
+                  </div>
+                  <Button size="sm" className="h-7 px-2">
+                    <UserPlus className="h-2 w-2 mr-1" />
+                    <span className="text-xs">Invite Member</span>
                   </Button>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              {teamLoading ? (
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="animate-pulse h-16 bg-gray-200 rounded"></div>
-                  ))}
                 </div>
-              ) : teamMembers && teamMembers.length > 0 ? (
-                <div className="space-y-4">
-                  {teamMembers.map((member) => (
-                    <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                          <Users className="h-5 w-5 text-gray-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900">{member.profile?.full_name || 'Unknown User'}</h4>
-                          <p className="text-sm text-gray-600">{member.profile?.email || 'No email'}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-3">
-                        <Badge className={getRoleColor(member.role)}>
-                          {getRoleIcon(member.role)}
-                          <span className="ml-1">{member.role.replace('_', ' ').toUpperCase()}</span>
-                        </Badge>
-                        {canManageSettings && member.role !== 'owner' && (
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline">
-                              <Edit3 className="h-4 w-4" />
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+              </CardHeader>
+              <CardContent>
+                {teamLoading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="animate-pulse h-12 bg-muted rounded-lg"></div>
+                    ))}
+                  </div>
+                ) : teamMembers && teamMembers.length > 0 ? (
+                  <div className="space-y-3">
+                    {teamMembers.map((member) => (
+                      <div key={member.id} className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
+                            <UserCheck className="h-2 w-2 text-primary" />
                           </div>
-                        )}
+                          <div>
+                            <h4 className="font-medium text-xs text-foreground">{member.profile?.full_name || 'Unknown User'}</h4>
+                            <p className="text-xs text-muted-foreground">{member.profile?.email || 'No email'}</p>
+                            <div className="flex items-center gap-1 mt-1">
+                              <Badge variant="secondary" className="text-xs h-4 px-1">
+                                {member.role}
+                              </Badge>
+                              {member.role === 'owner' && (
+                                <Crown className="h-2 w-2 text-yellow-500" />
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button size="sm" variant="outline" className="h-6 w-6 p-0">
+                            <Edit3 className="h-2 w-2" />
+                          </Button>
+                          {member.role !== 'owner' && (
+                            <Button size="sm" variant="outline" className="h-6 w-6 p-0">
+                              <Trash2 className="h-2 w-2" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-medium text-gray-900 mb-2">No Team Members</h3>
-                  <p className="text-gray-600 mb-4">Invite team members to collaborate on hiring</p>
-                  {canManageSettings && (
-                    <Button>
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Invite First Member
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Users className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                    <h3 className="text-sm font-medium text-foreground mb-1">No Team Members</h3>
+                    <p className="text-xs text-muted-foreground mb-3">Invite team members to help manage your company</p>
+                    <Button size="sm" className="h-7 px-3">
+                      <UserPlus className="h-2 w-2 mr-1" />
+                      <span className="text-xs">Invite First Member</span>
                     </Button>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* Notifications Tab */}
         <TabsContent value="notifications">
-          <Card>
-            <CardHeader>
-              <CardTitle>Notification Preferences</CardTitle>
-              <CardDescription>Configure how and when you receive notifications</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
+          <div className="space-y-4">
+            <Card className="border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-1">
+                  <Bell className="h-3 w-3 text-primary" />
+                  Notification Preferences
+                </CardTitle>
+                <CardDescription className="text-xs">Configure how and when you receive notifications</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between py-2">
                   <div>
-                    <Label htmlFor="new-applications">New Applications</Label>
-                    <p className="text-sm text-gray-600">Notify when new applications are received</p>
+                    <Label className="text-xs font-medium text-foreground">New Applications</Label>
+                    <p className="text-xs text-muted-foreground">Get notified when someone applies to your jobs</p>
                   </div>
                   <Switch 
-                    id="new-applications"
-                    checked={getNotificationPrefs().new_applications ?? true}
-                    onCheckedChange={(checked) => 
-                      handleSettingsUpdate('notification_preferences', {
-                        ...getNotificationPrefs(),
-                        new_applications: checked
-                      })
-                    }
-                    disabled={!canManageSettings}
+                    checked={(() => {
+                      const prefs = companySettings?.notification_preferences;
+                      if (typeof prefs === 'object' && prefs !== null) {
+                        return (prefs as any).new_applications || false;
+                      }
+                      return false;
+                    })()}
+                    onCheckedChange={(checked) => handleNotificationChange('new_applications', checked)}
+                    disabled={isUpdating}
                   />
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between py-2">
                   <div>
-                    <Label htmlFor="post-engagement">Post Engagement</Label>
-                    <p className="text-sm text-gray-600">Notify about likes, comments, and shares</p>
+                    <Label className="text-xs font-medium text-foreground">Post Engagement</Label>
+                    <p className="text-xs text-muted-foreground">Get notified when people interact with your posts</p>
                   </div>
                   <Switch 
-                    id="post-engagement"
-                    checked={getNotificationPrefs().post_engagement ?? true}
-                    onCheckedChange={(checked) => 
-                      handleSettingsUpdate('notification_preferences', {
-                        ...getNotificationPrefs(),
-                        post_engagement: checked
-                      })
-                    }
-                    disabled={!canManageSettings}
+                    checked={(() => {
+                      const prefs = companySettings?.notification_preferences;
+                      if (typeof prefs === 'object' && prefs !== null) {
+                        return (prefs as any).post_engagement || false;
+                      }
+                      return false;
+                    })()}
+                    onCheckedChange={(checked) => handleNotificationChange('post_engagement', checked)}
+                    disabled={isUpdating}
                   />
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between py-2">
                   <div>
-                    <Label htmlFor="follower-milestones">Follower Milestones</Label>
-                    <p className="text-sm text-gray-600">Notify about follower growth milestones</p>
+                    <Label className="text-xs font-medium text-foreground">Follower Milestones</Label>
+                    <p className="text-xs text-muted-foreground">Get notified when you reach follower milestones</p>
                   </div>
                   <Switch 
-                    id="follower-milestones"
-                    checked={getNotificationPrefs().follower_milestones ?? true}
-                    onCheckedChange={(checked) => 
-                      handleSettingsUpdate('notification_preferences', {
-                        ...getNotificationPrefs(),
-                        follower_milestones: checked
-                      })
-                    }
-                    disabled={!canManageSettings}
+                    checked={(() => {
+                      const prefs = companySettings?.notification_preferences;
+                      if (typeof prefs === 'object' && prefs !== null) {
+                        return (prefs as any).follower_milestones || false;
+                      }
+                      return false;
+                    })()}
+                    onCheckedChange={(checked) => handleNotificationChange('follower_milestones', checked)}
+                    disabled={isUpdating}
                   />
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between py-2">
                   <div>
-                    <Label htmlFor="weekly-reports">Weekly Reports</Label>
-                    <p className="text-sm text-gray-600">Receive weekly performance summaries</p>
+                    <Label className="text-xs font-medium text-foreground">Weekly Reports</Label>
+                    <p className="text-xs text-muted-foreground">Receive weekly performance and analytics reports</p>
                   </div>
                   <Switch 
-                    id="weekly-reports"
-                    checked={getNotificationPrefs().weekly_reports ?? true}
-                    onCheckedChange={(checked) => 
-                      handleSettingsUpdate('notification_preferences', {
-                        ...getNotificationPrefs(),
-                        weekly_reports: checked
-                      })
-                    }
-                    disabled={!canManageSettings}
+                    checked={(() => {
+                      const prefs = companySettings?.notification_preferences;
+                      if (typeof prefs === 'object' && prefs !== null) {
+                        return (prefs as any).weekly_reports || false;
+                      }
+                      return false;
+                    })()}
+                    onCheckedChange={(checked) => handleNotificationChange('weekly_reports', checked)}
+                    disabled={isUpdating}
                   />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* Branding Tab */}
         <TabsContent value="branding">
-          <Card>
-            <CardHeader>
-              <CardTitle>Branding & Appearance</CardTitle>
-              <CardDescription>Customize your company's visual identity</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <Palette className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Branding Settings Coming Soon</h3>
-                <p className="text-gray-600">Customize colors, themes, and visual elements</p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-4">
+            <Card className="border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-1">
+                  <Palette className="h-3 w-3 text-primary" />
+                  Brand Customization
+                </CardTitle>
+                <CardDescription className="text-xs">Customize your company's visual identity and branding</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label className="text-xs font-medium text-foreground">Company Logo</Label>
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center border border-border">
+                      {company?.logo_url ? (
+                        <img src={company.logo_url} alt="Company logo" className="w-full h-full object-cover rounded-lg" />
+                      ) : (
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    <Button size="sm" variant="outline" className="h-7 px-2">
+                      <Upload className="h-2 w-2 mr-1" />
+                      <span className="text-xs">Upload Logo</span>
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-medium text-foreground">Cover Image</Label>
+                  <div className="mt-2">
+                    <div className="w-full h-16 bg-muted rounded-lg flex items-center justify-center border border-border">
+                      {company?.cover_image_url ? (
+                        <img src={company.cover_image_url} alt="Cover" className="w-full h-full object-cover rounded-lg" />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">No cover image uploaded</span>
+                      )}
+                    </div>
+                    <Button size="sm" variant="outline" className="mt-2 h-7 px-2">
+                      <Upload className="h-2 w-2 mr-1" />
+                      <span className="text-xs">Upload Cover</span>
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="brand-color" className="text-xs font-medium text-foreground">Brand Color</Label>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Input 
+                      id="brand-color" 
+                      type="color" 
+                      className="w-12 h-7"
+                      defaultValue="#3b82f6"
+                    />
+                    <span className="text-xs text-muted-foreground">#3b82f6</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* Integrations Tab */}
         <TabsContent value="integrations">
-          <Card>
-            <CardHeader>
-              <CardTitle>Integrations & API Keys</CardTitle>
-              <CardDescription>Connect with external services and manage API access</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <Key className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Integrations Coming Soon</h3>
-                <p className="text-gray-600">Connect with ATS, CRM, and other hiring tools</p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-4">
+            <Card className="border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-1">
+                  <Key className="h-3 w-3 text-primary" />
+                  Integrations & API Keys
+                </CardTitle>
+                <CardDescription className="text-xs">Connect with external services and manage API access</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Key className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                  <h3 className="text-sm font-medium text-foreground mb-1">Integrations Coming Soon</h3>
+                  <p className="text-xs text-muted-foreground">Connect with ATS, CRM, and other hiring tools</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-1">
+                  <Shield className="h-3 w-3 text-primary" />
+                  TalentXcel Services
+                </CardTitle>
+                <CardDescription className="text-xs">Premium features and advanced analytics</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div>
+                      <h4 className="font-medium text-xs text-foreground">AI-Powered Candidate Screening</h4>
+                      <p className="text-xs text-muted-foreground">Automatically screen and rank candidates</p>
+                    </div>
+                    <Badge variant="secondary" className="text-xs h-4 px-1">Coming Soon</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div>
+                      <h4 className="font-medium text-xs text-foreground">Advanced Analytics</h4>
+                      <p className="text-xs text-muted-foreground">Deep insights into your hiring performance</p>
+                    </div>
+                    <Badge variant="secondary" className="text-xs h-4 px-1">Coming Soon</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div>
+                      <h4 className="font-medium text-xs text-foreground">Custom Integrations</h4>
+                      <p className="text-xs text-muted-foreground">Connect with your existing HR tools</p>
+                    </div>
+                    <Badge variant="secondary" className="text-xs h-4 px-1">Coming Soon</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
