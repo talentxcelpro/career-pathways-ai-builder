@@ -17,14 +17,12 @@ const EmployerProfile = () => {
     queryFn: async () => {
       if (!user?.id) return null;
 
-      // First check if user owns a company (get the most recent one)
+      // First check if user owns a company
       const { data: companyProfile } = await supabase
         .from('company_profiles')
         .select('company_id, companies(*)')
         .eq('owner_id', user.id)
-        .order('companies(created_at)', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .single();
 
       if (companyProfile) {
         return companyProfile.companies;

@@ -46,29 +46,25 @@ const CompanyProfileEdit = () => {
     queryFn: async () => {
       if (!user?.id) throw new Error('Not authenticated');
 
-      // First check if user has a company through company_profiles (get the most recent one)
+      // First check if user has a company through company_profiles
       const { data: profile } = await supabase
         .from('company_profiles')
         .select('company_id, companies(*)')
         .eq('owner_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .single();
 
       if (profile?.companies) {
         return profile.companies;
       }
 
-      // If not owner, check if they're a team member with admin/owner role (get the most recent one)
+      // If not owner, check if they're a team member with admin/owner role
       const { data: teamMember } = await supabase
         .from('company_team_members')
         .select('company_id, companies(*)')
         .eq('user_id', user.id)
         .in('role', ['admin', 'owner'])
         .eq('is_active', true)
-        .order('joined_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .single();
 
       if (teamMember?.companies) {
         return teamMember.companies;
