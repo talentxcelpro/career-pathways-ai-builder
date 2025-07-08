@@ -24,11 +24,13 @@ export const CRMWidget = () => {
       try {
         console.log('Pipeline: Fetching stats for user:', user.id);
 
-        // First check if user owns a company
+        // First check if user owns a company (get the most recent one)
         const { data: ownedCompany, error: companyError } = await supabase
           .from('company_profiles')
           .select('company_id')
           .eq('owner_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
           .maybeSingle();
 
         console.log('Pipeline: Owned company check:', ownedCompany, companyError);
@@ -141,11 +143,13 @@ export const CRMWidget = () => {
       try {
         console.log('CRM: Fetching applications for user:', user.id);
 
-        // First check if user owns a company
+        // First check if user owns a company (get the most recent one)
         const { data: ownedCompany, error: companyError } = await supabase
           .from('company_profiles')
           .select('company_id')
           .eq('owner_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
           .maybeSingle();
 
         console.log('CRM: Owned company check:', ownedCompany, companyError);
