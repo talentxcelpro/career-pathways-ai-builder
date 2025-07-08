@@ -1,5 +1,5 @@
 import { HomeIcon, Settings, BarChart3 } from "lucide-react";
-import { LandingPage } from "../components/landing/LandingPage";
+import Index from "../pages/Index";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import Help from "../pages/Help";
@@ -19,7 +19,7 @@ export const coreRoutes = [
     title: "Home",
     to: "/",
     icon: <HomeIcon className="h-4 w-4" />,
-    page: <LandingPage />,
+    page: <Index />,
     exact: true,
   },
   {
