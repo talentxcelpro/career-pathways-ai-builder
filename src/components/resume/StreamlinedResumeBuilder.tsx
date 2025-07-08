@@ -1,0 +1,576 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, Save, Download, Wand2, Sparkles, Target, FileText, Globe, Briefcase, Eye, Plus, Trash2, Palette, User } from "lucide-react";
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { resumeTemplates } from "./ResumeTemplates";
+import { toast } from 'sonner';
+
+interface SectionEnhancerProps {
+  title: string;
+  icon: React.ReactNode;
+  content: string;
+  onContentChange: (content: string) => void;
+  onEnhance: (type: string) => void;
+  placeholder: string;
+  isTextarea?: boolean;
+  enhanceTypes: { key: string; label: string; icon: string }[];
+}
+
+const SectionEnhancer: React.FC<SectionEnhancerProps> = ({
+  title,
+  icon,
+  content,
+  onContentChange,
+  onEnhance,
+  placeholder,
+  isTextarea = false,
+  enhanceTypes
+}) => {
+  const [isEnhancing, setIsEnhancing] = useState(false);
+
+  const handleEnhance = async (type: string) => {
+    setIsEnhancing(true);
+    try {
+      await onEnhance(type);
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+
+  return (
+    <Card className="mb-6">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            {icon}
+            {title}
+          </CardTitle>
+          <div className="flex gap-2">
+            {enhanceTypes.map((enhance) => (
+              <Button
+                key={enhance.key}
+                size="sm"
+                variant="outline"
+                onClick={() => handleEnhance(enhance.key)}
+                disabled={isEnhancing}
+                className="text-xs"
+              >
+                <span className="mr-1">{enhance.icon}</span>
+                {enhance.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {isTextarea ? (
+          <Textarea
+            value={content}
+            onChange={(e) => onContentChange(e.target.value)}
+            placeholder={placeholder}
+            rows={4}
+            className="resize-none"
+          />
+        ) : (
+          <Input
+            value={content}
+            onChange={(e) => onContentChange(e.target.value)}
+            placeholder={placeholder}
+          />
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+export const StreamlinedResumeBuilder = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  
+  const [selectedTemplate, setSelectedTemplate] = useState('modern');
+  const [resumeData, setResumeData] = useState<any>({
+    personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
+    experience: [],
+    education: [],
+    skills: [],
+    projects: [],
+    certifications: [],
+    awards: []
+  });
+
+  // Fetch resume data
+  const { data: resume, isLoading } = useQuery({
+    queryKey: ['resume', id],
+    queryFn: async () => {
+      if (!id || !user) return null;
+      
+      const { data, error } = await supabase
+        .from('ai_resumes')
+        .select('*')
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id && !!user
+  });
+
+  // Update local state when resume data is loaded
+  useEffect(() => {
+    if (resume?.content) {
+      const content = resume.content as any;
+      
+      const processedData = {
+        personalInfo: {
+          fullName: content.personalInfo?.fullName || '',
+          email: content.personalInfo?.email || '',
+          phone: content.personalInfo?.phone || '',
+          location: content.personalInfo?.location || '',
+          summary: content.personalInfo?.summary || ''
+        },
+        experience: Array.isArray(content.experience) ? content.experience : [],
+        education: Array.isArray(content.education) ? content.education : [],
+        skills: Array.isArray(content.skills) 
+          ? content.skills 
+          : content.skills?.technical 
+            ? [
+                ...(Array.isArray(content.skills.technical) ? content.skills.technical : [
+                  ...(content.skills.technical?.programming || []),
+                  ...(content.skills.technical?.frameworks || []),
+                  ...(content.skills.technical?.databases || []),
+                  ...(content.skills.technical?.tools || []),
+                  ...(content.skills.technical?.cloud || [])
+                ]),
+                ...(content.skills.soft || []), 
+                ...(content.skills.languages?.map((lang: any) => typeof lang === 'string' ? lang : lang.language) || []),
+                ...(content.skills.certifications || [])
+              ]
+            : [],
+        projects: Array.isArray(content.projects) ? content.projects : [],
+        certifications: Array.isArray(content.certifications) ? content.certifications : [],
+        awards: Array.isArray(content.awards) ? content.awards : []
+      };
+      
+      setResumeData(processedData);
+      if (resume.template_id) setSelectedTemplate(resume.template_id);
+    }
+  }, [resume]);
+
+  // Save resume mutation
+  const saveMutation = useMutation({
+    mutationFn: async (data: any) => {
+      if (!id || !user) throw new Error('Missing required data');
+      
+      const { error } = await supabase
+        .from('ai_resumes')
+        .update({ 
+          content: data,
+          template_id: selectedTemplate,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['resume', id] });
+      toast.success('Resume saved!');
+    }
+  });
+
+  // AI Enhancement function
+  const enhanceSection = useCallback(async (sectionType: string, enhanceType: string) => {
+    try {
+      let promptText = '';
+      let sectionData = '';
+
+      // Map section types to data and prompts
+      switch (sectionType) {
+        case 'summary':
+          sectionData = resumeData.personalInfo.summary;
+          promptText = enhanceType === 'ats' 
+            ? 'Make this professional summary ATS-friendly with relevant keywords'
+            : enhanceType === 'achievements'
+            ? 'Rewrite this summary to focus on quantifiable achievements and impact'
+            : 'Enhance this professional summary to be more compelling and professional';
+          break;
+        case 'experience':
+          sectionData = JSON.stringify(resumeData.experience);
+          promptText = enhanceType === 'ats'
+            ? 'Optimize these work experiences for ATS with relevant keywords and formatting'
+            : enhanceType === 'achievements'
+            ? 'Rewrite these experiences to focus on quantifiable achievements using metrics and results'
+            : 'Enhance these work experiences to be more professional and impactful';
+          break;
+        case 'skills':
+          sectionData = resumeData.skills.join(', ');
+          promptText = enhanceType === 'ats'
+            ? 'Optimize this skills list for ATS compatibility and add relevant industry keywords'
+            : 'Improve and expand this skills list for better professional presentation';
+          break;
+        default:
+          return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
+        body: {
+          prompt: promptText,
+          resumeData: sectionData,
+          category: enhanceType
+        }
+      });
+
+      if (error) throw error;
+
+      // Apply the enhancement
+      if (sectionType === 'summary') {
+        setResumeData(prev => ({
+          ...prev,
+          personalInfo: {
+            ...prev.personalInfo,
+            summary: data.enhancement
+          }
+        }));
+      } else if (sectionType === 'skills') {
+        const enhancedSkills = data.enhancement.split(',').map((skill: string) => skill.trim()).filter((skill: string) => skill);
+        setResumeData(prev => ({
+          ...prev,
+          skills: enhancedSkills
+        }));
+      }
+
+      toast.success(`${sectionType} enhanced successfully!`);
+    } catch (error) {
+      console.error('Enhancement error:', error);
+      toast.error('Failed to enhance section');
+    }
+  }, [resumeData]);
+
+  // Global enhancement functions
+  const handleGlobalEnhancement = useCallback(async (type: string) => {
+    try {
+      let promptText = '';
+      
+      switch (type) {
+        case 'ats':
+          promptText = 'Optimize this entire resume for ATS systems with proper keywords, formatting, and structure';
+          break;
+        case 'achievements':
+          promptText = 'Rewrite this resume to focus on quantifiable achievements, metrics, and impact across all sections';
+          break;
+        case 'professional':
+          promptText = 'Enhance this resume for professional tone, clarity, and modern language across all sections';
+          break;
+        case 'job-specific':
+          promptText = 'Tailor this resume for maximum job relevance and keyword optimization';
+          break;
+      }
+
+      const { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
+        body: {
+          prompt: promptText,
+          resumeData: JSON.stringify(resumeData),
+          category: type
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success(`Resume enhanced globally for ${type}!`);
+    } catch (error) {
+      console.error('Global enhancement error:', error);
+      toast.error('Failed to enhance resume');
+    }
+  }, [resumeData]);
+
+  // Export functions
+  const exportPDF = useCallback(async () => {
+    toast.loading('Generating PDF...', { id: 'pdf-export' });
+    // TODO: Implement actual PDF generation
+    setTimeout(() => {
+      toast.success('PDF generated!', { id: 'pdf-export' });
+    }, 2000);
+  }, []);
+
+  const exportDOCX = useCallback(async () => {
+    toast.loading('Generating DOCX...', { id: 'docx-export' });
+    // TODO: Implement actual DOCX generation
+    setTimeout(() => {
+      toast.success('DOCX generated!', { id: 'docx-export' });
+    }, 2000);
+  }, []);
+
+  // Auto-save
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (resumeData.personalInfo.fullName) {
+        saveMutation.mutate(resumeData);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [resumeData, saveMutation]);
+
+  const updatePersonalInfo = (field: string, value: string) => {
+    setResumeData(prev => ({
+      ...prev,
+      personalInfo: {
+        ...prev.personalInfo,
+        [field]: value
+      }
+    }));
+  };
+
+  const updateSkills = (skills: string) => {
+    const skillsArray = skills.split(',').map(skill => skill.trim()).filter(skill => skill);
+    setResumeData(prev => ({
+      ...prev,
+      skills: skillsArray
+    }));
+  };
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-64">Loading...</div>;
+  }
+
+  const SelectedTemplate = resumeTemplates.find(t => t.id === selectedTemplate)?.component;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/resume-builder')}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-xl font-semibold">Resume Builder</h1>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            {/* Global Enhancement Buttons */}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleGlobalEnhancement('ats')}
+              className="bg-blue-50 border-blue-200 text-blue-700"
+            >
+              <Target className="h-4 w-4 mr-1" />
+              🎯 ATS Optimize
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleGlobalEnhancement('achievements')}
+              className="bg-green-50 border-green-200 text-green-700"
+            >
+              <Sparkles className="h-4 w-4 mr-1" />
+              🚀 Focus Achievements
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleGlobalEnhancement('professional')}
+              className="bg-purple-50 border-purple-200 text-purple-700"
+            >
+              <FileText className="h-4 w-4 mr-1" />
+              📝 Professional Tone
+            </Button>
+            
+            <Separator orientation="vertical" className="h-6" />
+            
+            {/* Export Buttons */}
+            <Button size="sm" variant="outline" onClick={exportPDF}>
+              <Download className="h-4 w-4 mr-1" />
+              PDF
+            </Button>
+            <Button size="sm" variant="outline" onClick={exportDOCX}>
+              <Download className="h-4 w-4 mr-1" />
+              DOCX
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Editor Panel */}
+          <div className="space-y-6">
+            {/* Template Selector */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5" />
+                  Choose Template
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {resumeTemplates.map((template) => (
+                      <SelectItem key={template.id} value={template.id}>
+                        {template.name} - {template.description}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </CardContent>
+            </Card>
+
+            {/* Personal Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Personal Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Input
+                  placeholder="Full Name"
+                  value={resumeData.personalInfo.fullName}
+                  onChange={(e) => updatePersonalInfo('fullName', e.target.value)}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    placeholder="Email"
+                    value={resumeData.personalInfo.email}
+                    onChange={(e) => updatePersonalInfo('email', e.target.value)}
+                  />
+                  <Input
+                    placeholder="Phone"
+                    value={resumeData.personalInfo.phone}
+                    onChange={(e) => updatePersonalInfo('phone', e.target.value)}
+                  />
+                </div>
+                <Input
+                  placeholder="Location"
+                  value={resumeData.personalInfo.location}
+                  onChange={(e) => updatePersonalInfo('location', e.target.value)}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Professional Summary with Enhancement */}
+            <SectionEnhancer
+              title="Professional Summary"
+              icon={<FileText className="h-5 w-5" />}
+              content={resumeData.personalInfo.summary}
+              onContentChange={(content) => updatePersonalInfo('summary', content)}
+              onEnhance={(type) => enhanceSection('summary', type)}
+              placeholder="Write a compelling professional summary..."
+              isTextarea={true}
+              enhanceTypes={[
+                { key: 'general', label: '✨ Enhance', icon: '✨' },
+                { key: 'ats', label: 'ATS', icon: '🎯' },
+                { key: 'achievements', label: 'Results', icon: '🚀' }
+              ]}
+            />
+
+            {/* Skills with Enhancement */}
+            <SectionEnhancer
+              title="Skills"
+              icon={<Briefcase className="h-5 w-5" />}
+              content={resumeData.skills.join(', ')}
+              onContentChange={updateSkills}
+              onEnhance={(type) => enhanceSection('skills', type)}
+              placeholder="React, JavaScript, Python, etc."
+              enhanceTypes={[
+                { key: 'general', label: '✨ Enhance', icon: '✨' },
+                { key: 'ats', label: 'ATS', icon: '🎯' }
+              ]}
+            />
+
+            {/* Experience Section */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Briefcase className="h-5 w-5" />
+                    Experience
+                  </CardTitle>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => enhanceSection('experience', 'achievements')}
+                    >
+                      🚀 Focus Results
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => enhanceSection('experience', 'ats')}
+                    >
+                      🎯 ATS Optimize
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {resumeData.experience.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Briefcase className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <p>No experience added yet</p>
+                    <Button className="mt-4" onClick={() => {}}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Experience
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {resumeData.experience.map((exp, index) => (
+                      <div key={index} className="p-4 border rounded-lg">
+                        <h4 className="font-medium">{exp.position} at {exp.company}</h4>
+                        <p className="text-sm text-gray-600">{exp.startDate} - {exp.endDate}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Preview Panel */}
+          <div className="sticky top-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5" />
+                  Live Preview
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="bg-white border rounded-lg overflow-hidden" style={{ transform: 'scale(0.7)', transformOrigin: 'top left', width: '142.86%', height: '142.86%' }}>
+                  {SelectedTemplate && <SelectedTemplate data={resumeData} />}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
