@@ -35,6 +35,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { TeamAccessInstructions } from "@/components/employer/TeamAccessInstructions";
+import { RolePermissionsGuide } from "@/components/employer/RolePermissionsGuide";
 
 interface TeamMember {
   id: string;
@@ -620,6 +621,9 @@ const EmployerTeam = () => {
           </div>
         )}
       </div>
+
+      {/* Role Permissions Guide */}
+      <RolePermissionsGuide />
 
       {/* Direct Invitation CTA */}
       {canManageTeam && (
