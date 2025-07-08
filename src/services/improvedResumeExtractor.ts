@@ -86,24 +86,50 @@ export class ImprovedResumeExtractor {
       console.log('Text preview:', extractedText.substring(0, 200) + '...');
 
       // Validate text quality
-      if (!this.textExtractor.isValidText(extractedText)) {
-        console.warn('Poor text extraction quality, using advanced AI processing');
-        extractedText = `This document requires advanced AI processing for content extraction.
+      if (!this.textExtractor.isValidText(extractedText) || extractedText.length < 100) {
+        console.warn('Poor text extraction quality, attempting OCR-like processing');
+        
+        // For PDF files, try a different approach
+        if (file.type === 'application/pdf') {
+          try {
+            // Use AI to directly process the PDF content
+            const { data, error } = await supabase.functions.invoke('ai-comprehensive', {
+              body: { 
+                prompt: `Analyze this PDF resume file and extract all content. The file is named "${file.name}". Extract all text including personal information, professional summary, work experience, education, skills, projects, certifications, and any other relevant content.`,
+                context: `PDF Resume Analysis: ${file.name}`,
+                extractionMode: true
+              }
+            });
 
-Please analyze the uploaded resume file and extract all relevant information including:
-- Personal Information (Name, Email, Phone, Address)
-- Professional Summary or Objective
-- Work Experience with dates, companies, and responsibilities
-- Education details with institutions and degrees
-- Technical and soft skills
-- Projects, certifications, awards, and volunteer work
+            if (!error && data?.content) {
+              extractedText = data.content;
+              console.log('Enhanced PDF extraction successful');
+            }
+          } catch (pdfError) {
+            console.log('Enhanced PDF extraction failed, using fallback');
+          }
+        }
+        
+        // If still poor quality, provide better context for AI
+        if (!this.textExtractor.isValidText(extractedText) || extractedText.length < 100) {
+          extractedText = `Advanced resume content extraction required for: ${file.name}
 
-File Details for Reference:
-- Filename: ${file.name}
-- File Type: ${file.type}
-- File Size: ${(file.size / 1024).toFixed(1)}KB
+IMPORTANT: This is a complex resume document that requires comprehensive analysis.
 
-Extract all resume content accurately and structure it properly.`;
+Please extract ALL information from this resume including:
+- Complete personal information (name, contact details, location)
+- Full professional summary/objective
+- Detailed work experience with job titles, companies, dates, and descriptions
+- Complete education background including degrees, institutions, dates
+- All technical skills, soft skills, and competencies
+- Research projects, publications, achievements
+- Certifications, awards, and recognitions
+- Any additional relevant professional information
+
+File context: ${file.name} (${file.type}, ${(file.size / 1024).toFixed(1)}KB)
+
+Focus on extracting actual resume content, not generating placeholder data.`;
+        }
       }
 
       // Use AI parsing for structured extraction

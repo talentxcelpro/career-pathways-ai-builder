@@ -26,13 +26,24 @@ serve(async (req) => {
     console.log('Parsing resume with AI:', fileName, 'Full extraction:', fullExtraction);
 
     const prompt = fullExtraction ? 
-      `Extract ALL information from this resume text with maximum accuracy. Return comprehensive JSON structure:
+      `You are an expert resume parser. Extract ALL information from this resume text with maximum accuracy. 
 
-      IMPORTANT: 
-      - Extract every piece of information word-for-word. Do not summarize or paraphrase.
-      - IGNORE any metadata like "Resume File: [filename]" - these are NOT part of the resume content
-      - If you see patterns like "Resume File: FILENAME" or "File Type:" these are system metadata, not resume data
-      - Focus ONLY on actual resume content (personal info, experience, education, skills, etc.)
+      CRITICAL INSTRUCTIONS:
+      - Extract EVERY piece of information exactly as written
+      - Do NOT summarize, paraphrase, or modify any content
+      - IGNORE system metadata like "Resume File:", "File Type:", etc.
+      - Focus ONLY on actual resume content
+      - If the person has a PhD, engineering background, or specialized skills, capture ALL details
+      - Extract complete job descriptions, not just titles
+      - Capture ALL skills, technologies, and achievements mentioned
+      - Preserve technical terminology and specific domain knowledge
+
+      SPECIAL ATTENTION TO:
+      - Technical/Engineering backgrounds with specific domains (like microbial fuel cells, battery materials, etc.)
+      - Research experience, publications, projects
+      - Specialized skills and methodologies
+      - Academic qualifications and certifications
+      - Detailed work experience with specific technologies and achievements
 
       Structure:
       {
