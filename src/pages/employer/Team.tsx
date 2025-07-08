@@ -182,17 +182,13 @@ const EmployerTeam = () => {
     mutationFn: async ({ email, role, message }: { email: string; role: string; message?: string }) => {
       if (!teamData?.companyId) throw new Error('No company found');
       
-      // Get current user first
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-      
       const { data, error } = await supabase
         .from('team_invitations')
         .insert({
           company_id: teamData.companyId,
           invited_email: email,
           role: role,
-          invited_by: user.id
+          invited_by: (await supabase.auth.getUser()).data.user?.id
         })
         .select()
         .single();
@@ -317,19 +313,13 @@ const EmployerTeam = () => {
 
   const handleDirectAdd = async (user: any) => {
     try {
-      if (!teamData?.companyId) throw new Error('No company found');
-      
-      // Get current user first
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (!currentUser) throw new Error('Not authenticated');
-      
       const { error } = await supabase
         .from('team_invitations')
         .insert({
-          company_id: teamData.companyId,
+          company_id: teamData?.companyId,
           invited_email: user.email,
           role: 'recruiter',
-          invited_by: currentUser.id
+          invited_by: (await supabase.auth.getUser()).data.user?.id
         });
 
       if (error) throw error;
