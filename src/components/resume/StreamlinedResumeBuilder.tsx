@@ -418,19 +418,49 @@ export const StreamlinedResumeBuilder = () => {
     try {
       toast.loading('Extracting resume content...', { id: 'upload-extract' });
 
-      // Use EnhancedResumeProcessor for reliable extraction
-      const processor = new EnhancedResumeProcessor();
-      const extractedContent = await processor.processResume(file);
+      let extractedContent;
+      
+      try {
+        // Try enhanced processing first
+        const processor = new EnhancedResumeProcessor();
+        extractedContent = await processor.processResume(file);
+      } catch (processorError) {
+        console.log('Enhanced processor failed, trying basic extraction:', processorError);
+        
+        // Fallback to basic text extraction
+        const fileText = await readFileContent(file);
+        if (fileText && fileText.length > 50) {
+          // Create basic structure from extracted text
+          const lines = fileText.split('\n').filter(line => line.trim());
+          extractedContent = {
+            personalInfo: {
+              fullName: '',
+              email: fileText.match(/[\w.-]+@[\w.-]+\.\w+/)?.[0] || '',
+              phone: fileText.match(/[\+]?[\d\s\-\(\)]{10,}/)?.[0] || '',
+              location: '',
+              summary: lines.slice(0, 3).join(' ').substring(0, 200)
+            },
+            experience: [],
+            education: [],
+            skills: fileText.match(/\b(?:JavaScript|Python|React|HTML|CSS|SQL|Java|C\+\+|Node\.js|Angular|Vue|TypeScript|Git|AWS|Docker|Kubernetes)\b/gi) || [],
+            projects: [],
+            certifications: [],
+            awards: []
+          };
+        } else {
+          throw new Error('Could not extract meaningful content from file');
+        }
+      }
 
-      if (extractedContent && extractedContent.personalInfo) {
+      if (extractedContent && (extractedContent.personalInfo || extractedContent.experience || extractedContent.skills)) {
         // Apply extracted data to resume
         const extractedData = {
           personalInfo: {
-            fullName: extractedContent.personalInfo.fullName || '',
-            email: extractedContent.personalInfo.email || '',
-            phone: extractedContent.personalInfo.phone || '',
-            location: extractedContent.personalInfo.location || '',
-            summary: extractedContent.personalInfo.summary || ''
+            fullName: extractedContent.personalInfo?.fullName || '',
+            email: extractedContent.personalInfo?.email || '',
+            phone: extractedContent.personalInfo?.phone || '',
+            location: extractedContent.personalInfo?.location || '',
+            summary: extractedContent.personalInfo?.summary || ''
           },
           experience: Array.isArray(extractedContent.experience) ? extractedContent.experience.map((exp: any) => ({
             id: Date.now().toString() + Math.random(),
@@ -495,7 +525,7 @@ export const StreamlinedResumeBuilder = () => {
 
         toast.success('Resume extracted and loaded successfully!', { id: 'upload-extract' });
       } else {
-        throw new Error('Failed to extract resume content');
+        throw new Error('Failed to extract resume content - no valid data found');
       }
     } catch (error) {
       console.error('Upload & extract error:', error);

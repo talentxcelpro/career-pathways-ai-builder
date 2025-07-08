@@ -14,49 +14,56 @@ serve(async (req) => {
   try {
     const { prompt, resumeData, category } = await req.json();
 
-    if (!prompt || !resumeData) {
-      throw new Error('Prompt and resume data are required');
-    }
-
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('Enhancing resume with prompt:', prompt);
+    console.log('Processing resume enhancement:', category);
 
-    // Create category-specific system prompts
-    const systemPrompts = {
-      general: 'You are an expert resume writer with 15+ years of experience. Focus on making resumes professional, impactful, and modern.',
-      jobSpecific: 'You are a career coach specializing in job-specific resume tailoring. Match resumes perfectly to job requirements.',
-      ats: 'You are an ATS optimization expert. Ensure resumes pass through applicant tracking systems with proper keywords and formatting.',
-      achievements: 'You are an achievement-focused resume consultant. Transform job duties into quantifiable accomplishments and impact statements.',
-      fresher: 'You are a career counselor for new graduates and entry-level professionals. Make limited experience shine.',
-      skills: 'You are a skills assessment expert. Optimize technical and soft skills presentation for maximum impact.',
-      design: 'You are a resume design consultant. Focus on structure, layout, and visual hierarchy for professional presentation.',
-      review: 'You are a critical resume reviewer and recruiter. Provide honest, detailed feedback with specific improvement suggestions.'
-    };
+    // Enhanced prompts based on category
+    let systemPrompt = '';
+    let userPrompt = '';
 
-    const systemPrompt = systemPrompts[category as keyof typeof systemPrompts] || systemPrompts.general;
+    switch (category) {
+      case 'ats':
+        systemPrompt = `You are an ATS optimization expert. Enhance resumes for ATS compatibility with proper keywords, formatting, and structure. Focus on:
+        - Industry-specific keywords and phrases
+        - Standard section headers
+        - Quantifiable achievements
+        - Skills matching job requirements
+        - Professional formatting
+        Return a complete JSON object with the same structure as the input.`;
+        break;
+      case 'achievements':
+        systemPrompt = `You are a career achievements specialist. Transform resume content to highlight quantifiable results and impact. Focus on:
+        - Converting responsibilities into achievements
+        - Adding specific metrics, percentages, and numbers
+        - Highlighting business impact and results
+        - Using action verbs and power words
+        Return a complete JSON object with the same structure as the input.`;
+        break;
+      case 'professional':
+        systemPrompt = `You are a professional writing expert. Enhance resume content for professional tone and clarity. Focus on:
+        - Modern professional language
+        - Clear and concise writing
+        - Industry-appropriate terminology
+        - Consistent formatting and style
+        Return a complete JSON object with the same structure as the input.`;
+        break;
+      case 'general':
+        systemPrompt = `You are a resume enhancement expert. Improve the overall quality and impact of resume content. Focus on:
+        - Clarity and readability
+        - Professional language
+        - Stronger action verbs
+        - Better structure and flow
+        Return a complete JSON object with the same structure as the input.`;
+        break;
+      default:
+        systemPrompt = `You are a resume enhancement expert. Improve the provided resume content based on the specific requirements.`;
+    }
 
-    const enhancedPrompt = `${systemPrompt}
-
-ENHANCEMENT REQUEST: ${prompt}
-
-INSTRUCTIONS:
-- If this is a review/feedback request, provide detailed, actionable feedback in plain text
-- If this is an enhancement request, provide the enhanced content
-- For ATS optimization, focus on keywords, formatting, and compatibility
-- For job-specific tailoring, match content to job requirements
-- For achievement focus, use metrics, percentages, and quantifiable results
-- For freshers, emphasize potential, projects, education, and transferable skills
-- For skills enhancement, organize and strengthen technical/soft skills presentation
-- For design suggestions, provide structural and formatting recommendations
-
-RESUME DATA TO ENHANCE:
-${resumeData}
-
-Provide a comprehensive enhancement based on the request. Be specific, actionable, and professional.`;
+    userPrompt = `${prompt}\n\nResume Data:\n${resumeData}\n\nPlease enhance this resume data and return it in the exact same JSON structure. Maintain all existing sections and structure while improving the content quality.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -67,11 +74,8 @@ Provide a comprehensive enhancement based on the request. Be specific, actionabl
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { 
-            role: 'system', 
-            content: 'You are a professional resume enhancement AI with expertise in modern recruitment practices, ATS systems, and career development.' 
-          },
-          { role: 'user', content: enhancedPrompt }
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
         ],
         temperature: 0.7,
         max_tokens: 4000,
@@ -81,13 +85,11 @@ Provide a comprehensive enhancement based on the request. Be specific, actionabl
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${response.status}`);
+      throw new Error(`AI enhancement failed: ${response.status}`);
     }
 
     const data = await response.json();
     const enhancement = data.choices[0].message.content;
-
-    console.log('Resume enhancement completed successfully');
 
     return new Response(
       JSON.stringify({ 
