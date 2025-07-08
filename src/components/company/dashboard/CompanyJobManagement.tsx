@@ -141,7 +141,7 @@ export const CompanyJobManagement: React.FC<CompanyJobManagementProps> = ({
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {job.job_type || 'Full-time'}
+                        {job.employment_type || 'Full-time'}
                       </span>
                     </CardDescription>
                   </div>
