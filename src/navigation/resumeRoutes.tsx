@@ -3,7 +3,7 @@ import { FileText, Upload, Edit, Eye, Download, Mail, Settings } from "lucide-re
 import ResumeDashboard from "../pages/resume/ResumeDashboard";
 import CreateResume from "../pages/resume/CreateResume";
 import UploadResume from "../pages/resume/UploadResume";
-import EditResume from "../pages/resume/EditResume";
+import { StreamlinedResumeBuilder } from "../components/resume/StreamlinedResumeBuilder";
 import ResumeTemplates from "../pages/resume/ResumeTemplates";
 import ExportResume from "../pages/resume/ExportResume";
 import CoverLetterGenerator from "../pages/resume/CoverLetterGenerator";
@@ -33,13 +33,13 @@ export const resumeRoutes = [
     title: "Edit Resume",
     to: "/resume-builder/edit/:id",
     icon: <Edit className="h-4 w-4" />,
-    page: <EditResume />,
+    page: <StreamlinedResumeBuilder />,
   },
   {
     title: "Edit Resume (Alternative Path)",
     to: "/resume/edit/:id",
     icon: <Edit className="h-4 w-4" />,
-    page: <EditResume />,
+    page: <StreamlinedResumeBuilder />,
   },
   {
     title: "Resume Templates",
