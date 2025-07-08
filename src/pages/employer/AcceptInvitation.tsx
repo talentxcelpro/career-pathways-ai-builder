@@ -53,13 +53,10 @@ const AcceptInvitation = () => {
       }
 
       setInvitationData(result);
-      setSuccess(true);
       toast.success('Welcome to the team! You now have employer access.');
 
-      // Redirect to employer dashboard after a short delay
-      setTimeout(() => {
-        navigate('/employer');
-      }, 2000);
+      // Force clear any cached data and redirect immediately
+      window.location.href = '/employer';
 
     } catch (error: any) {
       console.error('Error accepting invitation:', error);
