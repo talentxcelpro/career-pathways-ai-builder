@@ -100,31 +100,41 @@ const EmployerTeam = () => {
       if (!user) throw new Error('Not authenticated');
 
       // First check if user has a company as owner (get the most recent one)
-      const { data: ownedCompany } = await supabase
+      const { data: ownedCompanies } = await supabase
         .from('company_profiles')
-        .select('company_id')
+        .select('company_id, companies!inner(name)')
         .eq('owner_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .order('created_at', { ascending: false });
 
-      let companyId = ownedCompany?.company_id;
-      let userRole = ownedCompany ? 'owner' : null;
+      console.log('Owned companies:', ownedCompanies);
+
+      let companyId = null;
+      let userRole = null;
+
+      // If user owns companies, use the first one (most recent)
+      if (ownedCompanies && ownedCompanies.length > 0) {
+        companyId = ownedCompanies[0].company_id;
+        userRole = 'owner';
+        console.log('Using owned company:', companyId);
+      }
 
       // If not an owner, check if they're a team member (get the most recent one)
       if (!companyId) {
         const { data: userTeamMember } = await supabase
           .from('company_team_members')
-          .select('company_id, role')
+          .select('company_id, role, companies!inner(name)')
           .eq('user_id', user.id)
           .eq('is_active', true)
           .order('joined_at', { ascending: false })
           .limit(1)
           .maybeSingle();
 
+        console.log('Team member data:', userTeamMember);
+
         if (userTeamMember) {
           companyId = userTeamMember.company_id;
           userRole = userTeamMember.role;
+          console.log('Using team member company:', companyId);
         }
       }
 
@@ -136,6 +146,7 @@ const EmployerTeam = () => {
           userRole: null,
           members: [],
           invitations: [],
+          invitationRequests: [],
           needsCompanySetup: true
         };
       }
@@ -164,6 +175,12 @@ const EmployerTeam = () => {
           .eq('company_id', companyId)
           .order('created_at', { ascending: false })
       ]);
+
+      // Debug logging
+      console.log('Company ID:', companyId);
+      console.log('Team Members Result:', teamMembersResult);
+      console.log('Invitations Result:', invitationsResult);
+      console.log('Invitation Requests Result:', invitationRequestsResult);
 
       const teamMembers = teamMembersResult.data || [];
       const invitationRequests = invitationRequestsResult.data || [];
