@@ -25,7 +25,7 @@ import { useNetworkRealtime, useAutoRefreshPosts } from "@/hooks/useRealtimeData
 import FloatingMessenger from "@/components/network/FloatingMessenger";
 import { Link } from 'react-router-dom';
 import { AICommentGenerator } from "@/components/network/AICommentGenerator";
-import { EnhancedTrendingTopics } from "@/components/network/EnhancedTrendingTopics";
+
 
 const Posts = () => {
   const [openComments, setOpenComments] = useState<string | null>(null);
@@ -341,18 +341,6 @@ const Posts = () => {
                 </Link>
               </div>
             </Card>
-            
-            {/* Enhanced Trending Topics */}
-            <EnhancedTrendingTopics
-              onTopicSelect={(topic) => {
-                console.log('Selected topic:', topic);
-              }}
-              onHashtagSelect={(hashtag) => {
-                console.log('Selected hashtag:', hashtag);
-              }}
-              userInterests={currentUserProfile?.career_interests || []}
-              industry={currentUserProfile?.industry || 'Technology'}
-            />
 
             {/* Network Stats */}
             <NetworkStats
