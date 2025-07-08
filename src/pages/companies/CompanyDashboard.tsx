@@ -31,7 +31,7 @@ import {
   Award,
   Lightbulb
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCompanyRealtime } from '@/hooks/useCompanyRealtime';
 
 // Import module components
@@ -45,6 +45,7 @@ import { CompanySettings } from '@/components/company/dashboard/CompanySettings'
 const CompanyDashboard = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const navigate = useNavigate();
 
   // Get current user
   React.useEffect(() => {
@@ -273,15 +274,29 @@ const CompanyDashboard = () => {
                   Live
                 </Badge>
               )}
-              <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
+              <Button 
+                size="sm" 
+                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+                onClick={() => setActiveTab('content')}
+              >
                 <Plus className="h-3 w-3 mr-1" />
                 <span className="text-xs">New Post</span>
               </Button>
-              <Button size="sm" variant="outline" className="border-border hover:bg-accent text-xs">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="border-border hover:bg-accent text-xs"
+                onClick={() => navigate('/jobs/post')}
+              >
                 <Briefcase className="h-3 w-3 mr-1" />
                 Post Job
               </Button>
-              <Button size="sm" variant="outline" className="border-border hover:bg-accent text-xs">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="border-border hover:bg-accent text-xs"
+                onClick={() => setActiveTab('analytics')}
+              >
                 <BarChart3 className="h-3 w-3 mr-1" />
                 Analytics
               </Button>
@@ -383,6 +398,7 @@ const CompanyDashboard = () => {
               metrics={companyMetrics} 
               recentActivity={recentActivity}
               userRole={userRole}
+              onTabChange={setActiveTab}
             />
           </TabsContent>
 

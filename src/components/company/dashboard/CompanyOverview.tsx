@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,14 +27,17 @@ interface CompanyOverviewProps {
   metrics: any;
   recentActivity: any[];
   userRole: string;
+  onTabChange?: (tab: string) => void;
 }
 
 export const CompanyOverview: React.FC<CompanyOverviewProps> = ({ 
   company, 
   metrics, 
   recentActivity, 
-  userRole 
+  userRole,
+  onTabChange 
 }) => {
+  const navigate = useNavigate();
   const getActivityIcon = (type: string) => {
     switch (type) {
       case 'job_posted': return <Briefcase className="h-3 w-3 text-primary" />;
@@ -155,23 +159,47 @@ export const CompanyOverview: React.FC<CompanyOverviewProps> = ({
             <CardDescription className="text-sm">Manage your company presence</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <Button size="sm" className="w-full justify-start text-xs bg-primary hover:bg-primary/90">
+            <Button 
+              size="sm" 
+              className="w-full justify-start text-xs bg-primary hover:bg-primary/90"
+              onClick={() => onTabChange?.('content')}
+            >
               <Plus className="h-3 w-3 mr-2" />
               Create Post
             </Button>
-            <Button size="sm" className="w-full justify-start text-xs" variant="outline">
+            <Button 
+              size="sm" 
+              className="w-full justify-start text-xs" 
+              variant="outline"
+              onClick={() => navigate('/jobs/post')}
+            >
               <Briefcase className="h-3 w-3 mr-2" />
               Post New Job
             </Button>
-            <Button size="sm" className="w-full justify-start text-xs" variant="outline">
+            <Button 
+              size="sm" 
+              className="w-full justify-start text-xs" 
+              variant="outline"
+              onClick={() => onTabChange?.('content')}
+            >
               <Calendar className="h-3 w-3 mr-2" />
               Schedule Event
             </Button>
-            <Button size="sm" className="w-full justify-start text-xs" variant="outline">
+            <Button 
+              size="sm" 
+              className="w-full justify-start text-xs" 
+              variant="outline"
+              onClick={() => onTabChange?.('settings')}
+            >
               <Upload className="h-3 w-3 mr-2" />
               Update Profile
             </Button>
-            <Button size="sm" className="w-full justify-start text-xs" variant="outline">
+            <Button 
+              size="sm" 
+              className="w-full justify-start text-xs" 
+              variant="outline"
+              onClick={() => onTabChange?.('analytics')}
+            >
               <BarChart3 className="h-3 w-3 mr-2" />
               View Analytics
             </Button>
