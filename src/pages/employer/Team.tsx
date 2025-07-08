@@ -81,23 +81,27 @@ const EmployerTeam = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // First check if user has a company as owner
+      // First check if user has a company as owner (get the most recent one)
       const { data: ownedCompany } = await supabase
         .from('company_profiles')
         .select('company_id')
         .eq('owner_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       let companyId = ownedCompany?.company_id;
       let userRole = ownedCompany ? 'owner' : null;
 
-      // If not an owner, check if they're a team member
+      // If not an owner, check if they're a team member (get the most recent one)
       if (!companyId) {
         const { data: userTeamMember } = await supabase
           .from('company_team_members')
           .select('company_id, role')
           .eq('user_id', user.id)
           .eq('is_active', true)
+          .order('joined_at', { ascending: false })
+          .limit(1)
           .maybeSingle();
 
         if (userTeamMember) {
