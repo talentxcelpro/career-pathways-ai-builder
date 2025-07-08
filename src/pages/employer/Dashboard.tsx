@@ -28,7 +28,8 @@ function DashboardContent() {
         .select('company_id, role')
         .eq('user_id', user.user.id)
         .eq('is_active', true)
-        .maybeSingle();
+        .order('role', { ascending: true }) // Owners first, then admins, etc.
+        .limit(1); // Take the first/primary company
 
       if (error) {
         console.error('Error fetching team data:', error);
@@ -36,7 +37,7 @@ function DashboardContent() {
       }
       
       console.log('Team data retrieved:', data);
-      return data;
+      return data && data.length > 0 ? data[0] : null;
     },
   });
 
