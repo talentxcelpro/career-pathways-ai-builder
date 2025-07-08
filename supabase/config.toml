@@ -1,1 +1,10 @@
 project_id = "dthlgsnakhoftinssokm"
+
+[auth]
+enabled = true
+
+[auth.email]
+enable_signup = true
+
+[functions.ai-resume-enhancement]
+verify_jwt = true
