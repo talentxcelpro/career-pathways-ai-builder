@@ -160,19 +160,7 @@ export const SimpleResumeBuilder = () => {
           }
         ],
         education: parsedData.education,
-        skills: {
-          technical: {
-            programming: parsedData.skills.filter(s => s.toLowerCase().includes('programming') || s.toLowerCase().includes('language')),
-            frameworks: parsedData.skills.filter(s => s.toLowerCase().includes('framework') || s.toLowerCase().includes('library')),
-            databases: parsedData.skills.filter(s => s.toLowerCase().includes('database') || s.toLowerCase().includes('sql')),
-            tools: parsedData.skills.filter(s => s.toLowerCase().includes('tool') || s.toLowerCase().includes('software')),
-            cloud: parsedData.skills.filter(s => s.toLowerCase().includes('cloud') || s.toLowerCase().includes('aws') || s.toLowerCase().includes('azure')),
-            confidence: 0.5
-          },
-          soft: parsedData.skills.filter(s => !s.toLowerCase().includes('programming') && !s.toLowerCase().includes('framework')),
-          languages: [],
-          certifications: parsedData.certifications
-        },
+        skills: parsedData.skills, // Pass the skills array directly
         projects: [],
         certifications: [],
         awards: [],
@@ -493,21 +481,46 @@ export const SimpleResumeBuilder = () => {
   };
 
   const formatExperience = (experience: any[]): string => {
-    return experience.map(exp => 
-      `${exp.title || 'Position'} at ${exp.company || 'Company'}\n${exp.startDate || 'Start'} - ${exp.endDate || 'End'}\n${exp.description || 'Job description...'}\n`
-    ).join('\n');
+    if (!experience || experience.length === 0) {
+      return 'No work experience data available.';
+    }
+    
+    return experience.map(exp => {
+      const title = exp.title || 'Position';
+      const company = exp.company || 'Company';
+      const startDate = exp.startDate || 'Start';
+      const endDate = exp.endDate || 'End';
+      const description = exp.description || 'Job responsibilities and achievements.';
+      
+      return `${title} at ${company}\n${startDate} - ${endDate}\n\n${description}\n`;
+    }).join('\n');
   };
 
   const formatEducation = (education: any[]): string => {
-    return education.map(edu => 
-      `${edu.degree || 'Degree'} from ${edu.school || 'School'}\n${edu.startDate || 'Start'} - ${edu.endDate || 'End'}\n`
-    ).join('\n');
+    if (!education || education.length === 0) {
+      return 'No education data available.';
+    }
+    
+    return education.map(edu => {
+      const degree = edu.degree || 'Degree';
+      const school = edu.school || 'Institution';
+      const year = edu.year || 'Year';
+      
+      return `${degree}\n${school}\n${year}\n`;
+    }).join('\n');
   };
 
   const formatSkills = (skills: any): string => {
-    const technical = skills.technical ? Object.values(skills.technical).flat().join(', ') : '';
-    const soft = skills.soft ? skills.soft.join(', ') : '';
-    return `Technical Skills: ${technical}\nSoft Skills: ${soft}`;
+    if (Array.isArray(skills) && skills.length > 0) {
+      // If skills is already an array of strings, format them properly
+      return skills.join('\n• ');
+    } else if (skills && typeof skills === 'object') {
+      // If skills is an object, extract the values
+      const technical = skills.technical ? Object.values(skills.technical).flat().join(', ') : '';
+      const soft = skills.soft ? (Array.isArray(skills.soft) ? skills.soft.join(', ') : skills.soft) : '';
+      return `Technical Skills:\n${technical}\n\nSoft Skills:\n${soft}`;
+    }
+    return 'No skills data available.';
   };
 
   const calculateATSScore = (data: any): number => {
