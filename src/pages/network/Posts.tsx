@@ -271,6 +271,12 @@ const Posts = () => {
                     Feed
                   </Button>
                 </Link>
+                <Link to="/dashboard" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                    <Sparkles className="h-3 w-3 mr-2" />
+                    Dashboard
+                  </Button>
+                </Link>
                 <Link to="/network/people" className="block">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
                     <Users className="h-3 w-3 mr-2" />

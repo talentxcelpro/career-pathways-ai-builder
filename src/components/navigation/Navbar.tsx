@@ -102,7 +102,6 @@ export const Navbar = () => {
 
   const mainNavItems = [
     { to: "/network", label: "Network" },
-    { to: "/dashboard", label: "Dashboard" },
     { to: "/jobs", label: "Jobs" },
     { to: "/employer", label: "Employer" },
     { to: "/companies", label: "Companies" },
