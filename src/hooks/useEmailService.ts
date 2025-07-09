@@ -24,9 +24,36 @@ export const useEmailService = (): EmailServiceHook => {
     try {
       console.log('Attempting to send email via edge function:', emailData);
       
-      // Use Supabase Edge Function instead of API route
+      // Create HTML content from template
+      let html = '';
+      if (emailData.template === 'welcome') {
+        html = `
+          <h2>Welcome to TalentXcel!</h2>
+          <p>Hi ${emailData.data?.name || 'there'}! 🎉</p>
+          <p>We're excited to have you join our professional community.</p>
+          <p><strong>Powering Global Career Growth</strong></p>
+        `;
+      } else if (emailData.template === 'job_opening') {
+        html = `
+          <h2>New Job Match for You!</h2>
+          <p>Hi ${emailData.data?.name || 'there'}! 💼</p>
+          <p>We found a job opportunity that matches your profile:</p>
+          <h3>${emailData.data?.job_title || 'Job Title'}</h3>
+          <p><strong>${emailData.data?.company_name || 'Company'}</strong> • ${emailData.data?.location || 'Location'}</p>
+          <p>Salary: ${emailData.data?.salary_range || 'Competitive'}</p>
+          <p>Requirements: ${emailData.data?.requirements?.join(', ') || 'As per job description'}</p>
+        `;
+      } else {
+        html = '<p>Thank you for using TalentXcel!</p>';
+      }
+      
+      // Use Supabase Edge Function with simplified format
       const { data, error } = await supabase.functions.invoke('send-email', {
-        body: emailData,
+        body: {
+          to: emailData.to,
+          subject: emailData.subject,
+          html: html
+        },
       });
 
       console.log('Edge function response:', { data, error });
@@ -36,8 +63,7 @@ export const useEmailService = (): EmailServiceHook => {
         throw new Error(error.message || 'Failed to send email');
       }
 
-      const message = emailData.immediate ? 'Email sent successfully!' : 'Email queued successfully!';
-      toast.success(message);
+      toast.success('Email sent successfully!');
       return true;
     } catch (error: any) {
       console.error('Email service error:', error);
