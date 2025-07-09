@@ -131,22 +131,20 @@ export const SimpleResumeBuilder = () => {
       setUploadProgress(60);
       console.log('Creating basic resume structure from text:', text.substring(0, 200) + '...');
       
-      // Create a basic structured resume from the text
+      // Parse the actual resume content from the extracted text
+      const parsedData = parseResumeFromText(text);
+      
+      // Create a basic structured resume from the parsed text
       const basicResumeData = {
         personalInfo: {
-          fullName: "Resume Import",
-          email: "",
-          phone: "",
-          location: "",
-          summary: text.includes('summary') || text.includes('objective') 
-            ? text.split('\n').find(line => 
-                line.toLowerCase().includes('summary') || 
-                line.toLowerCase().includes('objective')
-              )?.substring(0, 200) || "Professional with experience in technology and business."
-            : "Professional with experience in technology and business.",
+          fullName: parsedData.fullName || "Resume Import",
+          email: parsedData.email || "",
+          phone: parsedData.phone || "",
+          location: parsedData.location || "",
+          summary: parsedData.summary || "Professional with relevant experience and expertise.",
           confidence: 0.7
         },
-        experience: [
+        experience: parsedData.experience.length > 0 ? parsedData.experience : [
           {
             title: "Experience from uploaded resume",
             company: "See original resume for details",
@@ -160,19 +158,19 @@ export const SimpleResumeBuilder = () => {
             confidence: 0.6
           }
         ],
-        education: [],
+        education: parsedData.education,
         skills: {
           technical: {
-            programming: [],
-            frameworks: [],
-            databases: [],
-            tools: [],
-            cloud: [],
+            programming: parsedData.skills.filter(s => s.toLowerCase().includes('programming') || s.toLowerCase().includes('language')),
+            frameworks: parsedData.skills.filter(s => s.toLowerCase().includes('framework') || s.toLowerCase().includes('library')),
+            databases: parsedData.skills.filter(s => s.toLowerCase().includes('database') || s.toLowerCase().includes('sql')),
+            tools: parsedData.skills.filter(s => s.toLowerCase().includes('tool') || s.toLowerCase().includes('software')),
+            cloud: parsedData.skills.filter(s => s.toLowerCase().includes('cloud') || s.toLowerCase().includes('aws') || s.toLowerCase().includes('azure')),
             confidence: 0.5
           },
-          soft: [],
+          soft: parsedData.skills.filter(s => !s.toLowerCase().includes('programming') && !s.toLowerCase().includes('framework')),
           languages: [],
-          certifications: []
+          certifications: parsedData.certifications
         },
         projects: [],
         certifications: [],
@@ -244,40 +242,149 @@ export const SimpleResumeBuilder = () => {
       return await file.text();
     }
     
-    // For PDF and Word files, generate meaningful sample content based on filename
-    // This will allow the AI to demonstrate its enhancement capabilities
-    const sampleContent = `John Doe
-Email: john.doe@email.com
-Phone: (555) 123-4567
-Location: New York, NY
+    // For PDF and Word files, try to extract text from the file directly
+    try {
+      if (file.type === 'application/pdf') {
+        // For PDFs, read as text if possible, otherwise prompt user to copy-paste
+        const text = await file.text();
+        if (text && text.trim().length > 50) {
+          return text;
+        }
+      }
+      
+      if (file.type.includes('word') || file.name.toLowerCase().includes('.doc')) {
+        // For Word docs, prompt user to copy-paste content
+        toast.info('Please copy and paste your resume content from the Word document');
+        return 'Please paste your resume content here...';
+      }
+    } catch (error) {
+      console.error('Error extracting text from file:', error);
+    }
+    
+    // If text extraction fails, return empty string to prompt manual entry
+    toast.info('Could not extract text automatically. Please paste your resume content manually.');
+    return '';
+  };
 
-PROFESSIONAL SUMMARY
-Experienced professional with background in technology and business development.
+  const parseResumeFromText = (text: string) => {
+    if (!text || text.trim().length === 0) {
+      return {
+        fullName: '',
+        email: '',
+        phone: '',
+        location: '',
+        summary: '',
+        experience: [],
+        education: [],
+        skills: [],
+        certifications: []
+      };
+    }
 
-EXPERIENCE
-Software Developer at Tech Company
-2020 - Present
-• Developed applications using modern frameworks
-• Collaborated with cross-functional teams
-• Implemented best practices for code quality
+    const lines = text.split('\n').filter(line => line.trim());
+    
+    // Extract personal info from text
+    const emailMatch = text.match(/[\w.-]+@[\w.-]+\.\w+/);
+    const phoneMatch = text.match(/[\+\(\)\-\d\s]{10,}/);
+    const locationMatch = text.match(/📍\s*([^|📞📧\n]+?)(?:\s*\||📞|📧|\n|$)/);
+    
+    // Try to find name (usually first meaningful line or after title)
+    let fullName = '';
+    const namePattern = /^[A-Z][a-z]+ [A-Z][a-z]+/;
+    for (const line of lines.slice(0, 5)) {
+      const cleanLine = line.trim().replace(/^[•\-\*]\s*/, '');
+      if (namePattern.test(cleanLine) && !cleanLine.includes('@') && !cleanLine.includes('|') && !cleanLine.includes('📞') && !cleanLine.includes('📧')) {
+        fullName = cleanLine;
+        break;
+      }
+    }
+    
+    // Extract summary/profile section
+    let summary = '';
+    const summaryStart = text.match(/(PROFILE SUMMARY|PROFESSIONAL SUMMARY|SUMMARY|PROFILE)[\s:]*\n(.+?)(?=\n\s*[A-Z][A-Z\s]+:|$)/s);
+    if (summaryStart) {
+      summary = summaryStart[2].trim().substring(0, 300);
+    }
+    
+    // Extract experience section
+    const experience = [];
+    const expMatch = text.match(/(PROFESSIONAL EXPERIENCE|EXPERIENCE|WORK EXPERIENCE)[\s:]*\n(.+?)(?=\n\s*[A-Z][A-Z\s]+:|$)/s);
+    if (expMatch) {
+      const expText = expMatch[2];
+      // Split by bullet points or job entries
+      const jobs = expText.split(/•\s*/).filter(job => job.trim().length > 20);
+      jobs.forEach((job, index) => {
+        if (job.trim()) {
+          const jobLines = job.trim().split('\n').filter(l => l.trim());
+          experience.push({
+            title: jobLines[0] || `Position ${index + 1}`,
+            company: jobLines[1] || 'Company',
+            startDate: '2020',
+            endDate: 'Present',
+            description: job.trim(),
+            current: index === 0
+          });
+        }
+      });
+    }
+    
+    // Extract skills
+    const skills = [];
+    const skillsMatch = text.match(/(CORE SKILLS|SKILLS|TECHNICAL SKILLS)[\s:]*\n(.+?)(?=\n\s*[A-Z][A-Z\s]+:|$)/s);
+    if (skillsMatch) {
+      const skillsText = skillsMatch[2];
+      const skillItems = skillsText.split(/[•\n]/).filter(skill => skill.trim().length > 2);
+      skillItems.forEach(skill => {
+        const cleanSkill = skill.replace(/[:•]/g, '').trim();
+        if (cleanSkill && cleanSkill.length < 100) {
+          skills.push(cleanSkill);
+        }
+      });
+    }
+    
+    // Extract education
+    const education = [];
+    const eduMatch = text.match(/(EDUCATION|ACADEMIC BACKGROUND)[\s:]*\n(.+?)(?=\n\s*[A-Z][A-Z\s]+:|$)/s);
+    if (eduMatch) {
+      const eduText = eduMatch[2];
+      const degrees = eduText.split(/•/).filter(deg => deg.trim().length > 10);
+      degrees.forEach(degree => {
+        const degreeLines = degree.trim().split('\n').filter(l => l.trim());
+        if (degreeLines.length > 0) {
+          education.push({
+            degree: degreeLines[0].trim(),
+            school: degreeLines[1] || 'Institution',
+            year: '2020',
+            description: degree.trim()
+          });
+        }
+      });
+    }
 
-Marketing Specialist at Digital Agency  
-2018 - 2020
-• Managed social media campaigns
-• Analyzed performance metrics
-• Created content for various platforms
-
-EDUCATION
-Bachelor of Science in Computer Science
-University of Technology, 2018
-
-SKILLS
-Programming Languages: JavaScript, Python, Java
-Frameworks: React, Node.js, Express
-Databases: MySQL, MongoDB
-Tools: Git, Docker, AWS`;
-
-    return sampleContent;
+    // Extract certifications
+    const certifications = [];
+    const certMatch = text.match(/(CERTIFICATIONS|CERTIFICATES)[\s:]*\n(.+?)(?=\n\s*[A-Z][A-Z\s]+:|$)/s);
+    if (certMatch) {
+      const certText = certMatch[2];
+      const certs = certText.split(/•/).filter(cert => cert.trim().length > 5);
+      certs.forEach(cert => {
+        if (cert.trim()) {
+          certifications.push(cert.trim());
+        }
+      });
+    }
+    
+    return {
+      fullName: fullName,
+      email: emailMatch ? emailMatch[0] : '',
+      phone: phoneMatch ? phoneMatch[0].trim() : '',
+      location: locationMatch ? locationMatch[1].trim() : '',
+      summary: summary,
+      experience: experience,
+      education: education,
+      skills: skills,
+      certifications: certifications
+    };
   };
 
   const formatExperience = (experience: any[]): string => {
