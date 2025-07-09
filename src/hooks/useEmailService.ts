@@ -22,12 +22,17 @@ export const useEmailService = (): EmailServiceHook => {
   const sendEmail = async (emailData: EmailData): Promise<boolean> => {
     setIsLoading(true);
     try {
+      console.log('Attempting to send email via edge function:', emailData);
+      
       // Use Supabase Edge Function instead of API route
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: emailData,
       });
 
+      console.log('Edge function response:', { data, error });
+
       if (error) {
+        console.error('Edge function error:', error);
         throw new Error(error.message || 'Failed to send email');
       }
 
@@ -36,7 +41,18 @@ export const useEmailService = (): EmailServiceHook => {
       return true;
     } catch (error: any) {
       console.error('Email service error:', error);
-      toast.error(error.message || 'Failed to send email');
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to send email';
+      if (error.message?.includes('Failed to fetch')) {
+        errorMessage = 'Email service is currently unavailable. The function may still be deploying. Please try again in a few minutes.';
+      } else if (error.message?.includes('not found')) {
+        errorMessage = 'Email service not found. Please contact support.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
       return false;
     } finally {
       setIsLoading(false);
