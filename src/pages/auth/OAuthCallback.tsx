@@ -29,7 +29,7 @@ const OAuthCallback = () => {
           console.log('OAuth authentication successful');
           setStatus('success');
           toast.success('Successfully signed in!');
-          navigate('/dashboard', { replace: true });
+          navigate('/network', { replace: true });
         } else {
           console.log('No session found in callback');
           setStatus('error');
@@ -66,7 +66,7 @@ const OAuthCallback = () => {
               </svg>
             </div>
             <h2 className="text-xl font-semibold text-green-800 mb-2">Welcome!</h2>
-            <p className="text-gray-600">Redirecting to your dashboard...</p>
+            <p className="text-gray-600">Redirecting to your network...</p>
           </>
         )}
         
