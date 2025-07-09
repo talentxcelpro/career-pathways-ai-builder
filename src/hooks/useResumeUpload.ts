@@ -83,8 +83,8 @@ export const useResumeUpload = () => {
           user_id: user.id,
           title: `Enhanced Resume from ${file.name}`,
           content: extractedContent as any, // Convert to Json type
-          ats_score: extractedContent.atsOptimization.score || 75,
-          template_id: null
+          ats_score: extractedContent.atsOptimization?.score || 75,
+          template_id: null // Use null instead of string to avoid UUID errors
         })
         .select()
         .single();
@@ -104,7 +104,20 @@ export const useResumeUpload = () => {
       }, 2000);
     } catch (error) {
       console.error('Error processing resume:', error);
-      toast.error('Error processing resume. Please try again.');
+      
+      // Provide more specific error messages
+      let errorMessage = 'Error processing resume. Please try again.';
+      if (error.message?.includes('AI extraction failed')) {
+        errorMessage = 'Failed to extract resume content. The AI service may still be deploying. Please try again in a few minutes.';
+      } else if (error.message?.includes('AI enhancement failed')) {
+        errorMessage = 'Failed to enhance resume. The AI service may still be deploying. Please try again in a few minutes.';
+      } else if (error.message?.includes('Database')) {
+        errorMessage = 'Database error occurred. Please try again.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
       setIsProcessing(false);
     }
   };

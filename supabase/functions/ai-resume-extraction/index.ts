@@ -6,212 +6,199 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface ATSOptimization {
-  score: number;
-  keywordDensity: number;
-  sectionCompleteness: number;
-  readabilityScore: number;
-  suggestions: Array<{
-    category: 'keywords' | 'structure' | 'content' | 'formatting';
-    priority: 'high' | 'medium' | 'low';
-    issue: string;
-    suggestion: string;
-    impact: number;
-  }>;
-}
-
-interface ConfidenceMetrics {
-  overall: number;
-  personalInfo: number;
-  experience: number;
-  education: number;
-  skills: number;
-  sections: Record<string, number>;
-}
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { text, fileName, fileType, extractionLevel = 'comprehensive' } = await req.json();
-
-    if (!text) {
-      throw new Error('No resume text provided');
-    }
+    const { text, fileName, fileType, extractionLevel } = await req.json();
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('Processing resume with advanced AI extraction:', fileName, 'Type:', fileType);
+    console.log('Processing resume extraction:', { fileName, fileType, extractionLevel, textLength: text.length });
 
-    // Enhanced prompt with NLP-style instructions
-    const enhancedPrompt = `You are an expert resume parser with advanced NLP capabilities. Analyze this resume text with maximum accuracy.
+    const systemPrompt = `You are an advanced resume parsing AI. Extract and structure comprehensive resume data from the provided text.
 
-CRITICAL INSTRUCTIONS:
-- IGNORE system metadata like "Resume File:", "File Type:", "COMPREHENSIVE RESUME PROCESSING", etc.
-- These are NOT resume content - focus ONLY on actual professional information
-- Do NOT use filenames as names - extract the real person's name from resume content
-- For technical/engineering resumes, pay special attention to:
-  * PhD qualifications and research experience
-  * Technical specializations (e.g., Clean Energy, Chemical Engineering, Microbial Fuel Cells)
-  * Research publications, projects, and achievements
-  * Academic positions and teaching experience
-  * Industry-specific terminology and skills
+CRITICAL REQUIREMENTS:
+1. Extract ONLY information that exists in the text
+2. DO NOT generate or fabricate information
+3. Return valid JSON with the exact structure provided
+4. Use confidence scores (0.0-1.0) based on text clarity
+5. Parse technical skills separately by category
+6. Extract quantifiable achievements with numbers/percentages
 
-EXTRACTION REQUIREMENTS:
-1. Use Named Entity Recognition (NER) to identify:
-   - PERSON (actual names from resume content, NOT filenames)
-   - ORG (companies, institutions, universities)
-   - DATE (employment/education dates)
-   - SKILL (technical skills, research areas, specializations)
-   - LOCATION (addresses, work locations)
-
-2. For academic/research backgrounds, extract:
-   - PhD qualifications and specializations
-   - Research areas and expertise
-   - Academic positions (Professor, Researcher, etc.)
-   - Publications and research projects
-   - Technical skills and methodologies
-
-3. Implement confidence scoring for each field (0.0-1.0)
-
-RETURN COMPREHENSIVE JSON:
+Return a JSON object with this EXACT structure:
 {
   "personalInfo": {
-    "fullName": "actual person's name from resume content (NOT filename)",
-    "email": "exact email",
-    "phone": "standardized phone format",
-    "location": "full address/location",
-    "summary": "complete professional summary word-for-word",
-    "linkedin": "linkedin profile URL",
-    "website": "personal website URL",
-    "confidence": 0.95
+    "fullName": "",
+    "email": "",
+    "phone": "",
+    "location": "",
+    "summary": "",
+    "linkedin": "",
+    "website": "",
+    "confidence": 0.0
   },
   "experience": [
     {
-      "title": "exact job title",
-      "company": "exact company name", 
-      "location": "job location",
-      "startDate": "MM/YYYY format",
-      "endDate": "MM/YYYY or Present",
-      "duration": "calculated duration",
-      "description": "complete job description",
-      "achievements": ["quantified achievements with metrics"],
-      "technologies": ["specific technologies mentioned"],
-      "keywords": ["relevant industry keywords"],
-      "confidence": 0.90
+      "title": "",
+      "company": "",
+      "location": "",
+      "startDate": "",
+      "endDate": "",
+      "description": "",
+      "achievements": [],
+      "technologies": [],
+      "keywords": [],
+      "confidence": 0.0
     }
   ],
   "education": [
     {
-      "degree": "exact degree name",
-      "school": "exact institution name",
-      "location": "school location",
-      "startDate": "start date",
-      "endDate": "graduation date",
-      "gpa": "GPA if mentioned",
-      "honors": "honors/distinctions",
-      "relevantCoursework": ["specific courses"],
-      "confidence": 0.88
+      "degree": "",
+      "school": "",
+      "location": "",
+      "startDate": "",
+      "endDate": "",
+      "gpa": "",
+      "honors": "",
+      "relevantCoursework": [],
+      "confidence": 0.0
     }
   ],
   "skills": {
     "technical": {
-      "programming": ["languages with proficiency levels"],
-      "frameworks": ["frameworks and libraries"],
-      "databases": ["database technologies"],
-      "tools": ["development tools"],
-      "cloud": ["cloud platforms"],
-      "confidence": 0.92
+      "programming": [],
+      "frameworks": [],
+      "databases": [],
+      "tools": [],
+      "cloud": [],
+      "confidence": 0.0
     },
-    "soft": ["leadership", "communication", "etc"],
-    "languages": [{"language": "English", "proficiency": "Native"}],
-    "certifications": ["active certifications"]
+    "soft": [],
+    "languages": [
+      {
+        "language": "",
+        "proficiency": ""
+      }
+    ],
+    "certifications": []
   },
   "projects": [
     {
-      "title": "project name",
-      "description": "detailed description",
-      "technologies": ["tech stack used"],
-      "startDate": "start date",
-      "endDate": "end date", 
-      "url": "project URL",
-      "github": "repository link",
-      "achievements": ["measurable outcomes"],
-      "confidence": 0.85
+      "title": "",
+      "description": "",
+      "technologies": [],
+      "startDate": "",
+      "endDate": "",
+      "url": "",
+      "github": "",
+      "achievements": [],
+      "confidence": 0.0
     }
   ],
   "certifications": [
     {
-      "name": "certification name",
-      "issuer": "issuing organization",
-      "date": "date obtained",
-      "expiryDate": "expiry if applicable",
-      "credentialId": "credential ID",
-      "url": "verification URL",
-      "confidence": 0.90
+      "name": "",
+      "issuer": "",
+      "date": "",
+      "expiryDate": "",
+      "credentialId": "",
+      "url": "",
+      "confidence": 0.0
     }
   ],
   "awards": [
     {
-      "name": "award name",
-      "issuer": "organization",
-      "date": "date received",
-      "description": "award details",
-      "confidence": 0.87
+      "name": "",
+      "issuer": "",
+      "date": "",
+      "description": "",
+      "confidence": 0.0
     }
   ],
   "volunteer": [
     {
-      "organization": "organization name",
-      "role": "volunteer position",
-      "startDate": "start date",
-      "endDate": "end date",
-      "description": "volunteer activities",
-      "confidence": 0.85
+      "organization": "",
+      "role": "",
+      "startDate": "",
+      "endDate": "",
+      "description": "",
+      "confidence": 0.0
     }
   ],
   "sectionStructure": {
-    "detectedSections": ["list of identified sections"],
-    "sectionBoundaries": {"section": "line_numbers"},
+    "detectedSections": [],
+    "sectionBoundaries": {},
     "formatMetadata": {
-      "hasBulletPoints": true,
-      "indentationLevel": 2,
-      "fontHints": ["bold headers detected"],
-      "layoutType": "traditional/modern/creative"
+      "hasBulletPoints": false,
+      "indentationLevel": 0,
+      "fontHints": [],
+      "layoutType": ""
     }
   },
+  "atsOptimization": {
+    "score": 0,
+    "keywordDensity": 0.0,
+    "sectionCompleteness": 0.0,
+    "readabilityScore": 0.0,
+    "suggestions": [
+      {
+        "category": "",
+        "priority": "",
+        "issue": "",
+        "suggestion": "",
+        "impact": 0
+      }
+    ]
+  },
   "confidenceMetrics": {
-    "overall": 0.89,
-    "personalInfo": 0.95,
-    "experience": 0.88,
-    "education": 0.92,
-    "skills": 0.85,
-    "sections": {"experience": 0.90, "education": 0.88}
+    "overall": 0.0,
+    "personalInfo": 0.0,
+    "experience": 0.0,
+    "education": 0.0,
+    "skills": 0.0,
+    "sections": {}
+  },
+  "suggestions": [
+    {
+      "category": "",
+      "priority": "",
+      "issue": "",
+      "suggestion": "",
+      "impact": 0
+    }
+  ],
+  "metadata": {
+    "fileName": "",
+    "extractionTimestamp": "",
+    "extractionMethod": "ai-powered",
+    "processingVersion": "1.0"
   }
-}
+}`;
 
-EXTRACTION RULES:
-- Extract EXACTLY what is written - no interpretation
-- Maintain original wording and phrasing
-- For dates, standardize to MM/YYYY format when possible
-- Calculate durations for experience entries
-- Identify and preserve quantified achievements (numbers, percentages)
-- Detect industry-specific keywords and technologies
-- Assign confidence scores based on text clarity and context
-- Preserve formatting cues (bullets, indentation, sections)
-- IGNORE system metadata and filenames completely
+    const userPrompt = `Extract comprehensive resume data from this text:
 
-Resume text to analyze:
+FILE: ${fileName}
+TYPE: ${fileType}
+
+TEXT CONTENT:
 ${text}
 
-Return ONLY valid JSON with comprehensive extraction and confidence metrics.`;
+Instructions:
+- Extract ALL sections you can identify
+- For dates, use MM/YYYY format when possible
+- Group technical skills by category (programming, frameworks, databases, tools, cloud)
+- Extract specific achievements with quantifiable results
+- Identify all contact information
+- Calculate confidence scores based on text clarity
+- Generate ATS optimization suggestions
+- Return ONLY valid JSON with no additional text`;
 
-    // Use advanced model for better NLP capabilities
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -219,54 +206,51 @@ Return ONLY valid JSON with comprehensive extraction and confidence metrics.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini', // Use latest available model for resume parsing
+        model: 'gpt-4o-mini',
         messages: [
-          { 
-            role: 'system', 
-            content: 'You are an expert resume parser with advanced NLP capabilities. Analyze resumes with maximum accuracy and provide comprehensive extraction with confidence metrics.'
-          },
-          { role: 'user', content: enhancedPrompt }
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
         ],
         temperature: 0.1,
-        max_tokens: 6000,
+        max_tokens: 4000,
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenAI API error:', errorData);
-      
-      // Fallback to GPT-4o if Claude fails
-      const fallbackResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { 
-              role: 'system', 
-              content: 'You are an expert resume parser. Extract information accurately and return comprehensive JSON.'
-            },
-            { role: 'user', content: enhancedPrompt }
-          ],
-          temperature: 0.1,
-          max_tokens: 6000,
-        }),
-      });
-
-      if (!fallbackResponse.ok) {
-        throw new Error(`AI parsing failed: ${response.status}`);
-      }
-
-      const fallbackData = await fallbackResponse.json();
-      return await processAIResponse(fallbackData.choices[0].message.content, fileName);
+      throw new Error(`AI extraction failed: ${response.status}`);
     }
 
     const data = await response.json();
-    return await processAIResponse(data.choices[0].message.content, fileName);
+    const extractedContent = data.choices[0].message.content;
+
+    // Parse the JSON response
+    let parsedData;
+    try {
+      parsedData = JSON.parse(extractedContent);
+    } catch (parseError) {
+      console.error('Failed to parse AI response as JSON:', parseError);
+      console.error('Raw response:', extractedContent);
+      throw new Error('AI returned invalid JSON format');
+    }
+
+    // Add metadata
+    parsedData.metadata = {
+      ...parsedData.metadata,
+      fileName,
+      extractionTimestamp: new Date().toISOString(),
+      extractionMethod: 'ai-powered',
+      processingVersion: '1.0'
+    };
+
+    return new Response(
+      JSON.stringify({ 
+        success: true,
+        ...parsedData
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
 
   } catch (error) {
     console.error('Error in AI resume extraction:', error);
@@ -282,229 +266,3 @@ Return ONLY valid JSON with comprehensive extraction and confidence metrics.`;
     );
   }
 });
-
-async function processAIResponse(extractedContent: string, fileName: string) {
-  console.log('AI extracted content length:', extractedContent.length);
-
-  let parsedData;
-  try {
-    parsedData = JSON.parse(extractedContent);
-  } catch (parseError) {
-    console.error('Failed to parse AI response as JSON:', parseError);
-    // Return enhanced default structure
-    parsedData = getDefaultResumeStructure();
-  }
-
-  // Calculate comprehensive ATS score
-  const atsOptimization = calculateAdvancedATSScore(parsedData);
-  
-  // Calculate confidence metrics
-  const confidenceMetrics = calculateConfidenceMetrics(parsedData);
-
-  // Generate optimization suggestions
-  const suggestions = generateOptimizationSuggestions(parsedData, atsOptimization);
-
-  return new Response(
-    JSON.stringify({ 
-      ...parsedData, 
-      atsOptimization,
-      confidenceMetrics,
-      suggestions,
-      metadata: {
-        fileName,
-        extractionTimestamp: new Date().toISOString(),
-        extractionMethod: 'ai-enhanced-nlp',
-        processingVersion: '2.0'
-      },
-      success: true 
-    }),
-    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-  );
-}
-
-function calculateAdvancedATSScore(data: any): ATSOptimization {
-  let score = 0;
-  let keywordDensity = 0;
-  let sectionCompleteness = 0;
-  let readabilityScore = 0;
-  const suggestions = [];
-
-  // Personal Info Score (25 points)
-  const personalInfo = data.personalInfo || {};
-  let personalScore = 0;
-  if (personalInfo.fullName) personalScore += 8;
-  if (personalInfo.email) personalScore += 6;
-  if (personalInfo.phone) personalScore += 6;
-  if (personalInfo.location) personalScore += 3;
-  if (personalInfo.summary && personalInfo.summary.length > 50) personalScore += 2;
-  
-  if (personalScore < 20) {
-    suggestions.push({
-      category: 'content',
-      priority: 'high',
-      issue: 'Incomplete contact information',
-      suggestion: 'Add missing contact details (phone, email, location)',
-      impact: 20 - personalScore
-    });
-  }
-
-  // Experience Score (35 points)
-  const experience = data.experience || [];
-  let experienceScore = 0;
-  if (experience.length > 0) {
-    experienceScore += 15;
-    const hasQuantifiedAchievements = experience.some(exp => 
-      exp.achievements && exp.achievements.some(ach => /\d+/.test(ach))
-    );
-    if (hasQuantifiedAchievements) experienceScore += 10;
-    
-    const hasTechnologies = experience.some(exp => exp.technologies && exp.technologies.length > 0);
-    if (hasTechnologies) experienceScore += 10;
-  } else {
-    suggestions.push({
-      category: 'content',
-      priority: 'high',
-      issue: 'No work experience listed',
-      suggestion: 'Add detailed work experience with quantified achievements',
-      impact: 35
-    });
-  }
-
-  // Skills Score (20 points)
-  const skills = data.skills || {};
-  let skillsScore = 0;
-  if (skills.technical && Object.keys(skills.technical).length > 0) skillsScore += 12;
-  if (skills.soft && skills.soft.length > 0) skillsScore += 4;
-  if (skills.certifications && skills.certifications.length > 0) skillsScore += 4;
-
-  // Education Score (10 points)
-  const education = data.education || [];
-  let educationScore = education.length > 0 ? 10 : 0;
-
-  // Additional Sections Score (10 points)
-  let additionalScore = 0;
-  if (data.projects && data.projects.length > 0) additionalScore += 4;
-  if (data.certifications && data.certifications.length > 0) additionalScore += 3;
-  if (data.awards && data.awards.length > 0) additionalScore += 2;
-  if (data.volunteer && data.volunteer.length > 0) additionalScore += 1;
-
-  score = personalScore + experienceScore + skillsScore + educationScore + additionalScore;
-  sectionCompleteness = (score / 100) * 100;
-
-  // Calculate keyword density
-  const allText = JSON.stringify(data).toLowerCase();
-  const commonKeywords = [
-    'managed', 'developed', 'implemented', 'led', 'created', 'improved',
-    'increased', 'reduced', 'optimized', 'collaborated', 'designed'
-  ];
-  
-  const keywordCount = commonKeywords.filter(keyword => allText.includes(keyword)).length;
-  keywordDensity = (keywordCount / commonKeywords.length) * 100;
-
-  // Calculate readability score
-  const summaryLength = personalInfo.summary ? personalInfo.summary.length : 0;
-  const avgDescriptionLength = experience.length > 0 
-    ? experience.reduce((sum, exp) => sum + (exp.description ? exp.description.length : 0), 0) / experience.length
-    : 0;
-  
-  readabilityScore = Math.min(100, (summaryLength / 200) * 50 + (avgDescriptionLength / 300) * 50);
-
-  return {
-    score: Math.round(score),
-    keywordDensity: Math.round(keywordDensity),
-    sectionCompleteness: Math.round(sectionCompleteness),
-    readabilityScore: Math.round(readabilityScore),
-    suggestions
-  };
-}
-
-function calculateConfidenceMetrics(data: any): ConfidenceMetrics {
-  const getConfidence = (obj: any) => obj?.confidence || 0.8;
-  
-  return {
-    overall: data.confidenceMetrics?.overall || 0.85,
-    personalInfo: getConfidence(data.personalInfo),
-    experience: data.experience?.length > 0 
-      ? data.experience.reduce((sum: number, exp: any) => sum + getConfidence(exp), 0) / data.experience.length
-      : 0.5,
-    education: data.education?.length > 0
-      ? data.education.reduce((sum: number, edu: any) => sum + getConfidence(edu), 0) / data.education.length  
-      : 0.5,
-    skills: getConfidence(data.skills),
-    sections: data.confidenceMetrics?.sections || {}
-  };
-}
-
-function generateOptimizationSuggestions(data: any, ats: ATSOptimization) {
-  const suggestions = [...ats.suggestions];
-
-  // Add keyword suggestions
-  if (ats.keywordDensity < 60) {
-    suggestions.push({
-      category: 'keywords',
-      priority: 'medium',
-      issue: 'Low keyword density',
-      suggestion: 'Add more action verbs and industry-specific keywords',
-      impact: 15
-    });
-  }
-
-  // Add structure suggestions
-  if (!data.personalInfo?.summary) {
-    suggestions.push({
-      category: 'structure',
-      priority: 'high',
-      issue: 'Missing professional summary',
-      suggestion: 'Add a compelling professional summary (2-3 sentences)',
-      impact: 10
-    });
-  }
-
-  return suggestions.sort((a, b) => {
-    const priorityOrder = { high: 3, medium: 2, low: 1 };
-    return priorityOrder[b.priority] - priorityOrder[a.priority] || b.impact - a.impact;
-  });
-}
-
-function getDefaultResumeStructure() {
-  return {
-    personalInfo: {
-      fullName: '',
-      email: '',
-      phone: '',
-      location: '',
-      summary: '',
-      confidence: 0.5
-    },
-    experience: [],
-    education: [],
-    skills: {
-      technical: {},
-      soft: [],
-      languages: [],
-      certifications: []
-    },
-    projects: [],
-    certifications: [],
-    awards: [],
-    volunteer: [],
-    sectionStructure: {
-      detectedSections: [],
-      sectionBoundaries: {},
-      formatMetadata: {
-        hasBulletPoints: false,
-        indentationLevel: 0,
-        fontHints: [],
-        layoutType: 'unknown'
-      }
-    },
-    confidenceMetrics: {
-      overall: 0.5,
-      personalInfo: 0.5,
-      experience: 0.5,
-      education: 0.5,
-      skills: 0.5,
-      sections: {}
-    }
-  };
-}
