@@ -1,7 +1,7 @@
-import { EnhancedResumeBuilder } from "@/components/resume/EnhancedResumeBuilder";
+import { SimpleResumeBuilder } from "@/components/resume/SimpleResumeBuilder";
 
 const UploadResume = () => {
-  return <EnhancedResumeBuilder />;
+  return <SimpleResumeBuilder />;
 };
 
 export default UploadResume;
