@@ -14,7 +14,6 @@ import {
   Settings, 
   Upload, 
   Download, 
-  Sync,
   Shield,
   Zap,
   Building,
@@ -225,7 +224,7 @@ export const ATSIntegrationHub: React.FC = () => {
           disabled={isSyncing}
           className="flex items-center gap-2"
         >
-          <Sync className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
           {isSyncing ? 'Syncing...' : 'Sync All'}
         </Button>
       </div>
@@ -503,7 +502,7 @@ export const ATSIntegrationHub: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Sync className="h-5 w-5" />
+                  <RefreshCw className="h-5 w-5" />
                   Sync Settings
                 </CardTitle>
                 <CardDescription>
