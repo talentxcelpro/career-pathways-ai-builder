@@ -150,11 +150,26 @@ async function processEmailQueue(): Promise<{ processed: number; sent: number; f
 Deno.serve(async (req) => {
   console.log('Email queue processor request received:', req.method, req.url);
 
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Parse request body if present
+    let requestData = {};
+    if (req.method === 'POST') {
+      try {
+        const body = await req.text();
+        if (body) {
+          requestData = JSON.parse(body);
+        }
+      } catch (parseError) {
+        console.log('No valid JSON body, proceeding with default processing');
+      }
+    }
+
+    console.log('Processing email queue with data:', requestData);
     const result = await processEmailQueue();
     
     return new Response(JSON.stringify({
@@ -171,7 +186,7 @@ Deno.serve(async (req) => {
     
     return new Response(JSON.stringify({
       success: false,
-      error: error.message
+      error: error.message || 'Unknown error occurred'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
