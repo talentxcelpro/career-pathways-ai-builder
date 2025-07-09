@@ -41,7 +41,7 @@ async function sendEmailViaSendGrid(email: QueuedEmail): Promise<{ success: bool
       },
       body: JSON.stringify({
         personalizations: [{ to: [{ email: email.to_email }] }],
-        from: { email: 'noreply@talentxcel.in', name: "TalentXcel" },
+        from: { email: 'recruit@talentxcel.co.in', name: "TalentXcel" },
         subject: email.subject,
         content: [{ type: 'text/html', value: email.html_content }],
       }),
