@@ -177,6 +177,7 @@ export class EnhancedResumeProcessor {
       // Clean and validate if we have text
       if (extractedText) {
         extractedText = this.textExtractor.cleanText(extractedText);
+        extractedText = this.textExtractor.preprocessForAI(extractedText);
         extractedText = this.enhanceTextForAI(extractedText);
         
         // Check text quality

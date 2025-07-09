@@ -141,7 +141,7 @@ export class ResumeTextExtractor {
   }
 
   /**
-   * Clean extracted text
+   * Clean and structure extracted text for better AI parsing
    */
   cleanText(text: string): string {
     return text
@@ -149,6 +149,37 @@ export class ResumeTextExtractor {
       .replace(/[^\x20-\x7E\n\r\t]/g, ' ') // Keep only printable ASCII + whitespace
       .replace(/\s+/g, ' ') // Normalize whitespace
       .replace(/\n\s*\n/g, '\n') // Remove empty lines
+      .replace(/\t+/g, ' ') // Convert tabs to spaces
+      .replace(/(\r\n|\r)/g, '\n') // Normalize line endings
       .trim();
+  }
+
+  /**
+   * Enhanced text preprocessing for better AI extraction
+   */
+  preprocessForAI(text: string): string {
+    const cleaned = this.cleanText(text);
+    
+    // Add section markers if they're missing
+    let enhanced = cleaned;
+    
+    // Common section headers that might be missing proper formatting
+    const sectionPatterns = [
+      { pattern: /\b(summary|profile|objective)\b/gi, replacement: '\n\nSUMMARY:\n' },
+      { pattern: /\b(experience|employment|work history)\b/gi, replacement: '\n\nEXPERIENCE:\n' },
+      { pattern: /\b(education|academic)\b/gi, replacement: '\n\nEDUCATION:\n' },
+      { pattern: /\b(skills|competencies|technical skills)\b/gi, replacement: '\n\nSKILLS:\n' },
+      { pattern: /\b(certifications|certificates)\b/gi, replacement: '\n\nCERTIFICATIONS:\n' },
+      { pattern: /\b(projects|portfolio)\b/gi, replacement: '\n\nPROJECTS:\n' }
+    ];
+
+    // Only apply section markers if the text doesn't already have clear structure
+    if (!enhanced.includes('SUMMARY:') && !enhanced.includes('EXPERIENCE:')) {
+      sectionPatterns.forEach(({ pattern, replacement }) => {
+        enhanced = enhanced.replace(pattern, replacement);
+      });
+    }
+
+    return enhanced;
   }
 }

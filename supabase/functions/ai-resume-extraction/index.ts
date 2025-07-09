@@ -21,15 +21,23 @@ serve(async (req) => {
 
     console.log('Processing resume extraction:', { fileName, fileType, extractionLevel, textLength: text.length });
 
-    const systemPrompt = `You are an advanced resume parsing AI. Extract and structure comprehensive resume data from the provided text.
+    const systemPrompt = `You are an expert resume parser with advanced text analysis capabilities. Your job is to extract structured data from resumes and improve incomplete sections.
 
 CRITICAL REQUIREMENTS:
-1. Extract ONLY information that exists in the text
-2. DO NOT generate or fabricate information
+1. Extract ALL available information from the text
+2. For missing or incomplete sections, generate professional content based on context
 3. Return valid JSON with the exact structure provided
-4. Use confidence scores (0.0-1.0) based on text clarity
-5. Parse technical skills separately by category
-6. Extract quantifiable achievements with numbers/percentages
+4. Use confidence scores (0.0-1.0): 1.0 for extracted data, 0.7 for AI-generated content
+5. Categorize technical skills by type (programming, frameworks, tools, etc.)
+6. Convert all responsibilities into achievement-oriented bullet points
+7. If sections are empty, generate appropriate content based on available context
+
+ENHANCEMENT RULES:
+- Transform basic job descriptions into achievement-focused bullet points
+- Add quantifiable metrics where logical (e.g., "managed team" → "managed team of 5+ members")
+- Standardize formatting and professional language
+- Generate missing summaries based on experience and skills
+- Ensure ATS optimization with relevant keywords
 
 Return a JSON object with this EXACT structure:
 {
