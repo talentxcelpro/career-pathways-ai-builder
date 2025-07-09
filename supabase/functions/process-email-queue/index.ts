@@ -70,7 +70,7 @@ async function processEmailQueue(): Promise<{ processed: number; sent: number; f
     .from('email_queue_simple')
     .select('*')
     .eq('status', 'pending')
-    .lte('retry_count', supabase.raw('max_retries'))
+    .filter('retry_count', 'lte', 'max_retries')
     .order('created_at', { ascending: true })
     .limit(10); // Process up to 10 emails at a time
 
