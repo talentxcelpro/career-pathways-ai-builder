@@ -1,11 +1,22 @@
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
+console.log('Function starting...');
 
-serve(async (req) => {
-  return new Response(JSON.stringify({ message: 'Hello from send-email function!' }), {
-    headers: { 
-      'Content-Type': 'application/json',
+Deno.serve(async (req) => {
+  console.log('Request received:', req.method, req.url);
+  
+  if (req.method === 'OPTIONS') {
+    return new Response('OK', {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+      },
+    });
+  }
+
+  return new Response('Function is working!', {
+    headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+      'Content-Type': 'text/plain',
     },
   });
 });
