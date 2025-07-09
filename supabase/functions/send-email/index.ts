@@ -127,6 +127,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const { to, subject, template, data = {}, immediate = false }: EmailRequest = await req.json();
+    console.log('Received email request:', { to, subject, template, immediate });
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -136,12 +137,18 @@ const handler = async (req: Request): Promise<Response> => {
     if (immediate) {
       // Send email immediately using SendGrid
       const sendGridApiKey = Deno.env.get('SENDGRID_API_KEY');
+      console.log('SendGrid API Key configured:', !!sendGridApiKey);
+      
       if (!sendGridApiKey) {
+        console.error('SENDGRID_API_KEY not configured');
         throw new Error('SENDGRID_API_KEY not configured');
       }
 
       const templateHtml = emailTemplates[template as keyof typeof emailTemplates]?.(data);
+      console.log('Template found:', !!templateHtml, 'Template type:', template);
+      
       if (!templateHtml) {
+        console.error(`Template '${template}' not found. Available templates:`, Object.keys(emailTemplates));
         throw new Error(`Template '${template}' not found`);
       }
 
@@ -157,6 +164,8 @@ const handler = async (req: Request): Promise<Response> => {
         }]
       };
 
+      console.log('Sending email via SendGrid to:', to);
+      
       const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
         method: 'POST',
         headers: {
@@ -167,9 +176,16 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
       if (!response.ok) {
-        const error = await response.text();
-        throw new Error(`SendGrid API error: ${error}`);
+        const errorText = await response.text();
+        console.error('SendGrid API error:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText
+        });
+        throw new Error(`SendGrid API error (${response.status}): ${errorText}`);
       }
+      
+      console.log('Email sent successfully via SendGrid');
 
       return new Response(JSON.stringify({ success: true, message: 'Email sent immediately' }), {
         status: 200,
@@ -177,6 +193,8 @@ const handler = async (req: Request): Promise<Response> => {
       });
     } else {
       // Queue email for later processing
+      console.log('Queuing email for later processing');
+      
       const { error } = await supabase
         .from('email_queue')
         .insert({
@@ -188,8 +206,11 @@ const handler = async (req: Request): Promise<Response> => {
         });
 
       if (error) {
+        console.error('Error queuing email:', error);
         throw error;
       }
+      
+      console.log('Email queued successfully');
 
       return new Response(JSON.stringify({ success: true, message: 'Email queued successfully' }), {
         status: 200,
