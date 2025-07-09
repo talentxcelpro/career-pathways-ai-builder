@@ -10,6 +10,7 @@ import { SystemHealthWidget } from '@/components/admin/dashboard/SystemHealthWid
 import { QuickActionsPanel } from '@/components/admin/QuickActionsPanel';
 import { PlatformOverviewWidget } from '@/components/admin/dashboard/PlatformOverviewWidget';
 import EmailSystemTest from '@/components/admin/EmailSystemTest';
+import { EmailQueueManager } from '@/components/admin/EmailQueueManager';
 import { useAdminStats } from '@/hooks/useAdminStats';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
@@ -61,8 +62,11 @@ const AdminDashboard = () => {
         </div>
 
         {/* Email System Test Section */}
-        <div className="mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
           <EmailSystemTest />
+          <div className="lg:col-span-2">
+            <EmailQueueManager />
+          </div>
         </div>
       </div>
     </UnifiedAdminLayout>
