@@ -47,8 +47,8 @@ export const useEmailService = (): EmailServiceHook => {
         html = '<p>Thank you for using TalentXcel!</p>';
       }
       
-      // Use Supabase Edge Function with simplified format
-      const { data, error } = await supabase.functions.invoke('send-email', {
+      // Use the new email-sender function
+      const { data, error } = await supabase.functions.invoke('email-sender', {
         body: {
           to: emailData.to,
           subject: emailData.subject,
