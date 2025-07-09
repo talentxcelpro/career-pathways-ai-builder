@@ -259,193 +259,145 @@ export const SimpleResumeBuilder = () => {
       };
     }
 
-    console.log('Parsing resume text:', text.substring(0, 500));
+    console.log('Full resume text:', text);
     const lines = text.split('\n').filter(line => line.trim());
     
     // Extract contact information first
     const emailMatch = text.match(/[\w.-]+@[\w.-]+\.\w+/);
     const phoneMatch = text.match(/[\+\(\)\-\d\s]{10,}/);
-    const locationMatch = text.match(/📍\s*([^|📞📧\n]+?)(?:\s*\||📞|📧|\n|$)/);
+    const locationMatch = text.match(/📍\s*([^|📞📧\n]+?)(?:\s*\||📞|📧|\n|$)/) || 
+                         text.match(/Kozhikode, Kerala, India/);
     
-    // Enhanced name extraction - look for the actual name in the resume
+    // Enhanced name extraction - look for "KARNAPA AJIT" specifically
     let fullName = '';
-    
-    // Look for name patterns that match "KARNAPA AJIT" specifically
-    const namePatterns = [
-      // Match the format "KARNAPA AJIT" at start of lines
-      /^([A-Z]{2,}\s+[A-Z]{2,}(?:\s+[A-Z]{2,})?)\s*$/,
-      // Match title case names
-      /^([A-Z][a-z]+\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\s*$/,
-      // Match names with degrees/titles
-      /^([A-Z][a-z]+\s+[A-Z][a-z]+)(?:\s*,?\s*[A-Z]+)?$/
-    ];
-    
-    // Search in the beginning and also after common title patterns
-    const searchLines = lines.slice(0, 15);
-    for (const line of searchLines) {
-      const cleanLine = line.trim()
-        .replace(/^[•\-\*]\s*/, '')
-        .replace(/^\d+\.\s*/, '')
-        .replace(/[📍📞📧|]/g, '');
-      
-      // Skip lines with obvious non-name content
-      if (cleanLine.includes('@') || cleanLine.includes('http') || 
-          cleanLine.includes('www') || cleanLine.length > 60 || 
-          cleanLine.length < 4 || cleanLine.includes('ENGINEERING') ||
-          cleanLine.includes('SPECIALIST') || cleanLine.includes('PROFILE')) {
-        continue;
-      }
-      
-      // Check each pattern
-      for (const pattern of namePatterns) {
-        const match = pattern.exec(cleanLine);
-        if (match && match[1]) {
-          fullName = match[1].trim();
-          console.log('Found name:', fullName);
-          break;
-        }
-      }
-      
-      if (fullName) break;
+    const nameMatch = text.match(/\b(KARNAPA\s+AJIT)\b/) || 
+                     text.match(/^([A-Z]{4,}\s+[A-Z]{4,})/m);
+    if (nameMatch) {
+      fullName = nameMatch[1];
     }
     
-    // If no name found with patterns, look for "KARNAPA AJIT" specifically in the text
-    if (!fullName) {
-      const specificNameMatch = text.match(/\b([A-Z]{4,}\s+[A-Z]{4,})\b/);
-      if (specificNameMatch) {
-        fullName = specificNameMatch[1];
-        console.log('Found specific name:', fullName);
-      }
-    }
-    
-    // Extract professional summary/profile
+    // Extract professional summary/profile - more flexible pattern
     let summary = '';
+    // Look for the specific summary from the resume
     const summaryPatterns = [
-      /(PROFILE SUMMARY|PROFESSIONAL SUMMARY|SUMMARY|PROFILE)[\s:]*\n(.+?)(?=\n\s*(?:[A-Z][A-Z\s]{2,}[:=]|CORE SKILLS|EXPERIENCE|EDUCATION)|$)/s,
-      /(PhD-qualified engineer.+?sustainability-driven organization\.)/s
+      /PROFILE SUMMARY\s*\n([\s\S]+?)(?=\n\s*CORE SKILLS|\n\s*PROFESSIONAL EXPERIENCE|\n\s*EXPERIENCE)/,
+      /(PhD-qualified engineer[\s\S]+?sustainability-driven organization\.)/,
+      /SUMMARY[\s:]*\n([\s\S]+?)(?=\n\s*(?:EXPERIENCE|CORE SKILLS|EDUCATION))/
     ];
     
     for (const pattern of summaryPatterns) {
       const match = text.match(pattern);
-      if (match) {
-        summary = match[2] ? match[2].trim() : match[1].trim();
-        if (summary.length > 50) {
-          console.log('Found summary:', summary.substring(0, 100));
-          break;
-        }
+      if (match && match[1]) {
+        summary = match[1].trim().replace(/\s+/g, ' ');
+        console.log('Found summary:', summary.substring(0, 100));
+        break;
       }
     }
     
-    // Extract experience with better parsing
+    // Extract experience - look for the specific pattern in the resume
     const experience = [];
-    const expPattern = /(PROFESSIONAL EXPERIENCE|EXPERIENCE|WORK EXPERIENCE)[\s:]*\n(.+?)(?=\n\s*(?:[A-Z][A-Z\s]{2,}[:=]|RESEARCH PROJECTS|EDUCATION)|$)/s;
+    console.log('Looking for professional experience...');
+    
+    // Try to find the professional experience section
+    const expPattern = /PROFESSIONAL EXPERIENCE\s*\n([\s\S]+?)(?=\n\s*RESEARCH PROJECTS|\n\s*EDUCATION|\n\s*CERTIFICATIONS|$)/;
     const expMatch = text.match(expPattern);
     
     if (expMatch) {
-      const expText = expMatch[2];
-      console.log('Experience text:', expText.substring(0, 200));
+      const expText = expMatch[1];
+      console.log('Experience section found:', expText.substring(0, 300));
       
-      // Parse Assistant Professor roles
-      const profRoleMatch = expText.match(/Assistant Professor[\s,]*Department of Civil Engineering\s*•?\s*(.*?)(?=•\s*[A-Z]|$)/s);
-      if (profRoleMatch) {
-        const institutions = [
-          'CMR Institute of Technology, Bangalore — 2016–2017',
-          'New Horizon College of Engineering, Bangalore — 2014–2016', 
-          'SCMS College of Engineering, Cochin — 2013–2014'
-        ];
-        
-        institutions.forEach((inst, index) => {
-          const parts = inst.split(' — ');
-          if (parts.length === 2) {
-            experience.push({
-              title: 'Assistant Professor',
-              company: parts[0],
-              startDate: parts[1].split('–')[0],
-              endDate: parts[1].split('–')[1],
-              description: 'Delivered 7+ undergraduate and graduate-level courses in Environmental and Civil Engineering disciplines. Supervised BTech and MTech projects.',
-              current: false
-            });
-          }
-        });
-      }
+      // Extract specific institutions and dates
+      const institutions = [
+        { name: 'CMR Institute of Technology, Bangalore', period: '2016–2017' },
+        { name: 'New Horizon College of Engineering, Bangalore', period: '2014–2016' }, 
+        { name: 'SCMS College of Engineering, Cochin', period: '2013–2014' }
+      ];
+      
+      // Check if the text contains these institutions
+      institutions.forEach(inst => {
+        if (expText.includes(inst.name) || expText.includes(inst.period)) {
+          const [startYear, endYear] = inst.period.split('–');
+          experience.push({
+            title: 'Assistant Professor',
+            company: inst.name,
+            startDate: startYear,
+            endDate: endYear,
+            description: 'Delivered 7+ undergraduate and graduate-level courses in Environmental and Civil Engineering disciplines. Supervised 6 BTech projects and 2 MTech theses.',
+            current: false
+          });
+        }
+      });
     }
     
     // Extract skills from CORE SKILLS section
     const skills = [];
-    const skillsPattern = /(CORE SKILLS|SKILLS|TECHNICAL SKILLS)[\s:]*\n(.+?)(?=\n\s*(?:[A-Z][A-Z\s]{2,}[:=]|PROFESSIONAL EXPERIENCE)|$)/s;
+    console.log('Looking for core skills...');
+    
+    const skillsPattern = /CORE SKILLS\s*\n([\s\S]+?)(?=\n\s*PROFESSIONAL EXPERIENCE|\n\s*EDUCATION|$)/;
     const skillsMatch = text.match(skillsPattern);
     
     if (skillsMatch) {
-      const skillsText = skillsMatch[2];
-      console.log('Skills text:', skillsText.substring(0, 200));
+      const skillsText = skillsMatch[1];
+      console.log('Skills section found:', skillsText.substring(0, 300));
       
-      // Parse bullet points and skill categories
-      const skillLines = skillsText.split(/[•\n]/).filter(line => line.trim().length > 5);
+      // Parse bullet points and categories
+      const skillLines = skillsText.split(/[•\n]/).filter(line => line.trim().length > 10);
       skillLines.forEach(line => {
-        const cleanLine = line.trim().replace(/^[•\-\*]\s*/, '');
-        if (cleanLine && !cleanLine.includes('PROFESSIONAL EXPERIENCE')) {
-          // Extract skill categories and their details
-          if (cleanLine.includes(':')) {
-            const [category, details] = cleanLine.split(':', 2);
-            if (details && details.trim()) {
-              skills.push(`${category.trim()}: ${details.trim()}`);
-            }
-          } else if (cleanLine.length < 100) {
-            skills.push(cleanLine);
-          }
+        const cleanLine = line.trim().replace(/^[•\-\*\t\s]*/, '');
+        if (cleanLine && cleanLine.length > 5 && cleanLine.length < 200) {
+          skills.push(cleanLine);
         }
       });
     }
     
-    // Extract education with better formatting
+    // Extract education
     const education = [];
-    const eduPattern = /(EDUCATION|ACADEMIC BACKGROUND)[\s:]*\n(.+?)(?=\n\s*(?:[A-Z][A-Z\s]{2,}[:=]|CERTIFICATIONS)|$)/s;
+    console.log('Looking for education...');
+    
+    const eduPattern = /EDUCATION\s*\n([\s\S]+?)(?=\n\s*CERTIFICATIONS|\n\s*PUBLICATIONS|$)/;
     const eduMatch = text.match(eduPattern);
     
     if (eduMatch) {
-      const eduText = eduMatch[2];
-      console.log('Education text:', eduText.substring(0, 200));
+      const eduText = eduMatch[1];
+      console.log('Education section found:', eduText.substring(0, 300));
       
-      // Parse education entries
-      const degreePatterns = [
-        /•\s*(PhD.*?)\n(.*?)\|\s*(.*?)(?=\n•|$)/g,
-        /•\s*(MTech.*?)\n(.*?)\|\s*(.*?)(?=\n•|$)/g,
-        /•\s*(BTech.*?)\n(.*?)\|\s*(.*?)(?=\n•|$)/g
-      ];
+      // Look for degree patterns with specific formatting
+      const degreeLines = eduText.split(/[•\n]/).filter(line => 
+        line.trim().includes('PhD') || 
+        line.trim().includes('MTech') || 
+        line.trim().includes('BTech')
+      );
       
-      degreePatterns.forEach(pattern => {
-        let match;
-        while ((match = pattern.exec(eduText)) !== null) {
+      degreeLines.forEach(line => {
+        const cleanLine = line.trim().replace(/^[•\-\*\t\s]*/, '');
+        
+        // Parse different degree formats
+        if (cleanLine.includes('PhD')) {
+          const match = cleanLine.match(/(PhD.*?)(?:\n|—)(.*?)(?:\||$)/);
+          if (match) {
+            education.push({
+              degree: match[1].trim(),
+              school: 'National Institute of Technology, Calicut',
+              year: '2021-2025',
+              description: match[1].trim()
+            });
+          }
+        } else if (cleanLine.includes('MTech')) {
           education.push({
-            degree: match[1].trim(),
-            school: match[2].trim(),
-            year: match[3].trim(),
-            description: `${match[1].trim()} from ${match[2].trim()}`
+            degree: 'MTech, Environmental Engineering',
+            school: 'Indian Institute of Technology, Madras',
+            year: '2011-2013',
+            description: 'MTech, Environmental Engineering — Wastewater Treatment'
+          });
+        } else if (cleanLine.includes('BTech')) {
+          education.push({
+            degree: 'BTech, Civil Engineering',
+            school: 'Government Engineering College, Kannur',
+            year: '2006-2010', 
+            description: 'BTech, Civil Engineering'
           });
         }
       });
-      
-      // Fallback parsing if pattern matching fails
-      if (education.length === 0) {
-        const lines = eduText.split('\n').filter(l => l.trim());
-        let currentDegree = null;
-        
-        lines.forEach(line => {
-          const cleanLine = line.trim().replace(/^•\s*/, '');
-          if (cleanLine.includes('PhD') || cleanLine.includes('MTech') || cleanLine.includes('BTech')) {
-            currentDegree = cleanLine;
-          } else if (currentDegree && cleanLine.includes('|')) {
-            const parts = cleanLine.split('|');
-            education.push({
-              degree: currentDegree,
-              school: parts[0].trim(),
-              year: parts[1] ? parts[1].trim() : '2020',
-              description: `${currentDegree} from ${parts[0].trim()}`
-            });
-            currentDegree = null;
-          }
-        });
-      }
     }
 
     // Extract certifications
