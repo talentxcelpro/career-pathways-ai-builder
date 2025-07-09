@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface EmailData {
   to: string;
@@ -21,18 +22,13 @@ export const useEmailService = (): EmailServiceHook => {
   const sendEmail = async (emailData: EmailData): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(emailData),
+      // Use Supabase Edge Function instead of API route
+      const { data, error } = await supabase.functions.invoke('send-email', {
+        body: emailData,
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to send email');
+      if (error) {
+        throw new Error(error.message || 'Failed to send email');
       }
 
       const message = emailData.immediate ? 'Email sent successfully!' : 'Email queued successfully!';
