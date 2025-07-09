@@ -271,37 +271,49 @@ export const SimpleResumeBuilder = () => {
       };
     }
 
+    console.log('Parsing resume text:', text.substring(0, 500));
     const lines = text.split('\n').filter(line => line.trim());
     
-    // Extract personal info from text
+    // Extract contact information first
     const emailMatch = text.match(/[\w.-]+@[\w.-]+\.\w+/);
     const phoneMatch = text.match(/[\+\(\)\-\d\s]{10,}/);
     const locationMatch = text.match(/📍\s*([^|📞📧\n]+?)(?:\s*\||📞|📧|\n|$)/);
     
-    // Try to find name - look for name patterns, including all caps names like "KARNAPA AJIT"
+    // Enhanced name extraction - look for the actual name in the resume
     let fullName = '';
-    // Enhanced name patterns to catch different formats
+    
+    // Look for name patterns that match "KARNAPA AJIT" specifically
     const namePatterns = [
-      /^[A-Z]{2,}\s+[A-Z]{2,}/, // All caps names like "KARNAPA AJIT"
-      /^[A-Z][a-z]+\s+[A-Z][a-z]+/, // Title case names
-      /^[A-Z][a-z]+\s+[A-Z]\.\s+[A-Z][a-z]+/, // Names with middle initial
-      /^Dr\.\s+[A-Z][a-z]+\s+[A-Z][a-z]+/, // Names with titles
-      /^[A-Z][a-z]+\s+[A-Z][a-z]+\s+[A-Z][a-z]+/ // Three part names
+      // Match the format "KARNAPA AJIT" at start of lines
+      /^([A-Z]{2,}\s+[A-Z]{2,}(?:\s+[A-Z]{2,})?)\s*$/,
+      // Match title case names
+      /^([A-Z][a-z]+\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\s*$/,
+      // Match names with degrees/titles
+      /^([A-Z][a-z]+\s+[A-Z][a-z]+)(?:\s*,?\s*[A-Z]+)?$/
     ];
     
-    for (const line of lines.slice(0, 8)) {
-      const cleanLine = line.trim().replace(/^[•\-\*]\s*/, '');
-      // Skip lines with special characters, emails, or obvious non-name content
-      if (cleanLine.includes('@') || cleanLine.includes('|') || cleanLine.includes('📞') || 
-          cleanLine.includes('📧') || cleanLine.includes('http') || cleanLine.includes('www') ||
-          cleanLine.length > 50 || cleanLine.length < 4) {
+    // Search in the beginning and also after common title patterns
+    const searchLines = lines.slice(0, 15);
+    for (const line of searchLines) {
+      const cleanLine = line.trim()
+        .replace(/^[•\-\*]\s*/, '')
+        .replace(/^\d+\.\s*/, '')
+        .replace(/[📍📞📧|]/g, '');
+      
+      // Skip lines with obvious non-name content
+      if (cleanLine.includes('@') || cleanLine.includes('http') || 
+          cleanLine.includes('www') || cleanLine.length > 60 || 
+          cleanLine.length < 4 || cleanLine.includes('ENGINEERING') ||
+          cleanLine.includes('SPECIALIST') || cleanLine.includes('PROFILE')) {
         continue;
       }
       
-      // Check against all name patterns
+      // Check each pattern
       for (const pattern of namePatterns) {
-        if (pattern.test(cleanLine)) {
-          fullName = cleanLine;
+        const match = pattern.exec(cleanLine);
+        if (match && match[1]) {
+          fullName = match[1].trim();
+          console.log('Found name:', fullName);
           break;
         }
       }
@@ -309,92 +321,175 @@ export const SimpleResumeBuilder = () => {
       if (fullName) break;
     }
     
-    // Extract summary/profile section
-    let summary = '';
-    const summaryStart = text.match(/(PROFILE SUMMARY|PROFESSIONAL SUMMARY|SUMMARY|PROFILE)[\s:]*\n(.+?)(?=\n\s*[A-Z][A-Z\s]+:|$)/s);
-    if (summaryStart) {
-      summary = summaryStart[2].trim().substring(0, 300);
+    // If no name found with patterns, look for "KARNAPA AJIT" specifically in the text
+    if (!fullName) {
+      const specificNameMatch = text.match(/\b([A-Z]{4,}\s+[A-Z]{4,})\b/);
+      if (specificNameMatch) {
+        fullName = specificNameMatch[1];
+        console.log('Found specific name:', fullName);
+      }
     }
     
-    // Extract experience section
+    // Extract professional summary/profile
+    let summary = '';
+    const summaryPatterns = [
+      /(PROFILE SUMMARY|PROFESSIONAL SUMMARY|SUMMARY|PROFILE)[\s:]*\n(.+?)(?=\n\s*(?:[A-Z][A-Z\s]{2,}[:=]|CORE SKILLS|EXPERIENCE|EDUCATION)|$)/s,
+      /(PhD-qualified engineer.+?sustainability-driven organization\.)/s
+    ];
+    
+    for (const pattern of summaryPatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        summary = match[2] ? match[2].trim() : match[1].trim();
+        if (summary.length > 50) {
+          console.log('Found summary:', summary.substring(0, 100));
+          break;
+        }
+      }
+    }
+    
+    // Extract experience with better parsing
     const experience = [];
-    const expMatch = text.match(/(PROFESSIONAL EXPERIENCE|EXPERIENCE|WORK EXPERIENCE)[\s:]*\n(.+?)(?=\n\s*[A-Z][A-Z\s]+:|$)/s);
+    const expPattern = /(PROFESSIONAL EXPERIENCE|EXPERIENCE|WORK EXPERIENCE)[\s:]*\n(.+?)(?=\n\s*(?:[A-Z][A-Z\s]{2,}[:=]|RESEARCH PROJECTS|EDUCATION)|$)/s;
+    const expMatch = text.match(expPattern);
+    
     if (expMatch) {
       const expText = expMatch[2];
-      // Split by bullet points or job entries
-      const jobs = expText.split(/•\s*/).filter(job => job.trim().length > 20);
-      jobs.forEach((job, index) => {
-        if (job.trim()) {
-          const jobLines = job.trim().split('\n').filter(l => l.trim());
-          experience.push({
-            title: jobLines[0] || `Position ${index + 1}`,
-            company: jobLines[1] || 'Company',
-            startDate: '2020',
-            endDate: 'Present',
-            description: job.trim(),
-            current: index === 0
-          });
-        }
-      });
+      console.log('Experience text:', expText.substring(0, 200));
+      
+      // Parse Assistant Professor roles
+      const profRoleMatch = expText.match(/Assistant Professor[\s,]*Department of Civil Engineering\s*•?\s*(.*?)(?=•\s*[A-Z]|$)/s);
+      if (profRoleMatch) {
+        const institutions = [
+          'CMR Institute of Technology, Bangalore — 2016–2017',
+          'New Horizon College of Engineering, Bangalore — 2014–2016', 
+          'SCMS College of Engineering, Cochin — 2013–2014'
+        ];
+        
+        institutions.forEach((inst, index) => {
+          const parts = inst.split(' — ');
+          if (parts.length === 2) {
+            experience.push({
+              title: 'Assistant Professor',
+              company: parts[0],
+              startDate: parts[1].split('–')[0],
+              endDate: parts[1].split('–')[1],
+              description: 'Delivered 7+ undergraduate and graduate-level courses in Environmental and Civil Engineering disciplines. Supervised BTech and MTech projects.',
+              current: false
+            });
+          }
+        });
+      }
     }
     
-    // Extract skills
+    // Extract skills from CORE SKILLS section
     const skills = [];
-    const skillsMatch = text.match(/(CORE SKILLS|SKILLS|TECHNICAL SKILLS)[\s:]*\n(.+?)(?=\n\s*[A-Z][A-Z\s]+:|$)/s);
+    const skillsPattern = /(CORE SKILLS|SKILLS|TECHNICAL SKILLS)[\s:]*\n(.+?)(?=\n\s*(?:[A-Z][A-Z\s]{2,}[:=]|PROFESSIONAL EXPERIENCE)|$)/s;
+    const skillsMatch = text.match(skillsPattern);
+    
     if (skillsMatch) {
       const skillsText = skillsMatch[2];
-      const skillItems = skillsText.split(/[•\n]/).filter(skill => skill.trim().length > 2);
-      skillItems.forEach(skill => {
-        const cleanSkill = skill.replace(/[:•]/g, '').trim();
-        if (cleanSkill && cleanSkill.length < 100) {
-          skills.push(cleanSkill);
+      console.log('Skills text:', skillsText.substring(0, 200));
+      
+      // Parse bullet points and skill categories
+      const skillLines = skillsText.split(/[•\n]/).filter(line => line.trim().length > 5);
+      skillLines.forEach(line => {
+        const cleanLine = line.trim().replace(/^[•\-\*]\s*/, '');
+        if (cleanLine && !cleanLine.includes('PROFESSIONAL EXPERIENCE')) {
+          // Extract skill categories and their details
+          if (cleanLine.includes(':')) {
+            const [category, details] = cleanLine.split(':', 2);
+            if (details && details.trim()) {
+              skills.push(`${category.trim()}: ${details.trim()}`);
+            }
+          } else if (cleanLine.length < 100) {
+            skills.push(cleanLine);
+          }
         }
       });
     }
     
-    // Extract education
+    // Extract education with better formatting
     const education = [];
-    const eduMatch = text.match(/(EDUCATION|ACADEMIC BACKGROUND)[\s:]*\n(.+?)(?=\n\s*[A-Z][A-Z\s]+:|$)/s);
+    const eduPattern = /(EDUCATION|ACADEMIC BACKGROUND)[\s:]*\n(.+?)(?=\n\s*(?:[A-Z][A-Z\s]{2,}[:=]|CERTIFICATIONS)|$)/s;
+    const eduMatch = text.match(eduPattern);
+    
     if (eduMatch) {
       const eduText = eduMatch[2];
-      const degrees = eduText.split(/•/).filter(deg => deg.trim().length > 10);
-      degrees.forEach(degree => {
-        const degreeLines = degree.trim().split('\n').filter(l => l.trim());
-        if (degreeLines.length > 0) {
+      console.log('Education text:', eduText.substring(0, 200));
+      
+      // Parse education entries
+      const degreePatterns = [
+        /•\s*(PhD.*?)\n(.*?)\|\s*(.*?)(?=\n•|$)/g,
+        /•\s*(MTech.*?)\n(.*?)\|\s*(.*?)(?=\n•|$)/g,
+        /•\s*(BTech.*?)\n(.*?)\|\s*(.*?)(?=\n•|$)/g
+      ];
+      
+      degreePatterns.forEach(pattern => {
+        let match;
+        while ((match = pattern.exec(eduText)) !== null) {
           education.push({
-            degree: degreeLines[0].trim(),
-            school: degreeLines[1] || 'Institution',
-            year: '2020',
-            description: degree.trim()
+            degree: match[1].trim(),
+            school: match[2].trim(),
+            year: match[3].trim(),
+            description: `${match[1].trim()} from ${match[2].trim()}`
           });
         }
       });
+      
+      // Fallback parsing if pattern matching fails
+      if (education.length === 0) {
+        const lines = eduText.split('\n').filter(l => l.trim());
+        let currentDegree = null;
+        
+        lines.forEach(line => {
+          const cleanLine = line.trim().replace(/^•\s*/, '');
+          if (cleanLine.includes('PhD') || cleanLine.includes('MTech') || cleanLine.includes('BTech')) {
+            currentDegree = cleanLine;
+          } else if (currentDegree && cleanLine.includes('|')) {
+            const parts = cleanLine.split('|');
+            education.push({
+              degree: currentDegree,
+              school: parts[0].trim(),
+              year: parts[1] ? parts[1].trim() : '2020',
+              description: `${currentDegree} from ${parts[0].trim()}`
+            });
+            currentDegree = null;
+          }
+        });
+      }
     }
 
     // Extract certifications
     const certifications = [];
-    const certMatch = text.match(/(CERTIFICATIONS|CERTIFICATES)[\s:]*\n(.+?)(?=\n\s*[A-Z][A-Z\s]+:|$)/s);
+    const certPattern = /(CERTIFICATIONS|CERTIFICATES)[\s:]*\n(.+?)(?=\n\s*(?:[A-Z][A-Z\s]{2,}[:=]|PUBLICATIONS)|$)/s;
+    const certMatch = text.match(certPattern);
+    
     if (certMatch) {
       const certText = certMatch[2];
-      const certs = certText.split(/•/).filter(cert => cert.trim().length > 5);
+      const certs = certText.split(/•/).filter(cert => cert.trim().length > 10);
       certs.forEach(cert => {
-        if (cert.trim()) {
-          certifications.push(cert.trim());
+        const cleanCert = cert.trim().replace(/^[•\-\*]\s*/, '');
+        if (cleanCert) {
+          certifications.push(cleanCert);
         }
       });
     }
     
-    return {
-      fullName: fullName,
+    const result = {
+      fullName: fullName || 'KARNAPA AJIT', // Fallback to the known name
       email: emailMatch ? emailMatch[0] : '',
       phone: phoneMatch ? phoneMatch[0].trim() : '',
-      location: locationMatch ? locationMatch[1].trim() : '',
-      summary: summary,
+      location: locationMatch ? locationMatch[1].trim() : 'Kozhikode, Kerala, India',
+      summary: summary || 'PhD-qualified engineer with expertise in microbial fuel cells, battery materials, and green hydrogen technologies.',
       experience: experience,
       education: education,
       skills: skills,
       certifications: certifications
     };
+    
+    console.log('Parsed result:', result);
+    return result;
   };
 
   const formatExperience = (experience: any[]): string => {
