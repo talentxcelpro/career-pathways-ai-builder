@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Camera, Edit, Users2, Eye, Link2 } from 'lucide-react';
+import { Camera, Edit, Users, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { supabase } from '@/integrations/supabase/client';
@@ -64,10 +63,6 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     return 'Professional User';
   };
 
-  const formatTitleCase = (name: string) => {
-    return name.toUpperCase();
-  };
-
   const generateInitials = (profile: any) => {
     const displayName = formatDisplayName(profile);
     const names = displayName.split(' ');
@@ -78,195 +73,117 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   };
 
   return (
-    <TooltipProvider>
-      <Card className="overflow-hidden border-0 shadow-elegant bg-background transition-all duration-300 hover:shadow-glow">
-        {/* Enhanced Banner Section - Taller to prevent overlap */}
-        <div className="relative">
-          <div 
-            className="h-40 bg-gradient-primary relative overflow-hidden"
-            style={{
-              backgroundImage: profile?.banner_url ? `url(${profile.banner_url})` : undefined,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center top'
-            }}
-          >
-            {/* Professional overlay with blur effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-background/10 via-background/20 to-background/30 backdrop-blur-[0.5px]" />
-            
-            {isOwnProfile && (
-              <div className="absolute top-4 right-4 z-10">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="bg-background/10 backdrop-blur-md text-foreground hover:bg-background/20 h-9 px-4 text-sm border border-border/30 rounded-full transition-smooth hover:scale-105 shadow-lg"
-                  onClick={() => {
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = 'image/*';
-                    input.onchange = (e) => {
-                      const file = (e.target as HTMLInputElement).files?.[0];
-                      if (file) handleImageUpload('banner', file);
-                    };
-                    input.click();
-                  }}
-                  disabled={uploading === 'banner'}
-                >
-                  <Camera className="h-4 w-4 mr-2" />
-                  {uploading === 'banner' ? 'Uploading...' : 'Edit Cover'}
-                </Button>
+    <Card className="overflow-hidden border-0 shadow-xl bg-white">
+      {/* Enhanced Banner Section */}
+      <div className="relative">
+        <div 
+          className="h-28 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700"
+          style={{
+            backgroundImage: profile?.banner_url ? `url(${profile.banner_url})` : undefined,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          {/* Subtle overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-black/20" />
+          
+          {isOwnProfile && (
+            <div className="absolute top-2 right-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 h-7 px-2 text-xs border border-white/20"
+                onClick={() => {
+                  const input = document.createElement('input');
+                  input.type = 'file';
+                  input.accept = 'image/*';
+                  input.onchange = (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0];
+                    if (file) handleImageUpload('banner', file);
+                  };
+                  input.click();
+                }}
+                disabled={uploading === 'banner'}
+              >
+                <Camera className="h-3 w-3 mr-1" />
+                {uploading === 'banner' ? 'Uploading...' : 'Edit Cover'}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Enhanced Profile Section */}
+      <CardContent className="p-3 -mt-6 relative">
+        <div className="flex flex-col">
+          {/* Profile Picture and Basic Info */}
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start gap-3">
+              {/* Enhanced Profile Picture */}
+              <div className="relative">
+                <Avatar className="w-20 h-20 border-4 border-white shadow-2xl bg-white ring-4 ring-primary/20">
+                  <AvatarImage src={profile?.profile_picture_url} className="object-cover" />
+                  <AvatarFallback className="text-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold">
+                    {generateInitials(profile)}
+                  </AvatarFallback>
+                </Avatar>
+                {isOwnProfile && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute -bottom-0.5 -right-0.5 h-5 w-5 p-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-md border-2 border-white"
+                    onClick={() => {
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = 'image/*';
+                      input.onchange = (e) => {
+                        const file = (e.target as HTMLInputElement).files?.[0];
+                        if (file) handleImageUpload('avatar', file);
+                      };
+                      input.click();
+                    }}
+                    disabled={uploading === 'avatar'}
+                  >
+                    <Camera className="h-2.5 w-2.5" />
+                  </Button>
+                )}
               </div>
+
+              {/* Profile Info */}
+              <div className="pt-2 flex-1">
+                <h2 className="text-lg font-bold text-gray-900 leading-tight">
+                  {formatDisplayName(profile)}
+                </h2>
+                <p className="text-gray-600 text-xs mb-2 leading-tight">
+                  {profile?.title || 'Director'}
+                </p>
+                
+                {/* Compact Stats */}
+                <div className="flex items-center gap-3 text-xs text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    <span className="font-semibold text-blue-600">{stats.connections}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Eye className="h-3 w-3" />
+                    <span className="font-semibold text-blue-600">{stats.profileViews}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Edit Button */}
+            {isOwnProfile && (
+              <Link to="/profile/edit">
+                <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
+                  <Edit className="h-3 w-3 mr-1" />
+                  Edit
+                </Button>
+              </Link>
             )}
           </div>
         </div>
-
-        {/* Enhanced Profile Section - Reduced overlap */}
-        <CardContent className="p-6 -mt-12 relative">
-          <div className="flex flex-col">
-            {/* Profile Picture and Enhanced Info */}
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex items-start gap-6">
-                {/* Enhanced Profile Picture with Glow Effect */}
-                <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-primary rounded-full opacity-75 blur-sm group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <Avatar className="relative w-28 h-28 border-4 border-background shadow-2xl bg-background ring-2 ring-primary/30 transition-all duration-300 group-hover:ring-primary/50 group-hover:scale-105">
-                    <AvatarImage 
-                      src={profile?.profile_picture_url} 
-                      className="object-cover object-center"
-                      style={{ objectPosition: 'center center' }}
-                    />
-                    <AvatarFallback className="text-2xl bg-gradient-primary text-primary-foreground font-bold">
-                      {generateInitials(profile)}
-                    </AvatarFallback>
-                  </Avatar>
-                  {isOwnProfile && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute -bottom-2 -right-2 h-8 w-8 p-0 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg border-3 border-background transition-smooth hover:scale-110"
-                      onClick={() => {
-                        const input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = 'image/*';
-                        input.onchange = (e) => {
-                          const file = (e.target as HTMLInputElement).files?.[0];
-                          if (file) handleImageUpload('avatar', file);
-                        };
-                        input.click();
-                      }}
-                      disabled={uploading === 'avatar'}
-                    >
-                      <Camera className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-
-                {/* Enhanced Profile Info with Better Spacing */}
-                <div className="pt-4 flex-1 min-w-0">
-                  {/* Name and Title - Fixed text overflow */}
-                  <div className="mb-3">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight tracking-tight truncate">
-                      {formatTitleCase(formatDisplayName(profile).split(' ')[0])} | {profile?.title || 'Director, Product Strategy'}
-                    </h2>
-                  </div>
-                  
-                  {/* Enhanced Headline */}
-                  <div className="mb-4">
-                    <p className="text-sm sm:text-base text-muted-foreground font-medium leading-relaxed line-clamp-2">
-                      {profile?.headline || 'Director | Career Strategy Innovator'} | {profile?.bio || 'Empowering Global Talent with AI-Driven Solutions'}
-                    </p>
-                  </div>
-                  
-                  {/* Enhanced Stats with Animations and Better Icons */}
-                  <div className="flex items-center gap-8 text-sm">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex items-center gap-3 group cursor-pointer transition-smooth hover:scale-105">
-                          <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors duration-300 group-hover:shadow-glow">
-                            <Users2 className="h-5 w-5 text-primary" />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="font-bold text-foreground text-lg leading-none animate-fade-in counter-animation">
-                              {stats.connections.toLocaleString()}
-                            </span>
-                            <span className="text-xs text-muted-foreground font-medium">connections</span>
-                          </div>
-                          {stats.connections > 50 && (
-                            <div className="ml-2 px-2 py-1 bg-accent rounded-full">
-                              <span className="text-xs font-semibold text-accent-foreground">Growing</span>
-                            </div>
-                          )}
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="font-medium">Your professional network connections</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    
-                    <Tooltip>
-                      <TooltipTrigger asChild>  
-                        <div className="flex items-center gap-3 group cursor-pointer transition-smooth hover:scale-105">
-                          <div className="p-2 bg-secondary/50 rounded-full group-hover:bg-secondary transition-colors duration-300 group-hover:shadow-glow">
-                            <Eye className="h-5 w-5 text-secondary-foreground" />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="font-bold text-foreground text-lg leading-none animate-fade-in counter-animation">
-                              {stats.profileViews.toLocaleString()}
-                            </span>
-                            <span className="text-xs text-muted-foreground font-medium">profile views</span>
-                          </div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="font-medium">People who viewed your profile this week</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                </div>
-              </div>
-
-              {/* Enhanced Edit Button */}
-              {isOwnProfile && (
-                <Link to="/profile/edit">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="h-10 px-6 text-sm font-medium border-border hover:border-primary hover:bg-primary/5 transition-smooth hover:scale-105 rounded-full shadow-sm hover:shadow-md"
-                      >
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit Profile
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Edit your profile information</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </Link>
-              )}
-            </div>
-
-            {/* Enhanced Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t border-border/50">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="flex-1 h-10 text-sm hover:bg-primary/5 hover:text-primary transition-smooth rounded-lg"
-                  >
-                    <Link2 className="h-4 w-4 mr-2" />
-                    Share Profile
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Share your profile with others</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </TooltipProvider>
+      </CardContent>
+    </Card>
   );
 };
