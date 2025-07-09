@@ -9,6 +9,8 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 };
 
 interface QueuedEmail {
@@ -147,49 +149,100 @@ async function processEmailQueue(): Promise<{ processed: number; sent: number; f
 }
 
 Deno.serve(async (req) => {
-  console.log('Email queue processor request received:', req.method, req.url);
+  console.log('=== Email Queue Processing Request ===');
+  console.log('Method:', req.method);
+  console.log('URL:', req.url);
+  console.log('Headers:', Object.fromEntries(req.headers.entries()));
+  console.log('Timestamp:', new Date().toISOString());
+  
+  // Environment validation
   console.log('Environment check - SENDGRID_API_KEY exists:', !!sendGridApiKey);
   console.log('Environment check - SUPABASE_URL exists:', !!supabaseUrl);
   console.log('Environment check - SUPABASE_SERVICE_ROLE_KEY exists:', !!supabaseServiceKey);
 
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    console.log('Handling CORS preflight request');
+    return new Response(null, { 
+      headers: corsHeaders,
+      status: 200
+    });
+  }
+
+  // Validate HTTP method
+  if (req.method !== 'POST') {
+    console.log('Invalid HTTP method:', req.method);
+    return new Response(JSON.stringify({
+      success: false,
+      error: `Method ${req.method} not allowed. Use POST to process email queue.`
+    }), {
+      status: 405,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
 
   try {
+    // Parse request body
     let requestData = {};
-    if (req.method === 'POST') {
-      try {
-        const body = await req.text();
-        if (body) {
-          requestData = JSON.parse(body);
-        }
-      } catch (parseError) {
-        console.log('No valid JSON body, proceeding with default processing');
+    try {
+      const body = await req.text();
+      console.log('Request body received:', body ? 'YES' : 'NO');
+      if (body && body.trim()) {
+        requestData = JSON.parse(body);
+        console.log('Parsed request data:', requestData);
       }
+    } catch (parseError) {
+      console.log('Request body parsing failed (proceeding anyway):', parseError.message);
     }
 
-    console.log('Processing email queue with data:', requestData);
+    console.log('Starting email queue processing...');
+    const startTime = Date.now();
+    
+    // Process the email queue
     const result = await processEmailQueue();
     
-    return new Response(JSON.stringify({
+    const endTime = Date.now();
+    const processingTime = endTime - startTime;
+    
+    console.log('=== Processing Complete ===');
+    console.log('Result:', result);
+    console.log('Processing time:', processingTime, 'ms');
+    
+    const response = {
       success: true,
-      message: 'Email queue processed successfully',
-      stats: result
-    }), {
+      message: `Email queue processed successfully. Processed: ${result.processed}, Sent: ${result.sent}, Failed: ${result.failed}`,
+      stats: result,
+      processingTime: processingTime,
+      timestamp: new Date().toISOString()
+    };
+
+    return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      }
     });
 
   } catch (error) {
-    console.error('Email queue processing error:', error);
+    console.error('=== Email Queue Processing Error ===');
+    console.error('Error:', error);
+    console.error('Stack:', error.stack);
     
-    return new Response(JSON.stringify({
+    const errorResponse = {
       success: false,
-      error: error.message || 'Unknown error occurred'
-    }), {
+      error: error.message || 'Unknown error occurred while processing email queue',
+      timestamp: new Date().toISOString()
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      }
     });
   }
 });
