@@ -20,20 +20,54 @@ const PublicUserProfile = () => {
         return id;
       }
 
-      // Try to find by custom profile URL - this query doesn't require authentication
-      const { data, error } = await supabase
+      // Try to find by custom profile URL first
+      let { data, error } = await supabase
         .from('profiles')
         .select('id')
         .eq('custom_profile_url', id)
-        .eq('profile_visibility', 'public') // Only return public profiles
+        .eq('profile_visibility', 'public')
         .maybeSingle();
 
       if (error) {
-        console.error('Error resolving profile:', error);
+        console.error('Error resolving profile by custom URL:', error);
+      }
+
+      // If found by custom URL, return it
+      if (data?.id) {
+        return data.id;
+      }
+
+      // If not found by custom URL, try to find by generated URL from full_name
+      // Convert URL format back to name format (replace hyphens with spaces)
+      const nameFromUrl = id.replace(/-/g, ' ');
+      
+      const { data: nameData, error: nameError } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .eq('profile_visibility', 'public')
+        .ilike('full_name', nameFromUrl);
+
+      if (nameError) {
+        console.error('Error resolving profile by name:', nameError);
         return null;
       }
 
-      return data?.id || null;
+      // If we found profiles, check if any match the expected URL format
+      if (nameData && nameData.length > 0) {
+        for (const profile of nameData) {
+          const generatedUrl = profile.full_name
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+          
+          if (generatedUrl === id) {
+            return profile.id;
+          }
+        }
+      }
+
+      return null;
     },
     enabled: !!id
   });
