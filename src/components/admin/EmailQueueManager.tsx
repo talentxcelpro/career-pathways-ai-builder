@@ -75,41 +75,29 @@ export function EmailQueueManager() {
     console.log('Timestamp:', new Date().toISOString());
     
     try {
-      // Test basic connectivity first
-      console.log('Testing Supabase client connectivity...');
+      // Use direct HTTP call instead of Supabase client
+      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/process-email-queue`;
       
-      const { data, error } = await supabase.functions.invoke('process-email-queue', {
-        body: { manual: true }
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`
+        },
+        body: JSON.stringify({ manual: true })
       });
 
-      console.log('Supabase function invoke response:');
-      console.log('- data:', data);
-      console.log('- error:', error);
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
-      if (error) {
-        console.error('=== Supabase Function Error ===');
-        console.error('Error object:', error);
-        console.error('Error message:', error.message);
-        console.error('Error context:', error.context);
-        console.error('Error details:', error.details);
-        
-        // More specific error messages
-        let errorMessage = 'Failed to process email queue';
-        if (error.message?.includes('Failed to fetch')) {
-          errorMessage = 'Network error: Cannot reach email processing service. Check your internet connection.';
-        } else if (error.message?.includes('fetch')) {
-          errorMessage = 'Connection error: Unable to connect to email service.';
-        } else if (error.message?.includes('CORS')) {
-          errorMessage = 'CORS error: Cross-origin request blocked.';
-        } else if (error.message) {
-          errorMessage = `Service error: ${error.message}`;
-        }
-        
-        toast.error(errorMessage);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Function call failed:', errorText);
+        toast.error(`Processing failed: ${response.status} ${errorText}`);
         return;
       }
 
-      const result = data;
+      const result = await response.json();
       console.log('Processing result:', result);
       
       if (result?.success) {
