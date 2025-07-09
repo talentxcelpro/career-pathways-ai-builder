@@ -1,12 +1,9 @@
-console.log('Email queue processor starting...');
-
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const sendGridApiKey = Deno.env.get('SENDGRID_API_KEY');
 
-// Create admin client with service role key
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 const corsHeaders = {
@@ -65,13 +62,12 @@ async function sendEmailViaSendGrid(email: QueuedEmail): Promise<{ success: bool
 async function processEmailQueue(): Promise<{ processed: number; sent: number; failed: number }> {
   console.log('Processing email queue...');
   
-  // Get pending emails from the database
   const { data: pendingEmails, error } = await supabase
     .from('email_queue_simple')
     .select('*')
     .eq('status', 'pending')
     .order('created_at', { ascending: true })
-    .limit(10); // Process up to 10 emails at a time
+    .limit(10);
 
   if (error) {
     console.error('Error fetching pending emails:', error);
@@ -83,7 +79,6 @@ async function processEmailQueue(): Promise<{ processed: number; sent: number; f
     return { processed: 0, sent: 0, failed: 0 };
   }
 
-  // Filter emails that haven't exceeded max retries
   const eligibleEmails = pendingEmails.filter(email => email.retry_count <= email.max_retries);
   
   if (eligibleEmails.length === 0) {
@@ -92,8 +87,6 @@ async function processEmailQueue(): Promise<{ processed: number; sent: number; f
   }
 
   console.log(`Found ${eligibleEmails.length} eligible emails to process`);
-
-  
   
   let sentCount = 0;
   let failedCount = 0;
@@ -102,7 +95,6 @@ async function processEmailQueue(): Promise<{ processed: number; sent: number; f
     const result = await sendEmailViaSendGrid(email);
     
     if (result.success) {
-      // Mark as sent
       const { error: updateError } = await supabase
         .from('email_queue_simple')
         .update({
@@ -120,7 +112,6 @@ async function processEmailQueue(): Promise<{ processed: number; sent: number; f
       }
 
     } else {
-      // Increment retry count or mark as failed
       const newRetryCount = email.retry_count + 1;
       const isFinalFailure = newRetryCount > email.max_retries;
       
@@ -146,7 +137,6 @@ async function processEmailQueue(): Promise<{ processed: number; sent: number; f
       }
     }
 
-    // Add a small delay between emails to avoid rate limiting
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
@@ -162,13 +152,11 @@ Deno.serve(async (req) => {
   console.log('Environment check - SUPABASE_URL exists:', !!supabaseUrl);
   console.log('Environment check - SUPABASE_SERVICE_ROLE_KEY exists:', !!supabaseServiceKey);
 
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Parse request body if present
     let requestData = {};
     if (req.method === 'POST') {
       try {
