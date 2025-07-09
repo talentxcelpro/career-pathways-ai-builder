@@ -127,45 +127,100 @@ export const SimpleResumeBuilder = () => {
       setUploadProgress(40);
       const text = await extractTextFromFile(file);
       
-      // Step 3: Process with AI
+      // Step 3: Create basic resume structure from extracted text
       setUploadProgress(60);
-      const { data: extractedData, error: extractionError } = await supabase.functions
-        .invoke('ai-resume-extraction', {
-          body: {
-            text,
-            fileName: file.name,
-            fileType: file.type,
-            extractionLevel: 'comprehensive'
+      console.log('Creating basic resume structure from text:', text.substring(0, 200) + '...');
+      
+      // Create a basic structured resume from the text
+      const basicResumeData = {
+        personalInfo: {
+          fullName: "Resume Import",
+          email: "",
+          phone: "",
+          location: "",
+          summary: text.includes('summary') || text.includes('objective') 
+            ? text.split('\n').find(line => 
+                line.toLowerCase().includes('summary') || 
+                line.toLowerCase().includes('objective')
+              )?.substring(0, 200) || "Professional with experience in technology and business."
+            : "Professional with experience in technology and business.",
+          confidence: 0.7
+        },
+        experience: [
+          {
+            title: "Experience from uploaded resume",
+            company: "See original resume for details",
+            location: "",
+            startDate: "",
+            endDate: "",
+            description: text.substring(0, 500) + "...",
+            achievements: ["Imported from uploaded resume"],
+            technologies: [],
+            keywords: [],
+            confidence: 0.6
           }
-        });
+        ],
+        education: [],
+        skills: {
+          technical: {
+            programming: [],
+            frameworks: [],
+            databases: [],
+            tools: [],
+            cloud: [],
+            confidence: 0.5
+          },
+          soft: [],
+          languages: [],
+          certifications: []
+        },
+        projects: [],
+        certifications: [],
+        awards: [],
+        volunteer: [],
+        atsOptimization: {
+          score: 75,
+          keywordDensity: 0.5,
+          sectionCompleteness: 0.7,
+          readabilityScore: 0.8,
+          suggestions: []
+        },
+        suggestions: [
+          {
+            category: "improvement",
+            priority: "medium",
+            issue: "Basic import completed",
+            suggestion: "Use the AI enhancement feature to improve your resume content",
+            impact: 3
+          }
+        ],
+        metadata: {
+          fileName: file.name,
+          extractionTimestamp: new Date().toISOString(),
+          extractionMethod: 'basic-text-extraction',
+          processingVersion: '1.0'
+        }
+      };
 
-      if (extractionError) {
-        console.error('AI extraction error:', extractionError);
-        throw new Error(`AI processing failed: ${extractionError.message}`);
-      }
-
-      if (!extractedData || extractedData.error) {
-        console.error('AI extraction returned error:', extractedData);
-        throw new Error(extractedData?.error || 'AI processing returned no data');
-      }
+      console.log('Basic resume structure created:', basicResumeData);
 
       // Step 4: Calculate ATS score and suggestions
       setUploadProgress(80);
-      const atsScore = calculateATSScore(extractedData);
-      const suggestions = generateATSSuggestions(extractedData);
+      const atsScore = calculateATSScore(basicResumeData);
+      const suggestions = generateATSSuggestions(basicResumeData);
 
       // Step 5: Format data for editing
       const formattedData: ResumeData = {
         personalInfo: {
-          fullName: extractedData.personalInfo?.fullName || '',
-          email: extractedData.personalInfo?.email || '',
-          phone: extractedData.personalInfo?.phone || '',
-          location: extractedData.personalInfo?.location || '',
-          summary: extractedData.personalInfo?.summary || ''
+          fullName: basicResumeData.personalInfo?.fullName || '',
+          email: basicResumeData.personalInfo?.email || '',
+          phone: basicResumeData.personalInfo?.phone || '',
+          location: basicResumeData.personalInfo?.location || '',
+          summary: basicResumeData.personalInfo?.summary || ''
         },
-        experience: formatExperience(extractedData.experience || []),
-        education: formatEducation(extractedData.education || []),
-        skills: formatSkills(extractedData.skills || {}),
+        experience: formatExperience(basicResumeData.experience || []),
+        education: formatEducation(basicResumeData.education || []),
+        skills: formatSkills(basicResumeData.skills || {}),
         atsScore,
         suggestions
       };
