@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { RefreshCw, Play, Clock, CheckCircle, XCircle, Mail } from 'lucide-react';
+import { RefreshCw, Play, Clock, CheckCircle, XCircle, Mail, Activity, Globe } from 'lucide-react';
 
 interface QueuedEmail {
   id: string;
@@ -149,31 +149,95 @@ export function EmailQueueManager() {
   };
 
   const testConnectivity = async () => {
-    console.log('=== Testing Edge Function Connectivity ===');
+    console.log('=== Starting Connectivity Tests ===');
     
     try {
-      // Test if we can reach any edge function
-      const response = await fetch('https://dthlgsnakhofuinssokm.supabase.co/functions/v1/process-email-queue', {
-        method: 'OPTIONS',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
+      // Test 1: Health check function
+      console.log('Test 1: Health check function...');
+      const { data: healthData, error: healthError } = await supabase.functions.invoke('health-check');
       
-      console.log('Direct fetch test:');
-      console.log('- Status:', response.status);
-      console.log('- OK:', response.ok);
-      console.log('- Headers:', Object.fromEntries(response.headers.entries()));
+      console.log('Health check response:', { healthData, healthError });
       
-      if (response.ok) {
-        toast.success('Connectivity test passed - service is reachable');
+      if (healthError) {
+        console.error('Health check failed:', healthError);
+        toast.error(`Health check failed: ${healthError.message}`);
       } else {
-        toast.error(`Connectivity test failed - HTTP ${response.status}`);
+        console.log('Health check successful:', healthData);
+        toast.success('Health check successful!');
       }
       
-    } catch (error) {
-      console.error('Connectivity test failed:', error);
-      toast.error(`Connectivity test failed: ${error.message}`);
+      // Test 2: Process email queue function
+      console.log('Test 2: Process email queue function...');
+      const { data: queueData, error: queueError } = await supabase.functions.invoke('process-email-queue', {
+        body: { test: true }
+      });
+      
+      console.log('Queue function response:', { queueData, queueError });
+      
+      if (queueError) {
+        console.error('Queue function test failed:', queueError);
+        toast.error(`Queue function test failed: ${queueError.message}`);
+      } else {
+        console.log('Queue function test successful:', queueData);
+        toast.success('Queue function test successful!');
+      }
+      
+    } catch (err) {
+      console.error('Connectivity test exception:', err);
+      toast.error(`Connectivity test failed: ${err.message}`);
+    }
+  };
+
+  const testDirectUrl = async () => {
+    console.log('=== Testing Direct Function URLs ===');
+    
+    const baseUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1`;
+    
+    try {
+      // Test health check endpoint
+      console.log('Testing health check URL...');
+      const healthUrl = `${baseUrl}/health-check`;
+      console.log('Health check URL:', healthUrl);
+      
+      const healthResponse = await fetch(healthUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      console.log('Health check response status:', healthResponse.status);
+      console.log('Health check response headers:', Object.fromEntries(healthResponse.headers.entries()));
+      
+      if (healthResponse.ok) {
+        const healthResult = await healthResponse.json();
+        console.log('Health check result:', healthResult);
+        toast.success('Direct health check successful!');
+      } else {
+        const errorText = await healthResponse.text();
+        console.error('Health check failed:', errorText);
+        toast.error(`Direct health check failed: ${healthResponse.status} ${errorText}`);
+      }
+      
+    } catch (err) {
+      console.error('Direct URL test failed:', err);
+      toast.error(`Direct URL test failed: ${err.message}`);
+      
+      // Additional debugging
+      console.log('Network Error Details:');
+      console.log('- Error name:', err.name);
+      console.log('- Error message:', err.message);
+      console.log('- Error stack:', err.stack);
+      
+      if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+        console.log('This appears to be a network connectivity issue');
+        console.log('Possible causes:');
+        console.log('1. Function not deployed');
+        console.log('2. Network blocking requests');
+        console.log('3. CORS issues');
+        console.log('4. Browser security restrictions');
+      }
     }
   };
 
@@ -205,14 +269,7 @@ export function EmailQueueManager() {
           <h2 className="text-2xl font-bold">Email Queue Manager</h2>
           <p className="text-muted-foreground">Monitor and manage the email delivery queue</p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={testConnectivity}
-            variant="outline"
-            size="sm"
-          >
-            Test Connection
-          </Button>
+        <div className="flex gap-2 flex-wrap">
           <Button
             onClick={fetchQueueData}
             disabled={isLoading}
@@ -227,6 +284,22 @@ export function EmailQueueManager() {
           >
             <Play className={`w-4 h-4 mr-2 ${isProcessing ? 'animate-spin' : ''}`} />
             Process Queue
+          </Button>
+          <Button
+            onClick={testConnectivity}
+            variant="outline"
+            size="sm"
+          >
+            <Activity className="w-4 h-4 mr-2" />
+            Test Connection
+          </Button>
+          <Button
+            onClick={testDirectUrl}
+            variant="secondary"
+            size="sm"
+          >
+            <Globe className="w-4 h-4 mr-2" />
+            Test Direct URL
           </Button>
         </div>
       </div>
