@@ -12,6 +12,9 @@ verify_jwt = true
 [functions.ai-resume-extraction]
 verify_jwt = true
 
+[functions.enhance-resume]
+verify_jwt = true
+
 [functions.ai-resume-content]
 verify_jwt = true
 
