@@ -2381,6 +2381,48 @@ export type Database = {
         }
         Relationships: []
       }
+      email_queue: {
+        Row: {
+          created_at: string | null
+          data: Json | null
+          error_message: string | null
+          id: string
+          max_retries: number | null
+          retry_count: number | null
+          sent_at: string | null
+          status: string | null
+          subject: string
+          template: string
+          to_email: string
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json | null
+          error_message?: string | null
+          id?: string
+          max_retries?: number | null
+          retry_count?: number | null
+          sent_at?: string | null
+          status?: string | null
+          subject: string
+          template: string
+          to_email: string
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json | null
+          error_message?: string | null
+          id?: string
+          max_retries?: number | null
+          retry_count?: number | null
+          sent_at?: string | null
+          status?: string | null
+          subject?: string
+          template?: string
+          to_email?: string
+        }
+        Relationships: []
+      }
       email_templates: {
         Row: {
           company_id: string | null
