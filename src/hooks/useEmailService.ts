@@ -47,8 +47,8 @@ export const useEmailService = (): EmailServiceHook => {
         html = '<p>Thank you for using TalentXcel!</p>';
       }
       
-      // Use the new email-sender function
-      const { data, error } = await supabase.functions.invoke('email-sender', {
+      // Use the original send-email function
+      const { data, error } = await supabase.functions.invoke('send-email', {
         body: {
           to: emailData.to,
           subject: emailData.subject,
