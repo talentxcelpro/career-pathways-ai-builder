@@ -5366,24 +5366,36 @@ export type Database = {
       resume_versions: {
         Row: {
           content: Json
+          content_snapshot: Json | null
           created_at: string | null
           id: string
+          is_current: boolean | null
+          notes: string | null
           resume_id: string
           version_name: string
+          version_number: number | null
         }
         Insert: {
           content?: Json
+          content_snapshot?: Json | null
           created_at?: string | null
           id?: string
+          is_current?: boolean | null
+          notes?: string | null
           resume_id: string
           version_name: string
+          version_number?: number | null
         }
         Update: {
           content?: Json
+          content_snapshot?: Json | null
           created_at?: string | null
           id?: string
+          is_current?: boolean | null
+          notes?: string | null
           resume_id?: string
           version_name?: string
+          version_number?: number | null
         }
         Relationships: [
           {

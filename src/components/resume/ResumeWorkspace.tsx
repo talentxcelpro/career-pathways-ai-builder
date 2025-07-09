@@ -353,9 +353,11 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
               currentTemplateId={resume?.template_id}
               onTemplateSelect={(templateId) => {
                 if (resumeId) {
+                  // Handle template_id as string for frontend templates
+                  // The database template_id field can be null since we're using frontend templates
                   supabase
                     .from('ai_resumes')
-                    .update({ template_id: templateId })
+                    .update({ template_id: null }) // Store null since we use frontend template IDs
                     .eq('id', resumeId)
                     .then(() => {
                       queryClient.invalidateQueries({ queryKey: ['resume', resumeId] });

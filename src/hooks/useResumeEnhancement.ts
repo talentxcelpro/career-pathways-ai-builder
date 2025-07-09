@@ -40,6 +40,15 @@ export const useResumeEnhancement = () => {
 
       // Step 3: Enhance via AI
       setEnhancementProgress(60);
+      
+      console.log('Calling enhance-resume function with data:', {
+        summary: cleanedSections.summary ? cleanedSections.summary.substring(0, 100) + '...' : 'empty',
+        experience: cleanedSections.experience ? cleanedSections.experience.substring(0, 100) + '...' : 'empty',
+        skills: cleanedSections.skills ? cleanedSections.skills.substring(0, 100) + '...' : 'empty',
+        education: cleanedSections.education ? cleanedSections.education.substring(0, 100) + '...' : 'empty',
+        sectionType: options.sectionType === 'all' ? undefined : options.sectionType
+      });
+      
       const { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: {
           ...cleanedSections,
@@ -49,12 +58,17 @@ export const useResumeEnhancement = () => {
 
       if (error) {
         console.error('Enhancement error:', error);
-        throw new Error(error.message || 'Enhancement failed');
+        throw new Error(`Enhancement failed: ${error.message || 'Unknown error'}`);
       }
 
       if (data?.error) {
         console.error('Enhancement returned error:', data.error);
-        throw new Error(data.error);
+        throw new Error(`Enhancement service error: ${data.error}`);
+      }
+      
+      if (!data) {
+        console.error('Enhancement returned no data');
+        throw new Error('Enhancement service returned no data');
       }
 
       setEnhancementProgress(90);

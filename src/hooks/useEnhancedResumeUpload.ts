@@ -126,7 +126,7 @@ export const useEnhancedResumeUpload = () => {
           title: `Enhanced Resume from ${file.name}`,
           content: extractedContent as any,
           ats_score: extractedContent.atsOptimization?.score || 75,
-          template_id: null
+          template_id: null // Use null instead of string template ID
         })
         .select()
         .single();
@@ -163,6 +163,10 @@ export const useEnhancedResumeUpload = () => {
         errorMessage = 'Failed to enhance resume. The AI service may still be deploying. Please try again in a few minutes.';
       } else if (error.message?.includes('Database')) {
         errorMessage = 'Database error occurred. Please try again.';
+      } else if (error.message?.includes('OpenAI API key')) {
+        errorMessage = 'AI service configuration error. Please contact support.';
+      } else if (error.message?.includes('template_id')) {
+        errorMessage = 'Template configuration error. Using default template instead.';
       } else if (error.message) {
         errorMessage = error.message;
       }
