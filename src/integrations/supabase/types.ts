@@ -4923,6 +4923,51 @@ export type Database = {
           },
         ]
       }
+      resume_export_history: {
+        Row: {
+          created_at: string | null
+          download_count: number | null
+          export_format: string
+          file_url: string | null
+          id: string
+          resume_id: string
+          template_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          download_count?: number | null
+          export_format: string
+          file_url?: string | null
+          id?: string
+          resume_id: string
+          template_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          download_count?: number | null
+          export_format?: string
+          file_url?: string | null
+          id?: string
+          resume_id?: string
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_export_history_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "ai_resumes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resume_export_history_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "resume_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_exports: {
         Row: {
           created_at: string | null
@@ -5167,6 +5212,7 @@ export type Database = {
       }
       resume_templates: {
         Row: {
+          ats_score: number | null
           category: string
           component_name: string
           created_at: string | null
@@ -5174,13 +5220,17 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean | null
+          is_premium: boolean | null
+          layout_config: Json | null
           name: string
           preview_url: string | null
           status: boolean | null
+          tags: string[] | null
           thumbnail_url: string | null
           updated_at: string | null
         }
         Insert: {
+          ats_score?: number | null
           category?: string
           component_name?: string
           created_at?: string | null
@@ -5188,13 +5238,17 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_premium?: boolean | null
+          layout_config?: Json | null
           name: string
           preview_url?: string | null
           status?: boolean | null
+          tags?: string[] | null
           thumbnail_url?: string | null
           updated_at?: string | null
         }
         Update: {
+          ats_score?: number | null
           category?: string
           component_name?: string
           created_at?: string | null
@@ -5202,9 +5256,12 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_premium?: boolean | null
+          layout_config?: Json | null
           name?: string
           preview_url?: string | null
           status?: boolean | null
+          tags?: string[] | null
           thumbnail_url?: string | null
           updated_at?: string | null
         }
