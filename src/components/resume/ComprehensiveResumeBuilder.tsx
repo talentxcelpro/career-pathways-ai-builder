@@ -257,8 +257,6 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
       const shareToken = Math.random().toString(36).substring(7);
       const data = { share_token: shareToken };
 
-      if (error) throw error;
-
       const baseUrl = window.location.origin;
       let shareUrl = '';
       
