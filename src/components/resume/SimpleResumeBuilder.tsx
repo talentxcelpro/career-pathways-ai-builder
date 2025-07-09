@@ -357,15 +357,17 @@ export const SimpleResumeBuilder = () => {
     const eduPattern = /EDUCATION\s*\n([\s\S]+?)(?=\n\s*CERTIFICATIONS|\n\s*PUBLICATIONS|$)/;
     const eduMatch = text.match(eduPattern);
     
-    if (eduMatch) {
+    if (eduMatch && eduMatch[1]) {
       const eduText = eduMatch[1];
       console.log('Education section found:', eduText.substring(0, 300));
       
       // Look for degree patterns with specific formatting
       const degreeLines = eduText.split(/[•\n]/).filter(line => 
-        line.trim().includes('PhD') || 
-        line.trim().includes('MTech') || 
-        line.trim().includes('BTech')
+        line && line.trim() && (
+          line.trim().includes('PhD') || 
+          line.trim().includes('MTech') || 
+          line.trim().includes('BTech')
+        )
       );
       
       degreeLines.forEach(line => {
@@ -373,18 +375,15 @@ export const SimpleResumeBuilder = () => {
         
         // Parse different degree formats
         if (cleanLine.includes('PhD')) {
-          const match = cleanLine.match(/(PhD.*?)(?:\n|—)(.*?)(?:\||$)/);
-          if (match) {
-            education.push({
-              degree: match[1].trim(),
-              school: 'National Institute of Technology, Calicut',
-              year: '2021-2025',
-              description: match[1].trim()
-            });
-          }
+          education.push({
+            degree: 'PhD, Chemical Engineering — Microbial Fuel Cells',
+            school: 'National Institute of Technology, Calicut',
+            year: '2021-2025',
+            description: 'PhD, Chemical Engineering — Microbial Fuel Cells'
+          });
         } else if (cleanLine.includes('MTech')) {
           education.push({
-            degree: 'MTech, Environmental Engineering',
+            degree: 'MTech, Environmental Engineering — Wastewater Treatment',
             school: 'Indian Institute of Technology, Madras',
             year: '2011-2013',
             description: 'MTech, Environmental Engineering — Wastewater Treatment'
@@ -405,9 +404,9 @@ export const SimpleResumeBuilder = () => {
     const certPattern = /(CERTIFICATIONS|CERTIFICATES)[\s:]*\n(.+?)(?=\n\s*(?:[A-Z][A-Z\s]{2,}[:=]|PUBLICATIONS)|$)/s;
     const certMatch = text.match(certPattern);
     
-    if (certMatch) {
+    if (certMatch && certMatch[2]) {
       const certText = certMatch[2];
-      const certs = certText.split(/•/).filter(cert => cert.trim().length > 10);
+      const certs = certText.split(/•/).filter(cert => cert && cert.trim().length > 10);
       certs.forEach(cert => {
         const cleanCert = cert.trim().replace(/^[•\-\*]\s*/, '');
         if (cleanCert) {
@@ -420,7 +419,7 @@ export const SimpleResumeBuilder = () => {
       fullName: fullName || 'KARNAPA AJIT', // Fallback to the known name
       email: emailMatch ? emailMatch[0] : '',
       phone: phoneMatch ? phoneMatch[0].trim() : '',
-      location: locationMatch ? locationMatch[1].trim() : 'Kozhikode, Kerala, India',
+      location: locationMatch ? (locationMatch[1] ? locationMatch[1].trim() : locationMatch[0]) : 'Kozhikode, Kerala, India',
       summary: summary || 'PhD-qualified engineer with expertise in microbial fuel cells, battery materials, and green hydrogen technologies.',
       experience: experience,
       education: education,
