@@ -65,12 +65,11 @@ async function sendEmailViaSendGrid(email: QueuedEmail): Promise<{ success: bool
 async function processEmailQueue(): Promise<{ processed: number; sent: number; failed: number }> {
   console.log('Processing email queue...');
   
-  // Get pending emails (filter where retry_count <= max_retries)
+  // Get pending emails from the database
   const { data: pendingEmails, error } = await supabase
     .from('email_queue_simple')
     .select('*')
     .eq('status', 'pending')
-    .filter('retry_count', 'lte', 3) // Default max retries is 3
     .order('created_at', { ascending: true })
     .limit(10); // Process up to 10 emails at a time
 
@@ -84,12 +83,22 @@ async function processEmailQueue(): Promise<{ processed: number; sent: number; f
     return { processed: 0, sent: 0, failed: 0 };
   }
 
-  console.log(`Found ${pendingEmails.length} pending emails`);
+  // Filter emails that haven't exceeded max retries
+  const eligibleEmails = pendingEmails.filter(email => email.retry_count <= email.max_retries);
+  
+  if (eligibleEmails.length === 0) {
+    console.log('No eligible emails to process (all have exceeded max retries)');
+    return { processed: 0, sent: 0, failed: 0 };
+  }
+
+  console.log(`Found ${eligibleEmails.length} eligible emails to process`);
+
+  
   
   let sentCount = 0;
   let failedCount = 0;
 
-  for (const email of pendingEmails) {
+  for (const email of eligibleEmails) {
     const result = await sendEmailViaSendGrid(email);
     
     if (result.success) {
@@ -141,7 +150,7 @@ async function processEmailQueue(): Promise<{ processed: number; sent: number; f
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
-  const processed = pendingEmails.length;
+  const processed = eligibleEmails.length;
   console.log(`Queue processing complete: ${processed} processed, ${sentCount} sent, ${failedCount} failed`);
   
   return { processed, sent: sentCount, failed: failedCount };
