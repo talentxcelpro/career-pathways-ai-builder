@@ -101,7 +101,11 @@ export const Navbar = () => {
   };
 
   const mainNavItems = [
-    { to: "/network", label: "Network" },
+    { 
+      to: "/network", 
+      label: "Network", 
+      showLogo: true 
+    },
     { to: "/jobs", label: "Jobs" },
     { to: "/resume-builder", label: "Resume Builder" },
     { to: "/tools", label: "Tools" },
@@ -156,7 +160,15 @@ export const Navbar = () => {
                           : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                         }`}
                     >
-                      <span>{item.label}</span>
+                      {item.showLogo ? (
+                        <img 
+                          src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                          alt="TalentXcel" 
+                          className="h-6 w-6 rounded-sm"
+                        />
+                      ) : (
+                        <span>{item.label}</span>
+                      )}
                     </Link>
                   );
                 })}
@@ -293,7 +305,15 @@ export const Navbar = () => {
                       }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <span>{item.label}</span>
+                    {item.showLogo ? (
+                      <img 
+                        src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                        alt="TalentXcel" 
+                        className="h-6 w-6 rounded-sm"
+                      />
+                    ) : (
+                      <span>{item.label}</span>
+                    )}
                   </Link>
                 );
               })}

@@ -1,80 +1,40 @@
 
 import { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
 import { LandingPage } from "@/components/landing/LandingPage";
-import { UserDashboard } from "@/components/dashboard/UserDashboard";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Check authentication status
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
+      setIsLoading(false);
     };
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
+      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  // Fetch current user profile
-  const { data: currentUserProfile } = useQuery({
-    queryKey: ['currentUserProfile'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+  // Redirect logged-in users to network page
+  if (isLoggedIn) {
+    return <Navigate to="/network" replace />;
+  }
 
-      if (error) return null;
-      return data;
-    },
-    enabled: isLoggedIn
-  });
-
-  // Real user data from Supabase
-  const userData = {
-    name: currentUserProfile?.full_name || "Professional User",
-    title: currentUserProfile?.title || "Software Engineer"
-  };
-
-  // Check for missing profile fields
-  const getMissingFields = () => {
-    if (!currentUserProfile) return [];
-    
-    const missing = [];
-    if (!currentUserProfile.full_name) missing.push('full name');
-    if (!currentUserProfile.profile_picture_url) missing.push('profile picture');
-    if (!currentUserProfile.title) missing.push('professional title');
-    
-    return missing;
-  };
-
-  const missingFields = getMissingFields();
-
-  return (
-    <>
-      {!isLoggedIn ? (
-        <LandingPage />
-      ) : (
-        <UserDashboard 
-          currentUserProfile={currentUserProfile}
-          userData={userData}
-          missingFields={missingFields}
-        />
-      )}
-    </>
-  );
+  return <LandingPage />;
 };
 
 export default Index;
