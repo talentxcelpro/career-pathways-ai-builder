@@ -30,7 +30,7 @@ const LoginForm = () => {
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));
         } else {
-          navigate('/dashboard');
+          navigate('/network');
         }
       }
     };
@@ -55,11 +55,11 @@ const LoginForm = () => {
       if (data.user) {
         toast.success('Welcome back! 🎉');
         
-        // Redirect to return URL or dashboard
+        // Redirect to return URL or network
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));
         } else {
-          navigate('/dashboard');
+          navigate('/network');
         }
       }
     } catch (error: any) {

@@ -62,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Fast redirect for successful login
           const currentPath = window.location.pathname;
           if (currentPath === '/' || currentPath.startsWith('/auth')) {
-            navigate('/dashboard', { replace: true });
+            navigate('/network', { replace: true });
           }
         } else if (event === 'TOKEN_REFRESHED') {
           console.log('Token refreshed successfully');
@@ -84,9 +84,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setSession(session);
           setUser(session?.user ?? null);
           
-          // Auto-redirect to dashboard if user is already logged in and on index page
+          // Auto-redirect to network if user is already logged in and on index page
           if (session?.user && window.location.pathname === '/') {
-            navigate('/dashboard', { replace: true });
+            navigate('/network', { replace: true });
           }
         }
       } catch (error) {
