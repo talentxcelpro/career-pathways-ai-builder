@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAutoSave } from "@/hooks/useAutoSave";
+import { ResumeTextExtractor } from "@/services/resumeTextExtractor";
 
 interface ResumeData {
   personalInfo: {
@@ -238,32 +239,21 @@ export const SimpleResumeBuilder = () => {
   };
 
   const extractTextFromFile = async (file: File): Promise<string> => {
-    if (file.type === 'text/plain') {
-      return await file.text();
-    }
-    
-    // For PDF and Word files, try to extract text from the file directly
     try {
-      if (file.type === 'application/pdf') {
-        // For PDFs, read as text if possible, otherwise prompt user to copy-paste
-        const text = await file.text();
-        if (text && text.trim().length > 50) {
-          return text;
-        }
+      const extractor = new ResumeTextExtractor();
+      const extractedText = await extractor.extractText(file);
+      
+      if (!extractor.isValidText(extractedText)) {
+        toast.warning('Could not extract meaningful text from file. Please check the file and try again.');
+        return '';
       }
       
-      if (file.type.includes('word') || file.name.toLowerCase().includes('.doc')) {
-        // For Word docs, prompt user to copy-paste content
-        toast.info('Please copy and paste your resume content from the Word document');
-        return 'Please paste your resume content here...';
-      }
+      return extractor.preprocessForAI(extractedText);
     } catch (error) {
-      console.error('Error extracting text from file:', error);
+      console.error('Text extraction failed:', error);
+      toast.error('Failed to extract text from file. Please try uploading a different format.');
+      return '';
     }
-    
-    // If text extraction fails, return empty string to prompt manual entry
-    toast.info('Could not extract text automatically. Please paste your resume content manually.');
-    return '';
   };
 
   const parseResumeFromText = (text: string) => {
@@ -288,15 +278,35 @@ export const SimpleResumeBuilder = () => {
     const phoneMatch = text.match(/[\+\(\)\-\d\s]{10,}/);
     const locationMatch = text.match(/📍\s*([^|📞📧\n]+?)(?:\s*\||📞|📧|\n|$)/);
     
-    // Try to find name (usually first meaningful line or after title)
+    // Try to find name - look for name patterns, including all caps names like "KARNAPA AJIT"
     let fullName = '';
-    const namePattern = /^[A-Z][a-z]+ [A-Z][a-z]+/;
-    for (const line of lines.slice(0, 5)) {
+    // Enhanced name patterns to catch different formats
+    const namePatterns = [
+      /^[A-Z]{2,}\s+[A-Z]{2,}/, // All caps names like "KARNAPA AJIT"
+      /^[A-Z][a-z]+\s+[A-Z][a-z]+/, // Title case names
+      /^[A-Z][a-z]+\s+[A-Z]\.\s+[A-Z][a-z]+/, // Names with middle initial
+      /^Dr\.\s+[A-Z][a-z]+\s+[A-Z][a-z]+/, // Names with titles
+      /^[A-Z][a-z]+\s+[A-Z][a-z]+\s+[A-Z][a-z]+/ // Three part names
+    ];
+    
+    for (const line of lines.slice(0, 8)) {
       const cleanLine = line.trim().replace(/^[•\-\*]\s*/, '');
-      if (namePattern.test(cleanLine) && !cleanLine.includes('@') && !cleanLine.includes('|') && !cleanLine.includes('📞') && !cleanLine.includes('📧')) {
-        fullName = cleanLine;
-        break;
+      // Skip lines with special characters, emails, or obvious non-name content
+      if (cleanLine.includes('@') || cleanLine.includes('|') || cleanLine.includes('📞') || 
+          cleanLine.includes('📧') || cleanLine.includes('http') || cleanLine.includes('www') ||
+          cleanLine.length > 50 || cleanLine.length < 4) {
+        continue;
       }
+      
+      // Check against all name patterns
+      for (const pattern of namePatterns) {
+        if (pattern.test(cleanLine)) {
+          fullName = cleanLine;
+          break;
+        }
+      }
+      
+      if (fullName) break;
     }
     
     // Extract summary/profile section
