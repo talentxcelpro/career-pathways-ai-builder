@@ -9,6 +9,7 @@ import { RealtimeStatsWidget } from '@/components/admin/dashboard/RealtimeStatsW
 import { SystemHealthWidget } from '@/components/admin/dashboard/SystemHealthWidget';
 import { QuickActionsPanel } from '@/components/admin/QuickActionsPanel';
 import { PlatformOverviewWidget } from '@/components/admin/dashboard/PlatformOverviewWidget';
+import EmailSystemTest from '@/components/admin/EmailSystemTest';
 import { useAdminStats } from '@/hooks/useAdminStats';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
@@ -57,6 +58,11 @@ const AdminDashboard = () => {
           <div>
             <PlatformOverviewWidget stats={adminStats} />
           </div>
+        </div>
+
+        {/* Email System Test Section */}
+        <div className="mt-8">
+          <EmailSystemTest />
         </div>
       </div>
     </UnifiedAdminLayout>
