@@ -149,6 +149,9 @@ async function processEmailQueue(): Promise<{ processed: number; sent: number; f
 
 Deno.serve(async (req) => {
   console.log('Email queue processor request received:', req.method, req.url);
+  console.log('Environment check - SENDGRID_API_KEY exists:', !!sendGridApiKey);
+  console.log('Environment check - SUPABASE_URL exists:', !!supabaseUrl);
+  console.log('Environment check - SUPABASE_SERVICE_ROLE_KEY exists:', !!supabaseServiceKey);
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
