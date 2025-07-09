@@ -257,7 +257,7 @@ Please provide a complete, accurate extraction of this professional's resume con
     `.trim();
   }
 
-  private async performAIExtraction(text: string, fileName: string, fileType: string): Promise<any> {
+  protected async performAIExtraction(text: string, fileName: string, fileType: string): Promise<any> {
     console.log('Performing AI-powered extraction with', text.length, 'characters of text...');
     
     // Ensure we have reasonable text length for AI processing
@@ -308,7 +308,7 @@ Please provide a complete, accurate extraction of this professional's resume con
     }
   }
 
-  private async postProcessExtraction(data: any, file: File): Promise<EnhancedResumeData> {
+  protected async postProcessExtraction(data: any, file: File): Promise<EnhancedResumeData> {
     console.log('Post-processing extraction results...');
     
     // Validate and enhance data

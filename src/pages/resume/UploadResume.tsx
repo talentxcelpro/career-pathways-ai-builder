@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import { FileUploadZone, ProcessingStatus, FeaturesPreview } from "@/components/resume/upload";
+import { EnhancedFileUploadZone } from "@/components/resume/upload/EnhancedFileUploadZone";
+import { EnhancedProcessingStatus } from "@/components/resume/upload/EnhancedProcessingStatus";
+import { FeaturesPreview } from "@/components/resume/upload";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
-import { useResumeUpload } from "@/hooks/useResumeUpload";
+import { useEnhancedResumeUpload } from "@/hooks/useEnhancedResumeUpload";
 
 const UploadResume = () => {
   const navigate = useNavigate();
@@ -17,9 +19,15 @@ const UploadResume = () => {
     uploadSuccess,
     processingStep,
     processingSteps,
+    processingProgress,
+    processingStatus,
+    ocrMode,
+    livePreview,
+    extractedData,
     processResume,
-    resetUpload
-  } = useResumeUpload();
+    resetUpload,
+    toggleOCR
+  } = useEnhancedResumeUpload();
 
   const { dragActive, handleDrag, handleDrop } = useDragAndDrop((files) => {
     if (files && files[0]) {
@@ -92,17 +100,22 @@ const UploadResume = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ProcessingStatus
+                <EnhancedProcessingStatus
                   isProcessing={isProcessing}
                   uploadSuccess={uploadSuccess}
                   processingStep={processingStep}
                   processingSteps={processingSteps}
+                  processingProgress={processingProgress}
+                  processingStatus={processingStatus}
                   uploadedFile={uploadedFile}
+                  ocrMode={ocrMode}
+                  livePreview={livePreview}
+                  extractedData={extractedData}
                 />
                 
                 {!uploadSuccess && !isProcessing && (
                   <div className="space-y-4">
-                    <FileUploadZone
+                    <EnhancedFileUploadZone
                       onFileSelect={handleFileSelect}
                       uploadedFile={uploadedFile}
                       onRemoveFile={removeFile}
@@ -113,6 +126,11 @@ const UploadResume = () => {
                       onDragLeave={handleDrag}
                       onDragOver={handleDrag}
                       onDrop={handleDrop}
+                      processingProgress={processingProgress}
+                      processingStatus={processingStatus}
+                      ocrMode={ocrMode}
+                      onToggleOCR={toggleOCR}
+                      livePreview={livePreview}
                     />
                     
                     {isProcessing && (
