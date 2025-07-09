@@ -69,30 +69,111 @@ export function EmailQueueManager() {
 
   const processQueue = async () => {
     setIsProcessing(true);
+    
+    console.log('=== Email Queue Processing Debug ===');
+    console.log('Starting manual queue processing...');
+    console.log('Timestamp:', new Date().toISOString());
+    
     try {
+      // Test basic connectivity first
+      console.log('Testing Supabase client connectivity...');
+      
       const { data, error } = await supabase.functions.invoke('process-email-queue', {
         body: { manual: true }
       });
 
+      console.log('Supabase function invoke response:');
+      console.log('- data:', data);
+      console.log('- error:', error);
+
       if (error) {
-        console.error('Error processing queue:', error);
-        toast.error('Failed to process email queue');
+        console.error('=== Supabase Function Error ===');
+        console.error('Error object:', error);
+        console.error('Error message:', error.message);
+        console.error('Error context:', error.context);
+        console.error('Error details:', error.details);
+        
+        // More specific error messages
+        let errorMessage = 'Failed to process email queue';
+        if (error.message?.includes('Failed to fetch')) {
+          errorMessage = 'Network error: Cannot reach email processing service. Check your internet connection.';
+        } else if (error.message?.includes('fetch')) {
+          errorMessage = 'Connection error: Unable to connect to email service.';
+        } else if (error.message?.includes('CORS')) {
+          errorMessage = 'CORS error: Cross-origin request blocked.';
+        } else if (error.message) {
+          errorMessage = `Service error: ${error.message}`;
+        }
+        
+        toast.error(errorMessage);
         return;
       }
 
       const result = data;
+      console.log('Processing result:', result);
+      
       if (result?.success) {
-        toast.success(`Queue processed: ${result.stats.sent} sent, ${result.stats.failed} failed`);
+        const message = `Queue processed successfully! ${result.stats.sent} sent, ${result.stats.failed} failed`;
+        console.log('Success:', message);
+        toast.success(message);
         await fetchQueueData(); // Refresh the data
       } else {
-        toast.error(result?.error || 'Failed to process queue');
+        const errorMsg = result?.error || 'Unknown error occurred during processing';
+        console.error('Processing failed:', errorMsg);
+        toast.error(`Processing failed: ${errorMsg}`);
       }
 
     } catch (error) {
-      console.error('Error processing queue:', error);
-      toast.error('Failed to process email queue');
+      console.error('=== Unexpected Error ===');
+      console.error('Error type:', typeof error);
+      console.error('Error name:', error?.name);
+      console.error('Error message:', error?.message);
+      console.error('Error stack:', error?.stack);
+      console.error('Full error object:', error);
+      
+      // Determine error type for better user feedback
+      let userMessage = 'Failed to process email queue';
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        userMessage = 'Network connection failed. Please check your internet connection and try again.';
+      } else if (error?.message?.includes('NetworkError')) {
+        userMessage = 'Network error occurred. The service may be temporarily unavailable.';
+      } else if (error?.message) {
+        userMessage = `Error: ${error.message}`;
+      }
+      
+      toast.error(userMessage);
     } finally {
+      console.log('Processing attempt completed');
       setIsProcessing(false);
+    }
+  };
+
+  const testConnectivity = async () => {
+    console.log('=== Testing Edge Function Connectivity ===');
+    
+    try {
+      // Test if we can reach any edge function
+      const response = await fetch('https://dthlgsnakhofuinssokm.supabase.co/functions/v1/process-email-queue', {
+        method: 'OPTIONS',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      console.log('Direct fetch test:');
+      console.log('- Status:', response.status);
+      console.log('- OK:', response.ok);
+      console.log('- Headers:', Object.fromEntries(response.headers.entries()));
+      
+      if (response.ok) {
+        toast.success('Connectivity test passed - service is reachable');
+      } else {
+        toast.error(`Connectivity test failed - HTTP ${response.status}`);
+      }
+      
+    } catch (error) {
+      console.error('Connectivity test failed:', error);
+      toast.error(`Connectivity test failed: ${error.message}`);
     }
   };
 
@@ -125,6 +206,13 @@ export function EmailQueueManager() {
           <p className="text-muted-foreground">Monitor and manage the email delivery queue</p>
         </div>
         <div className="flex gap-2">
+          <Button
+            onClick={testConnectivity}
+            variant="outline"
+            size="sm"
+          >
+            Test Connection
+          </Button>
           <Button
             onClick={fetchQueueData}
             disabled={isLoading}
