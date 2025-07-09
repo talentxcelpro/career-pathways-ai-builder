@@ -79,26 +79,26 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
 
   return (
     <TooltipProvider>
-      <Card className="overflow-hidden border-0 shadow-xl bg-white transition-all duration-300 hover:shadow-2xl">
-        {/* Enhanced Banner Section with Modern Gradient */}
+      <Card className="overflow-hidden border-0 shadow-elegant bg-background transition-all duration-300 hover:shadow-glow">
+        {/* Enhanced Banner Section - Taller to prevent overlap */}
         <div className="relative">
           <div 
-            className="h-32 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700"
+            className="h-40 bg-gradient-primary relative overflow-hidden"
             style={{
               backgroundImage: profile?.banner_url ? `url(${profile.banner_url})` : undefined,
               backgroundSize: 'cover',
-              backgroundPosition: 'center'
+              backgroundPosition: 'center top'
             }}
           >
-            {/* Modern overlay for better contrast */}
-            <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-black/30" />
+            {/* Professional overlay with blur effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-background/10 via-background/20 to-background/30 backdrop-blur-[0.5px]" />
             
             {isOwnProfile && (
-              <div className="absolute top-3 right-3">
+              <div className="absolute top-4 right-4 z-10">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="bg-white/10 backdrop-blur-md text-white hover:bg-white/20 h-8 px-3 text-xs border border-white/30 rounded-full transition-all duration-200 hover:scale-105"
+                  className="bg-background/10 backdrop-blur-md text-foreground hover:bg-background/20 h-9 px-4 text-sm border border-border/30 rounded-full transition-smooth hover:scale-105 shadow-lg"
                   onClick={() => {
                     const input = document.createElement('input');
                     input.type = 'file';
@@ -111,7 +111,7 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
                   }}
                   disabled={uploading === 'banner'}
                 >
-                  <Camera className="h-3 w-3 mr-1.5" />
+                  <Camera className="h-4 w-4 mr-2" />
                   {uploading === 'banner' ? 'Uploading...' : 'Edit Cover'}
                 </Button>
               </div>
@@ -119,17 +119,22 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
           </div>
         </div>
 
-        {/* Enhanced Profile Section */}
-        <CardContent className="p-4 -mt-8 relative">
+        {/* Enhanced Profile Section - Reduced overlap */}
+        <CardContent className="p-6 -mt-12 relative">
           <div className="flex flex-col">
             {/* Profile Picture and Enhanced Info */}
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-start gap-4">
-                {/* Enhanced Profile Picture with Animation */}
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex items-start gap-6">
+                {/* Enhanced Profile Picture with Glow Effect */}
                 <div className="relative group">
-                  <Avatar className="w-24 h-24 border-4 border-white shadow-2xl bg-white ring-4 ring-primary/20 transition-all duration-300 group-hover:ring-primary/40">
-                    <AvatarImage src={profile?.profile_picture_url} className="object-cover" />
-                    <AvatarFallback className="text-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold">
+                  <div className="absolute -inset-1 bg-gradient-primary rounded-full opacity-75 blur-sm group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <Avatar className="relative w-28 h-28 border-4 border-background shadow-2xl bg-background ring-2 ring-primary/30 transition-all duration-300 group-hover:ring-primary/50 group-hover:scale-105">
+                    <AvatarImage 
+                      src={profile?.profile_picture_url} 
+                      className="object-cover object-center"
+                      style={{ objectPosition: 'center center' }}
+                    />
+                    <AvatarFallback className="text-2xl bg-gradient-primary text-primary-foreground font-bold">
                       {generateInitials(profile)}
                     </AvatarFallback>
                   </Avatar>
@@ -137,7 +142,7 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="absolute -bottom-1 -right-1 h-6 w-6 p-0 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg border-2 border-white transition-all duration-200 hover:scale-110"
+                      className="absolute -bottom-2 -right-2 h-8 w-8 p-0 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg border-3 border-background transition-smooth hover:scale-110"
                       onClick={() => {
                         const input = document.createElement('input');
                         input.type = 'file';
@@ -150,41 +155,46 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
                       }}
                       disabled={uploading === 'avatar'}
                     >
-                      <Camera className="h-3 w-3" />
+                      <Camera className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
 
-                {/* Enhanced Profile Info with New Format */}
-                <div className="pt-3 flex-1 font-inter">
-                  {/* Name in Title Case with Pipe Separator */}
-                  <div className="mb-2">
-                    <h2 className="text-xl font-bold text-gray-900 leading-tight tracking-tight">
-                      {formatTitleCase(formatDisplayName(profile).split(' ')[0])} | {profile?.title || 'Director'}
+                {/* Enhanced Profile Info with Better Spacing */}
+                <div className="pt-4 flex-1 min-w-0">
+                  {/* Name and Title - Fixed text overflow */}
+                  <div className="mb-3">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight tracking-tight truncate">
+                      {formatTitleCase(formatDisplayName(profile).split(' ')[0])} | {profile?.title || 'Director, Product Strategy'}
                     </h2>
                   </div>
                   
-                  {/* Headline | Extended Headline */}
-                  <div className="mb-3">
-                    <p className="text-sm text-gray-700 font-medium leading-tight">
-                      {profile?.headline || 'Innovative Professional'} | {profile?.bio || 'Building the future one project at a time'}
+                  {/* Enhanced Headline */}
+                  <div className="mb-4">
+                    <p className="text-sm sm:text-base text-muted-foreground font-medium leading-relaxed line-clamp-2">
+                      {profile?.headline || 'Director | Career Strategy Innovator'} | {profile?.bio || 'Empowering Global Talent with AI-Driven Solutions'}
                     </p>
                   </div>
                   
-                  {/* Enhanced Stats with Modern Icons and Tooltips */}
-                  <div className="flex items-center gap-6 text-sm">
+                  {/* Enhanced Stats with Animations and Better Icons */}
+                  <div className="flex items-center gap-8 text-sm">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="flex items-center gap-2 group cursor-pointer transition-all duration-200 hover:scale-105">
-                          <div className="p-1.5 bg-blue-50 rounded-full group-hover:bg-blue-100 transition-colors duration-200">
-                            <Users2 className="h-4 w-4 text-blue-600" />
+                        <div className="flex items-center gap-3 group cursor-pointer transition-smooth hover:scale-105">
+                          <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors duration-300 group-hover:shadow-glow">
+                            <Users2 className="h-5 w-5 text-primary" />
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-bold text-gray-900 text-base leading-none animate-fade-in">
+                            <span className="font-bold text-foreground text-lg leading-none animate-fade-in counter-animation">
                               {stats.connections.toLocaleString()}
                             </span>
-                            <span className="text-xs text-gray-500 font-medium">connections</span>
+                            <span className="text-xs text-muted-foreground font-medium">connections</span>
                           </div>
+                          {stats.connections > 50 && (
+                            <div className="ml-2 px-2 py-1 bg-accent rounded-full">
+                              <span className="text-xs font-semibold text-accent-foreground">Growing</span>
+                            </div>
+                          )}
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -194,15 +204,15 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
                     
                     <Tooltip>
                       <TooltipTrigger asChild>  
-                        <div className="flex items-center gap-2 group cursor-pointer transition-all duration-200 hover:scale-105">
-                          <div className="p-1.5 bg-green-50 rounded-full group-hover:bg-green-100 transition-colors duration-200">
-                            <Eye className="h-4 w-4 text-green-600" />
+                        <div className="flex items-center gap-3 group cursor-pointer transition-smooth hover:scale-105">
+                          <div className="p-2 bg-secondary/50 rounded-full group-hover:bg-secondary transition-colors duration-300 group-hover:shadow-glow">
+                            <Eye className="h-5 w-5 text-secondary-foreground" />
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-bold text-gray-900 text-base leading-none animate-fade-in">
+                            <span className="font-bold text-foreground text-lg leading-none animate-fade-in counter-animation">
                               {stats.profileViews.toLocaleString()}
                             </span>
-                            <span className="text-xs text-gray-500 font-medium">profile views</span>
+                            <span className="text-xs text-muted-foreground font-medium">profile views</span>
                           </div>
                         </div>
                       </TooltipTrigger>
@@ -217,24 +227,42 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
               {/* Enhanced Edit Button */}
               {isOwnProfile && (
                 <Link to="/profile/edit">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="h-9 px-4 text-sm font-medium border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 hover:scale-105 rounded-full"
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Profile
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-10 px-6 text-sm font-medium border-border hover:border-primary hover:bg-primary/5 transition-smooth hover:scale-105 rounded-full shadow-sm hover:shadow-md"
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit Profile
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Edit your profile information</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </Link>
               )}
             </div>
 
-            {/* Optional: Quick Action Buttons */}
-            <div className="flex gap-2 pt-2 border-t border-gray-100">
-              <Button variant="ghost" size="sm" className="flex-1 h-8 text-xs hover:bg-indigo-50 hover:text-indigo-700 transition-all duration-200">
-                <Link2 className="h-3 w-3 mr-1" />
-                Share Profile
-              </Button>
+            {/* Enhanced Action Buttons */}
+            <div className="flex gap-3 pt-4 border-t border-border/50">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="flex-1 h-10 text-sm hover:bg-primary/5 hover:text-primary transition-smooth rounded-lg"
+                  >
+                    <Link2 className="h-4 w-4 mr-2" />
+                    Share Profile
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Share your profile with others</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </CardContent>
