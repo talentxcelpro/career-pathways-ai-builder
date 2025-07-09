@@ -47,39 +47,57 @@ export const useEmailService = (): EmailServiceHook => {
         html = '<p>Thank you for using TalentXcel!</p>';
       }
       
-      // Use the original send-email function
-      const { data, error } = await supabase.functions.invoke('send-email', {
-        body: {
-          to: emailData.to,
-          subject: emailData.subject,
-          html: html
-        },
-      });
+      try {
+        // First try edge function
+        const { data, error } = await supabase.functions.invoke('send-email', {
+          body: {
+            to: emailData.to,
+            subject: emailData.subject,
+            html: html
+          },
+        });
 
-      console.log('Edge function response:', { data, error });
+        console.log('Edge function response:', { data, error });
 
-      if (error) {
-        console.error('Edge function error:', error);
-        throw new Error(error.message || 'Failed to send email');
+        if (error) {
+          console.log('Edge function failed, falling back to database queue');
+          throw error;
+        }
+
+        if (data?.success) {
+          toast.success('Email sent successfully!');
+          return true;
+        }
+      } catch (edgeFunctionError) {
+        console.log('Edge function error:', edgeFunctionError);
+        
+        // Fallback to database queue
+        console.log('Using database queue fallback');
+        try {
+          const { error: dbError } = await supabase
+            .from('email_queue_simple')
+            .insert({
+              to_email: emailData.to,
+              subject: emailData.subject,
+              html_content: html,
+              template_name: emailData.template,
+              template_data: emailData.data || {}
+            });
+
+          if (dbError) {
+            console.error('Database queue error:', dbError);
+            throw dbError;
+          }
+
+          toast.success('Email queued for delivery! 📧');
+          return true;
+
+        } catch (dbError) {
+          console.error('Database fallback failed:', dbError);
+          toast.error('Failed to queue email. Please try again.');
+          return false;
+        }
       }
-
-      toast.success('Email sent successfully!');
-      return true;
-    } catch (error: any) {
-      console.error('Email service error:', error);
-      
-      // Provide more specific error messages
-      let errorMessage = 'Failed to send email';
-      if (error.message?.includes('Failed to fetch')) {
-        errorMessage = 'Email service is currently unavailable. The function may still be deploying. Please try again in a few minutes.';
-      } else if (error.message?.includes('not found')) {
-        errorMessage = 'Email service not found. Please contact support.';
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      toast.error(errorMessage);
-      return false;
     } finally {
       setIsLoading(false);
     }

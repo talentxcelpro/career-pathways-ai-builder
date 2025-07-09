@@ -2423,6 +2423,54 @@ export type Database = {
         }
         Relationships: []
       }
+      email_queue_simple: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          html_content: string
+          id: string
+          max_retries: number | null
+          retry_count: number | null
+          sent_at: string | null
+          status: string | null
+          subject: string
+          template_data: Json | null
+          template_name: string | null
+          to_email: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          html_content: string
+          id?: string
+          max_retries?: number | null
+          retry_count?: number | null
+          sent_at?: string | null
+          status?: string | null
+          subject: string
+          template_data?: Json | null
+          template_name?: string | null
+          to_email: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          html_content?: string
+          id?: string
+          max_retries?: number | null
+          retry_count?: number | null
+          sent_at?: string | null
+          status?: string | null
+          subject?: string
+          template_data?: Json | null
+          template_name?: string | null
+          to_email?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_templates: {
         Row: {
           company_id: string | null
