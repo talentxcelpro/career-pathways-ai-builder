@@ -105,14 +105,23 @@ export const SimpleResumeBuilder = () => {
     setUploadProgress(0);
 
     try {
-      // Step 1: Upload file to storage
+      // Step 1: Get authenticated user and upload file to storage
       setUploadProgress(20);
-      const fileName = `resume-${Date.now()}.${file.name.split('.').pop()}`;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/resume-${Date.now()}.${fileExt}`;
+      console.log('Uploading file with path:', fileName);
+      
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('resumes')
         .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw uploadError;
+      }
 
       // Step 2: Extract text from file
       setUploadProgress(40);
