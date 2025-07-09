@@ -101,19 +101,15 @@ export const Navbar = () => {
   };
 
   const mainNavItems = [
-    { 
-      to: "/network", 
-      label: "Network", 
-      showLogo: true 
-    },
+    { to: "/network", label: "Network" },
+    { to: "/dashboard", label: "Dashboard" },
     { to: "/jobs", label: "Jobs" },
+    { to: "/employer", label: "Employer" },
+    { to: "/companies", label: "Companies" },
     { to: "/resume-builder", label: "Resume Builder" },
     { to: "/tools", label: "Tools" },
-    { to: "/companies", label: "Companies" },
     { to: "/learning", label: "Learning" },
     { to: "/career-map", label: "Career Map" },
-    { to: "/employer", label: "Employer" },
-    { to: "/", label: "TalentXcel" },
   ];
 
   const isCurrentPath = (path: string) => {
@@ -160,15 +156,7 @@ export const Navbar = () => {
                           : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                         }`}
                     >
-                      {item.showLogo ? (
-                        <img 
-                          src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                          alt="TalentXcel" 
-                          className="h-6 w-6 rounded-sm"
-                        />
-                      ) : (
-                        <span>{item.label}</span>
-                      )}
+                      <span>{item.label}</span>
                     </Link>
                   );
                 })}
@@ -305,15 +293,7 @@ export const Navbar = () => {
                       }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    {item.showLogo ? (
-                      <img 
-                        src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                        alt="TalentXcel" 
-                        className="h-6 w-6 rounded-sm"
-                      />
-                    ) : (
-                      <span>{item.label}</span>
-                    )}
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
