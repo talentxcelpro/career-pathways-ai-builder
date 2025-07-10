@@ -30,7 +30,8 @@ import {
   MessageCircle,
   Zap,
   Sliders,
-  ArrowRight
+  ArrowRight,
+  Plus
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
@@ -164,9 +165,28 @@ const EnhancedColleges = () => {
         {/* Header */}
         <div className="text-center mb-4">
           <h1 className="text-xl font-bold text-gray-900 mb-2">Discover Your Perfect College</h1>
-          <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+          <p className="text-sm text-gray-600 max-w-2xl mx-auto mb-4">
             AI-powered discovery with comprehensive data on programs, placements, student reviews, and smart guidance.
           </p>
+          
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-4">
+            <Button
+              onClick={() => navigate('/colleges/create-request')}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-2 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Your College
+            </Button>
+            <Button
+              onClick={() => navigate('/colleges/compare')}
+              variant="outline"
+              className="border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold px-6 py-2 rounded-full"
+            >
+              <Network className="h-4 w-4 mr-2" />
+              Compare Colleges
+            </Button>
+          </div>
         </div>
 
         {/* Hero Stats */}
