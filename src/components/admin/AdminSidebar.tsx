@@ -82,6 +82,12 @@ const adminMenuItems = [
     description: 'Courses & learning paths'
   },
   {
+    title: 'Colleges',
+    url: '/admin/colleges',
+    icon: GraduationCap,
+    description: 'College management & verification'
+  },
+  {
     title: 'Career Map',
     url: '/admin/career-map',
     icon: Map,
