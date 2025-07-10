@@ -87,10 +87,10 @@ const AIProfileOptimizer = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
           <Zap className="h-8 w-8 text-purple-600" />
-          AI Profile Optimizer
+          Powered by TalentXcel AI Profile Optimizer
         </h1>
         <p className="text-gray-600 mt-2">
-          Optimize your professional profile with AI-powered suggestions and keyword analysis
+          Optimize your professional profile with Powered by TalentXcel AI suggestions and keyword analysis
         </p>
       </div>
 

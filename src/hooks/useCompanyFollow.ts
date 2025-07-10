@@ -145,7 +145,7 @@ export function useFollowedCompanies(userId?: string) {
           )
         `)
         .eq('user_id', userId)
-        .order('followed_at', { ascending: false });
+        .order('created_at', { ascending: false });
       
       if (error) throw error;
       return data || [];
