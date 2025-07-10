@@ -116,7 +116,7 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
         <CardContent className="p-4 text-center">
           {/* Profile Picture */}
           <div className="relative mb-4 flex justify-center">
-            <Avatar className="w-16 h-16 border-2 border-white shadow-md">
+            <Avatar className="w-20 h-20 border-2 border-white shadow-md">
               <AvatarImage src={profile?.profile_picture_url} className="object-cover" />
               <AvatarFallback className="bg-gradient-to-br from-blue-600 to-blue-700 text-white font-bold text-lg">
                 {generateInitials(profile)}

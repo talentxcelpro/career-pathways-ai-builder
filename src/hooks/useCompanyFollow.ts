@@ -27,7 +27,7 @@ export function useCompanyFollow(companyId: string) {
         .select('id')
         .eq('company_id', companyId)
         .eq('user_id', currentUser.id)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== 'PGRST116') throw error;
       return !!data;
