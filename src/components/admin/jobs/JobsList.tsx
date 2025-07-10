@@ -11,7 +11,7 @@ import {
   Calendar,
   Building2,
   Users,
-  DollarSign
+  IndianRupee
 } from 'lucide-react';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 
@@ -89,7 +89,7 @@ export const JobsList: React.FC<JobsListProps> = ({ jobs, isLoading }) => {
                         </div>
                         {(job.salary_min || job.salary_max) && (
                           <div className="flex items-center gap-1">
-                            <DollarSign className="h-4 w-4" />
+                            <IndianRupee className="h-4 w-4" />
                             {formatSalaryRange(job.salary_min, job.salary_max)}
                           </div>
                         )}

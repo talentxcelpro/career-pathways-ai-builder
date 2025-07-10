@@ -2403,18 +2403,21 @@ export type Database = {
       company_follows: {
         Row: {
           company_id: string | null
+          created_at: string | null
           followed_at: string | null
           id: string
           user_id: string | null
         }
         Insert: {
           company_id?: string | null
+          created_at?: string | null
           followed_at?: string | null
           id?: string
           user_id?: string | null
         }
         Update: {
           company_id?: string | null
+          created_at?: string | null
           followed_at?: string | null
           id?: string
           user_id?: string | null

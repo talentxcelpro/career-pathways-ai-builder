@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MapPin, DollarSign, Clock, Eye, Building, FileText } from "lucide-react";
+import { MapPin, IndianRupee, Clock, Eye, Building, FileText } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { formatSalaryRange } from "@/utils/currencyUtils";
@@ -223,7 +223,7 @@ const MyApplications = () => {
                         </div>
                         {(application.jobs.salary_min || application.jobs.salary_max) && (
                           <div className="flex items-center gap-1">
-                            <DollarSign className="h-4 w-4" />
+                            <IndianRupee className="h-4 w-4" />
                             <span>{formatSalaryRange(application.jobs.salary_min, application.jobs.salary_max)}</span>
                           </div>
                         )}

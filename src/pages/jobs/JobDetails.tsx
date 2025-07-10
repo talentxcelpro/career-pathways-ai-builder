@@ -9,7 +9,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { 
   MapPin, 
-  DollarSign, 
+  IndianRupee, 
   Clock, 
   Building2, 
   Users, 
@@ -191,7 +191,7 @@ const JobDetails = () => {
                   </div>
                   {(job.salary_min || job.salary_max) && (
                     <div className="flex items-center">
-                      <DollarSign className="h-4 w-4 mr-1" />
+                      <IndianRupee className="h-4 w-4 mr-1" />
                       <span>{formatSalaryRange(job.salary_min, job.salary_max)}</span>
                     </div>
                   )}
