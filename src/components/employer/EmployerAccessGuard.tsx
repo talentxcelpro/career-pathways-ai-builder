@@ -46,24 +46,34 @@ export const EmployerAccessGuard: React.FC<EmployerAccessGuardProps> = ({ childr
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
-            <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Employer Access Required</h2>
-            <p className="text-gray-600 mb-4">
-              {employerStatus === 'pending' 
-                ? 'Your employer access request is pending approval.' 
-                : employerStatus === 'rejected'
-                ? 'Your employer access request was rejected.'
-                : 'You need to be an approved employer to access this feature.'
-              }
-            </p>
-            <div className="space-y-2">
-              <Button onClick={() => navigate('/employer/request-access')}>
-                {employerStatus === 'pending' ? 'Check Status' : 'Request Access'}
-              </Button>
-              <Button variant="outline" onClick={() => window.location.reload()}>
-                Refresh Status
-              </Button>
-            </div>
+            {employerStatus === 'pending' ? (
+              <>
+                <span className="text-4xl mb-4 block">🚧</span>
+                <h2 className="text-xl font-semibold mb-2">Employer Access Required</h2>
+                <p className="text-gray-600 mb-4">
+                  Your employer access request is pending approval.
+                </p>
+                <div className="space-y-2">
+                  <Button onClick={() => navigate('/employer/request-access')}>
+                    Check Status
+                  </Button>
+                  <Button variant="outline" onClick={() => window.location.reload()}>
+                    Refresh Status
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="text-4xl mb-4 block">🏢</span>
+                <h2 className="text-xl font-semibold mb-2">Become an Employer</h2>
+                <p className="text-gray-600 mb-4">
+                  To post jobs, invite team members, and manage your company profile, request access.
+                </p>
+                <Button onClick={() => navigate('/employer/request-access')}>
+                  Request Employer Access
+                </Button>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>

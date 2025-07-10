@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Building2, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
@@ -19,14 +20,9 @@ const RequestAccess = () => {
   const queryClient = useQueryClient();
   
   const [formData, setFormData] = useState({
-    fullName: '',
     companyName: '',
-    email: user?.email || '',
-    phoneNumber: '',
-    companyWebsite: '',
-    companyDescription: '',
-    gstNumber: '',
-    linkedinProfile: '',
+    companyEmail: user?.email || '',
+    role: '',
     hiringReason: ''
   });
 
@@ -81,14 +77,9 @@ const RequestAccess = () => {
         .from('employer_requests')
         .insert({
           user_id: user.id,
-          full_name: requestData.fullName,
           company_name: requestData.companyName,
-          email: requestData.email,
-          phone_number: requestData.phoneNumber,
-          company_website: requestData.companyWebsite,
-          company_description: requestData.companyDescription,
-          gst_number: requestData.gstNumber,
-          linkedin_profile: requestData.linkedinProfile,
+          email: requestData.companyEmail,
+          role: requestData.role,
           hiring_reason: requestData.hiringReason,
           status: 'pending'
         });
@@ -119,7 +110,7 @@ const RequestAccess = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.fullName || !formData.companyName || !formData.email) {
+    if (!formData.companyName || !formData.companyEmail || !formData.role) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -178,12 +169,12 @@ const RequestAccess = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="font-semibold text-gray-900">Company Information</h3>
-                  <p className="text-sm text-gray-600">Company: {existingRequest.company_name}</p>
-                  <p className="text-sm text-gray-600">Contact: {existingRequest.full_name}</p>
-                  <p className="text-sm text-gray-600">Email: {existingRequest.email}</p>
-                </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Company Information</h3>
+                    <p className="text-sm text-gray-600">Company: {existingRequest.company_name}</p>
+                    <p className="text-sm text-gray-600">Email: {existingRequest.email}</p>
+                    <p className="text-sm text-gray-600">Role: {existingRequest.role}</p>
+                  </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">Request Details</h3>
                   <p className="text-sm text-gray-600">
@@ -253,96 +244,50 @@ const RequestAccess = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="fullName">Full Name *</Label>
-                  <Input
-                    id="fullName"
-                    value={formData.fullName}
-                    onChange={(e) => handleInputChange('fullName', e.target.value)}
-                    placeholder="Your full name"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="companyName">Company Name *</Label>
-                  <Input
-                    id="companyName"
-                    value={formData.companyName}
-                    onChange={(e) => handleInputChange('companyName', e.target.value)}
-                    placeholder="Your company name"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="email">Email Address *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    placeholder="your@company.com"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phoneNumber">Phone Number</Label>
-                  <Input
-                    id="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                    placeholder="+91 98765 43210"
-                  />
-                </div>
-              </div>
-
               <div>
-                <Label htmlFor="companyWebsite">Company Website</Label>
+                <Label htmlFor="companyName">Company Name *</Label>
                 <Input
-                  id="companyWebsite"
-                  value={formData.companyWebsite}
-                  onChange={(e) => handleInputChange('companyWebsite', e.target.value)}
-                  placeholder="https://yourcompany.com"
+                  id="companyName"
+                  value={formData.companyName}
+                  onChange={(e) => handleInputChange('companyName', e.target.value)}
+                  placeholder="Your company name"
+                  required
                 />
               </div>
 
               <div>
-                <Label htmlFor="companyDescription">Company Description</Label>
-                <Textarea
-                  id="companyDescription"
-                  value={formData.companyDescription}
-                  onChange={(e) => handleInputChange('companyDescription', e.target.value)}
-                  placeholder="Brief description of your company and what you do"
-                  rows={3}
+                <Label htmlFor="companyEmail">Company Email *</Label>
+                <Input
+                  id="companyEmail"
+                  type="email"
+                  value={formData.companyEmail}
+                  onChange={(e) => handleInputChange('companyEmail', e.target.value)}
+                  placeholder="your@company.com (must be official email)"
+                  required
                 />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="gstNumber">GST Number (Optional)</Label>
-                  <Input
-                    id="gstNumber"
-                    value={formData.gstNumber}
-                    onChange={(e) => handleInputChange('gstNumber', e.target.value)}
-                    placeholder="GST registration number"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="linkedinProfile">LinkedIn Profile</Label>
-                  <Input
-                    id="linkedinProfile"
-                    value={formData.linkedinProfile}
-                    onChange={(e) => handleInputChange('linkedinProfile', e.target.value)}
-                    placeholder="https://linkedin.com/in/yourprofile"
-                  />
-                </div>
+                <p className="text-sm text-gray-500 mt-1">Must be your official company email address</p>
               </div>
 
               <div>
-                <Label htmlFor="hiringReason">Why do you want to hire through TalentXcel?</Label>
+                <Label htmlFor="role">Your Role *</Label>
+                <Select value={formData.role} onValueChange={(value) => handleInputChange('role', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="founder">Founder</SelectItem>
+                    <SelectItem value="ceo">CEO</SelectItem>
+                    <SelectItem value="hr_manager">HR Manager</SelectItem>
+                    <SelectItem value="hiring_manager">Hiring Manager</SelectItem>
+                    <SelectItem value="recruiter">Recruiter</SelectItem>
+                    <SelectItem value="team_lead">Team Lead</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="hiringReason">Why you want access (optional)</Label>
                 <Textarea
                   id="hiringReason"
                   value={formData.hiringReason}
