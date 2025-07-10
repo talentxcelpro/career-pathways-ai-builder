@@ -59,41 +59,41 @@ export const TopCompaniesHiring: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white py-6">
+    <div className="bg-white py-1">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-4">
-          <h2 className="text-lg font-semibold text-gray-900 mb-1">
+        <div className="text-center mb-1">
+          <h2 className="text-xs font-medium text-gray-900 mb-0.5">
             💼 Top Companies Hiring
           </h2>
-          <p className="text-sm text-gray-600">Join industry leaders and fast-growing startups</p>
+          <p className="text-xs text-gray-600">Join industry leaders and fast-growing startups</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           {companies.map((company) => (
             <Card key={company.id} className="hover:shadow-lg transition-all duration-200 cursor-pointer group">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3">
-                  <Avatar className="h-12 w-12 ring-2 ring-gray-100">
+              <CardContent className="p-2">
+                <div className="flex items-start gap-2">
+                  <Avatar className="h-8 w-8 ring-1 ring-gray-100">
                     <AvatarImage src={company.logo_url} alt={company.name} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
+                    <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
                       {company.name.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   
                   <div className="flex-1">
-                    <h3 className="font-semibold text-sm text-gray-900 mb-1 group-hover:text-primary transition-colors">
+                    <h3 className="font-medium text-xs text-gray-900 mb-0.5 group-hover:text-primary transition-colors">
                       {company.name}
                     </h3>
-                    <p className="text-xs text-gray-600 mb-1">{company.industry}</p>
-                    <p className="text-xs text-gray-500 mb-2 line-clamp-2">{company.description}</p>
+                    <p className="text-xs text-gray-600 mb-0.5">{company.industry}</p>
+                    <p className="text-xs text-gray-500 mb-1 line-clamp-1">{company.description}</p>
                     
-                    <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+                    <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
                       <span className="flex items-center gap-1">
-                        <Building className="h-3 w-3" />
+                        <Building className="h-2 w-2" />
                         {company.employee_count_range || 'N/A'}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Users className="h-3 w-3" />
+                        <Users className="h-2 w-2" />
                         {company.open_jobs} jobs
                       </span>
                     </div>
@@ -101,10 +101,10 @@ export const TopCompaniesHiring: React.FC = () => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="w-full text-xs group-hover:bg-primary group-hover:text-white transition-colors"
+                      className="w-full text-xs py-1 group-hover:bg-primary group-hover:text-white transition-colors"
                     >
                       View Jobs
-                      <ArrowRight className="h-3 w-3 ml-1" />
+                      <ArrowRight className="h-2 w-2 ml-1" />
                     </Button>
                   </div>
                 </div>
@@ -113,10 +113,10 @@ export const TopCompaniesHiring: React.FC = () => {
           ))}
         </div>
         
-        <div className="text-center mt-4">
-          <Button variant="outline" size="sm">
+        <div className="text-center mt-2">
+          <Button variant="outline" size="sm" className="text-xs py-1">
             View All Companies
-            <ArrowRight className="h-3 w-3 ml-2" />
+            <ArrowRight className="h-2 w-2 ml-1" />
           </Button>
         </div>
       </div>
