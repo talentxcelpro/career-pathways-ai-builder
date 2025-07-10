@@ -75,6 +75,42 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   return (
     <div className="w-full max-w-sm mx-auto">
       <Card className="overflow-hidden border border-gray-200 shadow-sm bg-white rounded-lg">
+        {/* Banner Image */}
+        <div className="relative h-16 bg-gradient-to-r from-blue-500 to-blue-600 overflow-hidden">
+          {profile?.banner_url ? (
+            <img 
+              src={profile.banner_url} 
+              alt="Profile banner"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <img 
+              src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&h=200"
+              alt="Default banner"
+              className="w-full h-full object-cover"
+            />
+          )}
+          {isOwnProfile && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-2 right-2 h-6 w-6 p-0 bg-black/20 hover:bg-black/30 rounded-full"
+              onClick={() => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (file) handleImageUpload('banner', file);
+                };
+                input.click();
+              }}
+              disabled={uploading === 'banner'}
+            >
+              <Camera className="h-3 w-3 text-white" />
+            </Button>
+          )}
+        </div>
 
         {/* Profile Content */}
         <CardContent className="p-4 text-center">
