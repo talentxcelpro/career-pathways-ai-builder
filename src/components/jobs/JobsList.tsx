@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { JobCard } from '@/components/jobs/JobCard';
+import { ModernJobCard } from '@/components/jobs/ModernJobCard';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Sparkles } from "lucide-react";
 
 interface JobsListProps {
   jobs: any[];
@@ -48,39 +49,43 @@ export const JobsList: React.FC<JobsListProps> = ({
         </Select>
       </div>
 
-      {/* Featured Jobs */}
+      {/* Featured Jobs Priority Section */}
       {featuredJobs.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <TrendingUp className="h-5 w-5 mr-2 text-yellow-500" />
-            Featured Jobs
-          </h2>
-          <div className="space-y-4">
-            {featuredJobs.map((job) => (
-              <JobCard
-                key={job.id}
-                job={job}
-                onSave={onSaveJob}
-                isSaved={savedJobs.includes(job.id)}
-              />
-            ))}
+          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-6 border border-primary/20">
+            <h2 className="text-2xl font-bold mb-6 flex items-center text-primary">
+              <Sparkles className="h-6 w-6 mr-3 text-yellow-500" />
+              🏆 Featured Jobs (Top Priority)
+            </h2>
+            <div className="space-y-4">
+              {featuredJobs.map((job) => (
+                <ModernJobCard
+                  key={job.id}
+                  job={job}
+                  onSave={onSaveJob}
+                  isSaved={savedJobs.includes(job.id)}
+                  variant="featured"
+                />
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Regular Jobs */}
+      {/* All Jobs List */}
       {regularJobs.length > 0 && (
         <div>
           {featuredJobs.length > 0 && (
-            <h2 className="text-xl font-semibold mb-4">All Jobs</h2>
+            <h2 className="text-2xl font-bold mb-6 text-foreground">🗂 All Jobs List</h2>
           )}
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
             {regularJobs.map((job) => (
-              <JobCard
+              <ModernJobCard
                 key={job.id}
                 job={job}
                 onSave={onSaveJob}
                 isSaved={savedJobs.includes(job.id)}
+                variant="regular"
               />
             ))}
           </div>

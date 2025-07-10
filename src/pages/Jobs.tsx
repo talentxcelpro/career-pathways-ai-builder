@@ -13,7 +13,7 @@ import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
 import { updateMetaTags } from '@/utils/metaTags';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Search, MapPin, Briefcase, Sparkles } from 'lucide-react';
+import { Search, MapPin, Briefcase, Sparkles, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
@@ -296,112 +296,109 @@ const Jobs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-background to-accent/5">
       <OfflineIndicator />
       
-      {/* Compact Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-          <div className="text-center mb-2">
-            <h1 className="text-lg md:text-xl font-bold mb-1">
-              Find Your Dream Job
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-primary via-primary/90 to-secondary text-primary-foreground relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              🚀 Find Your Dream Job
             </h1>
-            <p className="text-blue-100 text-xs">
-              Discover thousands of opportunities from top companies
+            <p className="text-xl text-primary-foreground/90 mb-2">
+              ✨ Personalized by AI • Verified by Experts • Applied by Thousands
             </p>
           </div>
 
-          {/* AI-Powered Universal Search */}
-          <div className="max-w-2xl mx-auto">
-            <UniversalSearchBar
-              searchType="jobs"
-              onSearch={handleUniversalSearch}
-              placeholder="Try: 'remote React developer jobs in Mumbai above 15 LPA'"
-              className="bg-white rounded-lg shadow-lg"
-              showSuggestions={true}
-              showFilters={true}
-            />
-          </div>
-        </div>
-      </div>
+          {/* Enhanced Search Section */}
+          <div className="max-w-4xl mx-auto mb-8">
+            <div className="flex flex-col md:flex-row gap-4 mb-4">
+              <div className="flex-1">
+                <UniversalSearchBar
+                  searchType="jobs"
+                  onSearch={handleUniversalSearch}
+                  placeholder="Job Title, Skills, Companies..."
+                  className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border-0"
+                  showSuggestions={true}
+                  showFilters={false}
+                />
+              </div>
+              <div className="md:w-80">
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    placeholder="Location"
+                    value={filters.location}
+                    onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                    className="pl-10 h-12 bg-white/95 backdrop-blur-sm border-0 rounded-2xl shadow-xl"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Quick Action Buttons */}
+            <div className="flex flex-wrap gap-2 justify-center">
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="rounded-full bg-white/20 hover:bg-white/30 text-white border-white/30"
+                onClick={() => setFilters(prev => ({ ...prev, is_remote: true }))}
+              >
+                Remote
+              </Button>
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="rounded-full bg-white/20 hover:bg-white/30 text-white border-white/30"
+                onClick={() => handleUniversalSearch("Ask AI to find best jobs for me")}
+              >
+                🧠 Ask AI to find best jobs for me
+              </Button>
+            </div>
 
-      {/* Compact Stats Section */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-            <button 
-              onClick={() => {/* Scroll to jobs list */}}
-              className="flex flex-col items-center hover:bg-blue-50 p-2 rounded-lg transition-colors"
-            >
-              <div className="bg-blue-100 p-1.5 rounded-full mb-1">
-                <Briefcase className="h-4 w-4 text-blue-600" />
+            {/* Suggested Searches */}
+            <div className="text-center mt-4">
+              <p className="text-sm text-primary-foreground/70 mb-2">🌐 Suggested Searches:</p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {['React Dev', 'SAP Consultant', 'Remote Jobs', 'Noida', '10+ LPA'].map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => handleUniversalSearch(suggestion)}
+                    className="text-xs px-3 py-1 bg-white/20 hover:bg-white/30 rounded-full text-white transition-colors"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
               </div>
-              <div className="text-lg font-bold text-gray-900">{allJobs.length}</div>
-              <div className="text-xs text-gray-600">Total Jobs</div>
-            </button>
-            <button 
-              onClick={() => setFilters(prev => ({ ...prev, search: 'featured' }))}
-              className="flex flex-col items-center hover:bg-green-50 p-2 rounded-lg transition-colors"
-            >
-              <div className="bg-green-100 p-1.5 rounded-full mb-1">
-                <Sparkles className="h-4 w-4 text-green-600" />
-              </div>
-              <div className="text-lg font-bold text-gray-900">{featuredJobs.length}</div>
-              <div className="text-xs text-gray-600">Featured</div>
-            </button>
-            <button 
-              onClick={() => setFilters(prev => ({ ...prev, is_remote: true }))}
-              className="flex flex-col items-center hover:bg-purple-50 p-2 rounded-lg transition-colors"
-            >
-              <div className="bg-purple-100 p-1.5 rounded-full mb-1">
-                <MapPin className="h-4 w-4 text-purple-600" />
-              </div>
-              <div className="text-lg font-bold text-gray-900">{remoteJobs.length}</div>
-              <div className="text-xs text-gray-600">Remote</div>
-            </button>
-            <div className="flex flex-col items-center p-2">
-              <div className="bg-orange-100 p-1.5 rounded-full mb-1">
-                <Briefcase className="h-4 w-4 text-orange-600" />
-              </div>
-              <div className="text-lg font-bold text-gray-900">{categories.length}</div>
-              <div className="text-xs text-gray-600">Categories</div>
             </div>
           </div>
         </div>
       </div>
 
-      <JobsCategories 
-        categories={categories} 
-        onCategoryClick={(categoryName) => {
-          setFilters(prev => ({ ...prev, search: categoryName }));
-          refetch();
-        }}
-      />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-lg font-bold text-gray-900">Job Opportunities</h2>
-            <p className="text-sm text-gray-600 mt-0.5">Find your perfect match from {allJobs.length} active positions</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <AutoRefreshIndicator 
-              isConnected={isConnected} 
-              lastRefresh={lastRefresh}
-            />
-            <DataFreshness 
-              lastUpdated={new Date(dataUpdatedAt || Date.now())}
-              onRefresh={() => {
-                refetch();
-              }}
-              isRefreshing={isLoading}
-            />
+      {/* Performance Metrics */}
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="text-center">
+            <p className="text-sm font-medium text-gray-700">
+              🎯 2,430 professionals found jobs this month through TalentXcel AI.
+            </p>
           </div>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      {/* Main Content Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          
+          {/* Smart Filters Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border p-3 sticky top-4">
+            <div className="bg-card rounded-2xl shadow-lg border p-6 sticky top-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Filter className="h-5 w-5 text-primary" />
+                <h3 className="font-semibold text-lg">🧠 Smart Filters</h3>
+              </div>
               <EnhancedJobFilters
                 filters={filters}
                 onFiltersChange={setFilters}
@@ -410,7 +407,26 @@ const Jobs = () => {
             </div>
           </div>
           
+          {/* Jobs Content */}
           <div className="lg:col-span-3">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Job Opportunities</h2>
+                <p className="text-muted-foreground">Find your perfect match from {allJobs.length} active positions</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <AutoRefreshIndicator 
+                  isConnected={isConnected} 
+                  lastRefresh={lastRefresh}
+                />
+                <DataFreshness 
+                  lastUpdated={new Date(dataUpdatedAt || Date.now())}
+                  onRefresh={() => refetch()}
+                  isRefreshing={isLoading}
+                />
+              </div>
+            </div>
+
             <JobsList
               jobs={sortedJobs}
               featuredJobs={featuredJobs}
