@@ -226,18 +226,34 @@ const Tools = () => {
               </div>
             </div>
             <div className="hidden md:flex items-center gap-4 text-xs">
-              <div className="text-center">
-                <div className="font-bold text-sm">{tools.length}</div>
-                <p className="text-blue-100">Tools</p>
-              </div>
-              <div className="text-center">
-                <div className="font-bold text-sm">{freeTools.length}</div>
-                <p className="text-blue-100">Free</p>
-              </div>
-              <div className="text-center">
+              <button 
+                onClick={() => navigate('/tools?filter=used')}
+                className="text-center hover:bg-white/10 rounded-lg p-2 transition-all duration-200 hover-scale cursor-pointer"
+              >
                 <div className="font-bold text-sm">{Object.values(toolUsage).reduce((a, b) => a + b, 0)}</div>
                 <p className="text-blue-100">Used</p>
-              </div>
+              </button>
+              <button 
+                onClick={() => navigate('/tools?filter=completed')}
+                className="text-center hover:bg-white/10 rounded-lg p-2 transition-all duration-200 hover-scale cursor-pointer"
+              >
+                <div className="font-bold text-sm">2</div>
+                <p className="text-blue-100">Done</p>
+              </button>
+              <button 
+                onClick={() => navigate('/bookmarks')}
+                className="text-center hover:bg-white/10 rounded-lg p-2 transition-all duration-200 hover-scale cursor-pointer"
+              >
+                <div className="font-bold text-sm">0</div>
+                <p className="text-blue-100">Saved</p>
+              </button>
+              <button 
+                onClick={() => navigate('/tools?filter=available')}
+                className="text-center hover:bg-white/10 rounded-lg p-2 transition-all duration-200 hover-scale cursor-pointer"
+              >
+                <div className="font-bold text-sm">{tools.filter(t => !t.is_premium).length}</div>
+                <p className="text-blue-100">Available</p>
+              </button>
             </div>
           </div>
         </div>
