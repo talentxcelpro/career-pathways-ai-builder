@@ -222,6 +222,117 @@ export type Database = {
           },
         ]
       }
+      ai_features_status: {
+        Row: {
+          average_response_time: number | null
+          created_at: string
+          enabled: boolean
+          error_count: number | null
+          error_message: string | null
+          feature_key: string
+          feature_name: string
+          id: string
+          last_checked: string | null
+          last_error: string | null
+          last_success: string | null
+          module_name: string
+          notes: string | null
+          prompt_version: string | null
+          success_count: number | null
+          updated_at: string
+          usage_count: number | null
+        }
+        Insert: {
+          average_response_time?: number | null
+          created_at?: string
+          enabled?: boolean
+          error_count?: number | null
+          error_message?: string | null
+          feature_key: string
+          feature_name: string
+          id?: string
+          last_checked?: string | null
+          last_error?: string | null
+          last_success?: string | null
+          module_name: string
+          notes?: string | null
+          prompt_version?: string | null
+          success_count?: number | null
+          updated_at?: string
+          usage_count?: number | null
+        }
+        Update: {
+          average_response_time?: number | null
+          created_at?: string
+          enabled?: boolean
+          error_count?: number | null
+          error_message?: string | null
+          feature_key?: string
+          feature_name?: string
+          id?: string
+          last_checked?: string | null
+          last_error?: string | null
+          last_success?: string | null
+          module_name?: string
+          notes?: string | null
+          prompt_version?: string | null
+          success_count?: number | null
+          updated_at?: string
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
+      ai_prompt_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          feature_key: string
+          id: string
+          is_active: boolean
+          max_tokens: number | null
+          model_name: string | null
+          module_name: string
+          prompt_template: string
+          system_message: string | null
+          temperature: number | null
+          template_name: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          feature_key: string
+          id?: string
+          is_active?: boolean
+          max_tokens?: number | null
+          model_name?: string | null
+          module_name: string
+          prompt_template: string
+          system_message?: string | null
+          temperature?: number | null
+          template_name: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          feature_key?: string
+          id?: string
+          is_active?: boolean
+          max_tokens?: number | null
+          model_name?: string | null
+          module_name?: string
+          prompt_template?: string
+          system_message?: string | null
+          temperature?: number | null
+          template_name?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
       ai_resume_suggestions: {
         Row: {
           confidence_score: number | null
@@ -7334,6 +7445,16 @@ export type Database = {
           p_link?: string
         }
         Returns: number
+      }
+      update_ai_feature_status: {
+        Args: {
+          p_module_name: string
+          p_feature_key: string
+          p_success: boolean
+          p_response_time?: number
+          p_error_message?: string
+        }
+        Returns: undefined
       }
       update_upload_progress: {
         Args: {
