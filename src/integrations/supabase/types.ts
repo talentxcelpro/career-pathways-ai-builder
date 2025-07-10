@@ -1164,6 +1164,53 @@ export type Database = {
           },
         ]
       }
+      college_analytics: {
+        Row: {
+          application_completions: number | null
+          application_starts: number | null
+          bookmark_count: number | null
+          college_id: string | null
+          course_views: number | null
+          created_at: string | null
+          date: string | null
+          id: string
+          profile_views: number | null
+          unique_visitors: number | null
+        }
+        Insert: {
+          application_completions?: number | null
+          application_starts?: number | null
+          bookmark_count?: number | null
+          college_id?: string | null
+          course_views?: number | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          profile_views?: number | null
+          unique_visitors?: number | null
+        }
+        Update: {
+          application_completions?: number | null
+          application_starts?: number | null
+          bookmark_count?: number | null
+          college_id?: string | null
+          course_views?: number | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          profile_views?: number | null
+          unique_visitors?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_analytics_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       college_bookmarks: {
         Row: {
           college_id: string
@@ -1312,6 +1359,60 @@ export type Database = {
           },
         ]
       }
+      college_creation_requests: {
+        Row: {
+          address: string | null
+          admin_notes: string | null
+          city: string | null
+          college_email: string
+          college_name: string
+          contact_person: string
+          created_at: string | null
+          documents_urls: string[] | null
+          id: string
+          official_website: string | null
+          phone: string | null
+          requester_id: string
+          state: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          admin_notes?: string | null
+          city?: string | null
+          college_email: string
+          college_name: string
+          contact_person: string
+          created_at?: string | null
+          documents_urls?: string[] | null
+          id?: string
+          official_website?: string | null
+          phone?: string | null
+          requester_id: string
+          state?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          admin_notes?: string | null
+          city?: string | null
+          college_email?: string
+          college_name?: string
+          contact_person?: string
+          created_at?: string | null
+          documents_urls?: string[] | null
+          id?: string
+          official_website?: string | null
+          phone?: string | null
+          requester_id?: string
+          state?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       college_events: {
         Row: {
           brochure_url: string | null
@@ -1444,6 +1545,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "college_media_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      college_posts: {
+        Row: {
+          college_id: string | null
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          post_type: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          college_id?: string | null
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          post_type?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          college_id?: string | null
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          post_type?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_posts_college_id_fkey"
             columns: ["college_id"]
             isOneToOne: false
             referencedRelation: "colleges"
@@ -8094,6 +8245,10 @@ export type Database = {
       accept_team_invitation: {
         Args: { invitation_token: string }
         Returns: Json
+      }
+      approve_college_creation: {
+        Args: { request_id: string }
+        Returns: string
       }
       approve_company_access_request: {
         Args: { request_id: string }

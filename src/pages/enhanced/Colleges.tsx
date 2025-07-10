@@ -67,13 +67,13 @@ const EnhancedColleges = () => {
         query = query.or(`name.ilike.%${searchTerm}%,city.ilike.%${searchTerm}%,state.ilike.%${searchTerm}%,college_type.ilike.%${searchTerm}%`);
       }
       
-      if (filters.collegeType) {
+      if (filters.collegeType && filters.collegeType !== 'all') {
         query = query.eq('college_type', filters.collegeType);
       }
-      if (filters.city) {
+      if (filters.city && filters.city !== 'all') {
         query = query.eq('city', filters.city);
       }
-      if (filters.state) {
+      if (filters.state && filters.state !== 'all') {
         query = query.eq('state', filters.state);
       }
       
@@ -212,7 +212,7 @@ const EnhancedColleges = () => {
                 <SelectValue placeholder="College Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 {filterOptions.college_types.map((type) => (
                   <SelectItem key={type} value={type}>{type}</SelectItem>
                 ))}
@@ -224,7 +224,7 @@ const EnhancedColleges = () => {
                 <SelectValue placeholder="State" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All States</SelectItem>
+                <SelectItem value="all">All States</SelectItem>
                 {filterOptions.states.map((state) => (
                   <SelectItem key={state} value={state}>{state}</SelectItem>
                 ))}
@@ -236,7 +236,7 @@ const EnhancedColleges = () => {
                 <SelectValue placeholder="City" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Cities</SelectItem>
+                <SelectItem value="all">All Cities</SelectItem>
                 {filterOptions.cities.map((city) => (
                   <SelectItem key={city} value={city}>{city}</SelectItem>
                 ))}
