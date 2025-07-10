@@ -208,14 +208,14 @@ const EnhancedColleges = () => {
           >
             Verified Only
           </Button>
-          <Select value={filters.college_type?.[0] || ''} onValueChange={(value) => 
-            updateFilter('college_type', value ? [value] : [])
+          <Select value={filters.college_type?.[0] || 'all'} onValueChange={(value) => 
+            updateFilter('college_type', value === 'all' ? [] : [value])
           }>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Institution Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Types</SelectItem>
+              <SelectItem value="all">All Types</SelectItem>
               {filterOptions.college_types?.map((type: string) => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}

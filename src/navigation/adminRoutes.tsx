@@ -19,6 +19,7 @@ import CreateCourse from "../pages/admin/learning/CreateCourse";
 import CreatePlan from "../pages/admin/pricing/CreatePlan";
 import EmailAutomationPage from "../pages/admin/EmailAutomation";
 import AIManagement from "../pages/admin/AIManagement";
+import CollegesManagement from "../pages/admin/CollegesManagement";
 
 export const adminRoutes = [
   {
@@ -83,6 +84,15 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessLearning" as const,
     description: "Courses and learning paths"
+  },
+  {
+    title: "Colleges Management",
+    to: "/admin/colleges",
+    icon: <GraduationCap className="h-4 w-4" />,
+    page: <CollegesManagement />,
+    requiresAuth: true,
+    permission: "canAccessColleges" as const,
+    description: "College management & verification"
   },
   {
     title: "Career Map Management",
