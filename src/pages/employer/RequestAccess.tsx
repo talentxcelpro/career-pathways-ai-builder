@@ -79,7 +79,7 @@ const RequestAccess = () => {
           user_id: user.id,
           company_name: requestData.companyName,
           email: requestData.companyEmail,
-          role: requestData.role,
+          full_name: user.user_metadata?.full_name || user.email || '',
           hiring_reason: requestData.hiringReason,
           status: 'pending'
         });
@@ -110,7 +110,7 @@ const RequestAccess = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.companyName || !formData.companyEmail || !formData.role) {
+    if (!formData.companyName || !formData.companyEmail) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -173,7 +173,7 @@ const RequestAccess = () => {
                     <h3 className="font-semibold text-gray-900">Company Information</h3>
                     <p className="text-sm text-gray-600">Company: {existingRequest.company_name}</p>
                     <p className="text-sm text-gray-600">Email: {existingRequest.email}</p>
-                    <p className="text-sm text-gray-600">Role: {existingRequest.role}</p>
+                    {/* Role field will be available after migration */}
                   </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">Request Details</h3>
