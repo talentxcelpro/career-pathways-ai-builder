@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { 
   MapPin, 
-  DollarSign, 
+  IndianRupee, 
   Clock, 
   Building2, 
   Users, 
@@ -178,7 +178,7 @@ export default function EnhancedJobCard({
             </div>
             {(job.salary_min || job.salary_max) && (
               <div className="flex items-center">
-                <DollarSign className="h-4 w-4 mr-1" />
+                <IndianRupee className="h-4 w-4 mr-1" />
                 <span>{formatSalaryRange(job.salary_min, job.salary_max)}</span>
               </div>
             )}

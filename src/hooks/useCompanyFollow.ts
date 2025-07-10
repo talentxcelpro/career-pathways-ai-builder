@@ -53,16 +53,27 @@ export function useCompanyFollow(companyId: string) {
   // Follow mutation
   const followMutation = useMutation({
     mutationFn: async () => {
-      if (!currentUser) throw new Error('Must be logged in');
+      if (!currentUser) {
+        console.error('Follow attempt without user authentication');
+        throw new Error('Must be logged in');
+      }
       
-      const { error } = await supabase
+      console.log('Attempting to follow company:', { companyId, userId: currentUser.id });
+      
+      const { data, error } = await supabase
         .from('company_follows')
         .insert({
           company_id: companyId,
           user_id: currentUser.id,
-        });
+        })
+        .select();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase follow error:', error);
+        throw error;
+      }
+      
+      console.log('Follow successful:', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['company-follow', companyId] });
@@ -70,16 +81,26 @@ export function useCompanyFollow(companyId: string) {
       queryClient.invalidateQueries({ queryKey: ['user-followed-companies'] });
       toast.success('Company followed successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to follow company');
-      console.error('Follow error:', error);
+    onError: (error: any) => {
+      console.error('Follow mutation error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      toast.error(`Failed to follow company: ${error.message}`);
     },
   });
 
   // Unfollow mutation
   const unfollowMutation = useMutation({
     mutationFn: async () => {
-      if (!currentUser) throw new Error('Must be logged in');
+      if (!currentUser) {
+        console.error('Unfollow attempt without user authentication');
+        throw new Error('Must be logged in');
+      }
+      
+      console.log('Attempting to unfollow company:', { companyId, userId: currentUser.id });
       
       const { error } = await supabase
         .from('company_follows')
@@ -87,7 +108,12 @@ export function useCompanyFollow(companyId: string) {
         .eq('company_id', companyId)
         .eq('user_id', currentUser.id);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase unfollow error:', error);
+        throw error;
+      }
+      
+      console.log('Unfollow successful');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['company-follow', companyId] });
@@ -95,9 +121,14 @@ export function useCompanyFollow(companyId: string) {
       queryClient.invalidateQueries({ queryKey: ['user-followed-companies'] });
       toast.success('Company unfollowed');
     },
-    onError: (error) => {
-      toast.error('Failed to unfollow company');
-      console.error('Unfollow error:', error);
+    onError: (error: any) => {
+      console.error('Unfollow mutation error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      toast.error(`Failed to unfollow company: ${error.message}`);
     },
   });
 
