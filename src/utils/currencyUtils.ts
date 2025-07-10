@@ -5,11 +5,11 @@ export const formatCurrency = (amount: number | null | undefined): string => {
   
   // Format for Indian currency system using Thousand & Lacs
   if (amount >= 100000) {
-    return `₹${(amount / 100000).toFixed(1)} Lacs`;
+    return `${(amount / 100000).toFixed(1)} Lacs`;
   } else if (amount >= 1000) {
-    return `₹${(amount / 1000).toFixed(1)} Thousand`;
+    return `${(amount / 1000).toFixed(1)} Thousand`;
   } else {
-    return `₹${amount.toLocaleString('en-IN')}`;
+    return `${amount.toLocaleString('en-IN')}`;
   }
 };
 
@@ -22,10 +22,10 @@ export const formatSalaryRange = (min?: number, max?: number): string => {
 
 export const formatCompactCurrency = (amount: number): string => {
   if (amount >= 100000) {
-    return `₹${(amount / 100000).toFixed(0)}L`;
+    return `${(amount / 100000).toFixed(0)}L`;
   } else if (amount >= 1000) {
-    return `₹${(amount / 1000).toFixed(0)}k`;
+    return `${(amount / 1000).toFixed(0)}k`;
   } else {
-    return `₹${amount}`;
+    return `${amount}`;
   }
 };

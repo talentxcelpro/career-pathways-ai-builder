@@ -206,7 +206,7 @@ const JobMatcher = () => {
                       <Label htmlFor="salary">Expected Salary Range</Label>
                       <Input
                         id="salary"
-                        placeholder="e.g., $80,000 - $120,000"
+                        placeholder="e.g., 80,000 - 1,20,000"
                         value={salary}
                         onChange={(e) => setSalary(e.target.value)}
                       />

@@ -357,7 +357,7 @@ Best regards,
                   <Label htmlFor="salary">Salary Expectation</Label>
                   <Input
                     id="salary"
-                    placeholder="e.g., $80,000 - $90,000"
+                    placeholder="e.g., 80,000 - 90,000"
                     value={formData.salary_expectation}
                     onChange={(e) => handleInputChange('salary_expectation', e.target.value)}
                   />
