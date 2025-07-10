@@ -61,8 +61,8 @@ export const TopCompaniesHiring: React.FC = () => {
   return (
     <div className="bg-white py-0.5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-1">
-          <h2 className="text-xs font-medium text-gray-700 mb-0">
+        <div className="mb-0.5">
+          <h2 className="text-[10px] font-normal text-gray-600 mb-0">
             Companies with Hot Jobs
           </h2>
         </div>
