@@ -151,35 +151,40 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
 
               {/* Profile Info */}
               <div className="pt-2 flex-1">
-                <h2 className="text-lg font-bold text-gray-900 leading-tight">
+                {/* Name and Title in LinkedIn style */}
+                <h2 className="text-lg font-bold text-gray-900 leading-tight mb-1">
                   {formatDisplayName(profile)}
-                  {profile?.title && (
-                    <>
-                      <span className="text-gray-400 mx-2">|</span>
-                      <span className="text-sm font-normal text-gray-600">{profile.title}</span>
-                    </>
-                  )}
                 </h2>
-                {profile?.headline && (
-                  <p className="text-gray-600 text-xs mb-2 leading-tight">
+                
+                {/* Professional Headline - Most Prominent */}
+                {profile?.headline ? (
+                  <p className="text-gray-700 text-sm leading-relaxed font-medium mb-2">
                     {profile.headline}
                   </p>
-                )}
+                ) : profile?.title ? (
+                  <p className="text-gray-600 text-sm leading-relaxed mb-2">
+                    {profile.title}
+                  </p>
+                ) : null}
+                
+                {/* Company */}
                 {profile?.current_company && (
                   <p className="text-gray-500 text-xs mb-2 leading-tight">
-                    {profile.current_company}
+                    📍 {profile.current_company}
                   </p>
                 )}
                 
-                {/* Compact Stats */}
-                <div className="flex items-center gap-3 text-xs text-gray-500">
-                  <div className="flex items-center gap-1">
+                {/* Compact Stats with Icons */}
+                <div className="flex items-center gap-4 text-xs text-gray-500">
+                  <div className="flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer">
                     <Users className="h-3 w-3" />
-                    <span className="font-semibold text-blue-600">{stats.connections}</span>
+                    <span className="font-semibold">{stats.connections}</span>
+                    <span>connections</span>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer">
                     <Eye className="h-3 w-3" />
-                    <span className="font-semibold text-blue-600">{stats.profileViews}</span>
+                    <span className="font-semibold">{stats.profileViews}</span>
+                    <span>profile views</span>
                   </div>
                 </div>
               </div>
