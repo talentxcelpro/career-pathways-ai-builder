@@ -13,6 +13,7 @@ import {
   Users,
   DollarSign
 } from 'lucide-react';
+import { formatSalaryRange } from '@/utils/currencyUtils';
 
 interface JobsListProps {
   jobs: any[];
@@ -86,11 +87,10 @@ export const JobsList: React.FC<JobsListProps> = ({ jobs, isLoading }) => {
                           <Users className="h-4 w-4" />
                           {job.applications_count || 0} applications
                         </div>
-                        {job.salary_min && (
+                        {(job.salary_min || job.salary_max) && (
                           <div className="flex items-center gap-1">
                             <DollarSign className="h-4 w-4" />
-                            {job.salary_currency} {job.salary_min?.toLocaleString()}
-                            {job.salary_max && ` - ${job.salary_max.toLocaleString()}`}
+                            {formatSalaryRange(job.salary_min, job.salary_max)}
                           </div>
                         )}
                       </div>

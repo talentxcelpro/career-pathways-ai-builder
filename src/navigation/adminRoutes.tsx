@@ -1,5 +1,5 @@
 
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail } from "lucide-react";
 import EmployerRequests from "../pages/admin/EmployerRequests";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminManagement from "../pages/admin/AdminManagement";
@@ -17,6 +17,7 @@ import AnalyticsReports from "../pages/admin/AnalyticsReports";
 import SecurityLogs from "../pages/admin/SecurityLogs";
 import CreateCourse from "../pages/admin/learning/CreateCourse";
 import CreatePlan from "../pages/admin/pricing/CreatePlan";
+import EmailAutomationPage from "../pages/admin/EmailAutomation";
 
 export const adminRoutes = [
   {
@@ -144,6 +145,15 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessSecurity" as const,
     description: "Security logs and audit trails"
+  },
+  {
+    title: "Email Automation",
+    to: "/admin/email-automation", 
+    icon: <Mail className="h-4 w-4" />,
+    page: <EmailAutomationPage />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Configure automated email templates and triggers"
   },
   {
     title: "Admin Management",

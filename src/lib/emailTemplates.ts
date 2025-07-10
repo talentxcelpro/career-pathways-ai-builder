@@ -1,4 +1,4 @@
-interface TemplateData {
+export interface TemplateData {
   [key: string]: any;
 }
 
@@ -293,4 +293,5 @@ const templates = {
   `)
 };
 
+export { templates };
 export default templates;
