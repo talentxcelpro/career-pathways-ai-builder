@@ -14,9 +14,10 @@ import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
 import { updateMetaTags } from '@/utils/metaTags';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Search, MapPin, Filter, Brain } from 'lucide-react';
+import { Search, MapPin, Briefcase, Sparkles, Filter, Zap, ChevronDown, Brain } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
@@ -69,6 +70,45 @@ const Jobs = () => {
     });
   }, []);
 
+  // Enhanced search function that handles natural language (backend only)
+  const processNaturalLanguageSearch = (searchTerm: string) => {
+    const lowerTerm = searchTerm.toLowerCase();
+    let processedFilters = { ...filters };
+    
+    // Handle remote work keywords
+    if (lowerTerm.includes('remote') || lowerTerm.includes('work from home') || lowerTerm.includes('wfh')) {
+      processedFilters.is_remote = true;
+    }
+    
+    // Handle experience level keywords
+    if (lowerTerm.includes('entry level') || lowerTerm.includes('fresher') || lowerTerm.includes('junior')) {
+      processedFilters.experience_level = ['entry'];
+    } else if (lowerTerm.includes('senior') || lowerTerm.includes('lead')) {
+      processedFilters.experience_level = ['senior'];
+    } else if (lowerTerm.includes('mid level') || lowerTerm.includes('intermediate')) {
+      processedFilters.experience_level = ['mid'];
+    }
+    
+    // Handle employment type keywords
+    if (lowerTerm.includes('full time') || lowerTerm.includes('full-time')) {
+      processedFilters.employment_type = ['full-time'];
+    } else if (lowerTerm.includes('part time') || lowerTerm.includes('part-time')) {
+      processedFilters.employment_type = ['part-time'];
+    } else if (lowerTerm.includes('contract') || lowerTerm.includes('freelance')) {
+      processedFilters.employment_type = ['contract'];
+    }
+    
+    // Clean the search term by removing processed keywords
+    let cleanedSearch = searchTerm
+      .replace(/\b(remote|work from home|wfh|entry level|fresher|junior|senior|lead|mid level|intermediate|full time|full-time|part time|part-time|contract|freelance)\b/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    processedFilters.search = cleanedSearch;
+    
+    return processedFilters;
+  };
+
   // Fetch jobs with enhanced filtering
   const { data: allJobs = [], isLoading, refetch, dataUpdatedAt } = useQuery({
     queryKey: ['jobs', filters, sortBy],
@@ -109,6 +149,10 @@ const Jobs = () => {
       if (filters.salary_max > 0) {
         query = query.lte('salary_max', filters.salary_max);
       }
+      if (filters.skills.length > 0) {
+        const skillFilters = filters.skills.map(skill => `skills_required.cs.{"${skill}"}`);
+        query = query.or(skillFilters.join(','));
+      }
 
       const { data, error } = await query
         .order('posted_at', { ascending: false })
@@ -117,15 +161,21 @@ const Jobs = () => {
       if (error) throw error;
       return data || [];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Auto-refresh jobs data
+  // Auto-refresh jobs data every 20 seconds
   useSmartAutoRefresh(() => {
     refetch();
   }, REFRESH_INTERVALS.JOBS);
 
-  // Get saved jobs
+  // Set up realtime for jobs updates
+  useJobsRealtime(
+    () => refetch(),
+    () => refetch()
+  );
+
+  // Get saved jobs (only if user is logged in)
   const { data: savedJobsData = [] } = useQuery({
     queryKey: ['saved_jobs', currentUser?.id],
     queryFn: async () => {
@@ -146,7 +196,7 @@ const Jobs = () => {
     setSavedJobs(savedJobsData);
   }, [savedJobsData]);
 
-  // Sort jobs
+  // Sort jobs based on sortBy
   const sortedJobs = React.useMemo(() => {
     if (!allJobs) return [];
     
@@ -158,7 +208,7 @@ const Jobs = () => {
           return (b.views_count || 0) - (a.views_count || 0);
         case 'applications_count':
           return (a.applications_count || 0) - (b.applications_count || 0);
-        default:
+        default: // posted_at
           return new Date(b.posted_at || b.created_at).getTime() - new Date(a.posted_at || a.created_at).getTime();
       }
     });
@@ -166,6 +216,7 @@ const Jobs = () => {
 
   const featuredJobs = sortedJobs.filter(job => job.is_featured);
   const regularJobs = sortedJobs.filter(job => !job.is_featured);
+  const remoteJobs = sortedJobs.filter(job => job.is_remote);
 
   const handleSaveJob = async (jobId: string) => {
     if (!currentUser) {
@@ -175,6 +226,7 @@ const Jobs = () => {
 
     try {
       if (savedJobs.includes(jobId)) {
+        // Unsave job
         await supabase
           .from('saved_jobs')
           .delete()
@@ -184,6 +236,7 @@ const Jobs = () => {
         setSavedJobs(prev => prev.filter(id => id !== jobId));
         toast.success('Job removed from saved');
       } else {
+        // Save job
         await supabase
           .from('saved_jobs')
           .insert({ user_id: currentUser.id, job_id: jobId });
@@ -211,6 +264,7 @@ const Jobs = () => {
 
   const handleUniversalSearch = (query: string, aiFilters?: SearchFilters) => {
     if (aiFilters) {
+      // Convert AI filters to our internal filter format
       const newFilters = {
         search: aiFilters.query || query,
         location: aiFilters.location || '',
@@ -223,8 +277,16 @@ const Jobs = () => {
       };
       setFilters(newFilters);
     } else {
+      // Fallback to basic search
       setFilters(prev => ({ ...prev, search: query }));
     }
+    refetch();
+  };
+
+  const handleQuickSearch = () => {
+    // Process natural language search and apply filters
+    const processedFilters = processNaturalLanguageSearch(filters.search);
+    setFilters(processedFilters);
     refetch();
   };
 
@@ -233,6 +295,7 @@ const Jobs = () => {
     refetch();
   };
 
+  // Tag suggestions based on real-time trends
   const tagSuggestions = [
     'Remote Jobs',
     '10+ LPA',
@@ -263,6 +326,7 @@ const Jobs = () => {
 
           {/* Enhanced Search Section */}
           <div className="max-w-5xl mx-auto mb-8">
+            {/* Main Search Bar */}
             <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 mb-6">
               <div className="flex flex-col lg:flex-row gap-4">
                 <div className="flex-1">
@@ -306,7 +370,7 @@ const Jobs = () => {
                 <Button 
                   size="lg" 
                   className="h-14 px-8 bg-primary hover:bg-primary/90 shadow-lg"
-                  onClick={() => refetch()}
+                  onClick={handleQuickSearch}
                 >
                   <Search className="h-5 w-5 mr-2" />
                   Search
@@ -330,6 +394,7 @@ const Jobs = () => {
               </div>
             </div>
 
+            {/* AI Button */}
             <div className="text-center">
               <Button 
                 size="lg" 

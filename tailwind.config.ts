@@ -11,7 +11,8 @@ export default {
 	prefix: "",
 	theme: {
 		fontFamily: {
-			sans: ['var(--font-primary)', 'ui-sans-serif', 'system-ui'],
+			sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+			display: ['Plus Jakarta Sans', 'Inter', 'ui-sans-serif', 'system-ui'],
 		},
 		container: {
 			center: true,
@@ -28,12 +29,12 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: 'hsl(220, 91%, 60%)', // #3478F6 - Job Blue
+					foreground: 'hsl(0, 0%, 100%)'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: 'hsl(240, 9%, 98%)', // #FAFAFA
+					foreground: 'hsl(220, 91%, 60%)'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -48,8 +49,8 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					DEFAULT: 'hsl(234, 48%, 97%)', // #F2F5FF
+					foreground: 'hsl(220, 91%, 60%)'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -68,6 +69,28 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Highlight colors
+				orange: {
+					DEFAULT: 'hsl(35, 100%, 63%)', // #FFB84C
+					50: 'hsl(35, 100%, 95%)',
+					100: 'hsl(35, 100%, 90%)',
+					500: 'hsl(35, 100%, 63%)',
+					600: 'hsl(35, 100%, 55%)',
+				},
+				green: {
+					DEFAULT: 'hsl(152, 60%, 57%)', // #57CC99
+					50: 'hsl(152, 60%, 95%)',
+					100: 'hsl(152, 60%, 90%)',
+					500: 'hsl(152, 60%, 57%)',
+					600: 'hsl(152, 60%, 50%)',
+				},
+				red: {
+					DEFAULT: 'hsl(0, 79%, 70%)', // #FF6B6B
+					50: 'hsl(0, 79%, 95%)',
+					100: 'hsl(0, 79%, 90%)',
+					500: 'hsl(0, 79%, 70%)',
+					600: 'hsl(0, 79%, 60%)',
 				}
 			},
 			fontSize: {

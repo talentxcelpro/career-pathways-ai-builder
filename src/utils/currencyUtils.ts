@@ -13,21 +13,26 @@ export const formatCurrency = (amount: number | null | undefined): string => {
   }
 };
 
-export const formatSalaryRange = (min?: number, max?: number, monthly: boolean = false): string => {
+export const formatSalaryRange = (min?: number, max?: number, lpa: boolean = true): string => {
   if (!min && !max) return "Salary not specified";
   
-  // Convert yearly to monthly if needed
   const formatAmount = (amount: number) => {
-    if (monthly && amount >= 100000) {
-      // Convert yearly to monthly (divide by 12)
-      return formatCurrency(Math.round(amount / 12));
+    if (lpa) {
+      // Convert to LPA format
+      if (amount >= 100000) {
+        return `${(amount / 100000).toFixed(0)} LPA`;
+      } else if (amount >= 1000) {
+        return `${(amount / 1000).toFixed(0)}K`;
+      } else {
+        return `${amount}`;
+      }
     }
     return formatCurrency(amount);
   };
   
-  if (min && max) return `₹${formatAmount(min)} - ${formatAmount(max)}${monthly ? '/month' : ''}`;
-  if (min) return `₹${formatAmount(min)}+${monthly ? '/month' : ''}`;
-  return `Up to ₹${formatAmount(max)}${monthly ? '/month' : ''}`;
+  if (min && max) return `₹${formatAmount(min)} - ${formatAmount(max)}`;
+  if (min) return `₹${formatAmount(min)}+`;
+  return `Up to ₹${formatAmount(max)}`;
 };
 
 export const formatCompactCurrency = (amount: number): string => {
