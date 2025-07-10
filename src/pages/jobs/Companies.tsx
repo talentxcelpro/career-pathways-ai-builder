@@ -72,7 +72,7 @@ const Companies = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        throw new Error('You must be logged in to follow companies');
+        throw new Error('You must be logged in to subscribe to companies');
       }
 
       if (isFollowing) {
@@ -98,10 +98,10 @@ const Companies = () => {
     },
     onSuccess: (_, { isFollowing }) => {
       queryClient.invalidateQueries({ queryKey: ['companies'] });
-      toast.success(isFollowing ? 'Unfollowed company' : 'Following company');
+      toast.success(isFollowing ? 'Unsubscribed from company' : 'Subscribed to company');
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to update follow status');
+      toast.error(error.message || 'Failed to update subscription');
     }
   });
 

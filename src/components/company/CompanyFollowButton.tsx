@@ -59,13 +59,13 @@ export function CompanyFollowButton({
             )} 
           />
         )}
-        {isFollowing ? 'Following' : 'Follow'}
+        {isFollowing ? 'Subscribed' : 'Subscribe'}
       </Button>
       
       {showFollowersCount && followersCount > 0 && (
         <Badge variant="secondary" className="flex items-center gap-1">
           <Users className="h-3 w-3" />
-          {followersCount} {followersCount === 1 ? 'follower' : 'followers'}
+          {followersCount} {followersCount === 1 ? 'subscriber' : 'subscribers'}
         </Badge>
       )}
     </div>
