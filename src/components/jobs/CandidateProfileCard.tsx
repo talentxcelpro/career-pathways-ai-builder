@@ -52,12 +52,20 @@ export const CandidateProfileCard: React.FC<CandidateProfileCardProps> = ({
           >
             <h2 className="text-xl font-semibold text-gray-900 mb-1 cursor-pointer">
               {formatDisplayName(profile)}
+              {profile?.title && (
+                <>
+                  <span className="text-gray-400 mx-2">|</span>
+                  <span className="text-lg font-normal text-gray-600">{profile.title}</span>
+                </>
+              )}
             </h2>
           </Link>
           
-          <p className="text-gray-600 mb-2">
-            {profile?.title || 'Professional'}
-          </p>
+          {profile?.headline && (
+            <p className="text-gray-600 mb-2">
+              {profile.headline}
+            </p>
+          )}
           
           {profile?.location && (
             <p className="text-sm text-gray-500 mb-4 flex items-center">

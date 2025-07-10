@@ -59,6 +59,7 @@ const ProfileEdit = () => {
   const [formData, setFormData] = useState({
     full_name: '',
     title: '',
+    headline: '',
     location: '',
     email: '',
     phone: '',
@@ -96,6 +97,7 @@ const ProfileEdit = () => {
       setFormData({
         full_name: profile.full_name || '',
         title: profile.title || '',
+        headline: profile.headline || '',
         location: profile.location || '',
         email: profile.email || '',
         phone: profile.phone || '',
@@ -217,6 +219,7 @@ const ProfileEdit = () => {
           formData={{
             full_name: formData.full_name,
             title: formData.title,
+            headline: formData.headline || '',
             email: formData.email,
             phone: formData.phone,
             location: formData.location,

@@ -12,6 +12,7 @@ interface ConnectionCardProps {
     id: string;
     full_name?: string;
     title?: string;
+    headline?: string;
     location?: string;
     current_company?: string;
     profile_picture_url?: string;
@@ -76,10 +77,18 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
             <div>
               <h3 className="font-semibold text-lg text-gray-900">
                 {formatDisplayName(profile)}
+                {profile.title && (
+                  <>
+                    <span className="text-gray-400 mx-2">|</span>
+                    <span className="text-base font-normal text-gray-600">{profile.title}</span>
+                  </>
+                )}
               </h3>
-              <p className="text-gray-600 text-sm">
-                {profile.title || 'Professional'}
-              </p>
+              {profile.headline && (
+                <p className="text-gray-600 text-sm">
+                  {profile.headline}
+                </p>
+              )}
             </div>
           </Link>
 

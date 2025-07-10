@@ -4446,6 +4446,7 @@ export type Database = {
           first_login: boolean | null
           full_name: string | null
           github_url: string | null
+          headline: string | null
           id: string
           industry: string | null
           is_employer: boolean | null
@@ -4500,6 +4501,7 @@ export type Database = {
           first_login?: boolean | null
           full_name?: string | null
           github_url?: string | null
+          headline?: string | null
           id: string
           industry?: string | null
           is_employer?: boolean | null
@@ -4554,6 +4556,7 @@ export type Database = {
           first_login?: boolean | null
           full_name?: string | null
           github_url?: string | null
+          headline?: string | null
           id?: string
           industry?: string | null
           is_employer?: boolean | null

@@ -95,7 +95,7 @@ const Posts = () => {
       // Get profiles for all authors
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, title')
+        .select('id, full_name, profile_picture_url, title, headline, current_company')
         .in('id', authorIds);
 
       if (profilesError) throw profilesError;
@@ -419,11 +419,24 @@ const Posts = () => {
                             >
                               <h3 className="font-semibold text-gray-900">
                                 {formatDisplayName(post.profiles)}
+                                {post.profiles?.title && (
+                                  <>
+                                    <span className="text-gray-400 mx-2">|</span>
+                                    <span className="text-sm font-normal text-gray-600">{post.profiles.title}</span>
+                                  </>
+                                )}
                               </h3>
                             </Link>
-                            <p className="text-sm text-gray-600">
-                              {post.profiles?.title || 'Professional'}
-                            </p>
+                            {post.profiles?.headline && (
+                              <p className="text-sm text-gray-600">
+                                {post.profiles.headline}
+                              </p>
+                            )}
+                            {post.profiles?.current_company && (
+                              <p className="text-xs text-gray-500">
+                                {post.profiles.current_company}
+                              </p>
+                            )}
                             <p className="text-xs text-gray-500">{formatTimeAgo(post.created_at)}</p>
                           </div>
                         </div>

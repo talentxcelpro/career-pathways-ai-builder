@@ -265,10 +265,18 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
               <div className="flex-1">
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">
                   {formatDisplayName(profile)}
+                  {profile.title && (
+                    <>
+                      <span className="text-gray-400 mx-3">|</span>
+                      <span className="text-xl font-normal text-gray-600">{profile.title}</span>
+                    </>
+                  )}
                 </h1>
-                <p className="text-lg text-gray-600 mb-4">
-                  {profile.title || 'Professional'}
-                </p>
+                {profile.headline && (
+                  <p className="text-lg text-gray-600 mb-4">
+                    {profile.headline}
+                  </p>
+                )}
 
                 {/* Contact Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-600 mb-4">

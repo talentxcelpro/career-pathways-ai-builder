@@ -6,6 +6,7 @@ interface BasicInformationSectionProps {
   formData: {
     full_name: string;
     title: string;
+    headline: string;
     email: string;
     phone: string;
     location: string;
@@ -42,6 +43,16 @@ export const BasicInformationSection: React.FC<BasicInformationSectionProps> = (
               placeholder="e.g. Senior Software Engineer"
             />
           </div>
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-2 block">Professional Headline</label>
+          <Input
+            value={formData.headline}
+            onChange={(e) => onFieldChange('headline', e.target.value)}
+            placeholder="e.g. Experienced developer passionate about AI and innovation"
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-sm font-medium mb-2 block">Email</label>
             <Input

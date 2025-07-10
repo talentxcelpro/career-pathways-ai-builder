@@ -153,10 +153,23 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
               <div className="pt-2 flex-1">
                 <h2 className="text-lg font-bold text-gray-900 leading-tight">
                   {formatDisplayName(profile)}
+                  {profile?.title && (
+                    <>
+                      <span className="text-gray-400 mx-2">|</span>
+                      <span className="text-sm font-normal text-gray-600">{profile.title}</span>
+                    </>
+                  )}
                 </h2>
-                <p className="text-gray-600 text-xs mb-2 leading-tight">
-                  {profile?.title || 'Director'}
-                </p>
+                {profile?.headline && (
+                  <p className="text-gray-600 text-xs mb-2 leading-tight">
+                    {profile.headline}
+                  </p>
+                )}
+                {profile?.current_company && (
+                  <p className="text-gray-500 text-xs mb-2 leading-tight">
+                    {profile.current_company}
+                  </p>
+                )}
                 
                 {/* Compact Stats */}
                 <div className="flex items-center gap-3 text-xs text-gray-500">
