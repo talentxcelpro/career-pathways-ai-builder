@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,6 +40,7 @@ import { toast } from 'sonner';
 import { collegeService } from '@/services/collegeService';
 
 const EnhancedColleges = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
     collegeType: '',
@@ -379,11 +381,21 @@ const EnhancedColleges = () => {
                   {/* Enhanced Action Buttons */}
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="hover:bg-blue-50 hover:text-blue-600"
+                        onClick={() => navigate(`/colleges/${college.id}/chat`)}
+                      >
                         <MessageCircle className="h-4 w-4 mr-1" />
                         Chat AI
                       </Button>
-                      <Button variant="ghost" size="sm" className="hover:bg-purple-50 hover:text-purple-600">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="hover:bg-purple-50 hover:text-purple-600"
+                        onClick={() => navigate('/colleges/compare')}
+                      >
                         <Star className="h-4 w-4 mr-1" />
                         Compare
                       </Button>
