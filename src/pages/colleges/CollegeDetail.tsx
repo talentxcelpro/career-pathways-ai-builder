@@ -55,7 +55,7 @@ const CollegeDetail = () => {
             placement_rating
           )
         `)
-        .eq('id', id)
+        .eq('slug', id)
         .single();
 
       if (error) throw error;
@@ -66,12 +66,12 @@ const CollegeDetail = () => {
 
   // Fetch college posts
   const { data: collegePosts } = useQuery({
-    queryKey: ['collegePosts', id],
+    queryKey: ['collegePosts', college?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('college_posts')
         .select('*')
-        .eq('college_id', id)
+        .eq('college_id', college?.id)
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(5);
@@ -79,17 +79,17 @@ const CollegeDetail = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!id
+    enabled: !!college?.id
   });
 
   // Fetch college events
   const { data: collegeEvents } = useQuery({
-    queryKey: ['collegeEvents', id],
+    queryKey: ['collegeEvents', college?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('college_events')
         .select('*')
-        .eq('college_id', id)
+        .eq('college_id', college?.id)
         .eq('is_active', true)
         .order('start_date', { ascending: true })
         .limit(5);
@@ -97,17 +97,17 @@ const CollegeDetail = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!id
+    enabled: !!college?.id
   });
 
   // Fetch college courses for programs tab
   const { data: collegeCourses } = useQuery({
-    queryKey: ['collegeCourses', id],
+    queryKey: ['collegeCourses', college?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('college_courses')
         .select('*')
-        .eq('college_id', id)
+        .eq('college_id', college?.id)
         .eq('is_active', true)
         .order('course_name', { ascending: true })
         .limit(10);
@@ -115,7 +115,7 @@ const CollegeDetail = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!id
+    enabled: !!college?.id
   });
 
   const handleFollow = async () => {
@@ -130,7 +130,7 @@ const CollegeDetail = () => {
           .from('college_bookmarks')
           .delete()
           .eq('user_id', user.id)
-          .eq('college_id', id);
+          .eq('college_id', college?.id);
         
         if (error) throw error;
         setIsFollowing(false);
@@ -140,7 +140,7 @@ const CollegeDetail = () => {
           .from('college_bookmarks')
           .insert({
             user_id: user.id,
-            college_id: id,
+            college_id: college?.id,
             notes: 'Following this college'
           });
         
@@ -154,11 +154,11 @@ const CollegeDetail = () => {
   };
 
   const handleApply = () => {
-    navigate(`/colleges/${id}/apply`);
+    navigate(`/colleges/${college?.id}/apply`);
   };
 
   const handleChatAI = () => {
-    navigate(`/colleges/${id}/chat`);
+    navigate(`/colleges/${college?.id}/chat`);
   };
 
   if (isLoading) {
