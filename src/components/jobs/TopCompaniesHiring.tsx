@@ -59,13 +59,12 @@ export const TopCompaniesHiring: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white py-1">
+    <div className="bg-white py-0.5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-1">
-          <h2 className="text-xs font-medium text-gray-900 mb-0.5">
-            💼 Top Companies Hiring
+          <h2 className="text-xs font-medium text-gray-700 mb-0">
+            Companies with Hot Jobs
           </h2>
-          <p className="text-xs text-gray-600">Join industry leaders and fast-growing startups</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
