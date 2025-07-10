@@ -73,26 +73,23 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   };
 
   return (
-    <Card className="overflow-hidden border-0 shadow-xl bg-white">
-      {/* Enhanced Banner Section */}
+    <Card className="overflow-hidden border shadow-sm bg-white">
+      {/* LinkedIn-Style Banner Section */}
       <div className="relative">
         <div 
-          className="h-28 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700"
+          className="h-[54px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800"
           style={{
             backgroundImage: profile?.banner_url ? `url(${profile.banner_url})` : undefined,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
         >
-          {/* Subtle overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-black/20" />
-          
           {isOwnProfile && (
             <div className="absolute top-2 right-2">
               <Button
                 variant="ghost"
                 size="sm"
-                className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 h-7 px-2 text-xs border border-white/20"
+                className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 h-6 px-2 text-xs border border-white/20"
                 onClick={() => {
                   const input = document.createElement('input');
                   input.type = 'file';
@@ -113,93 +110,97 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
         </div>
       </div>
 
-      {/* Enhanced Profile Section */}
-      <CardContent className="p-3 -mt-6 relative">
-        <div className="flex flex-col">
-          {/* Profile Picture and Basic Info */}
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex items-start gap-3">
-              {/* Enhanced Profile Picture */}
-              <div className="relative">
-                <Avatar className="w-20 h-20 border-4 border-white shadow-2xl bg-white ring-4 ring-primary/20">
-                  <AvatarImage src={profile?.profile_picture_url} className="object-cover" />
-                  <AvatarFallback className="text-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold">
-                    {generateInitials(profile)}
-                  </AvatarFallback>
-                </Avatar>
-                {isOwnProfile && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute -bottom-0.5 -right-0.5 h-5 w-5 p-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-md border-2 border-white"
-                    onClick={() => {
-                      const input = document.createElement('input');
-                      input.type = 'file';
-                      input.accept = 'image/*';
-                      input.onchange = (e) => {
-                        const file = (e.target as HTMLInputElement).files?.[0];
-                        if (file) handleImageUpload('avatar', file);
-                      };
-                      input.click();
-                    }}
-                    disabled={uploading === 'avatar'}
-                  >
-                    <Camera className="h-2.5 w-2.5" />
-                  </Button>
-                )}
-              </div>
-
-              {/* Profile Info */}
-              <div className="pt-2 flex-1">
-                {/* Name and Title in LinkedIn style */}
-                <h2 className="text-lg font-bold text-gray-900 leading-tight mb-1">
-                  {formatDisplayName(profile)}
-                </h2>
-                
-                {/* Professional Headline - Most Prominent */}
-                {profile?.headline ? (
-                  <p className="text-gray-700 text-sm leading-relaxed font-medium mb-2">
-                    {profile.headline}
-                  </p>
-                ) : profile?.title ? (
-                  <p className="text-gray-600 text-sm leading-relaxed mb-2">
-                    {profile.title}
-                  </p>
-                ) : null}
-                
-                {/* Company */}
-                {profile?.current_company && (
-                  <p className="text-gray-500 text-xs mb-2 leading-tight">
-                    📍 {profile.current_company}
-                  </p>
-                )}
-                
-                {/* Compact Stats with Icons */}
-                <div className="flex items-center gap-4 text-xs text-gray-500">
-                  <div className="flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer">
-                    <Users className="h-3 w-3" />
-                    <span className="font-semibold">{stats.connections}</span>
-                    <span>connections</span>
-                  </div>
-                  <div className="flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer">
-                    <Eye className="h-3 w-3" />
-                    <span className="font-semibold">{stats.profileViews}</span>
-                    <span>profile views</span>
-                  </div>
-                </div>
-              </div>
+      {/* LinkedIn-Style Profile Section */}
+      <CardContent className="p-4 -mt-12 relative">
+        <div className="flex items-start justify-between">
+          {/* Left side - Profile Picture and Info */}
+          <div className="flex items-start gap-4">
+            {/* Profile Picture - LinkedIn Style */}
+            <div className="relative">
+              <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+                <AvatarImage src={profile?.profile_picture_url} className="object-cover" />
+                <AvatarFallback className="text-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold">
+                  {generateInitials(profile)}
+                </AvatarFallback>
+              </Avatar>
+              {isOwnProfile && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute -bottom-1 -right-1 h-6 w-6 p-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg border-2 border-white"
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.onchange = (e) => {
+                      const file = (e.target as HTMLInputElement).files?.[0];
+                      if (file) handleImageUpload('avatar', file);
+                    };
+                    input.click();
+                  }}
+                  disabled={uploading === 'avatar'}
+                >
+                  <Camera className="h-3 w-3" />
+                </Button>
+              )}
             </div>
 
-            {/* Edit Button */}
-            {isOwnProfile && (
+            {/* Profile Information - LinkedIn Layout */}
+            <div className="pt-8 flex-1">
+              {/* Name - LinkedIn Style */}
+              <h1 className="text-2xl font-semibold text-gray-900 leading-tight mb-1">
+                {formatDisplayName(profile)}
+              </h1>
+              
+              {/* Professional Headline - Most Prominent like LinkedIn */}
+              {profile?.headline ? (
+                <p className="text-gray-600 text-base leading-relaxed mb-1 max-w-md">
+                  {profile.headline}
+                </p>
+              ) : profile?.title ? (
+                <p className="text-gray-600 text-base leading-relaxed mb-1">
+                  {profile.title}
+                </p>
+              ) : (
+                <p className="text-gray-500 text-base mb-1">Add a professional headline</p>
+              )}
+              
+              {/* Location and Company - LinkedIn Style */}
+              <div className="text-sm text-gray-500 mb-2 space-y-0.5">
+                {profile?.location && (
+                  <p className="flex items-center gap-1">
+                    <span>📍</span> {profile.location}
+                  </p>
+                )}
+                {profile?.current_company && (
+                  <p>{profile.current_company}</p>
+                )}
+              </div>
+              
+              {/* Connection Stats - LinkedIn Style */}
+              <div className="flex items-center gap-3 text-sm">
+                <button className="text-blue-600 hover:underline font-medium">
+                  {stats.connections} connections
+                </button>
+                <span className="text-gray-400">•</span>
+                <span className="text-gray-500">
+                  {stats.profileViews} profile views
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right side - Edit Button */}
+          {isOwnProfile && (
+            <div className="pt-8">
               <Link to="/profile/edit">
-                <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
-                  <Edit className="h-3 w-3 mr-1" />
-                  Edit
+                <Button variant="outline" size="sm" className="h-8 px-3 text-sm">
+                  <Edit className="h-4 w-4 mr-1" />
+                  Edit profile
                 </Button>
               </Link>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
