@@ -163,9 +163,9 @@ class AIService {
         successfulCalls: data.filter(log => log.success).length,
         failedCalls: data.filter(log => !log.success).length,
         totalTokens: data.reduce((sum, log) => sum + (log.tokens_used || 0), 0),
-        totalCost: data.reduce((sum, log) => sum + (log.cost_estimate || 0), 0),
+        totalCost: data.reduce((sum, log) => sum + ((log as any).cost_estimate || 0), 0),
         averageResponseTime: data.length > 0 
-          ? data.reduce((sum, log) => sum + (log.response_time || 0), 0) / data.length 
+          ? data.reduce((sum, log) => sum + ((log as any).response_time || 0), 0) / data.length 
           : 0,
         usageByModule: this.groupByModule(data),
         recentActivity: data.slice(0, 10)
