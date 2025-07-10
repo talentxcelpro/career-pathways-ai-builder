@@ -22,6 +22,7 @@ import { CompanyNetworkActivity } from "@/components/network/CompanyNetworkActiv
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
 import { useNetworkRealtime, useAutoRefreshPosts } from "@/hooks/useRealtimeData";
+import { useProfileStats } from "@/hooks/useProfileStats";
 import FloatingMessenger from "@/components/network/FloatingMessenger";
 import { Link } from 'react-router-dom';
 import { AICommentGenerator } from "@/components/network/AICommentGenerator";
@@ -69,6 +70,9 @@ const Posts = () => {
       return data;
     }
   });
+
+  // Get real profile stats after currentUserProfile is available
+  const { data: profileStats } = useProfileStats(currentUserProfile?.id);
 
   // Fetch posts with real-time counts
   const { data: posts, isLoading: postsLoading } = useQuery({
@@ -256,8 +260,8 @@ const Posts = () => {
               profile={currentUserProfile}
               isOwnProfile={true}
               stats={{
-                connections: stats?.connections || 14,
-                profileViews: stats?.profileViews || 167
+                connections: profileStats?.connections || 0,
+                profileViews: profileStats?.profileViews || 0
               }}
             />
             
@@ -351,9 +355,9 @@ const Posts = () => {
             {/* Network Stats */}
             <NetworkStats
               stats={{
-                connections: stats?.connections || 14,
+                connections: profileStats?.connections || 0,
                 messages: 0,
-                profileViews: stats?.profileViews || 167,
+                profileViews: profileStats?.profileViews || 0,
                 events: 0
               }}
             />
