@@ -20,6 +20,7 @@ const RequestAccess = () => {
   const queryClient = useQueryClient();
   
   const [formData, setFormData] = useState({
+    fullName: user?.user_metadata?.full_name || '',
     companyName: '',
     companyEmail: user?.email || '',
     role: '',
@@ -77,17 +78,40 @@ const RequestAccess = () => {
         .from('employer_requests')
         .insert({
           user_id: user.id,
+          full_name: requestData.fullName,
           company_name: requestData.companyName,
           email: requestData.companyEmail,
-          full_name: user.user_metadata?.full_name || user.email || '',
+          role: requestData.role,
           hiring_reason: requestData.hiringReason,
           status: 'pending'
         });
 
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: async (data, variables) => {
       toast.success('Employer access request submitted successfully!');
+      
+      // Call the edge function to send email notifications
+      try {
+        const { data: insertData } = await supabase
+          .from('employer_requests')
+          .select('id')
+          .eq('user_id', user?.id)
+          .eq('company_name', variables.companyName)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (insertData?.id) {
+          await supabase.functions.invoke('notify-employer-request', {
+            body: { requestId: insertData.id }
+          });
+        }
+      } catch (emailError) {
+        console.error('Failed to send notification emails:', emailError);
+        // Don't fail the submission if email fails
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['employer-request'] });
     },
     onError: (error: any) => {
@@ -110,7 +134,7 @@ const RequestAccess = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.companyName || !formData.companyEmail) {
+    if (!formData.fullName || !formData.companyName || !formData.companyEmail || !formData.role) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -172,8 +196,9 @@ const RequestAccess = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900">Company Information</h3>
                     <p className="text-sm text-gray-600">Company: {existingRequest.company_name}</p>
+                    <p className="text-sm text-gray-600">Contact: {existingRequest.full_name}</p>
                     <p className="text-sm text-gray-600">Email: {existingRequest.email}</p>
-                    {/* Role field will be available after migration */}
+                    {existingRequest.role && <p className="text-sm text-gray-600">Role: {existingRequest.role}</p>}
                   </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">Request Details</h3>
@@ -244,6 +269,17 @@ const RequestAccess = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <Label htmlFor="fullName">Full Name *</Label>
+                <Input
+                  id="fullName"
+                  value={formData.fullName}
+                  onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  placeholder="Your full name"
+                  required
+                />
+              </div>
+
               <div>
                 <Label htmlFor="companyName">Company Name *</Label>
                 <Input

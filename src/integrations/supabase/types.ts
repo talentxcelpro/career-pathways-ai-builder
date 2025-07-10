@@ -3508,6 +3508,7 @@ export type Database = {
           linkedin_profile: string | null
           phone_number: string | null
           rejection_reason: string | null
+          role: string | null
           status: string | null
           submitted_at: string | null
           updated_at: string | null
@@ -3529,6 +3530,7 @@ export type Database = {
           linkedin_profile?: string | null
           phone_number?: string | null
           rejection_reason?: string | null
+          role?: string | null
           status?: string | null
           submitted_at?: string | null
           updated_at?: string | null
@@ -3550,6 +3552,7 @@ export type Database = {
           linkedin_profile?: string | null
           phone_number?: string | null
           rejection_reason?: string | null
+          role?: string | null
           status?: string | null
           submitted_at?: string | null
           updated_at?: string | null

@@ -1,6 +1,6 @@
 
 import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain } from "lucide-react";
-import EmployerRequests from "../pages/admin/EmployerRequests";
+import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminManagement from "../pages/admin/AdminManagement";
 import UserManagement from "../pages/admin/UserManagement";
@@ -44,7 +44,7 @@ export const adminRoutes = [
     title: "Employer Requests",
     to: "/admin/employer-requests",
     icon: <Building2 className="h-4 w-4" />,
-    page: <EmployerRequests />,
+    page: <EmployerRequestsAdmin />,
     requiresAuth: true,
     permission: "canAccessEmployerRequests" as const,
     description: "Review and approve employer applications"
