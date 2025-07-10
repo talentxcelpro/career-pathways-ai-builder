@@ -8,6 +8,7 @@ import EmployerSettings from "../../pages/employer/Settings";
 import EmployerTeam from "../../pages/employer/Team";
 import TeamManagement from "../../pages/employer/TeamManagement";
 import EmployerAnalytics from "../../pages/employer/analytics/EmployerAnalytics";
+import EmployerApplications from "../../pages/employer/Applications";
 import CompanyAccessRequestPage from "../../pages/employer/CompanyAccessRequest";
 import AcceptInvitation from "../../pages/employer/AcceptInvitation";
 
@@ -43,6 +44,12 @@ export const employerCoreRoutes = [
     title: "Company Access Requests",
     to: "/employer/company-access",
     page: <CompanyAccessRequestPage />,
+  },
+  {
+    title: "Applications",
+    to: "/employer/applications",
+    icon: <Users className="h-4 w-4" />,
+    page: <EmployerApplications />,
   },
   {
     title: "Employer Analytics",
