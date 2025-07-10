@@ -137,7 +137,10 @@ function DashboardContent() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover-scale"
+          onClick={() => navigate('/jobs/manage')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Jobs</CardTitle>
             <Briefcase className="h-4 w-4 text-muted-foreground" />
@@ -148,7 +151,10 @@ function DashboardContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover-scale"
+          onClick={() => navigate('/jobs/manage?filter=active')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Jobs</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -159,7 +165,10 @@ function DashboardContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover-scale"
+          onClick={() => navigate('/employer/analytics?tab=views')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Views</CardTitle>
             <Eye className="h-4 w-4 text-muted-foreground" />
@@ -170,7 +179,10 @@ function DashboardContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover-scale"
+          onClick={() => navigate('/employer/applications')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Applications</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
