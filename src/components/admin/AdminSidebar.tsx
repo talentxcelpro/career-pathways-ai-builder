@@ -18,7 +18,8 @@ import {
   Settings,
   Bell,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Mail
 } from 'lucide-react';
 import {
   Sidebar,
@@ -121,6 +122,12 @@ const adminMenuItems = [
     url: '/admin/security',
     icon: Lock,
     description: 'Logs & security'
+  },
+  {
+    title: 'Email Automation',
+    url: '/admin/email-automation',
+    icon: Mail,
+    description: 'Manage email templates & triggers'
   },
   {
     title: 'Admin Management',
