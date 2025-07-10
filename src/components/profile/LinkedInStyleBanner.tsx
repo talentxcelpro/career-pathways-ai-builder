@@ -75,12 +75,6 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   return (
     <div className="w-full max-w-sm mx-auto">
       <Card className="overflow-hidden border border-gray-200 shadow-sm bg-white rounded-lg">
-        {/* Premium Badge */}
-        <div className="relative bg-gray-100 px-4 py-2">
-          <span className="absolute right-3 top-2 bg-yellow-600 text-white text-xs font-semibold px-2 py-1 rounded">
-            Premium
-          </span>
-        </div>
 
         {/* Profile Content */}
         <CardContent className="p-4 text-center">
@@ -114,35 +108,36 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
             )}
           </div>
 
-          {/* Name with LinkedIn icon */}
+          {/* Name */}
           <div className="mb-2">
-            <div className="flex items-center justify-center gap-2">
-              <h2 className="text-lg font-semibold text-gray-900 truncate">
-                {formatDisplayName(profile)}
-              </h2>
-              <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center">
-                <span className="text-white text-xs font-bold">in</span>
-              </div>
-            </div>
+            <h2 className="text-lg font-semibold text-gray-900 truncate">
+              {formatDisplayName(profile)}
+            </h2>
           </div>
 
           {/* Professional headline */}
-          <p className="text-sm text-gray-700 mb-2 leading-relaxed">
-            {profile?.headline || profile?.title || "Transformational Leader in IT Services | VP Engineering at APAC |"}
-          </p>
+          {profile?.headline || profile?.title ? (
+            <p className="text-sm text-gray-700 mb-2 leading-relaxed">
+              {profile.headline || profile.title}
+            </p>
+          ) : null}
 
           {/* Company */}
-          <div className="flex items-center justify-center gap-1 mb-2">
-            <Building2 className="h-3 w-3 text-gray-500" />
-            <p className="text-sm font-medium text-gray-800">
-              {profile?.current_company || "Savantis Solutions LLC"}
-            </p>
-          </div>
+          {profile?.current_company && (
+            <div className="flex items-center justify-center gap-1 mb-2">
+              <Building2 className="h-3 w-3 text-gray-500" />
+              <p className="text-sm font-medium text-gray-800">
+                {profile.current_company}
+              </p>
+            </div>
+          )}
 
           {/* Location */}
-          <p className="text-xs text-gray-500">
-            {profile?.location || "South Delhi, Delhi"}
-          </p>
+          {profile?.location && (
+            <p className="text-xs text-gray-500">
+              {profile.location}
+            </p>
+          )}
 
           {/* Edit button for own profile */}
           {isOwnProfile && (
