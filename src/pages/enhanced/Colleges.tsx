@@ -38,6 +38,7 @@ import { SearchFilters } from '@/services/aiSearchService';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 import { toast } from 'sonner';
 import { collegeService } from '@/services/collegeService';
+import CollegeApplyButton from '@/components/colleges/CollegeApplyButton';
 
 const EnhancedColleges = () => {
   const navigate = useNavigate();
@@ -407,9 +408,15 @@ const EnhancedColleges = () => {
                           <ArrowRight className="h-3 w-3 ml-1" />
                         </Button>
                       </Link>
-                      <Button size="sm" className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0">
-                        Apply
-                      </Button>
+                      <CollegeApplyButton 
+                        college={{
+                          id: college.id,
+                          name: college.name,
+                          logo_url: college.logo_url
+                        }}
+                        size="sm"
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0"
+                      />
                     </div>
                   </div>
                 </CardContent>
