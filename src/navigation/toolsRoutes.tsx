@@ -37,6 +37,7 @@ import AIProfileOptimizer from "../pages/tools/AIProfileOptimizer";
 import MentorConnectTool from "../pages/tools/MentorConnectTool";
 import ResumeGapAnalyzer from "../pages/tools/ResumeGapAnalyzer";
 import AIResumeBuilder from "../pages/tools/AIResumeBuilder";
+import ResumeAnalysis from "../pages/tools/ResumeAnalysis";
 
 export const toolsRoutes = [
   {
@@ -263,5 +264,17 @@ export const toolsRoutes = [
     to: "/tools/ai-outreach-generator",
     icon: <Send className="h-4 w-4" />,
     page: <AIOutreachGenerator />,
+  },
+  {
+    title: "Resume Analysis",
+    to: "/resume-analysis",
+    icon: <FileText className="h-4 w-4" />,
+    page: <ResumeAnalysis />,
+  },
+  {
+    title: "Interview Prep",
+    to: "/interview-prep",
+    icon: <MessageSquare className="h-4 w-4" />,
+    page: <InterviewPrep />,
   },
 ];
