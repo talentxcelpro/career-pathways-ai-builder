@@ -433,37 +433,52 @@ export type Database = {
       }
       ai_usage_logs: {
         Row: {
+          cost_estimate: number | null
           created_at: string
           error_message: string | null
+          feature_key: string | null
           feature_type: string
           id: string
+          module_name: string | null
           request_data: Json | null
           request_type: string
           response_data: Json | null
+          response_time: number | null
+          session_id: string | null
           success: boolean | null
           tokens_used: number | null
           user_id: string
         }
         Insert: {
+          cost_estimate?: number | null
           created_at?: string
           error_message?: string | null
+          feature_key?: string | null
           feature_type: string
           id?: string
+          module_name?: string | null
           request_data?: Json | null
           request_type: string
           response_data?: Json | null
+          response_time?: number | null
+          session_id?: string | null
           success?: boolean | null
           tokens_used?: number | null
           user_id: string
         }
         Update: {
+          cost_estimate?: number | null
           created_at?: string
           error_message?: string | null
+          feature_key?: string | null
           feature_type?: string
           id?: string
+          module_name?: string | null
           request_data?: Json | null
           request_type?: string
           response_data?: Json | null
+          response_time?: number | null
+          session_id?: string | null
           success?: boolean | null
           tokens_used?: number | null
           user_id?: string

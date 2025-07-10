@@ -1,5 +1,5 @@
 
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain } from "lucide-react";
 import EmployerRequests from "../pages/admin/EmployerRequests";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminManagement from "../pages/admin/AdminManagement";
@@ -18,6 +18,7 @@ import SecurityLogs from "../pages/admin/SecurityLogs";
 import CreateCourse from "../pages/admin/learning/CreateCourse";
 import CreatePlan from "../pages/admin/pricing/CreatePlan";
 import EmailAutomationPage from "../pages/admin/EmailAutomation";
+import AIManagement from "../pages/admin/AIManagement";
 
 export const adminRoutes = [
   {
@@ -154,6 +155,15 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessDashboard" as const,
     description: "Configure automated email templates and triggers"
+  },
+  {
+    title: "AI Management",
+    to: "/admin/ai-management",
+    icon: <Brain className="h-4 w-4" />,
+    page: <AIManagement />,
+    requiresAuth: true,
+    permission: "canAccessReports" as const,
+    description: "Monitor and manage AI features across the platform"
   },
   {
     title: "Admin Management",
