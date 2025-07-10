@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { Search, MapPin, Filter, Brain } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
@@ -245,129 +246,147 @@ const Jobs = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background font-sans">
+    <div className="min-h-screen bg-gray-50 font-sans">
       <OfflineIndicator />
       
-      {/* 1. Hero Section - Compact */}
-      <div className="bg-gradient-to-r from-primary to-primary/80 text-white relative overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold mb-3">
-              Find your dream job now
-            </h1>
-            <p className="text-sm md:text-base text-white/90 mb-4 max-w-2xl mx-auto">
-              Discover verified jobs, AI-matched roles, and top companies hiring.
-            </p>
-          </div>
-
-          {/* Enhanced Search Section - Compact */}
-          <div className="max-w-4xl mx-auto mb-4">
-            <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-4 mb-4">
-              <div className="flex flex-col lg:flex-row gap-3">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-                    <Input
-                      placeholder="Skills / Designations / Companies"
-                      value={filters.search}
-                      onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                      className="pl-10 h-10 text-sm border-0 focus:ring-2 focus:ring-primary/20 bg-gray-50 text-gray-800 font-medium"
-                    />
-                  </div>
+      {/* 1. Minimalist Header (1/8th size) */}
+      <div className="bg-white border-b sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          {/* Minimalist Title */}
+          <h1 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 text-center">
+            Find Jobs Faster – Powered by AI Matching
+          </h1>
+          
+          {/* 2. Condensed Search Bar (Single Row) */}
+          <div className="flex flex-col lg:flex-row gap-2 items-center max-w-5xl mx-auto">
+            <div className="flex-1 flex gap-2 w-full overflow-x-auto">
+              <div className="flex-1 min-w-[200px]">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Skills / Designations"
+                    value={filters.search}
+                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                    className="pl-9 h-9 text-sm border-gray-200 focus:ring-1 focus:ring-primary"
+                  />
                 </div>
-                
-                <div className="lg:w-48">
-                  <Select value={experienceLevel} onValueChange={setExperienceLevel}>
-                    <SelectTrigger className="h-10 border-0 bg-gray-50 text-gray-800 text-sm">
-                      <SelectValue placeholder="Experience" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="entry">Fresher (0-1 years)</SelectItem>
-                      <SelectItem value="junior">Junior (1-3 years)</SelectItem>
-                      <SelectItem value="mid">Mid-level (3-6 years)</SelectItem>
-                      <SelectItem value="senior">Senior (6+ years)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="lg:w-56">
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-                    <Input
-                      placeholder="Location"
-                      value={filters.location}
-                      onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                      className="pl-10 h-10 text-sm border-0 bg-gray-50 text-gray-800 font-medium"
-                    />
-                  </div>
-                </div>
-                
-                <button
-                  onClick={() => setFilters(prev => ({ ...prev, is_remote: !prev.is_remote }))}
-                  className={`px-4 h-10 text-sm font-medium rounded-lg transition-colors border-0 ${
-                    filters.is_remote 
-                      ? 'bg-primary text-white' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Remote
-                </button>
-                
-                <Button 
-                  size="sm" 
-                  className="h-10 px-6 bg-primary hover:bg-primary/90 text-sm"
-                  onClick={() => refetch()}
-                >
-                  <Search className="h-4 w-4 mr-1" />
-                  Search
-                </Button>
               </div>
+              
+              <div className="min-w-[140px]">
+                <Select value={experienceLevel} onValueChange={setExperienceLevel}>
+                  <SelectTrigger className="h-9 text-sm border-gray-200">
+                    <SelectValue placeholder="Experience ⌄" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border shadow-lg z-50">
+                    <SelectItem value="entry">Fresher (0-1y)</SelectItem>
+                    <SelectItem value="junior">Junior (1-3y)</SelectItem>
+                    <SelectItem value="mid">Mid-level (3-6y)</SelectItem>
+                    <SelectItem value="senior">Senior (6+y)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="min-w-[120px]">
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Location"
+                    value={filters.location}
+                    onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                    className="pl-9 h-9 text-sm border-gray-200 focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+              
+              <label className="flex items-center gap-2 cursor-pointer min-w-[80px]">
+                <input
+                  type="checkbox"
+                  checked={filters.is_remote}
+                  onChange={(e) => setFilters(prev => ({ ...prev, is_remote: e.target.checked }))}
+                  className="w-4 h-4 text-primary"
+                />
+                <span className="text-sm text-gray-700">Remote</span>
+              </label>
             </div>
             
-            {/* Tag Suggestions - Compact */}
-            <div className="text-center mb-3">
-              <p className="text-white/80 mb-2 text-sm">🌐 Suggested Searches:</p>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {['React Dev', 'SAP Consultant', 'Remote Jobs', 'Noida', '10+ LPA'].map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => handleUniversalSearch(tag)}
-                    className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-full text-white text-xs transition-colors backdrop-blur-sm font-medium"
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="text-center">
-              <Button 
-                size="sm" 
-                variant="secondary"
-                className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm text-sm font-medium"
-                onClick={() => handleUniversalSearch("Ask AI to suggest best jobs for me")}
-              >
-                <Brain className="h-4 w-4 mr-2" />
-                🧠 Ask AI to find best jobs for me
-              </Button>
+            <Button 
+              size="sm" 
+              className="h-9 px-4 bg-primary hover:bg-primary/90 text-sm whitespace-nowrap"
+              onClick={() => refetch()}
+            >
+              <Search className="h-4 w-4 mr-1" />
+              Search
+            </Button>
+          </div>
+          
+          {/* 3. Focused CTA */}
+          <div className="text-center mt-3">
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="text-sm font-medium border-primary text-primary hover:bg-primary hover:text-white"
+              onClick={() => handleUniversalSearch("Ask AI to suggest best jobs for me")}
+            >
+              <Brain className="h-4 w-4 mr-1" />
+              🧠 Let AI Match Me to Jobs
+            </Button>
+          </div>
+          
+          {/* Floating Job Count */}
+          <div className="absolute top-3 right-4 hidden md:block">
+            <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium">
+              {allJobs.length} Jobs Found
             </div>
           </div>
         </div>
       </div>
 
-      {/* 2. Banner Section */}
-      <JobsBanner />
-
-      {/* 3. Main Content - Compact */}
+      {/* Main Content - Featured Jobs Above the Fold */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {/* Featured Jobs Section - Immediately Visible */}
+        {featuredJobs.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">✨</span>
+              <h2 className="text-xl font-bold text-gray-900">Featured Jobs (Top Priority)</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {featuredJobs.slice(0, 6).map((job) => (
+                <div key={job.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {job.companies?.logo_url && (
+                        <img src={job.companies.logo_url} alt={job.companies.name} className="w-8 h-8 rounded" />
+                      )}
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-sm">{job.title}</h3>
+                        <p className="text-xs text-gray-600">{job.companies?.name}</p>
+                      </div>
+                    </div>
+                    <Badge variant="secondary" className="text-xs">Featured</Badge>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">{job.location} • {job.employment_type}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-medium text-primary">
+                      {job.salary_min && job.salary_max ? `₹${job.salary_min/100000}L - ₹${job.salary_max/100000}L` : 'Salary not disclosed'}
+                    </span>
+                    <Button size="sm" className="text-xs h-7 px-3">Apply</Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Main Jobs Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           
           {/* Smart Filters Panel */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-md border p-4 sticky top-4">
+            <div className="bg-white rounded-lg shadow-sm border p-4 sticky top-20">
               <div className="flex items-center gap-2 mb-4">
                 <Filter className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold text-base text-foreground">🧠 Smart Filters</h3>
+                <h3 className="font-semibold text-base text-gray-900">🧠 Smart Filters</h3>
               </div>
               <EnhancedJobFilters
                 filters={filters}
@@ -381,8 +400,8 @@ const Jobs = () => {
           <div className="lg:col-span-3">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <h2 className="text-xl font-bold text-foreground">Job Opportunities</h2>
-                <p className="text-sm text-muted-foreground">Find your perfect match from {allJobs.length} active positions</p>
+                <h2 className="text-xl font-bold text-gray-900">All Job Opportunities</h2>
+                <p className="text-sm text-gray-600">Find your perfect match from {allJobs.length} active positions</p>
               </div>
               <div className="flex items-center gap-2">
                 <AutoRefreshIndicator 
@@ -398,8 +417,8 @@ const Jobs = () => {
             </div>
 
             <JobsList
-              jobs={sortedJobs}
-              featuredJobs={featuredJobs}
+              jobs={regularJobs}
+              featuredJobs={[]}
               regularJobs={regularJobs}
               savedJobs={savedJobs}
               sortBy={sortBy}
@@ -412,16 +431,19 @@ const Jobs = () => {
         </div>
       </div>
 
-      {/* 6. Top Companies Hiring */}
+      {/* Top Companies Hiring - Moved up */}
       <TopCompaniesHiring />
 
-      {/* 7. Browse by Categories */}
+      {/* Mock Interview Banner - Moved to bottom */}
+      <JobsBanner />
+
+      {/* Browse by Categories */}
       <JobCategories onCategoryClick={handleCategoryClick} />
 
-      {/* 8. Trust & FOMO Section */}
+      {/* Trust & FOMO Section */}
       <TrustSection />
 
-      {/* 9. Floating Apply Widget (Mobile) */}
+      {/* Floating Apply Widget (Mobile) */}
       <div className="fixed bottom-4 left-4 right-4 lg:hidden z-50">
         <div className="bg-primary text-white rounded-2xl p-4 shadow-2xl">
           <div className="flex items-center justify-between">
