@@ -1,12 +1,12 @@
 
-import Colleges from "../pages/Colleges";
+import EnhancedColleges from "../pages/enhanced/Colleges";
 import CollegeDetail from "../pages/colleges/CollegeDetail";
 
 export const collegesRoutes = [
   {
     title: "Colleges",
     to: "/colleges",
-    page: <Colleges />,
+    page: <EnhancedColleges />,
   },
   {
     title: "College Detail",

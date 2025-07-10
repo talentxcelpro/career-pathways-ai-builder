@@ -330,6 +330,75 @@ class AIService {
       }
     });
   }
+
+  /**
+   * Colleges AI Features
+   */
+  async discoverColleges(userProfile: any, preferences: any) {
+    return this.call({
+      module: 'Colleges',
+      feature: 'college_discovery',
+      input: {
+        user_profile: JSON.stringify(userProfile),
+        preferences: JSON.stringify(preferences)
+      }
+    });
+  }
+
+  async recommendCourses(userProfile: any, careerGoals: any, collegeId?: string) {
+    return this.call({
+      module: 'Colleges',
+      feature: 'course_recommender',
+      input: {
+        user_profile: JSON.stringify(userProfile),
+        career_goals: JSON.stringify(careerGoals),
+        college_id: collegeId
+      }
+    });
+  }
+
+  async compareColleges(colleges: any[], comparisonCriteria: string[]) {
+    return this.call({
+      module: 'Colleges',
+      feature: 'college_comparison',
+      input: {
+        colleges: JSON.stringify(colleges),
+        criteria: JSON.stringify(comparisonCriteria)
+      }
+    });
+  }
+
+  async askCollegeQuestion(question: string, context?: any) {
+    return this.call({
+      module: 'Colleges',
+      feature: 'college_qa_assistant',
+      input: {
+        question: question,
+        context: context ? JSON.stringify(context) : null
+      }
+    });
+  }
+
+  async generateSOP(templateData: any, documentType: string = 'sop') {
+    return this.call({
+      module: 'Colleges',
+      feature: 'sop_lor_generator',
+      input: {
+        template_data: JSON.stringify(templateData),
+        document_type: documentType
+      }
+    });
+  }
+
+  async analyzeCollegeReviews(reviews: any[]) {
+    return this.call({
+      module: 'Colleges',
+      feature: 'review_analysis',
+      input: {
+        reviews: JSON.stringify(reviews)
+      }
+    });
+  }
 }
 
 // Export singleton instance

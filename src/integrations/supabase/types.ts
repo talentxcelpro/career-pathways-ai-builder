@@ -614,6 +614,102 @@ export type Database = {
           },
         ]
       }
+      applications: {
+        Row: {
+          academic_info: Json | null
+          admin_notes: string | null
+          ai_completion_score: number | null
+          ai_suggestions: string[] | null
+          application_date: string | null
+          application_deadline: string | null
+          application_number: string | null
+          application_status: string | null
+          campus_preferences: string[] | null
+          college_id: string
+          course_id: string
+          course_preferences: string[] | null
+          created_at: string
+          document_deadline: string | null
+          documents: Json | null
+          entrance_exam_scores: Json | null
+          fee_deadline: string | null
+          id: string
+          last_updated_by: string | null
+          personal_info: Json | null
+          status_history: Json | null
+          student_id: string
+          submission_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          academic_info?: Json | null
+          admin_notes?: string | null
+          ai_completion_score?: number | null
+          ai_suggestions?: string[] | null
+          application_date?: string | null
+          application_deadline?: string | null
+          application_number?: string | null
+          application_status?: string | null
+          campus_preferences?: string[] | null
+          college_id: string
+          course_id: string
+          course_preferences?: string[] | null
+          created_at?: string
+          document_deadline?: string | null
+          documents?: Json | null
+          entrance_exam_scores?: Json | null
+          fee_deadline?: string | null
+          id?: string
+          last_updated_by?: string | null
+          personal_info?: Json | null
+          status_history?: Json | null
+          student_id: string
+          submission_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          academic_info?: Json | null
+          admin_notes?: string | null
+          ai_completion_score?: number | null
+          ai_suggestions?: string[] | null
+          application_date?: string | null
+          application_deadline?: string | null
+          application_number?: string | null
+          application_status?: string | null
+          campus_preferences?: string[] | null
+          college_id?: string
+          course_id?: string
+          course_preferences?: string[] | null
+          created_at?: string
+          document_deadline?: string | null
+          documents?: Json | null
+          entrance_exam_scores?: Json | null
+          fee_deadline?: string | null
+          id?: string
+          last_updated_by?: string | null
+          personal_info?: Json | null
+          status_history?: Json | null
+          student_id?: string
+          submission_date?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "college_courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       awards: {
         Row: {
           award_date: string | null
@@ -1003,6 +1099,573 @@ export type Database = {
           shared_data?: Json | null
           tool_name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      college_admins: {
+        Row: {
+          can_edit_college_info: boolean | null
+          can_manage_admissions: boolean | null
+          can_manage_courses: boolean | null
+          can_view_analytics: boolean | null
+          college_id: string
+          created_at: string
+          department: string | null
+          designation: string | null
+          id: string
+          invited_by: string | null
+          is_active: boolean | null
+          joined_at: string | null
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          can_edit_college_info?: boolean | null
+          can_manage_admissions?: boolean | null
+          can_manage_courses?: boolean | null
+          can_view_analytics?: boolean | null
+          college_id: string
+          created_at?: string
+          department?: string | null
+          designation?: string | null
+          id?: string
+          invited_by?: string | null
+          is_active?: boolean | null
+          joined_at?: string | null
+          role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          can_edit_college_info?: boolean | null
+          can_manage_admissions?: boolean | null
+          can_manage_courses?: boolean | null
+          can_view_analytics?: boolean | null
+          college_id?: string
+          created_at?: string
+          department?: string | null
+          designation?: string | null
+          id?: string
+          invited_by?: string | null
+          is_active?: boolean | null
+          joined_at?: string | null
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_admins_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      college_bookmarks: {
+        Row: {
+          college_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          tags: string[] | null
+          user_id: string
+        }
+        Insert: {
+          college_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          tags?: string[] | null
+          user_id: string
+        }
+        Update: {
+          college_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          tags?: string[] | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_bookmarks_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      college_courses: {
+        Row: {
+          additional_fees: Json | null
+          ai_career_alignment_score: number | null
+          ai_course_summary: string | null
+          average_salary: number | null
+          brochure_url: string | null
+          career_prospects: string[] | null
+          college_id: string
+          course_code: string | null
+          course_mode: string | null
+          course_name: string
+          created_at: string
+          curriculum: string[] | null
+          degree_type: string
+          description: string | null
+          discipline: string
+          duration_years: number
+          eligibility_criteria: string | null
+          emi_available: boolean | null
+          entrance_exams: string[] | null
+          fees_per_semester: number | null
+          id: string
+          is_active: boolean | null
+          learning_outcomes: string[] | null
+          placement_rate: number | null
+          reservation_details: Json | null
+          scholarship_available: boolean | null
+          specialization: string | null
+          syllabus_url: string | null
+          top_recruiters: string[] | null
+          total_fees: number | null
+          total_seats: number | null
+          updated_at: string
+        }
+        Insert: {
+          additional_fees?: Json | null
+          ai_career_alignment_score?: number | null
+          ai_course_summary?: string | null
+          average_salary?: number | null
+          brochure_url?: string | null
+          career_prospects?: string[] | null
+          college_id: string
+          course_code?: string | null
+          course_mode?: string | null
+          course_name: string
+          created_at?: string
+          curriculum?: string[] | null
+          degree_type: string
+          description?: string | null
+          discipline: string
+          duration_years: number
+          eligibility_criteria?: string | null
+          emi_available?: boolean | null
+          entrance_exams?: string[] | null
+          fees_per_semester?: number | null
+          id?: string
+          is_active?: boolean | null
+          learning_outcomes?: string[] | null
+          placement_rate?: number | null
+          reservation_details?: Json | null
+          scholarship_available?: boolean | null
+          specialization?: string | null
+          syllabus_url?: string | null
+          top_recruiters?: string[] | null
+          total_fees?: number | null
+          total_seats?: number | null
+          updated_at?: string
+        }
+        Update: {
+          additional_fees?: Json | null
+          ai_career_alignment_score?: number | null
+          ai_course_summary?: string | null
+          average_salary?: number | null
+          brochure_url?: string | null
+          career_prospects?: string[] | null
+          college_id?: string
+          course_code?: string | null
+          course_mode?: string | null
+          course_name?: string
+          created_at?: string
+          curriculum?: string[] | null
+          degree_type?: string
+          description?: string | null
+          discipline?: string
+          duration_years?: number
+          eligibility_criteria?: string | null
+          emi_available?: boolean | null
+          entrance_exams?: string[] | null
+          fees_per_semester?: number | null
+          id?: string
+          is_active?: boolean | null
+          learning_outcomes?: string[] | null
+          placement_rate?: number | null
+          reservation_details?: Json | null
+          scholarship_available?: boolean | null
+          specialization?: string | null
+          syllabus_url?: string | null
+          top_recruiters?: string[] | null
+          total_fees?: number | null
+          total_seats?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_courses_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      college_events: {
+        Row: {
+          brochure_url: string | null
+          college_id: string
+          created_at: string
+          created_by: string | null
+          current_registrations: number | null
+          description: string | null
+          end_date: string | null
+          event_name: string
+          event_type: string
+          id: string
+          is_active: boolean | null
+          is_online: boolean | null
+          max_participants: number | null
+          poster_url: string | null
+          registration_fee: number | null
+          registration_url: string | null
+          start_date: string
+          updated_at: string
+          venue: string | null
+        }
+        Insert: {
+          brochure_url?: string | null
+          college_id: string
+          created_at?: string
+          created_by?: string | null
+          current_registrations?: number | null
+          description?: string | null
+          end_date?: string | null
+          event_name: string
+          event_type: string
+          id?: string
+          is_active?: boolean | null
+          is_online?: boolean | null
+          max_participants?: number | null
+          poster_url?: string | null
+          registration_fee?: number | null
+          registration_url?: string | null
+          start_date: string
+          updated_at?: string
+          venue?: string | null
+        }
+        Update: {
+          brochure_url?: string | null
+          college_id?: string
+          created_at?: string
+          created_by?: string | null
+          current_registrations?: number | null
+          description?: string | null
+          end_date?: string | null
+          event_name?: string
+          event_type?: string
+          id?: string
+          is_active?: boolean | null
+          is_online?: boolean | null
+          max_participants?: number | null
+          poster_url?: string | null
+          registration_fee?: number | null
+          registration_url?: string | null
+          start_date?: string
+          updated_at?: string
+          venue?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_events_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      college_media: {
+        Row: {
+          category: string | null
+          college_id: string
+          created_at: string
+          description: string | null
+          display_order: number | null
+          duration: number | null
+          file_size: number | null
+          id: string
+          is_featured: boolean | null
+          media_type: string
+          media_url: string
+          resolution: string | null
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          category?: string | null
+          college_id: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          duration?: number | null
+          file_size?: number | null
+          id?: string
+          is_featured?: boolean | null
+          media_type: string
+          media_url: string
+          resolution?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          category?: string | null
+          college_id?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          duration?: number | null
+          file_size?: number | null
+          id?: string
+          is_featured?: boolean | null
+          media_type?: string
+          media_url?: string
+          resolution?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_media_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      college_reviews: {
+        Row: {
+          academic_rating: number | null
+          ai_extracted_topics: string[] | null
+          ai_sentiment_label: string | null
+          ai_sentiment_score: number | null
+          college_id: string
+          course_studied: string | null
+          created_at: string
+          faculty_rating: number | null
+          graduation_year: number | null
+          helpful_count: number | null
+          id: string
+          infrastructure_rating: number | null
+          is_anonymous: boolean | null
+          is_verified: boolean | null
+          overall_rating: number
+          placement_rating: number | null
+          review_content: string
+          review_title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          academic_rating?: number | null
+          ai_extracted_topics?: string[] | null
+          ai_sentiment_label?: string | null
+          ai_sentiment_score?: number | null
+          college_id: string
+          course_studied?: string | null
+          created_at?: string
+          faculty_rating?: number | null
+          graduation_year?: number | null
+          helpful_count?: number | null
+          id?: string
+          infrastructure_rating?: number | null
+          is_anonymous?: boolean | null
+          is_verified?: boolean | null
+          overall_rating: number
+          placement_rating?: number | null
+          review_content: string
+          review_title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          academic_rating?: number | null
+          ai_extracted_topics?: string[] | null
+          ai_sentiment_label?: string | null
+          ai_sentiment_score?: number | null
+          college_id?: string
+          course_studied?: string | null
+          created_at?: string
+          faculty_rating?: number | null
+          graduation_year?: number | null
+          helpful_count?: number | null
+          id?: string
+          infrastructure_rating?: number | null
+          is_anonymous?: boolean | null
+          is_verified?: boolean | null
+          overall_rating?: number
+          placement_rating?: number | null
+          review_content?: string
+          review_title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_reviews_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      colleges: {
+        Row: {
+          accreditation_grade: string | null
+          address: string | null
+          affiliation: string | null
+          ai_match_keywords: string[] | null
+          ai_summary: string | null
+          average_fees_per_year: number | null
+          average_package: number | null
+          campus_size_acres: number | null
+          city: string | null
+          college_type: string | null
+          country: string | null
+          cover_image_url: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          email: string | null
+          established_year: number | null
+          featured: boolean | null
+          highest_package: number | null
+          hostels_available: boolean | null
+          id: string
+          is_active: boolean | null
+          is_verified: boolean | null
+          keywords: string[] | null
+          labs_count: number | null
+          library_books: number | null
+          logo_url: string | null
+          meta_description: string | null
+          meta_title: string | null
+          name: string
+          phone: string | null
+          placement_percentage: number | null
+          postal_code: string | null
+          ranking_national: number | null
+          ranking_nirf: number | null
+          recognition: string[] | null
+          scholarship_available: boolean | null
+          slug: string | null
+          state: string | null
+          total_faculty: number | null
+          total_students: number | null
+          updated_at: string
+          verification_status: string | null
+          website: string | null
+        }
+        Insert: {
+          accreditation_grade?: string | null
+          address?: string | null
+          affiliation?: string | null
+          ai_match_keywords?: string[] | null
+          ai_summary?: string | null
+          average_fees_per_year?: number | null
+          average_package?: number | null
+          campus_size_acres?: number | null
+          city?: string | null
+          college_type?: string | null
+          country?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          established_year?: number | null
+          featured?: boolean | null
+          highest_package?: number | null
+          hostels_available?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          keywords?: string[] | null
+          labs_count?: number | null
+          library_books?: number | null
+          logo_url?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          name: string
+          phone?: string | null
+          placement_percentage?: number | null
+          postal_code?: string | null
+          ranking_national?: number | null
+          ranking_nirf?: number | null
+          recognition?: string[] | null
+          scholarship_available?: boolean | null
+          slug?: string | null
+          state?: string | null
+          total_faculty?: number | null
+          total_students?: number | null
+          updated_at?: string
+          verification_status?: string | null
+          website?: string | null
+        }
+        Update: {
+          accreditation_grade?: string | null
+          address?: string | null
+          affiliation?: string | null
+          ai_match_keywords?: string[] | null
+          ai_summary?: string | null
+          average_fees_per_year?: number | null
+          average_package?: number | null
+          campus_size_acres?: number | null
+          city?: string | null
+          college_type?: string | null
+          country?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          established_year?: number | null
+          featured?: boolean | null
+          highest_package?: number | null
+          hostels_available?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          keywords?: string[] | null
+          labs_count?: number | null
+          library_books?: number | null
+          logo_url?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          name?: string
+          phone?: string | null
+          placement_percentage?: number | null
+          postal_code?: string | null
+          ranking_national?: number | null
+          ranking_nirf?: number | null
+          recognition?: string[] | null
+          scholarship_available?: boolean | null
+          slug?: string | null
+          state?: string | null
+          total_faculty?: number | null
+          total_students?: number | null
+          updated_at?: string
+          verification_status?: string | null
+          website?: string | null
         }
         Relationships: []
       }
@@ -6259,6 +6922,138 @@ export type Database = {
         }
         Relationships: []
       }
+      sop_drafts: {
+        Row: {
+          ai_feedback: string | null
+          ai_generated: boolean | null
+          ai_prompt: string | null
+          ai_score: number | null
+          ai_suggestions: string[] | null
+          character_count: number | null
+          college_id: string | null
+          content: string
+          course_id: string | null
+          created_at: string
+          document_type: string
+          id: string
+          is_final: boolean | null
+          parent_draft_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          version: number | null
+          word_count: number | null
+        }
+        Insert: {
+          ai_feedback?: string | null
+          ai_generated?: boolean | null
+          ai_prompt?: string | null
+          ai_score?: number | null
+          ai_suggestions?: string[] | null
+          character_count?: number | null
+          college_id?: string | null
+          content: string
+          course_id?: string | null
+          created_at?: string
+          document_type?: string
+          id?: string
+          is_final?: boolean | null
+          parent_draft_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+          version?: number | null
+          word_count?: number | null
+        }
+        Update: {
+          ai_feedback?: string | null
+          ai_generated?: boolean | null
+          ai_prompt?: string | null
+          ai_score?: number | null
+          ai_suggestions?: string[] | null
+          character_count?: number | null
+          college_id?: string | null
+          content?: string
+          course_id?: string | null
+          created_at?: string
+          document_type?: string
+          id?: string
+          is_final?: boolean | null
+          parent_draft_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          version?: number | null
+          word_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sop_drafts_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sop_drafts_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "college_courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sop_drafts_parent_draft_id_fkey"
+            columns: ["parent_draft_id"]
+            isOneToOne: false
+            referencedRelation: "sop_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_college_interactions: {
+        Row: {
+          college_id: string
+          created_at: string
+          id: string
+          inquiry_message: string | null
+          inquiry_status: string | null
+          inquiry_subject: string | null
+          interaction_type: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          college_id: string
+          created_at?: string
+          id?: string
+          inquiry_message?: string | null
+          inquiry_status?: string | null
+          inquiry_subject?: string | null
+          interaction_type: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          college_id?: string
+          created_at?: string
+          id?: string
+          inquiry_message?: string | null
+          inquiry_status?: string | null
+          inquiry_subject?: string | null
+          interaction_type?: string
+          metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_college_interactions_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           billing_cycle: string
@@ -7356,8 +8151,16 @@ export type Database = {
         }
         Returns: string
       }
+      ensure_unique_college_slug: {
+        Args: { base_slug: string; college_id?: string }
+        Returns: string
+      }
       ensure_unique_slug: {
         Args: { base_slug: string; company_id?: string }
+        Returns: string
+      }
+      generate_college_slug: {
+        Args: { college_name: string }
         Returns: string
       }
       generate_company_slug: {
