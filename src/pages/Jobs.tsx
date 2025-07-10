@@ -245,41 +245,40 @@ const Jobs = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 font-sans">
+    <div className="min-h-screen bg-background font-sans">
       <OfflineIndicator />
       
-      {/* 1. Hero Section */}
-      <div className="bg-gradient-to-r from-primary via-primary/95 to-primary/90 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <h1 className="text-5xl md:text-6xl font-bold font-display mb-6">
+      {/* 1. Hero Section - Compact */}
+      <div className="bg-gradient-to-r from-primary to-primary/80 text-white relative overflow-hidden">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center mb-6">
+            <h1 className="text-2xl md:text-3xl font-bold mb-3">
               Find your dream job now
             </h1>
-            <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
+            <p className="text-sm md:text-base text-white/90 mb-4 max-w-2xl mx-auto">
               Discover verified jobs, AI-matched roles, and top companies hiring.
             </p>
           </div>
 
-          {/* Enhanced Search Section */}
-          <div className="max-w-5xl mx-auto mb-8">
-            <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 mb-6">
-              <div className="flex flex-col lg:flex-row gap-4">
+          {/* Enhanced Search Section - Compact */}
+          <div className="max-w-4xl mx-auto mb-4">
+            <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-4 mb-4">
+              <div className="flex flex-col lg:flex-row gap-3">
                 <div className="flex-1">
                   <div className="relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                     <Input
                       placeholder="Skills / Designations / Companies"
                       value={filters.search}
                       onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                      className="pl-12 h-14 text-lg border-0 focus:ring-2 focus:ring-primary/20 bg-gray-50"
+                      className="pl-10 h-10 text-sm border-0 focus:ring-2 focus:ring-primary/20 bg-gray-50 text-gray-800 font-medium"
                     />
                   </div>
                 </div>
                 
-                <div className="lg:w-60">
+                <div className="lg:w-48">
                   <Select value={experienceLevel} onValueChange={setExperienceLevel}>
-                    <SelectTrigger className="h-14 border-0 bg-gray-50">
+                    <SelectTrigger className="h-10 border-0 bg-gray-50 text-gray-800 text-sm">
                       <SelectValue placeholder="Experience" />
                     </SelectTrigger>
                     <SelectContent>
@@ -291,38 +290,49 @@ const Jobs = () => {
                   </Select>
                 </div>
                 
-                <div className="lg:w-72">
+                <div className="lg:w-56">
                   <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                     <Input
-                      placeholder="Location or 'Remote only'"
+                      placeholder="Location"
                       value={filters.location}
                       onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                      className="pl-12 h-14 text-lg border-0 bg-gray-50"
+                      className="pl-10 h-10 text-sm border-0 bg-gray-50 text-gray-800 font-medium"
                     />
                   </div>
                 </div>
                 
+                <button
+                  onClick={() => setFilters(prev => ({ ...prev, is_remote: !prev.is_remote }))}
+                  className={`px-4 h-10 text-sm font-medium rounded-lg transition-colors border-0 ${
+                    filters.is_remote 
+                      ? 'bg-primary text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Remote
+                </button>
+                
                 <Button 
-                  size="lg" 
-                  className="h-14 px-8 bg-primary hover:bg-primary/90 shadow-lg"
+                  size="sm" 
+                  className="h-10 px-6 bg-primary hover:bg-primary/90 text-sm"
                   onClick={() => refetch()}
                 >
-                  <Search className="h-5 w-5 mr-2" />
+                  <Search className="h-4 w-4 mr-1" />
                   Search
                 </Button>
               </div>
             </div>
             
-            {/* Tag Suggestions */}
-            <div className="text-center mb-6">
-              <p className="text-white/80 mb-3">📍 Trending Searches:</p>
+            {/* Tag Suggestions - Compact */}
+            <div className="text-center mb-3">
+              <p className="text-white/80 mb-2 text-sm">🌐 Suggested Searches:</p>
               <div className="flex flex-wrap gap-2 justify-center">
-                {tagSuggestions.map((tag) => (
+                {['React Dev', 'SAP Consultant', 'Remote Jobs', 'Noida', '10+ LPA'].map((tag) => (
                   <button
                     key={tag}
                     onClick={() => handleUniversalSearch(tag)}
-                    className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-full text-white text-sm transition-colors backdrop-blur-sm"
+                    className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-full text-white text-xs transition-colors backdrop-blur-sm font-medium"
                   >
                     {tag}
                   </button>
@@ -332,13 +342,13 @@ const Jobs = () => {
 
             <div className="text-center">
               <Button 
-                size="lg" 
+                size="sm" 
                 variant="secondary"
-                className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm"
+                className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm text-sm font-medium"
                 onClick={() => handleUniversalSearch("Ask AI to suggest best jobs for me")}
               >
-                <Brain className="h-5 w-5 mr-2" />
-                🎯 Ask AI to suggest best jobs for me
+                <Brain className="h-4 w-4 mr-2" />
+                🧠 Ask AI to find best jobs for me
               </Button>
             </div>
           </div>
@@ -348,16 +358,16 @@ const Jobs = () => {
       {/* 2. Banner Section */}
       <JobsBanner />
 
-      {/* 3. Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      {/* 3. Main Content - Compact */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           
           {/* Smart Filters Panel */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg border p-6 sticky top-6">
-              <div className="flex items-center gap-2 mb-6">
-                <Filter className="h-5 w-5 text-primary" />
-                <h3 className="font-bold text-lg">🧠 Smart Filters</h3>
+            <div className="bg-white rounded-xl shadow-md border p-4 sticky top-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Filter className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold text-base text-foreground">🧠 Smart Filters</h3>
               </div>
               <EnhancedJobFilters
                 filters={filters}
@@ -369,12 +379,12 @@ const Jobs = () => {
           
           {/* Jobs Content */}
           <div className="lg:col-span-3">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-4">
               <div>
-                <h2 className="text-3xl font-bold text-foreground font-display">Job Opportunities</h2>
-                <p className="text-muted-foreground">Find your perfect match from {allJobs.length} active positions</p>
+                <h2 className="text-xl font-bold text-foreground">Job Opportunities</h2>
+                <p className="text-sm text-muted-foreground">Find your perfect match from {allJobs.length} active positions</p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <AutoRefreshIndicator 
                   isConnected={isConnected} 
                   lastRefresh={lastRefresh}

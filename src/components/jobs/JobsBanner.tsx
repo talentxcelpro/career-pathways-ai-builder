@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface BannerItem {
   id: string;
@@ -46,6 +47,7 @@ const banners: BannerItem[] = [
 
 export const JobsBanner: React.FC = () => {
   const [currentBanner, setCurrentBanner] = React.useState(0);
+  const navigate = useNavigate();
 
   const nextBanner = () => {
     setCurrentBanner((prev) => (prev + 1) % banners.length);
@@ -63,23 +65,24 @@ export const JobsBanner: React.FC = () => {
   const current = banners[currentBanner];
 
   return (
-    <div className="relative bg-gradient-to-r from-gray-50 to-blue-50 py-6">
+    <div className="relative bg-gray-50 py-3">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Card className="relative overflow-hidden">
           <div className={`bg-gradient-to-r ${current.gradient} text-white`}>
-            <CardContent className="p-6">
+            <CardContent className="p-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="text-4xl">{current.icon}</div>
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl">{current.icon}</div>
                   <div>
-                    <h3 className="text-xl font-bold mb-1">{current.title}</h3>
+                    <h3 className="text-lg font-bold mb-1">{current.title}</h3>
                     <p className="text-white/90 text-sm">{current.description}</p>
                   </div>
                 </div>
                 <Button 
                   variant="secondary" 
+                  size="sm"
                   className="bg-white/20 hover:bg-white/30 border-white/30 text-white"
-                  onClick={() => window.location.href = current.buttonAction}
+                  onClick={() => navigate(current.buttonAction)}
                 >
                   {current.buttonText}
                 </Button>
