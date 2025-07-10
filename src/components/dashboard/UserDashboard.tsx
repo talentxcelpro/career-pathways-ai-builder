@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Briefcase, GraduationCap, FileText, TrendingUp, Users, Star } from "lucide-react";
+import { ArrowRight, Briefcase, GraduationCap, FileText, TrendingUp, Users, Star, ExternalLink, ChevronRight } from "lucide-react";
 import { useNavigate, Link } from 'react-router-dom';
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 
@@ -24,9 +24,9 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
   const navigate = useNavigate();
 
   const featuredJobs = [
-    { id: 1, title: "Senior Frontend Developer", company: "TechCorp", location: "Remote", salary: "$90k-120k", type: "Full-time" },
-    { id: 2, title: "Product Manager", company: "InnovateLab", location: "San Francisco", salary: "$110k-140k", type: "Full-time" },
-    { id: 3, title: "UX Designer", company: "DesignStudio", location: "New York", salary: "$80k-100k", type: "Contract" }
+    { id: 1, title: "Senior Frontend Developer", company: "TechCorp", location: "Remote", salary: "₹18-25 LPA", type: "Full-time" },
+    { id: 2, title: "Product Manager", company: "InnovateLab", location: "Bangalore", salary: "₹22-35 LPA", type: "Full-time" },
+    { id: 3, title: "UX Designer", company: "DesignStudio", location: "Mumbai", salary: "₹15-22 LPA", type: "Contract" }
   ];
 
   const trendingCourses = [
@@ -101,18 +101,29 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
           </CardHeader>
           <CardContent className="space-y-4">
             {featuredJobs.map((job) => (
-              <div key={job.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+              <div 
+                key={job.id} 
+                className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer hover:bg-blue-50"
+                onClick={() => navigate('/jobs')}
+              >
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-semibold text-gray-900">{job.title}</h3>
-                  <Badge variant="secondary">{job.type}</Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary">{job.type}</Badge>
+                    <ExternalLink className="h-4 w-4 text-gray-400" />
+                  </div>
                 </div>
                 <p className="text-gray-600 mb-1">{job.company} • {job.location}</p>
                 <p className="text-green-600 font-medium">{job.salary}</p>
               </div>
             ))}
-            <Button variant="outline" className="w-full">
+            <Button 
+              variant="outline" 
+              className="w-full group"
+              onClick={() => navigate('/jobs')}
+            >
               View All Jobs
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </CardContent>
         </Card>
@@ -127,8 +138,15 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
           </CardHeader>
           <CardContent className="space-y-4">
             {trendingCourses.map((course) => (
-              <div key={course.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                <h3 className="font-semibold text-gray-900 mb-1">{course.title}</h3>
+              <div 
+                key={course.id} 
+                className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer hover:bg-green-50"
+                onClick={() => navigate('/learning')}
+              >
+                <div className="flex justify-between items-start mb-1">
+                  <h3 className="font-semibold text-gray-900">{course.title}</h3>
+                  <ExternalLink className="h-4 w-4 text-gray-400" />
+                </div>
                 <p className="text-gray-600 mb-2">by {course.instructor}</p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
@@ -139,9 +157,13 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 </div>
               </div>
             ))}
-            <Button variant="outline" className="w-full">
+            <Button 
+              variant="outline" 
+              className="w-full group"
+              onClick={() => navigate('/learning')}
+            >
               Explore Learning
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </CardContent>
         </Card>
@@ -169,15 +191,23 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               <span>Edit Profile</span>
             </div>
           </Button>
-          <Button variant="outline" className="h-24">
+          <Button 
+            variant="outline" 
+            className="h-24 group"
+            onClick={() => navigate('/career-map')}
+          >
             <div className="text-center">
-              <TrendingUp className="h-6 w-6 mx-auto mb-2" />
+              <TrendingUp className="h-6 w-6 mx-auto mb-2 group-hover:scale-110 transition-transform" />
               <span>Career Map</span>
             </div>
           </Button>
-          <Button variant="outline" className="h-24">
+          <Button 
+            variant="outline" 
+            className="h-24 group"
+            onClick={() => navigate('/jobs/saved')}
+          >
             <div className="text-center">
-              <Briefcase className="h-6 w-6 mx-auto mb-2" />
+              <Briefcase className="h-6 w-6 mx-auto mb-2 group-hover:scale-110 transition-transform" />
               <span>Job Alerts</span>
             </div>
           </Button>

@@ -154,7 +154,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
         {/* Salary Range */}
         <div>
           <label className="text-sm font-medium mb-3 block">
-            Salary Range: ${filters.salary_min.toLocaleString()} - ${filters.salary_max.toLocaleString()}
+            Salary Range: ₹{filters.salary_min.toLocaleString()} - ₹{filters.salary_max.toLocaleString()}
           </label>
           <div className="space-y-4">
             <div>

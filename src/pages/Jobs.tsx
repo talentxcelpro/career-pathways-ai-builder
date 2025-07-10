@@ -329,28 +329,37 @@ const Jobs = () => {
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-            <div className="flex flex-col items-center">
+            <button 
+              onClick={() => {/* Scroll to jobs list */}}
+              className="flex flex-col items-center hover:bg-blue-50 p-2 rounded-lg transition-colors"
+            >
               <div className="bg-blue-100 p-1.5 rounded-full mb-1">
                 <Briefcase className="h-4 w-4 text-blue-600" />
               </div>
               <div className="text-lg font-bold text-gray-900">{allJobs.length}</div>
               <div className="text-xs text-gray-600">Total Jobs</div>
-            </div>
-            <div className="flex flex-col items-center">
+            </button>
+            <button 
+              onClick={() => setFilters(prev => ({ ...prev, search: 'featured' }))}
+              className="flex flex-col items-center hover:bg-green-50 p-2 rounded-lg transition-colors"
+            >
               <div className="bg-green-100 p-1.5 rounded-full mb-1">
                 <Sparkles className="h-4 w-4 text-green-600" />
               </div>
               <div className="text-lg font-bold text-gray-900">{featuredJobs.length}</div>
               <div className="text-xs text-gray-600">Featured</div>
-            </div>
-            <div className="flex flex-col items-center">
+            </button>
+            <button 
+              onClick={() => setFilters(prev => ({ ...prev, is_remote: true }))}
+              className="flex flex-col items-center hover:bg-purple-50 p-2 rounded-lg transition-colors"
+            >
               <div className="bg-purple-100 p-1.5 rounded-full mb-1">
                 <MapPin className="h-4 w-4 text-purple-600" />
               </div>
               <div className="text-lg font-bold text-gray-900">{remoteJobs.length}</div>
               <div className="text-xs text-gray-600">Remote</div>
-            </div>
-            <div className="flex flex-col items-center">
+            </button>
+            <div className="flex flex-col items-center p-2">
               <div className="bg-orange-100 p-1.5 rounded-full mb-1">
                 <Briefcase className="h-4 w-4 text-orange-600" />
               </div>
@@ -361,7 +370,13 @@ const Jobs = () => {
         </div>
       </div>
 
-      <JobsCategories categories={categories} />
+      <JobsCategories 
+        categories={categories} 
+        onCategoryClick={(categoryName) => {
+          setFilters(prev => ({ ...prev, search: categoryName }));
+          refetch();
+        }}
+      />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between items-center mb-4">
