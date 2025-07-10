@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -30,14 +30,18 @@ import {
   FileText,
   Network,
   Shield,
-  ChevronDown
+  ChevronDown,
+  CheckCircle,
+  Clock
 } from "lucide-react";
 import { useAdminAccess } from '@/hooks/useAdminAccess';
+import { useEmployerAccess } from '@/hooks/useEmployerAccess';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const dropdownRef = React.useRef(null);
 
@@ -124,6 +128,21 @@ export const Navbar = () => {
   };
 
   const { isAdmin } = useAdminAccess();
+  const { hasEmployerAccess, employerStatus } = useEmployerAccess();
+
+  const getEmployerButtonText = () => {
+    if (!user) return 'Become an Employer';
+    if (hasEmployerAccess) return 'Go to Employer Dashboard';
+    if (employerStatus === 'pending') return 'Access Pending';
+    return 'Become an Employer';
+  };
+
+  const getEmployerButtonAction = () => {
+    if (!user) return () => navigate('/auth/register');
+    if (hasEmployerAccess) return () => navigate('/employer');
+    if (employerStatus === 'pending') return () => navigate('/employer/request-access');
+    return () => navigate('/employer/request-access');
+  };
 
   return (
     <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -190,6 +209,22 @@ export const Navbar = () => {
 
               {/* User Menu */}
               <div className="flex items-center space-x-4">
+                {/* Employer Button */}
+                <Button 
+                  variant={hasEmployerAccess ? "default" : "outline"}
+                  size="sm"
+                  onClick={getEmployerButtonAction()}
+                  className={`
+                    ${employerStatus === 'pending' ? 'border-yellow-500 text-yellow-600 hover:bg-yellow-50' : ''}
+                    ${hasEmployerAccess ? 'bg-green-600 hover:bg-green-700 text-white' : ''}
+                  `}
+                >
+                  {hasEmployerAccess && <CheckCircle className="h-4 w-4 mr-1" />}
+                  {employerStatus === 'pending' && <Clock className="h-4 w-4 mr-1" />}
+                  {!hasEmployerAccess && employerStatus !== 'pending' && <Building2 className="h-4 w-4 mr-1" />}
+                  {getEmployerButtonText()}
+                </Button>
+
                 {/* Notifications */}
                 <Link to="/network/notifications">
                   <Button variant="ghost" size="icon" className="relative">
@@ -266,6 +301,16 @@ export const Navbar = () => {
           ) : (
             /* Guest Navigation */
             <div className="flex items-center space-x-4">
+              <Button 
+                variant="ghost" 
+                onClick={getEmployerButtonAction()}
+                className={`
+                  ${employerStatus === 'pending' ? 'text-yellow-600 hover:text-yellow-700' : ''}
+                  ${hasEmployerAccess ? 'text-green-600 hover:text-green-700' : ''}
+                `}
+              >
+                {getEmployerButtonText()}
+              </Button>
               <Link to="/auth/login">
                 <Button variant="ghost">Sign In</Button>
               </Link>

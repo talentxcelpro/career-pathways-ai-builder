@@ -4,9 +4,18 @@ import { employerJobRoutes } from "./employer/jobRoutes";
 import { employerProfileRoutes } from "./employer/profileRoutes";
 import { employerCRMRoutes } from "./employer/crmRoutes";
 import RequestAccess from "../pages/employer/RequestAccess";
+import EmployerLanding from "../pages/employer/EmployerLanding";
 import CompanyDashboard from "../pages/companies/CompanyDashboard";
 
 export const employerRoutes = [
+  // Employer Landing Page (public route)
+  {
+    title: "Employer",
+    to: "/employer",
+    page: <EmployerLanding />,
+    requiresAuth: false,
+  },
+  
   // Employer Access Request (public route)
   {
     title: "Request Employer Access",
