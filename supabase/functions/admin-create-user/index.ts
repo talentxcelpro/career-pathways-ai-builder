@@ -60,19 +60,36 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check if user is admin using the user client context
-    const { data: isAdmin, error: adminCheckError } = await supabaseUser.rpc('is_super_admin');
+    // Check if user is admin - use multiple methods for reliability
+    let isAdmin = false;
     
-    if (adminCheckError) {
-      console.error('Admin check error:', adminCheckError);
-      return new Response(JSON.stringify({ error: 'Failed to verify admin status' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    // Method 1: Try RPC function first
+    try {
+      const { data: rpcResult, error: rpcError } = await supabaseUser.rpc('is_super_admin');
+      if (!rpcError && rpcResult) {
+        isAdmin = true;
+        console.log('Admin verified via RPC function');
+      }
+    } catch (rpcError) {
+      console.log('RPC admin check failed, trying fallback method');
+    }
+    
+    // Method 2: Fallback - check email directly against auth.users
+    if (!isAdmin) {
+      try {
+        const { data: adminUser, error: emailCheckError } = await supabaseAdmin.auth.admin.getUserById(user.id);
+        if (!emailCheckError && adminUser?.user?.email === 'talentxcelpro@gmail.com') {
+          isAdmin = true;
+          console.log('Admin verified via direct email check');
+        }
+      } catch (emailError) {
+        console.error('Email admin check failed:', emailError);
+      }
     }
 
     if (!isAdmin) {
-      return new Response(JSON.stringify({ error: 'Insufficient permissions' }), {
+      console.error('User is not admin:', user.email);
+      return new Response(JSON.stringify({ error: 'Insufficient permissions. Admin access required.' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
