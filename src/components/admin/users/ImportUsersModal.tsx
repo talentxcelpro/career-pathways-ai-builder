@@ -114,43 +114,29 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
   const createUser = async (userData: any) => {
     const password = generatePassword();
     
-    // Create auth user
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email: userData.email,
-      password: password,
-      user_metadata: {
-        full_name: userData.full_name
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session) {
+      throw new Error('Not authenticated');
+    }
+
+    // Call admin function to create user
+    const { data, error } = await supabase.functions.invoke('admin-create-user', {
+      body: {
+        email: userData.email,
+        password: password,
+        fullName: userData.full_name,
+        role: userData.role,
+        status: userData.status,
+        sendWelcomeEmail: userData.send_welcome_email === 'true'
       }
     });
 
-    if (authError) throw authError;
-
-    // Create profile
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert({
-        id: authData.user.id,
-        full_name: userData.full_name,
-        email: userData.email,
-        user_role: userData.role as 'job_seeker' | 'admin' | 'employer' | 'candidate',
-        profile_completed: userData.status === 'active',
-        created_at: new Date().toISOString()
-      });
-
-    if (profileError) throw profileError;
-
-    // Send welcome email if requested
-    if (userData.send_welcome_email === 'true') {
-      await supabase.functions.invoke('send-welcome-email', {
-        body: {
-          email: userData.email,
-          name: userData.full_name,
-          password: password
-        }
-      });
+    if (error) {
+      console.error('Error creating user:', error);
+      throw new Error(error.message || 'Failed to create user');
     }
 
-    return { success: true, password };
+    return { success: true, password, user: data.user };
   };
 
   const handleImport = async () => {
