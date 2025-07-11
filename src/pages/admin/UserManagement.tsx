@@ -36,6 +36,7 @@ const UserManagement = () => {
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
           filteredUsers={filteredUsers}
+          onUsersChanged={() => window.location.reload()}
         />
 
         <UsersList
