@@ -111,30 +111,49 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
     return password;
   };
 
-  const createUser = async (userData: any) => {
-    const password = generatePassword();
-    
+  const callAdminFunction = async (body: any): Promise<any> => {
     const { data: session } = await supabase.auth.getSession();
     if (!session.session) {
       throw new Error('Not authenticated');
     }
 
-    // Call admin function to create user
-    const { data, error } = await supabase.functions.invoke('admin-create-user', {
-      body: {
-        email: userData.email,
-        password: password,
-        fullName: userData.full_name,
-        role: userData.role,
-        status: userData.status,
-        sendWelcomeEmail: userData.send_welcome_email === 'true'
-      }
+    const functionUrl = `https://dthlgsnakhofinssokm.supabase.co/functions/v1/admin-create-user`;
+
+    const response = await fetch(functionUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.session.access_token}`,
+        'Content-Type': 'application/json',
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+      },
+      body: JSON.stringify(body)
     });
 
-    if (error) {
-      console.error('Error creating user:', error);
-      throw new Error(error.message || 'Failed to create user');
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
+
+    const data = await response.json();
+    
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    return data;
+  };
+
+  const createUser = async (userData: any) => {
+    const password = generatePassword();
+    
+    const data = await callAdminFunction({
+      email: userData.email,
+      password: password,
+      fullName: userData.full_name,
+      role: userData.role,
+      status: userData.status,
+      sendWelcomeEmail: userData.send_welcome_email === 'true'
+    });
 
     return { success: true, password, user: data.user };
   };

@@ -66,41 +66,71 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
     return true;
   };
 
+  const callAdminFunction = async (body: any, retries = 3): Promise<any> => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw new Error('You must be logged in to create users');
+    }
+
+    const functionUrl = `https://dthlgsnakhofinssokm.supabase.co/functions/v1/admin-create-user`;
+
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        console.log(`Attempt ${attempt}: Calling admin function`);
+        
+        const response = await fetch(functionUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+          },
+          body: JSON.stringify(body)
+        });
+
+        console.log(`Response status: ${response.status}`);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`HTTP error: ${response.status} - ${errorText}`);
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+        console.log('Function response:', data);
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        return data;
+      } catch (error) {
+        console.error(`Attempt ${attempt} failed:`, error);
+        
+        if (attempt === retries) {
+          throw error;
+        }
+        
+        // Wait before retrying (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
-      // Get current session for auth header
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error('You must be logged in to create users');
-        return;
-      }
-
-      // Call admin function to create user
-      const { data, error } = await supabase.functions.invoke('admin-create-user', {
-        body: {
-          email: formData.email,
-          password: formData.password,
-          fullName: formData.fullName,
-          role: formData.role,
-          status: formData.status,
-          sendWelcomeEmail: formData.sendWelcomeEmail
-        }
+      const data = await callAdminFunction({
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName,
+        role: formData.role,
+        status: formData.status,
+        sendWelcomeEmail: formData.sendWelcomeEmail
       });
-
-      if (error) {
-        console.error('Error creating user:', error);
-        toast.error(`Failed to create user: ${error.message}`);
-        return;
-      }
-
-      if (data?.error) {
-        toast.error(data.error);
-        return;
-      }
 
       setShowSuccess(true);
       toast.success('User created successfully!');
@@ -114,7 +144,8 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
 
     } catch (error: any) {
       console.error('Error creating user:', error);
-      toast.error(error.message || 'Failed to create user');
+      const errorMessage = error.message || 'Failed to create user';
+      toast.error(`Failed to create user: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
