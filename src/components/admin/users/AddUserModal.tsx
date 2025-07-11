@@ -80,27 +80,20 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
       }
 
       // Call admin function to create user
-      const response = await fetch(`https://dthlgsnahkoftinssokm.supabase.co/functions/v1/admin-create-user`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+        body: {
           email: formData.email,
           password: formData.password,
           fullName: formData.fullName,
           role: formData.role,
           status: formData.status,
           sendWelcomeEmail: formData.sendWelcomeEmail
-        })
+        }
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error('Error creating user:', data);
-        toast.error(`Failed to create user: ${data.error || 'Unknown error'}`);
+      if (error) {
+        console.error('Error creating user:', error);
+        toast.error(`Failed to create user: ${error.message}`);
         return;
       }
 
