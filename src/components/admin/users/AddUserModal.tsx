@@ -67,52 +67,86 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
   };
 
   const callAdminFunction = async (body: any, retries = 3): Promise<any> => {
-    const { data: { session } } = await supabase.auth.getSession();
+    // Validate session first
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      console.error('Session error:', sessionError);
+      throw new Error('Failed to get session');
+    }
+    
     if (!session) {
-      throw new Error('You must be logged in to create users');
+      console.error('No session found');
+      throw new Error('No session found - please log in again');
     }
 
-    const functionUrl = `https://dthlgsnakhofinssokm.supabase.co/functions/v1/admin-create-user`;
+    // Validate token is not expired
+    const now = Date.now() / 1000;
+    if (session.expires_at && session.expires_at < now) {
+      console.error('Token expired');
+      throw new Error('Session expired - please log in again');
+    }
+
+    console.log('Calling admin function with session for user:', session.user?.email);
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
-        console.log(`Attempt ${attempt}: Calling admin function`);
+        console.log(`Attempt ${attempt}: Calling admin-create-user function`);
         
-        const response = await fetch(functionUrl, {
-          method: 'POST',
+        // Method 1: Try using Supabase client first
+        const { data, error } = await supabase.functions.invoke('admin-create-user', {
+          body,
           headers: {
             'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
-          },
-          body: JSON.stringify(body)
+          }
         });
 
-        console.log(`Response status: ${response.status}`);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`HTTP error: ${response.status} - ${errorText}`);
-          throw new Error(`HTTP ${response.status}: ${errorText}`);
+        if (error) {
+          console.error('Supabase function invoke error:', error);
+          throw new Error(`Function error: ${error.message}`);
         }
 
-        const data = await response.json();
-        console.log('Function response:', data);
-
-        if (data.error) {
-          throw new Error(data.error);
-        }
-
+        console.log('Function call successful:', data);
         return data;
+
       } catch (error) {
         console.error(`Attempt ${attempt} failed:`, error);
         
+        // If Supabase client fails, try direct fetch as fallback
         if (attempt === retries) {
-          throw error;
+          try {
+            console.log('Trying direct fetch as fallback...');
+            const functionUrl = `https://dthlgsnakhofinssokm.supabase.co/functions/v1/admin-create-user`;
+            
+            const response = await fetch(functionUrl, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${session.access_token}`,
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+                'Content-Type': 'application/json',
+                'x-requested-with': 'XMLHttpRequest',
+              },
+              body: JSON.stringify(body),
+            });
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              console.error('Direct fetch error:', response.status, errorText);
+              throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+
+            const result = await response.json();
+            console.log('Direct fetch successful:', result);
+            return result;
+          } catch (fetchError) {
+            console.error('Direct fetch fallback failed:', fetchError);
+            throw error; // Throw the original error
+          }
         }
         
-        // Wait before retrying (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+        // Exponential backoff for retries
+        const delay = Math.pow(2, attempt) * 1000;
+        console.log(`Waiting ${delay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
   };

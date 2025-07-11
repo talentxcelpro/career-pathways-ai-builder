@@ -60,30 +60,39 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check if user is admin - use multiple methods for reliability
+    // Check if user is admin - check user_roles table directly
     let isAdmin = false;
     
-    // Method 1: Try RPC function first
     try {
-      const { data: rpcResult, error: rpcError } = await supabaseUser.rpc('is_super_admin');
-      if (!rpcError && rpcResult) {
+      // Method 1: Check user_roles table using admin client
+      const { data: userRoles, error: rolesError } = await supabaseAdmin
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .in('role', ['super_admin', 'admin']);
+      
+      if (!rolesError && userRoles && userRoles.length > 0) {
         isAdmin = true;
-        console.log('Admin verified via RPC function');
+        console.log('Admin verified via user_roles table:', userRoles[0].role);
+      } else {
+        // Method 2: Fallback - check email directly for super admin
+        const { data: adminUser, error: emailCheckError } = await supabaseAdmin.auth.admin.getUserById(user.id);
+        if (!emailCheckError && adminUser?.user?.email === 'talentxcelpro@gmail.com') {
+          isAdmin = true;
+          console.log('Admin verified via direct email check (super admin)');
+        }
       }
-    } catch (rpcError) {
-      console.log('RPC admin check failed, trying fallback method');
-    }
-    
-    // Method 2: Fallback - check email directly against auth.users
-    if (!isAdmin) {
+    } catch (error) {
+      console.error('Admin check failed:', error);
+      // Try email fallback as last resort
       try {
         const { data: adminUser, error: emailCheckError } = await supabaseAdmin.auth.admin.getUserById(user.id);
         if (!emailCheckError && adminUser?.user?.email === 'talentxcelpro@gmail.com') {
           isAdmin = true;
-          console.log('Admin verified via direct email check');
+          console.log('Admin verified via email fallback');
         }
       } catch (emailError) {
-        console.error('Email admin check failed:', emailError);
+        console.error('All admin checks failed:', emailError);
       }
     }
 
