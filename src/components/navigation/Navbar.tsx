@@ -131,10 +131,10 @@ export const Navbar = () => {
   const { hasEmployerAccess, employerStatus } = useEmployerAccess();
 
   const getEmployerButtonText = () => {
-    if (!user) return 'Become an Employer';
-    if (hasEmployerAccess) return 'Go to Employer Dashboard';
+    if (!user) return 'Login';
+    if (hasEmployerAccess) return 'Employer Dashboard';
     if (employerStatus === 'pending') return 'Access Pending';
-    return 'Become an Employer';
+    return 'Request Access';
   };
 
   const getEmployerButtonAction = () => {

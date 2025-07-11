@@ -140,6 +140,12 @@ const adminMenuItems = [
     url: '/admin/admins',
     icon: Settings,
     description: 'Manage administrators'
+  },
+  {
+    title: 'Employer Dashboard',
+    url: '/employer',
+    icon: Building2,
+    description: 'Access employer features'
   }
 ];
 
