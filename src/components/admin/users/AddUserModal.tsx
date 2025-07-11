@@ -72,40 +72,37 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
 
     setIsSubmitting(true);
     try {
-      // Create auth user
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: formData.email,
-        password: formData.password,
-        user_metadata: {
-          full_name: formData.fullName
+      // Get current session for auth header
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('You must be logged in to create users');
+        return;
+      }
+
+      // Call admin function to create user
+      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+        body: {
+          email: formData.email,
+          password: formData.password,
+          fullName: formData.fullName,
+          role: formData.role,
+          status: formData.status,
+          sendWelcomeEmail: formData.sendWelcomeEmail
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
         }
       });
 
-      if (authError) throw authError;
+      if (error) {
+        console.error('Error creating user:', error);
+        toast.error(`Failed to create user: ${error.message}`);
+        return;
+      }
 
-      // Create profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          full_name: formData.fullName,
-          email: formData.email,
-          user_role: formData.role as 'job_seeker' | 'admin' | 'employer' | 'candidate',
-          profile_completed: formData.status === 'active',
-          created_at: new Date().toISOString()
-        });
-
-      if (profileError) throw profileError;
-
-      // Send welcome email if requested
-      if (formData.sendWelcomeEmail) {
-        await supabase.functions.invoke('send-welcome-email', {
-          body: {
-            email: formData.email,
-            name: formData.fullName,
-            password: formData.password
-          }
-        });
+      if (data?.error) {
+        toast.error(data.error);
+        return;
       }
 
       setShowSuccess(true);
