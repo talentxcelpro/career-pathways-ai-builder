@@ -1,6 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 import { corsHeaders } from "../_shared/cors.ts";
 
+// Force redeployment - Updated timestamp: 2025-07-12T05:26:00Z
+
 Deno.serve(async (req) => {
   console.log(`[${new Date().toISOString()}] Received ${req.method} request from ${req.headers.get('Origin')} to admin-create-user`)
   

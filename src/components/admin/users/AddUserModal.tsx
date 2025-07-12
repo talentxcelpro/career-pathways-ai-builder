@@ -66,67 +66,84 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
     return true;
   };
 
+  const checkFunctionHealth = async (): Promise<boolean> => {
+    try {
+      console.log('Checking Edge Function health...');
+      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+        body: { healthCheck: true }
+      });
+      
+      if (error) {
+        console.log('Health check failed via function invoke, trying direct call');
+        // Try direct health check
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return false;
+        
+        const response = await fetch(`https://dthlgsnakhofinssokm.supabase.co/functions/v1/admin-create-user`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        return response.ok;
+      }
+      
+      console.log('Function health check passed');
+      return true;
+    } catch (error) {
+      console.error('Health check failed:', error);
+      return false;
+    }
+  };
+
   const callAdminFunction = async (body: any): Promise<any> => {
-    console.log('Creating user via Supabase function invoke...');
+    console.log('Creating user via admin function...');
+    
+    // Check function health first
+    const isHealthy = await checkFunctionHealth();
+    if (!isHealthy) {
+      throw new Error('Admin function is not accessible. The service may be temporarily unavailable. Please try again in a few minutes or contact support if the issue persists.');
+    }
     
     try {
-      // Primary method: Use Supabase's built-in function invocation
       const { data, error } = await supabase.functions.invoke('admin-create-user', {
         body
       });
 
       if (error) {
-        console.error('Supabase function invoke error:', error);
-        throw new Error(error.message || 'Function invocation failed');
-      }
-
-      console.log('Function call successful:', data);
-      return data;
-
-    } catch (primaryError) {
-      console.error('Primary method failed:', primaryError);
-      
-      // Fallback method: Direct fetch call
-      console.log('Attempting fallback method with direct fetch...');
-      
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          throw new Error('No session found - please log in again');
-        }
-
-        const response = await fetch(`https://dthlgsnakhofinssokm.supabase.co/functions/v1/admin-create-user`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP ${response.status}: ${errorText}`);
-        }
-
-        const result = await response.json();
-        if (result.error) {
-          throw new Error(result.error);
-        }
-
-        return result;
-
-      } catch (fallbackError) {
-        console.error('Fallback method also failed:', fallbackError);
+        console.error('Function invoke error:', error);
         
         // Provide specific error messages based on error type
-        if (fallbackError instanceof TypeError && fallbackError.message === 'Failed to fetch') {
-          throw new Error('Network error: Unable to connect to the server. Please check your internet connection and try again.');
+        if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+          throw new Error('Network connection error. Please check your internet connection and try again.');
         }
         
-        throw new Error(fallbackError.message || 'Failed to create user - both methods failed');
+        if (error.message?.includes('404')) {
+          throw new Error('Admin function not found. The service may not be properly deployed.');
+        }
+        
+        if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+          throw new Error('Authentication error. Please log out and log back in.');
+        }
+        
+        throw new Error(error.message || 'Function call failed');
       }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      console.log('User creation successful:', data);
+      return data;
+
+    } catch (error) {
+      console.error('Admin function call failed:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      throw new Error(`Failed to create user: ${errorMessage}`);
     }
   };
 
