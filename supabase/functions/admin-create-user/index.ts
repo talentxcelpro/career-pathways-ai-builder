@@ -2,24 +2,43 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 import { corsHeaders } from "../_shared/cors.ts";
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
-
-  // Health check endpoint
-  if (req.method === 'GET') {
-    return new Response(JSON.stringify({ 
-      status: 'healthy', 
-      timestamp: new Date().toISOString(),
-      service: 'admin-create-user'
-    }), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-
+  console.log(`[${new Date().toISOString()}] Received ${req.method} request from ${req.headers.get('Origin')} to admin-create-user`)
+  
   try {
+    // Handle CORS preflight requests
+    if (req.method === 'OPTIONS') {
+      console.log('Handling CORS preflight request')
+      return new Response('ok', { headers: corsHeaders });
+    }
+
+    // Health check endpoint
+    if (req.method === 'GET') {
+      console.log('Health check request')
+      return new Response(JSON.stringify({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        service: 'admin-create-user',
+        env_check: {
+          has_supabase_url: !!Deno.env.get('SUPABASE_URL'),
+          has_service_role: !!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
+          has_anon_key: !!Deno.env.get('SUPABASE_ANON_KEY')
+        }
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Only handle POST requests for user creation
+    if (req.method !== 'POST') {
+      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+        status: 405,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    console.log('Processing POST request for user creation')
+
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -28,6 +47,7 @@ Deno.serve(async (req) => {
     // Get the authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('No authorization header provided')
       return new Response(JSON.stringify({ error: 'Authorization header missing' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -59,6 +79,8 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    console.log('User authenticated:', user.email);
 
     // Check if user is admin - check user_roles table directly
     let isAdmin = false;
@@ -126,6 +148,8 @@ Deno.serve(async (req) => {
       });
     }
 
+    console.log('User created in auth:', authData.user.id);
+
     // Create profile
     const { error: profileError } = await supabaseAdmin
       .from('profiles')
@@ -147,6 +171,8 @@ Deno.serve(async (req) => {
       });
     }
 
+    console.log('Profile created successfully');
+
     // Send welcome email if requested
     if (sendWelcomeEmail) {
       try {
@@ -166,6 +192,8 @@ Deno.serve(async (req) => {
       }
     }
 
+    console.log('User creation completed successfully');
+
     return new Response(JSON.stringify({ 
       success: true, 
       user: {
@@ -181,7 +209,10 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Function error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Internal server error',
+      details: error.message 
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
