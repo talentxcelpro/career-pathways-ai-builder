@@ -66,55 +66,36 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
     return true;
   };
 
-  const callAdminFunction = async (body: any, retries = 3): Promise<any> => {
-    // Validate session first
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError) {
-      console.error('Session error:', sessionError);
-      throw new Error('Failed to get session');
-    }
-    
-    if (!session) {
-      console.error('No session found');
-      throw new Error('No session found - please log in again');
-    }
-
-    console.log('Calling admin function with session for user:', session.user?.email);
-
-    // First test if the function is accessible with a health check
-    const functionUrl = `https://dthlgsnakhofinssokm.supabase.co/functions/v1/admin-create-user`;
+  const callAdminFunction = async (body: any): Promise<any> => {
+    console.log('Creating user via Supabase function invoke...');
     
     try {
-      console.log('Testing function health...');
-      const healthResponse = await fetch(functionUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-        },
+      // Primary method: Use Supabase's built-in function invocation
+      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+        body
       });
-      
-      if (healthResponse.ok) {
-        const healthData = await healthResponse.json();
-        console.log('Function health check passed:', healthData);
-      } else {
-        console.error('Function health check failed:', healthResponse.status);
-        throw new Error(`Function not accessible (health check failed: ${healthResponse.status})`);
-      }
-    } catch (healthError) {
-      console.error('Function health check error:', healthError);
-      if (healthError instanceof TypeError && healthError.message === 'Failed to fetch') {
-        throw new Error('Edge Function is not deployed or accessible. Please check your Supabase project configuration.');
-      }
-      throw healthError;
-    }
 
-    // Now try the actual user creation
-    for (let attempt = 1; attempt <= retries; attempt++) {
+      if (error) {
+        console.error('Supabase function invoke error:', error);
+        throw new Error(error.message || 'Function invocation failed');
+      }
+
+      console.log('Function call successful:', data);
+      return data;
+
+    } catch (primaryError) {
+      console.error('Primary method failed:', primaryError);
+      
+      // Fallback method: Direct fetch call
+      console.log('Attempting fallback method with direct fetch...');
+      
       try {
-        console.log(`Attempt ${attempt}: Creating user via Edge Function`);
-        
-        const response = await fetch(functionUrl, {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          throw new Error('No session found - please log in again');
+        }
+
+        const response = await fetch(`https://dthlgsnakhofinssokm.supabase.co/functions/v1/admin-create-user`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${session.access_token}`,
@@ -124,38 +105,27 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
           body: JSON.stringify(body),
         });
 
-        console.log(`Response status: ${response.status}`);
-
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('HTTP error:', response.status, errorText);
           throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
 
         const result = await response.json();
-        console.log('Function call successful:', result);
-
         if (result.error) {
           throw new Error(result.error);
         }
 
         return result;
 
-      } catch (error) {
-        console.error(`Attempt ${attempt} failed:`, error);
+      } catch (fallbackError) {
+        console.error('Fallback method also failed:', fallbackError);
         
-        if (attempt === retries) {
-          // Provide more helpful error messages
-          if (error instanceof TypeError && error.message === 'Failed to fetch') {
-            throw new Error('Unable to connect to the user creation service. The Edge Function may not be deployed or there may be a network issue.');
-          }
-          throw error;
+        // Provide specific error messages based on error type
+        if (fallbackError instanceof TypeError && fallbackError.message === 'Failed to fetch') {
+          throw new Error('Network error: Unable to connect to the server. Please check your internet connection and try again.');
         }
         
-        // Exponential backoff for retries
-        const delay = Math.pow(2, attempt) * 1000;
-        console.log(`Waiting ${delay}ms before retry...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        throw new Error(fallbackError.message || 'Failed to create user - both methods failed');
       }
     }
   };
