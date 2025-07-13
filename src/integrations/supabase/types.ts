@@ -110,6 +110,110 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_admin_inputs: {
+        Row: {
+          category: string | null
+          content: Json
+          created_at: string | null
+          created_by: string | null
+          id: string
+          input_type: string
+          is_active: boolean | null
+          priority: number | null
+          title: string
+          tool_slug: string | null
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          category?: string | null
+          content?: Json
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          input_type: string
+          is_active?: boolean | null
+          priority?: number | null
+          title: string
+          tool_slug?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          category?: string | null
+          content?: Json
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          input_type?: string
+          is_active?: boolean | null
+          priority?: number | null
+          title?: string
+          tool_slug?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_admin_inputs_tool_slug_fkey"
+            columns: ["tool_slug"]
+            isOneToOne: false
+            referencedRelation: "ai_tools_config"
+            referencedColumns: ["tool_slug"]
+          },
+        ]
+      }
+      ai_content_library: {
+        Row: {
+          approved_by: string | null
+          category: string
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_approved: boolean | null
+          metadata: Json | null
+          quality_score: number | null
+          tags: string[] | null
+          template_type: string
+          title: string
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          approved_by?: string | null
+          category: string
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_approved?: boolean | null
+          metadata?: Json | null
+          quality_score?: number | null
+          tags?: string[] | null
+          template_type: string
+          title: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          approved_by?: string | null
+          category?: string
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_approved?: boolean | null
+          metadata?: Json | null
+          quality_score?: number | null
+          tags?: string[] | null
+          template_type?: string
+          title?: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
       ai_cover_letters: {
         Row: {
           company_name: string | null
@@ -282,6 +386,111 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_feedback_system: {
+        Row: {
+          admin_response: string | null
+          created_at: string | null
+          feedback_text: string | null
+          feedback_type: string | null
+          id: string
+          is_resolved: boolean | null
+          metadata: Json | null
+          operation_id: string | null
+          rating: number | null
+          resolved_at: string | null
+          tool_slug: string
+          user_id: string
+        }
+        Insert: {
+          admin_response?: string | null
+          created_at?: string | null
+          feedback_text?: string | null
+          feedback_type?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          metadata?: Json | null
+          operation_id?: string | null
+          rating?: number | null
+          resolved_at?: string | null
+          tool_slug: string
+          user_id: string
+        }
+        Update: {
+          admin_response?: string | null
+          created_at?: string | null
+          feedback_text?: string | null
+          feedback_type?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          metadata?: Json | null
+          operation_id?: string | null
+          rating?: number | null
+          resolved_at?: string | null
+          tool_slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_operation_queue: {
+        Row: {
+          attempts: number | null
+          completed_at: string | null
+          cost: number | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          input_data: Json
+          max_attempts: number | null
+          operation_type: string
+          output_data: Json | null
+          priority: number | null
+          processing_time_ms: number | null
+          scheduled_at: string | null
+          started_at: string | null
+          status: string | null
+          tool_slug: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number | null
+          completed_at?: string | null
+          cost?: number | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          input_data: Json
+          max_attempts?: number | null
+          operation_type: string
+          output_data?: Json | null
+          priority?: number | null
+          processing_time_ms?: number | null
+          scheduled_at?: string | null
+          started_at?: string | null
+          status?: string | null
+          tool_slug: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number | null
+          completed_at?: string | null
+          cost?: number | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          input_data?: Json
+          max_attempts?: number | null
+          operation_type?: string
+          output_data?: Json | null
+          priority?: number | null
+          processing_time_ms?: number | null
+          scheduled_at?: string | null
+          started_at?: string | null
+          status?: string | null
+          tool_slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_prompt_templates: {
         Row: {
           created_at: string
@@ -431,15 +640,82 @@ export type Database = {
           },
         ]
       }
+      ai_tools_config: {
+        Row: {
+          admin_notes: string | null
+          category: string | null
+          cost_per_request: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_enabled: boolean | null
+          is_premium: boolean | null
+          max_tokens: number | null
+          model_name: string | null
+          prompt_template: string | null
+          rate_limit_per_day: number | null
+          rate_limit_per_hour: number | null
+          system_message: string | null
+          temperature: number | null
+          tool_name: string
+          tool_slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          category?: string | null
+          cost_per_request?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          is_premium?: boolean | null
+          max_tokens?: number | null
+          model_name?: string | null
+          prompt_template?: string | null
+          rate_limit_per_day?: number | null
+          rate_limit_per_hour?: number | null
+          system_message?: string | null
+          temperature?: number | null
+          tool_name: string
+          tool_slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string | null
+          cost_per_request?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          is_premium?: boolean | null
+          max_tokens?: number | null
+          model_name?: string | null
+          prompt_template?: string | null
+          rate_limit_per_day?: number | null
+          rate_limit_per_hour?: number | null
+          system_message?: string | null
+          temperature?: number | null
+          tool_name?: string
+          tool_slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ai_usage_logs: {
         Row: {
+          admin_flagged: boolean | null
           cost_estimate: number | null
           created_at: string
           error_message: string | null
           feature_key: string | null
           feature_type: string
           id: string
+          input_tokens: number | null
           module_name: string | null
+          operation_id: string | null
+          output_tokens: number | null
           request_data: Json | null
           request_type: string
           response_data: Json | null
@@ -447,16 +723,22 @@ export type Database = {
           session_id: string | null
           success: boolean | null
           tokens_used: number | null
+          tool_slug: string | null
           user_id: string
+          user_rating: number | null
         }
         Insert: {
+          admin_flagged?: boolean | null
           cost_estimate?: number | null
           created_at?: string
           error_message?: string | null
           feature_key?: string | null
           feature_type: string
           id?: string
+          input_tokens?: number | null
           module_name?: string | null
+          operation_id?: string | null
+          output_tokens?: number | null
           request_data?: Json | null
           request_type: string
           response_data?: Json | null
@@ -464,16 +746,22 @@ export type Database = {
           session_id?: string | null
           success?: boolean | null
           tokens_used?: number | null
+          tool_slug?: string | null
           user_id: string
+          user_rating?: number | null
         }
         Update: {
+          admin_flagged?: boolean | null
           cost_estimate?: number | null
           created_at?: string
           error_message?: string | null
           feature_key?: string | null
           feature_type?: string
           id?: string
+          input_tokens?: number | null
           module_name?: string | null
+          operation_id?: string | null
+          output_tokens?: number | null
           request_data?: Json | null
           request_type?: string
           response_data?: Json | null
@@ -481,7 +769,9 @@ export type Database = {
           session_id?: string | null
           success?: boolean | null
           tokens_used?: number | null
+          tool_slug?: string | null
           user_id?: string
+          user_rating?: number | null
         }
         Relationships: []
       }
