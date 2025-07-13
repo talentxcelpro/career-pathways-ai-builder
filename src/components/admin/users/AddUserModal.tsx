@@ -66,8 +66,24 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
     return true;
   };
 
+  const testEdgeFunction = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('test-function');
+      console.log('Test function result:', { data, error });
+      return { success: true, data, error };
+    } catch (err) {
+      console.error('Test function failed:', err);
+      return { success: false, error: err };
+    }
+  };
+
   const callAdminFunction = async (body: any): Promise<any> => {
     console.log('Creating user via admin function...');
+    
+    // First test if Edge Functions work at all
+    console.log('Testing Edge Function connectivity...');
+    const testResult = await testEdgeFunction();
+    console.log('Test result:', testResult);
     
     try {
       console.log('Calling function with body:', body);
