@@ -1,10 +1,9 @@
 
-import { FileText, Upload, Edit, Eye, Download, Mail, Settings } from "lucide-react";
+import { FileText, Upload, Edit, Download, Mail, Settings } from "lucide-react";
 import ResumeDashboard from "../pages/resume/ResumeDashboard";
 import CreateResume from "../pages/resume/CreateResume";
 import UploadResume from "../pages/resume/UploadResume";
 import { StreamlinedResumeBuilder } from "../components/resume/StreamlinedResumeBuilder";
-import ResumeTemplates from "../pages/resume/ResumeTemplates";
 import ExportResume from "../pages/resume/ExportResume";
 import CoverLetterGenerator from "../pages/resume/CoverLetterGenerator";
 import EditCoverLetter from "../pages/resume/EditCoverLetter";
@@ -40,12 +39,6 @@ export const resumeRoutes = [
     to: "/resume/edit/:id",
     icon: <Edit className="h-4 w-4" />,
     page: <StreamlinedResumeBuilder />,
-  },
-  {
-    title: "Resume Templates",
-    to: "/resume-builder/templates",
-    icon: <Eye className="h-4 w-4" />,
-    page: <ResumeTemplates />,
   },
   {
     title: "Export Resume",
