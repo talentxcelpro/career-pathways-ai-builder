@@ -13,20 +13,26 @@ const getBaseTemplate = (content: string, year: number = new Date().getFullYear(
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr>
       <td align="center">
-        <table width="600" cellpadding="40" cellspacing="0" style="background-color:#ffffff; margin:40px auto; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; margin:40px auto; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.12);">
           <tr>
-            <td align="center" style="padding-bottom:20px;">
-              <img src="https://16bdb5f0-0ce9-4c42-843e-b9e7c9fae575.lovableproject.com/lovable-uploads/854df183-7bfd-468f-a663-be6607202336.png" alt="TalentXcel" style="height:45px;" />
+            <td align="center" style="padding:40px 40px 30px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius:12px 12px 0 0;">
+              <img src="https://16bdb5f0-0ce9-4c42-843e-b9e7c9fae575.lovableproject.com/lovable-uploads/854df183-7bfd-468f-a663-be6607202336.png" alt="TalentXcel" style="height:80px; width:auto; margin-bottom:15px;" />
+              <h1 style="color:#ffffff; margin:0; font-size:28px; font-weight:700; text-shadow:0 2px 4px rgba(0,0,0,0.1);">TalentXcel</h1>
+              <p style="color:#ffffff; margin:8px 0 0 0; font-size:16px; opacity:0.95;">Powering Global Career Growth</p>
             </td>
           </tr>
           <tr>
-            <td>
+            <td style="padding:40px;">
               ${content}
             </td>
           </tr>
           <tr>
-            <td style="font-size:12px; color:#999999; text-align:center; padding-top:30px;">
-              © ${year} TalentXcel. All rights reserved. • <a href="https://talentxcel.in/unsubscribe" style="color:#999;">Unsubscribe</a>
+            <td style="background-color:#f8f9fa; padding:30px; text-align:center; border-top:1px solid #e9ecef; border-radius:0 0 12px 12px;">
+              <p style="margin:0; color:#6c757d; font-size:14px; line-height:1.6;">
+                © ${year} <strong style="color:#495057;">TalentXcel</strong>. All rights reserved.<br>
+                <a href="https://talentxcel.in/unsubscribe" style="color:#6c757d; text-decoration:none; font-size:13px;">Unsubscribe</a> | 
+                <a href="https://talentxcel.in/privacy" style="color:#6c757d; text-decoration:none; font-size:13px;">Privacy Policy</a>
+              </p>
             </td>
           </tr>
         </table>
