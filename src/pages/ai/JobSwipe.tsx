@@ -19,7 +19,8 @@ import {
   ChevronRight,
   RotateCcw,
   Info,
-  Briefcase
+  Briefcase,
+  Brain
 } from 'lucide-react';
 import { motion, AnimatePresence, PanInfo, useAnimation } from 'framer-motion';
 
@@ -39,6 +40,8 @@ interface JobSwipeData {
   skills_required?: string[];
   description: string;
   posted_at: string;
+  views_count?: number;
+  applications_count?: number;
   matchScore?: number;
   matchReasons?: string[];
   gapAreas?: string[];
@@ -289,36 +292,90 @@ const JobSwipe = () => {
             >
               <Card className="h-full shadow-xl border-2 hover:shadow-2xl transition-shadow">
                 <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3 flex-1">
-                      {currentJob.companies?.logo_url && (
+                  {/* AI Relevance Score */}
+                  {currentJob.matchScore && (
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2 bg-primary/10 px-3 py-1 rounded-full">
+                        <Brain className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-primary">
+                          AI Relevance: {currentJob.matchScore}%
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Company Logo and Job Title */}
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold text-lg">
+                      {currentJob.companies?.logo_url ? (
                         <img
                           src={currentJob.companies.logo_url}
-                          alt={currentJob.companies.name}
+                          alt={currentJob.companies?.name}
                           className="w-12 h-12 rounded-lg object-cover"
                         />
+                      ) : (
+                        currentJob.companies?.name?.charAt(0) || 'J'
                       )}
-                      <div className="flex-1">
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Briefcase className="h-4 w-4 text-gray-600" />
                         <CardTitle className="text-lg line-clamp-2">
                           {currentJob.title}
                         </CardTitle>
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <Building className="h-4 w-4" />
-                          <span className="text-sm">{currentJob.companies?.name}</span>
-                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 text-gray-600">
+                        <span className="text-sm">@{currentJob.companies?.name || 'Company'}</span>
                       </div>
                     </div>
-                    
-                    {currentJob.matchScore && (
-                      <div className="text-right">
-                        <div className={`text-2xl font-bold ${getMatchColor(currentJob.matchScore)}`}>
-                          {currentJob.matchScore}%
-                        </div>
-                        <Badge variant="secondary" className="text-xs">
-                          {getMatchBadge(currentJob.matchScore)}
-                        </Badge>
+                  </div>
+
+                  {/* Job Details Row */}
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-3 flex-wrap">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      <span>{currentJob.location}</span>
+                    </div>
+                    <span>|</span>
+                    <span>{currentJob.experience_level}</span>
+                    <span>|</span>
+                    <span>{currentJob.employment_type}</span>
+                    <span>|</span>
+                    {currentJob.salary_min && currentJob.salary_max && (
+                      <div className="flex items-center gap-1 text-green-600 font-medium">
+                        <DollarSign className="h-3 w-3" />
+                        {currentJob.salary_currency} {(currentJob.salary_min/1000).toFixed(0)}K - {(currentJob.salary_max/1000).toFixed(0)}K
                       </div>
                     )}
+                  </div>
+
+                  {/* Skills */}
+                  {currentJob.skills_required && currentJob.skills_required.length > 0 && (
+                    <div className="mb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm font-medium">🛠️ Skills:</span>
+                        <span className="text-sm text-gray-600">
+                          {currentJob.skills_required.slice(0, 3).join(', ')}
+                          {currentJob.skills_required.length > 3 && '...'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Stats Row */}
+                  <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
+                    <div className="flex items-center gap-1">
+                      <span>👀</span>
+                      <span>{currentJob.views_count || 0} views</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span>👤</span>
+                      <span>{currentJob.applications_count || 0} applicants</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      <span>2 minutes ago</span>
+                    </div>
                   </div>
                 </CardHeader>
 
@@ -394,6 +451,17 @@ const JobSwipe = () => {
                     <p className="text-sm text-gray-600 line-clamp-4">
                       {currentJob.description}
                     </p>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-4 border-t">
+                    <Button variant="outline" size="sm" className="flex-1">
+                      <Heart className="h-4 w-4 mr-2" />
+                      Save
+                    </Button>
+                    <Button size="sm" className="flex-1">
+                      Apply Now
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
