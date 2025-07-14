@@ -29,6 +29,16 @@ import { PersonalInfoSection } from "./sections/PersonalInfoSection";
 import { ProfessionalSummarySection } from "./sections/ProfessionalSummarySection";
 import { WorkExperienceSection } from "./sections/WorkExperienceSection";
 import { SkillsSection } from "./sections/SkillsSection";
+import { EducationSection } from "./sections/EducationSection";
+import { CertificationsSection } from "./sections/CertificationsSection";
+import { ProjectsSection } from "./sections/ProjectsSection";
+import { LanguagesSection } from "./sections/LanguagesSection";
+import { AwardsSection } from "./sections/AwardsSection";
+import { VolunteerWorkSection } from "./sections/VolunteerWorkSection";
+import { ToolsSection } from "./sections/ToolsSection";
+import { TrainingsSection } from "./sections/TrainingsSection";
+import { CareerObjectivesSection } from "./sections/CareerObjectivesSection";
+import { ReferencesSection } from "./sections/ReferencesSection";
 import { ResumePreview } from "../ResumePreview";
 
 interface EnhancedResumeBuilderProps {

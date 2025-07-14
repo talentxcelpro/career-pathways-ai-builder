@@ -6686,6 +6686,50 @@ export type Database = {
           },
         ]
       }
+      resume_sections_config: {
+        Row: {
+          created_at: string | null
+          enabled: boolean | null
+          id: string
+          order_index: number
+          resume_id: string | null
+          section_group: string
+          section_type: string
+          settings: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          order_index: number
+          resume_id?: string | null
+          section_group: string
+          section_type: string
+          settings?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          order_index?: number
+          resume_id?: string | null
+          section_group?: string
+          section_type?: string
+          settings?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_sections_config_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "ai_resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_skills: {
         Row: {
           ai_suggested: boolean | null
@@ -7282,6 +7326,95 @@ export type Database = {
           tool_name?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      section_analytics: {
+        Row: {
+          completion_percentage: number | null
+          created_at: string | null
+          edit_count: number | null
+          effectiveness_score: number | null
+          id: string
+          last_edited: string | null
+          resume_id: string | null
+          section_type: string
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          completion_percentage?: number | null
+          created_at?: string | null
+          edit_count?: number | null
+          effectiveness_score?: number | null
+          id?: string
+          last_edited?: string | null
+          resume_id?: string | null
+          section_type: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          completion_percentage?: number | null
+          created_at?: string | null
+          edit_count?: number | null
+          effectiveness_score?: number | null
+          id?: string
+          last_edited?: string | null
+          resume_id?: string | null
+          section_type?: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "section_analytics_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "ai_resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      section_templates: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          experience_level: string | null
+          id: string
+          industry: string | null
+          is_active: boolean | null
+          name: string
+          section_type: string
+          template_data: Json
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          experience_level?: string | null
+          id?: string
+          industry?: string | null
+          is_active?: boolean | null
+          name: string
+          section_type: string
+          template_data?: Json
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          experience_level?: string | null
+          id?: string
+          industry?: string | null
+          is_active?: boolean | null
+          name?: string
+          section_type?: string
+          template_data?: Json
+          updated_at?: string | null
+          usage_count?: number | null
         }
         Relationships: []
       }
