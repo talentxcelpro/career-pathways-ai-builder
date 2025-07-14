@@ -50,7 +50,7 @@ interface ResumeData {
 
 export const UnifiedResumeBuilder = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // State management
@@ -517,6 +517,25 @@ export const UnifiedResumeBuilder = () => {
     }));
   };
 
+  // Debug authentication
+  console.log('UnifiedResumeBuilder - User:', user, 'Loading state from auth:', loading);
+  
+  // Show loading state while authentication is being checked
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 flex items-center justify-center">
+        <Card className="max-w-md mx-auto">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       <div className="container max-w-6xl mx-auto px-4 py-8">
