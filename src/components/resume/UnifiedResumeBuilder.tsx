@@ -276,15 +276,22 @@ export const UnifiedResumeBuilder = () => {
           gpa: edu.gpa || ''
         })) : [],
         skills: extractedContent.skills?.technical ? [
-          ...(extractedContent.skills.technical.programming || []),
-          ...(extractedContent.skills.technical.frameworks || []),
-          ...(extractedContent.skills.technical.databases || []),
-          ...(extractedContent.skills.technical.tools || []),
-          ...(extractedContent.skills.technical.cloud || []),
-          ...(extractedContent.skills.soft || []),
+          ...(extractedContent.skills.technical.programming || []).map(skill => 
+            typeof skill === 'string' ? skill : skill.skill || '').filter(Boolean),
+          ...(extractedContent.skills.technical.frameworks || []).map(skill => 
+            typeof skill === 'string' ? skill : skill.skill || '').filter(Boolean),
+          ...(extractedContent.skills.technical.databases || []).map(skill => 
+            typeof skill === 'string' ? skill : skill.skill || '').filter(Boolean),
+          ...(extractedContent.skills.technical.tools || []).map(skill => 
+            typeof skill === 'string' ? skill : skill.skill || '').filter(Boolean),
+          ...(extractedContent.skills.technical.cloud || []).map(skill => 
+            typeof skill === 'string' ? skill : skill.skill || '').filter(Boolean),
+          ...(extractedContent.skills.soft || []).map(skill => 
+            typeof skill === 'string' ? skill : skill.skill || '').filter(Boolean),
           ...(extractedContent.skills.languages?.map(lang => 
-            typeof lang === 'string' ? lang : lang.language) || []),
-          ...(extractedContent.skills.certifications || [])
+            typeof lang === 'string' ? lang : lang.language || lang.skill || '') || []).filter(Boolean),
+          ...(extractedContent.skills.certifications || []).map(skill => 
+            typeof skill === 'string' ? skill : skill.skill || '').filter(Boolean)
         ].filter(Boolean) : [],
         projects: Array.isArray(extractedContent.projects) ? extractedContent.projects : [],
         certifications: Array.isArray(extractedContent.certifications) ? extractedContent.certifications : [],
