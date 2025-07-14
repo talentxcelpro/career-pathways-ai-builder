@@ -26,7 +26,7 @@ import { motion, AnimatePresence, PanInfo, useAnimation } from 'framer-motion';
 interface JobSwipeData {
   id: string;
   title: string;
-  company: {
+  companies?: {
     name: string;
     logo_url?: string;
   };
@@ -121,14 +121,9 @@ const JobSwipe = () => {
 
     setSwipeActions(prev => [...prev, swipeAction]);
 
-    // Save swipe action to database
+    // Save swipe action to local state (database integration will be added later)
     try {
-      await supabase.from('job_swipes').insert({
-        job_id: currentJob.id,
-        user_id: (await supabase.auth.getUser()).data.user?.id,
-        action,
-        match_score: currentJob.matchScore
-      });
+      console.log('Swipe action:', { jobId: currentJob.id, action, matchScore: currentJob.matchScore });
 
       if (action === 'like' || action === 'super_like') {
         toast.success(action === 'super_like' ? '⭐ Super Liked!' : '❤️ Liked!');
@@ -291,10 +286,10 @@ const JobSwipe = () => {
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3 flex-1">
-                      {currentJob.company?.logo_url && (
+                      {currentJob.companies?.logo_url && (
                         <img
-                          src={currentJob.company.logo_url}
-                          alt={currentJob.company.name}
+                          src={currentJob.companies.logo_url}
+                          alt={currentJob.companies.name}
                           className="w-12 h-12 rounded-lg object-cover"
                         />
                       )}
@@ -304,7 +299,7 @@ const JobSwipe = () => {
                         </CardTitle>
                         <div className="flex items-center gap-1 text-gray-600">
                           <Building className="h-4 w-4" />
-                          <span className="text-sm">{currentJob.company?.name}</span>
+                          <span className="text-sm">{currentJob.companies?.name}</span>
                         </div>
                       </div>
                     </div>

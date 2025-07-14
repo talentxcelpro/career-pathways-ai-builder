@@ -4547,6 +4547,42 @@ export type Database = {
           },
         ]
       }
+      job_matches: {
+        Row: {
+          created_at: string | null
+          employer_id: string
+          employer_swiped_at: string | null
+          id: string
+          is_mutual: boolean | null
+          job_id: string
+          match_score: number | null
+          user_id: string
+          user_swiped_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          employer_id: string
+          employer_swiped_at?: string | null
+          id?: string
+          is_mutual?: boolean | null
+          job_id: string
+          match_score?: number | null
+          user_id: string
+          user_swiped_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          employer_id?: string
+          employer_swiped_at?: string | null
+          id?: string
+          is_mutual?: boolean | null
+          job_id?: string
+          match_score?: number | null
+          user_id?: string
+          user_swiped_at?: string | null
+        }
+        Relationships: []
+      }
       job_recommendations: {
         Row: {
           created_at: string | null
@@ -4587,6 +4623,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      job_swipes: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          job_id: string
+          match_score: number | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          job_id: string
+          match_score?: number | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          job_id?: string
+          match_score?: number | null
+          user_id?: string
+        }
+        Relationships: []
       }
       job_views: {
         Row: {
@@ -8606,6 +8669,57 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           weekly_growth?: number | null
+        }
+        Relationships: []
+      }
+      user_job_preferences: {
+        Row: {
+          career_growth_importance: number | null
+          company_culture_importance: number | null
+          created_at: string | null
+          id: string
+          preferred_company_sizes: string[] | null
+          preferred_industries: string[] | null
+          preferred_locations: string[] | null
+          preferred_roles: string[] | null
+          remote_work_preference: string | null
+          salary_max: number | null
+          salary_min: number | null
+          updated_at: string | null
+          user_id: string
+          work_life_balance_importance: number | null
+        }
+        Insert: {
+          career_growth_importance?: number | null
+          company_culture_importance?: number | null
+          created_at?: string | null
+          id?: string
+          preferred_company_sizes?: string[] | null
+          preferred_industries?: string[] | null
+          preferred_locations?: string[] | null
+          preferred_roles?: string[] | null
+          remote_work_preference?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          updated_at?: string | null
+          user_id: string
+          work_life_balance_importance?: number | null
+        }
+        Update: {
+          career_growth_importance?: number | null
+          company_culture_importance?: number | null
+          created_at?: string | null
+          id?: string
+          preferred_company_sizes?: string[] | null
+          preferred_industries?: string[] | null
+          preferred_locations?: string[] | null
+          preferred_roles?: string[] | null
+          remote_work_preference?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          updated_at?: string | null
+          user_id?: string
+          work_life_balance_importance?: number | null
         }
         Relationships: []
       }

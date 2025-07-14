@@ -3,6 +3,7 @@ import { Brain } from "lucide-react";
 import AIAssistant from "../pages/ai/AIAssistant";
 import AIOptimizer from "../pages/ai/AIOptimizer";
 import JobMatch from "../pages/ai/JobMatch";
+import JobSwipe from "../pages/ai/JobSwipe";
 import MessageSuggest from "../pages/ai/MessageSuggest";
 import Pathfinder from "../pages/ai/Pathfinder";
 import { AICareerAnalytics } from "../components/ai/AICareerAnalytics";
@@ -30,6 +31,11 @@ export const aiRoutes = [
     title: "AI Job Match",
     to: "/ai/job-match",
     page: <JobMatch />,
+  },
+  {
+    title: "Job Swipe",
+    to: "/ai/job-swipe",
+    page: <JobSwipe />,
   },
   {
     title: "AI Message Suggest",
