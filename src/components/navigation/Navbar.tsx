@@ -209,21 +209,6 @@ export const Navbar = () => {
 
               {/* User Menu */}
               <div className="flex items-center space-x-4">
-                {/* Employer Button */}
-                <Button 
-                  variant={hasEmployerAccess ? "default" : "outline"}
-                  size="sm"
-                  onClick={getEmployerButtonAction()}
-                  className={`
-                    ${employerStatus === 'pending' ? 'border-yellow-500 text-yellow-600 hover:bg-yellow-50' : ''}
-                    ${hasEmployerAccess ? 'bg-green-600 hover:bg-green-700 text-white' : ''}
-                  `}
-                >
-                  {hasEmployerAccess && <CheckCircle className="h-4 w-4 mr-1" />}
-                  {employerStatus === 'pending' && <Clock className="h-4 w-4 mr-1" />}
-                  {!hasEmployerAccess && employerStatus !== 'pending' && <Building2 className="h-4 w-4 mr-1" />}
-                  {getEmployerButtonText()}
-                </Button>
 
                 {/* Notifications */}
                 <Link to="/network/notifications">

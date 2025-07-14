@@ -120,8 +120,12 @@ const EmployerLanding = () => {
             <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-green-900 mb-2">✅ Access Granted</h3>
             <p className="text-green-700 mb-4">You're all set to start hiring!</p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Button onClick={() => navigate('/jobs/post')} className="bg-green-600 hover:bg-green-700">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Button onClick={() => navigate('/employer')} className="bg-green-600 hover:bg-green-700">
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Employer Dashboard
+              </Button>
+              <Button onClick={() => navigate('/jobs/post')} variant="outline">
                 <Plus className="h-4 w-4 mr-2" />
                 Post a Job
               </Button>
