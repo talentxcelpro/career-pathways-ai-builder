@@ -21,27 +21,33 @@ serve(async (req) => {
 
     console.log('Processing resume extraction:', { fileName, fileType, extractionLevel, textLength: text.length });
 
-    const systemPrompt = `You are an expert resume parser with advanced text analysis capabilities. Your job is to extract structured data from resumes and improve incomplete sections.
+    const systemPrompt = `You are an expert resume parser with advanced text analysis capabilities and deep ATS optimization knowledge. Your job is to extract structured data from resumes and improve incomplete sections.
 
 CRITICAL REQUIREMENTS:
-1. Extract ALL available information from the text
+1. Extract ALL available information from the text with high accuracy
 2. For missing or incomplete sections, generate professional content based on context
 3. Return valid JSON with the exact structure provided
 4. Use confidence scores (0.0-1.0): 1.0 for extracted data, 0.7 for AI-generated content
-5. Categorize technical skills by type (programming, frameworks, tools, etc.)
+5. Categorize technical skills by type and include proficiency levels
 6. Convert all responsibilities into achievement-oriented bullet points
 7. If sections are empty, generate appropriate content based on available context
+8. Optimize content for ATS systems with relevant keywords
+9. Extract comprehensive personal details including social profiles
+10. Identify publications, papers, and custom achievement sections
 
-ENHANCEMENT RULES:
-- Transform basic job descriptions into achievement-focused bullet points
-- Add quantifiable metrics where logical (e.g., "managed team" → "managed team of 5+ members")
-- Standardize formatting and professional language
-- Generate missing summaries based on experience and skills
-- Ensure ATS optimization with relevant keywords
+ADVANCED EXTRACTION RULES:
+- Transform basic job descriptions into quantified achievement statements
+- Add specific metrics where logical (e.g., "managed team" → "managed team of 5+ members")
+- Standardize formatting and professional language across all sections
+- Generate missing professional summaries based on experience patterns
+- Ensure keyword density is optimal for ATS systems (2-3% for key terms)
+- Extract industry-specific terminology and technical competencies
 - For skills, always include proficiency levels: "Beginner", "Intermediate", "Advanced", "Expert"
 - Categorize skills by type: "Programming Languages", "Frameworks", "Databases", "Tools", "Cloud Platforms", "Soft Skills"
-- Extract publications, papers, and custom achievement sections
-- Look for additional personal details like profile pictures, social profiles
+- Extract publications, research papers, and academic achievements
+- Look for additional personal details like profile pictures, social profiles, certifications
+- Identify custom sections like honors, volunteering, hackathons, competitions
+- Extract contact information comprehensively including LinkedIn, portfolios, GitHub
 
 Return a JSON object with this EXACT structure:
 {
@@ -249,7 +255,7 @@ Return a JSON object with this EXACT structure:
   }
 }`;
 
-    const userPrompt = `Extract comprehensive resume data from this text:
+    const userPrompt = `Extract comprehensive resume data from this text with enhanced AI processing:
 
 FILE: ${fileName}
 TYPE: ${fileType}
@@ -257,15 +263,30 @@ TYPE: ${fileType}
 TEXT CONTENT:
 ${text}
 
-Instructions:
-- Extract ALL sections you can identify
-- For dates, use MM/YYYY format when possible
-- Group technical skills by category (programming, frameworks, databases, tools, cloud)
-- Extract specific achievements with quantifiable results
-- Identify all contact information
-- Calculate confidence scores based on text clarity
-- Generate ATS optimization suggestions
-- Return ONLY valid JSON with no additional text`;
+COMPREHENSIVE EXTRACTION INSTRUCTIONS:
+1. Extract ALL sections you can identify with high accuracy
+2. For dates, use MM/YYYY format when possible, standardize date formats
+3. Group technical skills by category with proficiency levels (Beginner/Intermediate/Advanced/Expert)
+4. Extract specific achievements with quantifiable results and metrics
+5. Identify all contact information including social media profiles
+6. Calculate confidence scores based on text clarity and completeness
+7. Generate professional ATS optimization suggestions with keyword analysis
+8. Extract publications, research papers, academic achievements
+9. Identify custom sections like honors, volunteering, competitions, hackathons
+10. Optimize content for professional impact and ATS compatibility
+11. For missing sections, generate appropriate professional content based on existing data
+12. Include industry-specific keywords and technical terminology
+13. Transform passive descriptions into active, achievement-focused statements
+14. Ensure all extracted data follows professional resume standards
+
+QUALITY ASSURANCE:
+- Verify all extracted information is accurate to the source
+- Ensure generated content is contextually appropriate
+- Maintain professional tone throughout all sections
+- Optimize for both human readability and ATS parsing
+- Include relevant keywords for the candidate's industry and role
+
+Return ONLY valid JSON with no additional text or explanations.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
