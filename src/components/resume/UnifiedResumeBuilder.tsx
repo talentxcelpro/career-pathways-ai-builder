@@ -27,6 +27,9 @@ import { toast } from 'sonner';
 import { EnhancedResumeProcessor } from '@/services/enhancedResumeProcessor';
 import { ATSOptimizationPanel } from './ATSOptimizationPanel';
 import { useNavigate } from 'react-router-dom';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { FileUploadZone } from './upload/FileUploadZone';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 // Configure PDF worker
 import * as pdfjsLib from 'pdfjs-dist';
@@ -52,6 +55,9 @@ export const UnifiedResumeBuilder = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadError, setUploadError] = useState<string>('');
   
   // State management
   const [currentStep, setCurrentStep] = useState<'upload' | 'edit' | 'enhance' | 'export'>('upload');
@@ -83,7 +89,7 @@ export const UnifiedResumeBuilder = () => {
     fileInputRef.current?.click();
   }, []);
 
-  // Drag and drop handlers
+  // Enhanced drag and drop handlers
   const handleDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.stopPropagation();
@@ -92,28 +98,51 @@ export const UnifiedResumeBuilder = () => {
   const handleDragEnter = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.stopPropagation();
+    setDragActive(true);
   }, []);
 
   const handleDragLeave = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.stopPropagation();
+    setDragActive(false);
   }, []);
 
   const handleDrop = useCallback(async (event: React.DragEvent) => {
     event.preventDefault();
     event.stopPropagation();
+    setDragActive(false);
     
     const files = Array.from(event.dataTransfer.files);
-    const file = files[0];
-    
-    if (file && (file.type === 'application/pdf' || 
-                 file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-                 file.type === 'text/plain')) {
-      await processFile(file);
-    } else {
-      toast.error('Please upload a PDF, DOCX, or TXT file');
+    if (files.length > 0) {
+      const file = files[0];
+      setUploadedFile(file);
+      setUploadError('');
     }
   }, []);
+
+  // File selection handler
+  const handleFileSelect = useCallback((files: FileList | null) => {
+    if (files && files.length > 0) {
+      setUploadedFile(files[0]);
+      setUploadError('');
+    }
+  }, []);
+
+  // Remove file handler
+  const handleRemoveFile = useCallback(() => {
+    setUploadedFile(null);
+    setUploadError('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, []);
+
+  // Process resume handler
+  const handleProcessResume = useCallback(async () => {
+    if (uploadedFile) {
+      await processFile(uploadedFile);
+    }
+  }, [uploadedFile]);
 
   const processFile = useCallback(async (file: File) => {
     console.log('Starting file processing for:', file.name, 'Type:', file.type, 'Size:', file.size);
@@ -434,34 +463,85 @@ export const UnifiedResumeBuilder = () => {
     }
   }, [resumeData, resumeId]);
 
-  // Export functions
+  // Enhanced export functions with better error handling
   const exportPDF = useCallback(async () => {
+    if (!resumeData || !resumeData.personalInfo) {
+      toast.error('No resume data available for export');
+      return;
+    }
+
     try {
       setIsProcessing(true);
+      setProcessingStatus('Preparing PDF export...');
+      setProcessingProgress(10);
+
+      // Check if resume preview element exists
+      const previewElement = document.getElementById('resume-preview');
+      if (!previewElement) {
+        toast.error('Resume preview not found. Please switch to Preview tab first.');
+        return;
+      }
+
       setProcessingStatus('Generating PDF...');
+      setProcessingProgress(50);
       
       const { exportToPDF } = await import('@/utils/exportResume');
-      await exportToPDF('resume-preview', `${resumeData.personalInfo.fullName || 'resume'}.pdf`);
-      toast.success('PDF downloaded!');
+      const filename = `${(resumeData.personalInfo.fullName || 'resume').replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+      
+      setProcessingProgress(80);
+      await exportToPDF('resume-preview', filename);
+      
+      setProcessingProgress(100);
+      setProcessingStatus('PDF exported successfully!');
+      
     } catch (error) {
-      toast.error('Failed to generate PDF');
+      console.error('PDF export error:', error);
+      const errorMessage = error.message || 'Failed to generate PDF';
+      toast.error(errorMessage);
+      setProcessingStatus('PDF export failed');
     } finally {
-      setIsProcessing(false);
+      setTimeout(() => {
+        setIsProcessing(false);
+        setProcessingProgress(0);
+        setProcessingStatus('');
+      }, 2000);
     }
   }, [resumeData]);
 
   const exportDOCX = useCallback(async () => {
+    if (!resumeData || !resumeData.personalInfo) {
+      toast.error('No resume data available for export');
+      return;
+    }
+
     try {
       setIsProcessing(true);
+      setProcessingStatus('Preparing DOCX export...');
+      setProcessingProgress(10);
+      
       setProcessingStatus('Generating DOCX...');
+      setProcessingProgress(50);
       
       const { exportToDOCX } = await import('@/utils/exportResume');
-      await exportToDOCX(resumeData, `${resumeData.personalInfo.fullName || 'resume'}.docx`);
-      toast.success('DOCX downloaded!');
+      const filename = `${(resumeData.personalInfo.fullName || 'resume').replace(/[^a-zA-Z0-9]/g, '_')}.docx`;
+      
+      setProcessingProgress(80);
+      await exportToDOCX(resumeData, filename);
+      
+      setProcessingProgress(100);
+      setProcessingStatus('DOCX exported successfully!');
+      
     } catch (error) {
-      toast.error('Failed to generate DOCX');
+      console.error('DOCX export error:', error);
+      const errorMessage = error.message || 'Failed to generate DOCX';
+      toast.error(errorMessage);
+      setProcessingStatus('DOCX export failed');
     } finally {
-      setIsProcessing(false);
+      setTimeout(() => {
+        setIsProcessing(false);
+        setProcessingProgress(0);
+        setProcessingStatus('');
+      }, 2000);
     }
   }, [resumeData]);
 
@@ -533,9 +613,12 @@ export const UnifiedResumeBuilder = () => {
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 flex items-center justify-center">
         <Card className="max-w-md mx-auto">
           <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading...</p>
+            <div className="text-center space-y-4">
+              <LoadingSpinner size="lg" />
+              <div>
+                <h3 className="font-medium">Loading Resume Builder</h3>
+                <p className="text-muted-foreground text-sm">Please wait while we initialize your workspace...</p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -597,43 +680,31 @@ export const UnifiedResumeBuilder = () => {
 
         {/* Step Content */}
         {currentStep === 'upload' && (
-          <Card className="max-w-2xl mx-auto">
-            <CardHeader className="text-center">
-              <CardTitle>Upload Your Resume</CardTitle>
-              <p className="text-muted-foreground">Upload your existing resume and we'll extract all content with AI</p>
-            </CardHeader>
-            <CardContent>
-              <div 
-                className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-primary/50 transition-colors"
-                onDragOver={handleDragOver}
-                onDragEnter={handleDragEnter}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-              >
-                <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-lg font-medium mb-2">Drop your resume here</p>
-                <p className="text-muted-foreground mb-4">Supports PDF, DOCX, and TXT files up to 10MB</p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".pdf,.docx,.txt"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  disabled={isProcessing}
+          <ErrorBoundary>
+            <Card className="max-w-2xl mx-auto">
+              <CardHeader className="text-center">
+                <CardTitle>Upload Your Resume</CardTitle>
+                <p className="text-muted-foreground">Upload your existing resume and we'll extract all content with AI</p>
+              </CardHeader>
+              <CardContent>
+                <FileUploadZone
+                  onFileSelect={handleFileSelect}
+                  uploadedFile={uploadedFile}
+                  onRemoveFile={handleRemoveFile}
+                  onProcessResume={handleProcessResume}
+                  isProcessing={isProcessing}
+                  dragActive={dragActive}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  error={uploadError}
+                  processingProgress={processingProgress}
+                  processingStatus={processingStatus}
                 />
-                <Button 
-                  onClick={handleChooseFileClick}
-                  disabled={isProcessing} 
-                  size="lg"
-                >
-                  {isProcessing ? 'Processing...' : 'Choose File'}
-                </Button>
-                <p className="text-xs text-muted-foreground mt-3">
-                  AI will automatically extract and organize your resume content
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </ErrorBoundary>
         )}
 
         {currentStep === 'edit' && (

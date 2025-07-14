@@ -1,7 +1,12 @@
 import { UnifiedResumeBuilder } from "@/components/resume/UnifiedResumeBuilder";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const UploadResume = () => {
-  return <UnifiedResumeBuilder />;
+  return (
+    <ErrorBoundary>
+      <UnifiedResumeBuilder />
+    </ErrorBoundary>
+  );
 };
 
 export default UploadResume;
