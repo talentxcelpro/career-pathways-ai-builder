@@ -4624,6 +4624,51 @@ export type Database = {
           },
         ]
       }
+      job_skills_required: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_mandatory: boolean | null
+          job_id: string
+          required_level: number
+          skill_id: string
+          weight: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_mandatory?: boolean | null
+          job_id: string
+          required_level: number
+          skill_id: string
+          weight?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_mandatory?: boolean | null
+          job_id?: string
+          required_level?: number
+          skill_id?: string
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_skills_required_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_skills_required_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills_master"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_swipes: {
         Row: {
           action: string
@@ -7771,6 +7816,104 @@ export type Database = {
           },
         ]
       }
+      skill_assessments: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          difficulty_level: string
+          duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          passing_score: number | null
+          questions: Json
+          skill_id: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty_level: string
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          passing_score?: number | null
+          questions?: Json
+          skill_id: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty_level?: string
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          passing_score?: number | null
+          questions?: Json
+          skill_id?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_assessments_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills_master"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skill_salary_data: {
+        Row: {
+          company_size: string | null
+          confidence_score: number | null
+          created_at: string | null
+          currency: string | null
+          data_source: string | null
+          experience_level: string | null
+          id: string
+          job_title: string | null
+          location: string | null
+          salary_max: number | null
+          salary_min: number | null
+          skills: Json
+        }
+        Insert: {
+          company_size?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          currency?: string | null
+          data_source?: string | null
+          experience_level?: string | null
+          id?: string
+          job_title?: string | null
+          location?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          skills: Json
+        }
+        Update: {
+          company_size?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          currency?: string | null
+          data_source?: string | null
+          experience_level?: string | null
+          id?: string
+          job_title?: string | null
+          location?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          skills?: Json
+        }
+        Relationships: []
+      }
       skills: {
         Row: {
           created_at: string | null
@@ -7801,6 +7944,54 @@ export type Database = {
           technical_skills?: string[] | null
           tools_software?: string[] | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      skills_master: {
+        Row: {
+          average_salary_impact: number | null
+          category: string
+          created_at: string | null
+          description: string | null
+          difficulty_level: string | null
+          id: string
+          is_active: boolean | null
+          learning_resources: Json | null
+          market_demand_score: number | null
+          name: string
+          related_skills: string[] | null
+          subcategory: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          average_salary_impact?: number | null
+          category: string
+          created_at?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          id?: string
+          is_active?: boolean | null
+          learning_resources?: Json | null
+          market_demand_score?: number | null
+          name: string
+          related_skills?: string[] | null
+          subcategory?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          average_salary_impact?: number | null
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          id?: string
+          is_active?: boolean | null
+          learning_resources?: Json | null
+          market_demand_score?: number | null
+          name?: string
+          related_skills?: string[] | null
+          subcategory?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -8598,6 +8789,154 @@ export type Database = {
           },
         ]
       }
+      user_assessment_results: {
+        Row: {
+          answers: Json | null
+          assessment_id: string
+          attempted_at: string | null
+          id: string
+          passed: boolean
+          score: number
+          time_taken_minutes: number | null
+          user_id: string
+        }
+        Insert: {
+          answers?: Json | null
+          assessment_id: string
+          attempted_at?: string | null
+          id?: string
+          passed: boolean
+          score: number
+          time_taken_minutes?: number | null
+          user_id: string
+        }
+        Update: {
+          answers?: Json | null
+          assessment_id?: string
+          attempted_at?: string | null
+          id?: string
+          passed?: boolean
+          score?: number
+          time_taken_minutes?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_assessment_results_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "skill_assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_career_goals: {
+        Row: {
+          created_at: string | null
+          current_readiness_score: number | null
+          id: string
+          progress_milestones: Json | null
+          recommended_courses: string[] | null
+          recommended_paths: string[] | null
+          skill_gaps: Json | null
+          status: string | null
+          target_location: string | null
+          target_role: string
+          target_salary: number | null
+          timeline_months: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_readiness_score?: number | null
+          id?: string
+          progress_milestones?: Json | null
+          recommended_courses?: string[] | null
+          recommended_paths?: string[] | null
+          skill_gaps?: Json | null
+          status?: string | null
+          target_location?: string | null
+          target_role: string
+          target_salary?: number | null
+          timeline_months?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_readiness_score?: number | null
+          id?: string
+          progress_milestones?: Json | null
+          recommended_courses?: string[] | null
+          recommended_paths?: string[] | null
+          skill_gaps?: Json | null
+          status?: string | null
+          target_location?: string | null
+          target_role?: string
+          target_salary?: number | null
+          timeline_months?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_course_progress: {
+        Row: {
+          certificate_earned: boolean | null
+          certificate_url: string | null
+          completion_date: string | null
+          course_id: string
+          created_at: string | null
+          current_module: string | null
+          enrollment_date: string | null
+          id: string
+          progress_percentage: number | null
+          status: string | null
+          time_spent_hours: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          certificate_earned?: boolean | null
+          certificate_url?: string | null
+          completion_date?: string | null
+          course_id: string
+          created_at?: string | null
+          current_module?: string | null
+          enrollment_date?: string | null
+          id?: string
+          progress_percentage?: number | null
+          status?: string | null
+          time_spent_hours?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          certificate_earned?: boolean | null
+          certificate_url?: string | null
+          completion_date?: string | null
+          course_id?: string
+          created_at?: string | null
+          current_module?: string | null
+          enrollment_date?: string | null
+          id?: string
+          progress_percentage?: number | null
+          status?: string | null
+          time_spent_hours?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_course_progress_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_courses: {
         Row: {
           certificate_url: string | null
@@ -8836,6 +9175,53 @@ export type Database = {
         }
         Relationships: []
       }
+      user_skills: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_used_date: string | null
+          proficiency_level: number
+          proficiency_type: string | null
+          skill_id: string
+          updated_at: string | null
+          user_id: string
+          verification_details: Json | null
+          years_experience: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_used_date?: string | null
+          proficiency_level: number
+          proficiency_type?: string | null
+          skill_id: string
+          updated_at?: string | null
+          user_id: string
+          verification_details?: Json | null
+          years_experience?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_used_date?: string | null
+          proficiency_level?: number
+          proficiency_type?: string | null
+          skill_id?: string
+          updated_at?: string | null
+          user_id?: string
+          verification_details?: Json | null
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills_master"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_suggestions: {
         Row: {
           created_at: string
@@ -9047,6 +9433,15 @@ export type Database = {
       calculate_company_engagement_score: {
         Args: { company_uuid: string }
         Returns: number
+      }
+      calculate_job_skill_match: {
+        Args: { job_uuid: string; user_uuid: string }
+        Returns: {
+          match_percentage: number
+          matching_skills: Json
+          missing_skills: Json
+          skill_gaps: Json
+        }[]
       }
       calculate_resume_completion_enhanced: {
         Args: { resume_uuid: string }
