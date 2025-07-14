@@ -128,7 +128,31 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { email, password, fullName, role, status, sendWelcomeEmail } = await req.json();
+    // Parse and validate request body
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { email, password, fullName, role, status, sendWelcomeEmail } = requestBody;
+
+    // Validate required fields
+    if (!email || !password || !fullName) {
+      console.error('Missing required fields:', { email: !!email, password: !!password, fullName: !!fullName });
+      return new Response(JSON.stringify({ 
+        error: 'Missing required fields', 
+        details: 'email, password, and fullName are required' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     console.log('Creating user:', { email, fullName, role, status });
 
@@ -164,10 +188,27 @@ Deno.serve(async (req) => {
       });
 
     if (profileError) {
-      console.error('Profile error:', profileError);
+      console.error('Profile creation error details:', {
+        error: profileError,
+        code: profileError.code,
+        details: profileError.details,
+        hint: profileError.hint,
+        message: profileError.message
+      });
+      
       // Clean up auth user if profile creation fails
-      await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
-      return new Response(JSON.stringify({ error: 'Failed to create user profile' }), {
+      try {
+        await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+        console.log('Cleaned up auth user after profile creation failure');
+      } catch (cleanupError) {
+        console.error('Failed to cleanup auth user:', cleanupError);
+      }
+      
+      return new Response(JSON.stringify({ 
+        error: 'Failed to create user profile', 
+        details: profileError.message,
+        code: profileError.code 
+      }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

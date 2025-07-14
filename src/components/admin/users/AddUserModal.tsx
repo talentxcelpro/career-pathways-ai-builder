@@ -107,42 +107,22 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
     } catch (error) {
       console.error('Admin function call failed:', error);
       
-      // Try direct fetch as fallback with correct URL
-      try {
-        console.log('Trying direct fetch as fallback...');
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          throw new Error('No authentication session');
+      // Provide more specific error messages
+      let errorMessage = 'Failed to create user';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('CORS')) {
+          errorMessage = 'Network connectivity issue. Please try again.';
+        } else if (error.message.includes('Authorization') || error.message.includes('permission')) {
+          errorMessage = 'Permission denied. Please check your admin access.';
+        } else if (error.message.includes('Failed to send a request')) {
+          errorMessage = 'Unable to connect to the server. Please check your connection and try again.';
+        } else {
+          errorMessage = error.message;
         }
-        
-        const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/admin-create-user`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body)
-        });
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP ${response.status}: ${errorText}`);
-        }
-        
-        const result = await response.json();
-        if (result.error) {
-          throw new Error(result.error);
-        }
-        
-        console.log('Direct fetch successful:', result);
-        return result;
-        
-      } catch (fallbackError) {
-        console.error('Fallback fetch also failed:', fallbackError);
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-        throw new Error(`Failed to create user: ${errorMessage}`);
       }
+      
+      throw new Error(errorMessage);
     }
   };
 
@@ -161,15 +141,13 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
         sendWelcomeEmail: formData.sendWelcomeEmail
       });
 
-      setShowSuccess(true);
-      toast.success('User created successfully!');
-      
-      // Reset form after short delay
-      setTimeout(() => {
-        setShowSuccess(false);
-        resetForm();
+      if (data?.success) {
+        setShowSuccess(true);
         onUserAdded();
-      }, 2000);
+        toast.success('User created successfully!');
+      } else {
+        throw new Error(data?.error || 'User creation failed');
+      }
 
     } catch (error: any) {
       console.error('Error creating user:', error);
