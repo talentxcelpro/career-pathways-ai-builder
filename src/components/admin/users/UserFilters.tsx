@@ -1,12 +1,13 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, UserPlus, Upload } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Search, UserPlus, Upload, Mail } from 'lucide-react';
 import { ExportButton } from '@/components/admin/ExportButton';
 import { AddUserModal } from './AddUserModal';
 import { ImportUsersModal } from './ImportUsersModal';
+import { EmailManagementPanel } from './EmailManagementPanel';
 
 interface UserFiltersProps {
   searchTerm: string;
@@ -31,6 +32,8 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
 }) => {
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showEmailPanel, setShowEmailPanel] = useState(false);
+
   return (
     <>
       <Card>
@@ -84,6 +87,20 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
                 filename="users-export" 
                 format="csv"
               />
+              <Dialog open={showEmailPanel} onOpenChange={setShowEmailPanel}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    Email Management
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Email Management Panel</DialogTitle>
+                  </DialogHeader>
+                  <EmailManagementPanel />
+                </DialogContent>
+              </Dialog>
               <Button
                 onClick={() => setShowAddUserModal(true)}
                 className="flex items-center gap-2"
