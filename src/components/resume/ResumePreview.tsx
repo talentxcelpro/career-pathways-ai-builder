@@ -117,8 +117,23 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
 
   const renderSkills = () => {
     const skills = content?.skills || {};
-    const technicalSkills = skills.technical || [];
-    const softSkills = skills.soft || [];
+    
+    // Handle skills as array (new format) or object (legacy format)
+    let technicalSkills = [];
+    let softSkills = [];
+    
+    if (Array.isArray(skills)) {
+      // Skills is an array of strings
+      technicalSkills = skills.filter(skill => typeof skill === 'string');
+    } else if (skills.technical) {
+      // Legacy object format
+      technicalSkills = Array.isArray(skills.technical) 
+        ? skills.technical.map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || '').filter(Boolean)
+        : [];
+      softSkills = Array.isArray(skills.soft) 
+        ? skills.soft.map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || '').filter(Boolean)
+        : [];
+    }
     
     if (!technicalSkills.length && !softSkills.length) return null;
 
@@ -129,7 +144,7 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
         </h2>
         {technicalSkills.length > 0 && (
           <div className="mb-3">
-            <h3 className="font-medium mb-2">Technical Skills</h3>
+            <h3 className="font-medium mb-2">{softSkills.length > 0 ? 'Technical Skills' : 'Skills'}</h3>
             <div className="flex flex-wrap gap-2">
               {technicalSkills.map((skill: string, index: number) => (
                 <span 

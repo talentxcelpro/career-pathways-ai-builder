@@ -1,7 +1,7 @@
-import { StreamlinedResumeBuilder } from "@/components/resume/StreamlinedResumeBuilder";
+import { UnifiedResumeInterface } from "@/components/resume/enhanced/UnifiedResumeInterface";
 
 const EditResume = () => {
-  return <StreamlinedResumeBuilder />;
+  return <UnifiedResumeInterface mode="edit" />;
 };
 
 export default EditResume;

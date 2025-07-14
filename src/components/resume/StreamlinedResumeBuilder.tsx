@@ -153,23 +153,23 @@ export const StreamlinedResumeBuilder = () => {
         experience: Array.isArray(content.experience) ? content.experience : [],
         education: Array.isArray(content.education) ? content.education : [],
         skills: Array.isArray(content.skills) 
-          ? content.skills.filter(skill => typeof skill === 'string')
+          ? content.skills.map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || '').filter(Boolean)
           : content.skills?.technical 
             ? [
                 ...(Array.isArray(content.skills.technical) 
-                  ? content.skills.technical.filter(skill => typeof skill === 'string')
+                  ? content.skills.technical.map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || '').filter(Boolean)
                   : [
-                      ...(content.skills.technical?.programming || []),
-                      ...(content.skills.technical?.frameworks || []),
-                      ...(content.skills.technical?.databases || []),
-                      ...(content.skills.technical?.tools || []),
-                      ...(content.skills.technical?.cloud || [])
-                    ].filter(skill => typeof skill === 'string')
+                      ...(content.skills.technical?.programming || []).map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || ''),
+                      ...(content.skills.technical?.frameworks || []).map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || ''),
+                      ...(content.skills.technical?.databases || []).map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || ''),
+                      ...(content.skills.technical?.tools || []).map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || ''),
+                      ...(content.skills.technical?.cloud || []).map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || '')
+                    ].filter(Boolean)
                 ),
-                ...(content.skills.soft || []).filter(skill => typeof skill === 'string'), 
-                ...(content.skills.languages?.map((lang: any) => typeof lang === 'string' ? lang : lang.language) || []),
-                ...(content.skills.certifications || []).filter(skill => typeof skill === 'string')
-              ].filter(skill => skill && typeof skill === 'string')
+                ...(content.skills.soft || []).map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || '').filter(Boolean), 
+                ...(content.skills.languages?.map((lang: any) => typeof lang === 'string' ? lang : lang.language || lang.skill || lang.name) || []).filter(Boolean),
+                ...(content.skills.certifications || []).map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || '').filter(Boolean)
+              ].filter(Boolean)
             : [],
         projects: Array.isArray(content.projects) ? content.projects : [],
         certifications: Array.isArray(content.certifications) ? content.certifications : [],
