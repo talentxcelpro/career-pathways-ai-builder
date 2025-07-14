@@ -68,31 +68,76 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
 
   const testEdgeFunction = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('test-function');
+      console.log('=== TESTING EDGE FUNCTION CONNECTIVITY ===');
+      console.log('Testing Supabase connection...');
+      console.log('Current user:', await supabase.auth.getUser());
+      console.log('Current session:', await supabase.auth.getSession());
+      
+      const { data, error } = await supabase.functions.invoke('test-function', {
+        body: { test: 'connection' },
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
       console.log('Test function result:', { data, error });
+      console.log('=== END CONNECTIVITY TEST ===');
+      
+      if (error) {
+        console.error('Test function error details:', JSON.stringify(error, null, 2));
+        return { success: false, error: error.message || 'Test function failed' };
+      }
+      
       return { success: true, data, error };
     } catch (err) {
-      console.error('Test function failed:', err);
-      return { success: false, error: err };
+      console.error('Test function catch:', err);
+      console.error('Catch error details:', JSON.stringify(err, null, 2));
+      return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
     }
   };
 
   const callAdminFunction = async (body: any): Promise<any> => {
+    console.log('=== ADMIN FUNCTION CALL START ===');
     console.log('Creating user via admin function...');
+    console.log('Request body:', JSON.stringify(body, null, 2));
     
     // First test if Edge Functions work at all
     console.log('Testing Edge Function connectivity...');
     const testResult = await testEdgeFunction();
     console.log('Test result:', testResult);
     
+    if (!testResult.success) {
+      throw new Error(`Edge Functions connectivity test failed: ${testResult.error}`);
+    }
+    
     try {
-      console.log('Calling function with body:', body);
+      console.log('Making admin-create-user function call...');
+      console.log('Calling admin-create-user function...');
+      
       const { data, error } = await supabase.functions.invoke('admin-create-user', {
-        body
+        body,
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
+
+      console.log('Function response received:');
+      console.log('- Data:', data);
+      console.log('- Error:', error);
+      console.log('- Error type:', typeof error);
+      console.log('- Error JSON:', JSON.stringify(error, null, 2));
 
       if (error) {
         console.error('Function invoke error:', error);
+        
+        // Check for network/connectivity issues
+        if (error.message?.includes('fetch') || 
+            error.message?.includes('Failed to send a request') ||
+            error.message?.includes('NetworkError') ||
+            error.message?.includes('network')) {
+          throw new Error('Unable to connect to the server. Please check your connection and try again.');
+        }
+        
         throw new Error(error.message || 'Function call failed');
       }
 
@@ -102,26 +147,32 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
       }
 
       console.log('User creation successful:', data);
+      console.log('=== ADMIN FUNCTION CALL END ===');
       return data;
 
     } catch (error) {
       console.error('Admin function call failed:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       
       // Provide more specific error messages
       let errorMessage = 'Failed to create user';
       
       if (error instanceof Error) {
         if (error.message.includes('CORS')) {
-          errorMessage = 'Network connectivity issue. Please try again.';
+          errorMessage = 'Network connectivity issue (CORS). Please try again.';
         } else if (error.message.includes('Authorization') || error.message.includes('permission')) {
           errorMessage = 'Permission denied. Please check your admin access.';
-        } else if (error.message.includes('Failed to send a request')) {
+        } else if (error.message.includes('Failed to send a request') || 
+                   error.message.includes('NetworkError') ||
+                   error.message.includes('fetch')) {
           errorMessage = 'Unable to connect to the server. Please check your connection and try again.';
         } else {
           errorMessage = error.message;
         }
       }
       
+      console.log('=== ADMIN FUNCTION CALL END (ERROR) ===');
       throw new Error(errorMessage);
     }
   };
