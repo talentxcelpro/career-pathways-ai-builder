@@ -17,7 +17,9 @@ import {
   Bell,
   Shield,
   BarChart,
-  Lock
+  Lock,
+  SendHorizontal,
+  Loader2
 } from 'lucide-react';
 import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 import { toast } from 'sonner';
@@ -41,6 +43,8 @@ export const EmailAutomationManager = () => {
   const [testEmail, setTestEmail] = useState('');
   const [triggers, setTriggers] = useState<EmailTrigger[]>([]);
   const [loading, setLoading] = useState(true);
+  const [bulkEmailSending, setBulkEmailSending] = useState(false);
+  const [bulkEmailProgress, setBulkEmailProgress] = useState({ sent: 0, total: 0 });
   const [emailStats, setEmailStats] = useState({
     sentToday: 0,
     deliveryRate: 92,
@@ -214,6 +218,71 @@ export const EmailAutomationManager = () => {
     return sampleData[triggerType as keyof typeof sampleData] || {};
   };
 
+  const sendWelcomeEmailToAllUsers = async () => {
+    setBulkEmailSending(true);
+    setBulkEmailProgress({ sent: 0, total: 0 });
+    
+    try {
+      // Get all users from profiles table who have emails
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .not('email', 'is', null);
+        
+      if (profilesError) throw profilesError;
+      
+      if (!profiles || profiles.length === 0) {
+        toast.error('No users found with email addresses');
+        return;
+      }
+      
+      setBulkEmailProgress({ sent: 0, total: profiles.length });
+      
+      let successful = 0;
+      let failed = 0;
+      
+      // Process in batches to avoid overwhelming the system
+      for (let i = 0; i < profiles.length; i += 10) {
+        const batch = profiles.slice(i, i + 10);
+        
+        const batchPromises = batch.map(async (profile) => {
+          try {
+            const { error } = await supabase.rpc('queue_automated_email', {
+              p_trigger_type: 'welcome_email',
+              p_recipient_email: profile.email,
+              p_recipient_name: profile.full_name || 'User',
+              p_template_data: { name: profile.full_name || 'User', user_id: profile.id }
+            });
+            
+            if (error) throw error;
+            successful++;
+          } catch (error) {
+            console.error(`Failed to queue email for ${profile.email}:`, error);
+            failed++;
+          }
+        });
+        
+        await Promise.allSettled(batchPromises);
+        setBulkEmailProgress({ sent: successful + failed, total: profiles.length });
+        
+        // Small delay between batches
+        if (i + 10 < profiles.length) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
+      
+      toast.success(`Bulk email completed: ${successful} queued, ${failed} failed`);
+      fetchEmailStats(); // Refresh stats
+      
+    } catch (error) {
+      console.error('Error sending bulk emails:', error);
+      toast.error('Failed to send bulk welcome emails');
+    } finally {
+      setBulkEmailSending(false);
+      setBulkEmailProgress({ sent: 0, total: 0 });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -297,6 +366,70 @@ export const EmailAutomationManager = () => {
                 </div>
               ))
             )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <SendHorizontal className="h-5 w-5" />
+            Bulk Email Operations
+          </CardTitle>
+          <CardDescription>
+            Send emails to multiple users at once
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="border rounded-lg p-4 bg-gradient-to-r from-green-50 to-blue-50">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h3 className="font-semibold text-lg">Send Welcome Email to All Users</h3>
+                  <p className="text-sm text-gray-600">
+                    Queue welcome emails for all registered users with email addresses
+                  </p>
+                </div>
+                <UserPlus className="h-8 w-8 text-green-600" />
+              </div>
+              
+              {bulkEmailSending && (
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm">Processing... {bulkEmailProgress.sent}/{bulkEmailProgress.total} users</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                      style={{ 
+                        width: bulkEmailProgress.total > 0 
+                          ? `${(bulkEmailProgress.sent / bulkEmailProgress.total) * 100}%` 
+                          : '0%' 
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+              
+              <Button
+                onClick={sendWelcomeEmailToAllUsers}
+                disabled={bulkEmailSending}
+                className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+              >
+                {bulkEmailSending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <SendHorizontal className="h-4 w-4 mr-2" />
+                    Send Welcome Email to All Users
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
