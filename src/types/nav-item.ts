@@ -9,4 +9,6 @@ export interface NavItem {
   page: React.ReactNode;
   children?: NavItem[];
   isNew?: boolean;
+  requiresAuth?: boolean;
+  requiresEmployerAccess?: boolean;
 }

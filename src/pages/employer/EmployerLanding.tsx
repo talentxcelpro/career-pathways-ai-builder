@@ -22,6 +22,7 @@ import {
   BarChart3,
   Building2
 } from 'lucide-react';
+import { toast } from 'sonner';
 import employerHero from '@/assets/employer-hero.jpg';
 import teamCollaboration from '@/assets/team-collaboration.jpg';
 import aiMatching from '@/assets/ai-matching.jpg';
@@ -120,20 +121,51 @@ const EmployerLanding = () => {
             <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-green-900 mb-2">✅ Access Granted</h3>
             <p className="text-green-700 mb-4">You're all set to start hiring!</p>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Button onClick={() => navigate('/employer')} className="bg-green-600 hover:bg-green-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Button 
+                onClick={() => {
+                  navigate('/employer');
+                  toast.success('Navigating to Employer Dashboard');
+                }} 
+                className="bg-green-600 hover:bg-green-700 transition-colors"
+                size="lg"
+              >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Employer Dashboard
               </Button>
-              <Button onClick={() => navigate('/jobs/post')} variant="outline">
+              <Button 
+                onClick={() => {
+                  navigate('/jobs/post');
+                  toast.success('Opening Job Posting Form');
+                }} 
+                variant="outline" 
+                className="border-green-600 text-green-700 hover:bg-green-50"
+                size="lg"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Post a Job
               </Button>
-              <Button variant="outline" onClick={() => navigate('/employer/team')}>
+              <Button 
+                onClick={() => {
+                  navigate('/employer/team');
+                  toast.success('Opening Team Management');
+                }}
+                variant="outline"
+                className="border-green-600 text-green-700 hover:bg-green-50"
+                size="lg"
+              >
                 <Users className="h-4 w-4 mr-2" />
                 Invite Team
               </Button>
-              <Button variant="outline" onClick={() => navigate('/employer/applications')}>
+              <Button 
+                onClick={() => {
+                  navigate('/employer/applications');
+                  toast.success('Loading Job Applications');
+                }}
+                variant="outline"
+                className="border-green-600 text-green-700 hover:bg-green-50"
+                size="lg"
+              >
                 <FileText className="h-4 w-4 mr-2" />
                 View Applications
               </Button>

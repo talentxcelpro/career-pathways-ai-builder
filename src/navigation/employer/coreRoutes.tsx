@@ -11,6 +11,7 @@ import EmployerAnalytics from "../../pages/employer/analytics/EmployerAnalytics"
 import EmployerApplications from "../../pages/employer/Applications";
 import CompanyAccessRequestPage from "../../pages/employer/CompanyAccessRequest";
 import AcceptInvitation from "../../pages/employer/AcceptInvitation";
+import { EmployerAccessGuard } from "../../components/employer/EmployerAccessGuard";
 
 export const employerCoreRoutes = [
   // Main Employer Routes
@@ -19,6 +20,7 @@ export const employerCoreRoutes = [
     to: "/employer",
     icon: <Building2 className="h-4 w-4" />,
     page: <EmployerDashboard />,
+    requiresAuth: false, // This shows the landing page with conditional access
   },
   {
     title: "Employer Profile",
@@ -33,7 +35,9 @@ export const employerCoreRoutes = [
   {
     title: "Team Management",
     to: "/employer/team",
-    page: <TeamManagement />,
+    page: <EmployerAccessGuard><TeamManagement /></EmployerAccessGuard>,
+    requiresAuth: true,
+    requiresEmployerAccess: true,
   },
   {
     title: "Legacy Team Management",
@@ -49,13 +53,17 @@ export const employerCoreRoutes = [
     title: "Applications",
     to: "/employer/applications",
     icon: <Users className="h-4 w-4" />,
-    page: <EmployerApplications />,
+    page: <EmployerAccessGuard><EmployerApplications /></EmployerAccessGuard>,
+    requiresAuth: true,
+    requiresEmployerAccess: true,
   },
   {
     title: "Employer Analytics",
     to: "/employer/analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <EmployerAnalytics />,
+    page: <EmployerAccessGuard><EmployerAnalytics /></EmployerAccessGuard>,
+    requiresAuth: true,
+    requiresEmployerAccess: true,
   },
   {
     title: "Accept Team Invitation",

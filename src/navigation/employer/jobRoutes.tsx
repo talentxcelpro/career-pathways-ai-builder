@@ -3,6 +3,7 @@ import { Briefcase, PlusCircle, Copy, XCircle, Star, Edit, Eye, Brain, Users, Ca
 
 // Job Posting Flow
 import JobPost from "../../pages/jobs/JobPost";
+import { EmployerAccessGuard } from "../../components/employer/EmployerAccessGuard";
 import JobPostAI from "../../pages/employer/jobs/JobPostAI";
 import JobPostPreview from "../../pages/employer/jobs/JobPostPreview";
 import JobPostSuccess from "../../pages/employer/jobs/JobPostSuccess";
@@ -41,7 +42,9 @@ export const employerJobRoutes = [
   {
     title: "Post Job",
     to: "/jobs/post",
-    page: <JobPost />,
+    page: <EmployerAccessGuard><JobPost /></EmployerAccessGuard>,
+    requiresAuth: true,
+    requiresEmployerAccess: true,
   },
   {
     title: "AI Job Post",

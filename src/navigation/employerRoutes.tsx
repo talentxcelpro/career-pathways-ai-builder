@@ -6,6 +6,7 @@ import { employerCRMRoutes } from "./employer/crmRoutes";
 import RequestAccess from "../pages/employer/RequestAccess";
 import EmployerLanding from "../pages/employer/EmployerLanding";
 import CompanyDashboard from "../pages/companies/CompanyDashboard";
+import { EmployerAccessGuard } from "../components/employer/EmployerAccessGuard";
 
 export const employerRoutes = [
   // Employer Landing Page (public route)

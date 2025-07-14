@@ -48,7 +48,9 @@ const publicRoutes = [
   '/companies/:id',
   '/:slug', // Company slug route
   '/profile/:id',
-  '/employer/request-access'
+  '/employer', // Employer landing page (shows different content based on auth)
+  '/employer/request-access',
+  '/employer/team/accept/:token' // Invitation acceptance
 ];
 
 const App = () => (
@@ -66,10 +68,11 @@ const App = () => (
               <main className="flex-1">
                 <Routes>
                   {navItems.map((item: NavItem) => {
-                     const isPublicRoute = publicRoutes.some(route => {
-                       // Handle dynamic routes like /companies/:id, /profile/:id, /:slug, and /jobs/:id
+                     // Check if route is explicitly marked as public or in our public routes list
+                     const isPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
+                       // Handle dynamic routes like /companies/:id, /profile/:id, /:slug, /jobs/:id, and /employer/team/accept/:token
                        if (route.includes(':')) {
-                         const routePattern = route.replace(':id', '[^/]+').replace(':slug', '[^/]+');
+                         const routePattern = route.replace(/:[^/]+/g, '[^/]+');
                          return new RegExp(`^${routePattern}$`).test(item.to);
                        }
                        return route === item.to;
