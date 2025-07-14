@@ -14,6 +14,8 @@ import Phase5SEOAdmin from "../pages/admin/Phase5SEOAdmin";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import InvitationFlow from "../pages/InvitationFlow";
 import MobileDemoPage from "../pages/mobile/MobileDemoPage";
+import { MobileAuth } from "../pages/auth/MobileAuth";
+import { MobileResumeBuilder } from "../components/mobile/MobileResumeBuilder";
 
 export const coreRoutes = [
   {
@@ -92,6 +94,16 @@ export const coreRoutes = [
     title: "Mobile Demo",
     to: "/mobile-demo",
     page: <MobileDemoPage />,
+  },
+  {
+    title: "Mobile Auth",
+    to: "/mobile-auth",
+    page: <MobileAuth />,
+  },
+  {
+    title: "Mobile Resume",
+    to: "/mobile-resume",
+    page: <MobileResumeBuilder />,
   },
   {
     title: "Not Found",
