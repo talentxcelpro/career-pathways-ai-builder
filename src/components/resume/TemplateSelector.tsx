@@ -126,6 +126,7 @@ export const TemplateSelector = ({ templates = enhancedTemplateLibrary, currentT
             <div className="text-sm" style={{ color: primaryColor }}>
               University of Technology • Boston, MA
             </div>
+          </div>
         </div>
       </div>
     );
