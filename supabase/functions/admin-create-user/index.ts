@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
 
     console.log('Creating user:', { email, fullName, role, status });
 
-    // Create the user in Auth
+    // Create the user in Auth (trigger will automatically create profile)
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
@@ -176,19 +176,23 @@ Deno.serve(async (req) => {
 
     console.log('User created in auth:', authData.user.id);
 
-    // Create profile
+    // Wait briefly for the trigger to create the profile
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Update the profile with admin-specified values (profile was created by trigger)
     const { error: profileError } = await supabaseAdmin
       .from('profiles')
-      .insert({
-        id: authData.user.id,
+      .update({
         full_name: fullName,
         email: email,
         user_role: role,
-        profile_completed: status === 'active'
-      });
+        profile_completed: status === 'active',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', authData.user.id);
 
     if (profileError) {
-      console.error('Profile creation error details:', {
+      console.error('Profile update error details:', {
         error: profileError,
         code: profileError.code,
         details: profileError.details,
@@ -196,16 +200,16 @@ Deno.serve(async (req) => {
         message: profileError.message
       });
       
-      // Clean up auth user if profile creation fails
+      // Clean up auth user if profile update fails
       try {
         await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
-        console.log('Cleaned up auth user after profile creation failure');
+        console.log('Cleaned up auth user after profile update failure');
       } catch (cleanupError) {
         console.error('Failed to cleanup auth user:', cleanupError);
       }
       
       return new Response(JSON.stringify({ 
-        error: 'Failed to create user profile', 
+        error: 'Failed to update user profile', 
         details: profileError.message,
         code: profileError.code 
       }), {
