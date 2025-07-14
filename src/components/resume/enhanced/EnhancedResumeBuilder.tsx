@@ -69,12 +69,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
       keyHighlights: []
     },
     workExperience: [],
-    keySkills: {
-      technical: [],
-      soft: [],
-      domain: [],
-      frameworks: []
-    },
+    skills: [],
     education: [],
     certifications: [],
     projects: [],
@@ -207,8 +202,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
         case 'workExperience':
           if (resumeData.workExperience.length > 0) completedSections++;
           break;
-        case 'keySkills':
-          if (resumeData.keySkills.technical.length > 0 || resumeData.keySkills.soft.length > 0) completedSections++;
+        case 'skills':
+          if (resumeData.skills?.length > 0) completedSections++;
           break;
         case 'education':
           if (resumeData.education.length > 0) completedSections++;
@@ -329,12 +324,12 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                         />
                       );
                     
-                    case 'keySkills':
+                    case 'skills':
                       return (
                         <SkillsSection
                           key={section.id}
-                          data={resumeData.keySkills}
-                          onChange={(data) => updateResumeData({ keySkills: data })}
+                          data={resumeData.skills}
+                          onChange={(data) => updateResumeData({ skills: data })}
                         />
                       );
                     

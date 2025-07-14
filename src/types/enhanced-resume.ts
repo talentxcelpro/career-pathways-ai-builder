@@ -11,7 +11,7 @@ export interface ResumeSection {
 export type ResumeSectionType = 
   | 'personalInfo'
   | 'professionalSummary'
-  | 'keySkills'
+  | 'skills'
   | 'workExperience'
   | 'education'
   | 'certifications'
@@ -42,7 +42,7 @@ export interface EnhancedResumeData {
   // Professional Background Group
   workExperience: WorkExperience[];
   projects: Project[];
-  keySkills: SkillsSection;
+  skills: Skill[];
   tools: ToolsSection;
 
   // Education & Credentials Group
@@ -128,8 +128,11 @@ export interface SkillsSection {
 }
 
 export interface Skill {
+  id: string;
   name: string;
   level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  category: string;
+  years: number;
   yearsOfExperience?: number;
   lastUsed?: string;
 }
@@ -213,8 +216,10 @@ export interface Publication {
   id: string;
   title: string;
   authors: string[];
+  journal: string;
   venue: string;
   date: string;
+  publicationDate: string;
   type: 'journal' | 'conference' | 'workshop' | 'book' | 'blog';
   url?: string;
   doi?: string;
@@ -340,7 +345,7 @@ export const DEFAULT_SECTION_CONFIG: ResumeSection[] = [
 
   // Professional Group
   { id: 'workExperience', type: 'workExperience', enabled: true, order: 4, group: 'professional' },
-  { id: 'keySkills', type: 'keySkills', enabled: true, order: 5, group: 'professional' },
+  { id: 'skills', type: 'skills', enabled: true, order: 5, group: 'professional' },
   { id: 'projects', type: 'projects', enabled: true, order: 6, group: 'professional' },
   { id: 'tools', type: 'tools', enabled: false, order: 7, group: 'professional' },
 
@@ -406,8 +411,8 @@ export const SECTION_METADATA: Record<ResumeSectionType, {
     required: false,
     recommendedFor: ['technical', 'creative', 'student']
   },
-  keySkills: {
-    title: 'Key Skills',
+  skills: {
+    title: 'Skills',
     description: 'Technical and soft skills',
     icon: 'Zap',
     required: true,
