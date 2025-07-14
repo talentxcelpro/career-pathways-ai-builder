@@ -10,6 +10,9 @@ export interface EnhancedResumeData {
     summary: string;
     linkedin?: string;
     website?: string;
+    profilePicture?: string;
+    dateOfBirth?: string;
+    gender?: string;
     confidence: number;
   };
   experience: Array<{
@@ -38,14 +41,37 @@ export interface EnhancedResumeData {
   }>;
   skills: {
     technical: {
-      programming: string[];
-      frameworks: string[];
-      databases: string[];
-      tools: string[];
-      cloud: string[];
+      programming: Array<{
+        skill: string;
+        proficiency: string;
+        category: string;
+      }>;
+      frameworks: Array<{
+        skill: string;
+        proficiency: string;
+        category: string;
+      }>;
+      databases: Array<{
+        skill: string;
+        proficiency: string;
+        category: string;
+      }>;
+      tools: Array<{
+        skill: string;
+        proficiency: string;
+        category: string;
+      }>;
+      cloud: Array<{
+        skill: string;
+        proficiency: string;
+        category: string;
+      }>;
       confidence: number;
     };
-    soft: string[];
+    soft: Array<{
+      skill: string;
+      proficiency: string;
+    }>;
     languages: Array<{
       language: string;
       proficiency: string;
@@ -77,6 +103,20 @@ export interface EnhancedResumeData {
     issuer: string;
     date: string;
     description: string;
+    confidence: number;
+  }>;
+  publications: Array<{
+    title: string;
+    publisher: string;
+    publicationDate: string;
+    url?: string;
+    doi?: string;
+    description: string;
+    confidence: number;
+  }>;
+  customSections: Array<{
+    sectionName: string;
+    content: string;
     confidence: number;
   }>;
   volunteer: Array<{
@@ -327,6 +367,8 @@ Please provide a complete, accurate extraction of this professional's resume con
       projects: this.validateProjects(data.projects || []),
       certifications: this.validateCertifications(data.certifications || []),
       awards: data.awards || [],
+      publications: data.publications || [],
+      customSections: data.customSections || [],
       volunteer: data.volunteer || [],
     };
 
@@ -352,6 +394,9 @@ Please provide a complete, accurate extraction of this professional's resume con
       summary: personalInfo?.summary || '',
       linkedin: this.validateUrl(personalInfo?.linkedin),
       website: this.validateUrl(personalInfo?.website),
+      profilePicture: personalInfo?.profilePicture || '',
+      dateOfBirth: personalInfo?.dateOfBirth || '',
+      gender: personalInfo?.gender || '',
       confidence: personalInfo?.confidence || 0.5
     };
   }
@@ -382,16 +427,50 @@ Please provide a complete, accurate extraction of this professional's resume con
   private validateSkills(skills: any) {
     return {
       technical: {
-        programming: Array.isArray(skills.technical?.programming) ? skills.technical.programming : [],
-        frameworks: Array.isArray(skills.technical?.frameworks) ? skills.technical.frameworks : [],
-        databases: Array.isArray(skills.technical?.databases) ? skills.technical.databases : [],
-        tools: Array.isArray(skills.technical?.tools) ? skills.technical.tools : [],
-        cloud: Array.isArray(skills.technical?.cloud) ? skills.technical.cloud : [],
+        programming: Array.isArray(skills.technical?.programming) ? 
+          skills.technical.programming.map(this.validateSkillWithProficiency) : [],
+        frameworks: Array.isArray(skills.technical?.frameworks) ? 
+          skills.technical.frameworks.map(this.validateSkillWithProficiency) : [],
+        databases: Array.isArray(skills.technical?.databases) ? 
+          skills.technical.databases.map(this.validateSkillWithProficiency) : [],
+        tools: Array.isArray(skills.technical?.tools) ? 
+          skills.technical.tools.map(this.validateSkillWithProficiency) : [],
+        cloud: Array.isArray(skills.technical?.cloud) ? 
+          skills.technical.cloud.map(this.validateSkillWithProficiency) : [],
         confidence: skills.technical?.confidence || 0.8
       },
-      soft: Array.isArray(skills.soft) ? skills.soft : [],
+      soft: Array.isArray(skills.soft) ? 
+        skills.soft.map(this.validateSoftSkill) : [],
       languages: Array.isArray(skills.languages) ? skills.languages : [],
       certifications: Array.isArray(skills.certifications) ? skills.certifications : []
+    };
+  }
+
+  private validateSkillWithProficiency = (skill: any) => {
+    if (typeof skill === 'string') {
+      return {
+        skill,
+        proficiency: 'Intermediate',
+        category: 'General'
+      };
+    }
+    return {
+      skill: skill?.skill || '',
+      proficiency: skill?.proficiency || 'Intermediate',
+      category: skill?.category || 'General'
+    };
+  }
+
+  private validateSoftSkill = (skill: any) => {
+    if (typeof skill === 'string') {
+      return {
+        skill,
+        proficiency: 'Intermediate'
+      };
+    }
+    return {
+      skill: skill?.skill || '',
+      proficiency: skill?.proficiency || 'Intermediate'
     };
   }
 

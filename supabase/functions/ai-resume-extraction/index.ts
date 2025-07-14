@@ -38,6 +38,10 @@ ENHANCEMENT RULES:
 - Standardize formatting and professional language
 - Generate missing summaries based on experience and skills
 - Ensure ATS optimization with relevant keywords
+- For skills, always include proficiency levels: "Beginner", "Intermediate", "Advanced", "Expert"
+- Categorize skills by type: "Programming Languages", "Frameworks", "Databases", "Tools", "Cloud Platforms", "Soft Skills"
+- Extract publications, papers, and custom achievement sections
+- Look for additional personal details like profile pictures, social profiles
 
 Return a JSON object with this EXACT structure:
 {
@@ -49,6 +53,9 @@ Return a JSON object with this EXACT structure:
     "summary": "",
     "linkedin": "",
     "website": "",
+    "profilePicture": "",
+    "dateOfBirth": "",
+    "gender": "",
     "confidence": 0.0
   },
   "experience": [
@@ -80,14 +87,49 @@ Return a JSON object with this EXACT structure:
   ],
   "skills": {
     "technical": {
-      "programming": [],
-      "frameworks": [],
-      "databases": [],
-      "tools": [],
-      "cloud": [],
+      "programming": [
+        {
+          "skill": "",
+          "proficiency": "",
+          "category": ""
+        }
+      ],
+      "frameworks": [
+        {
+          "skill": "",
+          "proficiency": "",
+          "category": ""
+        }
+      ],
+      "databases": [
+        {
+          "skill": "",
+          "proficiency": "",
+          "category": ""
+        }
+      ],
+      "tools": [
+        {
+          "skill": "",
+          "proficiency": "",
+          "category": ""
+        }
+      ],
+      "cloud": [
+        {
+          "skill": "",
+          "proficiency": "",
+          "category": ""
+        }
+      ],
       "confidence": 0.0
     },
-    "soft": [],
+    "soft": [
+      {
+        "skill": "",
+        "proficiency": ""
+      }
+    ],
     "languages": [
       {
         "language": "",
@@ -126,6 +168,24 @@ Return a JSON object with this EXACT structure:
       "issuer": "",
       "date": "",
       "description": "",
+      "confidence": 0.0
+    }
+  ],
+  "publications": [
+    {
+      "title": "",
+      "publisher": "",
+      "publicationDate": "",
+      "url": "",
+      "doi": "",
+      "description": "",
+      "confidence": 0.0
+    }
+  ],
+  "customSections": [
+    {
+      "sectionName": "",
+      "content": "",
       "confidence": 0.0
     }
   ],
