@@ -96,6 +96,31 @@ export const coreRoutes = [
     page: <MobileDemoPage />,
   },
   {
+    title: "Mobile Notifications",
+    to: "/mobile-notifications",
+    page: <div className="p-4"><MobileNotifications /></div>,
+  },
+  {
+    title: "AI Matching",
+    to: "/mobile-ai-matching", 
+    page: <div className="p-4"><MobileAIMatching /></div>,
+  },
+  {
+    title: "Video Interview",
+    to: "/mobile-video-interview",
+    page: <div className="p-4"><MobileVideoInterview /></div>,
+  },
+  {
+    title: "Analytics",
+    to: "/mobile-analytics",
+    page: <div className="p-4"><MobileAnalytics /></div>,
+  },
+  {
+    title: "Social Network", 
+    to: "/mobile-social-network",
+    page: <div className="p-4"><MobileSocialNetwork /></div>,
+  },
+  {
     title: "Mobile Auth",
     to: "/mobile-auth",
     page: <MobileAuth />,
