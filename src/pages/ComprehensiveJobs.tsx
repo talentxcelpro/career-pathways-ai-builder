@@ -1,11 +1,13 @@
 
 import React, { useState } from 'react';
-import { SmartJobSearch } from '@/components/jobs/SmartJobSearch';
+import { HeroSection } from '@/components/jobs/HeroSection';
+import { EnhancedSearchBar } from '@/components/jobs/EnhancedSearchBar';
 import { PersonalInsights } from '@/components/jobs/PersonalInsights';
 import { EnhancedJobFilters } from '@/components/jobs/EnhancedJobFilters';
 import { JobCategoriesGrid } from '@/components/jobs/JobCategoriesGrid';
+import { JobListings } from '@/components/jobs/JobListings';
+import { CompanyShowcase } from '@/components/jobs/CompanyShowcase';
 import { UserControlPanel } from '@/components/jobs/UserControlPanel';
-import { EmptyJobsState } from '@/components/jobs/EmptyJobsState';
 
 const ComprehensiveJobs = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -56,27 +58,19 @@ const ComprehensiveJobs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              TalentXcel Job Portal
-            </h1>
-            <p className="text-gray-600">
-              Filter jobs, explore industries, and save your preferences to receive perfect matches daily.
-            </p>
-          </div>
-          
-          <SmartJobSearch
-            searchTerm={searchTerm}
-            location={location}
-            onSearchChange={setSearchTerm}
-            onLocationChange={setLocation}
-            onSearch={handleSearch}
-          />
-        </div>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <HeroSection />
+      
+      {/* Enhanced Search */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <EnhancedSearchBar
+          searchTerm={searchTerm}
+          location={location}
+          onSearchChange={setSearchTerm}
+          onLocationChange={setLocation}
+          onSearch={handleSearch}
+        />
       </div>
 
       {/* Main Content */}
@@ -98,31 +92,14 @@ const ComprehensiveJobs = () => {
             {/* Job Categories */}
             <JobCategoriesGrid />
 
+            {/* Job Listings */}
+            <JobListings filters={filters} onClearFilters={handleClearFilters} />
+
+            {/* Company Showcase */}
+            <CompanyShowcase />
+
             {/* User Controls */}
             <UserControlPanel />
-
-            {/* Empty State - No Jobs Found */}
-            <EmptyJobsState
-              onResetFilters={handleResetFilters}
-              onUpdateResume={handleUpdateResume}
-              onSetAlerts={handleSetAlerts}
-            />
-
-            {/* Footer Info */}
-            <div className="text-center py-8 border-t">
-              <p className="text-gray-600 text-sm">
-                🔔 Subscribe for real-time alerts for{' '}
-                <a 
-                  href="https://talentxcel.in/jobs" 
-                  className="text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  https://talentxcel.in/jobs
-                </a>
-              </p>
-              <p className="text-gray-500 text-xs mt-2">
-                Join thousands of professionals who find their dream jobs through TalentXcel
-              </p>
-            </div>
           </div>
         </div>
       </div>
