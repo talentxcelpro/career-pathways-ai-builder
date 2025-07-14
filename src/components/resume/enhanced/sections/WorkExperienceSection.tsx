@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Briefcase, Plus, Trash2, GripVertical, Calendar, Users, TrendingUp } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Trash2, Plus, Calendar, Building2 } from "lucide-react";
 import { WorkExperience } from "@/types/enhanced-resume";
-import { DraggableSection } from "../../DraggableSection";
 
 interface WorkExperienceSectionProps {
   data: WorkExperience[];
@@ -17,323 +14,220 @@ interface WorkExperienceSectionProps {
 
 export const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
   data,
-  onChange
+  onChange,
 }) => {
-  const [newAchievement, setNewAchievement] = useState<{ [key: string]: string }>({});
-
   const addExperience = () => {
-    const newExp: WorkExperience = {
-      id: `exp-${Date.now()}`,
-      title: '',
-      company: '',
-      location: '',
-      startDate: '',
-      endDate: '',
+    const newExperience: WorkExperience = {
+      id: crypto.randomUUID(),
+      title: "",
+      company: "",
+      location: "",
+      startDate: "",
+      endDate: "",
       current: false,
-      description: '',
+      description: "",
       achievements: [],
       technologies: [],
-      teamSize: undefined,
-      reportingTo: ''
     };
-    onChange([...data, newExp]);
+    onChange([...data, newExperience]);
   };
 
   const updateExperience = (id: string, field: keyof WorkExperience, value: any) => {
-    onChange(data.map(exp => 
-      exp.id === id ? { ...exp, [field]: value } : exp
-    ));
+    onChange(
+      data.map((exp) =>
+        exp.id === id ? { ...exp, [field]: value } : exp
+      )
+    );
   };
 
   const removeExperience = (id: string) => {
-    onChange(data.filter(exp => exp.id !== id));
+    onChange(data.filter((exp) => exp.id !== id));
   };
 
-  const addAchievement = (expId: string) => {
-    const achievement = newAchievement[expId]?.trim();
-    if (achievement) {
-      const exp = data.find(e => e.id === expId);
-      if (exp) {
-        updateExperience(expId, 'achievements', [...exp.achievements, achievement]);
-        setNewAchievement({ ...newAchievement, [expId]: '' });
-      }
+  const addAchievement = (experienceId: string) => {
+    updateExperience(experienceId, "achievements", [
+      ...data.find(exp => exp.id === experienceId)?.achievements || [],
+      ""
+    ]);
+  };
+
+  const updateAchievement = (experienceId: string, index: number, value: string) => {
+    const experience = data.find(exp => exp.id === experienceId);
+    if (experience) {
+      const newAchievements = [...experience.achievements];
+      newAchievements[index] = value;
+      updateExperience(experienceId, "achievements", newAchievements);
     }
   };
 
-  const removeAchievement = (expId: string, index: number) => {
-    const exp = data.find(e => e.id === expId);
-    if (exp) {
-      updateExperience(expId, 'achievements', exp.achievements.filter((_, i) => i !== index));
-    }
-  };
-
-  const addTechnology = (expId: string, tech: string) => {
-    const exp = data.find(e => e.id === expId);
-    if (exp && !exp.technologies?.includes(tech)) {
-      updateExperience(expId, 'technologies', [...(exp.technologies || []), tech]);
-    }
-  };
-
-  const removeTechnology = (expId: string, tech: string) => {
-    const exp = data.find(e => e.id === expId);
-    if (exp) {
-      updateExperience(expId, 'technologies', exp.technologies?.filter(t => t !== tech) || []);
+  const removeAchievement = (experienceId: string, index: number) => {
+    const experience = data.find(exp => exp.id === experienceId);
+    if (experience) {
+      const newAchievements = experience.achievements.filter((_, i) => i !== index);
+      updateExperience(experienceId, "achievements", newAchievements);
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Briefcase className="h-5 w-5" />
-            Work Experience
-          </CardTitle>
-          <Button onClick={addExperience} size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Experience
-          </Button>
-        </div>
+    <Card className="w-full">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="flex items-center gap-2">
+          <Building2 className="h-5 w-5" />
+          Work Experience
+        </CardTitle>
+        <Button onClick={addExperience} size="sm" variant="outline">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Experience
+        </Button>
       </CardHeader>
       <CardContent className="space-y-6">
-        {data.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Briefcase className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No work experience added yet.</p>
-            <p className="text-sm">Click "Add Experience" to get started.</p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {data.map((exp, index) => (
-              <DraggableSection
-                key={exp.id}
-                id={exp.id}
-                title={exp.title || `Experience ${index + 1}`}
-                description={exp.company || 'New position'}
-                actions={
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeExperience(exp.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                }
-              >
-                <div className="space-y-4">
-                  {/* Basic Information */}
+        {data.map((experience, index) => (
+          <Card key={experience.id} className="relative">
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div className="space-y-2 flex-1">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium">Job Title *</label>
+                      <Label htmlFor={`job-title-${experience.id}`}>Job Title *</Label>
                       <Input
-                        value={exp.title}
-                        onChange={(e) => updateExperience(exp.id, 'title', e.target.value)}
-                        placeholder="Senior Software Engineer"
+                        id={`job-title-${experience.id}`}
+                        value={experience.title}
+                        onChange={(e) => updateExperience(experience.id, "title", e.target.value)}
+                        placeholder="e.g., Senior Software Engineer"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium">Company *</label>
+                      <Label htmlFor={`company-${experience.id}`}>Company *</Label>
                       <Input
-                        value={exp.company}
-                        onChange={(e) => updateExperience(exp.id, 'company', e.target.value)}
-                        placeholder="TechCorp Inc."
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Location</label>
-                      <Input
-                        value={exp.location}
-                        onChange={(e) => updateExperience(exp.id, 'location', e.target.value)}
-                        placeholder="San Francisco, CA"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Reporting To</label>
-                      <Input
-                        value={exp.reportingTo || ''}
-                        onChange={(e) => updateExperience(exp.id, 'reportingTo', e.target.value)}
-                        placeholder="Engineering Manager"
+                        id={`company-${experience.id}`}
+                        value={experience.company}
+                        onChange={(e) => updateExperience(experience.id, "company", e.target.value)}
+                        placeholder="e.g., Tech Corp Inc."
                       />
                     </div>
                   </div>
-
-                  {/* Dates and Current Position */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="text-sm font-medium flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        Start Date *
-                      </label>
+                      <Label htmlFor={`location-${experience.id}`}>Location</Label>
                       <Input
-                        type="month"
-                        value={exp.startDate}
-                        onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)}
+                        id={`location-${experience.id}`}
+                        value={experience.location}
+                        onChange={(e) => updateExperience(experience.id, "location", e.target.value)}
+                        placeholder="e.g., San Francisco, CA"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium">End Date</label>
+                      <Label htmlFor={`start-date-${experience.id}`}>Start Date</Label>
                       <Input
+                        id={`start-date-${experience.id}`}
                         type="month"
-                        value={exp.endDate}
-                        onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
-                        disabled={exp.current}
+                        value={experience.startDate}
+                        onChange={(e) => updateExperience(experience.id, "startDate", e.target.value)}
                       />
                     </div>
-                    <div className="flex items-end">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`current-${exp.id}`}
-                          checked={exp.current}
-                          onCheckedChange={(checked) => {
-                            updateExperience(exp.id, 'current', checked);
-                            if (checked) {
-                              updateExperience(exp.id, 'endDate', '');
-                            }
-                          }}
-                        />
-                        <label htmlFor={`current-${exp.id}`} className="text-sm">
-                          Current Position
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Team Size */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        Team Size (Optional)
-                      </label>
-                      <Select
-                        value={exp.teamSize?.toString() || ''}
-                        onValueChange={(value) => updateExperience(exp.id, 'teamSize', value ? parseInt(value) : undefined)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select team size" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">Individual contributor</SelectItem>
-                          <SelectItem value="2">2-5 people</SelectItem>
-                          <SelectItem value="6">6-10 people</SelectItem>
-                          <SelectItem value="11">11-20 people</SelectItem>
-                          <SelectItem value="21">21-50 people</SelectItem>
-                          <SelectItem value="51">50+ people</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {/* Job Description */}
-                  <div>
-                    <label className="text-sm font-medium">Job Description</label>
-                    <Textarea
-                      value={exp.description}
-                      onChange={(e) => updateExperience(exp.id, 'description', e.target.value)}
-                      placeholder="Describe your role, responsibilities, and overall impact..."
-                      rows={3}
-                    />
-                  </div>
-
-                  {/* Key Achievements */}
-                  <div>
-                    <label className="text-sm font-medium flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4" />
-                      Key Achievements
-                    </label>
-                    <div className="space-y-2 mt-2">
-                      {exp.achievements.map((achievement, achIndex) => (
-                        <div key={achIndex} className="flex items-start gap-2">
-                          <div className="text-sm bg-muted rounded p-3 flex-1">
-                            {achievement}
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeAchievement(exp.id, achIndex)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                      <div className="flex gap-2">
-                        <Input
-                          value={newAchievement[exp.id] || ''}
-                          onChange={(e) => setNewAchievement({ ...newAchievement, [exp.id]: e.target.value })}
-                          placeholder="Increased team productivity by 40% through process optimization..."
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              addAchievement(exp.id);
+                      <Label htmlFor={`end-date-${experience.id}`}>End Date</Label>
+                      <Input
+                        id={`end-date-${experience.id}`}
+                        type="month"
+                        value={experience.endDate}
+                        onChange={(e) => updateExperience(experience.id, "endDate", e.target.value)}
+                        disabled={experience.current}
+                        placeholder={experience.current ? "Present" : ""}
+                      />
+                      <div className="flex items-center space-x-2 mt-2">
+                        <input
+                          type="checkbox"
+                          id={`current-role-${experience.id}`}
+                          checked={experience.current}
+                          onChange={(e) => {
+                            updateExperience(experience.id, "current", e.target.checked);
+                            if (e.target.checked) {
+                              updateExperience(experience.id, "endDate", "");
                             }
                           }}
                         />
-                        <Button
-                          onClick={() => addAchievement(exp.id)}
-                          disabled={!newAchievement[exp.id]?.trim()}
-                          size="sm"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
+                        <Label htmlFor={`current-role-${experience.id}`} className="text-sm">
+                          I currently work here
+                        </Label>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Technologies/Skills Used */}
-                  <div>
-                    <label className="text-sm font-medium">Technologies & Tools</label>
-                    <div className="mt-2">
-                      {exp.technologies && exp.technologies.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-2">
-                          {exp.technologies.map((tech, techIndex) => (
-                            <Badge key={techIndex} variant="secondary" className="flex items-center gap-1">
-                              {tech}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-4 w-4 p-0 hover:bg-transparent"
-                                onClick={() => removeTechnology(exp.id, tech)}
-                              >
-                                ×
-                              </Button>
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                      <Input
-                        placeholder="Add technologies used (React, Python, AWS, etc.)"
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            const input = e.target as HTMLInputElement;
-                            const tech = input.value.trim();
-                            if (tech) {
-                              addTechnology(exp.id, tech);
-                              input.value = '';
-                            }
-                          }
-                        }}
-                      />
                     </div>
                   </div>
                 </div>
-              </DraggableSection>
-            ))}
+                <Button
+                  onClick={() => removeExperience(experience.id)}
+                  size="sm"
+                  variant="outline"
+                  className="ml-4"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor={`description-${experience.id}`}>Job Description</Label>
+                <Textarea
+                  id={`description-${experience.id}`}
+                  value={experience.description}
+                  onChange={(e) => updateExperience(experience.id, "description", e.target.value)}
+                  placeholder="Describe your role and responsibilities..."
+                  className="min-h-[100px]"
+                />
+              </div>
+              
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <Label>Key Achievements</Label>
+                  <Button
+                    onClick={() => addAchievement(experience.id)}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Achievement
+                  </Button>
+                </div>
+                {experience.achievements.map((achievement, achievementIndex) => (
+                  <div key={achievementIndex} className="flex gap-2 mb-2">
+                    <Input
+                      value={achievement}
+                      onChange={(e) => updateAchievement(experience.id, achievementIndex, e.target.value)}
+                      placeholder="e.g., Increased team productivity by 30%"
+                    />
+                    <Button
+                      onClick={() => removeAchievement(experience.id, achievementIndex)}
+                      size="sm"
+                      variant="outline"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <Label htmlFor={`technologies-${experience.id}`}>Technologies Used</Label>
+                <Input
+                  id={`technologies-${experience.id}`}
+                  value={experience.technologies.join(", ")}
+                  onChange={(e) => updateExperience(experience.id, "technologies", 
+                    e.target.value.split(",").map(tech => tech.trim()).filter(Boolean)
+                  )}
+                  placeholder="e.g., React, Node.js, PostgreSQL"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+        
+        {data.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>No work experience added yet.</p>
+            <p className="text-sm">Click "Add Experience" to get started.</p>
           </div>
         )}
-
-        {/* Tips */}
-        <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-6">
-          <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-            💡 Pro Tips for Work Experience
-          </h4>
-          <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
-            <li>• Use action verbs: Led, Developed, Implemented, Achieved</li>
-            <li>• Quantify results: "Increased sales by 25%" instead of "Improved sales"</li>
-            <li>• Focus on impact and achievements, not just responsibilities</li>
-            <li>• List most recent positions first (reverse chronological order)</li>
-            <li>• Include relevant technologies and tools you used</li>
-          </ul>
-        </div>
       </CardContent>
     </Card>
   );
