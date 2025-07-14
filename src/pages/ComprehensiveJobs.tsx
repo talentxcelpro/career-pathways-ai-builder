@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import { HeroSection } from '@/components/jobs/HeroSection';
-import { EnhancedSearchBar } from '@/components/jobs/EnhancedSearchBar';
-import { PersonalInsights } from '@/components/jobs/PersonalInsights';
+import { AdvancedHeroSection } from '@/components/jobs/AdvancedHeroSection';
+import { IntelligentSearchBar } from '@/components/jobs/IntelligentSearchBar';
+import { PersonalDashboard } from '@/components/jobs/PersonalDashboard';
 import { EnhancedJobFilters } from '@/components/jobs/EnhancedJobFilters';
 import { JobCategoriesGrid } from '@/components/jobs/JobCategoriesGrid';
-import { JobListings } from '@/components/jobs/JobListings';
+import { AdvancedJobListings } from '@/components/jobs/AdvancedJobListings';
 import { CompanyShowcase } from '@/components/jobs/CompanyShowcase';
 import { UserControlPanel } from '@/components/jobs/UserControlPanel';
 
@@ -58,13 +58,13 @@ const ComprehensiveJobs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <HeroSection />
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-accent/10">
+      {/* Advanced Hero Section */}
+      <AdvancedHeroSection />
       
-      {/* Enhanced Search */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <EnhancedSearchBar
+      {/* Intelligent Search */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <IntelligentSearchBar
           searchTerm={searchTerm}
           location={location}
           onSearchChange={setSearchTerm}
@@ -78,7 +78,7 @@ const ComprehensiveJobs = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Left Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            <PersonalInsights />
+            <PersonalDashboard />
             
             <EnhancedJobFilters
               filters={filters}
@@ -88,12 +88,12 @@ const ComprehensiveJobs = () => {
           </div>
 
           {/* Main Content Area */}
-          <div className="lg:col-span-3 space-y-8">
+          <div className="lg:col-span-3 space-y-12">
             {/* Job Categories */}
             <JobCategoriesGrid />
 
-            {/* Job Listings */}
-            <JobListings filters={filters} onClearFilters={handleClearFilters} />
+            {/* Advanced Job Listings */}
+            <AdvancedJobListings filters={filters} onClearFilters={handleClearFilters} />
 
             {/* Company Showcase */}
             <CompanyShowcase />
