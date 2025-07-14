@@ -81,16 +81,32 @@ export const useResumeCollaboration = (resumeId?: string) => {
         .from('resume_comments')
         .select(`
           *,
-          user_profile:profiles!user_id(full_name, email)
+          user_profile:profiles(full_name, email)
         `)
         .eq('resume_id', resumeId)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
 
+      // Helper function to safely extract user profile
+      const extractUserProfile = (profile: any) => {
+        if (Array.isArray(profile) && profile.length > 0) {
+          return profile[0];
+        }
+        if (profile && typeof profile === 'object' && profile.full_name && profile.email) {
+          return profile;
+        }
+        return { full_name: 'Unknown', email: '' };
+      };
+
       // Organize comments with replies
-      const topLevelComments = (data || []).filter(c => !c.parent_id);
-      const repliesMap = (data || []).reduce((acc, comment) => {
+      const processedComments = (data || []).map(comment => ({
+        ...comment,
+        user_profile: extractUserProfile(comment.user_profile)
+      }));
+
+      const topLevelComments = processedComments.filter(c => !c.parent_id);
+      const repliesMap = processedComments.reduce((acc, comment) => {
         if (comment.parent_id) {
           if (!acc[comment.parent_id]) acc[comment.parent_id] = [];
           acc[comment.parent_id].push(comment);
@@ -100,15 +116,7 @@ export const useResumeCollaboration = (resumeId?: string) => {
 
       return topLevelComments.map(comment => ({
         ...comment,
-        user_profile: Array.isArray(comment.user_profile) 
-          ? comment.user_profile[0] || { full_name: 'Unknown', email: '' }
-          : { full_name: 'Unknown', email: '' },
-        replies: (repliesMap[comment.id] || []).map(reply => ({
-          ...reply,
-          user_profile: Array.isArray(reply.user_profile) 
-            ? reply.user_profile[0] || { full_name: 'Unknown', email: '' }
-            : { full_name: 'Unknown', email: '' }
-        }))
+        replies: repliesMap[comment.id] || []
       })) as Comment[];
     },
     enabled: !!resumeId && !!user
