@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -51,6 +51,7 @@ interface ResumeData {
 export const UnifiedResumeBuilder = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // State management
   const [currentStep, setCurrentStep] = useState<'upload' | 'edit' | 'enhance' | 'export'>('upload');
@@ -75,6 +76,11 @@ export const UnifiedResumeBuilder = () => {
     if (file) {
       await processFile(file);
     }
+  }, []);
+
+  // Button click handler
+  const handleChooseFileClick = useCallback(() => {
+    fileInputRef.current?.click();
   }, []);
 
   // Drag and drop handlers
@@ -581,18 +587,21 @@ export const UnifiedResumeBuilder = () => {
                 <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-lg font-medium mb-2">Drop your resume here</p>
                 <p className="text-muted-foreground mb-4">Supports PDF, DOCX, and TXT files up to 10MB</p>
-                <label className="cursor-pointer">
-                  <input
-                    type="file"
-                    accept=".pdf,.docx,.txt"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    disabled={isProcessing}
-                  />
-                  <Button disabled={isProcessing} size="lg">
-                    {isProcessing ? 'Processing...' : 'Choose File'}
-                  </Button>
-                </label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.docx,.txt"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  disabled={isProcessing}
+                />
+                <Button 
+                  onClick={handleChooseFileClick}
+                  disabled={isProcessing} 
+                  size="lg"
+                >
+                  {isProcessing ? 'Processing...' : 'Choose File'}
+                </Button>
                 <p className="text-xs text-muted-foreground mt-3">
                   AI will automatically extract and organize your resume content
                 </p>
