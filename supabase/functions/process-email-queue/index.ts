@@ -13,17 +13,20 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    console.log('Email queue processing started...');
+    
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get pending emails from queue
+    // Get pending emails from queue, including retry logic
     const { data: pendingEmails, error: fetchError } = await supabase
       .from('email_automation_queue')
       .select('*')
       .eq('status', 'pending')
       .lte('scheduled_at', new Date().toISOString())
+      .lt('attempts', 3) // Only retry up to 3 times
       .order('created_at', { ascending: true })
       .limit(50); // Process in batches
 
@@ -36,19 +39,33 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('No pending emails to process');
       return new Response(JSON.stringify({ 
         message: 'No pending emails to process',
-        processed: 0 
+        processed: 0,
+        failed: 0,
+        timestamp: new Date().toISOString()
       }), {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
+    console.log(`Found ${pendingEmails.length} emails to process`);
+
     let processed = 0;
     let failed = 0;
+    const results = [];
 
     for (const email of pendingEmails) {
       try {
-        console.log(`Processing email ${email.id} to ${email.recipient_email}`);
+        console.log(`Processing email ${email.id} to ${email.recipient_email} (attempt ${(email.attempts || 0) + 1})`);
+
+        // Increment attempts before processing
+        await supabase
+          .from('email_automation_queue')
+          .update({
+            attempts: (email.attempts || 0) + 1,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', email.id);
 
         // Send email via the automated email function
         const emailResponse = await supabase.functions.invoke('send-automated-email', {
@@ -61,10 +78,14 @@ const handler = async (req: Request): Promise<Response> => {
         });
 
         if (emailResponse.error) {
-          throw new Error(emailResponse.error.message || 'Failed to send email');
+          throw new Error(JSON.stringify(emailResponse.error));
         }
 
-        console.log('Email sent successfully via automated email function');
+        if (emailResponse.data?.error) {
+          throw new Error(emailResponse.data.error);
+        }
+
+        console.log(`Email sent successfully to ${email.recipient_email}`);
 
         // Update email status to sent
         await supabase
@@ -72,36 +93,67 @@ const handler = async (req: Request): Promise<Response> => {
           .update({
             status: 'sent',
             sent_at: new Date().toISOString(),
-            error_message: null
+            error_message: null,
+            updated_at: new Date().toISOString()
           })
           .eq('id', email.id);
 
         processed++;
+        results.push({
+          email_id: email.id,
+          recipient: email.recipient_email,
+          status: 'sent',
+          template: email.trigger_type
+        });
 
       } catch (emailError: any) {
-        console.error(`Failed to send email ${email.id}:`, emailError);
+        console.error(`Failed to send email ${email.id} to ${email.recipient_email}:`, emailError);
         
-        // Update email with error status
+        const currentAttempts = (email.attempts || 0) + 1;
+        const newStatus = currentAttempts >= 3 ? 'failed' : 'pending';
+        
+        // Update email with error status or mark for retry
         await supabase
           .from('email_automation_queue')
           .update({
-            status: 'failed',
-            error_message: emailError.message || 'Unknown error'
+            status: newStatus,
+            error_message: emailError.message || 'Unknown error',
+            updated_at: new Date().toISOString(),
+            // Schedule retry in 5 minutes if not at max attempts
+            ...(newStatus === 'pending' && {
+              scheduled_at: new Date(Date.now() + 5 * 60 * 1000).toISOString()
+            })
           })
           .eq('id', email.id);
 
-        failed++;
+        if (newStatus === 'failed') {
+          failed++;
+        }
+
+        results.push({
+          email_id: email.id,
+          recipient: email.recipient_email,
+          status: newStatus,
+          template: email.trigger_type,
+          error: emailError.message,
+          attempts: currentAttempts
+        });
       }
     }
 
-    console.log(`Email processing complete: ${processed} sent, ${failed} failed`);
-
-    return new Response(JSON.stringify({
+    const summary = {
       message: 'Email processing complete',
       processed,
       failed,
-      total: pendingEmails.length
-    }), {
+      retrying: pendingEmails.length - processed - failed,
+      total: pendingEmails.length,
+      timestamp: new Date().toISOString(),
+      results
+    };
+
+    console.log('Processing summary:', JSON.stringify(summary, null, 2));
+
+    return new Response(JSON.stringify(summary), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
@@ -109,7 +161,10 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in process-email-queue function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        timestamp: new Date().toISOString()
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

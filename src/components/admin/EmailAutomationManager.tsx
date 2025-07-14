@@ -592,18 +592,24 @@ export const EmailAutomationManager = () => {
                 Email Queue
               </CardTitle>
               <CardDescription>
-                View pending and processed emails in the automation queue
+                Automatic processing runs every 2 minutes. View pending and processed emails.
               </CardDescription>
             </div>
-            <Button
-              onClick={() => {
-                setShowQueue(!showQueue);
-                if (!showQueue) fetchEmailQueue();
-              }}
-              variant="outline"
-            >
-              {showQueue ? 'Hide Queue' : 'View Queue'}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+                <div className="w-2 h-2 bg-green-600 rounded-full mr-2 animate-pulse"></div>
+                Auto Processing Active
+              </Badge>
+              <Button
+                onClick={() => {
+                  setShowQueue(!showQueue);
+                  if (!showQueue) fetchEmailQueue();
+                }}
+                variant="outline"
+              >
+                {showQueue ? 'Hide Queue' : 'View Queue'}
+              </Button>
+            </div>
           </div>
         </CardHeader>
         {showQueue && (

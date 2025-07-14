@@ -213,7 +213,7 @@ serve(async (req) => {
         const resend = new Resend(RESEND_API_KEY);
         
         const emailResponse = await resend.emails.send({
-          from: "TalentXCE <noreply@talentxcel.in>",
+          from: "TalentXCE <onboarding@resend.dev>",
           to: [recipient_email],
           subject: emailContent.subject,
           html: emailContent.html,
@@ -238,7 +238,7 @@ serve(async (req) => {
           },
           body: JSON.stringify({
             personalizations: [{ to: [{ email: recipient_email }] }],
-            from: { email: 'noreply@talentxcel.in', name: "TalentXCE" },
+            from: { email: 'onboarding@resend.dev', name: "TalentXCE" },
             subject: emailContent.subject,
             content: [{ type: 'text/html', value: emailContent.html }],
           }),
