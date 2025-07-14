@@ -240,15 +240,15 @@ const JobSwipe = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto p-4">
+    <div className="max-w-md mx-auto p-4 min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Heart className="h-6 w-6 text-primary" />
+          <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+            <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             Job Match
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-xs sm:text-sm text-gray-600">
             {currentJobIndex + 1} of {enhancedJobs.length}
           </p>
         </div>
@@ -263,10 +263,10 @@ const JobSwipe = () => {
       </div>
 
       {/* Progress Bar */}
-      <Progress value={(currentJobIndex / enhancedJobs.length) * 100} className="mb-6" />
+      <Progress value={(currentJobIndex / enhancedJobs.length) * 100} className="mb-4 sm:mb-6" />
 
       {/* Job Card Stack */}
-      <div className="relative h-[600px] mb-6" ref={constraintsRef}>
+      <div className="relative h-[500px] sm:h-[600px] mb-4 sm:mb-6" ref={constraintsRef}>
         <AnimatePresence>
           {currentJob && (
             <motion.div

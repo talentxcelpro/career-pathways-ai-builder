@@ -38,6 +38,11 @@ export const aiRoutes = [
     page: <JobSwipe />,
   },
   {
+    title: "Job Match",
+    to: "/ai/job",
+    page: <JobSwipe />,
+  },
+  {
     title: "AI Message Suggest",
     to: "/ai/message-suggest",
     page: <MessageSuggest />,
