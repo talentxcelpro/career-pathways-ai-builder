@@ -1,0 +1,18 @@
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'app.lovable.16bdb5f00ce94c42843eb9e7c9fae575',
+  appName: 'talentxce-1',
+  webDir: 'dist',
+  server: {
+    url: 'https://16bdb5f0-0ce9-4c42-843e-b9e7c9fae575.lovableproject.com?forceHideBadge=true',
+    cleartext: true
+  },
+  plugins: {
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"]
+    }
+  }
+};
+
+export default config;
