@@ -16,7 +16,7 @@ const getBaseTemplate = (content: string, year: number = new Date().getFullYear(
         <table width="600" cellpadding="40" cellspacing="0" style="background-color:#ffffff; margin:40px auto; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
           <tr>
             <td align="center" style="padding-bottom:20px;">
-              <img src="https://16bdb5f0-0ce9-4c42-843e-b9e7c9fae575.lovableproject.com/lovable-uploads/5ec63114-6784-4a2b-a615-f9b8e097e1c9.png" alt="TalentXcel" style="height:45px;" />
+              <img src="https://16bdb5f0-0ce9-4c42-843e-b9e7c9fae575.lovableproject.com/lovable-uploads/854df183-7bfd-468f-a663-be6607202336.png" alt="TalentXcel" style="height:45px;" />
             </td>
           </tr>
           <tr>
