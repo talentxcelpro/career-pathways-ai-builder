@@ -124,7 +124,7 @@ const EmployerLanding = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Button 
                 onClick={() => {
-                  navigate('/employer');
+                  navigate('/employer/dashboard');
                   toast.success('Navigating to Employer Dashboard');
                 }} 
                 className="bg-green-600 hover:bg-green-700 transition-colors"

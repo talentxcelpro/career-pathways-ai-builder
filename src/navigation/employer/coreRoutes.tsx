@@ -17,10 +17,11 @@ export const employerCoreRoutes = [
   // Main Employer Routes
   {
     title: "Employer Dashboard",
-    to: "/employer",
+    to: "/employer/dashboard",
     icon: <Building2 className="h-4 w-4" />,
-    page: <EmployerDashboard />,
-    requiresAuth: false, // This shows the landing page with conditional access
+    page: <EmployerAccessGuard><EmployerDashboard /></EmployerAccessGuard>,
+    requiresAuth: true,
+    requiresEmployerAccess: true,
   },
   {
     title: "Employer Profile",
