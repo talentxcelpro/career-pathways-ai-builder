@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Upload, FileText, Eye, Download, Edit, Star, Share2, Copy, Trash2, RefreshCw } from "lucide-react";
+import { Plus, Upload, FileText, Download, Edit, Star, Share2, Copy, Trash2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -25,19 +25,6 @@ const ResumeDashboard = () => {
     }
   });
 
-  const { data: templates } = useQuery({
-    queryKey: ['resume-templates'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('resume_templates')
-        .select('*')
-        .eq('is_active', true)
-        .limit(4);
-      
-      if (error) throw error;
-      return data;
-    }
-  });
 
   const handleDeleteResume = async (resumeId: string) => {
     const { error } = await supabase
@@ -370,14 +357,6 @@ const ResumeDashboard = () => {
                   Upload Existing Resume
                 </Button>
                 <Button 
-                  onClick={() => navigate('/resume-builder/templates')} 
-                  className="w-full justify-start"
-                  variant="outline"
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Browse Templates
-                </Button>
-                <Button 
                   onClick={() => navigate('/resume-builder/cover-letter')} 
                   className="w-full justify-start"
                   variant="outline"
@@ -388,37 +367,6 @@ const ResumeDashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Popular Templates */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Popular Templates</CardTitle>
-                <CardDescription>Professional designs optimized for ATS</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-3">
-                  {templates?.map((template) => (
-                    <div 
-                      key={template.id}
-                      className="border rounded-lg p-3 hover:shadow-md transition-shadow cursor-pointer"
-                      onClick={() => navigate('/resume-builder/templates')}
-                    >
-                      <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded mb-2 flex items-center justify-center">
-                        <FileText className="h-8 w-8 text-gray-500" />
-                      </div>
-                      <p className="text-sm font-medium text-center">{template.name}</p>
-                      <p className="text-xs text-gray-600 text-center capitalize">{template.category}</p>
-                    </div>
-                  ))}
-                </div>
-                <Button 
-                  onClick={() => navigate('/resume-builder/templates')} 
-                  variant="outline" 
-                  className="w-full mt-4"
-                >
-                  View All Templates
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
