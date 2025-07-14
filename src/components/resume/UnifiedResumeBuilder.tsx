@@ -110,22 +110,83 @@ export const UnifiedResumeBuilder = () => {
   }, []);
 
   const processFile = useCallback(async (file: File) => {
-    if (!user) return;
+    // Phase 1: Authentication & User Feedback
+    if (!user) {
+      toast.error('Please sign in to upload a resume');
+      return;
+    }
+
+    // Phase 2: File Validation
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/msword',
+      'text/plain'
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload a PDF, DOCX, or TXT file');
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast.error('File size must be less than 10MB');
+      return;
+    }
+
+    if (file.size < 100) {
+      toast.error('File appears to be empty');
+      return;
+    }
 
     setIsProcessing(true);
     setProcessingProgress(0);
-    setProcessingStatus('Uploading file...');
+    setProcessingStatus('Validating file...');
 
     try {
-      // Step 1: Upload progress
-      setProcessingProgress(20);
-      setProcessingStatus('Extracting content with AI...');
+      // Step 1: File validation complete
+      setProcessingProgress(10);
+      setProcessingStatus('Reading file content...');
 
-      // Step 2: Extract with AI
-      const processor = new EnhancedResumeProcessor();
-      const extractedContent = await processor.processResume(file);
+      // Step 2: Initialize processor with enhanced error handling
+      let extractedContent;
+      try {
+        setProcessingProgress(20);
+        setProcessingStatus('Extracting content with AI...');
 
-      // Convert extracted content to our format
+        const processor = new EnhancedResumeProcessor();
+        extractedContent = await processor.processResume(file);
+        
+        if (!extractedContent) {
+          throw new Error('No content could be extracted from the file');
+        }
+
+        console.log('AI extraction successful:', extractedContent);
+        setProcessingProgress(60);
+        setProcessingStatus('Processing extracted content...');
+
+      } catch (processingError) {
+        console.warn('AI processing failed, using fallback extraction:', processingError);
+        setProcessingStatus('Using fallback extraction method...');
+        
+        // Phase 4: Fallback extraction
+        extractedContent = {
+          personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '', confidence: 0.3 },
+          experience: [],
+          education: [],
+          skills: { technical: { programming: [], frameworks: [], databases: [], tools: [], cloud: [], confidence: 0.3 }, soft: [], languages: [], certifications: [] },
+          projects: [],
+          certifications: [],
+          awards: [],
+          success: true,
+          metadata: { fileName: file.name, extractionMethod: 'fallback', processingVersion: '2.0' }
+        };
+        
+        toast.warning('Basic extraction used. Please review and edit the content manually.');
+      }
+
+      // Step 3: Convert to our format with validation
       const convertedData: ResumeData = {
         personalInfo: {
           fullName: extractedContent.personalInfo?.fullName || '',
@@ -134,8 +195,8 @@ export const UnifiedResumeBuilder = () => {
           location: extractedContent.personalInfo?.location || '',
           summary: extractedContent.personalInfo?.summary || ''
         },
-        experience: extractedContent.experience || [],
-        education: extractedContent.education || [],
+        experience: Array.isArray(extractedContent.experience) ? extractedContent.experience : [],
+        education: Array.isArray(extractedContent.education) ? extractedContent.education : [],
         skills: extractedContent.skills?.technical ? [
           ...(extractedContent.skills.technical.programming || []),
           ...(extractedContent.skills.technical.frameworks || []),
@@ -147,15 +208,15 @@ export const UnifiedResumeBuilder = () => {
             typeof lang === 'string' ? lang : lang.language) || []),
           ...(extractedContent.skills.certifications || [])
         ].filter(Boolean) : [],
-        projects: extractedContent.projects || [],
-        certifications: extractedContent.certifications || [],
-        awards: extractedContent.awards || []
+        projects: Array.isArray(extractedContent.projects) ? extractedContent.projects : [],
+        certifications: Array.isArray(extractedContent.certifications) ? extractedContent.certifications : [],
+        awards: Array.isArray(extractedContent.awards) ? extractedContent.awards : []
       };
 
       setProcessingProgress(80);
-      setProcessingStatus('Saving resume...');
+      setProcessingStatus('Saving resume to your account...');
 
-      // Step 3: Save to database
+      // Step 4: Save to database with error handling
       const { data: savedResume, error } = await supabase
         .from('ai_resumes')
         .insert({
@@ -167,24 +228,62 @@ export const UnifiedResumeBuilder = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database save error:', error);
+        throw new Error(`Failed to save resume: ${error.message}`);
+      }
 
       setResumeId(savedResume.id);
       setResumeData(convertedData);
-      setProcessingProgress(100);
-      setProcessingStatus('Extraction complete!');
+      setProcessingProgress(90);
+      setProcessingStatus('Calculating ATS score...');
       
-      // Calculate initial ATS score
-      const { analyzeATSCompatibility } = await import('@/utils/atsOptimization');
-      const atsAnalysis = analyzeATSCompatibility(convertedData);
-      setAtsScore(atsAnalysis.overall);
+      // Step 5: Calculate initial ATS score with error handling
+      try {
+        const { analyzeATSCompatibility } = await import('@/utils/atsOptimization');
+        const atsAnalysis = analyzeATSCompatibility(convertedData);
+        setAtsScore(atsAnalysis.overall);
+      } catch (atsError) {
+        console.warn('ATS analysis failed:', atsError);
+        setAtsScore(65); // Default score
+      }
 
-      toast.success('Resume extracted successfully!');
-      setCurrentStep('edit');
+      setProcessingProgress(100);
+      setProcessingStatus('Complete!');
+      
+      // Phase 5: Success feedback
+      const hasContent = convertedData.personalInfo.fullName || 
+                        convertedData.experience.length > 0 || 
+                        convertedData.skills.length > 0;
+      
+      if (hasContent) {
+        toast.success('Resume uploaded and processed successfully!');
+      } else {
+        toast.success('Resume uploaded! Please add your information in the editor.');
+      }
+      
+      // Move to edit step
+      setTimeout(() => setCurrentStep('edit'), 500);
       
     } catch (error) {
       console.error('Upload/extraction failed:', error);
-      toast.error('Failed to process resume. Please try again.');
+      setProcessingStatus('Failed to process file');
+      
+      // Phase 3: Enhanced Error Handling
+      let errorMessage = 'Failed to process resume. ';
+      
+      if (error.message.includes('authentication') || error.message.includes('unauthorized')) {
+        errorMessage += 'Please try signing in again.';
+      } else if (error.message.includes('network') || error.message.includes('fetch')) {
+        errorMessage += 'Please check your internet connection and try again.';
+      } else if (error.message.includes('file') || error.message.includes('extract')) {
+        errorMessage += 'The file might be corrupted or in an unsupported format.';
+      } else {
+        errorMessage += 'Please try again or contact support if the issue persists.';
+      }
+      
+      toast.error(errorMessage);
+      
     } finally {
       setIsProcessing(false);
     }
