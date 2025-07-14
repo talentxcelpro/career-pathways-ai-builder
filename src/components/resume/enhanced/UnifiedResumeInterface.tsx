@@ -29,6 +29,7 @@ import { ResumeEditor } from '../ResumeEditor';
 import { ResumePreview } from '../ResumePreview';
 import { AIEnhancementPanel } from './AIEnhancementPanel';
 import { useResumeDataProcessor, ProcessedResumeData } from './ResumeDataProcessor';
+import { ExtractionQualityIndicator } from '../ExtractionQualityIndicator';
 import { analyzeATSCompatibility } from '@/utils/atsOptimization';
 
 interface UnifiedResumeInterfaceProps {

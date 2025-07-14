@@ -295,13 +295,13 @@ Return ONLY valid JSON with no additional text or explanations.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-2025-04-14',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.1,
-        max_tokens: 4000,
+        max_tokens: 8000,
       }),
     });
 
