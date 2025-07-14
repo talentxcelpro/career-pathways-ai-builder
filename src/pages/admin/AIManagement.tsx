@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AIToolsManager } from '@/components/admin/AIToolsManager';
+import { AIUsageAnalytics } from '@/components/admin/AIUsageAnalytics';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -216,7 +218,8 @@ const AIManagement = () => {
         <Tabs defaultValue="features" className="space-y-6">
           <TabsList>
             <TabsTrigger value="features">AI Features</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="tools">AI Tools</TabsTrigger>
+            <TabsTrigger value="analytics">Usage Analytics</TabsTrigger>
             <TabsTrigger value="logs">Activity Logs</TabsTrigger>
           </TabsList>
 
@@ -293,6 +296,14 @@ const AIManagement = () => {
                 </CardContent>
               </Card>
             ))}
+          </TabsContent>
+
+          <TabsContent value="tools">
+            <AIToolsManager />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <AIUsageAnalytics />
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-6">
