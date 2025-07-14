@@ -3614,6 +3614,90 @@ export type Database = {
         }
         Relationships: []
       }
+      email_automation_queue: {
+        Row: {
+          attempts: number | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          max_attempts: number | null
+          recipient_email: string
+          recipient_name: string | null
+          scheduled_at: string | null
+          sent_at: string | null
+          status: string | null
+          template_data: Json | null
+          trigger_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          attempts?: number | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_attempts?: number | null
+          recipient_email: string
+          recipient_name?: string | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          template_data?: Json | null
+          trigger_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          attempts?: number | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_attempts?: number | null
+          recipient_email?: string
+          recipient_name?: string | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          template_data?: Json | null
+          trigger_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      email_automation_settings: {
+        Row: {
+          conditions: Json | null
+          created_at: string | null
+          delay_minutes: number | null
+          id: string
+          is_enabled: boolean | null
+          subject_template: string
+          template_name: string
+          trigger_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          conditions?: Json | null
+          created_at?: string | null
+          delay_minutes?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          subject_template: string
+          template_name: string
+          trigger_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          conditions?: Json | null
+          created_at?: string | null
+          delay_minutes?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          subject_template?: string
+          template_name?: string
+          trigger_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       email_queue: {
         Row: {
           created_at: string | null
@@ -9572,6 +9656,16 @@ export type Database = {
           _details?: Json
         }
         Returns: undefined
+      }
+      queue_automated_email: {
+        Args: {
+          p_trigger_type: string
+          p_recipient_email: string
+          p_recipient_name?: string
+          p_template_data?: Json
+          p_delay_minutes?: number
+        }
+        Returns: string
       }
       reject_company_access_request: {
         Args: { request_id: string; reason?: string }

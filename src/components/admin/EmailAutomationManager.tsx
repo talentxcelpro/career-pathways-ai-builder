@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { 
   Mail, 
   Send, 
@@ -17,135 +16,202 @@ import {
   Briefcase,
   Bell,
   Shield,
-  BarChart
+  BarChart,
+  Lock
 } from 'lucide-react';
 import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface EmailTrigger {
   id: string;
+  trigger_type: string;
+  is_enabled: boolean;
+  template_name: string;
+  subject_template: string;
+  delay_minutes: number;
   name: string;
   description: string;
-  template: string;
   icon: React.ElementType;
-  enabled: boolean;
   color: string;
 }
 
 export const EmailAutomationManager = () => {
   const { isProcessing, triggerWelcomeEmail, triggerConnectionEmail, triggerJobRecommendationEmail } = useEmailAutomation();
   const [testEmail, setTestEmail] = useState('');
-  const [triggers, setTriggers] = useState<EmailTrigger[]>([
-    {
-      id: 'welcome',
-      name: 'Welcome Email',
-      description: 'Sent when a new user signs up',
-      template: 'welcome',
-      icon: UserPlus,
-      enabled: true,
-      color: 'text-green-600'
-    },
-    {
-      id: 'connection',
-      name: 'Connection Request',
-      description: 'Sent when someone sends a connection request',
-      template: 'new_connection',
-      icon: Users,
-      enabled: true,
-      color: 'text-blue-600'
-    },
-    {
-      id: 'job_match',
-      name: 'Job Recommendations',
-      description: 'Sent when new matching jobs are found',
-      template: 'job_opening',
-      icon: Briefcase,
-      enabled: false,
-      color: 'text-purple-600'
-    },
-    {
-      id: 'application',
-      name: 'Application Confirmation',
-      description: 'Sent when user applies for a job',
-      template: 'application_confirmation',
-      icon: Send,
-      enabled: true,
-      color: 'text-orange-600'
-    },
-    {
-      id: 'team_invite',
-      name: 'Team Invitation',
-      description: 'Sent when user is invited to join a team',
-      template: 'invite_member',
-      icon: Mail,
-      enabled: true,
-      color: 'text-indigo-600'
-    },
-    {
-      id: 'password_reset',
-      name: 'Password Reset',
-      description: 'Sent when user requests password reset',
-      template: 'password_reset',
-      icon: Shield,
-      enabled: true,
-      color: 'text-red-600'
-    },
-    {
-      id: 'interview',
-      name: 'Interview Scheduled',
-      description: 'Sent when an interview is scheduled',
-      template: 'interview_scheduled',
-      icon: Calendar,
-      enabled: false,
-      color: 'text-teal-600'
-    },
-    {
-      id: 'digest',
-      name: 'Monthly Digest',
-      description: 'Monthly summary of user activity',
-      template: 'monthly_digest',
-      icon: BarChart,
-      enabled: false,
-      color: 'text-yellow-600'
-    }
-  ]);
+  const [triggers, setTriggers] = useState<EmailTrigger[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [emailStats, setEmailStats] = useState({
+    sentToday: 0,
+    deliveryRate: 92,
+    openRate: 34,
+    clickRate: 8
+  });
 
-  const toggleTrigger = (id: string) => {
-    setTriggers(prev => prev.map(trigger => 
-      trigger.id === id ? { ...trigger, enabled: !trigger.enabled } : trigger
-    ));
+  const triggerConfigs = {
+    welcome_email: { name: 'Welcome Email', description: 'Sent when a new user signs up', icon: UserPlus, color: 'text-green-600' },
+    connection_request: { name: 'Connection Request', description: 'Sent when someone sends a connection request', icon: Users, color: 'text-blue-600' },
+    job_recommendation: { name: 'Job Recommendations', description: 'Sent when new matching jobs are found', icon: Briefcase, color: 'text-purple-600' },
+    application_confirmation: { name: 'Application Confirmation', description: 'Sent when user applies for a job', icon: Send, color: 'text-orange-600' },
+    team_invitation: { name: 'Team Invitation', description: 'Sent when user is invited to join a team', icon: Mail, color: 'text-indigo-600' },
+    password_reset: { name: 'Password Reset', description: 'Sent when user requests password reset', icon: Lock, color: 'text-red-600' },
+    interview_scheduled: { name: 'Interview Scheduled', description: 'Sent when an interview is scheduled', icon: Calendar, color: 'text-teal-600' },
+    monthly_digest: { name: 'Monthly Digest', description: 'Monthly summary of user activity', icon: BarChart, color: 'text-yellow-600' }
   };
 
-  const testEmailTemplate = async (templateId: string) => {
+  useEffect(() => {
+    fetchEmailTriggers();
+    fetchEmailStats();
+  }, []);
+
+  const fetchEmailTriggers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('email_automation_settings')
+        .select('*')
+        .order('trigger_type');
+
+      if (error) throw error;
+
+      const formattedTriggers = data.map(trigger => ({
+        ...trigger,
+        ...triggerConfigs[trigger.trigger_type as keyof typeof triggerConfigs],
+        id: trigger.id
+      }));
+
+      setTriggers(formattedTriggers);
+    } catch (error) {
+      console.error('Error fetching triggers:', error);
+      toast.error('Failed to load email automation settings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchEmailStats = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const { data, error } = await supabase
+        .from('email_automation_queue')
+        .select('status, sent_at')
+        .gte('created_at', today);
+
+      if (error) throw error;
+
+      const sentToday = data?.filter(email => email.status === 'sent').length || 0;
+      setEmailStats(prev => ({ ...prev, sentToday }));
+    } catch (error) {
+      console.error('Error fetching email stats:', error);
+    }
+  };
+
+  const toggleTrigger = async (triggerId: string, currentEnabled: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('email_automation_settings')
+        .update({ is_enabled: !currentEnabled })
+        .eq('id', triggerId);
+
+      if (error) throw error;
+
+      setTriggers(prev => prev.map(trigger => 
+        trigger.id === triggerId 
+          ? { ...trigger, is_enabled: !currentEnabled }
+          : trigger
+      ));
+
+      toast.success(`Email trigger ${!currentEnabled ? 'enabled' : 'disabled'} successfully`);
+    } catch (error) {
+      console.error('Error toggling trigger:', error);
+      toast.error('Failed to update email trigger');
+    }
+  };
+
+  const testEmailTemplate = async (triggerType: string) => {
     if (!testEmail) {
       toast.error('Please enter a test email address');
       return;
     }
 
     try {
-      switch (templateId) {
-        case 'welcome':
-          await triggerWelcomeEmail(testEmail, 'Test User');
-          break;
-        case 'connection':
-          await triggerConnectionEmail(testEmail, 'Test User', 'John Doe');
-          break;
-        case 'job_match':
-          await triggerJobRecommendationEmail(testEmail, 'Test User', [
-            { title: 'Senior Developer', company: 'TechCorp' },
-            { title: 'Product Manager', company: 'InnovaCorp' },
-            { title: 'Data Scientist', company: 'DataTech' }
-          ]);
-          break;
-        default:
-          toast.error('Test not implemented for this template');
-          return;
-      }
-      toast.success(`Test email sent to ${testEmail}`);
+      const testData = getTestData(triggerType);
+      
+      const { error } = await supabase.rpc('queue_automated_email', {
+        p_trigger_type: triggerType,
+        p_recipient_email: testEmail,
+        p_recipient_name: 'Test User',
+        p_template_data: testData
+      });
+
+      if (error) throw error;
+
+      toast.success(`Test email queued successfully to ${testEmail}`);
     } catch (error) {
-      console.error('Test email error:', error);
-      toast.error('Failed to send test email');
+      console.error('Error sending test email:', error);
+      toast.error('Failed to queue test email');
     }
+  };
+
+  const getTestData = (triggerType: string) => {
+    const sampleData = {
+      welcome_email: { name: 'Test User', user_id: 'test-123' },
+      connection_request: { 
+        recipient_name: 'Test User', 
+        requester_name: 'John Doe', 
+        requester_title: 'Software Engineer',
+        requester_company: 'TechCorp'
+      },
+      job_recommendation: {
+        name: 'Test User',
+        job_title: 'Senior Developer',
+        company_name: 'Amazing Company',
+        location: 'Remote',
+        salary_range: '$80k - $120k',
+        job_id: 'test-job-123',
+        requirements: ['React experience', 'TypeScript knowledge', 'Team collaboration']
+      },
+      application_confirmation: {
+        name: 'Test User',
+        job_title: 'Frontend Developer',
+        company_name: 'Great Startup',
+        application_id: 'APP-TEST-123',
+        applied_date: new Date().toISOString()
+      },
+      team_invitation: {
+        invited_name: 'Test User',
+        inviter_name: 'Jane Smith',
+        company_name: 'Awesome Corp',
+        role: 'Developer',
+        invite_token: 'test-token-123'
+      },
+      password_reset: {
+        name: 'Test User',
+        reset_link: 'https://talentxcel.in/reset?token=test-123',
+        ip_address: '192.168.1.1'
+      },
+      interview_scheduled: {
+        candidate_name: 'Test User',
+        company_name: 'Dream Company',
+        job_title: 'Senior Engineer',
+        interview_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        interview_time: '2:00 PM',
+        interview_type: 'Virtual',
+        meeting_link: 'https://meet.google.com/test-123'
+      },
+      monthly_digest: {
+        name: 'Test User',
+        profile_views: 45,
+        applications_sent: 12,
+        new_connections: 8,
+        interviews: 3,
+        trending_jobs: [
+          { title: 'React Developer', company: 'TechCorp', location: 'Remote', salary: '$90k - $130k' },
+          { title: 'Full Stack Engineer', company: 'StartupXYZ', location: 'San Francisco', salary: '$100k - $150k' }
+        ]
+      }
+    };
+
+    return sampleData[triggerType as keyof typeof sampleData] || {};
   };
 
   return (
@@ -189,44 +255,48 @@ export const EmailAutomationManager = () => {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
-            {triggers.map((trigger) => (
-              <div key={trigger.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <trigger.icon className={`h-5 w-5 ${trigger.color}`} />
-                    <div>
-                      <h3 className="font-semibold">{trigger.name}</h3>
-                      <p className="text-sm text-gray-600">{trigger.description}</p>
+            {loading ? (
+              <div className="col-span-2 text-center py-8">Loading email triggers...</div>
+            ) : (
+              triggers.map((trigger) => (
+                <div key={trigger.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <trigger.icon className={`h-5 w-5 ${trigger.color}`} />
+                      <div>
+                        <h3 className="font-semibold">{trigger.name}</h3>
+                        <p className="text-sm text-gray-600">{trigger.description}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={trigger.is_enabled ? "default" : "secondary"}>
+                        {trigger.is_enabled ? "Enabled" : "Disabled"}
+                      </Badge>
+                      <Switch
+                        checked={trigger.is_enabled}
+                        onCheckedChange={() => toggleTrigger(trigger.id, trigger.is_enabled)}
+                      />
                     </div>
                   </div>
+                  
                   <div className="flex items-center gap-2">
-                    <Badge variant={trigger.enabled ? "default" : "secondary"}>
-                      {trigger.enabled ? "Enabled" : "Disabled"}
-                    </Badge>
-                    <Switch
-                      checked={trigger.enabled}
-                      onCheckedChange={() => toggleTrigger(trigger.id)}
-                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => testEmailTemplate(trigger.trigger_type)}
+                      disabled={isProcessing || !testEmail}
+                      className="flex-1"
+                    >
+                      <TestTube className="h-4 w-4 mr-2" />
+                      Test Template
+                    </Button>
+                    <Button size="sm" variant="ghost">
+                      <Settings className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => testEmailTemplate(trigger.id)}
-                    disabled={isProcessing || !testEmail}
-                    className="flex-1"
-                  >
-                    <TestTube className="h-4 w-4 mr-2" />
-                    Test Template
-                  </Button>
-                  <Button size="sm" variant="ghost">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </CardContent>
       </Card>
@@ -241,19 +311,19 @@ export const EmailAutomationManager = () => {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">127</div>
+              <div className="text-2xl font-bold text-green-600">{emailStats.sentToday}</div>
               <div className="text-sm text-gray-600">Emails Sent Today</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">92%</div>
+              <div className="text-2xl font-bold text-blue-600">{emailStats.deliveryRate}%</div>
               <div className="text-sm text-gray-600">Delivery Rate</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">34%</div>
+              <div className="text-2xl font-bold text-purple-600">{emailStats.openRate}%</div>
               <div className="text-sm text-gray-600">Open Rate</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">8%</div>
+              <div className="text-2xl font-bold text-orange-600">{emailStats.clickRate}%</div>
               <div className="text-sm text-gray-600">Click Rate</div>
             </div>
           </div>
