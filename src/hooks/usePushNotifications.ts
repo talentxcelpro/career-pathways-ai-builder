@@ -44,17 +44,19 @@ export const usePushNotifications = () => {
             token: token.value
           }));
 
-          // Store token in database for the current user
+          // Store token via edge function
           const { data: { user } } = await supabase.auth.getUser();
           if (user) {
-            await supabase
-              .from('user_push_tokens')
-              .upsert({
-                user_id: user.id,
-                push_token: token.value,
-                platform: Capacitor.getPlatform(),
-                updated_at: new Date().toISOString()
+            try {
+              await supabase.functions.invoke('register-push-token', {
+                body: {
+                  push_token: token.value,
+                  platform: Capacitor.getPlatform()
+                }
               });
+            } catch (error) {
+              console.error('Failed to store push token:', error);
+            }
           }
         });
 

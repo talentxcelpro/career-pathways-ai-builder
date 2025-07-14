@@ -14,6 +14,7 @@ import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { MobileAppInitializer } from "./components/MobileAppInitializer";
 
 // Create query client with better default configurations
 const queryClient = new QueryClient({
@@ -60,6 +61,7 @@ const App = () => (
       <BrowserRouter>
         <AnalyticsProvider>
           <AuthProvider>
+            <MobileAppInitializer />
             <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
             <SearchConsoleVerification verificationCode="your-search-console-verification-code" />
             <div className="min-h-screen flex flex-col">

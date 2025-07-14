@@ -3698,6 +3698,51 @@ export type Database = {
         }
         Relationships: []
       }
+      email_notification_settings: {
+        Row: {
+          created_at: string
+          id: string
+          push_on_application: boolean
+          push_on_connection: boolean
+          push_on_interview: boolean
+          push_on_job_match: boolean
+          push_on_monthly_digest: boolean
+          push_on_password_reset: boolean
+          push_on_team_invite: boolean
+          push_on_welcome: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          push_on_application?: boolean
+          push_on_connection?: boolean
+          push_on_interview?: boolean
+          push_on_job_match?: boolean
+          push_on_monthly_digest?: boolean
+          push_on_password_reset?: boolean
+          push_on_team_invite?: boolean
+          push_on_welcome?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          push_on_application?: boolean
+          push_on_connection?: boolean
+          push_on_interview?: boolean
+          push_on_job_match?: boolean
+          push_on_monthly_digest?: boolean
+          push_on_password_reset?: boolean
+          push_on_team_invite?: boolean
+          push_on_welcome?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       email_queue: {
         Row: {
           created_at: string | null
@@ -9220,6 +9265,36 @@ export type Database = {
           total_points?: number | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_push_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          platform: string
+          push_token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          platform: string
+          push_token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          platform?: string
+          push_token?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

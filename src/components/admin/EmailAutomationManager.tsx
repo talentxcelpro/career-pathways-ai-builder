@@ -243,6 +243,7 @@ export const EmailAutomationManager = () => {
       
       let successful = 0;
       let failed = 0;
+      const userIds = profiles.map(p => p.id);
       
       // Process in batches to avoid overwhelming the system
       for (let i = 0; i < profiles.length; i += 10) {
@@ -273,8 +274,26 @@ export const EmailAutomationManager = () => {
           await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
+
+      // Send push notifications to all users
+      try {
+        await supabase.functions.invoke('send-push-notification', {
+          body: {
+            user_ids: userIds,
+            title: 'Welcome to TalentXCE!',
+            body: 'Thank you for joining our platform. Explore amazing career opportunities!',
+            trigger_type: 'welcome_email',
+            data: {
+              route: '/dashboard'
+            }
+          }
+        });
+      } catch (pushError) {
+        console.error('Failed to send push notifications:', pushError);
+        // Don't fail the whole operation if push notifications fail
+      }
       
-      toast.success(`Bulk email completed: ${successful} queued, ${failed} failed`);
+      toast.success(`Bulk operation completed: ${successful} emails queued, ${failed} failed. Push notifications sent to all users.`);
       fetchEmailStats(); // Refresh stats
       
     } catch (error) {
