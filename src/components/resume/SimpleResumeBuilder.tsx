@@ -453,23 +453,46 @@ export const SimpleResumeBuilder = () => {
     }
     
     return education.map(edu => {
-      const degree = edu.degree || 'Degree';
-      const school = edu.school || 'Institution';
-      const year = edu.year || 'Year';
+      const degree = edu.degree || edu.school || 'Degree';
+      const school = edu.school || edu.institution || 'Institution';
+      const year = edu.endDate || edu.year || edu.graduationDate || 'Year';
       
-      return `${degree}\n${school}\n${year}\n`;
-    }).join('\n');
+      return `${degree} from ${school} (${year})`;
+    }).join('\n\n');
   };
 
   const formatSkills = (skills: any): string => {
     if (Array.isArray(skills) && skills.length > 0) {
-      // If skills is already an array of strings, format them properly
-      return skills.join('\n• ');
+      return skills.map(skill => `• ${skill}`).join('\n');
     } else if (skills && typeof skills === 'object') {
-      // If skills is an object, extract the values
-      const technical = skills.technical ? Object.values(skills.technical).flat().join(', ') : '';
-      const soft = skills.soft ? (Array.isArray(skills.soft) ? skills.soft.join(', ') : skills.soft) : '';
-      return `Technical Skills:\n${technical}\n\nSoft Skills:\n${soft}`;
+      let skillsList = [];
+      
+      // Extract technical skills
+      if (skills.technical) {
+        if (Array.isArray(skills.technical)) {
+          skillsList.push(...skills.technical);
+        } else if (typeof skills.technical === 'object') {
+          Object.values(skills.technical).forEach(skillGroup => {
+            if (Array.isArray(skillGroup)) {
+              skillsList.push(...skillGroup);
+            }
+          });
+        }
+      }
+      
+      // Extract soft skills
+      if (skills.soft && Array.isArray(skills.soft)) {
+        skillsList.push(...skills.soft);
+      }
+      
+      // Extract languages
+      if (skills.languages && Array.isArray(skills.languages)) {
+        skillsList.push(...skills.languages.map(lang => 
+          typeof lang === 'string' ? lang : `${lang.language} (${lang.proficiency})`
+        ));
+      }
+      
+      return skillsList.length > 0 ? skillsList.map(skill => `• ${skill}`).join('\n') : 'No skills data available.';
     }
     return 'No skills data available.';
   };
@@ -525,31 +548,54 @@ export const SimpleResumeBuilder = () => {
   const handleEnhanceWithAI = async () => {
     if (!resumeData) return;
     
+    setIsUploading(true);
+    
     try {
+      console.log('Starting AI enhancement with data:', resumeData);
+      
       const { data: enhanced, error } = await supabase.functions
         .invoke('enhance-resume', {
           body: {
-            summary: resumeData.personalInfo.summary,
-            experience: resumeData.experience,
-            skills: resumeData.skills,
-            education: resumeData.education
+            summary: resumeData.personalInfo?.summary || '',
+            experience: resumeData.experience || [],
+            skills: resumeData.skills || {},
+            education: resumeData.education || []
           }
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Enhancement API error:', error);
+        throw new Error(error.message || 'Enhancement service failed');
+      }
 
-      setResumeData(prev => prev ? {
-        ...prev,
-        personalInfo: { ...prev.personalInfo, summary: enhanced.summary || prev.personalInfo.summary },
-        experience: enhanced.experience || prev.experience,
-        skills: enhanced.skills || prev.skills,
-        education: enhanced.education || prev.education
-      } : prev);
+      if (enhanced) {
+        console.log('Enhancement successful:', enhanced);
+        setResumeData(prev => prev ? {
+          ...prev,
+          personalInfo: { 
+            ...prev.personalInfo, 
+            summary: enhanced.summary || prev.personalInfo.summary 
+          },
+          experience: enhanced.experience || prev.experience,
+          skills: enhanced.skills || prev.skills,
+          education: enhanced.education || prev.education
+        } : prev);
 
-      toast.success('Resume enhanced with AI!');
+        toast.success('Resume enhanced with AI!');
+      } else {
+        throw new Error('No enhancement data received');
+      }
     } catch (error) {
       console.error('Enhancement failed:', error);
-      toast.error('Failed to enhance resume');
+      
+      // Provide more specific error messaging
+      if (error.message?.includes('Failed to fetch') || error.message?.includes('Failed to send a request')) {
+        toast.error('AI enhancement service is currently unavailable. Please try again in a few minutes.');
+      } else {
+        toast.error(`Enhancement failed: ${error.message}`);
+      }
+    } finally {
+      setIsUploading(false);
     }
   };
 
