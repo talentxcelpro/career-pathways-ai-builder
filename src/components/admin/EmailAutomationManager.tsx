@@ -39,10 +39,11 @@ interface EmailTrigger {
 }
 
 export const EmailAutomationManager = () => {
-  const { isProcessing, triggerWelcomeEmail, triggerConnectionEmail, triggerJobRecommendationEmail } = useEmailAutomation();
+  const { triggerWelcomeEmail, triggerConnectionEmail, triggerJobRecommendationEmail } = useEmailAutomation();
   const [testEmail, setTestEmail] = useState('');
   const [triggers, setTriggers] = useState<EmailTrigger[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [bulkEmailSending, setBulkEmailSending] = useState(false);
   const [bulkEmailProgress, setBulkEmailProgress] = useState({ sent: 0, total: 0 });
   const [emailQueue, setEmailQueue] = useState<any[]>([]);
@@ -55,6 +56,27 @@ export const EmailAutomationManager = () => {
     clickRate: 8
   });
 
+  const processEmailQueue = async () => {
+    setIsProcessing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('process-email-queue');
+      
+      if (error) throw error;
+      
+      toast.success(`Email queue processed: ${data.processed} sent, ${data.failed} failed`);
+      fetchEmailStats(); // Refresh stats
+      
+      // Refresh queue if it's showing
+      if (showQueue) {
+        fetchEmailQueue();
+      }
+    } catch (error) {
+      console.error('Error processing email queue:', error);
+      toast.error('Failed to process email queue');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
   const triggerConfigs = {
     welcome_email: { name: 'Welcome Email', description: 'Sent when a new user signs up', icon: UserPlus, color: 'text-green-600' },
     connection_request: { name: 'Connection Request', description: 'Sent when someone sends a connection request', icon: Users, color: 'text-blue-600' },
@@ -455,7 +477,7 @@ export const EmailAutomationManager = () => {
                 <div>
                   <h3 className="font-semibold text-lg">Send Welcome Email to All Users</h3>
                   <p className="text-sm text-gray-600">
-                    Queue welcome emails for all registered users with email addresses
+                    Queue welcome emails and push notifications for all registered users
                   </p>
                 </div>
                 <UserPlus className="h-8 w-8 text-green-600" />
@@ -494,6 +516,36 @@ export const EmailAutomationManager = () => {
                   <>
                     <SendHorizontal className="h-4 w-4 mr-2" />
                     Send Welcome Email to All Users
+                  </>
+                )}
+              </Button>
+            </div>
+
+            <div className="border rounded-lg p-4 bg-gradient-to-r from-purple-50 to-indigo-50">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h3 className="font-semibold text-lg">Process Email Queue</h3>
+                  <p className="text-sm text-gray-600">
+                    Manually process all pending emails in the queue
+                  </p>
+                </div>
+                <Send className="h-8 w-8 text-purple-600" />
+              </div>
+              
+              <Button
+                onClick={processEmailQueue}
+                disabled={isProcessing}
+                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4 mr-2" />
+                    Process Email Queue Now
                   </>
                 )}
               </Button>
