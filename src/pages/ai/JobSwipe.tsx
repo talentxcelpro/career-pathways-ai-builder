@@ -278,7 +278,6 @@ const JobSwipe = () => {
               animate={controls}
               whileDrag={{ scale: 1.05, rotate: 5 }}
               initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               className="absolute inset-0 cursor-grab active:cursor-grabbing"
             >
