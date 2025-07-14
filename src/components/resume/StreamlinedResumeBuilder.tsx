@@ -153,20 +153,23 @@ export const StreamlinedResumeBuilder = () => {
         experience: Array.isArray(content.experience) ? content.experience : [],
         education: Array.isArray(content.education) ? content.education : [],
         skills: Array.isArray(content.skills) 
-          ? content.skills 
+          ? content.skills.filter(skill => typeof skill === 'string')
           : content.skills?.technical 
             ? [
-                ...(Array.isArray(content.skills.technical) ? content.skills.technical : [
-                  ...(content.skills.technical?.programming || []),
-                  ...(content.skills.technical?.frameworks || []),
-                  ...(content.skills.technical?.databases || []),
-                  ...(content.skills.technical?.tools || []),
-                  ...(content.skills.technical?.cloud || [])
-                ]),
-                ...(content.skills.soft || []), 
+                ...(Array.isArray(content.skills.technical) 
+                  ? content.skills.technical.filter(skill => typeof skill === 'string')
+                  : [
+                      ...(content.skills.technical?.programming || []),
+                      ...(content.skills.technical?.frameworks || []),
+                      ...(content.skills.technical?.databases || []),
+                      ...(content.skills.technical?.tools || []),
+                      ...(content.skills.technical?.cloud || [])
+                    ].filter(skill => typeof skill === 'string')
+                ),
+                ...(content.skills.soft || []).filter(skill => typeof skill === 'string'), 
                 ...(content.skills.languages?.map((lang: any) => typeof lang === 'string' ? lang : lang.language) || []),
-                ...(content.skills.certifications || [])
-              ]
+                ...(content.skills.certifications || []).filter(skill => typeof skill === 'string')
+              ].filter(skill => skill && typeof skill === 'string')
             : [],
         projects: Array.isArray(content.projects) ? content.projects : [],
         certifications: Array.isArray(content.certifications) ? content.certifications : [],
