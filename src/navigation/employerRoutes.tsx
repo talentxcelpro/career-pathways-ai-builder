@@ -11,8 +11,8 @@ import { EmployerAccessGuard } from "../components/employer/EmployerAccessGuard"
 export const employerRoutes = [
   // Employer Landing Page (public route)
   {
-    title: "Employer",
-    to: "/employer",
+    title: "Employer Landing",
+    to: "/employer/landing",
     page: <EmployerLanding />,
     requiresAuth: false,
   },
