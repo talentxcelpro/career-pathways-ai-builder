@@ -72,7 +72,45 @@ export const UnifiedResumeBuilder = () => {
   // File upload and extraction
   const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !user) return;
+    if (file) {
+      await processFile(file);
+    }
+  }, []);
+
+  // Drag and drop handlers
+  const handleDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+  }, []);
+
+  const handleDragEnter = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+  }, []);
+
+  const handleDragLeave = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback(async (event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const files = Array.from(event.dataTransfer.files);
+    const file = files[0];
+    
+    if (file && (file.type === 'application/pdf' || 
+                 file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+                 file.type === 'text/plain')) {
+      await processFile(file);
+    } else {
+      toast.error('Please upload a PDF, DOCX, or TXT file');
+    }
+  }, []);
+
+  const processFile = useCallback(async (file: File) => {
+    if (!user) return;
 
     setIsProcessing(true);
     setProcessingProgress(0);
@@ -354,7 +392,13 @@ export const UnifiedResumeBuilder = () => {
               <p className="text-muted-foreground">Upload your existing resume and we'll extract all content with AI</p>
             </CardHeader>
             <CardContent>
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
+              <div 
+                className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-primary/50 transition-colors"
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
                 <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-lg font-medium mb-2">Drop your resume here</p>
                 <p className="text-muted-foreground mb-4">Supports PDF, DOCX, and TXT files up to 10MB</p>
@@ -366,10 +410,13 @@ export const UnifiedResumeBuilder = () => {
                     className="hidden"
                     disabled={isProcessing}
                   />
-                  <Button disabled={isProcessing}>
+                  <Button disabled={isProcessing} size="lg">
                     {isProcessing ? 'Processing...' : 'Choose File'}
                   </Button>
                 </label>
+                <p className="text-xs text-muted-foreground mt-3">
+                  AI will automatically extract and organize your resume content
+                </p>
               </div>
             </CardContent>
           </Card>
