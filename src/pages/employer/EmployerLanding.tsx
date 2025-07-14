@@ -121,13 +121,13 @@ const EmployerLanding = () => {
             <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-green-900 mb-2">✅ Access Granted</h3>
             <p className="text-green-700 mb-4">You're all set to start hiring!</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               <Button 
                 onClick={() => {
                   navigate('/employer/dashboard');
                   toast.success('Navigating to Employer Dashboard');
                 }} 
-                className="bg-green-600 hover:bg-green-700 transition-colors"
+                className="bg-green-600 hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg"
                 size="lg"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
@@ -139,7 +139,7 @@ const EmployerLanding = () => {
                   toast.success('Opening Job Posting Form');
                 }} 
                 variant="outline" 
-                className="border-green-600 text-green-700 hover:bg-green-50"
+                className="border-green-600 text-green-700 hover:bg-green-50 transition-all duration-200 shadow-sm hover:shadow-md"
                 size="lg"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -151,7 +151,7 @@ const EmployerLanding = () => {
                   toast.success('Opening Team Management');
                 }}
                 variant="outline"
-                className="border-green-600 text-green-700 hover:bg-green-50"
+                className="border-green-600 text-green-700 hover:bg-green-50 transition-all duration-200 shadow-sm hover:shadow-md"
                 size="lg"
               >
                 <Users className="h-4 w-4 mr-2" />
@@ -163,19 +163,20 @@ const EmployerLanding = () => {
                   toast.success('Loading Job Applications');
                 }}
                 variant="outline"
-                className="border-green-600 text-green-700 hover:bg-green-50"
+                className="border-green-600 text-green-700 hover:bg-green-50 transition-all duration-200 shadow-sm hover:shadow-md"
                 size="lg"
               >
                 <FileText className="h-4 w-4 mr-2" />
                 View Applications
               </Button>
+            </div>
+            <div className="flex justify-center">
               <Button 
                 onClick={() => {
                   navigate('/employer/request-access');
-                  toast.success('Opening Employer Access Request');
+                  toast.success('🔵 Become an Employer - Access Request');
                 }}
-                variant="outline"
-                className="border-blue-600 text-blue-700 hover:bg-blue-50"
+                className="bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 shadow-md hover:shadow-lg"
                 size="lg"
               >
                 <Building2 className="h-4 w-4 mr-2" />
