@@ -5919,40 +5919,137 @@ export type Database = {
         }
         Relationships: []
       }
+      resume_ab_results: {
+        Row: {
+          id: string
+          metric_type: string
+          metric_value: number
+          recorded_at: string | null
+          test_id: string | null
+          variant: string
+        }
+        Insert: {
+          id?: string
+          metric_type: string
+          metric_value: number
+          recorded_at?: string | null
+          test_id?: string | null
+          variant: string
+        }
+        Update: {
+          id?: string
+          metric_type?: string
+          metric_value?: number
+          recorded_at?: string | null
+          test_id?: string | null
+          variant?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_ab_results_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "resume_ab_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_ab_tests: {
+        Row: {
+          created_at: string | null
+          end_date: string | null
+          id: string
+          resume_id: string | null
+          start_date: string | null
+          status: string | null
+          test_name: string
+          traffic_split: number | null
+          user_id: string
+          variant_a: Json
+          variant_b: Json
+          winner_variant: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          resume_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          test_name: string
+          traffic_split?: number | null
+          user_id: string
+          variant_a: Json
+          variant_b: Json
+          winner_variant?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          resume_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          test_name?: string
+          traffic_split?: number | null
+          user_id?: string
+          variant_a?: Json
+          variant_b?: Json
+          winner_variant?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_ab_tests_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "ai_resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_analytics: {
         Row: {
           created_at: string | null
+          event_data: Json | null
           event_type: string
           id: string
           ip_address: unknown | null
           job_id: string | null
+          location: string | null
           metadata: Json | null
           referrer: string | null
           resume_id: string
+          source: string | null
           user_agent: string | null
           viewer_id: string | null
         }
         Insert: {
           created_at?: string | null
+          event_data?: Json | null
           event_type: string
           id?: string
           ip_address?: unknown | null
           job_id?: string | null
+          location?: string | null
           metadata?: Json | null
           referrer?: string | null
           resume_id: string
+          source?: string | null
           user_agent?: string | null
           viewer_id?: string | null
         }
         Update: {
           created_at?: string | null
+          event_data?: Json | null
           event_type?: string
           id?: string
           ip_address?: unknown | null
           job_id?: string | null
+          location?: string | null
           metadata?: Json | null
           referrer?: string | null
           resume_id?: string
+          source?: string | null
           user_agent?: string | null
           viewer_id?: string | null
         }
@@ -6075,6 +6172,104 @@ export type Database = {
             columns: ["resume_id"]
             isOneToOne: false
             referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_collaborations: {
+        Row: {
+          accepted_at: string | null
+          collaborator_id: string
+          created_at: string | null
+          id: string
+          invited_at: string | null
+          is_active: boolean | null
+          owner_id: string
+          permission_level: string
+          resume_id: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          collaborator_id: string
+          created_at?: string | null
+          id?: string
+          invited_at?: string | null
+          is_active?: boolean | null
+          owner_id: string
+          permission_level?: string
+          resume_id?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          collaborator_id?: string
+          created_at?: string | null
+          id?: string
+          invited_at?: string | null
+          is_active?: boolean | null
+          owner_id?: string
+          permission_level?: string
+          resume_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_collaborations_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "ai_resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_resolved: boolean | null
+          parent_id: string | null
+          resume_id: string | null
+          section_id: string | null
+          section_type: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          parent_id?: string | null
+          resume_id?: string | null
+          section_id?: string | null
+          section_type?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          parent_id?: string | null
+          resume_id?: string | null
+          section_id?: string | null
+          section_type?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "resume_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resume_comments_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "ai_resumes"
             referencedColumns: ["id"]
           },
         ]
@@ -6289,6 +6484,50 @@ export type Database = {
             columns: ["resume_id"]
             isOneToOne: false
             referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_insights: {
+        Row: {
+          created_at: string | null
+          id: string
+          insight_data: Json
+          insight_type: string
+          is_read: boolean | null
+          priority: string | null
+          recommendation: string | null
+          resume_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          insight_data: Json
+          insight_type: string
+          is_read?: boolean | null
+          priority?: string | null
+          recommendation?: string | null
+          resume_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          insight_data?: Json
+          insight_type?: string
+          is_read?: boolean | null
+          priority?: string | null
+          recommendation?: string | null
+          resume_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_insights_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "ai_resumes"
             referencedColumns: ["id"]
           },
         ]
