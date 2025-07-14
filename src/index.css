@@ -182,6 +182,27 @@
     @apply bg-slate-400;
   }
 
+  /* Mobile Safe Area Support */
+  .safe-area-padding-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .mobile-layout {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  @supports (padding: env(safe-area-inset-bottom)) {
+    .mobile-layout.with-bottom-nav {
+      padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+    }
+  }
+
+  /* Touch-friendly tap targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
   /* Optimized animations for performance */
   @media (prefers-reduced-motion: no-preference) {
     * {
