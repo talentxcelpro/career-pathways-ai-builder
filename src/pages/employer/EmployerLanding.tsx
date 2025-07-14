@@ -121,7 +121,7 @@ const EmployerLanding = () => {
             <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-green-900 mb-2">✅ Access Granted</h3>
             <p className="text-green-700 mb-4">You're all set to start hiring!</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <Button 
                 onClick={() => {
                   navigate('/employer/dashboard');
@@ -168,6 +168,18 @@ const EmployerLanding = () => {
               >
                 <FileText className="h-4 w-4 mr-2" />
                 View Applications
+              </Button>
+              <Button 
+                onClick={() => {
+                  navigate('/employer/request-access');
+                  toast.success('Opening Employer Access Request');
+                }}
+                variant="outline"
+                className="border-blue-600 text-blue-700 hover:bg-blue-50"
+                size="lg"
+              >
+                <Building2 className="h-4 w-4 mr-2" />
+                🔵 Become an Employer
               </Button>
             </div>
           </CardContent>
