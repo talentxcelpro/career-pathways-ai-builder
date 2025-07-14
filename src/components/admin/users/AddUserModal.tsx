@@ -67,12 +67,48 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
   };
 
   const testEdgeFunction = async () => {
+    console.log('=== COMPREHENSIVE EDGE FUNCTION TESTING ===');
+    
+    // Step 1: Test Supabase client configuration
+    console.log('Step 1: Verifying Supabase configuration...');
+    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    console.log('Session exists:', !!session);
+    console.log('User authenticated:', !!user);
+    console.log('User email:', user?.email);
+    
+    // Step 2: Test direct function URL access
+    console.log('Step 2: Testing direct function URL access...');
+    const functionUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/test-function';
+    console.log('Function URL:', functionUrl);
+    
     try {
-      console.log('=== TESTING EDGE FUNCTION CONNECTIVITY ===');
-      console.log('Testing Supabase connection...');
-      console.log('Current user:', await supabase.auth.getUser());
-      console.log('Current session:', await supabase.auth.getSession());
+      const directResponse = await fetch(functionUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session?.access_token}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+          'Content-Type': 'application/json',
+        }
+      });
       
+      console.log('Direct fetch response status:', directResponse.status);
+      console.log('Direct fetch response ok:', directResponse.ok);
+      
+      if (directResponse.ok) {
+        const directData = await directResponse.text();
+        console.log('Direct fetch response data:', directData);
+        console.log('✅ Direct function access successful');
+      } else {
+        console.log('❌ Direct function access failed:', directResponse.statusText);
+      }
+    } catch (directError) {
+      console.error('❌ Direct fetch failed:', directError);
+    }
+    
+    // Step 3: Test Supabase client function invoke
+    console.log('Step 3: Testing Supabase client function invoke...');
+    try {
       const { data, error } = await supabase.functions.invoke('test-function', {
         body: { test: 'connection' },
         headers: {
@@ -80,19 +116,52 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
         }
       });
       
-      console.log('Test function result:', { data, error });
-      console.log('=== END CONNECTIVITY TEST ===');
+      console.log('Supabase invoke result:', { data, error });
       
       if (error) {
-        console.error('Test function error details:', JSON.stringify(error, null, 2));
-        return { success: false, error: error.message || 'Test function failed' };
+        console.error('❌ Supabase invoke failed:', JSON.stringify(error, null, 2));
+        return { success: false, error: error.message || 'Supabase invoke failed' };
       }
       
+      console.log('✅ Supabase invoke successful');
       return { success: true, data, error };
-    } catch (err) {
-      console.error('Test function catch:', err);
-      console.error('Catch error details:', JSON.stringify(err, null, 2));
-      return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
+      
+    } catch (invokeError) {
+      console.error('❌ Supabase invoke exception:', invokeError);
+      
+      // Step 4: Test admin function with direct fetch as fallback
+      console.log('Step 4: Testing admin function with direct fetch...');
+      return await testDirectAdminFunctionAccess(session?.access_token);
+    }
+  };
+
+  const testDirectAdminFunctionAccess = async (accessToken?: string) => {
+    const adminFunctionUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/admin-create-user';
+    
+    try {
+      console.log('Testing admin function health check...');
+      const healthResponse = await fetch(adminFunctionUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      console.log('Admin function health response:', healthResponse.status);
+      
+      if (healthResponse.ok) {
+        const healthData = await healthResponse.text();
+        console.log('✅ Admin function accessible:', healthData);
+        return { success: true, fallbackAvailable: true };
+      } else {
+        console.log('❌ Admin function not accessible:', healthResponse.statusText);
+        return { success: false, error: 'Edge Functions not accessible' };
+      }
+    } catch (error) {
+      console.error('❌ Admin function test failed:', error);
+      return { success: false, error: 'Complete Edge Function failure' };
     }
   };
 
@@ -106,73 +175,102 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
     const testResult = await testEdgeFunction();
     console.log('Test result:', testResult);
     
-    if (!testResult.success) {
-      throw new Error(`Edge Functions connectivity test failed: ${testResult.error}`);
+    // If Edge Functions work, try the normal approach
+    if (testResult.success && !('fallbackAvailable' in testResult)) {
+      try {
+        console.log('Using Supabase function invoke...');
+        const { data, error } = await supabase.functions.invoke('admin-create-user', {
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        if (error) {
+          console.error('Function invoke error:', error);
+          throw new Error(error.message || 'Function call failed');
+        }
+
+        if (data?.error) {
+          console.error('Function returned error:', data.error);
+          throw new Error(data.error);
+        }
+
+        console.log('✅ User creation successful via function invoke:', data);
+        return data;
+
+      } catch (error) {
+        console.error('Function invoke failed, trying direct fetch fallback:', error);
+        return await callAdminFunctionDirect(body);
+      }
     }
     
+    // If Edge Functions don't work or we need fallback, use direct approach
+    console.log('Using direct fetch approach...');
+    return await callAdminFunctionDirect(body);
+  };
+
+  const callAdminFunctionDirect = async (body: any): Promise<any> => {
+    console.log('=== DIRECT ADMIN FUNCTION CALL ===');
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session?.access_token) {
+      throw new Error('No authentication session found');
+    }
+
+    const adminFunctionUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/admin-create-user';
+    
     try {
-      console.log('Making admin-create-user function call...');
-      console.log('Calling admin-create-user function...');
-      
-      const { data, error } = await supabase.functions.invoke('admin-create-user', {
-        body,
+      const response = await fetch(adminFunctionUrl, {
+        method: 'POST',
         headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
           'Content-Type': 'application/json',
-        }
+        },
+        body: JSON.stringify(body)
       });
 
-      console.log('Function response received:');
-      console.log('- Data:', data);
-      console.log('- Error:', error);
-      console.log('- Error type:', typeof error);
-      console.log('- Error JSON:', JSON.stringify(error, null, 2));
+      console.log('Direct fetch response status:', response.status);
+      console.log('Direct fetch response ok:', response.ok);
 
-      if (error) {
-        console.error('Function invoke error:', error);
-        
-        // Check for network/connectivity issues
-        if (error.message?.includes('fetch') || 
-            error.message?.includes('Failed to send a request') ||
-            error.message?.includes('NetworkError') ||
-            error.message?.includes('network')) {
-          throw new Error('Unable to connect to the server. Please check your connection and try again.');
-        }
-        
-        throw new Error(error.message || 'Function call failed');
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Direct fetch failed:', errorText);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      if (data?.error) {
-        console.error('Function returned error:', data.error);
-        throw new Error(data.error);
+      const result = await response.json();
+      console.log('✅ Direct fetch successful:', result);
+
+      if (result.error) {
+        throw new Error(result.error);
       }
 
-      console.log('User creation successful:', data);
-      console.log('=== ADMIN FUNCTION CALL END ===');
-      return data;
+      return result;
 
     } catch (error) {
-      console.error('Admin function call failed:', error);
-      console.error('Error type:', typeof error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
+      console.error('❌ Direct admin function call failed:', error);
       
       // Provide more specific error messages
       let errorMessage = 'Failed to create user';
       
       if (error instanceof Error) {
-        if (error.message.includes('CORS')) {
-          errorMessage = 'Network connectivity issue (CORS). Please try again.';
-        } else if (error.message.includes('Authorization') || error.message.includes('permission')) {
-          errorMessage = 'Permission denied. Please check your admin access.';
-        } else if (error.message.includes('Failed to send a request') || 
-                   error.message.includes('NetworkError') ||
-                   error.message.includes('fetch')) {
-          errorMessage = 'Unable to connect to the server. Please check your connection and try again.';
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          errorMessage = 'Network connection failed. Please check your internet connection and try again.';
+        } else if (error.message.includes('HTTP 401')) {
+          errorMessage = 'Authentication failed. Please refresh the page and try again.';
+        } else if (error.message.includes('HTTP 403')) {
+          errorMessage = 'Permission denied. You need admin privileges to create users.';
+        } else if (error.message.includes('HTTP 404')) {
+          errorMessage = 'Admin function not found. Please contact support.';
+        } else if (error.message.includes('HTTP 500')) {
+          errorMessage = 'Server error occurred. Please try again later.';
         } else {
           errorMessage = error.message;
         }
       }
       
-      console.log('=== ADMIN FUNCTION CALL END (ERROR) ===');
       throw new Error(errorMessage);
     }
   };
