@@ -4,129 +4,54 @@ export interface TemplateData {
 
 const getBaseTemplate = (content: string, year: number = new Date().getFullYear()) => `
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        margin: 0;
-        padding: 0;
-        background-color: #f5f5f5;
-      }
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-        background-color: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-      .header {
-        background: linear-gradient(135deg, #3b82f6, #6366f1);
-        padding: 40px 30px;
-        text-align: center;
-      }
-      .header img {
-        height: 40px;
-        width: auto;
-      }
-      .header h1 {
-        color: white;
-        margin: 15px 0 0 0;
-        font-size: 24px;
-        font-weight: 700;
-      }
-      .content {
-        padding: 40px 30px;
-      }
-      .content h2 {
-        color: #1f2937;
-        margin: 0 0 20px 0;
-        font-size: 20px;
-        font-weight: 600;
-      }
-      .content p {
-        margin: 0 0 15px 0;
-        color: #4b5563;
-      }
-      .button {
-        display: inline-block;
-        background: linear-gradient(135deg, #3b82f6, #6366f1);
-        color: white !important;
-        padding: 12px 24px;
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: 600;
-        margin: 20px 0;
-        transition: transform 0.2s;
-      }
-      .button:hover {
-        transform: translateY(-1px);
-      }
-      .footer {
-        background-color: #f9fafb;
-        padding: 30px;
-        text-align: center;
-        color: #6b7280;
-        font-size: 14px;
-        border-top: 1px solid #e5e7eb;
-      }
-      .highlight {
-        background-color: #eff6ff;
-        border-left: 4px solid #3b82f6;
-        padding: 15px;
-        margin: 20px 0;
-        border-radius: 0 6px 6px 0;
-      }
-      .company-name {
-        color: #3b82f6;
-        font-weight: 600;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <img src="https://talentxcel.in/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" alt="TalentXcel Logo" />
-        <h1>TalentXcel</h1>
-      </div>
-      <div class="content">
-        ${content}
-      </div>
-      <div class="footer">
-        <p>© ${year} <strong>TalentXcel</strong>. All rights reserved.</p>
-        <p>Follow us on <a href="#" style="color: #3b82f6;">LinkedIn</a> | <a href="#" style="color: #3b82f6;">Twitter</a></p>
-        <p><a href="https://talentxcel.in/unsubscribe" style="color: #6b7280; font-size: 12px;">Unsubscribe</a></p>
-      </div>
-    </div>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TalentXcel</title>
+</head>
+<body style="background-color:#f4f4f4;margin:0;padding:0;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="40" cellspacing="0" style="background-color:#ffffff; margin:40px auto; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+          <tr>
+            <td align="center" style="padding-bottom:20px;">
+              <img src="data:image/webp;base64,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" alt="TalentXcel" style="height:45px;" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              ${content}
+            </td>
+          </tr>
+          <tr>
+            <td style="font-size:12px; color:#999999; text-align:center; padding-top:30px;">
+              © ${year} TalentXcel. All rights reserved. • <a href="https://talentxcel.in/unsubscribe" style="color:#999;">Unsubscribe</a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
 </html>
 `;
 
 const templates = {
   welcome: (data: TemplateData) => getBaseTemplate(`
-    <h2>Welcome to TalentXcel, ${data.name}! 🎉</h2>
-    <p>We're thrilled to have you join our professional community. TalentXcel is designed to accelerate your career journey and connect you with amazing opportunities.</p>
-    
-    <div class="highlight">
-      <strong>Get started in 3 simple steps:</strong>
-      <ol>
-        <li>Complete your profile</li>
-        <li>Upload your resume</li>
-        <li>Start exploring opportunities</li>
-      </ol>
+    <h1 style="color:#333;">Welcome to TalentXcel, ${data.name || '[First Name]'}</h1>
+    <p style="color:#555; font-size:16px;">We're excited to have you onboard! Explore jobs, build your resume, and grow your network.</p>
+    <div style="margin:24px 0;">
+      <a href="https://talentxcel.in/dashboard" style="background:#007BFF;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;">Go to Dashboard</a>
     </div>
     
-    <p>Your professional journey starts here. Let's build something amazing together!</p>
-    <a href="https://talentxcel.in/network" class="button">Go to Dashboard</a>
-    
-    <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
-      Need help? Contact our support team at <a href="mailto:support@talentxcel.in">support@talentxcel.in</a>
-    </p>
+    <div style="background:#f1f8ff; padding:20px; margin-top:30px; border-left:4px solid #007BFF; border-radius:6px;">
+      <h2 style="color:#007BFF; margin:0 0 10px;">Powering Global Career Growth</h2>
+      <p style="color:#333; font-size:15px; margin:0;">
+        Your all-in-one platform for networking, skill-building, and finding the perfect career opportunities tailored to your unique journey. 
+        Join thousands of professionals accelerating their careers with TalentXcel.
+      </p>
+    </div>
   `),
 
   new_connection: (data: TemplateData) => getBaseTemplate(`
