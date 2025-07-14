@@ -6129,6 +6129,45 @@ export type Database = {
         }
         Relationships: []
       }
+      push_notification_history: {
+        Row: {
+          body: string
+          created_at: string
+          data: Json | null
+          id: string
+          platform: string
+          sent_at: string | null
+          status: string
+          title: string
+          trigger_type: string | null
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          platform: string
+          sent_at?: string | null
+          status?: string
+          title: string
+          trigger_type?: string | null
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          platform?: string
+          sent_at?: string | null
+          status?: string
+          title?: string
+          trigger_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       references_info: {
         Row: {
           contact_info: string | null
