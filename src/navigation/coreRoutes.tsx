@@ -16,6 +16,11 @@ import InvitationFlow from "../pages/InvitationFlow";
 import MobileDemoPage from "../pages/mobile/MobileDemoPage";
 import { MobileAuth } from "../pages/auth/MobileAuth";
 import { MobileResumeBuilder } from "../components/mobile/MobileResumeBuilder";
+import { MobileNotifications } from "../components/mobile/MobileNotifications";
+import { MobileAIMatching } from "../components/mobile/MobileAIMatching";
+import { MobileVideoInterview } from "../components/mobile/MobileVideoInterview";
+import { MobileAnalytics } from "../components/mobile/MobileAnalytics";
+import { MobileSocialNetwork } from "../components/mobile/MobileSocialNetwork";
 
 export const coreRoutes = [
   {
