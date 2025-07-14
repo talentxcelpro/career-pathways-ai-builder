@@ -311,10 +311,16 @@ Please provide a complete, accurate extraction of this professional's resume con
   protected async postProcessExtraction(data: any, file: File): Promise<EnhancedResumeData> {
     console.log('Post-processing extraction results...');
     
+    // Ensure we have valid data structure
+    if (!data || typeof data !== 'object') {
+      console.warn('Invalid data received, using fallback');
+      data = await this.performFallbackExtraction('', file.name);
+    }
+    
     // Validate and enhance data
     const processedData = {
       ...data,
-      personalInfo: this.validatePersonalInfo(data.personalInfo),
+      personalInfo: this.validatePersonalInfo(data.personalInfo || {}),
       experience: this.validateExperience(data.experience || []),
       education: this.validateEducation(data.education || []),
       skills: this.validateSkills(data.skills || {}),

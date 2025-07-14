@@ -70,6 +70,11 @@ interface ExtractedContent {
     endDate: string;
     description?: string;
   }>;
+  metadata?: {
+    extractionMethod?: string;
+    atsScore?: number;
+    [key: string]: any;
+  };
 }
 
 export class EnhancedResumeExtractor {
@@ -79,25 +84,56 @@ export class EnhancedResumeExtractor {
     try {
       const { supabase } = await import("@/integrations/supabase/client");
       
-      const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
-        body: { text, fileName }
+      const { data, error } = await supabase.functions.invoke('ai-resume-extraction', {
+        body: { 
+          text, 
+          fileName,
+          fileType: fileName.split('.').pop()?.toLowerCase() || 'unknown',
+          extractionLevel: 'comprehensive'
+        }
       });
 
       if (error) {
         console.error('AI parsing error:', error);
-        return this.getDefaultContent();
+        throw new Error(`AI extraction failed: ${error.message}`);
       }
 
-      if (data.success) {
-        console.log('AI extraction successful:', data);
-        return data;
+      if (data?.success && data.personalInfo) {
+        console.log('AI extraction successful');
+        
+        // Transform the AI response to match our ExtractedContent structure
+        const transformedSkills = data.skills?.technical ? {
+          technical: Array.isArray(data.skills.technical.programming) ? 
+            [...(data.skills.technical.programming || []), ...(data.skills.technical.frameworks || []), ...(data.skills.technical.tools || [])] :
+            Array.isArray(data.skills.technical) ? data.skills.technical : [],
+          soft: Array.isArray(data.skills.soft) ? data.skills.soft : [],
+          languages: Array.isArray(data.skills.languages) ? 
+            data.skills.languages.map((lang: any) => typeof lang === 'string' ? lang : lang.language) : [],
+          tools: Array.isArray(data.skills.technical?.tools) ? data.skills.technical.tools : []
+        } : { technical: [], soft: [], languages: [], tools: [] };
+
+        return {
+          personalInfo: data.personalInfo || {},
+          experience: Array.isArray(data.experience) ? data.experience : [],
+          education: Array.isArray(data.education) ? data.education : [],
+          skills: transformedSkills,
+          projects: Array.isArray(data.projects) ? data.projects : [],
+          certifications: Array.isArray(data.certifications) ? data.certifications : [],
+          awards: Array.isArray(data.awards) ? data.awards : [],
+          volunteer: Array.isArray(data.volunteer) ? data.volunteer : [],
+          metadata: {
+            ...data.metadata,
+            extractionMethod: 'ai-powered',
+            atsScore: data.atsOptimization?.score || 0
+          }
+        };
       } else {
-        console.error('AI parsing failed:', data.error);
-        return this.getDefaultContent();
+        console.error('AI parsing failed:', data?.error || 'No valid data returned');
+        throw new Error(`AI extraction failed: ${data?.error || 'Invalid response format'}`);
       }
     } catch (error) {
-      console.error('Failed to call AI parser:', error);
-      return this.getDefaultContent();
+      console.error('Failed to call AI extraction:', error);
+      throw error; // Re-throw to trigger proper error handling upstream
     }
   }
 
