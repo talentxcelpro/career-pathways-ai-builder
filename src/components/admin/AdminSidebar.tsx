@@ -149,10 +149,28 @@ const adminMenuItems = [
     description: 'Train and manage custom AI models for TalentXcel services'
   },
   {
+    title: 'AI Management',
+    url: '/admin/ai-management',
+    icon: Brain,
+    description: 'Monitor and manage AI features across the platform'
+  },
+  {
     title: 'Admin Management',
     url: '/admin/admins',
     icon: Settings,
     description: 'Manage administrators'
+  },
+  {
+    title: 'Create Course',
+    url: '/admin/learning/create',
+    icon: GraduationCap,
+    description: 'Create new learning courses'
+  },
+  {
+    title: 'Create Pricing Plan',
+    url: '/admin/pricing/create',
+    icon: CreditCard,
+    description: 'Create new subscription plans'
   }
 ];
 
