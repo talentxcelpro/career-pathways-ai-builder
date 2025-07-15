@@ -19,7 +19,8 @@ import {
   Bell,
   ChevronLeft,
   ChevronRight,
-  Mail
+  Mail,
+  Brain
 } from 'lucide-react';
 import {
   Sidebar,
@@ -140,6 +141,12 @@ const adminMenuItems = [
     url: '/admin/email-automation',
     icon: Mail,
     description: 'Manage email templates & triggers'
+  },
+  {
+    title: 'AI/ML Training Center',
+    url: '/admin/ai-ml-training',
+    icon: Brain,
+    description: 'Train and manage custom AI models for TalentXcel services'
   },
   {
     title: 'Admin Management',

@@ -18,6 +18,7 @@ import SecurityLogs from "../pages/admin/SecurityLogs";
 import CreateCourse from "../pages/admin/learning/CreateCourse";
 import CreatePlan from "../pages/admin/pricing/CreatePlan";
 import EmailAutomationPage from "../pages/admin/EmailAutomation";
+import AIMLTrainingCenter from "../pages/admin/AIMLTrainingCenter";
 import AIManagement from "../pages/admin/AIManagement";
 import CollegesManagement from "../pages/admin/CollegesManagement";
 
@@ -165,6 +166,15 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessDashboard" as const,
     description: "Configure automated email templates and triggers"
+  },
+  {
+    title: "AI/ML Training Center",
+    to: "/admin/ai-ml-training",
+    icon: <Brain className="h-4 w-4" />,
+    page: <AIMLTrainingCenter />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Train, fine-tune, monitor, and manage AI models personalized for platform services"
   },
   {
     title: "AI Management",
