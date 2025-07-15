@@ -7993,48 +7993,66 @@ export type Database = {
         Row: {
           avg_response_time_hours: number | null
           bookings_count: number | null
+          churn_rate: number | null
+          client_acquisition_cost: number | null
           client_satisfaction: number | null
           conversion_rate: number | null
           created_at: string
+          customer_lifetime_value: number | null
           date: string
           id: string
           inquiries_count: number | null
+          monthly_recurring_revenue: number | null
+          portfolio_views: number | null
           profile_id: string
           referral_source: Json | null
           revenue: number | null
           service_id: string | null
+          service_inquiries: number | null
           unique_visitors: number | null
           views_count: number | null
         }
         Insert: {
           avg_response_time_hours?: number | null
           bookings_count?: number | null
+          churn_rate?: number | null
+          client_acquisition_cost?: number | null
           client_satisfaction?: number | null
           conversion_rate?: number | null
           created_at?: string
+          customer_lifetime_value?: number | null
           date: string
           id?: string
           inquiries_count?: number | null
+          monthly_recurring_revenue?: number | null
+          portfolio_views?: number | null
           profile_id: string
           referral_source?: Json | null
           revenue?: number | null
           service_id?: string | null
+          service_inquiries?: number | null
           unique_visitors?: number | null
           views_count?: number | null
         }
         Update: {
           avg_response_time_hours?: number | null
           bookings_count?: number | null
+          churn_rate?: number | null
+          client_acquisition_cost?: number | null
           client_satisfaction?: number | null
           conversion_rate?: number | null
           created_at?: string
+          customer_lifetime_value?: number | null
           date?: string
           id?: string
           inquiries_count?: number | null
+          monthly_recurring_revenue?: number | null
+          portfolio_views?: number | null
           profile_id?: string
           referral_source?: Json | null
           revenue?: number | null
           service_id?: string | null
+          service_inquiries?: number | null
           unique_visitors?: number | null
           views_count?: number | null
         }
@@ -8051,6 +8069,222 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "pro_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_client_feedback: {
+        Row: {
+          client_id: string | null
+          communication_rating: number | null
+          contract_id: string | null
+          created_at: string | null
+          id: string
+          is_public: boolean | null
+          profile_id: string | null
+          rating: number | null
+          responded_at: string | null
+          response_from_provider: string | null
+          review: string | null
+          service_quality_rating: number | null
+          timeliness_rating: number | null
+          updated_at: string | null
+          would_recommend: boolean | null
+        }
+        Insert: {
+          client_id?: string | null
+          communication_rating?: number | null
+          contract_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          profile_id?: string | null
+          rating?: number | null
+          responded_at?: string | null
+          response_from_provider?: string | null
+          review?: string | null
+          service_quality_rating?: number | null
+          timeliness_rating?: number | null
+          updated_at?: string | null
+          would_recommend?: boolean | null
+        }
+        Update: {
+          client_id?: string | null
+          communication_rating?: number | null
+          contract_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          profile_id?: string | null
+          rating?: number | null
+          responded_at?: string | null
+          response_from_provider?: string | null
+          review?: string | null
+          service_quality_rating?: number | null
+          timeliness_rating?: number | null
+          updated_at?: string | null
+          would_recommend?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_client_feedback_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_client_feedback_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "pro_contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_client_feedback_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_client_notes: {
+        Row: {
+          content: string
+          contract_id: string | null
+          created_at: string | null
+          id: string
+          is_private: boolean | null
+          lead_id: string | null
+          note_type: string | null
+          profile_id: string | null
+          reminder_date: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          contract_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_private?: boolean | null
+          lead_id?: string | null
+          note_type?: string | null
+          profile_id?: string | null
+          reminder_date?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          contract_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_private?: boolean | null
+          lead_id?: string | null
+          note_type?: string | null
+          profile_id?: string | null
+          reminder_date?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_client_notes_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "pro_contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_client_notes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "pro_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_client_notes_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_communications: {
+        Row: {
+          communication_type: string
+          completed_at: string | null
+          content: string | null
+          contract_id: string | null
+          created_at: string | null
+          direction: string
+          id: string
+          lead_id: string | null
+          metadata: Json | null
+          profile_id: string | null
+          scheduled_at: string | null
+          status: string | null
+          subject: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          communication_type: string
+          completed_at?: string | null
+          content?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          direction: string
+          id?: string
+          lead_id?: string | null
+          metadata?: Json | null
+          profile_id?: string | null
+          scheduled_at?: string | null
+          status?: string | null
+          subject?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          communication_type?: string
+          completed_at?: string | null
+          content?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          direction?: string
+          id?: string
+          lead_id?: string | null
+          metadata?: Json | null
+          profile_id?: string | null
+          scheduled_at?: string | null
+          status?: string | null
+          subject?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_communications_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "pro_contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_communications_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "pro_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_communications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -8202,6 +8436,41 @@ export type Database = {
           },
         ]
       }
+      pro_lead_scoring: {
+        Row: {
+          created_at: string | null
+          factors: Json | null
+          id: string
+          lead_id: string | null
+          score: number | null
+          scoring_date: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          factors?: Json | null
+          id?: string
+          lead_id?: string | null
+          score?: number | null
+          scoring_date?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          factors?: Json | null
+          id?: string
+          lead_id?: string | null
+          score?: number | null
+          scoring_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_lead_scoring_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "pro_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pro_leads: {
         Row: {
           ai_lead_score: number | null
@@ -8282,6 +8551,47 @@ export type Database = {
           },
           {
             foreignKeyName: "pro_leads_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_performance_metrics: {
+        Row: {
+          comparison_period: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          metric_date: string | null
+          metric_type: string
+          metric_value: number
+          profile_id: string | null
+        }
+        Insert: {
+          comparison_period?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_date?: string | null
+          metric_type: string
+          metric_value: number
+          profile_id?: string | null
+        }
+        Update: {
+          comparison_period?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_date?: string | null
+          metric_type?: string
+          metric_value?: number
+          profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_performance_metrics_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "pro_service_profiles"
