@@ -7989,6 +7989,720 @@ export type Database = {
         }
         Relationships: []
       }
+      pro_analytics: {
+        Row: {
+          avg_response_time_hours: number | null
+          bookings_count: number | null
+          client_satisfaction: number | null
+          conversion_rate: number | null
+          created_at: string
+          date: string
+          id: string
+          inquiries_count: number | null
+          profile_id: string
+          referral_source: Json | null
+          revenue: number | null
+          service_id: string | null
+          unique_visitors: number | null
+          views_count: number | null
+        }
+        Insert: {
+          avg_response_time_hours?: number | null
+          bookings_count?: number | null
+          client_satisfaction?: number | null
+          conversion_rate?: number | null
+          created_at?: string
+          date: string
+          id?: string
+          inquiries_count?: number | null
+          profile_id: string
+          referral_source?: Json | null
+          revenue?: number | null
+          service_id?: string | null
+          unique_visitors?: number | null
+          views_count?: number | null
+        }
+        Update: {
+          avg_response_time_hours?: number | null
+          bookings_count?: number | null
+          client_satisfaction?: number | null
+          conversion_rate?: number | null
+          created_at?: string
+          date?: string
+          id?: string
+          inquiries_count?: number | null
+          profile_id?: string
+          referral_source?: Json | null
+          revenue?: number | null
+          service_id?: string | null
+          unique_visitors?: number | null
+          views_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_analytics_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_analytics_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "pro_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_contracts: {
+        Row: {
+          booking_id: string | null
+          client_id: string | null
+          client_signature: string | null
+          content: string
+          contract_type: string | null
+          created_at: string
+          deliverables: Json | null
+          expiry_date: string | null
+          id: string
+          payment_terms: string | null
+          profile_id: string
+          provider_signature: string | null
+          signed_date: string | null
+          status: string | null
+          template_used: string | null
+          terms_conditions: string | null
+          title: string
+          total_value: number | null
+          updated_at: string
+        }
+        Insert: {
+          booking_id?: string | null
+          client_id?: string | null
+          client_signature?: string | null
+          content: string
+          contract_type?: string | null
+          created_at?: string
+          deliverables?: Json | null
+          expiry_date?: string | null
+          id?: string
+          payment_terms?: string | null
+          profile_id: string
+          provider_signature?: string | null
+          signed_date?: string | null
+          status?: string | null
+          template_used?: string | null
+          terms_conditions?: string | null
+          title: string
+          total_value?: number | null
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string | null
+          client_id?: string | null
+          client_signature?: string | null
+          content?: string
+          contract_type?: string | null
+          created_at?: string
+          deliverables?: Json | null
+          expiry_date?: string | null
+          id?: string
+          payment_terms?: string | null
+          profile_id?: string
+          provider_signature?: string | null
+          signed_date?: string | null
+          status?: string | null
+          template_used?: string | null
+          terms_conditions?: string | null
+          title?: string
+          total_value?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_contracts_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_contracts_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_deliverables: {
+        Row: {
+          access_expires_at: string | null
+          booking_id: string | null
+          contract_id: string
+          created_at: string
+          description: string | null
+          download_count: number | null
+          file_name: string | null
+          file_size_mb: number | null
+          file_type: string | null
+          file_url: string | null
+          id: string
+          is_downloadable: boolean | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          access_expires_at?: string | null
+          booking_id?: string | null
+          contract_id: string
+          created_at?: string
+          description?: string | null
+          download_count?: number | null
+          file_name?: string | null
+          file_size_mb?: number | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          is_downloadable?: boolean | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          access_expires_at?: string | null
+          booking_id?: string | null
+          contract_id?: string
+          created_at?: string
+          description?: string | null
+          download_count?: number | null
+          file_name?: string | null
+          file_size_mb?: number | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          is_downloadable?: boolean | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_deliverables_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_deliverables_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "pro_contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_leads: {
+        Row: {
+          ai_lead_score: number | null
+          assigned_to: string | null
+          booking_id: string | null
+          client_email: string
+          client_name: string
+          client_phone: string | null
+          company: string | null
+          created_at: string
+          estimated_value: number | null
+          id: string
+          interaction_history: Json | null
+          last_contact_date: string | null
+          next_follow_up: string | null
+          notes: string | null
+          priority: string | null
+          probability: number | null
+          profile_id: string
+          source: string | null
+          status: string | null
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          ai_lead_score?: number | null
+          assigned_to?: string | null
+          booking_id?: string | null
+          client_email: string
+          client_name: string
+          client_phone?: string | null
+          company?: string | null
+          created_at?: string
+          estimated_value?: number | null
+          id?: string
+          interaction_history?: Json | null
+          last_contact_date?: string | null
+          next_follow_up?: string | null
+          notes?: string | null
+          priority?: string | null
+          probability?: number | null
+          profile_id: string
+          source?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          ai_lead_score?: number | null
+          assigned_to?: string | null
+          booking_id?: string | null
+          client_email?: string
+          client_name?: string
+          client_phone?: string | null
+          company?: string | null
+          created_at?: string
+          estimated_value?: number | null
+          id?: string
+          interaction_history?: Json | null
+          last_contact_date?: string | null
+          next_follow_up?: string | null
+          notes?: string | null
+          priority?: string | null
+          probability?: number | null
+          profile_id?: string
+          source?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_leads_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_leads_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_portfolios: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number | null
+          external_url: string | null
+          file_size_mb: number | null
+          file_url: string | null
+          id: string
+          is_featured: boolean | null
+          metadata: Json | null
+          profile_id: string
+          service_id: string | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          external_url?: string | null
+          file_size_mb?: number | null
+          file_url?: string | null
+          id?: string
+          is_featured?: boolean | null
+          metadata?: Json | null
+          profile_id: string
+          service_id?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          external_url?: string | null
+          file_size_mb?: number | null
+          file_url?: string | null
+          id?: string
+          is_featured?: boolean | null
+          metadata?: Json | null
+          profile_id?: string
+          service_id?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_portfolios_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_portfolios_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "pro_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_service_bookings: {
+        Row: {
+          ai_lead_score: number | null
+          booking_type: string | null
+          client_email: string
+          client_id: string | null
+          client_name: string
+          client_phone: string | null
+          contract_id: string | null
+          created_at: string
+          deposit_amount: number | null
+          duration_hours: number | null
+          follow_up_date: string | null
+          id: string
+          message: string | null
+          notes: string | null
+          payment_id: string | null
+          payment_status: string | null
+          pricing_selected: Json | null
+          priority: string | null
+          requirements: Json | null
+          scheduled_date: string | null
+          service_id: string
+          source: string | null
+          status: string | null
+          total_amount: number | null
+          updated_at: string
+        }
+        Insert: {
+          ai_lead_score?: number | null
+          booking_type?: string | null
+          client_email: string
+          client_id?: string | null
+          client_name: string
+          client_phone?: string | null
+          contract_id?: string | null
+          created_at?: string
+          deposit_amount?: number | null
+          duration_hours?: number | null
+          follow_up_date?: string | null
+          id?: string
+          message?: string | null
+          notes?: string | null
+          payment_id?: string | null
+          payment_status?: string | null
+          pricing_selected?: Json | null
+          priority?: string | null
+          requirements?: Json | null
+          scheduled_date?: string | null
+          service_id: string
+          source?: string | null
+          status?: string | null
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Update: {
+          ai_lead_score?: number | null
+          booking_type?: string | null
+          client_email?: string
+          client_id?: string | null
+          client_name?: string
+          client_phone?: string | null
+          contract_id?: string | null
+          created_at?: string
+          deposit_amount?: number | null
+          duration_hours?: number | null
+          follow_up_date?: string | null
+          id?: string
+          message?: string | null
+          notes?: string | null
+          payment_id?: string | null
+          payment_status?: string | null
+          pricing_selected?: Json | null
+          priority?: string | null
+          requirements?: Json | null
+          scheduled_date?: string | null
+          service_id?: string
+          source?: string | null
+          status?: string | null
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_service_bookings_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "pro_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_service_profiles: {
+        Row: {
+          availability_hours: Json | null
+          average_rating: number | null
+          bio: string | null
+          business_name: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          cover_image_url: string | null
+          created_at: string
+          custom_branding: Json | null
+          id: string
+          is_active: boolean | null
+          is_verified: boolean | null
+          location: string | null
+          logo_url: string | null
+          profile_slug: string
+          response_time_hours: number | null
+          social_links: Json | null
+          subscription_tier: string | null
+          timezone: string | null
+          total_bookings: number | null
+          total_reviews: number | null
+          updated_at: string
+          user_id: string
+          video_bio_url: string | null
+          website_url: string | null
+        }
+        Insert: {
+          availability_hours?: Json | null
+          average_rating?: number | null
+          bio?: string | null
+          business_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          custom_branding?: Json | null
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          profile_slug: string
+          response_time_hours?: number | null
+          social_links?: Json | null
+          subscription_tier?: string | null
+          timezone?: string | null
+          total_bookings?: number | null
+          total_reviews?: number | null
+          updated_at?: string
+          user_id: string
+          video_bio_url?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          availability_hours?: Json | null
+          average_rating?: number | null
+          bio?: string | null
+          business_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          custom_branding?: Json | null
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          profile_slug?: string
+          response_time_hours?: number | null
+          social_links?: Json | null
+          subscription_tier?: string | null
+          timezone?: string | null
+          total_bookings?: number | null
+          total_reviews?: number | null
+          updated_at?: string
+          user_id?: string
+          video_bio_url?: string | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_service_profiles_subscription_tier_fkey"
+            columns: ["subscription_tier"]
+            isOneToOne: false
+            referencedRelation: "pro_subscription_tiers"
+            referencedColumns: ["name"]
+          },
+        ]
+      }
+      pro_services: {
+        Row: {
+          base_price: number | null
+          booking_enabled: boolean | null
+          bookings_count: number | null
+          category: string
+          conversion_rate: number | null
+          created_at: string
+          delivery_time_days: number | null
+          description: string
+          hourly_rate: number | null
+          id: string
+          inquiries_count: number | null
+          instant_booking: boolean | null
+          is_active: boolean | null
+          is_featured: boolean | null
+          pricing_tiers: Json | null
+          pricing_type: string | null
+          profile_id: string
+          requirements: string | null
+          revisions_included: number | null
+          seo_description: string | null
+          seo_title: string | null
+          service_type: string | null
+          subcategory: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views_count: number | null
+          what_included: string[] | null
+          what_not_included: string[] | null
+        }
+        Insert: {
+          base_price?: number | null
+          booking_enabled?: boolean | null
+          bookings_count?: number | null
+          category: string
+          conversion_rate?: number | null
+          created_at?: string
+          delivery_time_days?: number | null
+          description: string
+          hourly_rate?: number | null
+          id?: string
+          inquiries_count?: number | null
+          instant_booking?: boolean | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          pricing_tiers?: Json | null
+          pricing_type?: string | null
+          profile_id: string
+          requirements?: string | null
+          revisions_included?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          service_type?: string | null
+          subcategory?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views_count?: number | null
+          what_included?: string[] | null
+          what_not_included?: string[] | null
+        }
+        Update: {
+          base_price?: number | null
+          booking_enabled?: boolean | null
+          bookings_count?: number | null
+          category?: string
+          conversion_rate?: number | null
+          created_at?: string
+          delivery_time_days?: number | null
+          description?: string
+          hourly_rate?: number | null
+          id?: string
+          inquiries_count?: number | null
+          instant_booking?: boolean | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          pricing_tiers?: Json | null
+          pricing_type?: string | null
+          profile_id?: string
+          requirements?: string | null
+          revisions_included?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          service_type?: string | null
+          subcategory?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views_count?: number | null
+          what_included?: string[] | null
+          what_not_included?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_services_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "pro_service_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_subscription_tiers: {
+        Row: {
+          created_at: string
+          features: Json
+          has_ai_tools: boolean | null
+          has_analytics: boolean | null
+          has_branding: boolean | null
+          has_contracts: boolean | null
+          has_crm: boolean | null
+          has_payments: boolean | null
+          id: string
+          is_active: boolean | null
+          marketplace_priority: number | null
+          max_services: number | null
+          name: string
+          price_monthly: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          features?: Json
+          has_ai_tools?: boolean | null
+          has_analytics?: boolean | null
+          has_branding?: boolean | null
+          has_contracts?: boolean | null
+          has_crm?: boolean | null
+          has_payments?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          marketplace_priority?: number | null
+          max_services?: number | null
+          name: string
+          price_monthly: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          features?: Json
+          has_ai_tools?: boolean | null
+          has_analytics?: boolean | null
+          has_branding?: boolean | null
+          has_contracts?: boolean | null
+          has_crm?: boolean | null
+          has_payments?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          marketplace_priority?: number | null
+          max_services?: number | null
+          name?: string
+          price_monthly?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profile_views: {
         Row: {
           id: string
