@@ -318,7 +318,7 @@ export const EnterpriseDashboard: React.FC = () => {
 
       {/* Tab Content */}
       {activeTab === 'overview' && renderOverview()}
-      {activeTab === 'departments' && <DepartmentManagement />}
+      {activeTab === 'departments' && <DepartmentManagement organizationId={currentOrganization?.id || ''} />}
       {activeTab === 'marketing' && <MarketingDashboard />}
       {activeTab === 'reporting' && <LiveReporting />}
     </div>
