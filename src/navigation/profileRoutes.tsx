@@ -9,6 +9,7 @@ import ProfileSettings from "../pages/profile/ProfileSettings";
 import ProfileMedia from "../pages/profile/ProfileMedia";
 import ProfileAnalytics from "../pages/profile/ProfileAnalytics";
 import ProfileDocuments from "../pages/profile/ProfileDocuments";
+import ProfileBranding from "../pages/profile/ProfileBranding";
 import PublicUserProfile from "../pages/network/PublicUserProfile";
 
 export const profileRoutes = [
@@ -71,6 +72,12 @@ export const profileRoutes = [
     title: "Profile Documents",
     to: "/profile/documents",
     page: <ProfileDocuments />,
+    requiresAuth: true,
+  },
+  {
+    title: "Profile Branding",
+    to: "/profile/branding",
+    page: <ProfileBranding />,
     requiresAuth: true,
   },
 ];

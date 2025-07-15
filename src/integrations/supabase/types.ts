@@ -9341,7 +9341,9 @@ export type Database = {
           cover_image_url: string | null
           created_at: string | null
           current_company: string | null
+          custom_logo_url: string | null
           custom_profile_url: string | null
+          custom_theme: Json | null
           email: string | null
           employer_status: string | null
           experience_years: number | null
@@ -9385,6 +9387,8 @@ export type Database = {
           title: string | null
           updated_at: string | null
           user_role: Database["public"]["Enums"]["user_role"] | null
+          vanity_url: string | null
+          video_bio_url: string | null
           video_resume_url: string | null
           website: string | null
           work_experiences: Json | null
@@ -9399,7 +9403,9 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string | null
           current_company?: string | null
+          custom_logo_url?: string | null
           custom_profile_url?: string | null
+          custom_theme?: Json | null
           email?: string | null
           employer_status?: string | null
           experience_years?: number | null
@@ -9443,6 +9449,8 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
+          vanity_url?: string | null
+          video_bio_url?: string | null
           video_resume_url?: string | null
           website?: string | null
           work_experiences?: Json | null
@@ -9457,7 +9465,9 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string | null
           current_company?: string | null
+          custom_logo_url?: string | null
           custom_profile_url?: string | null
+          custom_theme?: Json | null
           email?: string | null
           employer_status?: string | null
           experience_years?: number | null
@@ -9501,6 +9511,8 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
+          vanity_url?: string | null
+          video_bio_url?: string | null
           video_resume_url?: string | null
           website?: string | null
           work_experiences?: Json | null
@@ -13808,6 +13820,10 @@ export type Database = {
         Args: { resume_uuid: string }
         Returns: number
       }
+      check_vanity_url_availability: {
+        Args: { url: string }
+        Returns: boolean
+      }
       cleanup_old_notifications: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -13863,6 +13879,10 @@ export type Database = {
       generate_resume_slug_enhanced: {
         Args: { resume_title: string; user_uuid: string }
         Returns: string
+      }
+      generate_vanity_url_suggestions: {
+        Args: { base_name: string }
+        Returns: string[]
       }
       get_email_domain: {
         Args: { email_address: string }
