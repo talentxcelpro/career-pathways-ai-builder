@@ -33,6 +33,8 @@ import {
 import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { EmailTriggerSettingsModal } from './EmailTriggerSettingsModal';
+import { BulkEmailProcessor } from './BulkEmailProcessor';
 
 interface EmailTrigger {
   id: string;
@@ -69,6 +71,8 @@ export const EmailAutomationManager = () => {
   const [emailQueue, setEmailQueue] = useState<any[]>([]);
   const [queueLoading, setQueueLoading] = useState(false);
   const [showQueue, setShowQueue] = useState(false);
+  const [selectedTrigger, setSelectedTrigger] = useState<EmailTrigger | null>(null);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [stats, setStats] = useState<EmailStats>({
     pending: 0,
     sent: 0,
@@ -85,9 +89,17 @@ export const EmailAutomationManager = () => {
       setIsProcessing(true);
       
       console.log('Calling process-email-queue function...');
-      const { data, error } = await supabase.functions.invoke('process-email-queue', {
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout after 30 seconds')), 30000)
+      );
+
+      const requestPromise = supabase.functions.invoke('process-email-queue', {
         body: { manual: true }
       });
+
+      const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as any;
       
       if (error) {
         console.error('Supabase function error:', error);
@@ -126,7 +138,16 @@ export const EmailAutomationManager = () => {
       await Promise.all([fetchStats(), showQueue && fetchEmailQueue()]);
     } catch (error: any) {
       console.error('Network/Function error:', error);
-      toast.error(`Failed to process email queue: ${error.message || 'Unknown error'}`);
+      const errorMessage = error.message || 'Unknown error';
+      
+      // Provide more specific error messages
+      if (errorMessage.includes('timeout')) {
+        toast.error('Email processing timed out. Please try the bulk processor for large queues.');
+      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        toast.error('Network error. Please check your connection and try again.');
+      } else {
+        toast.error(`Failed to process email queue: ${errorMessage}`);
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -339,6 +360,19 @@ export const EmailAutomationManager = () => {
     };
 
     return sampleData[triggerType as keyof typeof sampleData] || {};
+  };
+
+  const handleSettingsClick = (trigger: EmailTrigger) => {
+    setSelectedTrigger(trigger);
+    setIsSettingsModalOpen(true);
+  };
+
+  const handleSettingsSave = (updatedTrigger: EmailTrigger) => {
+    setTriggers(prev => prev.map(trigger => 
+      trigger.id === updatedTrigger.id ? updatedTrigger : trigger
+    ));
+    setIsSettingsModalOpen(false);
+    setSelectedTrigger(null);
   };
 
   const fetchEmailQueue = async () => {
@@ -615,7 +649,11 @@ export const EmailAutomationManager = () => {
                       <TestTube className="h-4 w-4 mr-2" />
                       Test Template
                     </Button>
-                    <Button size="sm" variant="ghost">
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      onClick={() => handleSettingsClick(trigger)}
+                    >
                       <Settings className="h-4 w-4" />
                     </Button>
                   </div>
@@ -722,6 +760,20 @@ export const EmailAutomationManager = () => {
           </CardContent>
         )}
       </Card>
+
+      {/* Bulk Email Processor */}
+      <BulkEmailProcessor onStatsUpdate={fetchStats} />
+
+      {/* Settings Modal */}
+      <EmailTriggerSettingsModal
+        trigger={selectedTrigger}
+        isOpen={isSettingsModalOpen}
+        onClose={() => {
+          setIsSettingsModalOpen(false);
+          setSelectedTrigger(null);
+        }}
+        onSave={handleSettingsSave}
+      />
     </div>
   );
 };
