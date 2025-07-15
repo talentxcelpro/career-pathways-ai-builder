@@ -563,7 +563,7 @@ const Posts = () => {
                                         alt={`Shared by ${formatDisplayName(post.profiles)}`}
                                         className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
                                         onError={(e) => {
-                                          console.error('Image failed to load:', url);
+                                          // Silently handle image load errors without console logging
                                           (e.target as HTMLImageElement).style.display = 'none';
                                           const parent = (e.target as HTMLImageElement).parentElement;
                                           if (parent) {
