@@ -8,32 +8,44 @@ import { Search, Plus, Eye, Edit, Trash2, CheckCircle, XCircle } from "lucide-re
 const CollegesManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Mock data for demonstration
-  const colleges = [
-    {
-      id: 1,
-      name: "IIT Delhi",
-      type: "Public",
-      location: "Delhi, India",
-      students: 11000,
-      status: "verified",
-      created: "2023-01-15"
-    },
-    {
-      id: 2,
-      name: "Stanford University",
-      type: "Private",
-      location: "California, USA",
-      students: 17000,
-      status: "pending",
-      created: "2023-02-20"
+  const { data: colleges, isLoading } = useQuery({
+    queryKey: ['colleges-admin'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('colleges')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
     }
-  ];
+  });
+
+  const { data: collegeStats } = useQuery({
+    queryKey: ['college-stats'],
+    queryFn: async () => {
+      const [
+        { count: totalColleges },
+        { count: verifiedColleges },
+        { count: pendingColleges }
+      ] = await Promise.all([
+        supabase.from('colleges').select('*', { count: 'exact', head: true }),
+        supabase.from('colleges').select('*', { count: 'exact', head: true }).eq('is_verified', true),
+        supabase.from('colleges').select('*', { count: 'exact', head: true }).eq('verification_status', 'pending')
+      ]);
+
+      return {
+        totalColleges: totalColleges || 0,
+        verifiedColleges: verifiedColleges || 0,
+        pendingColleges: pendingColleges || 0
+      };
+    }
+  });
 
   const stats = [
-    { title: "Total Colleges", value: "1,247", change: "+12%" },
-    { title: "Verified Colleges", value: "892", change: "+8%" },
-    { title: "Pending Verification", value: "89", change: "+15%" },
+    { title: "Total Colleges", value: collegeStats?.totalColleges.toString() || "0", change: "+12%" },
+    { title: "Verified Colleges", value: collegeStats?.verifiedColleges.toString() || "0", change: "+8%" },
+    { title: "Pending Verification", value: collegeStats?.pendingColleges.toString() || "0", change: "+15%" },
     { title: "New This Month", value: "24", change: "+20%" }
   ];
 
