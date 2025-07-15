@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Mail, 
   Send, 
@@ -19,7 +20,15 @@ import {
   BarChart,
   Lock,
   SendHorizontal,
-  Loader2
+  Loader2,
+  AlertTriangle,
+  ExternalLink,
+  Zap,
+  Clock,
+  AlertCircle,
+  Eye,
+  MousePointer,
+  TrendingUp
 } from 'lucide-react';
 import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 import { toast } from 'sonner';
@@ -38,6 +47,17 @@ interface EmailTrigger {
   color: string;
 }
 
+interface EmailStats {
+  pending: number;
+  sent: number;
+  failed: number;
+  totalSent: number;
+  delivered: number;
+  opened: number;
+  clicked: number;
+  bounced: number;
+}
+
 export const EmailAutomationManager = () => {
   const { triggerWelcomeEmail, triggerConnectionEmail, triggerJobRecommendationEmail } = useEmailAutomation();
   const [testEmail, setTestEmail] = useState('');
@@ -49,34 +69,116 @@ export const EmailAutomationManager = () => {
   const [emailQueue, setEmailQueue] = useState<any[]>([]);
   const [queueLoading, setQueueLoading] = useState(false);
   const [showQueue, setShowQueue] = useState(false);
-  const [emailStats, setEmailStats] = useState({
-    sentToday: 0,
-    deliveryRate: 92,
-    openRate: 34,
-    clickRate: 8
+  const [stats, setStats] = useState<EmailStats>({
+    pending: 0,
+    sent: 0,
+    failed: 0,
+    totalSent: 0,
+    delivered: 0,
+    opened: 0,
+    clicked: 0,
+    bounced: 0,
   });
 
   const processEmailQueue = async () => {
-    setIsProcessing(true);
     try {
+      setIsProcessing(true);
+      
       const { data, error } = await supabase.functions.invoke('process-email-queue');
       
-      if (error) throw error;
-      
-      toast.success(`Email queue processed: ${data.processed} sent, ${data.failed} failed`);
-      fetchEmailStats(); // Refresh stats
-      
-      // Refresh queue if it's showing
-      if (showQueue) {
-        fetchEmailQueue();
+      if (error) {
+        console.error('Error processing email queue:', error);
+        toast.error(`Failed to process email queue: ${error.message}`);
+        return;
       }
-    } catch (error) {
-      console.error('Error processing email queue:', error);
-      toast.error('Failed to process email queue');
+      
+      console.log('Email queue processing result:', data);
+      
+      if (data?.error) {
+        toast.error(`Queue processing failed: ${data.error}`);
+        return;
+      }
+      
+      const message = data?.processed > 0 
+        ? `✅ Processed ${data.processed} emails successfully`
+        : data?.message || 'No emails to process';
+      
+      if (data?.failed > 0) {
+        toast.warning(`${message} (${data.failed} failed)`);
+      } else {
+        toast.success(message);
+      }
+      
+      // Refresh stats after processing
+      await fetchStats();
+    } catch (error: any) {
+      console.error('Error:', error);
+      toast.error(`Failed to process email queue: ${error.message || 'Unknown error'}`);
     } finally {
       setIsProcessing(false);
     }
   };
+
+  // Fetch email statistics
+  const fetchStats = async () => {
+    try {
+      // Get queue statistics
+      const { data: queueData } = await supabase
+        .from('email_automation_queue')
+        .select('status')
+        .order('created_at', { ascending: false });
+      
+      // Get delivery events for real analytics
+      const { data: eventsData } = await supabase
+        .from('email_delivery_events')
+        .select('event_type, created_at')
+        .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+        .order('created_at', { ascending: false });
+      
+      // Get daily analytics
+      const { data: dailyData } = await supabase
+        .from('email_analytics_daily')
+        .select('*')
+        .order('date', { ascending: false })
+        .limit(30);
+      
+      if (queueData) {
+        const pending = queueData.filter(q => q.status === 'pending').length;
+        const sent = queueData.filter(q => q.status === 'sent').length;
+        const failed = queueData.filter(q => q.status === 'failed').length;
+        
+        // Calculate real delivery stats from events
+        const eventCounts = eventsData?.reduce((acc, event) => {
+          acc[event.event_type] = (acc[event.event_type] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>) || {};
+        
+        // Calculate totals from daily analytics
+        const totals = dailyData?.reduce((acc, day) => ({
+          sent: acc.sent + (day.emails_sent || 0),
+          delivered: acc.delivered + (day.emails_delivered || 0),
+          opened: acc.opened + (day.emails_opened || 0),
+          clicked: acc.clicked + (day.emails_clicked || 0),
+          bounced: acc.bounced + (day.emails_bounced || 0),
+          failed: acc.failed + (day.emails_failed || 0),
+        }), { sent: 0, delivered: 0, opened: 0, clicked: 0, bounced: 0, failed: 0 }) || { sent: 0, delivered: 0, opened: 0, clicked: 0, bounced: 0, failed: 0 };
+        
+        setStats({
+          pending,
+          sent,
+          failed,
+          totalSent: totals.sent || sent,
+          delivered: totals.delivered || eventCounts['delivered'] || 0,
+          opened: totals.opened || eventCounts['opened'] || 0,
+          clicked: totals.clicked || eventCounts['clicked'] || 0,
+          bounced: totals.bounced || eventCounts['bounced'] || 0,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
   const triggerConfigs = {
     welcome_email: { name: 'Welcome Email', description: 'Sent when a new user signs up', icon: UserPlus, color: 'text-green-600' },
     connection_request: { name: 'Connection Request', description: 'Sent when someone sends a connection request', icon: Users, color: 'text-blue-600' },
@@ -90,7 +192,7 @@ export const EmailAutomationManager = () => {
 
   useEffect(() => {
     fetchEmailTriggers();
-    fetchEmailStats();
+    fetchStats();
   }, []);
 
   const fetchEmailTriggers = async () => {
@@ -114,63 +216,6 @@ export const EmailAutomationManager = () => {
       toast.error('Failed to load email automation settings');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchEmailStats = async () => {
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      
-      // Get today's analytics data
-      const { data: analyticsData, error: analyticsError } = await supabase
-        .from('email_analytics_daily')
-        .select('*')
-        .eq('date', today)
-        .single();
-
-      if (analyticsError && analyticsError.code !== 'PGRST116') {
-        throw analyticsError;
-      }
-
-      // Get real email stats from delivery events if analytics data exists
-      if (analyticsData) {
-        const deliveryRate = analyticsData.emails_sent > 0 
-          ? Math.round((analyticsData.emails_delivered / analyticsData.emails_sent) * 100)
-          : 0;
-        const openRate = analyticsData.emails_delivered > 0
-          ? Math.round((analyticsData.emails_opened / analyticsData.emails_delivered) * 100)
-          : 0;
-        const clickRate = analyticsData.emails_opened > 0
-          ? Math.round((analyticsData.emails_clicked / analyticsData.emails_opened) * 100)
-          : 0;
-
-        setEmailStats({
-          sentToday: analyticsData.emails_sent,
-          deliveryRate,
-          openRate,
-          clickRate
-        });
-      } else {
-        // Fallback to queue data for sent emails only
-        const { data: queueData, error: queueError } = await supabase
-          .from('email_automation_queue')
-          .select('status, sent_at')
-          .gte('created_at', today);
-
-        if (queueError) throw queueError;
-
-        const sentToday = queueData?.filter(email => email.status === 'sent').length || 0;
-        setEmailStats(prev => ({ 
-          ...prev, 
-          sentToday,
-          // Reset other stats to 0 if no analytics data
-          deliveryRate: 0,
-          openRate: 0,
-          clickRate: 0
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching email stats:', error);
     }
   };
 
@@ -283,90 +328,6 @@ export const EmailAutomationManager = () => {
     return sampleData[triggerType as keyof typeof sampleData] || {};
   };
 
-  const sendWelcomeEmailToAllUsers = async () => {
-    setBulkEmailSending(true);
-    setBulkEmailProgress({ sent: 0, total: 0 });
-    
-    try {
-      // Get all users from profiles table who have emails
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, full_name, email')
-        .not('email', 'is', null);
-        
-      if (profilesError) throw profilesError;
-      
-      if (!profiles || profiles.length === 0) {
-        toast.error('No users found with email addresses');
-        return;
-      }
-      
-      setBulkEmailProgress({ sent: 0, total: profiles.length });
-      
-      let successful = 0;
-      let failed = 0;
-      const userIds = profiles.map(p => p.id);
-      
-      // Process in batches to avoid overwhelming the system
-      for (let i = 0; i < profiles.length; i += 10) {
-        const batch = profiles.slice(i, i + 10);
-        
-        const batchPromises = batch.map(async (profile) => {
-          try {
-            const { error } = await supabase.rpc('queue_automated_email', {
-              p_trigger_type: 'welcome_email',
-              p_recipient_email: profile.email,
-              p_recipient_name: profile.full_name || 'User',
-              p_template_data: { name: profile.full_name || 'User', user_id: profile.id }
-            });
-            
-            if (error) throw error;
-            successful++;
-          } catch (error) {
-            console.error(`Failed to queue email for ${profile.email}:`, error);
-            failed++;
-          }
-        });
-        
-        await Promise.allSettled(batchPromises);
-        setBulkEmailProgress({ sent: successful + failed, total: profiles.length });
-        
-        // Small delay between batches
-        if (i + 10 < profiles.length) {
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
-      }
-
-      // Send push notifications to all users
-      try {
-        await supabase.functions.invoke('send-push-notification', {
-          body: {
-            user_ids: userIds,
-            title: 'Welcome to TalentXCE!',
-            body: 'Thank you for joining our platform. Explore amazing career opportunities!',
-            trigger_type: 'welcome_email',
-            data: {
-              route: '/dashboard'
-            }
-          }
-        });
-      } catch (pushError) {
-        console.error('Failed to send push notifications:', pushError);
-        // Don't fail the whole operation if push notifications fail
-      }
-      
-      toast.success(`Bulk operation completed: ${successful} emails queued, ${failed} failed. Push notifications sent to all users.`);
-      fetchEmailStats(); // Refresh stats
-      
-    } catch (error) {
-      console.error('Error sending bulk emails:', error);
-      toast.error('Failed to send bulk welcome emails');
-    } finally {
-      setBulkEmailSending(false);
-      setBulkEmailProgress({ sent: 0, total: 0 });
-    }
-  };
-
   const fetchEmailQueue = async () => {
     setQueueLoading(true);
     try {
@@ -415,6 +376,158 @@ export const EmailAutomationManager = () => {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Email Automation</h1>
+          <p className="text-muted-foreground">
+            Configure and monitor automated email campaigns and delivery reports
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button 
+            onClick={processEmailQueue} 
+            disabled={isProcessing}
+            variant="outline"
+          >
+            <Send className="w-4 h-4 mr-2" />
+            {isProcessing ? 'Processing...' : 'Process Queue'}
+          </Button>
+          <Button onClick={fetchStats} variant="outline">
+            <BarChart className="w-4 h-4 mr-2" />
+            Refresh Stats
+          </Button>
+        </div>
+      </div>
+
+      {/* API Configuration Alert */}
+      <Alert className="border-yellow-200 bg-yellow-50">
+        <Zap className="h-4 w-4 text-yellow-600" />
+        <AlertDescription className="text-yellow-800">
+          <strong>Email Service Setup Required:</strong> To send emails, configure either RESEND_API_KEY or SENDGRID_API_KEY in your Supabase Edge Functions secrets.
+          <div className="mt-2 flex flex-wrap gap-4">
+            <a 
+              href="https://resend.com/api-keys" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+            >
+              Get Resend API Key <ExternalLink className="h-3 w-3" />
+            </a>
+            <a 
+              href="https://app.sendgrid.com/settings/api_keys" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+            >
+              Get SendGrid API Key <ExternalLink className="h-3 w-3" />
+            </a>
+            <a 
+              href={`https://supabase.com/dashboard/project/dthlgsnakhoftinssokm/settings/functions`}
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+            >
+              Configure in Supabase <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+        </AlertDescription>
+      </Alert>
+
+      {/* Email Statistics Dashboard */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Pending</p>
+                <p className="text-3xl font-bold text-yellow-600">{stats.pending}</p>
+              </div>
+              <Clock className="h-8 w-8 text-yellow-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Sent</p>
+                <p className="text-3xl font-bold text-green-600">{stats.totalSent}</p>
+              </div>
+              <Send className="h-8 w-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Failed</p>
+                <p className="text-3xl font-bold text-red-600">{stats.failed}</p>
+              </div>
+              <AlertCircle className="h-8 w-8 text-red-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Delivery Rate</p>
+                <p className="text-3xl font-bold text-blue-600">
+                  {stats.totalSent > 0 ? Math.round((stats.delivered / stats.totalSent) * 100) : 0}%
+                </p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Detailed Analytics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <Mail className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">Delivered</p>
+              <p className="text-2xl font-bold">{stats.delivered}</p>
+              <p className="text-xs text-muted-foreground">
+                {stats.totalSent > 0 ? Math.round((stats.delivered / stats.totalSent) * 100) : 0}% delivery rate
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <Eye className="h-8 w-8 text-green-500 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">Opened</p>
+              <p className="text-2xl font-bold">{stats.opened}</p>
+              <p className="text-xs text-muted-foreground">
+                {stats.delivered > 0 ? Math.round((stats.opened / stats.delivered) * 100) : 0}% open rate
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <MousePointer className="h-8 w-8 text-purple-500 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">Clicked</p>
+              <p className="text-2xl font-bold">{stats.clicked}</p>
+              <p className="text-xs text-muted-foreground">
+                {stats.opened > 0 ? Math.round((stats.clicked / stats.opened) * 100) : 0}% click rate
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -496,129 +609,6 @@ export const EmailAutomationManager = () => {
                 </div>
               ))
             )}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <SendHorizontal className="h-5 w-5" />
-            Bulk Email Operations
-          </CardTitle>
-          <CardDescription>
-            Send emails to multiple users at once
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="border rounded-lg p-4 bg-gradient-to-r from-green-50 to-blue-50">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h3 className="font-semibold text-lg">Send Welcome Email to All Users</h3>
-                  <p className="text-sm text-gray-600">
-                    Queue welcome emails and push notifications for all registered users
-                  </p>
-                </div>
-                <UserPlus className="h-8 w-8 text-green-600" />
-              </div>
-              
-              {bulkEmailSending && (
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">Processing... {bulkEmailProgress.sent}/{bulkEmailProgress.total} users</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                      style={{ 
-                        width: bulkEmailProgress.total > 0 
-                          ? `${(bulkEmailProgress.sent / bulkEmailProgress.total) * 100}%` 
-                          : '0%' 
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
-              
-              <Button
-                onClick={sendWelcomeEmailToAllUsers}
-                disabled={bulkEmailSending}
-                className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
-              >
-                {bulkEmailSending ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <SendHorizontal className="h-4 w-4 mr-2" />
-                    Send Welcome Email to All Users
-                  </>
-                )}
-              </Button>
-            </div>
-
-            <div className="border rounded-lg p-4 bg-gradient-to-r from-purple-50 to-indigo-50">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h3 className="font-semibold text-lg">Process Email Queue</h3>
-                  <p className="text-sm text-gray-600">
-                    Manually process all pending emails in the queue
-                  </p>
-                </div>
-                <Send className="h-8 w-8 text-purple-600" />
-              </div>
-              
-              <Button
-                onClick={processEmailQueue}
-                disabled={isProcessing}
-                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Send className="h-4 w-4 mr-2" />
-                    Process Email Queue Now
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Email Statistics</CardTitle>
-          <CardDescription>
-            Overview of email automation performance
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{emailStats.sentToday}</div>
-              <div className="text-sm text-gray-600">Emails Sent Today</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{emailStats.deliveryRate}%</div>
-              <div className="text-sm text-gray-600">Delivery Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{emailStats.openRate}%</div>
-              <div className="text-sm text-gray-600">Open Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{emailStats.clickRate}%</div>
-              <div className="text-sm text-gray-600">Click Rate</div>
-            </div>
           </div>
         </CardContent>
       </Card>
