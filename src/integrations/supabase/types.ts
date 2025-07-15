@@ -13668,6 +13668,10 @@ export type Database = {
         }
         Returns: number
       }
+      setup_multiple_pro_users: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       simulate_delivery_events_for_sent_emails: {
         Args: Record<PropertyKey, never>
         Returns: {
