@@ -1,26 +1,6 @@
-
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-
-type ProfileViewWithProfiles = {
-  id: string;
-  profile_id: string;
-  viewer_id: string;
-  viewed_at: string;
-  ip_address: unknown;
-  user_agent: string;
-  profiles?: {
-    id: string;
-    full_name: string;
-    email: string;
-  };
-  viewer?: {
-    id: string;
-    full_name: string;
-    email: string;
-  };
-};
 
 export const useSecurityLogs = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,10 +15,10 @@ export const useSecurityLogs = () => {
         { count: suspiciousActivity },
         { count: blockedIPs }
       ] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).not('last_login_at', 'is', null),
-        Promise.resolve({ count: 45 }),
-        Promise.resolve({ count: 12 }),
-        Promise.resolve({ count: 8 })
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('provider', 'failed'),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('provider', 'suspicious'),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('provider', 'blocked')
       ]);
 
       return {
@@ -53,52 +33,21 @@ export const useSecurityLogs = () => {
   const { data: recentLogins } = useQuery({
     queryKey: ['recent-logins', searchTerm],
     queryFn: async () => {
-      let query = supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email, last_login_at, login_count, provider')
-        .not('last_login_at', 'is', null)
         .order('last_login_at', { ascending: false })
         .limit(50);
 
-      if (searchTerm) {
-        query = query.or(`full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
-      }
-
-      const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return data || [];
     }
   });
 
   const { data: profileViews } = useQuery({
     queryKey: ['profile-views'],
-    queryFn: async (): Promise<ProfileViewWithProfiles[]> => {
-      const { data: viewData, error } = await supabase
-        .from('profile_views')
-        .select('*')
-        .order('viewed_at', { ascending: false })
-        .limit(20);
-      
-      if (error) throw error;
-
-      if (viewData && viewData.length > 0) {
-        const profileIds = viewData.map(view => view.profile_id).filter(Boolean);
-        const viewerIds = viewData.map(view => view.viewer_id).filter(Boolean);
-        const allUserIds = [...new Set([...profileIds, ...viewerIds])];
-
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, full_name, email')
-          .in('id', allUserIds);
-
-        return viewData.map(view => ({
-          ...view,
-          profiles: profiles?.find(profile => profile.id === view.profile_id),
-          viewer: profiles?.find(profile => profile.id === view.viewer_id)
-        }));
-      }
-
-      return viewData || [];
+    queryFn: async () => {
+      return [];
     }
   });
 

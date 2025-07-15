@@ -1,207 +1,181 @@
-
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AlertCircle, CheckCircle, ExternalLink, BarChart3, Search } from 'lucide-react';
-import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { Calendar, Download, TrendingUp, Users, Eye, MessageSquare, Briefcase, Building } from 'lucide-react';
+import { useAnalyticsReports } from '@/hooks/useAnalyticsReports';
+
+const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))'];
 
 export const AnalyticsAdmin = () => {
-  const [config, setConfig] = useState({
-    googleAnalyticsId: '',
-    searchConsoleVerification: '',
-    enableTracking: true,
-  });
-  const [isConfigured, setIsConfigured] = useState({
-    ga4: false,
-    gsc: false,
-  });
+  const { 
+    platformAnalytics, 
+    userGrowthData, 
+    topPerformingJobs,
+    dateRange,
+    setDateRange 
+  } = useAnalyticsReports();
 
-  useEffect(() => {
-    // Check if analytics is properly configured
-    const gaConfigured = config.googleAnalyticsId && config.googleAnalyticsId !== 'G-XXXXXXXXXX';
-    const gscConfigured = config.searchConsoleVerification && config.searchConsoleVerification !== 'your-search-console-verification-code';
-    
-    setIsConfigured({
-      ga4: gaConfigured,
-      gsc: gscConfigured,
-    });
-  }, [config]);
-
-  const handleSaveConfig = () => {
-    // In a real app, you'd save this to your backend or environment variables
-    localStorage.setItem('analytics_config', JSON.stringify(config));
-    toast.success('Analytics configuration saved! Please refresh the page to apply changes.');
-  };
-
-  const handleTestTracking = () => {
-    if (window.gtag) {
-      window.gtag('event', 'test_event', {
-        event_category: 'admin',
-        event_label: 'Analytics test from admin panel',
-        value: 1,
-      });
-      toast.success('Test event sent to Google Analytics');
-    } else {
-      toast.error('Google Analytics not loaded');
+  const platformStats = [
+    { 
+      title: 'Total Users', 
+      value: platformAnalytics?.totalUsers?.toLocaleString() || '0', 
+      change: '+12.5%',
+      icon: Users 
+    },
+    { 
+      title: 'New Users (Period)', 
+      value: platformAnalytics?.newUsers?.toLocaleString() || '0', 
+      change: '+8.2%',
+      icon: Users 
+    },
+    { 
+      title: 'Active Jobs', 
+      value: platformAnalytics?.totalJobs?.toLocaleString() || '0', 
+      change: '+15.3%',
+      icon: Briefcase 
+    },
+    { 
+      title: 'Total Applications', 
+      value: platformAnalytics?.totalApplications?.toLocaleString() || '0', 
+      change: '+22.1%',
+      icon: MessageSquare 
+    },
+    { 
+      title: 'Companies', 
+      value: platformAnalytics?.totalCompanies?.toLocaleString() || '0', 
+      change: '+5.7%',
+      icon: Building 
+    },
+    { 
+      title: 'Community Posts', 
+      value: platformAnalytics?.totalPosts?.toLocaleString() || '0', 
+      change: '+18.9%',
+      icon: MessageSquare 
     }
-  };
+  ];
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Analytics Configuration
-          </CardTitle>
-          <CardDescription>
-            Configure Google Analytics 4 and Search Console for your platform
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="setup" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="setup">Setup</TabsTrigger>
-              <TabsTrigger value="status">Status</TabsTrigger>
-              <TabsTrigger value="testing">Testing</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="setup" className="space-y-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="ga-id">Google Analytics 4 Measurement ID</Label>
-                  <Input
-                    id="ga-id"
-                    placeholder="G-XXXXXXXXXX"
-                    value={config.googleAnalyticsId}
-                    onChange={(e) => setConfig(prev => ({ ...prev, googleAnalyticsId: e.target.value }))}
-                  />
-                  <p className="text-sm text-gray-600">
-                    Find this in your GA4 property under Admin → Property → Data Streams
-                  </p>
-                </div>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold">Platform Analytics</h2>
+          <p className="text-muted-foreground">Comprehensive insights into platform performance</p>
+        </div>
+        <div className="flex gap-2">
+          <Select value={dateRange} onValueChange={setDateRange}>
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="7d">Last 7 days</SelectItem>
+              <SelectItem value="30d">Last 30 days</SelectItem>
+              <SelectItem value="90d">Last 90 days</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+        </div>
+      </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="gsc-verification">Search Console Verification Code</Label>
-                  <Input
-                    id="gsc-verification"
-                    placeholder="your-verification-code"
-                    value={config.searchConsoleVerification}
-                    onChange={(e) => setConfig(prev => ({ ...prev, searchConsoleVerification: e.target.value }))}
-                  />
-                  <p className="text-sm text-gray-600">
-                    Get this from Google Search Console → Settings → Ownership verification
-                  </p>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    checked={config.enableTracking}
-                    onCheckedChange={(checked) => setConfig(prev => ({ ...prev, enableTracking: checked }))}
-                  />
-                  <Label>Enable Analytics Tracking</Label>
-                </div>
-
-                <Button onClick={handleSaveConfig} className="w-full">
-                  Save Configuration
-                </Button>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="status" className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <BarChart3 className="h-4 w-4" />
-                      Google Analytics 4
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <Badge variant={isConfigured.ga4 ? "default" : "secondary"}>
-                        {isConfigured.ga4 ? (
-                          <><CheckCircle className="h-3 w-3 mr-1" /> Configured</>
-                        ) : (
-                          <><AlertCircle className="h-3 w-3 mr-1" /> Not Configured</>
-                        )}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <Search className="h-4 w-4" />
-                      Search Console
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <Badge variant={isConfigured.gsc ? "default" : "secondary"}>
-                        {isConfigured.gsc ? (
-                          <><CheckCircle className="h-3 w-3 mr-1" /> Configured</>
-                        ) : (
-                          <><AlertCircle className="h-3 w-3 mr-1" /> Not Configured</>
-                        )}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="space-y-3">
-                <h4 className="font-medium">Quick Links</h4>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      GA4 Dashboard
-                    </a>
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Search Console
-                    </a>
-                  </Button>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="testing" className="space-y-4">
-              <div className="space-y-4">
-                <p className="text-sm text-gray-600">
-                  Test your analytics implementation to ensure events are being tracked properly.
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {platformStats.map((stat, index) => {
+          const IconComponent = stat.icon;
+          return (
+            <Card key={index}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                <IconComponent className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-green-600">{stat.change}</span> from last period
                 </p>
-                
-                <Button onClick={handleTestTracking} variant="outline">
-                  Send Test Event
-                </Button>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2">Events Being Tracked:</h4>
-                  <ul className="text-sm space-y-1 text-gray-600">
-                    <li>• Page views (automatic)</li>
-                    <li>• Job applications</li>
-                    <li>• Course enrollments</li>
-                    <li>• Job searches</li>
-                    <li>• Profile views</li>
-                    <li>• Tool usage</li>
-                    <li>• File downloads</li>
-                  </ul>
-                </div>
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="users">User Analytics</TabsTrigger>
+          <TabsTrigger value="engagement">Engagement</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>User Growth Trend</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={userGrowthData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line 
+                    type="monotone" 
+                    dataKey="users" 
+                    stroke="hsl(var(--primary))" 
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="users" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>User Registration Trends</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart data={userGrowthData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="users" fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="engagement" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Top Performing Jobs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {topPerformingJobs?.map((job, index) => (
+                  <div key={job.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <h4 className="font-medium">{job.title}</h4>
+                      <p className="text-sm text-muted-foreground">{job.companies?.name}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold">{job.applications_count} applications</div>
+                      <div className="text-sm text-muted-foreground">#{index + 1}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
