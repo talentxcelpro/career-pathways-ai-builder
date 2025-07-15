@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Send, Loader2, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Send, Loader2, AlertTriangle, CheckCircle, XCircle, Wifi, WifiOff, TestTube, Database } from 'lucide-react';
 
 interface BulkProcessingStatus {
   isProcessing: boolean;
@@ -14,6 +16,8 @@ interface BulkProcessingStatus {
   retrying: number;
   currentBatch: number;
   errors: string[];
+  connectionStatus: 'checking' | 'connected' | 'disconnected';
+  lastHealthCheck: Date | null;
 }
 
 interface BulkEmailProcessorProps {
@@ -29,11 +33,100 @@ export const BulkEmailProcessor: React.FC<BulkEmailProcessorProps> = ({ onStatsU
     retrying: 0,
     currentBatch: 0,
     errors: [],
+    connectionStatus: 'checking',
+    lastHealthCheck: null,
   });
 
   const BATCH_SIZE = 10; // Process emails in batches
   const MAX_RETRIES = 3;
   const RETRY_DELAY = 2000; // 2 seconds
+
+  // Health check function
+  const checkConnectionHealth = async (): Promise<boolean> => {
+    try {
+      setStatus(prev => ({ ...prev, connectionStatus: 'checking', lastHealthCheck: new Date() }));
+      
+      // Simple health check using a lightweight Supabase query
+      const { error } = await supabase
+        .from('email_automation_queue')
+        .select('id')
+        .limit(1);
+      
+      if (error) {
+        console.error('Health check failed:', error);
+        setStatus(prev => ({ ...prev, connectionStatus: 'disconnected' }));
+        return false;
+      }
+      
+      setStatus(prev => ({ ...prev, connectionStatus: 'connected' }));
+      return true;
+    } catch (error) {
+      console.error('Health check error:', error);
+      setStatus(prev => ({ ...prev, connectionStatus: 'disconnected' }));
+      return false;
+    }
+  };
+
+  // Process single email for testing
+  const processSingleEmail = async (): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('process-email-queue', {
+        body: { manual: true, batch_size: 1 }
+      });
+      
+      if (error || data?.error) {
+        throw new Error(error?.message || data?.error || 'Failed to process single email');
+      }
+      
+      return true;
+    } catch (error: any) {
+      console.error('Single email processing failed:', error);
+      return false;
+    }
+  };
+
+  // Database-only processing fallback
+  const processDatabaseOnly = async (): Promise<void> => {
+    try {
+      // Get pending emails and mark them as failed with a note
+      const { data: pendingEmails, error } = await supabase
+        .from('email_automation_queue')
+        .select('*')
+        .eq('status', 'pending')
+        .limit(10);
+      
+      if (error) throw error;
+      
+      if (pendingEmails && pendingEmails.length > 0) {
+        // Update status to indicate manual processing needed
+        const { error: updateError } = await supabase
+          .from('email_automation_queue')
+          .update({ 
+            status: 'failed',
+            error_message: 'Edge function unavailable - requires manual processing',
+            updated_at: new Date().toISOString()
+          })
+          .in('id', pendingEmails.map(e => e.id));
+        
+        if (updateError) throw updateError;
+        
+        toast.warning(`Marked ${pendingEmails.length} emails for manual processing due to edge function issues`);
+      } else {
+        toast.info('No pending emails found');
+      }
+    } catch (error: any) {
+      console.error('Database fallback failed:', error);
+      toast.error(`Database fallback failed: ${error.message}`);
+    }
+  };
+
+  useEffect(() => {
+    checkConnectionHealth();
+    
+    // Check connection health every 30 seconds
+    const interval = setInterval(checkConnectionHealth, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const processEmailBatch = async (batchNumber: number, retryCount: number = 0): Promise<{ success: boolean; error?: string }> => {
     try {
@@ -55,6 +148,10 @@ export const BulkEmailProcessor: React.FC<BulkEmailProcessorProps> = ({ onStatsU
       const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as any;
 
       if (error) {
+        // Check for specific error types
+        if (error.message?.includes('Failed to send a request to the Edge Function')) {
+          throw new Error('Edge function unavailable - connection failed');
+        }
         throw new Error(error.message || 'Unknown Supabase error');
       }
 
@@ -67,9 +164,15 @@ export const BulkEmailProcessor: React.FC<BulkEmailProcessorProps> = ({ onStatsU
       const errorMessage = error.message || 'Unknown error';
       console.error(`Batch ${batchNumber} failed (attempt ${retryCount + 1}):`, errorMessage);
       
-      // Retry logic
+      // Update connection status on specific errors
+      if (errorMessage.includes('Edge function unavailable') || errorMessage.includes('timeout')) {
+        setStatus(prev => ({ ...prev, connectionStatus: 'disconnected' }));
+      }
+      
+      // Retry logic with exponential backoff
       if (retryCount < MAX_RETRIES) {
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
+        const delay = RETRY_DELAY * Math.pow(2, retryCount); // Exponential backoff
+        await new Promise(resolve => setTimeout(resolve, delay));
         return await processEmailBatch(batchNumber, retryCount + 1);
       }
       
@@ -79,6 +182,13 @@ export const BulkEmailProcessor: React.FC<BulkEmailProcessorProps> = ({ onStatsU
 
   const processBulkEmails = async () => {
     try {
+      // First check connection health
+      const isHealthy = await checkConnectionHealth();
+      if (!isHealthy) {
+        toast.error('Connection check failed. Please try the database fallback option.');
+        return;
+      }
+
       setStatus(prev => ({ 
         ...prev, 
         isProcessing: true, 
@@ -181,10 +291,34 @@ export const BulkEmailProcessor: React.FC<BulkEmailProcessorProps> = ({ onStatsU
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-4">
+        {/* Connection Status */}
+        <Alert className={`mb-4 ${status.connectionStatus === 'connected' ? 'border-green-200 bg-green-50' : status.connectionStatus === 'disconnected' ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50'}`}>
+          <div className="flex items-center gap-2">
+            {status.connectionStatus === 'connected' ? (
+              <Wifi className="h-4 w-4 text-green-600" />
+            ) : status.connectionStatus === 'disconnected' ? (
+              <WifiOff className="h-4 w-4 text-red-600" />
+            ) : (
+              <Loader2 className="h-4 w-4 text-yellow-600 animate-spin" />
+            )}
+            <AlertDescription className={status.connectionStatus === 'connected' ? 'text-green-800' : status.connectionStatus === 'disconnected' ? 'text-red-800' : 'text-yellow-800'}>
+              <span className="font-medium">Connection Status: </span>
+              <Badge variant={status.connectionStatus === 'connected' ? 'default' : status.connectionStatus === 'disconnected' ? 'destructive' : 'secondary'}>
+                {status.connectionStatus === 'connected' ? 'Connected' : status.connectionStatus === 'disconnected' ? 'Disconnected' : 'Checking...'}
+              </Badge>
+              {status.lastHealthCheck && (
+                <span className="text-sm ml-2">
+                  Last checked: {status.lastHealthCheck.toLocaleTimeString()}
+                </span>
+              )}
+            </AlertDescription>
+          </div>
+        </Alert>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Button
             onClick={processBulkEmails}
-            disabled={status.isProcessing}
+            disabled={status.isProcessing || status.connectionStatus === 'disconnected'}
             className="flex-1"
           >
             {status.isProcessing ? (
@@ -195,9 +329,35 @@ export const BulkEmailProcessor: React.FC<BulkEmailProcessorProps> = ({ onStatsU
             ) : (
               <>
                 <Send className="w-4 h-4 mr-2" />
-                Process All Pending Emails
+                Process All Pending
               </>
             )}
+          </Button>
+
+          <Button
+            onClick={async () => {
+              const success = await processSingleEmail();
+              if (success) {
+                toast.success('Single email processed successfully');
+                onStatsUpdate();
+              } else {
+                toast.error('Failed to process single email');
+              }
+            }}
+            disabled={status.isProcessing}
+            variant="outline"
+          >
+            <TestTube className="w-4 h-4 mr-2" />
+            Test Single Email
+          </Button>
+
+          <Button
+            onClick={processDatabaseOnly}
+            disabled={status.isProcessing}
+            variant="secondary"
+          >
+            <Database className="w-4 h-4 mr-2" />
+            Database Fallback
           </Button>
         </div>
 

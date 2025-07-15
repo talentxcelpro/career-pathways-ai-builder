@@ -90,6 +90,22 @@ export const EmailAutomationManager = () => {
       
       console.log('Calling process-email-queue function...');
       
+      // First, do a quick health check
+      try {
+        const { error: healthError } = await supabase
+          .from('email_automation_queue')
+          .select('id')
+          .limit(1);
+        
+        if (healthError) {
+          toast.error('Database connection failed. Please check your connection.');
+          return;
+        }
+      } catch (healthErr) {
+        toast.error('Unable to connect to database. Please try again.');
+        return;
+      }
+      
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Request timeout after 30 seconds')), 30000)
@@ -140,13 +156,15 @@ export const EmailAutomationManager = () => {
       console.error('Network/Function error:', error);
       const errorMessage = error.message || 'Unknown error';
       
-      // Provide more specific error messages
+      // Provide more specific error messages with actionable solutions
       if (errorMessage.includes('timeout')) {
-        toast.error('Email processing timed out. Please try the bulk processor for large queues.');
+        toast.error('Email processing timed out. Try the "Bulk Email Processing" section below for better handling of large queues.');
+      } else if (errorMessage.includes('Failed to send a request to the Edge Function')) {
+        toast.error('Edge function is unavailable. Use "Test Single Email" or "Database Fallback" in the Bulk Processing section.');
       } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
-        toast.error('Network error. Please check your connection and try again.');
+        toast.error('Network error. Check your connection and try again, or use the Bulk Processing fallback options.');
       } else {
-        toast.error(`Failed to process email queue: ${errorMessage}`);
+        toast.error(`Failed to process email queue: ${errorMessage}. Try the Bulk Processing section for alternative options.`);
       }
     } finally {
       setIsProcessing(false);
