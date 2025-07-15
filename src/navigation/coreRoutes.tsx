@@ -21,6 +21,7 @@ import { MobileAIMatching } from "../components/mobile/MobileAIMatching";
 import { MobileVideoInterview } from "../components/mobile/MobileVideoInterview";
 import { MobileAnalytics } from "../components/mobile/MobileAnalytics";
 import { MobileSocialNetwork } from "../components/mobile/MobileSocialNetwork";
+import PublicServiceProfile from "../pages/PublicServiceProfile";
 
 export const coreRoutes = [
   {
@@ -134,6 +135,11 @@ export const coreRoutes = [
     title: "Mobile Resume",
     to: "/mobile-resume",
     page: <MobileResumeBuilder />,
+  },
+  {
+    title: "Public Service Profile",
+    to: "/:username/services",
+    page: <PublicServiceProfile />,
   },
   {
     title: "Not Found",
