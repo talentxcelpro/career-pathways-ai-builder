@@ -105,13 +105,13 @@ const ServiceManagement = () => {
     }
 
     const serviceData = {
+      profile_id: profileId,
       title: template.title,
       description: template.description,
       category: template.category,
       pricing_type: template.recommended_pricing_type,
       delivery_time_days: template.delivery_time_days,
-      is_active: true,
-      profile_id: profileId
+      is_active: true
     };
 
     const { error } = await supabase
@@ -174,7 +174,6 @@ const ServiceManagement = () => {
         .insert([{ 
           user_id: user.id,
           profile_slug: profileSlug,
-          subscription_tier: 'pro_starter',
           is_active: true
         }])
         .select('id')
@@ -235,6 +234,7 @@ const ServiceManagement = () => {
     }
 
     const serviceData = {
+      profile_id: profileId,
       title: serviceForm.title,
       description: serviceForm.description,
       category: serviceForm.category,
@@ -242,8 +242,7 @@ const ServiceManagement = () => {
       base_price: serviceForm.base_price ? parseFloat(serviceForm.base_price) : null,
       hourly_rate: serviceForm.hourly_rate ? parseFloat(serviceForm.hourly_rate) : null,
       delivery_time_days: serviceForm.delivery_time_days ? parseInt(serviceForm.delivery_time_days) : null,
-      is_active: serviceForm.is_active,
-      profile_id: profileId
+      is_active: serviceForm.is_active
     };
 
     let error;
@@ -283,11 +282,11 @@ const ServiceManagement = () => {
     if (!profileId) return;
 
     const portfolioData = {
+      profile_id: profileId,
       title: portfolioForm.title,
       description: portfolioForm.description,
       type: portfolioForm.type,
-      external_url: portfolioForm.external_url,
-      profile_id: profileId
+      external_url: portfolioForm.external_url
     };
 
     const { error } = await supabase

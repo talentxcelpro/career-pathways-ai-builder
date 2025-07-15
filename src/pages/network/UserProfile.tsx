@@ -256,12 +256,24 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
         <Card className="mb-6">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-start space-y-6 md:space-y-0 md:space-x-6">
-              <Avatar className="w-24 h-24">
-                <AvatarImage src={profile.profile_picture_url} />
-                <AvatarFallback className="text-xl">
-                  {generateInitials(profile)}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className="w-24 h-24">
+                  <AvatarImage src={profile.profile_picture_url} />
+                  <AvatarFallback className="text-xl">
+                    {generateInitials(profile)}
+                  </AvatarFallback>
+                </Avatar>
+                {profile.pro_status && (
+                  <div className="absolute -bottom-1 -right-1">
+                    <ProBadge 
+                      plan={profile.pro_status === 'starter' ? 'Starter' : 
+                            profile.pro_status === 'business' ? 'Business' : 
+                            profile.pro_status === 'elite' ? 'Elite' : 'Starter'} 
+                      size="sm" 
+                    />
+                  </div>
+                )}
+              </div>
 
                <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">

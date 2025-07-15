@@ -115,20 +115,32 @@ const Profile = () => {
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
-              {profile?.profile_picture_url ? (
-                <img
-                  src={profile.profile_picture_url}
-                  alt={profile.full_name || 'Profile'}
-                  className="w-20 h-20 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
-                  {profile?.full_name 
-                    ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase()
-                    : currentUser.email?.[0]?.toUpperCase() || 'U'
-                  }
-                </div>
-              )}
+              <div className="relative">
+                {profile?.profile_picture_url ? (
+                  <img
+                    src={profile.profile_picture_url}
+                    alt={profile.full_name || 'Profile'}
+                    className="w-20 h-20 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
+                    {profile?.full_name 
+                      ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase()
+                      : currentUser.email?.[0]?.toUpperCase() || 'U'
+                    }
+                  </div>
+                )}
+                {profile?.pro_status && (
+                  <div className="absolute -bottom-1 -right-1">
+                    <ProBadge 
+                      plan={profile.pro_status === 'starter' ? 'Starter' : 
+                            profile.pro_status === 'business' ? 'Business' : 
+                            profile.pro_status === 'elite' ? 'Elite' : 'Starter'} 
+                      size="sm" 
+                    />
+                  </div>
+                )}
+              </div>
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <h1 className="text-3xl font-bold text-gray-900">
