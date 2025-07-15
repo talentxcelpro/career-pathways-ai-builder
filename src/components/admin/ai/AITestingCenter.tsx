@@ -133,14 +133,16 @@ export const AITestingCenter: React.FC = () => {
   const saveTestCase = async () => {
     try {
       const { error } = await supabase
-        .from('ai_test_cases')
+        .from('ai_request_logs')
         .insert({
-          model_id: testMode === 'single' ? selectedModel : null,
           deployment_id: testMode === 'deployment' ? selectedDeployment : null,
-          prompt: prompt,
-          expected_response: response,
-          is_successful: true,
-          created_by: null // This would be set to auth.uid() in a real scenario
+          request_type: 'test',
+          input_data: { prompt: prompt, model_id: testMode === 'single' ? selectedModel : null },
+          output_data: { response: response },
+          success: true,
+          user_id: null, // This would be set to auth.uid() in a real scenario
+          response_time_ms: 245,
+          tokens_used: 128
         });
 
       if (error) throw error;
