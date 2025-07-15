@@ -111,6 +111,7 @@ export const Navbar = () => {
     { to: "/companies", label: "Companies" },
     { to: "/resume-builder", label: "Resume Builder" },
     { to: "/tools", label: "Tools" },
+    { to: "/services", label: "Services" },
     { to: "/learning", label: "Learning" },
     { to: "/colleges", label: "Colleges" },
     { to: "/career-map", label: "Career Map" },

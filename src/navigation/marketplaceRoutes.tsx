@@ -3,6 +3,7 @@ import Marketplace from "../pages/Marketplace";
 import ServiceDetail from "../pages/marketplace/ServiceDetail";
 import PostService from "../pages/marketplace/PostService";
 import LearningHub from "../pages/LearningHub";
+import ServiceMarketplace from "../components/marketplace/ServiceMarketplace";
 
 export const marketplaceRoutes = [
   {
@@ -13,7 +14,7 @@ export const marketplaceRoutes = [
   {
     title: "Services Directory",
     to: "/services",
-    page: <Marketplace />,
+    page: <ServiceMarketplace />,
   },
   {
     title: "Service Detail",
