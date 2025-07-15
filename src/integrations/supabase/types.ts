@@ -163,6 +163,170 @@ export type Database = {
           },
         ]
       }
+      ai_career_insights: {
+        Row: {
+          confidence_level: string | null
+          created_at: string | null
+          data: Json
+          data_freshness: string | null
+          id: string
+          industry: string | null
+          insight_type: string
+          is_personalized: boolean | null
+          location: string | null
+          role: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          confidence_level?: string | null
+          created_at?: string | null
+          data?: Json
+          data_freshness?: string | null
+          id?: string
+          industry?: string | null
+          insight_type: string
+          is_personalized?: boolean | null
+          location?: string | null
+          role?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          confidence_level?: string | null
+          created_at?: string | null
+          data?: Json
+          data_freshness?: string | null
+          id?: string
+          industry?: string | null
+          insight_type?: string
+          is_personalized?: boolean | null
+          location?: string | null
+          role?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_career_recommendations: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          description: string
+          expires_at: string | null
+          id: string
+          is_dismissed: boolean | null
+          is_viewed: boolean | null
+          metadata: Json | null
+          priority: number | null
+          recommendation_type: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          description: string
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          is_viewed?: boolean | null
+          metadata?: Json | null
+          priority?: number | null
+          recommendation_type: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          description?: string
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          is_viewed?: boolean | null
+          metadata?: Json | null
+          priority?: number | null
+          recommendation_type?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_chat_messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          message_type: string
+          metadata: Json | null
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          message_type: string
+          metadata?: Json | null
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          message_type?: string
+          metadata?: Json | null
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_chat_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "ai_chat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_chat_sessions: {
+        Row: {
+          context_data: Json | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          last_message_at: string | null
+          session_title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          context_data?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_message_at?: string | null
+          session_title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          context_data?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_message_at?: string | null
+          session_title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_content_library: {
         Row: {
           approved_by: string | null
@@ -431,6 +595,56 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_job_matches: {
+        Row: {
+          applied_at: string | null
+          created_at: string | null
+          id: string
+          is_bookmarked: boolean | null
+          job_id: string
+          match_score: number
+          matching_factors: Json | null
+          salary_comparison: Json | null
+          skill_gaps: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          applied_at?: string | null
+          created_at?: string | null
+          id?: string
+          is_bookmarked?: boolean | null
+          job_id: string
+          match_score: number
+          matching_factors?: Json | null
+          salary_comparison?: Json | null
+          skill_gaps?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          applied_at?: string | null
+          created_at?: string | null
+          id?: string
+          is_bookmarked?: boolean | null
+          job_id?: string
+          match_score?: number
+          matching_factors?: Json | null
+          salary_comparison?: Json | null
+          skill_gaps?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_job_matches_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_operation_queue: {
         Row: {
           attempts: number | null
@@ -541,6 +755,59 @@ export type Database = {
           version?: string
         }
         Relationships: []
+      }
+      ai_resume_analysis: {
+        Row: {
+          analysis_version: string | null
+          ats_compatibility_score: number | null
+          created_at: string | null
+          id: string
+          improvements: Json | null
+          industry_comparison: Json | null
+          keyword_optimization: Json | null
+          overall_score: number | null
+          resume_id: string
+          strengths: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          analysis_version?: string | null
+          ats_compatibility_score?: number | null
+          created_at?: string | null
+          id?: string
+          improvements?: Json | null
+          industry_comparison?: Json | null
+          keyword_optimization?: Json | null
+          overall_score?: number | null
+          resume_id: string
+          strengths?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          analysis_version?: string | null
+          ats_compatibility_score?: number | null
+          created_at?: string | null
+          id?: string
+          improvements?: Json | null
+          industry_comparison?: Json | null
+          keyword_optimization?: Json | null
+          overall_score?: number | null
+          resume_id?: string
+          strengths?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_resume_analysis_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_resume_suggestions: {
         Row: {

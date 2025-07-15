@@ -9,8 +9,15 @@ import Pathfinder from "../pages/ai/Pathfinder";
 import { AICareerAnalytics } from "../components/ai/AICareerAnalytics";
 import { PredictiveJobRecommendations } from "../components/ai/PredictiveJobRecommendations";
 import { SmartNetworkAnalytics } from "../components/ai/SmartNetworkAnalytics";
+import AICareerIntelligence from "../pages/AICareerIntelligence";
 
 export const aiRoutes = [
+  {
+    title: "AI Career Intelligence",
+    to: "/ai-career",
+    icon: <Brain className="h-4 w-4" />,
+    page: <AICareerIntelligence />,
+  },
   {
     title: "AI Assistant",
     to: "/ai-assistant",
