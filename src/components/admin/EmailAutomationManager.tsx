@@ -35,6 +35,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { EmailTriggerSettingsModal } from './EmailTriggerSettingsModal';
 import { BulkEmailProcessor } from './BulkEmailProcessor';
+import { EmailAnalyticsDashboard } from './EmailAnalyticsDashboard';
 
 interface EmailTrigger {
   id: string;
@@ -778,6 +779,9 @@ export const EmailAutomationManager = () => {
           </CardContent>
         )}
       </Card>
+
+      {/* Comprehensive Analytics Dashboard */}
+      <EmailAnalyticsDashboard />
 
       {/* Bulk Email Processor */}
       <BulkEmailProcessor onStatsUpdate={fetchStats} />
