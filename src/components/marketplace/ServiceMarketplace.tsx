@@ -1,175 +1,260 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Star, Clock, DollarSign, User, MessageSquare, Filter, TrendingUp } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Search, Star, Clock, DollarSign, User, MessageSquare, Filter, TrendingUp, Plus, IndianRupee, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { formatCurrency } from "@/utils/currencyUtils";
 import EnhancedServiceCard from "./EnhancedServiceCard";
 import ServiceRecommendations from "./ServiceRecommendations";
 import MarketplaceFilters from "./MarketplaceFilters";
 
-// Enhanced mock data with additional fields for marketplace features
-const mockServices = [
-  {
-    id: "1",
-    title: "Professional Resume Review & Optimization",
-    description: "Get your resume reviewed by industry experts and optimized for ATS systems with detailed feedback and improvement suggestions",
-    category: "resume",
-    service_type: "review",
-    price_type: "fixed",
-    base_price: 75,
-    delivery_time_days: 3,
-    skills_offered: ["Resume Writing", "ATS Optimization", "Career Strategy"],
-    rating: 4.8,
-    reviews_count: 124,
-    orders_completed: 89,
-    is_featured: true,
-    is_verified: true,
-    provider_name: "Sarah Johnson",
-    provider_location: "New York, NY",
-    provider_response_time: "2 hours",
-    provider_avatar: "/placeholder.svg",
-    provider_badge: "expert"
-  },
-  {
-    id: "2",
-    title: "Mock Interview Session with Feedback",
-    description: "Practice your interview skills with experienced professionals and get detailed feedback on your performance",
-    category: "interview",
-    service_type: "coaching",
-    price_type: "hourly",
-    base_price: 60,
-    delivery_time_days: 1,
-    skills_offered: ["Interview Coaching", "Communication Skills", "Confidence Building"],
-    rating: 4.9,
-    reviews_count: 87,
-    orders_completed: 156,
-    is_featured: false,
-    is_verified: true,
-    provider_name: "Mike Chen",
-    provider_location: "San Francisco, CA",
-    provider_response_time: "1 hour",
-    provider_avatar: "/placeholder.svg",
-    provider_badge: "verified"
-  },
-  {
-    id: "3",
-    title: "LinkedIn Profile Optimization",
-    description: "Transform your LinkedIn profile to attract recruiters and networking opportunities with professional copywriting",
-    category: "linkedin_optimization",
-    service_type: "design",
-    price_type: "package",
-    base_price: 120,
-    delivery_time_days: 5,
-    skills_offered: ["LinkedIn Optimization", "Personal Branding", "Networking"],
-    rating: 4.7,
-    reviews_count: 203,
-    orders_completed: 178,
-    is_featured: true,
-    is_verified: true,
-    provider_name: "Emily Rodriguez",
-    provider_location: "Remote",
-    provider_response_time: "4 hours",
-    provider_avatar: "/placeholder.svg",
-    provider_badge: "premium"
-  },
-  {
-    id: "4",
-    title: "Career Coaching & Strategy Session",
-    description: "One-on-one career coaching sessions to help you navigate your professional journey and achieve your goals",
-    category: "career_coaching",
-    service_type: "coaching",
-    price_type: "hourly",
-    base_price: 90,
-    delivery_time_days: 1,
-    skills_offered: ["Career Planning", "Goal Setting", "Professional Development"],
-    rating: 4.6,
-    reviews_count: 156,
-    orders_completed: 234,
-    is_featured: false,
-    is_verified: true,
-    provider_name: "David Kim",
-    provider_location: "Los Angeles, CA",
-    provider_response_time: "3 hours",
-    provider_avatar: "/placeholder.svg",
-    provider_badge: "verified"
-  },
-  {
-    id: "5",
-    title: "Technical Skills Assessment & Training",
-    description: "Comprehensive technical skills evaluation and personalized training program for career advancement",
-    category: "skill_development",
-    service_type: "training",
-    price_type: "package",
-    base_price: 200,
-    delivery_time_days: 14,
-    skills_offered: ["Technical Assessment", "Skill Development", "Programming"],
-    rating: 4.9,
-    reviews_count: 89,
-    orders_completed: 67,
-    is_featured: true,
-    is_verified: true,
-    provider_name: "Alex Thompson",
-    provider_location: "Seattle, WA",
-    provider_response_time: "6 hours",
-    provider_avatar: "/placeholder.svg",
-    provider_badge: "expert"
-  },
-  {
-    id: "6",
-    title: "Personal Branding & Portfolio Review",
-    description: "Complete personal branding makeover including portfolio review and online presence optimization",
-    category: "portfolio_review",
-    service_type: "design",
-    price_type: "fixed",
-    base_price: 150,
-    delivery_time_days: 7,
-    skills_offered: ["Personal Branding", "Portfolio Design", "Online Presence"],
-    rating: 4.8,
-    reviews_count: 134,
-    orders_completed: 98,
-    is_featured: false,
-    is_verified: false,
-    provider_name: "Jessica Lee",
-    provider_location: "Chicago, IL",
-    provider_response_time: "8 hours",
-    provider_avatar: "/placeholder.svg"
-  }
-];
+interface Service {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  service_type: string;
+  price_type: string;
+  base_price: number;
+  delivery_time_days: number;
+  skills_offered: string[];
+  rating: number;
+  reviews_count: number;
+  orders_completed: number;
+  is_featured: boolean;
+  is_verified: boolean;
+  provider_name: string;
+  provider_location: string;
+  provider_response_time: string;
+  provider_avatar: string;
+  provider_badge?: string;
+}
+
+interface ServiceRequest {
+  title: string;
+  description: string;
+  category: string;
+  budget: string;
+  timeline: string;
+}
 
 export default function ServiceMarketplace() {
-  const [services, setServices] = useState(mockServices);
+  const [services, setServices] = useState<Service[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedServiceType, setSelectedServiceType] = useState<string>("all");
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [minRating, setMinRating] = useState(0);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [serviceTypes, setServiceTypes] = useState<string[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
+  const [showRequestDialog, setShowRequestDialog] = useState(false);
+  const [serviceRequest, setServiceRequest] = useState<ServiceRequest>({
+    title: "",
+    description: "",
+    category: "",
+    budget: "",
+    timeline: ""
+  });
+  const [stats, setStats] = useState({
+    totalProviders: 0,
+    totalServices: 0,
+    averageRating: 0,
+    averageResponseTime: ""
+  });
 
-  const categories = [
-    "resume", "interview", "career_coaching", "skill_development", 
-    "portfolio_review", "linkedin_optimization", "salary_negotiation"
-  ];
+  useEffect(() => {
+    fetchServices();
+    fetchCategories();
+    fetchStats();
+  }, []);
 
-  const serviceTypes = [
-    "consultation", "review", "training", "coaching", "design"
-  ];
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const { data: servicesData, error } = await supabase
+        .from('services')
+        .select(`
+          *,
+          service_providers (
+            business_name,
+            rating,
+            total_reviews,
+            is_verified,
+            completed_jobs,
+            response_time,
+            location,
+            profiles (
+              full_name,
+              avatar_url
+            )
+          ),
+          service_categories (
+            name
+          )
+        `)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
 
-  const locations = [
-    "New York, NY", "San Francisco, CA", "Los Angeles, CA", "Seattle, WA", "Chicago, IL", "Remote"
-  ];
+      if (error) throw error;
 
-  const handleFavorite = (serviceId: string) => {
-    setFavorites(prev => 
-      prev.includes(serviceId) 
-        ? prev.filter(id => id !== serviceId)
-        : [...prev, serviceId]
-    );
+      const formattedServices = servicesData?.map(service => ({
+        id: service.id,
+        title: service.title,
+        description: service.description,
+        category: service.service_categories?.name || "Other",
+        service_type: service.service_type || "consultation",
+        price_type: service.price_type || "fixed",
+        base_price: service.price_inr || 0,
+        delivery_time_days: service.delivery_time_days || 1,
+        skills_offered: service.skills_offered || [],
+        rating: service.service_providers?.rating || 0,
+        reviews_count: service.service_providers?.total_reviews || 0,
+        orders_completed: service.service_providers?.completed_jobs || 0,
+        is_featured: service.is_featured || false,
+        is_verified: service.service_providers?.is_verified || false,
+        provider_name: service.service_providers?.business_name || 
+                     service.service_providers?.profiles?.full_name || 
+                     "Unknown Provider",
+        provider_location: service.service_providers?.location || "Remote",
+        provider_response_time: service.service_providers?.response_time || "24 hours",
+        provider_avatar: service.service_providers?.profiles?.avatar_url || "/placeholder.svg",
+        provider_badge: service.service_providers?.is_verified ? "verified" : undefined
+      })) || [];
+
+      setServices(formattedServices);
+
+      // Extract unique values for filters
+      const uniqueServiceTypes = [...new Set(formattedServices.map(s => s.service_type))];
+      const uniqueLocations = [...new Set(formattedServices.map(s => s.provider_location))];
+      
+      setServiceTypes(uniqueServiceTypes);
+      setLocations(uniqueLocations);
+
+    } catch (error) {
+      console.error('Error fetching services:', error);
+      toast.error('Failed to load services');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('service_categories')
+        .select('name')
+        .eq('is_active', true);
+
+      if (error) throw error;
+      setCategories(data?.map(cat => cat.name) || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const { data: providersData } = await supabase
+        .from('service_providers')
+        .select('rating', { count: 'exact' });
+
+      const { data: servicesData } = await supabase
+        .from('services')
+        .select('id', { count: 'exact' })
+        .eq('is_active', true);
+
+      const totalProviders = providersData?.length || 0;
+      const totalServices = servicesData?.length || 0;
+      const averageRating = providersData?.reduce((sum, p) => sum + (p.rating || 0), 0) / totalProviders || 0;
+
+      setStats({
+        totalProviders,
+        totalServices,
+        averageRating: Math.round(averageRating * 10) / 10,
+        averageResponseTime: "2 hours"
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  const handleFavorite = async (serviceId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error('Please login to add favorites');
+        return;
+      }
+
+      const isFavorited = favorites.includes(serviceId);
+      
+      if (isFavorited) {
+        await supabase
+          .from('service_favorites')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('service_id', serviceId);
+          
+        setFavorites(prev => prev.filter(id => id !== serviceId));
+      } else {
+        await supabase
+          .from('service_favorites')
+          .insert([{ user_id: user.id, service_id: serviceId }]);
+          
+        setFavorites(prev => [...prev, serviceId]);
+      }
+    } catch (error) {
+      console.error('Error updating favorite:', error);
+      toast.error('Failed to update favorite');
+    }
+  };
+
+  const handleServiceRequest = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error('Please login to request a service');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('service_requests')
+        .insert([
+          {
+            user_id: user.id,
+            title: serviceRequest.title,
+            description: serviceRequest.description,
+            category: serviceRequest.category,
+            budget: serviceRequest.budget,
+            timeline: serviceRequest.timeline,
+            status: 'pending'
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast.success('Service request submitted! We\'ll get back to you soon.');
+      setShowRequestDialog(false);
+      setServiceRequest({ title: "", description: "", category: "", budget: "", timeline: "" });
+    } catch (error) {
+      console.error('Error submitting service request:', error);
+      toast.error('Failed to submit service request');
+    }
   };
 
   const getActiveFiltersCount = () => {
@@ -177,7 +262,7 @@ export default function ServiceMarketplace() {
     if (selectedCategory !== "all") count++;
     if (selectedServiceType !== "all") count++;
     if (selectedLocation !== "all") count++;
-    if (priceRange[0] !== 0 || priceRange[1] !== 500) count++;
+    if (priceRange[0] !== 0 || priceRange[1] !== 10000) count++;
     if (minRating > 0) count++;
     if (verifiedOnly) count++;
     return count;
@@ -187,7 +272,7 @@ export default function ServiceMarketplace() {
     setSelectedCategory("all");
     setSelectedServiceType("all");
     setSelectedLocation("all");
-    setPriceRange([0, 500]);
+    setPriceRange([0, 10000]);
     setMinRating(0);
     setVerifiedOnly(false);
   };
@@ -212,37 +297,137 @@ export default function ServiceMarketplace() {
 
   // Get featured and trending services for recommendations
   const featuredServices = services.filter(service => service.is_featured);
-  const trendingServices = services.sort((a, b) => b.orders_completed - a.orders_completed);
+  const trendingServices = [...services].sort((a, b) => b.orders_completed - a.orders_completed);
   const recommendedServices = services.filter(service => service.rating >= 4.5);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading services...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold mb-2">Professional Services Marketplace</h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Connect with verified experts, book instantly, and accelerate your career growth with our comprehensive service directory.
+      <div className="text-center bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-8">
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <Sparkles className="h-8 w-8 text-primary" />
+          <h1 className="text-4xl font-bold text-primary">Professional Services Marketplace</h1>
+        </div>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
+          Connect with verified Indian professionals and experts. All prices in INR. Quality guaranteed.
         </p>
+        
+        {/* Request Service Button */}
+        <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="bg-white/50 backdrop-blur-sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Can't find what you need? Request a service
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Request a Service</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="title">Service Title</Label>
+                <Input
+                  id="title"
+                  value={serviceRequest.title}
+                  onChange={(e) => setServiceRequest(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="What service do you need?"
+                />
+              </div>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={serviceRequest.description}
+                  onChange={(e) => setServiceRequest(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe your requirements in detail..."
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Select value={serviceRequest.category} onValueChange={(value) => setServiceRequest(prev => ({ ...prev, category: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map(category => (
+                      <SelectItem key={category} value={category}>{category}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="budget">Budget (INR)</Label>
+                <Input
+                  id="budget"
+                  value={serviceRequest.budget}
+                  onChange={(e) => setServiceRequest(prev => ({ ...prev, budget: e.target.value }))}
+                  placeholder="Your budget range (e.g., ₹5,000 - ₹10,000)"
+                />
+              </div>
+              <div>
+                <Label htmlFor="timeline">Timeline</Label>
+                <Input
+                  id="timeline"
+                  value={serviceRequest.timeline}
+                  onChange={(e) => setServiceRequest(prev => ({ ...prev, timeline: e.target.value }))}
+                  placeholder="When do you need this? (e.g., Within 1 week)"
+                />
+              </div>
+              <Button 
+                onClick={handleServiceRequest} 
+                className="w-full"
+                disabled={!serviceRequest.title || !serviceRequest.description}
+              >
+                Submit Request
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Stats Bar */}
-      <Card className="border-border/40">
-        <CardContent className="p-4">
+      <Card className="border-border/40 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
+        <CardContent className="p-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-primary">500+</div>
+            <div className="flex flex-col items-center">
+              <div className="text-3xl font-bold text-primary flex items-center gap-1">
+                <User className="h-6 w-6" />
+                {stats.totalProviders}+
+              </div>
               <div className="text-sm text-muted-foreground">Verified Experts</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-primary">1.2K+</div>
+            <div className="flex flex-col items-center">
+              <div className="text-3xl font-bold text-primary flex items-center gap-1">
+                <Sparkles className="h-6 w-6" />
+                {stats.totalServices}+
+              </div>
               <div className="text-sm text-muted-foreground">Services Available</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-primary">4.8</div>
+            <div className="flex flex-col items-center">
+              <div className="text-3xl font-bold text-primary flex items-center gap-1">
+                <Star className="h-6 w-6" />
+                {stats.averageRating}
+              </div>
               <div className="text-sm text-muted-foreground">Average Rating</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-primary">2hr</div>
+            <div className="flex flex-col items-center">
+              <div className="text-3xl font-bold text-primary flex items-center gap-1">
+                <Clock className="h-6 w-6" />
+                {stats.averageResponseTime}
+              </div>
               <div className="text-sm text-muted-foreground">Avg Response Time</div>
             </div>
           </div>
@@ -276,31 +461,45 @@ export default function ServiceMarketplace() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Services Grid */}
         <div className="lg:col-span-3">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <IndianRupee className="h-6 w-6 text-primary" />
               {filteredServices.length} Service{filteredServices.length !== 1 ? 's' : ''} Found
             </h2>
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Sorted by relevance</span>
+              <span className="text-sm text-muted-foreground">All prices in INR</span>
             </div>
           </div>
 
           {filteredServices.length === 0 ? (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Filter className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Services Found</h3>
-                <p className="text-muted-foreground">
-                  Try adjusting your search criteria or browse all categories
+            <Card className="border-dashed border-2">
+              <CardContent className="p-12 text-center">
+                <MessageSquare className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Services Found</h3>
+                <p className="text-muted-foreground mb-6">
+                  {searchTerm || getActiveFiltersCount() > 0 
+                    ? "No services match your criteria. Try adjusting your search or filters."
+                    : "No services are currently available. Check back later!"}
                 </p>
-                <Button 
-                  variant="outline" 
-                  onClick={clearFilters}
-                  className="mt-4"
-                >
-                  Clear All Filters
-                </Button>
+                <div className="space-y-2">
+                  {(searchTerm || getActiveFiltersCount() > 0) && (
+                    <Button 
+                      variant="outline" 
+                      onClick={clearFilters}
+                      className="mr-4"
+                    >
+                      Clear All Filters
+                    </Button>
+                  )}
+                  <Button 
+                    onClick={() => setShowRequestDialog(true)}
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Request a Service
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ) : (
@@ -319,23 +518,29 @@ export default function ServiceMarketplace() {
 
         {/* Sidebar with Recommendations */}
         <div className="space-y-6">
-          <ServiceRecommendations
-            type="featured"
-            services={featuredServices}
-            onServiceClick={(id) => console.log('Navigate to service:', id)}
-          />
+          {featuredServices.length > 0 && (
+            <ServiceRecommendations
+              type="featured"
+              services={featuredServices}
+              onServiceClick={(id) => console.log('Navigate to service:', id)}
+            />
+          )}
           
-          <ServiceRecommendations
-            type="trending"
-            services={trendingServices}
-            onServiceClick={(id) => console.log('Navigate to service:', id)}
-          />
+          {trendingServices.length > 0 && (
+            <ServiceRecommendations
+              type="trending"
+              services={trendingServices}
+              onServiceClick={(id) => console.log('Navigate to service:', id)}
+            />
+          )}
           
-          <ServiceRecommendations
-            type="recommended"
-            services={recommendedServices}
-            onServiceClick={(id) => console.log('Navigate to service:', id)}
-          />
+          {recommendedServices.length > 0 && (
+            <ServiceRecommendations
+              type="recommended"
+              services={recommendedServices}
+              onServiceClick={(id) => console.log('Navigate to service:', id)}
+            />
+          )}
         </div>
       </div>
     </div>
