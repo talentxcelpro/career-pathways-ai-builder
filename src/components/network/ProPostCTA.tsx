@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Crown, ArrowRight, Sparkles } from "lucide-react";
+import { useAuth } from '@/contexts/AuthContext';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import ProSubscriptionModal from './ProSubscriptionModal';
 
 interface ProPostCTAProps {
@@ -11,10 +14,31 @@ interface ProPostCTAProps {
 
 const ProPostCTA: React.FC<ProPostCTAProps> = ({ authorName, authorPlan }) => {
   const [showModal, setShowModal] = useState(false);
+  const { user } = useAuth();
+
+  // Check if current user has Pro access
+  const { data: userProfile } = useQuery({
+    queryKey: ['user-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('pro_status, pro_plan')
+        .eq('id', user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user?.id
+  });
 
   const handleSubscriptionSuccess = () => {
     window.location.reload();
   };
+
+  // Hide CTA if user already has Pro access
+  if (userProfile?.pro_status === 'active') {
+    return null;
+  }
 
   return (
     <>
