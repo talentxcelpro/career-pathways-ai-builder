@@ -43,6 +43,9 @@ export const EnterpriseDashboard: React.FC = () => {
       
       if (currentOrganization?.id) {
         await fetchDashboardData();
+      } else {
+        // Show fallback data while loading
+        setLoading(false);
       }
     };
 
@@ -85,7 +88,7 @@ export const EnterpriseDashboard: React.FC = () => {
     return 'Needs attention';
   };
 
-  if (orgLoading || loading) {
+  if (orgLoading) {
     return (
       <div className="space-y-8">
         <div>
@@ -103,6 +106,26 @@ export const EnterpriseDashboard: React.FC = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if no organization is available
+  if (!currentOrganization && !loading) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold">Enterprise Dashboard</h1>
+          <p className="text-muted-foreground mt-2">
+            Manage your organization's settings, users, and security.
+          </p>
+        </div>
+        <div className="text-center py-12">
+          <h3 className="text-lg font-medium">No Organization Found</h3>
+          <p className="text-muted-foreground mt-2">
+            Sample data is being created. Please refresh the page in a moment.
+          </p>
         </div>
       </div>
     );
