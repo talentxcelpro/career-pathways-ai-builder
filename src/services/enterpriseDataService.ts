@@ -85,11 +85,10 @@ export class EnterpriseDataService {
         .from('enterprise_audit_logs')
         .select(`
           id,
-          action,
+          action_type,
           created_at,
           user_id,
-          details,
-          profiles!inner(full_name)
+          event_details
         `)
         .eq('organization_id', organizationId)
         .order('created_at', { ascending: false })
@@ -99,10 +98,10 @@ export class EnterpriseDataService {
 
       return activities?.map(activity => ({
         id: activity.id,
-        action: activity.action,
+        action: activity.action_type,
         timestamp: activity.created_at,
-        user: activity.profiles?.full_name || 'System',
-        type: this.getActivityType(activity.action)
+        user: 'System User',
+        type: this.getActivityType(activity.action_type)
       })) || [];
     } catch (error) {
       console.error('Error fetching recent activity:', error);
@@ -135,17 +134,8 @@ export class EnterpriseDataService {
         .from('organizations')
         .insert({
           name: 'TalentXcel Pro',
-          industry: 'Technology',
-          size: 'medium',
-          settings: {
-            timezone: 'UTC',
-            currency: 'USD',
-            security_policy: {
-              password_policy: 'strong',
-              mfa_required: true,
-              session_timeout: 480
-            }
-          }
+          description: 'Technology company focused on talent management',
+          subscription_tier: 'enterprise'
         })
         .select()
         .single();
@@ -175,11 +165,11 @@ export class EnterpriseDataService {
 
       // Create sample audit logs
       const sampleActivities = [
-        { action: 'User added to HR department', details: { department: 'HR', user: 'John Doe' } },
-        { action: 'Security policy updated', details: { policy: 'password_requirements' } },
-        { action: 'Bulk user import completed', details: { imported_count: 25 } },
-        { action: 'New department created', details: { department: 'Engineering' } },
-        { action: 'User role updated', details: { user: 'Jane Smith', role: 'admin' } }
+        { action_type: 'user_department_assigned', resource_type: 'user', event_details: { department: 'HR', user: 'John Doe' } },
+        { action_type: 'security_policy_updated', resource_type: 'security', event_details: { policy: 'password_requirements' } },
+        { action_type: 'bulk_user_import', resource_type: 'system', event_details: { imported_count: 25 } },
+        { action_type: 'department_created', resource_type: 'department', event_details: { department: 'Engineering' } },
+        { action_type: 'user_role_updated', resource_type: 'user', event_details: { user: 'Jane Smith', role: 'admin' } }
       ];
 
       const { error: auditError } = await supabase
@@ -187,8 +177,9 @@ export class EnterpriseDataService {
         .insert(
           sampleActivities.map((activity, index) => ({
             organization_id: org.id,
-            action: activity.action,
-            details: activity.details,
+            action_type: activity.action_type,
+            resource_type: activity.resource_type,
+            event_details: activity.event_details,
             created_at: new Date(Date.now() - (index * 86400000)).toISOString() // Spread over days
           }))
         );

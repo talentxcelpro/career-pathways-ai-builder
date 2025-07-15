@@ -1,12 +1,11 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './useAuth';
+import { useUser } from '@/hooks/useUser';
 
 interface Organization {
   id: string;
   name: string;
-  industry: string;
-  size: string;
+  description?: string;
   created_at: string;
 }
 
@@ -29,7 +28,7 @@ export const useOrganization = () => {
 };
 
 export const useOrganizationData = () => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
