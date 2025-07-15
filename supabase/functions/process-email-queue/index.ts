@@ -15,8 +15,18 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     console.log('Email queue processing started...');
     
-    // Handle health check requests
-    const body = await req.json().catch(() => ({}));
+    // Handle health check requests more robustly
+    let body: any = {};
+    try {
+      const requestText = await req.text();
+      if (requestText.trim()) {
+        body = JSON.parse(requestText);
+      }
+    } catch (parseError) {
+      console.log('Could not parse request body, treating as empty object');
+      body = {};
+    }
+    
     if (body.healthCheck) {
       console.log('Health check request received');
       return new Response(JSON.stringify({ 
