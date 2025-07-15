@@ -120,15 +120,55 @@ export const EmailAutomationManager = () => {
   const fetchEmailStats = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      const { data, error } = await supabase
-        .from('email_automation_queue')
-        .select('status, sent_at')
-        .gte('created_at', today);
+      
+      // Get today's analytics data
+      const { data: analyticsData, error: analyticsError } = await supabase
+        .from('email_analytics_daily')
+        .select('*')
+        .eq('date', today)
+        .single();
 
-      if (error) throw error;
+      if (analyticsError && analyticsError.code !== 'PGRST116') {
+        throw analyticsError;
+      }
 
-      const sentToday = data?.filter(email => email.status === 'sent').length || 0;
-      setEmailStats(prev => ({ ...prev, sentToday }));
+      // Get real email stats from delivery events if analytics data exists
+      if (analyticsData) {
+        const deliveryRate = analyticsData.emails_sent > 0 
+          ? Math.round((analyticsData.emails_delivered / analyticsData.emails_sent) * 100)
+          : 0;
+        const openRate = analyticsData.emails_delivered > 0
+          ? Math.round((analyticsData.emails_opened / analyticsData.emails_delivered) * 100)
+          : 0;
+        const clickRate = analyticsData.emails_opened > 0
+          ? Math.round((analyticsData.emails_clicked / analyticsData.emails_opened) * 100)
+          : 0;
+
+        setEmailStats({
+          sentToday: analyticsData.emails_sent,
+          deliveryRate,
+          openRate,
+          clickRate
+        });
+      } else {
+        // Fallback to queue data for sent emails only
+        const { data: queueData, error: queueError } = await supabase
+          .from('email_automation_queue')
+          .select('status, sent_at')
+          .gte('created_at', today);
+
+        if (queueError) throw queueError;
+
+        const sentToday = queueData?.filter(email => email.status === 'sent').length || 0;
+        setEmailStats(prev => ({ 
+          ...prev, 
+          sentToday,
+          // Reset other stats to 0 if no analytics data
+          deliveryRate: 0,
+          openRate: 0,
+          clickRate: 0
+        }));
+      }
     } catch (error) {
       console.error('Error fetching email stats:', error);
     }

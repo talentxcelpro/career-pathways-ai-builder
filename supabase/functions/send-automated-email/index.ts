@@ -181,6 +181,12 @@ serve(async (req) => {
   }
 
   try {
+    // Initialize Supabase client for logging events
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+
     const { template_name, recipient_email, recipient_name, template_data } = await req.json();
 
     if (!template_name || !recipient_email) {
@@ -217,9 +223,37 @@ serve(async (req) => {
           to: [recipient_email],
           subject: emailContent.subject,
           html: emailContent.html,
+          headers: {
+            'X-Entity-Ref-ID': crypto.randomUUID(), // For tracking
+          },
         });
 
         console.log('Email sent via Resend:', emailResponse);
+        
+        // Record the sent event
+        if (emailResponse.data?.id) {
+          try {
+            const { error: eventError } = await supabase
+              .from('email_delivery_events')
+              .insert({
+                event_type: 'sent',
+                recipient_email: recipient_email,
+                external_id: emailResponse.data.id,
+                event_data: {
+                  service: 'resend',
+                  template: template_name,
+                  messageId: emailResponse.data.id
+                }
+              });
+            
+            if (eventError) {
+              console.error('Error recording sent event:', eventError);
+            }
+          } catch (error) {
+            console.error('Failed to record email sent event:', error);
+          }
+        }
+        
         emailSent = true;
       } catch (resendError: any) {
         console.error('Resend failed:', resendError);
@@ -246,6 +280,28 @@ serve(async (req) => {
 
         if (response.ok) {
           console.log('Email sent via SendGrid');
+          
+          // Record the sent event for SendGrid
+          try {
+            const { error: eventError } = await supabase
+              .from('email_delivery_events')
+              .insert({
+                event_type: 'sent',
+                recipient_email: recipient_email,
+                external_id: 'sendgrid-sent',
+                event_data: {
+                  service: 'sendgrid',
+                  template: template_name
+                }
+              });
+            
+            if (eventError) {
+              console.error('Error recording sent event:', eventError);
+            }
+          } catch (error) {
+            console.error('Failed to record email sent event:', error);
+          }
+          
           emailSent = true;
         } else {
           const sendGridError = await response.text();

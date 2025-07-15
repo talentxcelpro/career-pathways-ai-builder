@@ -3614,6 +3614,45 @@ export type Database = {
         }
         Relationships: []
       }
+      email_analytics_daily: {
+        Row: {
+          created_at: string
+          date: string
+          emails_bounced: number | null
+          emails_clicked: number | null
+          emails_delivered: number | null
+          emails_failed: number | null
+          emails_opened: number | null
+          emails_sent: number | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          emails_bounced?: number | null
+          emails_clicked?: number | null
+          emails_delivered?: number | null
+          emails_failed?: number | null
+          emails_opened?: number | null
+          emails_sent?: number | null
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          emails_bounced?: number | null
+          emails_clicked?: number | null
+          emails_delivered?: number | null
+          emails_failed?: number | null
+          emails_opened?: number | null
+          emails_sent?: number | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_automation_queue: {
         Row: {
           attempts: number | null
@@ -3697,6 +3736,53 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      email_delivery_events: {
+        Row: {
+          created_at: string
+          email_id: string | null
+          event_data: Json | null
+          event_type: string
+          external_id: string | null
+          id: string
+          ip_address: unknown | null
+          link_url: string | null
+          recipient_email: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_id?: string | null
+          event_data?: Json | null
+          event_type: string
+          external_id?: string | null
+          id?: string
+          ip_address?: unknown | null
+          link_url?: string | null
+          recipient_email: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_id?: string | null
+          event_data?: Json | null
+          event_type?: string
+          external_id?: string | null
+          id?: string
+          ip_address?: unknown | null
+          link_url?: string | null
+          recipient_email?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_delivery_events_email_id_fkey"
+            columns: ["email_id"]
+            isOneToOne: false
+            referencedRelation: "email_automation_queue"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       email_notification_settings: {
         Row: {
