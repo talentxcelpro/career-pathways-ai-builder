@@ -4213,6 +4213,30 @@ export type Database = {
           },
         ]
       }
+      department_members: {
+        Row: {
+          department_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          department_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          department_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       discussion_forums: {
         Row: {
           category: string
@@ -6307,6 +6331,60 @@ export type Database = {
           },
         ]
       }
+      marketing_campaigns: {
+        Row: {
+          budget: number | null
+          campaign_type: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          metrics: Json | null
+          name: string
+          organization_id: string
+          spent: number | null
+          start_date: string | null
+          status: string
+          target_audience: Json | null
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          campaign_type?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          metrics?: Json | null
+          name: string
+          organization_id: string
+          spent?: number | null
+          start_date?: string | null
+          status?: string
+          target_audience?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          campaign_type?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          metrics?: Json | null
+          name?: string
+          organization_id?: string
+          spent?: number | null
+          start_date?: string | null
+          status?: string
+          target_audience?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mentorship_programs: {
         Row: {
           created_at: string | null
@@ -6608,6 +6686,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      organization_members: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          department_id: string | null
+          hired_date: string | null
+          id: string
+          organization_id: string
+          permissions: Json | null
+          role: string
+          salary: number | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          department_id?: string | null
+          hired_date?: string | null
+          id?: string
+          organization_id: string
+          permissions?: Json | null
+          role?: string
+          salary?: number | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          department_id?: string | null
+          hired_date?: string | null
+          id?: string
+          organization_id?: string
+          permissions?: Json | null
+          role?: string
+          salary?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       organization_roles: {
         Row: {
@@ -10196,6 +10319,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      system_metrics: {
+        Row: {
+          id: string
+          metadata: Json | null
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          organization_id: string
+          timestamp: string
+        }
+        Insert: {
+          id?: string
+          metadata?: Json | null
+          metric_name: string
+          metric_type?: string
+          metric_value: number
+          organization_id: string
+          timestamp?: string
+        }
+        Update: {
+          id?: string
+          metadata?: Json | null
+          metric_name?: string
+          metric_type?: string
+          metric_value?: number
+          organization_id?: string
+          timestamp?: string
+        }
+        Relationships: []
       }
       team_activity_logs: {
         Row: {
