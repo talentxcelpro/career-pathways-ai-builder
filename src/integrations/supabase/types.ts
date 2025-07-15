@@ -14,6 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
+      ab_test_participants: {
+        Row: {
+          assigned_at: string | null
+          id: string
+          test_id: string
+          user_id: string
+          variant: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          id?: string
+          test_id: string
+          user_id: string
+          variant: string
+        }
+        Update: {
+          assigned_at?: string | null
+          id?: string
+          test_id?: string
+          user_id?: string
+          variant?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ab_test_participants_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "ab_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ab_tests: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          start_date: string | null
+          status: string | null
+          success_metrics: string[] | null
+          test_name: string
+          traffic_allocation: number | null
+          updated_at: string | null
+          variants: Json
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          status?: string | null
+          success_metrics?: string[] | null
+          test_name: string
+          traffic_allocation?: number | null
+          updated_at?: string | null
+          variants?: Json
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          status?: string | null
+          success_metrics?: string[] | null
+          test_name?: string
+          traffic_allocation?: number | null
+          updated_at?: string | null
+          variants?: Json
+        }
+        Relationships: []
+      }
       admin_activity_log: {
         Row: {
           action_type: string
@@ -3884,6 +3961,51 @@ export type Database = {
         }
         Relationships: []
       }
+      dashboard_widgets: {
+        Row: {
+          configuration: Json
+          created_at: string | null
+          height: number | null
+          id: string
+          is_active: boolean | null
+          position_x: number | null
+          position_y: number | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          widget_type: string
+          width: number | null
+        }
+        Insert: {
+          configuration?: Json
+          created_at?: string | null
+          height?: number | null
+          id?: string
+          is_active?: boolean | null
+          position_x?: number | null
+          position_y?: number | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          widget_type: string
+          width?: number | null
+        }
+        Update: {
+          configuration?: Json
+          created_at?: string | null
+          height?: number | null
+          id?: string
+          is_active?: boolean | null
+          position_x?: number | null
+          position_y?: number | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          widget_type?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
       discussion_forums: {
         Row: {
           category: string
@@ -5951,6 +6073,54 @@ export type Database = {
           },
         ]
       }
+      performance_benchmarks: {
+        Row: {
+          benchmark_type: string
+          created_at: string | null
+          data_source: string | null
+          id: string
+          industry: string | null
+          last_updated: string | null
+          metric_name: string
+          percentile_25: number | null
+          percentile_50: number | null
+          percentile_75: number | null
+          percentile_90: number | null
+          role_level: string | null
+          sample_size: number | null
+        }
+        Insert: {
+          benchmark_type: string
+          created_at?: string | null
+          data_source?: string | null
+          id?: string
+          industry?: string | null
+          last_updated?: string | null
+          metric_name: string
+          percentile_25?: number | null
+          percentile_50?: number | null
+          percentile_75?: number | null
+          percentile_90?: number | null
+          role_level?: string | null
+          sample_size?: number | null
+        }
+        Update: {
+          benchmark_type?: string
+          created_at?: string | null
+          data_source?: string | null
+          id?: string
+          industry?: string | null
+          last_updated?: string | null
+          metric_name?: string
+          percentile_25?: number | null
+          percentile_50?: number | null
+          percentile_75?: number | null
+          percentile_90?: number | null
+          role_level?: string | null
+          sample_size?: number | null
+        }
+        Relationships: []
+      }
       permission_requests: {
         Row: {
           approved_by: string | null
@@ -6047,6 +6217,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      platform_metrics: {
+        Row: {
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          metric_category: string
+          metric_name: string
+          metric_unit: string | null
+          metric_value: number | null
+          period_end: string
+          period_start: string
+          time_period: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_category: string
+          metric_name: string
+          metric_unit?: string | null
+          metric_value?: number | null
+          period_end: string
+          period_start: string
+          time_period?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_category?: string
+          metric_name?: string
+          metric_unit?: string | null
+          metric_value?: number | null
+          period_end?: string
+          period_start?: string
+          time_period?: string | null
+        }
+        Relationships: []
       }
       portfolio_items: {
         Row: {
@@ -6753,6 +6962,57 @@ export type Database = {
           reference_name?: string | null
           title?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          data: Json | null
+          description: string | null
+          file_url: string | null
+          format: string | null
+          id: string
+          is_scheduled: boolean | null
+          parameters: Json | null
+          report_type: string
+          schedule_frequency: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          data?: Json | null
+          description?: string | null
+          file_url?: string | null
+          format?: string | null
+          id?: string
+          is_scheduled?: boolean | null
+          parameters?: Json | null
+          report_type: string
+          schedule_frequency?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          data?: Json | null
+          description?: string | null
+          file_url?: string | null
+          format?: string | null
+          id?: string
+          is_scheduled?: boolean | null
+          parameters?: Json | null
+          report_type?: string
+          schedule_frequency?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -9682,6 +9942,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_analytics: {
+        Row: {
+          created_at: string | null
+          event_category: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          page_url: string | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_category: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          page_url?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_category?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          page_url?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_assessment_attempts: {
         Row: {
