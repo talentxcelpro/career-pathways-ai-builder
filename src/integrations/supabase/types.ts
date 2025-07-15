@@ -1374,6 +1374,54 @@ export type Database = {
         }
         Relationships: []
       }
+      bulk_operation_queue: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string
+          error_details: string | null
+          id: string
+          operation_type: string
+          parameters: Json | null
+          processed_items: number | null
+          progress: number | null
+          started_at: string | null
+          status: string | null
+          target_criteria: Json
+          total_items: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by: string
+          error_details?: string | null
+          id?: string
+          operation_type: string
+          parameters?: Json | null
+          processed_items?: number | null
+          progress?: number | null
+          started_at?: string | null
+          status?: string | null
+          target_criteria: Json
+          total_items?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string
+          error_details?: string | null
+          id?: string
+          operation_type?: string
+          parameters?: Json | null
+          processed_items?: number | null
+          progress?: number | null
+          started_at?: string | null
+          status?: string | null
+          target_criteria?: Json
+          total_items?: number | null
+        }
+        Relationships: []
+      }
       bulk_operations: {
         Row: {
           completed_at: string | null
@@ -3745,6 +3793,48 @@ export type Database = {
           message?: string | null
           recipient_id?: string | null
           requester_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      content_moderation: {
+        Row: {
+          automated_flags: Json | null
+          content_id: string
+          content_type: string
+          created_at: string | null
+          id: string
+          moderation_reason: string | null
+          moderator_id: string | null
+          reported_by: string[] | null
+          severity_level: number | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          automated_flags?: Json | null
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          id?: string
+          moderation_reason?: string | null
+          moderator_id?: string | null
+          reported_by?: string[] | null
+          severity_level?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          automated_flags?: Json | null
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          id?: string
+          moderation_reason?: string | null
+          moderator_id?: string | null
+          reported_by?: string[] | null
+          severity_level?: number | null
           status?: string | null
           updated_at?: string | null
         }
@@ -6507,6 +6597,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notification_templates: {
+        Row: {
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          subject: string | null
+          type: string
+          updated_at: string | null
+          variables: Json | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          subject?: string | null
+          type: string
+          updated_at?: string | null
+          variables?: Json | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          subject?: string | null
+          type?: string
+          updated_at?: string | null
+          variables?: Json | null
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -10320,6 +10449,45 @@ export type Database = {
           },
         ]
       }
+      system_configuration: {
+        Row: {
+          category: string
+          created_at: string | null
+          data_type: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          key: string
+          updated_at: string | null
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          data_type?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          key: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          data_type?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          key?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       system_metrics: {
         Row: {
           id: string
@@ -11366,6 +11534,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_management_actions: {
+        Row: {
+          action_type: string
+          admin_user_id: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          metadata: Json | null
+          reason: string | null
+          target_user_id: string
+        }
+        Insert: {
+          action_type: string
+          admin_user_id: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          reason?: string | null
+          target_user_id: string
+        }
+        Update: {
+          action_type?: string
+          admin_user_id?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          reason?: string | null
+          target_user_id?: string
+        }
+        Relationships: []
       }
       user_posts: {
         Row: {
