@@ -33,46 +33,108 @@ export const EmailSystemHealthMonitor: React.FC = () => {
   const [overallHealth, setOverallHealth] = useState<'healthy' | 'warning' | 'error'>('healthy');
 
   const checkEdgeFunctionHealth = async (): Promise<HealthStatus> => {
-    try {
-      const startTime = Date.now();
-      
-      const { data, error } = await supabase.functions.invoke('process-email-queue', {
-        body: { healthCheck: true }
-      });
-      
-      const responseTime = Date.now() - startTime;
-      
-      if (error) {
+    const maxRetries = 3;
+    const timeout = 15000; // 15 seconds timeout
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const startTime = Date.now();
+        
+        // Create an AbortController for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        
+        const { data, error } = await supabase.functions.invoke('process-email-queue', {
+          body: { healthCheck: true }
+        });
+        
+        clearTimeout(timeoutId);
+        const responseTime = Date.now() - startTime;
+        
+        if (error) {
+          // Check if this is a timeout/network error vs function error
+          if (error.message.includes('Failed to send a request') || 
+              error.message.includes('timeout') ||
+              error.message.includes('network')) {
+            
+            if (attempt < maxRetries) {
+              console.log(`Edge function health check attempt ${attempt} failed, retrying...`);
+              await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000)); // Exponential backoff
+              continue;
+            }
+            
+            return {
+              component: 'Edge Function',
+              status: 'warning',
+              responseTime,
+              message: `Network timeout after ${maxRetries} attempts (${responseTime}ms)`,
+              lastChecked: new Date(),
+              details: { error, attempt }
+            };
+          }
+          
+          return {
+            component: 'Edge Function',
+            status: 'error',
+            responseTime,
+            message: `Edge function error: ${error.message}`,
+            lastChecked: new Date(),
+            details: error
+          };
+        }
+        
+        return {
+          component: 'Edge Function',
+          status: responseTime > 8000 ? 'warning' : 'healthy',
+          responseTime,
+          message: responseTime > 8000 
+            ? `Slow response: ${responseTime}ms (but functional)` 
+            : `Responding normally: ${responseTime}ms`,
+          lastChecked: new Date(),
+          details: data
+        };
+        
+      } catch (error: any) {
+        if (error.name === 'AbortError') {
+          if (attempt < maxRetries) {
+            console.log(`Edge function health check timed out on attempt ${attempt}, retrying...`);
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+            continue;
+          }
+          
+          return {
+            component: 'Edge Function',
+            status: 'warning',
+            message: `Function timeout after ${timeout/1000}s (${maxRetries} attempts)`,
+            lastChecked: new Date(),
+            details: { error: 'timeout', attempts: maxRetries }
+          };
+        }
+        
+        if (attempt < maxRetries) {
+          console.log(`Edge function health check attempt ${attempt} failed, retrying...`);
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+          continue;
+        }
+        
         return {
           component: 'Edge Function',
           status: 'error',
-          responseTime,
-          message: `Edge function error: ${error.message}`,
+          message: `Unavailable: ${error.message}`,
           lastChecked: new Date(),
           details: error
         };
       }
-      
-      return {
-        component: 'Edge Function',
-        status: responseTime > 5000 ? 'warning' : 'healthy',
-        responseTime,
-        message: responseTime > 5000 
-          ? `Slow response: ${responseTime}ms` 
-          : `Responding normally: ${responseTime}ms`,
-        lastChecked: new Date(),
-        details: data
-      };
-      
-    } catch (error: any) {
-      return {
-        component: 'Edge Function',
-        status: 'error',
-        message: `Unavailable: ${error.message}`,
-        lastChecked: new Date(),
-        details: error
-      };
     }
+    
+    // Fallback (should never reach here)
+    return {
+      component: 'Edge Function',
+      status: 'error',
+      message: 'Unexpected error in health check',
+      lastChecked: new Date(),
+      details: null
+    };
   };
 
   const checkDatabaseHealth = async (): Promise<HealthStatus> => {
