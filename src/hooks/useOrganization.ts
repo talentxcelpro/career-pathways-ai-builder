@@ -17,21 +17,44 @@ export const useOrganizationData = () => {
     try {
       setLoading(true);
       
-      // For now, get all organizations (simplified for demo)
-      const { data: orgs, error } = await supabase
-        .from('organizations')
-        .select('id, name, description, created_at')
-        .limit(10);
-
-      if (error) {
-        console.error('Error fetching organizations:', error);
+      // First check user's team memberships to get their companies
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setLoading(false);
         return;
       }
 
-      setOrganizations(orgs || []);
+      const { data: teamMemberships, error: teamError } = await supabase
+        .from('company_team_members')
+        .select(`
+          company_id,
+          companies:company_id (
+            id,
+            name,
+            description,
+            created_at
+          )
+        `)
+        .eq('user_id', user.id)
+        .eq('is_active', true);
+
+      if (teamError) {
+        console.error('Error fetching team memberships:', teamError);
+        return;
+      }
+
+      // Map companies to organization format
+      const orgs = teamMemberships?.map(membership => ({
+        id: membership.companies.id,
+        name: membership.companies.name,
+        description: membership.companies.description,
+        created_at: membership.companies.created_at
+      })) || [];
+
+      setOrganizations(orgs);
       
       // Set first organization as current if none selected
-      if (orgs && orgs.length > 0 && !currentOrganization) {
+      if (orgs.length > 0 && !currentOrganization) {
         setCurrentOrganization(orgs[0]);
       }
     } catch (error) {

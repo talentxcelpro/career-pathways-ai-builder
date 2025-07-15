@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Building2, Users, Shield, BarChart3, Settings, UserPlus, ShieldCheck } from 'lucide-react';
+import { Building2, Users, Shield, BarChart3, Settings, UserPlus, ShieldCheck, Megaphone, Activity, TrendingUp, Database } from 'lucide-react';
 import { useOrganizationData } from '@/hooks/useOrganization';
 import { EnterpriseDataService } from '@/services/enterpriseDataService';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { DepartmentManagement } from './DepartmentManagement';
+import { MarketingDashboard } from './MarketingDashboard';
+import { LiveReporting } from './LiveReporting';
 
 interface DashboardMetrics {
   totalUsers: number;
@@ -26,6 +29,7 @@ interface RecentActivity {
 export const EnterpriseDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { currentOrganization, loading: orgLoading } = useOrganizationData();
+  const [activeTab, setActiveTab] = useState<'overview' | 'departments' | 'marketing' | 'reporting'>('overview');
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     totalUsers: 0,
     departmentCount: 0,
@@ -131,15 +135,8 @@ export const EnterpriseDashboard: React.FC = () => {
     );
   }
 
-  return (
+  const renderOverview = () => (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">Enterprise Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage your organization's settings, users, and security.
-        </p>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -203,37 +200,37 @@ export const EnterpriseDashboard: React.FC = () => {
             <Button
               variant="ghost"
               className="w-full justify-between p-4 h-auto"
-              onClick={() => navigate('/enterprise/organization')}
+              onClick={() => setActiveTab('departments')}
             >
               <div className="text-left">
-                <h3 className="font-medium">Organization Settings</h3>
-                <p className="text-sm text-muted-foreground">Configure your organization</p>
+                <h3 className="font-medium">Manage Departments</h3>
+                <p className="text-sm text-muted-foreground">Organize team structure</p>
               </div>
-              <Settings className="h-5 w-5 text-muted-foreground" />
+              <Building2 className="h-5 w-5 text-muted-foreground" />
             </Button>
             
             <Button
               variant="ghost"
               className="w-full justify-between p-4 h-auto"
-              onClick={() => navigate('/enterprise/team')}
+              onClick={() => setActiveTab('marketing')}
             >
               <div className="text-left">
-                <h3 className="font-medium">Manage Team</h3>
-                <p className="text-sm text-muted-foreground">Add and manage users</p>
+                <h3 className="font-medium">Marketing Dashboard</h3>
+                <p className="text-sm text-muted-foreground">Track campaigns and engagement</p>
               </div>
-              <UserPlus className="h-5 w-5 text-muted-foreground" />
+              <Megaphone className="h-5 w-5 text-muted-foreground" />
             </Button>
             
             <Button
               variant="ghost"
               className="w-full justify-between p-4 h-auto"
-              onClick={() => navigate('/enterprise/security')}
+              onClick={() => setActiveTab('reporting')}
             >
               <div className="text-left">
-                <h3 className="font-medium">Security Settings</h3>
-                <p className="text-sm text-muted-foreground">Configure security policies</p>
+                <h3 className="font-medium">Live Reporting</h3>
+                <p className="text-sm text-muted-foreground">Real-time metrics and alerts</p>
               </div>
-              <ShieldCheck className="h-5 w-5 text-muted-foreground" />
+              <Activity className="h-5 w-5 text-muted-foreground" />
             </Button>
           </CardContent>
         </Card>
@@ -265,6 +262,65 @@ export const EnterpriseDashboard: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Enterprise Dashboard</h1>
+          <p className="text-muted-foreground mt-2">
+            {currentOrganization?.name || 'Manage your organization'}
+          </p>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="flex space-x-1 bg-muted p-1 rounded-lg w-fit">
+        <Button
+          variant={activeTab === 'overview' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setActiveTab('overview')}
+          className="flex items-center gap-2"
+        >
+          <BarChart3 className="h-4 w-4" />
+          Overview
+        </Button>
+        <Button
+          variant={activeTab === 'departments' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setActiveTab('departments')}
+          className="flex items-center gap-2"
+        >
+          <Building2 className="h-4 w-4" />
+          Departments
+        </Button>
+        <Button
+          variant={activeTab === 'marketing' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setActiveTab('marketing')}
+          className="flex items-center gap-2"
+        >
+          <Megaphone className="h-4 w-4" />
+          Marketing
+        </Button>
+        <Button
+          variant={activeTab === 'reporting' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setActiveTab('reporting')}
+          className="flex items-center gap-2"
+        >
+          <Activity className="h-4 w-4" />
+          Live Reports
+        </Button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'overview' && renderOverview()}
+      {activeTab === 'departments' && <DepartmentManagement />}
+      {activeTab === 'marketing' && <MarketingDashboard />}
+      {activeTab === 'reporting' && <LiveReporting />}
     </div>
   );
 };
