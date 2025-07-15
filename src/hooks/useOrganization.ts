@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useUser } from '@/hooks/useUser';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 interface Organization {
   id: string;
@@ -28,7 +28,7 @@ export const useOrganization = () => {
 };
 
 export const useOrganizationData = () => {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);

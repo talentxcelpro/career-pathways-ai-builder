@@ -134,6 +134,7 @@ export class EnterpriseDataService {
         .from('organizations')
         .insert({
           name: 'TalentXcel Pro',
+          slug: 'talentxcel-pro',
           description: 'Technology company focused on talent management',
           subscription_tier: 'enterprise'
         })
