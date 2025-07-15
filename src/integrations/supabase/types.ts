@@ -567,6 +567,125 @@ export type Database = {
           },
         ]
       }
+      ai_datasets: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          data_schema: Json | null
+          dataset_name: string
+          dataset_type: string
+          description: string | null
+          file_path: string | null
+          file_size_mb: number | null
+          id: string
+          last_processed_at: string | null
+          processing_progress: number | null
+          processing_status: string | null
+          quality_score: number | null
+          sample_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          data_schema?: Json | null
+          dataset_name: string
+          dataset_type: string
+          description?: string | null
+          file_path?: string | null
+          file_size_mb?: number | null
+          id?: string
+          last_processed_at?: string | null
+          processing_progress?: number | null
+          processing_status?: string | null
+          quality_score?: number | null
+          sample_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          data_schema?: Json | null
+          dataset_name?: string
+          dataset_type?: string
+          description?: string | null
+          file_path?: string | null
+          file_size_mb?: number | null
+          id?: string
+          last_processed_at?: string | null
+          processing_progress?: number | null
+          processing_status?: string | null
+          quality_score?: number | null
+          sample_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ai_deployments: {
+        Row: {
+          average_response_time_ms: number | null
+          created_at: string | null
+          deployed_by: string | null
+          deployment_config: Json | null
+          deployment_date: string | null
+          deployment_name: string
+          endpoint_url: string
+          error_rate: number | null
+          health_status: string | null
+          id: string
+          is_live: boolean | null
+          last_health_check: string | null
+          model_id: string | null
+          module_name: string
+          request_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          average_response_time_ms?: number | null
+          created_at?: string | null
+          deployed_by?: string | null
+          deployment_config?: Json | null
+          deployment_date?: string | null
+          deployment_name: string
+          endpoint_url: string
+          error_rate?: number | null
+          health_status?: string | null
+          id?: string
+          is_live?: boolean | null
+          last_health_check?: string | null
+          model_id?: string | null
+          module_name: string
+          request_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          average_response_time_ms?: number | null
+          created_at?: string | null
+          deployed_by?: string | null
+          deployment_config?: Json | null
+          deployment_date?: string | null
+          deployment_name?: string
+          endpoint_url?: string
+          error_rate?: number | null
+          health_status?: string | null
+          id?: string
+          is_live?: boolean | null
+          last_health_check?: string | null
+          model_id?: string | null
+          module_name?: string
+          request_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_deployments_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "ai_models"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_features_status: {
         Row: {
           average_response_time: number | null
@@ -626,6 +745,47 @@ export type Database = {
           usage_count?: number | null
         }
         Relationships: []
+      }
+      ai_feedback: {
+        Row: {
+          created_at: string | null
+          feedback_text: string | null
+          feedback_type: string | null
+          id: string
+          is_helpful: boolean | null
+          log_id: string | null
+          rating: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          feedback_text?: string | null
+          feedback_type?: string | null
+          id?: string
+          is_helpful?: boolean | null
+          log_id?: string | null
+          rating?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          feedback_text?: string | null
+          feedback_type?: string | null
+          id?: string
+          is_helpful?: boolean | null
+          log_id?: string | null
+          rating?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_feedback_log_id_fkey"
+            columns: ["log_id"]
+            isOneToOne: false
+            referencedRelation: "ai_request_logs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_feedback_system: {
         Row: {
@@ -721,6 +881,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ai_models: {
+        Row: {
+          api_endpoint: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          model_config: Json | null
+          model_name: string
+          model_path: string | null
+          model_size_mb: number | null
+          model_version: string
+          performance_metrics: Json | null
+          task_type: string
+          training_accuracy: number | null
+          training_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          api_endpoint?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          model_config?: Json | null
+          model_name: string
+          model_path?: string | null
+          model_size_mb?: number | null
+          model_version?: string
+          performance_metrics?: Json | null
+          task_type: string
+          training_accuracy?: number | null
+          training_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          api_endpoint?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          model_config?: Json | null
+          model_name?: string
+          model_path?: string | null
+          model_size_mb?: number | null
+          model_version?: string
+          performance_metrics?: Json | null
+          task_type?: string
+          training_accuracy?: number | null
+          training_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       ai_operation_queue: {
         Row: {
@@ -832,6 +1049,65 @@ export type Database = {
           version?: string
         }
         Relationships: []
+      }
+      ai_request_logs: {
+        Row: {
+          cost_estimate: number | null
+          created_at: string | null
+          deployment_id: string | null
+          error_message: string | null
+          id: string
+          input_data: Json
+          ip_address: unknown | null
+          output_data: Json | null
+          request_type: string
+          response_time_ms: number | null
+          success: boolean | null
+          tokens_used: number | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cost_estimate?: number | null
+          created_at?: string | null
+          deployment_id?: string | null
+          error_message?: string | null
+          id?: string
+          input_data: Json
+          ip_address?: unknown | null
+          output_data?: Json | null
+          request_type: string
+          response_time_ms?: number | null
+          success?: boolean | null
+          tokens_used?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cost_estimate?: number | null
+          created_at?: string | null
+          deployment_id?: string | null
+          error_message?: string | null
+          id?: string
+          input_data?: Json
+          ip_address?: unknown | null
+          output_data?: Json | null
+          request_type?: string
+          response_time_ms?: number | null
+          success?: boolean | null
+          tokens_used?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_request_logs_deployment_id_fkey"
+            columns: ["deployment_id"]
+            isOneToOne: false
+            referencedRelation: "ai_deployments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_resume_analysis: {
         Row: {
@@ -1046,6 +1322,84 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      ai_training_jobs: {
+        Row: {
+          accuracy: number | null
+          created_at: string | null
+          created_by: string | null
+          current_epoch: number | null
+          dataset_id: string | null
+          end_time: string | null
+          error_message: string | null
+          id: string
+          job_name: string
+          loss_value: number | null
+          model_id: string | null
+          progress: number | null
+          start_time: string | null
+          status: string | null
+          total_epochs: number | null
+          training_config: Json | null
+          training_logs: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          accuracy?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          current_epoch?: number | null
+          dataset_id?: string | null
+          end_time?: string | null
+          error_message?: string | null
+          id?: string
+          job_name: string
+          loss_value?: number | null
+          model_id?: string | null
+          progress?: number | null
+          start_time?: string | null
+          status?: string | null
+          total_epochs?: number | null
+          training_config?: Json | null
+          training_logs?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          accuracy?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          current_epoch?: number | null
+          dataset_id?: string | null
+          end_time?: string | null
+          error_message?: string | null
+          id?: string
+          job_name?: string
+          loss_value?: number | null
+          model_id?: string | null
+          progress?: number | null
+          start_time?: string | null
+          status?: string | null
+          total_epochs?: number | null
+          training_config?: Json | null
+          training_logs?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_training_jobs_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: false
+            referencedRelation: "ai_datasets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_training_jobs_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "ai_models"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_usage_logs: {
         Row: {
