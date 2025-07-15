@@ -9013,6 +9013,54 @@ export type Database = {
         }
         Relationships: []
       }
+      pro_subscriptions: {
+        Row: {
+          created_at: string | null
+          currency: string
+          expires_at: string | null
+          features: Json | null
+          id: string
+          plan_name: string
+          price_amount: number
+          razorpay_payment_id: string | null
+          razorpay_subscription_id: string | null
+          started_at: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string
+          expires_at?: string | null
+          features?: Json | null
+          id?: string
+          plan_name: string
+          price_amount: number
+          razorpay_payment_id?: string | null
+          razorpay_subscription_id?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string
+          expires_at?: string | null
+          features?: Json | null
+          id?: string
+          plan_name?: string
+          price_amount?: number
+          razorpay_payment_id?: string | null
+          razorpay_subscription_id?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profile_views: {
         Row: {
           id: string
@@ -9088,6 +9136,9 @@ export type Database = {
           preferred_salary_max: number | null
           preferred_salary_min: number | null
           primary_role: Database["public"]["Enums"]["app_role"] | null
+          pro_expires_at: string | null
+          pro_plan: string | null
+          pro_status: string | null
           profile_completed: boolean | null
           profile_photo_url: string | null
           profile_picture_url: string | null
@@ -9143,6 +9194,9 @@ export type Database = {
           preferred_salary_max?: number | null
           preferred_salary_min?: number | null
           primary_role?: Database["public"]["Enums"]["app_role"] | null
+          pro_expires_at?: string | null
+          pro_plan?: string | null
+          pro_status?: string | null
           profile_completed?: boolean | null
           profile_photo_url?: string | null
           profile_picture_url?: string | null
@@ -9198,6 +9252,9 @@ export type Database = {
           preferred_salary_max?: number | null
           preferred_salary_min?: number | null
           primary_role?: Database["public"]["Enums"]["app_role"] | null
+          pro_expires_at?: string | null
+          pro_plan?: string | null
+          pro_status?: string | null
           profile_completed?: boolean | null
           profile_photo_url?: string | null
           profile_picture_url?: string | null
@@ -13388,6 +13445,16 @@ export type Database = {
         Args: { invitation_token: string }
         Returns: Json
       }
+      activate_pro_subscription: {
+        Args: {
+          p_user_id: string
+          p_plan_name: string
+          p_price_amount: number
+          p_razorpay_payment_id: string
+          p_duration_months?: number
+        }
+        Returns: string
+      }
       approve_college_creation: {
         Args: { request_id: string }
         Returns: string
@@ -13493,6 +13560,10 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_user_pro_plan: {
+        Args: { p_user_id: string }
+        Returns: string
+      }
       has_app_role: {
         Args: {
           _user_id: string
@@ -13530,6 +13601,10 @@ export type Database = {
       }
       is_company_admin_or_owner: {
         Args: { company_uuid: string }
+        Returns: boolean
+      }
+      is_pro_user: {
+        Args: { p_user_id: string }
         Returns: boolean
       }
       is_super_admin: {

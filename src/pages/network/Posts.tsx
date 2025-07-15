@@ -26,6 +26,9 @@ import { useProfileStats } from "@/hooks/useProfileStats";
 import FloatingMessenger from "@/components/network/FloatingMessenger";
 import { Link } from 'react-router-dom';
 import { AICommentGenerator } from "@/components/network/AICommentGenerator";
+import ProBanner from "@/components/network/ProBanner";
+import ProBadge from "@/components/network/ProBadge";
+import ProPostCTA from "@/components/network/ProPostCTA";
 
 
 const Posts = () => {
@@ -34,6 +37,7 @@ const Posts = () => {
   const [feedFilter, setFeedFilter] = useState<'all' | 'smart'>('all');
   const [showCommentGenerator, setShowCommentGenerator] = useState<string | null>(null);
   const [activePost, setActivePost] = useState<any>(null);
+  const [dismissedBanners, setDismissedBanners] = useState<string[]>([]);
   const queryClient = useQueryClient();
 
   // Auto-refresh with realtime updates
@@ -70,6 +74,11 @@ const Posts = () => {
       return data;
     }
   });
+
+  // Check if user is Pro
+  const isProUser = currentUserProfile?.pro_status === 'active' && 
+                   currentUserProfile?.pro_expires_at && 
+                   new Date(currentUserProfile.pro_expires_at) > new Date();
 
   // Get real profile stats after currentUserProfile is available
   const { data: profileStats } = useProfileStats(currentUserProfile?.id);
@@ -249,6 +258,41 @@ const Posts = () => {
             </div>
           </div>
         </div>
+
+        {/* Pro Integration Banners */}
+        {!isProUser && !dismissedBanners.includes('topBanner') && (
+          <ProBanner 
+            variant="top" 
+            onDismiss={() => setDismissedBanners(prev => [...prev, 'topBanner'])}
+          />
+        )}
+
+        {/* Pro Success Banner for New Pro Users */}
+        {isProUser && currentUserProfile?.pro_plan && (
+          <Card className="mb-6 bg-gradient-to-r from-green-600 to-emerald-600 text-white border-0">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-6 w-6 text-yellow-300" />
+                  <div>
+                    <h3 className="font-semibold text-lg">🎉 You're now a Pro Member!</h3>
+                    <p className="text-green-100 text-sm">
+                      Start building your service page and unlock advanced features
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 ml-auto">
+                  <ProBadge plan={currentUserProfile.pro_plan as any} />
+                  <Link to="/pro/services">
+                    <Button className="bg-white text-green-600 hover:bg-gray-100">
+                      Set Up Services
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
 
         {/* Three Column Layout */}
@@ -737,6 +781,16 @@ const Posts = () => {
                 </Button>
               </Link>
             </Card>
+
+            {/* Pro Sidebar Banner */}
+            {!isProUser && !dismissedBanners.includes('sidebarBanner') && (
+              <ProBanner variant="sidebar" />
+            )}
+
+            {/* Pro Feed Banner */}
+            {!isProUser && !dismissedBanners.includes('feedBanner') && (
+              <ProBanner variant="feed" />
+            )}
 
             {/* Recent Activity */}
             <Card className="p-3">
