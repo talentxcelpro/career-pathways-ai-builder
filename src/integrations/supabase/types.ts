@@ -4759,6 +4759,48 @@ export type Database = {
         }
         Relationships: []
       }
+      elite_service_templates: {
+        Row: {
+          category: string
+          created_at: string | null
+          delivery_time_days: number | null
+          description: string
+          features: string[] | null
+          id: string
+          is_active: boolean | null
+          recommended_pricing_type: string | null
+          suggested_price_range: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          delivery_time_days?: number | null
+          description: string
+          features?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          recommended_pricing_type?: string | null
+          suggested_price_range?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          delivery_time_days?: number | null
+          description?: string
+          features?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          recommended_pricing_type?: string | null
+          suggested_price_range?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       email_analytics_daily: {
         Row: {
           created_at: string

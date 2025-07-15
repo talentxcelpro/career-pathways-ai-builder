@@ -5,11 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Trash2, ExternalLink, Star, Crown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Service {
   id: string;
@@ -36,6 +38,18 @@ interface Portfolio {
   profile_id: string;
 }
 
+interface EliteServiceTemplate {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  recommended_pricing_type: string;
+  suggested_price_range: string;
+  delivery_time_days: number;
+  features: string[];
+  is_active: boolean;
+}
+
 const ServiceManagement = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
@@ -45,6 +59,72 @@ const ServiceManagement = () => {
   const [showServiceDialog, setShowServiceDialog] = useState(false);
   const [showPortfolioDialog, setShowPortfolioDialog] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
+
+  // Check if user is Elite
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfile', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('pro_status')
+        .eq('id', user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  // Fetch Elite service templates
+  const { data: eliteTemplates } = useQuery({
+    queryKey: ['eliteServiceTemplates'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('elite_service_templates')
+        .select('*')
+        .eq('is_active', true)
+        .order('title');
+      return data as EliteServiceTemplate[];
+    },
+    enabled: userProfile?.pro_status === 'elite',
+  });
+
+  const isElite = userProfile?.pro_status === 'elite';
+
+  const createServiceFromTemplate = async (template: EliteServiceTemplate) => {
+    if (!profileId) return;
+    
+    if (services.length >= 15) {
+      toast({ 
+        title: 'Service limit reached', 
+        description: 'You can only create up to 15 services per profile.',
+        variant: 'destructive' 
+      });
+      return;
+    }
+
+    const serviceData = {
+      title: template.title,
+      description: template.description,
+      category: template.category,
+      pricing_type: template.recommended_pricing_type,
+      delivery_time_days: template.delivery_time_days,
+      is_active: true,
+      profile_id: profileId
+    };
+
+    const { error } = await supabase
+      .from('pro_services')
+      .insert([serviceData]);
+
+    if (error) {
+      toast({ title: 'Error creating service', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Success', description: 'Elite service created successfully' });
+      if (profileId) fetchServices(profileId);
+    }
+  };
 
   const [serviceForm, setServiceForm] = useState({
     title: '',
@@ -270,6 +350,71 @@ const ServiceManagement = () => {
 
   return (
     <div className="space-y-6">
+      {/* Elite Services Section */}
+      {isElite && eliteTemplates && eliteTemplates.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Crown className="h-5 w-5 text-yellow-500" />
+              Elite Service Templates
+              <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                Premium
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {eliteTemplates.map((template) => (
+                <Card key={template.id} className="p-4 border-2 border-yellow-200">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-semibold text-lg">{template.title}</h3>
+                        <Badge variant="outline" className="text-xs">
+                          {template.category}
+                        </Badge>
+                      </div>
+                      <p className="text-muted-foreground text-sm mb-3">{template.description}</p>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-4 text-sm">
+                          <span className="font-medium">Pricing:</span>
+                          <span className="text-muted-foreground">{template.suggested_price_range}</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm">
+                          <span className="font-medium">Delivery:</span>
+                          <span className="text-muted-foreground">{template.delivery_time_days} days</span>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <span className="font-medium text-sm">Features:</span>
+                          <div className="flex flex-wrap gap-1">
+                            {template.features.map((feature, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button
+                    onClick={() => createServiceFromTemplate(template)}
+                    className="w-full"
+                    disabled={services.length >= 15}
+                  >
+                    <Star className="h-4 w-4 mr-2" />
+                    Setup This Elite Service
+                  </Button>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Services Section */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
