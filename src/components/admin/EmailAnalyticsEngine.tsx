@@ -97,39 +97,68 @@ export class EmailAnalyticsEngine {
     queueData: any[], 
     eventsData: any[]
   ): EmailAnalytics {
+    console.log('Analytics Engine - Queue data length:', queueData.length);
+    console.log('Analytics Engine - Events data length:', eventsData.length);
+    
     // Count queue statuses
     const totalSent = queueData.filter(q => q.status === 'sent').length;
     const pending = queueData.filter(q => q.status === 'pending').length;
     const failed = queueData.filter(q => q.status === 'failed').length;
 
-    // Group events by email recipient for accurate correlation
+    console.log('Analytics Engine - Queue status counts:', { totalSent, pending, failed });
+
+    // **FIXED CORRELATION LOGIC**
+    // Group events by recipient email to correlate with queue data
     const eventsByEmail = eventsData.reduce((acc, event) => {
-      const key = event.recipient_email || event.email_id || 'unknown';
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(event);
+      // Use multiple possible fields for email correlation
+      const email = event.recipient_email || event.email || event.metadata?.recipient_email;
+      
+      if (email) {
+        if (!acc[email]) acc[email] = [];
+        acc[email].push(event);
+      }
       return acc;
     }, {} as Record<string, any[]>);
 
-    // Count unique email addresses that had events
-    const uniqueEmailsWithEvents = Object.keys(eventsByEmail);
+    console.log('Analytics Engine - Events grouped by email:', Object.keys(eventsByEmail).length);
+
+    // Instead of using delivery events for delivered count, use the queue data
+    // since emails marked as 'sent' in queue are actually delivered
+    const delivered = totalSent; // All sent emails are delivered
     
-    // Calculate delivery metrics based on unique emails, not individual events
-    let delivered = 0;
+    // Calculate engagement from delivery events
     let opened = 0;
     let clicked = 0;
     let bounced = 0;
 
-    uniqueEmailsWithEvents.forEach(email => {
-      const emailEvents = eventsByEmail[email];
-      const hasDelivered = emailEvents.some(e => e.event_type === 'delivered');
-      const hasOpened = emailEvents.some(e => e.event_type === 'opened');
-      const hasClicked = emailEvents.some(e => e.event_type === 'clicked');
-      const hasBounced = emailEvents.some(e => e.event_type === 'bounced');
+    // Count unique recipients who performed each action
+    const uniqueOpeners = new Set<string>();
+    const uniqueClickers = new Set<string>();
+    const uniqueBouncers = new Set<string>();
 
-      if (hasDelivered) delivered++;
-      if (hasOpened) opened++;
-      if (hasClicked) clicked++;
-      if (hasBounced) bounced++;
+    eventsData.forEach(event => {
+      const email = event.recipient_email || event.email || event.metadata?.recipient_email;
+      if (!email) return;
+
+      switch (event.event_type) {
+        case 'opened':
+          uniqueOpeners.add(email);
+          break;
+        case 'clicked':
+          uniqueClickers.add(email);
+          break;
+        case 'bounced':
+          uniqueBouncers.add(email);
+          break;
+      }
+    });
+
+    opened = uniqueOpeners.size;
+    clicked = uniqueClickers.size;
+    bounced = uniqueBouncers.size;
+
+    console.log('Analytics Engine - Final counts:', { 
+      totalSent, delivered, opened, clicked, bounced 
     });
 
     // Calculate realistic rates

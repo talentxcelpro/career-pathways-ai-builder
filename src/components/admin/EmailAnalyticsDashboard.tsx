@@ -33,6 +33,8 @@ import { toast } from '@/hooks/use-toast';
 import { EmailTrackingFixer } from './EmailTrackingFixer';
 import { EmailAnalyticsEngine } from './EmailAnalyticsEngine';
 import { RobustEmailProcessor } from './RobustEmailProcessor';
+import { EmailSystemHealthMonitor } from './EmailSystemHealthMonitor';
+import { InstantAnalyticsRefresh } from './InstantAnalyticsRefresh';
 
 interface EmailAnalytics {
   totalSent: number;
@@ -189,10 +191,16 @@ export const EmailAnalyticsDashboard = () => {
         </div>
       </div>
 
-      {/* Email Processing & Tracking Tools */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* System Health & Processing Tools */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+        {/* System Health Monitor */}
+        <EmailSystemHealthMonitor />
+        
         {/* Robust Email Processor */}
         <RobustEmailProcessor onComplete={fetchAnalytics} />
+        
+        {/* Instant Analytics Refresh */}
+        <InstantAnalyticsRefresh onComplete={fetchAnalytics} />
         
         {/* Email Tracking Fixer - only show if delivery rate is 0 */}
         {analytics.totalSent > 0 && analytics.deliveryRate === 0 && (

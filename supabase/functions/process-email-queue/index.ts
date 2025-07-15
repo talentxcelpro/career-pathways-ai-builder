@@ -15,6 +15,20 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     console.log('Email queue processing started...');
     
+    // Handle health check requests
+    const body = await req.json().catch(() => ({}));
+    if (body.healthCheck) {
+      console.log('Health check request received');
+      return new Response(JSON.stringify({ 
+        status: 'healthy',
+        message: 'Edge function is operational',
+        timestamp: new Date().toISOString()
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+    
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
