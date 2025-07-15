@@ -363,7 +363,7 @@ const SystemConfiguration = () => {
                         <div>
                           <div className="font-medium">{template.name}</div>
                           <div className="text-sm text-muted-foreground">
-                            Variables: {template.variables?.join(', ') || 'None'}
+                            Variables: {(template.variables as string[])?.join(', ') || 'None'}
                           </div>
                         </div>
                       </TableCell>

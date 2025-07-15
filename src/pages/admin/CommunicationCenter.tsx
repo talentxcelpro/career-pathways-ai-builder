@@ -38,17 +38,24 @@ const CommunicationCenter = () => {
   const { data: notificationStats } = useQuery({
     queryKey: ['notification-stats'],
     queryFn: async () => {
-      const [
-        { count: totalSent },
-        { count: delivered },
-        { count: opened },
-        { count: failed }
-      ] = await Promise.all([
-        supabase.from('notifications').select('*', { count: 'exact', head: true }),
-        supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('delivered', true),
-        supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('is_read', true),
-        supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('failed', true)
-      ]);
+      const { count: totalSent } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true });
+      
+      const { count: delivered } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .not('delivered_at', 'is', null);
+      
+      const { count: opened } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_read', true);
+      
+      const { count: failed } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .not('error_message', 'is', null);
 
       return {
         totalSent: totalSent || 0,
@@ -67,10 +74,7 @@ const CommunicationCenter = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('notifications')
-        .select(`
-          *,
-          profiles:user_id(full_name, email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -273,13 +277,13 @@ const CommunicationCenter = () => {
                             {operation.operation_type.replace('_', ' ')}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {operation.parameters?.subject || 'Bulk Operation'}
+                            {(operation.parameters as any)?.subject || 'Bulk Operation'}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {operation.target_criteria?.audience || 'All Users'}
+                          {(operation.target_criteria as any)?.audience || 'All Users'}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -352,13 +356,13 @@ const CommunicationCenter = () => {
                 <TableBody>
                   {recentNotifications?.slice(0, 10).map((notification) => (
                     <TableRow key={notification.id}>
-                      <TableCell>
+                       <TableCell>
                         <div>
                           <div className="font-medium">
-                            {notification.profiles?.full_name || 'Unknown User'}
+                            User #{notification.user_id.slice(0, 8)}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {notification.profiles?.email}
+                            {notification.user_id}
                           </div>
                         </div>
                       </TableCell>
@@ -429,16 +433,16 @@ const CommunicationCenter = () => {
                       <TableCell className="max-w-xs truncate">
                         {template.subject}
                       </TableCell>
-                      <TableCell>
+                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {template.variables?.slice(0, 3).map((variable, index) => (
+                          {(template.variables as string[])?.slice(0, 3).map((variable, index) => (
                             <span key={index} className="text-xs bg-muted px-2 py-1 rounded">
                               {variable}
                             </span>
                           ))}
-                          {template.variables?.length > 3 && (
+                          {(template.variables as string[])?.length > 3 && (
                             <span className="text-xs text-muted-foreground">
-                              +{template.variables.length - 3} more
+                              +{(template.variables as string[]).length - 3} more
                             </span>
                           )}
                         </div>

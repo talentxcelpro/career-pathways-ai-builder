@@ -82,13 +82,7 @@ const ContentModeration = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select(`
-          id,
-          content,
-          created_at,
-          author_id,
-          profiles:author_id(full_name, email)
-        `)
+        .select('id, content, created_at, author_id')
         .order('created_at', { ascending: false })
         .limit(20);
 
@@ -401,11 +395,11 @@ const ContentModeration = () => {
                 </TableHeader>
                 <TableBody>
                   {recentPosts?.map((post) => (
-                    <TableRow key={post.id}>
+                     <TableRow key={post.id}>
                       <TableCell>
                         <div>
-                          <div className="font-medium">{post.profiles?.full_name || 'Unknown'}</div>
-                          <div className="text-sm text-muted-foreground">{post.profiles?.email}</div>
+                          <div className="font-medium">User #{post.author_id.slice(0, 8)}</div>
+                          <div className="text-sm text-muted-foreground">{post.author_id}</div>
                         </div>
                       </TableCell>
                       <TableCell className="max-w-xs truncate">
