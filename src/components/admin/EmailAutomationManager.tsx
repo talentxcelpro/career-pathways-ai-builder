@@ -84,10 +84,13 @@ export const EmailAutomationManager = () => {
     try {
       setIsProcessing(true);
       
-      const { data, error } = await supabase.functions.invoke('process-email-queue');
+      console.log('Calling process-email-queue function...');
+      const { data, error } = await supabase.functions.invoke('process-email-queue', {
+        body: { manual: true }
+      });
       
       if (error) {
-        console.error('Error processing email queue:', error);
+        console.error('Supabase function error:', error);
         toast.error(`Failed to process email queue: ${error.message}`);
         return;
       }
@@ -95,24 +98,34 @@ export const EmailAutomationManager = () => {
       console.log('Email queue processing result:', data);
       
       if (data?.error) {
+        console.error('Function returned error:', data.error);
         toast.error(`Queue processing failed: ${data.error}`);
         return;
       }
       
-      const message = data?.processed > 0 
-        ? `✅ Processed ${data.processed} emails successfully`
-        : data?.message || 'No emails to process';
+      const processed = data?.processed || 0;
+      const failed = data?.failed || 0;
+      const retrying = data?.retrying || 0;
       
-      if (data?.failed > 0) {
-        toast.warning(`${message} (${data.failed} failed)`);
+      let message = 'Email queue processed successfully';
+      if (processed > 0) {
+        message = `✅ Processed ${processed} emails`;
+        if (retrying > 0) message += `, ${retrying} retrying`;
+        if (failed > 0) message += `, ${failed} failed`;
+      } else {
+        message = 'No emails to process';
+      }
+      
+      if (failed > 0) {
+        toast.warning(message);
       } else {
         toast.success(message);
       }
       
-      // Refresh stats after processing
-      await fetchStats();
+      // Refresh stats and queue after processing
+      await Promise.all([fetchStats(), showQueue && fetchEmailQueue()]);
     } catch (error: any) {
-      console.error('Error:', error);
+      console.error('Network/Function error:', error);
       toast.error(`Failed to process email queue: ${error.message || 'Unknown error'}`);
     } finally {
       setIsProcessing(false);
