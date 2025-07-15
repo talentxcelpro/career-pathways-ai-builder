@@ -11,8 +11,18 @@ export const marketplaceRoutes = [
     page: <Marketplace />,
   },
   {
+    title: "Services Directory",
+    to: "/services",
+    page: <Marketplace />,
+  },
+  {
     title: "Service Detail",
     to: "/marketplace/:id",
+    page: <ServiceDetail />,
+  },
+  {
+    title: "Service Detail by ID",
+    to: "/services/:id",
     page: <ServiceDetail />,
   },
   {

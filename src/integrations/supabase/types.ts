@@ -4194,6 +4194,198 @@ export type Database = {
         }
         Relationships: []
       }
+      contract_activities: {
+        Row: {
+          activity_type: string
+          contract_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_type: string
+          contract_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_type?: string
+          contract_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_activities_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_signatures: {
+        Row: {
+          contract_id: string
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          signature_data: string | null
+          signed_at: string | null
+          signer_email: string
+          signer_name: string
+          signer_type: string
+          user_agent: string | null
+        }
+        Insert: {
+          contract_id: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          signature_data?: string | null
+          signed_at?: string | null
+          signer_email: string
+          signer_name: string
+          signer_type: string
+          user_agent?: string | null
+        }
+        Update: {
+          contract_id?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          signature_data?: string | null
+          signed_at?: string | null
+          signer_email?: string
+          signer_name?: string
+          signer_type?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_signatures_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_templates: {
+        Row: {
+          content: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          template_type: string
+          updated_at: string | null
+          variables: Json | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          template_type: string
+          updated_at?: string | null
+          variables?: Json | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          template_type?: string
+          updated_at?: string | null
+          variables?: Json | null
+        }
+        Relationships: []
+      }
+      contracts: {
+        Row: {
+          content: string
+          contract_currency: string | null
+          contract_value: number | null
+          created_at: string | null
+          created_by: string
+          id: string
+          metadata: Json | null
+          pdf_url: string | null
+          recipient_email: string
+          recipient_name: string | null
+          signed_pdf_url: string | null
+          signing_deadline: string | null
+          status: string | null
+          template_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          contract_currency?: string | null
+          contract_value?: number | null
+          created_at?: string | null
+          created_by: string
+          id?: string
+          metadata?: Json | null
+          pdf_url?: string | null
+          recipient_email: string
+          recipient_name?: string | null
+          signed_pdf_url?: string | null
+          signing_deadline?: string | null
+          status?: string | null
+          template_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          contract_currency?: string | null
+          contract_value?: number | null
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          metadata?: Json | null
+          pdf_url?: string | null
+          recipient_email?: string
+          recipient_name?: string | null
+          signed_pdf_url?: string | null
+          signing_deadline?: string | null
+          status?: string | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "contract_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           created_at: string | null
