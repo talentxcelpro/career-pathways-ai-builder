@@ -149,60 +149,47 @@ const ServiceManagement = () => {
   }, []);
 
   const initializeData = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
-      // First, get or create the pro service profile
-      const { data: profile, error: profileError } = await supabase
+    // First, get or create the pro service profile
+    const { data: profile, error: profileError } = await supabase
+      .from('pro_service_profiles')
+      .select('id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (profileError && profileError.code !== 'PGRST116') {
+      toast({ title: 'Error', description: 'Failed to access profile', variant: 'destructive' });
+      return;
+    }
+
+    let currentProfileId = profile?.id;
+
+    // Create profile if it doesn't exist
+    if (!profile) {
+      const profileSlug = `user-${user.id.slice(0, 8)}-${Date.now()}`;
+      const { data: newProfile, error: createError } = await supabase
         .from('pro_service_profiles')
+        .insert([{ 
+          user_id: user.id,
+          profile_slug: profileSlug,
+          subscription_tier: 'pro_starter',
+          is_active: true
+        }])
         .select('id')
-        .eq('user_id', user.id)
         .single();
 
-      if (profileError && profileError.code !== 'PGRST116') {
-        console.error('Profile error:', profileError);
-        toast({ title: 'Error', description: 'Failed to access profile', variant: 'destructive' });
-        setLoading(false);
+      if (createError) {
+        toast({ title: 'Error', description: 'Failed to create profile', variant: 'destructive' });
         return;
       }
-
-      let currentProfileId = profile?.id;
-
-      // Create profile if it doesn't exist
-      if (!profile) {
-        const profileSlug = `user-${user.id.slice(0, 8)}-${Date.now()}`;
-        const { data: newProfile, error: createError } = await supabase
-          .from('pro_service_profiles')
-          .insert([{ 
-            user_id: user.id,
-            profile_slug: profileSlug,
-            subscription_tier: 'pro_starter',
-            is_active: true
-          }])
-          .select('id')
-          .single();
-
-        if (createError) {
-          console.error('Create profile error:', createError);
-          toast({ title: 'Error', description: 'Failed to create profile', variant: 'destructive' });
-          setLoading(false);
-          return;
-        }
-        currentProfileId = newProfile.id;
-      }
-
-      setProfileId(currentProfileId);
-      await fetchServices(currentProfileId);
-      await fetchPortfolios(currentProfileId);
-    } catch (error) {
-      console.error('Initialize data error:', error);
-      toast({ title: 'Error', description: 'Failed to initialize data', variant: 'destructive' });
-      setLoading(false);
+      currentProfileId = newProfile.id;
     }
+
+    setProfileId(currentProfileId);
+    await fetchServices(currentProfileId);
+    await fetchPortfolios(currentProfileId);
   };
 
   const fetchServices = async (profileId: string) => {
