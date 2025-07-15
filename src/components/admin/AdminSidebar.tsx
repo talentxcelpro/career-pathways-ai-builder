@@ -20,7 +20,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Mail,
-  Brain
+  Brain,
+  Crown
 } from 'lucide-react';
 import {
   Sidebar,
@@ -50,6 +51,12 @@ const adminMenuItems = [
     url: '/admin/users',
     icon: Users,
     description: 'Manage all users'
+  },
+  {
+    title: 'Pro Users',
+    url: '/admin/pro-users',
+    icon: Crown,
+    description: 'Manage Pro subscriptions & Elite users'
   },
   {
     title: 'Employer Requests',

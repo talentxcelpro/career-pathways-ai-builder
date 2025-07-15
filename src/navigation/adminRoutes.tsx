@@ -1,5 +1,5 @@
 
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown } from "lucide-react";
 import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminManagement from "../pages/admin/AdminManagement";
@@ -21,6 +21,7 @@ import EmailAutomationPage from "../pages/admin/EmailAutomation";
 import AIMLTrainingCenter from "../pages/admin/AIMLTrainingCenter";
 import AIManagement from "../pages/admin/AIManagement";
 import CollegesManagement from "../pages/admin/CollegesManagement";
+import { ProUsersPage } from "../components/admin/ProUsersPage";
 
 export const adminRoutes = [
   {
@@ -40,6 +41,15 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessUsers" as const,
     description: "Manage and moderate all users"
+  },
+  {
+    title: "Pro Users",
+    to: "/admin/pro-users",
+    icon: <Crown className="h-4 w-4" />,
+    page: <ProUsersPage />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Manage Pro subscriptions & Elite users"
   },
   {
     title: "Employer Requests",
