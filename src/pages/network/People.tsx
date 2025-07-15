@@ -13,6 +13,7 @@ import { useConversations } from "@/hooks/useConversations";
 import { useNavigate } from 'react-router-dom';
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
+import ProBadge from "@/components/network/ProBadge";
 
 const People = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -285,22 +286,30 @@ const People = () => {
               <CardContent className="p-6">
                 <div className="text-center space-y-4">
                   {/* Profile Picture - Clickable */}
-                  <Link 
-                    to={`/network/people/${profile.id}`}
-                    className="block w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto flex items-center justify-center hover:scale-105 transition-transform"
-                  >
-                    {profile.profile_picture_url ? (
-                      <img 
-                        src={profile.profile_picture_url} 
-                        alt={formatDisplayName(profile)}
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-white font-semibold text-lg">
-                        {generateInitials(profile)}
-                      </span>
+                  <div className="relative mx-auto w-16 h-16">
+                    <Link 
+                      to={`/network/people/${profile.id}`}
+                      className="block w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center hover:scale-105 transition-transform"
+                    >
+                      {profile.profile_picture_url ? (
+                        <img 
+                          src={profile.profile_picture_url} 
+                          alt={formatDisplayName(profile)}
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-white font-semibold text-lg">
+                          {generateInitials(profile)}
+                        </span>
+                      )}
+                    </Link>
+                    {profile.pro_plan && profile.pro_status === 'active' && 
+                     profile.pro_expires_at && new Date(profile.pro_expires_at) > new Date() && (
+                      <div className="absolute -top-1 -right-1">
+                        <ProBadge plan={profile.pro_plan as any} size="sm" />
+                      </div>
                     )}
-                  </Link>
+                  </div>
 
                   {/* Basic Info - Clickable */}
                   <div>

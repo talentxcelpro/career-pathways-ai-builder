@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
 import { PostMenu } from "@/components/posts/PostMenu";
+import ProBadge from "@/components/network/ProBadge";
 
 interface PostCardProps {
   post: {
@@ -25,6 +26,9 @@ interface PostCardProps {
       full_name?: string;
       title?: string;
       profile_picture_url?: string;
+      pro_plan?: string;
+      pro_status?: string;
+      pro_expires_at?: string;
     };
   };
   openComments?: string | null;
@@ -72,12 +76,20 @@ export const PostCard: React.FC<PostCardProps> = ({
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start space-x-3">
             <Link to={`/network/people/${post.author_id}`} className="block">
-              <Avatar className="hover:scale-105 transition-transform">
-                <AvatarImage src={post.profiles?.profile_picture_url} />
-                <AvatarFallback>
-                  {generateInitials(post.profiles)}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className="hover:scale-105 transition-transform">
+                  <AvatarImage src={post.profiles?.profile_picture_url} />
+                  <AvatarFallback>
+                    {generateInitials(post.profiles)}
+                  </AvatarFallback>
+                </Avatar>
+                {post.profiles?.pro_plan && post.profiles?.pro_status === 'active' && 
+                 post.profiles?.pro_expires_at && new Date(post.profiles.pro_expires_at) > new Date() && (
+                  <div className="absolute -top-1 -right-1">
+                    <ProBadge plan={post.profiles.pro_plan as any} size="sm" />
+                  </div>
+                )}
+              </div>
             </Link>
             <div>
               <Link 

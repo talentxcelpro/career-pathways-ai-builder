@@ -108,7 +108,7 @@ const Posts = () => {
       // Get profiles for all authors
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, title, headline, current_company')
+        .select('id, full_name, profile_picture_url, title, headline, current_company, pro_plan, pro_status, pro_expires_at')
         .in('id', authorIds);
 
       if (profilesError) throw profilesError;
@@ -453,12 +453,20 @@ const Posts = () => {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-start space-x-3">
                           <Link to={`/network/people/${post.author_id}`} className="block hover:scale-105 transition-transform">
-                            <Avatar className="cursor-pointer">
-                              <AvatarImage src={post.profiles?.profile_picture_url} />
-                              <AvatarFallback>
-                                {generateInitials(post.profiles)}
-                              </AvatarFallback>
-                            </Avatar>
+                            <div className="relative">
+                              <Avatar className="cursor-pointer">
+                                <AvatarImage src={post.profiles?.profile_picture_url} />
+                                <AvatarFallback>
+                                  {generateInitials(post.profiles)}
+                                </AvatarFallback>
+                              </Avatar>
+                              {post.profiles?.pro_plan && post.profiles?.pro_status === 'active' && 
+                               post.profiles?.pro_expires_at && new Date(post.profiles.pro_expires_at) > new Date() && (
+                                <div className="absolute -top-1 -right-1">
+                                  <ProBadge plan={post.profiles.pro_plan as any} size="sm" />
+                                </div>
+                              )}
+                            </div>
                           </Link>
                           <div>
                             <Link 
