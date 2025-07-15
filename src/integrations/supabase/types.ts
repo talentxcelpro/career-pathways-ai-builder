@@ -5291,6 +5291,59 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_progress: {
+        Row: {
+          completed_steps: string[] | null
+          created_at: string
+          current_step: number
+          id: string
+          last_accessed_at: string | null
+          learning_path_id: string | null
+          notes: string | null
+          step_details: Json
+          time_spent_minutes: number
+          total_steps: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_steps?: string[] | null
+          created_at?: string
+          current_step?: number
+          id?: string
+          last_accessed_at?: string | null
+          learning_path_id?: string | null
+          notes?: string | null
+          step_details?: Json
+          time_spent_minutes?: number
+          total_steps: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_steps?: string[] | null
+          created_at?: string
+          current_step?: number
+          id?: string
+          last_accessed_at?: string | null
+          learning_path_id?: string | null
+          notes?: string | null
+          step_details?: Json
+          time_spent_minutes?: number
+          total_steps?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_progress_learning_path_id_fkey"
+            columns: ["learning_path_id"]
+            isOneToOne: false
+            referencedRelation: "learning_paths"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_reads: {
         Row: {
           id: string
@@ -8038,6 +8091,146 @@ export type Database = {
         }
         Relationships: []
       }
+      service_orders: {
+        Row: {
+          client_feedback: string | null
+          client_id: string
+          created_at: string
+          delivery_date: string | null
+          id: string
+          order_details: Json
+          payment_status: string
+          provider_id: string
+          provider_notes: string | null
+          rating: number | null
+          requirements_met: boolean | null
+          service_id: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          client_feedback?: string | null
+          client_id: string
+          created_at?: string
+          delivery_date?: string | null
+          id?: string
+          order_details: Json
+          payment_status?: string
+          provider_id: string
+          provider_notes?: string | null
+          rating?: number | null
+          requirements_met?: boolean | null
+          service_id?: string | null
+          status?: string
+          total_amount: number
+          updated_at?: string
+        }
+        Update: {
+          client_feedback?: string | null
+          client_id?: string
+          created_at?: string
+          delivery_date?: string | null
+          id?: string
+          order_details?: Json
+          payment_status?: string
+          provider_id?: string
+          provider_notes?: string | null
+          rating?: number | null
+          requirements_met?: boolean | null
+          service_id?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_orders_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          base_price: number
+          category: string
+          created_at: string
+          currency: string
+          delivery_time_days: number
+          description: string
+          id: string
+          is_active: boolean | null
+          is_featured: boolean | null
+          orders_completed: number | null
+          portfolio_items: Json | null
+          price_type: string
+          provider_id: string
+          rating: number | null
+          requirements: string | null
+          reviews_count: number | null
+          service_type: string
+          skills_offered: string[]
+          subcategory: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          what_included: string[] | null
+        }
+        Insert: {
+          base_price: number
+          category: string
+          created_at?: string
+          currency?: string
+          delivery_time_days?: number
+          description: string
+          id?: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          orders_completed?: number | null
+          portfolio_items?: Json | null
+          price_type: string
+          provider_id: string
+          rating?: number | null
+          requirements?: string | null
+          reviews_count?: number | null
+          service_type: string
+          skills_offered?: string[]
+          subcategory?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          what_included?: string[] | null
+        }
+        Update: {
+          base_price?: number
+          category?: string
+          created_at?: string
+          currency?: string
+          delivery_time_days?: number
+          description?: string
+          id?: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          orders_completed?: number | null
+          portfolio_items?: Json | null
+          price_type?: string
+          provider_id?: string
+          rating?: number | null
+          requirements?: string | null
+          reviews_count?: number | null
+          service_type?: string
+          skills_offered?: string[]
+          subcategory?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          what_included?: string[] | null
+        }
+        Relationships: []
+      }
       session_participants: {
         Row: {
           id: string
@@ -8122,6 +8315,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      skill_recommendations: {
+        Row: {
+          based_on_data: Json
+          confidence_score: number
+          created_at: string
+          id: string
+          is_dismissed: boolean | null
+          priority_level: string
+          reasoning: string | null
+          recommended_skill: string
+          skill_category: string
+          user_id: string
+        }
+        Insert: {
+          based_on_data?: Json
+          confidence_score: number
+          created_at?: string
+          id?: string
+          is_dismissed?: boolean | null
+          priority_level: string
+          reasoning?: string | null
+          recommended_skill: string
+          skill_category: string
+          user_id: string
+        }
+        Update: {
+          based_on_data?: Json
+          confidence_score?: number
+          created_at?: string
+          id?: string
+          is_dismissed?: boolean | null
+          priority_level?: string
+          reasoning?: string | null
+          recommended_skill?: string
+          skill_category?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       skill_salary_data: {
         Row: {

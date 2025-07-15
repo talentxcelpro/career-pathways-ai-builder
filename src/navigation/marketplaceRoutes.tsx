@@ -2,6 +2,7 @@
 import Marketplace from "../pages/Marketplace";
 import ServiceDetail from "../pages/marketplace/ServiceDetail";
 import PostService from "../pages/marketplace/PostService";
+import LearningHub from "../pages/LearningHub";
 
 export const marketplaceRoutes = [
   {
@@ -18,5 +19,10 @@ export const marketplaceRoutes = [
     title: "Post Service",
     to: "/marketplace/post-service",
     page: <PostService />,
+  },
+  {
+    title: "Learning Hub",
+    to: "/learning",
+    page: <LearningHub />,
   },
 ];
