@@ -28,7 +28,8 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast';
+import { EmailTrackingFixer } from './EmailTrackingFixer';
 
 interface EmailAnalytics {
   totalSent: number;
@@ -173,10 +174,14 @@ export const EmailAnalyticsDashboard = () => {
         setDailyStats(processedDailyStats);
       }
       
-    } catch (error) {
-      console.error('Error fetching analytics:', error);
-      toast.error('Failed to load email analytics');
-    } finally {
+      } catch (error) {
+        console.error('Error fetching analytics:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load email analytics",
+          variant: "destructive",
+        });
+      } finally {
       setLoading(false);
     }
   };
@@ -247,6 +252,11 @@ export const EmailAnalyticsDashboard = () => {
           </Button>
         </div>
       </div>
+
+      {/* Email Tracking Issue Detection & Fix */}
+      {analytics.totalSent > 0 && analytics.deliveryRate === 0 && (
+        <EmailTrackingFixer onComplete={fetchAnalytics} />
+      )}
 
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

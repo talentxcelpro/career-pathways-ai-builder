@@ -9890,6 +9890,13 @@ export type Database = {
         }
         Returns: number
       }
+      simulate_delivery_events_for_sent_emails: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          processed_count: number
+          simulated_events: number
+        }[]
+      }
       update_ai_feature_status: {
         Args: {
           p_module_name: string
@@ -9912,6 +9919,10 @@ export type Database = {
       }
       update_user_login: {
         Args: { user_uuid: string }
+        Returns: undefined
+      }
+      upsert_daily_analytics: {
+        Args: { p_date: string; p_field: string; p_increment?: number }
         Returns: undefined
       }
     }
