@@ -61,7 +61,7 @@ const ServiceManagement = () => {
   const { toast } = useToast();
   const { user } = useAuth();
 
-  // Check if user is Elite
+  // Check if user is Pro (any tier)
   const { data: userProfile } = useQuery({
     queryKey: ['userProfile', user?.id],
     queryFn: async () => {
@@ -76,7 +76,7 @@ const ServiceManagement = () => {
     enabled: !!user,
   });
 
-  // Fetch Elite service templates
+  // Fetch Elite service templates for all Pro users
   const { data: eliteTemplates } = useQuery({
     queryKey: ['eliteServiceTemplates'],
     queryFn: async () => {
@@ -87,10 +87,10 @@ const ServiceManagement = () => {
         .order('title');
       return data as EliteServiceTemplate[];
     },
-    enabled: userProfile?.pro_status === 'elite',
+    enabled: ['starter', 'business', 'elite'].includes(userProfile?.pro_status),
   });
 
-  const isElite = userProfile?.pro_status === 'elite';
+  const isProUser = ['starter', 'business', 'elite'].includes(userProfile?.pro_status);
 
   const createServiceFromTemplate = async (template: EliteServiceTemplate) => {
     if (!profileId) return;
@@ -351,14 +351,14 @@ const ServiceManagement = () => {
   return (
     <div className="space-y-6">
       {/* Elite Services Section */}
-      {isElite && eliteTemplates && eliteTemplates.length > 0 && (
+      {isProUser && eliteTemplates && eliteTemplates.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Crown className="h-5 w-5 text-yellow-500" />
-              Elite Service Templates
+              Premium Service Templates
               <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                Premium
+                Pro Feature
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -400,13 +400,13 @@ const ServiceManagement = () => {
                     </div>
                   </div>
                   
-                  <Button
+                    <Button
                     onClick={() => createServiceFromTemplate(template)}
                     className="w-full"
                     disabled={services.length >= 15}
                   >
                     <Star className="h-4 w-4 mr-2" />
-                    Setup This Elite Service
+                    Setup This Premium Service
                   </Button>
                 </Card>
               ))}

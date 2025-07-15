@@ -13,6 +13,7 @@ import { PostCard } from "@/components/network/PostCard";
 import { useConversations } from "@/hooks/useConversations";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import ProBadge from "@/components/network/ProBadge";
 
 interface UserProfileProps {
   profileIdOverride?: string;
@@ -262,16 +263,26 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
                 </AvatarFallback>
               </Avatar>
 
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                  {formatDisplayName(profile)}
-                  {profile.title && (
-                    <>
-                      <span className="text-gray-400 mx-3">|</span>
-                      <span className="text-xl font-normal text-gray-600">{profile.title}</span>
-                    </>
+               <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {formatDisplayName(profile)}
+                    {profile.title && (
+                      <>
+                        <span className="text-gray-400 mx-3">|</span>
+                        <span className="text-xl font-normal text-gray-600">{profile.title}</span>
+                      </>
+                    )}
+                  </h1>
+                  {profile.pro_status && (
+                    <ProBadge 
+                      plan={profile.pro_status === 'starter' ? 'Starter' : 
+                            profile.pro_status === 'business' ? 'Business' : 
+                            profile.pro_status === 'elite' ? 'Elite' : 'Starter'} 
+                      size="md" 
+                    />
                   )}
-                </h1>
+                </div>
                 {profile.headline && (
                   <p className="text-lg text-gray-600 mb-4">
                     {profile.headline}

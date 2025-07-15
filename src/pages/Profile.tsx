@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Share2, Eye, Download, ExternalLink } from 'lucide-react';
 import { incrementProfileView } from '@/utils/profileHelpers';
 import { useState } from 'react';
+import ProBadge from '@/components/network/ProBadge';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -129,9 +130,19 @@ const Profile = () => {
                 </div>
               )}
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {profile?.full_name || currentUser.email || 'Your Profile'}
-                </h1>
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    {profile?.full_name || currentUser.email || 'Your Profile'}
+                  </h1>
+                  {profile?.pro_status && (
+                    <ProBadge 
+                      plan={profile.pro_status === 'starter' ? 'Starter' : 
+                            profile.pro_status === 'business' ? 'Business' : 
+                            profile.pro_status === 'elite' ? 'Elite' : 'Starter'} 
+                      size="md" 
+                    />
+                  )}
+                </div>
                 {profile?.title && (
                   <p className="text-xl text-gray-600">{profile.title}</p>
                 )}
