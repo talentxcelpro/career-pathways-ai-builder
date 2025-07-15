@@ -30,6 +30,46 @@ serve(async (req: Request) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
+    // Handle tracking pixel requests (email opens)
+    const url = new URL(req.url);
+    if (url.searchParams.has('event') && url.searchParams.get('event') === 'opened') {
+      const messageId = url.searchParams.get('id');
+      if (messageId) {
+        console.log('Recording email open event for:', messageId);
+        
+        const { error } = await supabase
+          .from('email_delivery_events')
+          .insert({
+            event_type: 'opened',
+            external_id: messageId,
+            event_data: {
+              service: 'sendgrid',
+              ip: req.headers.get('x-forwarded-for') || 'unknown',
+              user_agent: req.headers.get('user-agent') || 'unknown'
+            }
+          });
+        
+        if (error) {
+          console.error('Error recording open event:', error);
+        }
+      }
+      
+      // Return 1x1 transparent pixel
+      const pixel = Uint8Array.from([
+        0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x00, 0x00, 0xff, 0xff, 0xff,
+        0x00, 0x00, 0x00, 0x21, 0xf9, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00, 0x00,
+        0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x04, 0x01, 0x00, 0x3b
+      ]);
+      
+      return new Response(pixel, {
+        headers: {
+          'Content-Type': 'image/gif',
+          'Cache-Control': 'no-cache',
+          ...corsHeaders
+        }
+      });
+    }
+
     const body = await req.json();
     console.log('Webhook body:', body);
 
@@ -41,11 +81,11 @@ serve(async (req: Request) => {
       events = body.map((event: any) => ({
         event: event.event,
         email: event.email,
-        messageId: event.sg_message_id,
+        messageId: event.sg_message_id || event.custom_args?.message_id,
         linkUrl: event.url,
         userAgent: event.useragent,
         ip: event.ip,
-        timestamp: event.timestamp
+        timestamp: event.timestamp ? new Date(event.timestamp * 1000).toISOString() : new Date().toISOString()
       }));
     }
     // Resend webhook format

@@ -42,6 +42,10 @@ Deno.serve(async (req) => {
     }
 
     console.log('Sending email via SendGrid...');
+    const messageId = crypto.randomUUID();
+    const trackingPixel = `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/email-webhook?event=opened&id=${messageId}" width="1" height="1" style="display:none;" />`;
+    const htmlWithTracking = (html || '<p>Test email from TalentXcel</p>') + trackingPixel;
+
     const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
       method: 'POST',
       headers: {
@@ -49,10 +53,23 @@ Deno.serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        personalizations: [{ to: [{ email: to }] }],
+        personalizations: [{ 
+          to: [{ email: to }],
+          custom_args: {
+            message_id: messageId
+          }
+        }],
         from: { email: 'noreply@talentxcel.in', name: "TalentXcel" },
         subject,
-        content: [{ type: 'text/html', value: html || '<p>Test email from TalentXcel</p>' }],
+        content: [{ type: 'text/html', value: htmlWithTracking }],
+        tracking_settings: {
+          click_tracking: { enable: true },
+          open_tracking: { enable: true },
+          subscription_tracking: { enable: false }
+        },
+        custom_args: {
+          message_id: messageId
+        }
       }),
     });
 

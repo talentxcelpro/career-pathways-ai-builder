@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -207,63 +206,19 @@ serve(async (req) => {
 
     const emailContent = templateFunction(template_data || {});
 
-    // Try Resend first, then fallback to SendGrid
-    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+    // Use SendGrid for email sending
     const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
 
     let emailSent = false;
     let error = null;
+    let messageId = crypto.randomUUID();
 
-    if (RESEND_API_KEY) {
+    if (SENDGRID_API_KEY) {
       try {
-        const resend = new Resend(RESEND_API_KEY);
-        
-        const emailResponse = await resend.emails.send({
-          from: "TalentXCE <onboarding@resend.dev>",
-          to: [recipient_email],
-          subject: emailContent.subject,
-          html: emailContent.html,
-          headers: {
-            'X-Entity-Ref-ID': crypto.randomUUID(), // For tracking
-          },
-        });
+        // Add tracking pixel and unique ID to HTML content
+        const trackingPixel = `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/email-webhook?event=opened&id=${messageId}" width="1" height="1" style="display:none;" />`;
+        const htmlWithTracking = emailContent.html + trackingPixel;
 
-        console.log('Email sent via Resend:', emailResponse);
-        
-        // Record the sent event
-        if (emailResponse.data?.id) {
-          try {
-            const { error: eventError } = await supabase
-              .from('email_delivery_events')
-              .insert({
-                event_type: 'sent',
-                recipient_email: recipient_email,
-                external_id: emailResponse.data.id,
-                event_data: {
-                  service: 'resend',
-                  template: template_name,
-                  messageId: emailResponse.data.id
-                }
-              });
-            
-            if (eventError) {
-              console.error('Error recording sent event:', eventError);
-            }
-          } catch (error) {
-            console.error('Failed to record email sent event:', error);
-          }
-        }
-        
-        emailSent = true;
-      } catch (resendError: any) {
-        console.error('Resend failed:', resendError);
-        error = resendError.message;
-      }
-    }
-
-    // Fallback to SendGrid if Resend failed
-    if (!emailSent && SENDGRID_API_KEY) {
-      try {
         const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
           method: 'POST',
           headers: {
@@ -271,15 +226,30 @@ serve(async (req) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            personalizations: [{ to: [{ email: recipient_email }] }],
-            from: { email: 'onboarding@resend.dev', name: "TalentXCE" },
+            personalizations: [{ 
+              to: [{ email: recipient_email }],
+              custom_args: {
+                message_id: messageId,
+                template: template_name
+              }
+            }],
+            from: { email: 'noreply@talentxcel.in', name: "TalentXcel" },
             subject: emailContent.subject,
-            content: [{ type: 'text/html', value: emailContent.html }],
+            content: [{ type: 'text/html', value: htmlWithTracking }],
+            tracking_settings: {
+              click_tracking: { enable: true },
+              open_tracking: { enable: true },
+              subscription_tracking: { enable: false }
+            },
+            custom_args: {
+              message_id: messageId,
+              template: template_name
+            }
           }),
         });
 
         if (response.ok) {
-          console.log('Email sent via SendGrid');
+          console.log('Email sent via SendGrid with tracking');
           
           // Record the sent event for SendGrid
           try {
@@ -288,10 +258,11 @@ serve(async (req) => {
               .insert({
                 event_type: 'sent',
                 recipient_email: recipient_email,
-                external_id: 'sendgrid-sent',
+                external_id: messageId,
                 event_data: {
                   service: 'sendgrid',
-                  template: template_name
+                  template: template_name,
+                  messageId: messageId
                 }
               });
             
@@ -317,8 +288,8 @@ serve(async (req) => {
     if (!emailSent) {
       return new Response(
         JSON.stringify({ 
-          error: error || 'No email service configured or all services failed',
-          details: 'Please ensure RESEND_API_KEY or SENDGRID_API_KEY is configured'
+          error: error || 'SendGrid API not configured or failed',
+          details: 'Please ensure SENDGRID_API_KEY is configured in Edge Function secrets'
         }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
