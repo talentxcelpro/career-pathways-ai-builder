@@ -1498,6 +1498,45 @@ export type Database = {
         }
         Relationships: []
       }
+      career_milestones: {
+        Row: {
+          achievement_date: string
+          celebration_count: number | null
+          company: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          milestone_type: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          achievement_date: string
+          celebration_count?: number | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          milestone_type: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          achievement_date?: string
+          celebration_count?: number | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          milestone_type?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       career_switches: {
         Row: {
           created_at: string
@@ -3845,6 +3884,48 @@ export type Database = {
         }
         Relationships: []
       }
+      discussion_forums: {
+        Row: {
+          category: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          member_count: number | null
+          name: string
+          post_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          member_count?: number | null
+          name: string
+          post_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          member_count?: number | null
+          name?: string
+          post_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       education: {
         Row: {
           academic_projects: string[] | null
@@ -4452,6 +4533,38 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      forum_memberships: {
+        Row: {
+          forum_id: string
+          id: string
+          joined_at: string | null
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          forum_id: string
+          id?: string
+          joined_at?: string | null
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          forum_id?: string
+          id?: string
+          joined_at?: string | null
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_memberships_forum_id_fkey"
+            columns: ["forum_id"]
+            isOneToOne: false
+            referencedRelation: "discussion_forums"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       goal_communities: {
         Row: {
@@ -5610,6 +5723,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mentorship_programs: {
+        Row: {
+          created_at: string | null
+          duration_weeks: number | null
+          goals: string[] | null
+          id: string
+          meeting_frequency: string | null
+          mentee_id: string
+          mentor_id: string
+          notes: string | null
+          program_type: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration_weeks?: number | null
+          goals?: string[] | null
+          id?: string
+          meeting_frequency?: string | null
+          mentee_id: string
+          mentor_id: string
+          notes?: string | null
+          program_type: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          duration_weeks?: number | null
+          goals?: string[] | null
+          id?: string
+          meeting_frequency?: string | null
+          mentee_id?: string
+          mentor_id?: string
+          notes?: string | null
+          program_type?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       message_reads: {
         Row: {
@@ -8748,6 +8903,36 @@ export type Database = {
         }
         Relationships: []
       }
+      social_interactions: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          interaction_type: string
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_type: string
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_type?: string
+          target_id?: string
+          target_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       sop_drafts: {
         Row: {
           ai_feedback: string | null
@@ -9852,6 +10037,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_posts: {
+        Row: {
+          author_id: string
+          comments_count: number | null
+          content: string
+          created_at: string | null
+          id: string
+          is_featured: boolean | null
+          likes_count: number | null
+          media_urls: string[] | null
+          post_type: string
+          shares_count: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          views_count: number | null
+        }
+        Insert: {
+          author_id: string
+          comments_count?: number | null
+          content: string
+          created_at?: string | null
+          id?: string
+          is_featured?: boolean | null
+          likes_count?: number | null
+          media_urls?: string[] | null
+          post_type: string
+          shares_count?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          author_id?: string
+          comments_count?: number | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_featured?: boolean | null
+          likes_count?: number | null
+          media_urls?: string[] | null
+          post_type?: string
+          shares_count?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Relationships: []
       }
       user_progress: {
         Row: {
