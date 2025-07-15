@@ -25,11 +25,14 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  RefreshCw
+  RefreshCw,
+  Activity
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { EmailTrackingFixer } from './EmailTrackingFixer';
+import { EmailAnalyticsEngine } from './EmailAnalyticsEngine';
+import { RobustEmailProcessor } from './RobustEmailProcessor';
 
 interface EmailAnalytics {
   totalSent: number;
@@ -64,6 +67,12 @@ interface EmailDetails {
   created_at: string;
   sent_at: string;
   error_message?: string;
+  delivery_events?: {
+    delivered: boolean;
+    opened: boolean;
+    clicked: boolean;
+    bounced: boolean;
+  };
 }
 
 export const EmailAnalyticsDashboard = () => {
@@ -89,101 +98,28 @@ export const EmailAnalyticsDashboard = () => {
     try {
       setLoading(true);
       
-      // Get queue statistics
-      const { data: queueData } = await supabase
-        .from('email_automation_queue')
-        .select('status, trigger_type, recipient_email, created_at, sent_at, error_message, id')
-        .gte('created_at', new Date(Date.now() - parseInt(selectedTimeRange) * 24 * 60 * 60 * 1000).toISOString())
-        .order('created_at', { ascending: false });
+      // Use the new analytics engine for correct data correlation
+      const { analytics, dailyStats, emailDetails } = await EmailAnalyticsEngine.fetchCorrectAnalytics(selectedTimeRange);
       
-      // Get delivery events
-      const { data: eventsData } = await supabase
-        .from('email_delivery_events')
-        .select('event_type, created_at, email_id')
-        .gte('created_at', new Date(Date.now() - parseInt(selectedTimeRange) * 24 * 60 * 60 * 1000).toISOString())
-        .order('created_at', { ascending: false });
+      setAnalytics(analytics);
+      setDailyStats(dailyStats);
+      setEmailDetails(emailDetails);
       
-      // Get daily analytics
-      const { data: dailyData } = await supabase
-        .from('email_analytics_daily')
-        .select('*')
-        .gte('date', new Date(Date.now() - parseInt(selectedTimeRange) * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
-        .order('date', { ascending: false });
-      
-      if (queueData) {
-        const totalSent = queueData.filter(q => q.status === 'sent').length;
-        const pending = queueData.filter(q => q.status === 'pending').length;
-        const failed = queueData.filter(q => q.status === 'failed').length;
-        
-        // Count delivery events
-        const eventCounts = eventsData?.reduce((acc, event) => {
-          acc[event.event_type] = (acc[event.event_type] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>) || {};
-        
-        const delivered = eventCounts['delivered'] || 0;
-        const opened = eventCounts['opened'] || 0;
-        const clicked = eventCounts['clicked'] || 0;
-        const bounced = eventCounts['bounced'] || 0;
-        
-        // Calculate rates
-        const deliveryRate = totalSent > 0 ? (delivered / totalSent) * 100 : 0;
-        const openRate = delivered > 0 ? (opened / delivered) * 100 : 0;
-        const clickRate = opened > 0 ? (clicked / opened) * 100 : 0;
-        const bounceRate = totalSent > 0 ? (bounced / totalSent) * 100 : 0;
-        
-        setAnalytics({
-          totalSent,
-          delivered,
-          opened,
-          clicked,
-          bounced,
-          failed,
-          pending,
-          deliveryRate,
-          openRate,
-          clickRate,
-          bounceRate,
-        });
-        
-        // Set email details
-        setEmailDetails(queueData.map(email => ({
-          id: email.id,
-          recipient_email: email.recipient_email,
-          subject: email.trigger_type.replace('_', ' ').toUpperCase(),
-          status: email.status,
-          trigger_type: email.trigger_type,
-          created_at: email.created_at,
-          sent_at: email.sent_at,
-          error_message: email.error_message
-        })));
-      }
-      
-      // Process daily stats
-      if (dailyData) {
-        const processedDailyStats = dailyData.map(day => ({
-          date: new Date(day.date).toLocaleDateString(),
-          sent: day.emails_sent || 0,
-          delivered: day.emails_delivered || 0,
-          opened: day.emails_opened || 0,
-          clicked: day.emails_clicked || 0,
-          bounced: day.emails_bounced || 0,
-          failed: day.emails_failed || 0,
-        })).reverse();
-        
-        setDailyStats(processedDailyStats);
-      }
-      
-      } catch (error) {
-        console.error('Error fetching analytics:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load email analytics",
-          variant: "destructive",
-        });
-      } finally {
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load email analytics",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
     }
+  };
+
+  const handleRefreshAnalytics = async () => {
+    await EmailAnalyticsEngine.refreshAnalytics();
+    await fetchAnalytics();
   };
 
   useEffect(() => {
@@ -246,17 +182,23 @@ export const EmailAnalyticsDashboard = () => {
               {days} days
             </Button>
           ))}
-          <Button onClick={fetchAnalytics} variant="outline" size="sm">
+          <Button onClick={handleRefreshAnalytics} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
+            Refresh Analytics
           </Button>
         </div>
       </div>
 
-      {/* Email Tracking Issue Detection & Fix */}
-      {analytics.totalSent > 0 && analytics.deliveryRate === 0 && (
-        <EmailTrackingFixer onComplete={fetchAnalytics} />
-      )}
+      {/* Email Processing & Tracking Tools */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Robust Email Processor */}
+        <RobustEmailProcessor onComplete={fetchAnalytics} />
+        
+        {/* Email Tracking Fixer - only show if delivery rate is 0 */}
+        {analytics.totalSent > 0 && analytics.deliveryRate === 0 && (
+          <EmailTrackingFixer onComplete={fetchAnalytics} />
+        )}
+      </div>
 
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -398,7 +340,35 @@ export const EmailAnalyticsDashboard = () => {
                     <td className="p-2">
                       <Badge variant="outline">{email.trigger_type.replace('_', ' ')}</Badge>
                     </td>
-                    <td className="p-2">{getStatusBadge(email.status)}</td>
+                    <td className="p-2">
+                      <div className="flex items-center gap-2">
+                        {getStatusBadge(email.status)}
+                        {email.delivery_events && (
+                          <div className="flex gap-1">
+                            {email.delivery_events.delivered && (
+                              <Badge variant="outline" className="text-xs bg-green-50 text-green-700">
+                                ✓ Delivered
+                              </Badge>
+                            )}
+                            {email.delivery_events.opened && (
+                              <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
+                                👁 Opened
+                              </Badge>
+                            )}
+                            {email.delivery_events.clicked && (
+                              <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700">
+                                🖱 Clicked
+                              </Badge>
+                            )}
+                            {email.delivery_events.bounced && (
+                              <Badge variant="outline" className="text-xs bg-red-50 text-red-700">
+                                ↩ Bounced
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </td>
                     <td className="p-2 text-sm text-muted-foreground">
                       {email.sent_at ? new Date(email.sent_at).toLocaleString() : '-'}
                     </td>
