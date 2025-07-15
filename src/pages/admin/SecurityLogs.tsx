@@ -150,22 +150,22 @@ const SecurityLogs = () => {
                     <TableRow key={log.id}>
                       <TableCell>
                         <div>
-                          <div className="font-medium">{log.profiles?.full_name || 'Unknown User'}</div>
-                          <div className="text-sm text-muted-foreground">{log.profiles?.email}</div>
+                          <div className="font-medium">Admin User</div>
+                          <div className="text-sm text-muted-foreground">{log.admin_user_id || 'System'}</div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <Badge variant={log.action_type === 'failed_login' ? 'destructive' : 'default'}>
-                          {log.action_type.replace('_', ' ').toUpperCase()}
+                          {log.action_type?.replace('_', ' ').toUpperCase() || 'SYSTEM'}
                         </Badge>
                       </TableCell>
                       <TableCell className="font-mono text-sm">
-                        {log.ip_address || 'N/A'}
+                        {log.ip_address ? String(log.ip_address) : 'N/A'}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {format(new Date(log.created_at), 'MMM dd, HH:mm')}
+                          {log.created_at ? format(new Date(log.created_at), 'MMM dd, HH:mm') : 'N/A'}
                         </div>
                       </TableCell>
                       <TableCell>

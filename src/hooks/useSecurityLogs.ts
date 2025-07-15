@@ -34,9 +34,17 @@ export const useSecurityLogs = () => {
     queryKey: ['recent-logins', searchTerm],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, last_login_at, login_count, provider')
-        .order('last_login_at', { ascending: false })
+        .from('admin_activity_log')
+        .select(`
+          id,
+          action_type,
+          ip_address,
+          created_at,
+          admin_user_id,
+          target_user_id,
+          details
+        `)
+        .order('created_at', { ascending: false })
         .limit(50);
 
       if (error) throw error;

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -114,25 +116,25 @@ const CollegesManagement = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {colleges.map((college) => (
+                  {colleges?.map((college) => (
                     <tr key={college.id} className="border-b">
                       <td className="px-4 py-3">
                         <div>
                           <div className="font-medium">{college.name}</div>
-                          <div className="text-sm text-muted-foreground">Added {college.created}</div>
+                          <div className="text-sm text-muted-foreground">Added {new Date(college.created_at).toLocaleDateString()}</div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <Badge variant="outline">{college.type}</Badge>
+                        <Badge variant="outline">{college.college_type || 'N/A'}</Badge>
                       </td>
-                      <td className="px-4 py-3 text-sm">{college.location}</td>
-                      <td className="px-4 py-3 text-sm">{college.students.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-sm">{college.city}, {college.state}</td>
+                      <td className="px-4 py-3 text-sm">{college.total_students?.toLocaleString() || 'N/A'}</td>
                       <td className="px-4 py-3">
                         <Badge 
-                          variant={college.status === 'verified' ? 'default' : 'secondary'}
-                          className={college.status === 'verified' ? 'bg-green-100 text-green-800' : ''}
+                          variant={college.is_verified ? 'default' : 'secondary'}
+                          className={college.is_verified ? 'bg-green-100 text-green-800' : ''}
                         >
-                          {college.status === 'verified' ? (
+                          {college.is_verified ? (
                             <>
                               <CheckCircle className="h-3 w-3 mr-1" />
                               Verified
