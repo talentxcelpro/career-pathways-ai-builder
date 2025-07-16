@@ -30,6 +30,11 @@ export const useEnhancedAI = () => {
     setError(null);
 
     try {
+      // Validate required fields
+      if (!request.module || !request.task) {
+        throw new Error('Module and task are required');
+      }
+
       // Generate user message content for chat
       let userMessage = '';
       if (request.task === 'chat' && request.input?.message) {
@@ -46,51 +51,85 @@ export const useEnhancedAI = () => {
         metadata: request.input
       });
 
-      // Create simplified request that matches Edge Function expectations
-      const simplifiedRequest = {
-        module: request.module || currentModule,
+      // Create clean request payload that exactly matches Edge Function expectations
+      const requestPayload = {
+        module: request.module,
         task: request.task,
         input: request.input || {},
-        userId: userProfile?.id,
+        userId: userProfile?.id || null,
         prompt: request.task === 'chat' ? request.input?.message : undefined
       };
 
-      console.log('Sending AI request:', simplifiedRequest);
+      console.log('🚀 Sending AI request:', JSON.stringify(requestPayload, null, 2));
 
-      const { data, error } = await supabase.functions.invoke('ai-agent', {
-        body: simplifiedRequest
+      // Add timeout and retry logic
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timed out after 30 seconds')), 30000)
+      );
+
+      const requestPromise = supabase.functions.invoke('ai-agent', {
+        body: requestPayload,
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
+      const result = await Promise.race([requestPromise, timeoutPromise]) as any;
+      const { data, error } = result;
+
+      console.log('📡 Raw response:', { data, error });
+
       if (error) {
-        console.error('Supabase function error:', error);
-        throw new Error(error.message);
+        console.error('❌ Supabase function invoke error:', error);
+        
+        // Handle different types of errors
+        if (error.message?.includes('Failed to fetch')) {
+          throw new Error('Network connection failed. Please check your internet connection.');
+        } else if (error.message?.includes('Function not found')) {
+          throw new Error('AI service is temporarily unavailable. Please try again later.');
+        } else {
+          throw new Error(`Service error: ${error.message}`);
+        }
       }
 
-      console.log('AI response received:', data);
+      if (!data) {
+        throw new Error('No response received from AI service');
+      }
+
+      console.log('✅ AI response received:', JSON.stringify(data, null, 2));
 
       // Handle the response structure from Edge Function
       if (data.success) {
         const aiResponse = data.response || data.data;
         
+        if (!aiResponse) {
+          throw new Error('Empty response received from AI service');
+        }
+        
         // Add AI response to context
         addMessage({
           type: 'ai',
           content: typeof aiResponse === 'string' ? aiResponse : JSON.stringify(aiResponse, null, 2),
-          module: request.module || currentModule,
-          metadata: { tokens_used: data.tokens_used }
+          module: request.module,
+          metadata: { 
+            tokens_used: data.tokens_used,
+            requestId: data.requestId 
+          }
         });
 
         return {
           success: true,
           data: aiResponse,
-          requestId: data.requestId
+          requestId: data.requestId,
+          confidence: data.confidence
         };
       } else {
-        throw new Error(data.error || 'AI request failed');
+        throw new Error(data.error || 'AI processing failed');
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-      console.error('AI request failed:', errorMessage, err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      console.error('💥 AI request failed:', errorMessage, err);
+      
       setError(errorMessage);
       toast.error(`AI Error: ${errorMessage}`);
       
