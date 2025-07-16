@@ -87,35 +87,82 @@ export const AIDebugMonitor = () => {
   const checkConnectivity = async () => {
     addLog({ type: 'connectivity', message: 'Testing Edge Function connectivity...', status: 'info' });
     
+    // Test 1: Supabase client method
     try {
+      addLog({ type: 'connectivity', message: 'Testing with Supabase client...', status: 'info' });
+      
       const result = await supabase.functions.invoke('test-function', {
         body: { test: true, timestamp: Date.now() }
       });
       
       if (result.error) {
-        setConnectivityStatus('offline');
         addLog({ 
           type: 'connectivity', 
-          message: `Test function failed: ${result.error.message}`, 
-          status: 'error',
+          message: `Supabase client failed: ${result.error.message}`, 
+          status: 'warning',
           details: result.error 
         });
+        
+        // Test 2: Direct fetch fallback
+        await testDirectFetch();
         return;
       }
       
       setConnectivityStatus('online');
       addLog({ 
         type: 'connectivity', 
-        message: 'Edge Function connectivity successful', 
+        message: 'Supabase client connectivity successful', 
         status: 'success',
         details: result.data 
+      });
+      
+    } catch (err) {
+      addLog({ 
+        type: 'connectivity', 
+        message: `Supabase client error: ${err.message}`, 
+        status: 'warning',
+        details: err 
+      });
+      
+      // Test 2: Direct fetch fallback
+      await testDirectFetch();
+    }
+  };
+
+  const testDirectFetch = async () => {
+    addLog({ type: 'connectivity', message: 'Testing with direct fetch...', status: 'info' });
+    
+    try {
+      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/test-function`;
+      
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+          'Content-Type': 'application/json',
+          'cache-control': 'no-cache'
+        },
+        body: JSON.stringify({ test: true, timestamp: Date.now() })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      setConnectivityStatus('online');
+      addLog({ 
+        type: 'connectivity', 
+        message: 'Direct fetch connectivity successful', 
+        status: 'success',
+        details: { response_status: response.status, data } 
       });
       
     } catch (err) {
       setConnectivityStatus('offline');
       addLog({ 
         type: 'connectivity', 
-        message: `Connectivity test failed: ${err.message}`, 
+        message: `Direct fetch failed: ${err.message}`, 
         status: 'error',
         details: err 
       });
@@ -125,7 +172,10 @@ export const AIDebugMonitor = () => {
   const testAIFunction = async () => {
     addLog({ type: 'request', message: 'Testing AI agent function (requires auth)...', status: 'info' });
     
+    // Test 1: Supabase client method
     try {
+      addLog({ type: 'request', message: 'Testing AI agent with Supabase client...', status: 'info' });
+      
       const result = await supabase.functions.invoke('ai-agent', {
         body: {
           module: 'test',
@@ -135,7 +185,7 @@ export const AIDebugMonitor = () => {
       });
       
       if (result.error) {
-        let errorMessage = `AI function failed: ${result.error.message}`;
+        let errorMessage = `Supabase client AI function failed: ${result.error.message}`;
         let shouldRetry = false;
         
         // Check for authentication issues
@@ -147,72 +197,181 @@ export const AIDebugMonitor = () => {
         addLog({ 
           type: 'request', 
           message: errorMessage, 
-          status: 'error',
+          status: 'warning',
           details: result.error 
         });
         
         // Try token refresh if auth issue
         if (shouldRetry) {
-          addLog({ type: 'auth', message: 'Attempting token refresh...', status: 'info' });
-          
-          const { error: refreshError } = await supabase.auth.refreshSession();
-          
-          if (refreshError) {
-            addLog({ 
-              type: 'auth', 
-              message: `Token refresh failed: ${refreshError.message}`, 
-              status: 'error',
-              details: refreshError 
+          const refreshResult = await attemptTokenRefresh();
+          if (refreshResult) {
+            // Retry with Supabase client after refresh
+            const retryResult = await supabase.functions.invoke('ai-agent', {
+              body: {
+                module: 'test',
+                task: 'ping',
+                input: { test: true }
+              }
             });
-            return;
-          }
-          
-          addLog({ type: 'auth', message: 'Token refreshed, retrying AI function...', status: 'success' });
-          
-          // Retry the request
-          const retryResult = await supabase.functions.invoke('ai-agent', {
-            body: {
-              module: 'test',
-              task: 'ping',
-              input: { test: true }
+            
+            if (!retryResult.error) {
+              addLog({ 
+                type: 'response', 
+                message: 'AI function succeeded with Supabase client after token refresh', 
+                status: 'success',
+                details: retryResult.data 
+              });
+              return;
             }
-          });
-          
-          if (retryResult.error) {
-            addLog({ 
-              type: 'request', 
-              message: `AI function still failed after refresh: ${retryResult.error.message}`, 
-              status: 'error',
-              details: retryResult.error 
-            });
-            return;
           }
-          
-          addLog({ 
-            type: 'response', 
-            message: 'AI function succeeded after token refresh', 
-            status: 'success',
-            details: retryResult.data 
-          });
         }
         
+        // Fallback to direct fetch
+        await testAIFunctionDirectFetch();
         return;
       }
       
       addLog({ 
         type: 'response', 
-        message: 'AI function responded successfully', 
+        message: 'AI function responded successfully with Supabase client', 
         status: 'success',
         details: result.data 
       });
       
     } catch (err) {
       addLog({ 
+        type: 'request', 
+        message: `Supabase client AI function error: ${err.message}`, 
+        status: 'warning',
+        details: err 
+      });
+      
+      // Fallback to direct fetch
+      await testAIFunctionDirectFetch();
+    }
+  };
+
+  const testAIFunctionDirectFetch = async () => {
+    addLog({ type: 'request', message: 'Testing AI agent with direct fetch...', status: 'info' });
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        addLog({ 
+          type: 'request', 
+          message: 'No session available for direct fetch test', 
+          status: 'error' 
+        });
+        return;
+      }
+      
+      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-agent`;
+      
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+          'Content-Type': 'application/json',
+          'cache-control': 'no-cache'
+        },
+        body: JSON.stringify({
+          module: 'test',
+          task: 'ping',
+          input: { test: true }
+        })
+      });
+      
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          addLog({ 
+            type: 'request', 
+            message: `Direct fetch authentication failed (${response.status})`, 
+            status: 'warning' 
+          });
+          
+          const refreshResult = await attemptTokenRefresh();
+          if (refreshResult) {
+            // Retry with fresh token
+            const newSession = await supabase.auth.getSession();
+            if (newSession.data.session) {
+              const retryResponse = await fetch(functionUrl, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${newSession.data.session.access_token}`,
+                  'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+                  'Content-Type': 'application/json',
+                  'cache-control': 'no-cache'
+                },
+                body: JSON.stringify({
+                  module: 'test',
+                  task: 'ping',
+                  input: { test: true }
+                })
+              });
+              
+              if (retryResponse.ok) {
+                const data = await retryResponse.json();
+                addLog({ 
+                  type: 'response', 
+                  message: 'AI function succeeded with direct fetch after token refresh', 
+                  status: 'success',
+                  details: data 
+                });
+                return;
+              }
+            }
+          }
+        }
+        
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      addLog({ 
+        type: 'response', 
+        message: 'AI function responded successfully with direct fetch', 
+        status: 'success',
+        details: data 
+      });
+      
+    } catch (err) {
+      addLog({ 
         type: 'error', 
-        message: `AI function test failed: ${err.message}`, 
+        message: `Direct fetch AI function failed: ${err.message}`, 
         status: 'error',
         details: err 
       });
+    }
+  };
+
+  const attemptTokenRefresh = async (): Promise<boolean> => {
+    addLog({ type: 'auth', message: 'Attempting token refresh...', status: 'info' });
+    
+    try {
+      const { error: refreshError } = await supabase.auth.refreshSession();
+      
+      if (refreshError) {
+        addLog({ 
+          type: 'auth', 
+          message: `Token refresh failed: ${refreshError.message}`, 
+          status: 'error',
+          details: refreshError 
+        });
+        return false;
+      }
+      
+      addLog({ type: 'auth', message: 'Token refreshed successfully', status: 'success' });
+      return true;
+    } catch (err) {
+      addLog({ 
+        type: 'auth', 
+        message: `Token refresh error: ${err.message}`, 
+        status: 'error',
+        details: err 
+      });
+      return false;
     }
   };
 

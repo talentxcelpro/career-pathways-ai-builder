@@ -167,13 +167,15 @@ export const useEnhancedAI = () => {
 
       console.log('🚀 Sending AI request:', JSON.stringify(requestPayload, null, 2));
 
-      // Add timeout and retry logic with exponential backoff
+      // Add timeout and retry logic with exponential backoff and direct fetch fallback
       const makeRequest = async (attempt = 1): Promise<any> => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Request timed out after 30 seconds')), 30000)
           );
 
+          // Try Supabase client first
+          console.log(`🔄 Attempt ${attempt}: Using Supabase client...`);
           const requestPromise = supabase.functions.invoke('ai-agent', {
             body: requestPayload,
             headers: {
@@ -181,15 +183,63 @@ export const useEnhancedAI = () => {
             }
           });
 
-          return await Promise.race([requestPromise, timeoutPromise]);
+          const result = await Promise.race([requestPromise, timeoutPromise]);
+          console.log('✅ Supabase client request succeeded');
+          return result;
+
         } catch (error) {
-          if (attempt < 3 && error.message?.includes('Failed to fetch')) {
-            const delay = Math.pow(2, attempt) * 1000; // Exponential backoff
-            console.log(`⏳ Retry attempt ${attempt + 1} after ${delay}ms delay`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            return makeRequest(attempt + 1);
+          console.log(`❌ Supabase client failed on attempt ${attempt}:`, error.message);
+          
+          // Try direct fetch as fallback
+          try {
+            console.log(`🔄 Attempt ${attempt}: Falling back to direct fetch...`);
+            
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+              throw new Error('No session for direct fetch');
+            }
+
+            const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-agent`;
+            
+            const timeoutPromise = new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Direct fetch timed out after 30 seconds')), 30000)
+            );
+
+            const fetchPromise = fetch(functionUrl, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${session.access_token}`,
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+                'Content-Type': 'application/json',
+                'cache-control': 'no-cache'
+              },
+              body: JSON.stringify(requestPayload)
+            });
+
+            const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
+            
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log('✅ Direct fetch request succeeded');
+            return { data, error: null };
+
+          } catch (fetchError) {
+            console.log(`❌ Direct fetch failed on attempt ${attempt}:`, fetchError.message);
+            
+            // Retry with exponential backoff if we haven't exhausted attempts
+            if (attempt < 3) {
+              const delay = Math.pow(2, attempt) * 1000;
+              console.log(`⏳ Retry attempt ${attempt + 1} after ${delay}ms delay`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+              return makeRequest(attempt + 1);
+            }
+            
+            // If all attempts failed, throw the most informative error
+            throw new Error(`Both Supabase client and direct fetch failed. Last errors: Supabase: ${error.message}, Direct: ${fetchError.message}`);
           }
-          throw error;
         }
       };
 
