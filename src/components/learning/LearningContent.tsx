@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { CourseCard } from './CourseCard';
 import { LearningPathCard } from './LearningPathCard';
 import { AIRecommendations } from './AIRecommendations';
 import { EmptyMyLearning } from './EmptyMyLearning';
 import { Course, LearningPath } from './types';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Grid3X3, TrendingUp, Award } from 'lucide-react';
+import { useAIRecommendations } from '@/hooks/useAIRecommendations';
+import { Sparkles, Grid3X3, TrendingUp, Award, Brain } from 'lucide-react';
 
 interface LearningContentProps {
   activeTab: string;
@@ -26,28 +27,42 @@ export const LearningContent: React.FC<LearningContentProps> = ({
   onEnroll,
   onBrowseCourses
 }) => {
+  const aiRecommendationsRef = useRef<HTMLDivElement>(null);
   const isEnrolled = (courseId: string) => enrolledCourses.includes(courseId);
+  
+  // Get AI recommendations
+  const { recommendations, isLoading: recommendationsLoading } = useAIRecommendations(courses);
 
   if (activeTab === 'courses') {
     return (
       <div className="space-y-6">
-        {/* AI Recommendations with compact design */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="h-5 w-5 text-blue-600" />
-            <h3 className="font-semibold text-slate-900">AI Recommended</h3>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700 text-xs">
-              Personalized
+        {/* AI Recommendations with Apple-inspired design */}
+        <div ref={aiRecommendationsRef} data-ai-recommendations className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 rounded-2xl p-6 border border-white/50 shadow-lg backdrop-blur-sm">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Brain className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-lg">AI Recommended for You</h3>
+              <p className="text-sm text-slate-600">Personalized based on your profile and goals</p>
+            </div>
+            <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 border-0 shadow-sm ml-auto">
+              {recommendations.length} Matches
             </Badge>
           </div>
-          <AIRecommendations 
-            recommendations={filteredCourses.slice(0, 3).map(course => ({
-              ...course,
-              skills_taught: course.skills_taught || []
-            }))}
-            onEnroll={onEnroll}
-            isEnrolled={isEnrolled}
-          />
+          
+          {recommendationsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
+              <span className="ml-3 text-slate-600">Generating recommendations...</span>
+            </div>
+          ) : (
+            <AIRecommendations 
+              recommendations={recommendations}
+              onEnroll={onEnroll}
+              isEnrolled={isEnrolled}
+            />
+          )}
         </div>
         
         {/* All Courses Section */}

@@ -60,6 +60,33 @@ const Learning = () => {
     }
   };
 
+  // Handler for clicking feature cards
+  const handleFeatureCardClick = (feature: string) => {
+    switch (feature) {
+      case 'ai-recommendations':
+        // Scroll to AI recommendations section
+        setActiveTab('courses');
+        setTimeout(() => {
+          const aiSection = document.querySelector('[data-ai-recommendations]');
+          aiSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+        break;
+      case 'skill-based':
+        // Reset filters and focus on skill-based learning
+        setActiveTab('courses');
+        setSelectedCategory('all');
+        setSelectedDifficulty('all');
+        setSearchTerm('');
+        break;
+      case 'community':
+        // Show community/popular courses
+        setActiveTab('courses');
+        setSearchTerm('');
+        // Could sort by enrolled_count or add community filter
+        break;
+    }
+  };
+
   const getTabIcon = (tab: string) => {
     switch (tab) {
       case 'courses': return <BookOpen className="h-3 w-3" />;
@@ -184,40 +211,49 @@ const Learning = () => {
         {/* AI-Powered Features Showcase */}
         {activeTab === 'courses' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-xl transition-all duration-300 group cursor-pointer">
+            <Card 
+              onClick={() => handleFeatureCardClick('ai-recommendations')}
+              className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-xl transition-all duration-300 group cursor-pointer hover:scale-105"
+            >
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform shadow-lg">
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="text-base font-bold text-blue-900 mb-2">AI Recommendations</h3>
                 <p className="text-blue-700 text-xs mb-3">Personalized course suggestions</p>
-                <Button variant="ghost" className="text-blue-600 hover:text-blue-800 text-xs">
+                <Button variant="ghost" className="text-blue-600 hover:text-blue-800 text-xs group-hover:translate-x-1 transition-transform">
                   Explore <ArrowRight className="h-3 w-3 ml-1" />
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-xl transition-all duration-300 group cursor-pointer">
+            <Card 
+              onClick={() => handleFeatureCardClick('skill-based')}
+              className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-xl transition-all duration-300 group cursor-pointer hover:scale-105"
+            >
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform shadow-lg">
                   <Target className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="text-base font-bold text-purple-900 mb-2">Skill-Based Learning</h3>
                 <p className="text-purple-700 text-xs mb-3">Target specific skills</p>
-                <Button variant="ghost" className="text-purple-600 hover:text-purple-800 text-xs">
+                <Button variant="ghost" className="text-purple-600 hover:text-purple-800 text-xs group-hover:translate-x-1 transition-transform">
                   Start <ArrowRight className="h-3 w-3 ml-1" />
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-emerald-100 hover:shadow-xl transition-all duration-300 group cursor-pointer">
+            <Card 
+              onClick={() => handleFeatureCardClick('community')}
+              className="border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-emerald-100 hover:shadow-xl transition-all duration-300 group cursor-pointer hover:scale-105"
+            >
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform shadow-lg">
                   <Users className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="text-base font-bold text-emerald-900 mb-2">Community Learning</h3>
                 <p className="text-emerald-700 text-xs mb-3">Learn with peers</p>
-                <Button variant="ghost" className="text-emerald-600 hover:text-emerald-800 text-xs">
+                <Button variant="ghost" className="text-emerald-600 hover:text-emerald-800 text-xs group-hover:translate-x-1 transition-transform">
                   Join <ArrowRight className="h-3 w-3 ml-1" />
                 </Button>
               </CardContent>
