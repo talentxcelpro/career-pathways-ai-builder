@@ -18,20 +18,6 @@ interface AIResponse {
   tokens_used?: number;
 }
 
-// Helper function for network diagnostics
-const checkNetworkConnectivity = async (): Promise<boolean> => {
-  try {
-    const response = await fetch('https://dthlgsnakhofinssokm.supabase.co/rest/v1/', {
-      method: 'HEAD',
-      mode: 'no-cors',
-      cache: 'no-cache'
-    });
-    return true;
-  } catch {
-    return false;
-  }
-};
-
 // Direct HTTP fallback function
 const callAIDirectly = async (request: AIRequest): Promise<AIResponse> => {
   const { data: { session } } = await supabase.auth.getSession();
@@ -64,6 +50,7 @@ const callAIDirectly = async (request: AIRequest): Promise<AIResponse> => {
   const data = await response.json();
   return data;
 };
+
 
 export const useSimpleAI = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -101,19 +88,13 @@ export const useSimpleAI = () => {
       } catch (clientError) {
         console.warn('⚠️ Supabase client failed, trying direct HTTP:', clientError);
         
-        // Check network connectivity
-        const isConnected = await checkNetworkConnectivity();
-        if (!isConnected) {
-          throw new Error('Network connectivity issue. Please check your internet connection.');
-        }
-
         // Try direct HTTP fallback
         try {
           result = await callAIDirectly(request);
           console.log('✅ Direct HTTP Success:', result);
         } catch (directError) {
           console.error('❌ Direct HTTP failed:', directError);
-          throw new Error(`Both Supabase client and direct HTTP failed. ${directError instanceof Error ? directError.message : 'Unknown error'}`);
+          throw new Error(`AI service temporarily unavailable. ${directError instanceof Error ? directError.message : 'Please try again later.'}`);
         }
       }
 
@@ -137,12 +118,12 @@ export const useSimpleAI = () => {
       
       // Provide user-friendly error messages
       let userMessage = errorMessage;
-      if (errorMessage.includes('Failed to send a request')) {
-        userMessage = 'Connection issue. Please try again.';
-      } else if (errorMessage.includes('Network connectivity')) {
-        userMessage = 'Please check your internet connection and try again.';
+      if (errorMessage.includes('AI service temporarily unavailable')) {
+        userMessage = 'AI service is temporarily unavailable. Please try again in a moment.';
       } else if (errorMessage.includes('Authentication')) {
         userMessage = 'Please log in again to continue.';
+      } else if (errorMessage.includes('HTTP 429')) {
+        userMessage = 'Too many requests. Please wait a moment and try again.';
       }
       
       toast.error(`AI Error: ${userMessage}`);
