@@ -14,7 +14,7 @@ const AIAssistant = () => {
     {
       id: '1',
       type: 'ai',
-      content: "Hello! I'm your TalentXcel AI Career Assistant. I can help you with career advice, resume feedback, interview preparation, and job matching insights. How can I assist you today?",
+      content: "Hello! I'm your AI Career Assistant. I can help you with career advice, resume feedback, interview preparation, and job matching insights. How can I assist you today?",
       timestamp: new Date().toISOString()
     }
   ]);

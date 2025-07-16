@@ -54,7 +54,7 @@ Sincerely,
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Cover Letter Generator</h1>
-            <p className="text-gray-600">Create personalized cover letters with Powered by TalentXcel AI</p>
+            <p className="text-gray-600">Create personalized cover letters with AI</p>
           </div>
         </div>
 
@@ -133,7 +133,7 @@ Sincerely,
               <CardHeader>
                 <CardTitle>Generated Cover Letter</CardTitle>
                 <CardDescription>
-                  {generatedLetter ? "Edit and customize your cover letter" : "Your TalentXcel AI-generated cover letter will appear here"}
+                  {generatedLetter ? "Edit and customize your cover letter" : "Your AI-generated cover letter will appear here"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -158,7 +158,7 @@ Sincerely,
                 ) : (
                   <div className="text-center py-12 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
                     <p>Fill in the job information and click "Generate Cover Letter"</p>
-                    <p className="text-sm">TalentXcel AI will create a personalized letter based on your resume</p>
+                    <p className="text-sm">AI will create a personalized letter based on your resume</p>
                   </div>
                 )}
               </CardContent>

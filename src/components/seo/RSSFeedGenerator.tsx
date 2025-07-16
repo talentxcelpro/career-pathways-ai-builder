@@ -29,7 +29,7 @@ export const RSSFeedGenerator = () => {
   <channel>
     <title>TalentXcel - Latest Job Openings</title>
     <link>https://talentxcel.in</link>
-    <description>Latest job opportunities from TalentXcel - India's AI-powered career platform</description>
+    <description>Latest job opportunities from TalentXcel - India's career platform</description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <generator>TalentXcel RSS Generator</generator>

@@ -80,7 +80,7 @@ export function AIProvider({ children }: { children: ReactNode }) {
   // Load conversation history from localStorage
   const loadConversationHistory = (): ConversationMessage[] => {
     try {
-      const saved = localStorage.getItem('talentxcel_ai_conversation');
+      const saved = localStorage.getItem('ai_conversation');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -141,7 +141,7 @@ export function AIProvider({ children }: { children: ReactNode }) {
       const updatedHistory = [...prev.conversationHistory, newMessage];
       // Save to localStorage
       try {
-        localStorage.setItem('talentxcel_ai_conversation', JSON.stringify(updatedHistory));
+        localStorage.setItem('ai_conversation', JSON.stringify(updatedHistory));
       } catch (error) {
         console.warn('Failed to save conversation to localStorage:', error);
       }
@@ -156,7 +156,7 @@ export function AIProvider({ children }: { children: ReactNode }) {
     setState(prev => ({ ...prev, conversationHistory: [] }));
     // Clear from localStorage
     try {
-      localStorage.removeItem('talentxcel_ai_conversation');
+      localStorage.removeItem('ai_conversation');
     } catch (error) {
       console.warn('Failed to clear conversation from localStorage:', error);
     }

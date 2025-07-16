@@ -112,7 +112,7 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, className }) =>
               <Bot className="h-4 w-4 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="font-semibold text-gray-900 text-sm">TalentXcel AI</span>
+              <span className="font-semibold text-gray-900 text-sm">AI Assistant</span>
               <Badge variant="secondary" className="w-fit text-xs mt-0.5 bg-blue-50 text-blue-700">
                 {currentModule.replace('_', ' ')}
               </Badge>
