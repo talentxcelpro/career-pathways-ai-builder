@@ -4,6 +4,8 @@ import ServiceDetail from "../pages/marketplace/ServiceDetail";
 import PostService from "../pages/marketplace/PostService";
 import LearningHub from "../pages/LearningHub";
 import ServiceMarketplace from "../components/marketplace/ServiceMarketplace";
+import ServicesIntegration from "../pages/marketplace/ServicesIntegration";
+import TestingOptimization from "../pages/marketplace/TestingOptimization";
 
 export const marketplaceRoutes = [
   {
@@ -35,5 +37,15 @@ export const marketplaceRoutes = [
     title: "Learning Hub",
     to: "/learning",
     page: <LearningHub />,
+  },
+  {
+    title: "Services Integration",
+    to: "/services/integration",
+    page: <ServicesIntegration />,
+  },
+  {
+    title: "Testing & Optimization",
+    to: "/services/testing",
+    page: <TestingOptimization />,
   },
 ];
