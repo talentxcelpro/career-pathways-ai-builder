@@ -24,7 +24,7 @@ export const useAIService = () => {
     setError(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('ai-service', {
+      const { data, error } = await supabase.functions.invoke('ai-agent', {
         body: request
       });
 
