@@ -90,7 +90,7 @@ const CareerMap = () => {
                 </Button>
               </Link>
               <Link to="/career-map/skills-gap">
-                <Button size="sm" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-3 py-1.5 text-xs font-semibold rounded-lg backdrop-blur-sm">
+                <Button size="sm" className="bg-blue-600 text-white hover:bg-blue-700 px-3 py-1.5 text-xs font-semibold rounded-lg shadow-apple-light">
                   <Target className="h-3 w-3 mr-1" />
                   Analyze
                 </Button>
@@ -185,7 +185,7 @@ const CareerMap = () => {
                     </Button>
                   </Link>
                   <Link to="/career-map/skills-gap">
-                    <Button variant="outline" size="sm" className="border-gray-200 text-text-primary hover:bg-gray-50 px-4 py-2 text-xs font-semibold rounded-lg">
+                    <Button size="sm" className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 text-xs font-semibold rounded-lg shadow-apple-light">
                       <Target className="h-3 w-3 mr-1" />
                       Analyze Skills
                     </Button>
