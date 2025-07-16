@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { useEmployerAccess } from '@/hooks/useEmployerAccess';
+import { AuthDialog } from '@/components/auth/AuthDialog';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -306,12 +307,10 @@ export const Navbar = () => {
               >
                 {getEmployerButtonText()}
               </Button>
-              <Link to="/auth/login">
-                <Button variant="ghost">Sign In</Button>
-              </Link>
-              <Link to="/auth/register">
-                <Button>Get Started</Button>
-              </Link>
+              <AuthDialog 
+                buttonText="Sign In" 
+                variant="ghost" 
+              />
             </div>
           )}
         </div>
