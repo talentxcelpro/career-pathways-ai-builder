@@ -30,6 +30,7 @@ import ProBanner from "@/components/network/ProBanner";
 import ProBadge from "@/components/network/ProBadge";
 import ProPostCTA from "@/components/network/ProPostCTA";
 import { useEmployerAccess } from "@/hooks/useEmployerAccess";
+import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
 
 
 const Posts = () => {
@@ -58,6 +59,7 @@ const Posts = () => {
   const { connections, stats, isLoading: connectionsLoading } = useRealtimeConnections();
   const { recentActivity, isLoading: activityLoading } = useRealtimeActivity();
   const { hasEmployerAccess } = useEmployerAccess();
+  const { preferences: smartFeedPreferences } = useSmartFeedPreferences();
 
   // Get current user profile first for Smart Feed filtering
   const { data: currentUserProfile } = useQuery({
@@ -125,31 +127,151 @@ const Posts = () => {
         // Use actual counts from related tables
         likes_count: post.post_likes?.length || 0,
         comments_count: post.post_comments?.length || 0,
-        shares_count: post.post_shares?.length || 0
+        shares_count: post.post_shares?.length || 0,
+        smart_feed_score: 0.5 // Default score for all posts
       }));
 
       // Apply Smart Feed filtering
-      if (feedFilter === 'smart' && currentUserProfile) {
-        const userInterests = currentUserProfile.career_interests || [];
-        const userGoals = currentUserProfile.career_goals || [];
-        const userStage = currentUserProfile.career_stage || 'early_career';
-        
-        // Filter posts based on user's career interests and intent tags
+      if (feedFilter === 'smart' && currentUserProfile && smartFeedPreferences) {
         postsWithProfiles = postsWithProfiles.filter(post => {
-          if (!post.intent_tags || post.intent_tags.length === 0) return true;
+          // Check if post author is blocked
+          if (smartFeedPreferences.blocked_users?.includes(post.author_id)) {
+            return false;
+          }
           
-          // Match based on career stage
-          if (userStage === 'early_career' && post.intent_tags.includes('mentoring')) return true;
-          if (userStage === 'mid_career' && post.intent_tags.includes('networking')) return true;
-          if (userStage === 'senior_career' && post.intent_tags.includes('showcasing')) return true;
-          
-          // Match based on interests and goals
-          const hasMatchingIntent = post.intent_tags.some(tag => 
-            userInterests.includes(tag) || userGoals.includes(tag)
+          // Check for blocked keywords in content
+          const blockedKeywords = smartFeedPreferences.blocked_keywords || [];
+          const hasBlockedKeywords = blockedKeywords.some(keyword => 
+            post.content.toLowerCase().includes(keyword.toLowerCase())
           );
+          if (hasBlockedKeywords) return false;
           
-          return hasMatchingIntent;
+          // Check content type filtering
+          const excludedContentTypes = smartFeedPreferences.exclude_content_types || [];
+          const includedContentTypes = smartFeedPreferences.include_content_types || [];
+          
+          if (post.content_type && excludedContentTypes.includes(post.content_type)) {
+            return false;
+          }
+          
+          // If we have specific included content types, filter by them
+          if (includedContentTypes.length > 0 && post.content_type) {
+            if (!includedContentTypes.includes(post.content_type)) {
+              return false;
+            }
+          }
+          
+          // Check tag filtering
+          const excludedTags = smartFeedPreferences.exclude_tags || [];
+          const includedTags = smartFeedPreferences.include_tags || [];
+          
+          // Check if post has any excluded tags
+          if (post.tags && excludedTags.length > 0) {
+            const hasExcludedTags = post.tags.some(tag => 
+              excludedTags.some(excludedTag => 
+                tag.toLowerCase().includes(excludedTag.toLowerCase())
+              )
+            );
+            if (hasExcludedTags) return false;
+          }
+          
+          // Check intent tags against excluded tags
+          if (post.intent_tags && excludedTags.length > 0) {
+            const hasExcludedIntentTags = post.intent_tags.some(tag => 
+              excludedTags.some(excludedTag => 
+                tag.toLowerCase().includes(excludedTag.toLowerCase())
+              )
+            );
+            if (hasExcludedIntentTags) return false;
+          }
+          
+          // If we have specific included tags, prioritize posts with those tags
+          if (includedTags.length > 0) {
+            let hasIncludedTags = false;
+            
+            // Check post tags
+            if (post.tags) {
+              hasIncludedTags = post.tags.some(tag => 
+                includedTags.some(includedTag => 
+                  tag.toLowerCase().includes(includedTag.toLowerCase())
+                )
+              );
+            }
+            
+            // Check intent tags
+            if (!hasIncludedTags && post.intent_tags) {
+              hasIncludedTags = post.intent_tags.some(tag => 
+                includedTags.some(includedTag => 
+                  tag.toLowerCase().includes(includedTag.toLowerCase())
+                )
+              );
+            }
+            
+            // Check content for included tags
+            if (!hasIncludedTags) {
+              hasIncludedTags = includedTags.some(tag => 
+                post.content.toLowerCase().includes(tag.toLowerCase())
+              );
+            }
+            
+            // If we have specific included tags and this post doesn't match, skip it
+            if (!hasIncludedTags) return false;
+          }
+          
+          // Check industry/role preferences
+          const preferredIndustries = smartFeedPreferences.preferred_industries || [];
+          const preferredRoles = smartFeedPreferences.preferred_roles || [];
+          
+          if (preferredIndustries.length > 0 || preferredRoles.length > 0) {
+            const authorProfile = post.profiles;
+            let matchesPreferences = false;
+            
+            // Check author's title/role against preferred roles
+            if (authorProfile?.title && preferredRoles.length > 0) {
+              matchesPreferences = preferredRoles.some(role => 
+                authorProfile.title.toLowerCase().includes(role.toLowerCase())
+              );
+            }
+            
+            // Check author's company against preferred industries
+            if (!matchesPreferences && authorProfile?.current_company && preferredIndustries.length > 0) {
+              matchesPreferences = preferredIndustries.some(industry => 
+                authorProfile.current_company.toLowerCase().includes(industry.toLowerCase())
+              );
+            }
+            
+            // If we have preferences but post doesn't match, reduce priority but don't exclude
+            if (!matchesPreferences && (preferredIndustries.length > 0 || preferredRoles.length > 0)) {
+              // Add a score property for later sorting
+              post.smart_feed_score = 0.3; // Lower score for non-matching posts
+            } else {
+              post.smart_feed_score = 1.0; // Higher score for matching posts
+            }
+          }
+          
+          return true;
         });
+        
+        // Sort posts by Smart Feed score if prioritize_connections is enabled
+        if (smartFeedPreferences.prioritize_connections) {
+          postsWithProfiles.sort((a, b) => {
+            const scoreA = a.smart_feed_score || 0.5;
+            const scoreB = b.smart_feed_score || 0.5;
+            
+            // Also consider post recency
+            const timeA = new Date(a.created_at).getTime();
+            const timeB = new Date(b.created_at).getTime();
+            
+            // Combine score and recency (weighted)
+            const relevanceWeight = smartFeedPreferences.relevance_weight || 0.8;
+            const freshnessWeight = smartFeedPreferences.content_freshness_weight || 0.7;
+            
+            const finalScoreA = (scoreA * relevanceWeight) + (timeA / 1000000000000 * freshnessWeight);
+            const finalScoreB = (scoreB * relevanceWeight) + (timeB / 1000000000000 * freshnessWeight);
+            
+            return finalScoreB - finalScoreA;
+          });
+        }
       }
 
       return postsWithProfiles;
@@ -266,6 +388,16 @@ const Posts = () => {
                 Smart Feed
               </Button>
             </div>
+            
+            {/* Smart Feed Indicator */}
+            {feedFilter === 'smart' && (
+              <div className="text-sm text-gray-600">
+                <span className="mr-2">🎯 Smart Feed is personalized.</span>
+                <Link to="/profile/preferences" className="text-blue-600 hover:text-blue-700 underline">
+                  Edit Preferences
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 

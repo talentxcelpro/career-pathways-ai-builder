@@ -8079,6 +8079,7 @@ export type Database = {
           author_id: string | null
           comments_count: number | null
           content: string
+          content_type: string | null
           created_at: string | null
           id: string
           intent_tags: string[] | null
@@ -8096,6 +8097,7 @@ export type Database = {
           author_id?: string | null
           comments_count?: number | null
           content: string
+          content_type?: string | null
           created_at?: string | null
           id?: string
           intent_tags?: string[] | null
@@ -8113,6 +8115,7 @@ export type Database = {
           author_id?: string | null
           comments_count?: number | null
           content?: string
+          content_type?: string | null
           created_at?: string | null
           id?: string
           intent_tags?: string[] | null
@@ -11850,6 +11853,66 @@ export type Database = {
           related_skills?: string[] | null
           subcategory?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      smart_feed_preferences: {
+        Row: {
+          blocked_keywords: string[] | null
+          blocked_users: string[] | null
+          content_freshness_weight: number | null
+          created_at: string | null
+          diversity_weight: number | null
+          exclude_content_types: string[] | null
+          exclude_tags: string[] | null
+          id: string
+          include_content_types: string[] | null
+          include_tags: string[] | null
+          preferred_industries: string[] | null
+          preferred_roles: string[] | null
+          prioritize_connections: boolean | null
+          relevance_weight: number | null
+          show_trending_content: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          blocked_keywords?: string[] | null
+          blocked_users?: string[] | null
+          content_freshness_weight?: number | null
+          created_at?: string | null
+          diversity_weight?: number | null
+          exclude_content_types?: string[] | null
+          exclude_tags?: string[] | null
+          id?: string
+          include_content_types?: string[] | null
+          include_tags?: string[] | null
+          preferred_industries?: string[] | null
+          preferred_roles?: string[] | null
+          prioritize_connections?: boolean | null
+          relevance_weight?: number | null
+          show_trending_content?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          blocked_keywords?: string[] | null
+          blocked_users?: string[] | null
+          content_freshness_weight?: number | null
+          created_at?: string | null
+          diversity_weight?: number | null
+          exclude_content_types?: string[] | null
+          exclude_tags?: string[] | null
+          id?: string
+          include_content_types?: string[] | null
+          include_tags?: string[] | null
+          preferred_industries?: string[] | null
+          preferred_roles?: string[] | null
+          prioritize_connections?: boolean | null
+          relevance_weight?: number | null
+          show_trending_content?: boolean | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
