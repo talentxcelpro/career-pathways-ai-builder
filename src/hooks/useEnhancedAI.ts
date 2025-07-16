@@ -21,7 +21,7 @@ interface EnhancedAIResponse {
 }
 
 export const useEnhancedAI = () => {
-  const { currentModule, userProfile, sessionId, addMessage, setLoading, setError } = useAI();
+  const { currentModule, userProfile, sessionId, addMessage, setLoading, setError, clearError } = useAI();
   const [processing, setProcessing] = useState(false);
 
   const callEnhancedAI = useCallback(async (request: EnhancedAIRequest): Promise<EnhancedAIResponse> => {
@@ -281,6 +281,9 @@ export const useEnhancedAI = () => {
           throw new Error('Empty response received from AI service');
         }
         
+        // Clear any previous errors on success
+        clearError();
+        
         // Add AI response to context
         addMessage({
           type: 'ai',
@@ -316,7 +319,7 @@ export const useEnhancedAI = () => {
       setProcessing(false);
       setLoading(false);
     }
-  }, [currentModule, userProfile, sessionId, addMessage, setLoading, setError]);
+  }, [currentModule, userProfile, sessionId, addMessage, setLoading, setError, clearError]);
 
   // Network Module AI Functions
   const generatePost = useCallback(async (topic: string, tone: 'professional' | 'casual' | 'thought-leadership' = 'professional') => {

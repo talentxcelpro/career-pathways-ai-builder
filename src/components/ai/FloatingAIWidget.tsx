@@ -44,7 +44,8 @@ export const FloatingAIWidget = () => {
     isLoading, 
     error,
     addMessage,
-    clearHistory
+    clearHistory,
+    clearError
   } = useAI();
   
   const { callEnhancedAI } = useEnhancedAI();
@@ -128,7 +129,10 @@ export const FloatingAIWidget = () => {
         input: { message: userInput }
       });
       
-      if (!result.success) {
+      if (result.success) {
+        // Clear any previous errors on successful operation
+        clearError();
+      } else {
         console.error('AI request failed:', result.error);
       }
     } catch (error) {
@@ -140,11 +144,16 @@ export const FloatingAIWidget = () => {
     setShowQuickActions(false);
     
     try {
-      await callEnhancedAI({
+      const result = await callEnhancedAI({
         module: action.module,
         task: action.task,
         input: action.input || {}
       });
+      
+      if (result.success) {
+        // Clear any previous errors on successful operation
+        clearError();
+      }
     } catch (error) {
       console.error('Failed to execute quick action:', error);
     }
@@ -159,6 +168,7 @@ export const FloatingAIWidget = () => {
 
   const handleNewConversation = () => {
     clearHistory();
+    clearError();
     setShowQuickActions(true);
   };
 
@@ -354,9 +364,28 @@ export const FloatingAIWidget = () => {
               </div>
               
               {error && (
-                <p className="text-xs text-red-500 mt-2 animate-fade-in">
-                  {error}
-                </p>
+                <div className="mt-2 animate-fade-in">
+                  <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-lg p-3">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0">
+                        <svg className="h-4 w-4 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <p className="ml-2 text-xs text-red-600 font-medium">
+                        {error}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearError}
+                      className="ml-2 h-6 w-6 p-0 text-red-400 hover:text-red-600 hover:bg-red-100"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
               )}
               
               <p className="text-xs text-gray-500 mt-2 leading-relaxed">

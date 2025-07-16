@@ -38,6 +38,7 @@ interface AIContextValue extends AIContextState {
   setUserProfile: (profile: UserProfile | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  clearError: () => void;
 }
 
 const AIContext = createContext<AIContextValue | undefined>(undefined);
@@ -173,6 +174,21 @@ export function AIProvider({ children }: { children: ReactNode }) {
     setState(prev => ({ ...prev, error }));
   };
 
+  const clearError = () => {
+    setState(prev => ({ ...prev, error: null }));
+  };
+
+  // Auto-clear errors after 10 seconds
+  useEffect(() => {
+    if (state.error) {
+      const timer = setTimeout(() => {
+        clearError();
+      }, 10000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [state.error, clearError]);
+
   const value: AIContextValue = {
     ...state,
     updateModule,
@@ -180,7 +196,8 @@ export function AIProvider({ children }: { children: ReactNode }) {
     clearHistory,
     setUserProfile,
     setLoading,
-    setError
+    setError,
+    clearError
   };
 
   return (
