@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface DiagnosticResult {
   test: string;
@@ -130,6 +131,64 @@ export const NetworkDiagnostic = () => {
         status: 'error', 
         message: `GET error: ${error.message}`,
         details: { error: error.name }
+      });
+    }
+
+    // Test 6: TalentXcel AI Agent Function (requires authentication)
+    const aiTest = { test: 'TalentXcel AI Agent', status: 'pending' as const, message: 'Testing AI agent function with authentication...' };
+    addResult(aiTest);
+    
+    try {
+      // Check authentication first
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        updateResult(5, { 
+          status: 'error', 
+          message: `Authentication error: ${sessionError.message}`,
+          details: { error: sessionError }
+        });
+      } else if (!session) {
+        updateResult(5, { 
+          status: 'error', 
+          message: 'No active session - authentication required',
+          details: { error: 'No session' }
+        });
+      } else {
+        // Test the ai-agent function with authentication
+        const { data, error } = await supabase.functions.invoke('ai-agent', {
+          body: { 
+            module: 'test', 
+            task: 'ping', 
+            input: { test: true } 
+          }
+        });
+        
+        if (error) {
+          updateResult(5, { 
+            status: 'error', 
+            message: `AI function error: ${error.message}`,
+            details: { error: error }
+          });
+        } else if (data && data.success) {
+          updateResult(5, { 
+            status: 'success', 
+            message: `AI function working: ${data.data?.message || data.response || 'OK'}`,
+            details: { response: data }
+          });
+        } else {
+          updateResult(5, { 
+            status: 'error', 
+            message: `AI function failed: ${data?.error || 'Unknown error'}`,
+            details: { response: data }
+          });
+        }
+      }
+    } catch (error) {
+      updateResult(5, { 
+        status: 'error', 
+        message: `AI function request failed: ${error.message}`,
+        details: { error: error.name, message: error.message }
       });
     }
 
