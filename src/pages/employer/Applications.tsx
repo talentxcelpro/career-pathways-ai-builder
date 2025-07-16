@@ -23,7 +23,6 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
-import { RoleBasedAccess } from "@/components/employer/RoleBasedAccess";
 
 interface Application {
   id: string;
@@ -341,9 +340,7 @@ function ApplicationsContent() {
 export default function EmployerApplications() {
   return (
     <EmployerAccessGuard>
-      <RoleBasedAccess requiredPermission="view_applications" companyId="">
-        <ApplicationsContent />
-      </RoleBasedAccess>
+      <ApplicationsContent />
     </EmployerAccessGuard>
   );
 }
