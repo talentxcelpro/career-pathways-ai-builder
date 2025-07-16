@@ -68,23 +68,7 @@ export const useEnhancedAI = () => {
         console.log('✅ Token refreshed successfully');
       }
 
-      // 2. TEST WITH SIMPLER FUNCTION FIRST (NO AUTH REQUIRED)
-      console.log('🧪 Testing connectivity with test function (no auth)...');
-      try {
-        const testResult = await supabase.functions.invoke('test-function', {
-          body: { test: true, timestamp: Date.now() }
-        });
-        
-        if (testResult.error) {
-          console.error('❌ Test function failed:', testResult.error);
-          throw new Error(`Basic connectivity failed: ${testResult.error.message}`);
-        }
-        
-        console.log('✅ Basic connectivity test succeeded:', testResult.data);
-      } catch (testError) {
-        console.error('❌ Test function error:', testError);
-        throw new Error(`Network connectivity test failed: ${testError.message}`);
-      }
+      // Skip basic connectivity test since we'll test the AI function directly
 
       // 3. TEST AI FUNCTION WITH SIMPLE PING (AUTH REQUIRED)
       console.log('🧪 Testing AI function with authentication...');
