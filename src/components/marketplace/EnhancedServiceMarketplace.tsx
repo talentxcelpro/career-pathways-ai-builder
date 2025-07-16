@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/utils/currencyUtils";
 import { motion, AnimatePresence } from "framer-motion";
+import { AppleSubscriptionUI } from "@/components/subscription/AppleSubscriptionUI";
 
 // Load Razorpay script
 const loadRazorpayScript = (): Promise<boolean> => {
@@ -797,6 +798,18 @@ export default function EnhancedServiceMarketplace() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* Apple-inspired Subscription Section */}
+        <div className="my-16">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="bg-gradient-to-br from-white/95 via-blue-50/95 to-purple-50/95 rounded-3xl shadow-2xl border border-gray-200/60 backdrop-blur-md p-8 md:p-12"
+          >
+            <AppleSubscriptionUI compact={true} />
+          </motion.div>
+        </div>
 
         {/* Search and Filters */}
         <div className="my-8 space-y-6">
