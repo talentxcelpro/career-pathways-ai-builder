@@ -1,12 +1,11 @@
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { 
-  Wrench, 
-  History, 
-  BarChart3, 
-  Star,
+  Search,
   FileCheck, 
   FileText, 
   DollarSign, 
@@ -15,8 +14,14 @@ import {
   Brain, 
   Award,
   Users,
-  Target,
-  Lightbulb
+  Globe,
+  Briefcase,
+  BarChart3,
+  Zap,
+  Shield,
+  Sparkles,
+  ArrowRight,
+  Star
 } from 'lucide-react';
 
 // Import existing tool components
@@ -28,207 +33,363 @@ import InterviewPrep from '@/pages/tools/InterviewPrep';
 import AICareerAssistant from '@/pages/tools/AICareerAssistant';
 import ProfileScore from '@/pages/tools/ProfileScore';
 
-// Import new components
-import ToolResultsHistory from './ToolResultsHistory';
-import ToolsAnalyticsDashboard from './ToolsAnalyticsDashboard';
-import RealTimeCollaboration from './RealTimeCollaboration';
-import AdvancedAnalytics from './AdvancedAnalytics';
-import ProfileIntegration from './ProfileIntegration';
-import AutomatedSuggestions from './AutomatedSuggestions';
-
 interface Tool {
   id: string;
   title: string;
+  subtitle: string;
   icon: React.ComponentType<any>;
   component: React.ComponentType;
+  category: string;
   popular?: boolean;
+  premium?: boolean;
+  global?: boolean;
 }
+
+const toolCategories = [
+  {
+    id: 'essentials',
+    title: 'Career Essentials',
+    subtitle: 'Core tools for every professional',
+    icon: Briefcase,
+    gradient: 'from-blue-500 to-blue-600'
+  },
+  {
+    id: 'ai-powered',
+    title: 'AI-Powered Insights',
+    subtitle: 'Advanced intelligence for career growth',
+    icon: Brain,
+    gradient: 'from-purple-500 to-purple-600'
+  },
+  {
+    id: 'market-analysis',
+    title: 'Market Intelligence',
+    subtitle: 'Global market trends and analytics',
+    icon: BarChart3,
+    gradient: 'from-green-500 to-green-600'
+  },
+  {
+    id: 'interview-suite',
+    title: 'Interview Excellence',
+    subtitle: 'Master any interview worldwide',
+    icon: MessageSquare,
+    gradient: 'from-orange-500 to-orange-600'
+  }
+];
 
 const tools: Tool[] = [
   {
     id: 'resume-check',
-    title: 'Resume Checker',
+    title: 'Resume Optimizer',
+    subtitle: 'ATS-optimized for global markets',
     icon: FileCheck,
     component: ResumeCheck,
-    popular: true
+    category: 'essentials',
+    popular: true,
+    global: true
   },
   {
     id: 'cover-letter',
-    title: 'Cover Letter',
+    title: 'Cover Letter AI',
+    subtitle: 'Culturally-aware content generation',
     icon: FileText,
     component: CoverLetter,
-    popular: true
-  },
-  {
-    id: 'salary-analyzer',
-    title: 'Salary Analyzer',
-    icon: DollarSign,
-    component: SalaryAnalyzer
-  },
-  {
-    id: 'market-insights',
-    title: 'Market Insights',
-    icon: TrendingUp,
-    component: MarketInsights
-  },
-  {
-    id: 'interview-prep',
-    title: 'Interview Prep',
-    icon: MessageSquare,
-    component: InterviewPrep,
-    popular: true
+    category: 'essentials',
+    popular: true,
+    global: true
   },
   {
     id: 'ai-assistant',
-    title: 'AI Assistant',
+    title: 'Career Coach AI',
+    subtitle: 'Personalized career guidance',
     icon: Brain,
-    component: AICareerAssistant
+    component: AICareerAssistant,
+    category: 'ai-powered',
+    premium: true
+  },
+  {
+    id: 'salary-analyzer',
+    title: 'Global Salary Intel',
+    subtitle: 'Worldwide compensation insights',
+    icon: DollarSign,
+    component: SalaryAnalyzer,
+    category: 'market-analysis',
+    global: true
+  },
+  {
+    id: 'market-insights',
+    title: 'Market Pulse',
+    subtitle: 'Real-time industry trends',
+    icon: TrendingUp,
+    component: MarketInsights,
+    category: 'market-analysis'
+  },
+  {
+    id: 'interview-prep',
+    title: 'Interview Mastery',
+    subtitle: 'Practice with global standards',
+    icon: MessageSquare,
+    component: InterviewPrep,
+    category: 'interview-suite',
+    popular: true,
+    global: true
   },
   {
     id: 'profile-score',
-    title: 'Profile Score',
+    title: 'Profile Analytics',
+    subtitle: 'Comprehensive profile scoring',
     icon: Award,
-    component: ProfileScore
+    component: ProfileScore,
+    category: 'ai-powered'
   }
 ];
 
 const ToolsTabsInterface = () => {
-  const [activeTab, setActiveTab] = useState('tools');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [activeTool, setActiveTool] = useState('resume-check');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredTools = selectedCategory === 'all' 
+    ? tools.filter(tool => tool.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    : tools.filter(tool => tool.category === selectedCategory && tool.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  const getToolsByCategory = (categoryId: string) => {
+    return tools.filter(tool => tool.category === categoryId);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Career Tools</h1>
-          <p className="text-gray-600">Comprehensive toolkit for your career development</p>
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+      {/* Header */}
+      <div className="border-b bg-background/80 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2.5 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">TalentXcel Tools</h1>
+                  <p className="text-sm text-muted-foreground">Professional career acceleration for global markets</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge variant="outline" className="gap-2">
+                <Globe className="h-3 w-3" />
+                Global Ready
+              </Badge>
+              <Badge variant="outline" className="gap-2">
+                <Zap className="h-3 w-3" />
+                AI-Powered
+              </Badge>
+            </div>
+          </div>
+
+          {/* Search */}
+          <div className="mt-6">
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search tools..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-background/50 border-border/50"
+              />
+            </div>
+          </div>
         </div>
+      </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-8 mb-8">
-            <TabsTrigger value="tools" className="flex items-center space-x-2">
-              <Wrench className="h-4 w-4" />
-              <span>Tools</span>
-            </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center space-x-2">
-              <History className="h-4 w-4" />
-              <span>History</span>
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center space-x-2">
-              <BarChart3 className="h-4 w-4" />
-              <span>Analytics</span>
-            </TabsTrigger>
-            <TabsTrigger value="favorites" className="flex items-center space-x-2">
-              <Star className="h-4 w-4" />
-              <span>Favorites</span>
-            </TabsTrigger>
-            <TabsTrigger value="collaboration" className="flex items-center space-x-2">
-              <Users className="h-4 w-4" />
-              <span>Collaborate</span>
-            </TabsTrigger>
-            <TabsTrigger value="advanced" className="flex items-center space-x-2">
-              <Target className="h-4 w-4" />
-              <span>Advanced</span>
-            </TabsTrigger>
-            <TabsTrigger value="profile" className="flex items-center space-x-2">
-              <Award className="h-4 w-4" />
-              <span>Profile</span>
-            </TabsTrigger>
-            <TabsTrigger value="suggestions" className="flex items-center space-x-2">
-              <Lightbulb className="h-4 w-4" />
-              <span>Suggestions</span>
-            </TabsTrigger>
-          </TabsList>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Categories */}
+        <div className="mb-8">
+          <div className="flex items-center gap-4 mb-6">
+            <Button
+              variant={selectedCategory === 'all' ? 'default' : 'outline'}
+              onClick={() => setSelectedCategory('all')}
+              className="gap-2"
+            >
+              <Sparkles className="h-4 w-4" />
+              All Tools
+            </Button>
+            {toolCategories.map((category) => (
+              <Button
+                key={category.id}
+                variant={selectedCategory === category.id ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory(category.id)}
+                className="gap-2"
+              >
+                <category.icon className="h-4 w-4" />
+                {category.title}
+              </Button>
+            ))}
+          </div>
 
-          <TabsContent value="tools" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {/* Tool Selection Sidebar */}
-              <div className="lg:col-span-1">
-                <div className="bg-white rounded-lg shadow-sm border p-4 sticky top-4">
-                  <h3 className="font-semibold text-gray-900 mb-4">Available Tools</h3>
-                  <div className="space-y-2">
-                    {tools.map((tool) => (
-                      <button
-                        key={tool.id}
-                        onClick={() => setActiveTool(tool.id)}
-                        className={`w-full flex items-center space-x-3 p-3 rounded-lg text-left transition-colors ${
-                          activeTool === tool.id
-                            ? 'bg-blue-50 border-blue-200 border'
-                            : 'hover:bg-gray-50'
-                        }`}
-                      >
-                        <tool.icon className={`h-5 w-5 ${
-                          activeTool === tool.id ? 'text-blue-600' : 'text-gray-600'
-                        }`} />
-                        <div className="flex-1">
-                          <span className={`text-sm font-medium ${
-                            activeTool === tool.id ? 'text-blue-900' : 'text-gray-900'
-                          }`}>
-                            {tool.title}
-                          </span>
+          {/* Category Sections */}
+          {selectedCategory === 'all' ? (
+            <div className="space-y-12">
+              {toolCategories.map((category) => {
+                const categoryTools = getToolsByCategory(category.id);
+                if (categoryTools.length === 0) return null;
+
+                return (
+                  <div key={category.id} className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <div className={`p-3 bg-gradient-to-br ${category.gradient} rounded-xl`}>
+                        <category.icon className="h-6 w-6 text-white" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-semibold text-foreground">{category.title}</h2>
+                        <p className="text-sm text-muted-foreground">{category.subtitle}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {categoryTools.map((tool) => (
+                        <Card 
+                          key={tool.id}
+                          className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80"
+                          onClick={() => setActiveTool(tool.id)}
+                        >
+                          <div className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div className={`p-3 bg-gradient-to-br ${category.gradient} rounded-xl group-hover:scale-110 transition-transform duration-300`}>
+                                <tool.icon className="h-6 w-6 text-white" />
+                              </div>
+                              <div className="flex gap-2">
+                                {tool.popular && (
+                                  <Badge variant="secondary" className="gap-1">
+                                    <Star className="h-3 w-3" />
+                                    Popular
+                                  </Badge>
+                                )}
+                                {tool.premium && (
+                                  <Badge className="gap-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+                                    <Shield className="h-3 w-3" />
+                                    Pro
+                                  </Badge>
+                                )}
+                                {tool.global && (
+                                  <Badge variant="outline" className="gap-1">
+                                    <Globe className="h-3 w-3" />
+                                    Global
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="space-y-3">
+                              <div>
+                                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                                  {tool.title}
+                                </h3>
+                                <p className="text-sm text-muted-foreground">{tool.subtitle}</p>
+                              </div>
+
+                              <Button 
+                                size="sm" 
+                                className="w-full gap-2 group-hover:gap-3 transition-all"
+                                variant={tool.premium ? "default" : "outline"}
+                              >
+                                {tool.premium ? 'Try Pro' : 'Launch Tool'}
+                                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredTools.map((tool) => {
+                const category = toolCategories.find(cat => cat.id === tool.category);
+                return (
+                  <Card 
+                    key={tool.id}
+                    className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80"
+                    onClick={() => setActiveTool(tool.id)}
+                  >
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className={`p-3 bg-gradient-to-br ${category?.gradient} rounded-xl group-hover:scale-110 transition-transform duration-300`}>
+                          <tool.icon className="h-6 w-6 text-white" />
+                        </div>
+                        <div className="flex gap-2">
                           {tool.popular && (
-                            <Badge variant="secondary" className="ml-2 text-xs">
+                            <Badge variant="secondary" className="gap-1">
+                              <Star className="h-3 w-3" />
                               Popular
                             </Badge>
                           )}
+                          {tool.premium && (
+                            <Badge className="gap-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+                              <Shield className="h-3 w-3" />
+                              Pro
+                            </Badge>
+                          )}
+                          {tool.global && (
+                            <Badge variant="outline" className="gap-1">
+                              <Globe className="h-3 w-3" />
+                              Global
+                            </Badge>
+                          )}
                         </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                      </div>
 
-              {/* Active Tool Content */}
-              <div className="lg:col-span-3">
-                <div className="bg-white rounded-lg shadow-sm border">
-                  {(() => {
-                    const activeTool_obj = tools.find(t => t.id === activeTool);
-                    if (activeTool_obj) {
-                      const ToolComponent = activeTool_obj.component;
-                      return <ToolComponent />;
-                    }
-                    return null;
-                  })()}
-                </div>
+                      <div className="space-y-3">
+                        <div>
+                          <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                            {tool.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">{tool.subtitle}</p>
+                        </div>
+
+                        <Button 
+                          size="sm" 
+                          className="w-full gap-2 group-hover:gap-3 transition-all"
+                          variant={tool.premium ? "default" : "outline"}
+                        >
+                          {tool.premium ? 'Try Pro' : 'Launch Tool'}
+                          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Active Tool Modal/Overlay */}
+        {activeTool && (
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-background border rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-auto">
+              <div className="p-6 border-b flex items-center justify-between">
+                <h2 className="text-xl font-semibold">
+                  {tools.find(t => t.id === activeTool)?.title}
+                </h2>
+                <Button variant="ghost" size="sm" onClick={() => setActiveTool('')}>
+                  ×
+                </Button>
+              </div>
+              <div className="p-6">
+                {(() => {
+                  const activeTool_obj = tools.find(t => t.id === activeTool);
+                  if (activeTool_obj) {
+                    const ToolComponent = activeTool_obj.component;
+                    return <ToolComponent />;
+                  }
+                  return null;
+                })()}
               </div>
             </div>
-          </TabsContent>
-
-          <TabsContent value="history">
-            <ToolResultsHistory />
-          </TabsContent>
-
-          <TabsContent value="analytics">
-            <ToolsAnalyticsDashboard />
-          </TabsContent>
-
-          <TabsContent value="favorites">
-            <div className="bg-white rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Favorite Tools & Results</h2>
-              <p className="text-gray-600">Your starred tools and saved results will appear here.</p>
-              {/* This would filter and display favorite items from ToolResultsHistory */}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="collaboration">
-            <RealTimeCollaboration 
-              toolName={activeTool} 
-              toolData={{ currentTool: activeTool, timestamp: new Date().toISOString() }} 
-            />
-          </TabsContent>
-
-          <TabsContent value="advanced">
-            <AdvancedAnalytics />
-          </TabsContent>
-
-          <TabsContent value="profile">
-            <ProfileIntegration />
-          </TabsContent>
-
-          <TabsContent value="suggestions">
-            <AutomatedSuggestions />
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
       </div>
     </div>
   );
