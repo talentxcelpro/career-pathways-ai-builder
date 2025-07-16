@@ -7,13 +7,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, User, FileText, Target, Calendar } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Sparkles, User, FileText, Target, Calendar, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEnhancedAI } from '@/hooks/useEnhancedAI';
+import { toast } from 'sonner';
 
 const Generate = () => {
   const [targetRole, setTargetRole] = useState('');
   const [timeframe, setTimeframe] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedRoadmap, setGeneratedRoadmap] = useState(null);
+  const [error, setError] = useState('');
+  
+  const navigate = useNavigate();
+  const { generateCareerRoadmap, processing } = useEnhancedAI();
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -33,12 +40,60 @@ const Generate = () => {
   });
 
   const handleGenerate = async () => {
+    if (!targetRole || !timeframe) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
     setIsGenerating(true);
-    // Simulate AI generation process
-    setTimeout(() => {
+    setError('');
+    setGeneratedRoadmap(null);
+
+    try {
+      const currentRole = profile?.title || 'Current Professional';
+      
+      const result = await generateCareerRoadmap(
+        currentRole,
+        targetRole,
+        timeframe,
+        {
+          currentSkills: profile?.skills || [],
+          experience: profile?.experience_years || 0,
+          industry: profile?.industry || 'General',
+          preferences: {
+            learningStyle: 'practical',
+            timeline: 'flexible'
+          }
+        }
+      );
+
+      if (result.success && result.data) {
+        setGeneratedRoadmap(result.data);
+        toast.success('Career roadmap generated successfully!');
+        
+        // Save to career goals
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('career_goals').insert({
+            user_id: user.id,
+            target_role: targetRole,
+            current_position: currentRole,
+            timeline_months: parseInt(timeframe),
+            skills_needed: result.data.skills_needed || [],
+            milestones: result.data.milestones || [],
+            is_active: true
+          });
+        }
+      } else {
+        throw new Error(result.error || 'Failed to generate roadmap');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate career roadmap';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
       setIsGenerating(false);
-      // In a real implementation, this would create a career map and redirect
-    }, 3000);
+    }
   };
 
   return (
@@ -90,13 +145,13 @@ const Generate = () => {
 
                 <Button 
                   onClick={handleGenerate}
-                  disabled={!targetRole || !timeframe || isGenerating}
+                  disabled={!targetRole || !timeframe || isGenerating || processing}
                   className="w-full"
                 >
-                  {isGenerating ? (
+                  {isGenerating || processing ? (
                     <>
-                      <Sparkles className="h-4 w-4 mr-2 animate-spin" />
-                      Generating Roadmap...
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Generating AI Roadmap...
                     </>
                   ) : (
                     <>
@@ -105,6 +160,20 @@ const Generate = () => {
                     </>
                   )}
                 </Button>
+
+                {error && (
+                  <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <AlertTriangle className="h-4 w-4 text-red-600" />
+                    <p className="text-sm text-red-600">{error}</p>
+                  </div>
+                )}
+
+                {generatedRoadmap && (
+                  <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <p className="text-sm text-green-600">Roadmap generated! Check your career goals.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -189,6 +258,73 @@ const Generate = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Generated Roadmap Display */}
+            {generatedRoadmap && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Target className="h-5 w-5 mr-2" />
+                    Generated Roadmap
+                  </CardTitle>
+                  <CardDescription>
+                    Your AI-powered career roadmap
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {typeof generatedRoadmap === 'string' ? (
+                      <div className="prose prose-sm max-w-none">
+                        <p className="whitespace-pre-wrap">{generatedRoadmap}</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {generatedRoadmap.milestones && (
+                          <div>
+                            <h4 className="font-medium mb-2">Key Milestones</h4>
+                            <ul className="space-y-1 text-sm">
+                              {generatedRoadmap.milestones.map((milestone, index) => (
+                                <li key={index} className="flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                  {milestone}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {generatedRoadmap.skills_needed && (
+                          <div>
+                            <h4 className="font-medium mb-2">Skills to Develop</h4>
+                            <div className="flex flex-wrap gap-1">
+                              {generatedRoadmap.skills_needed.map((skill, index) => (
+                                <Badge key={index} variant="secondary">{skill}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={() => navigate('/career-map/my-roadmaps')}
+                        variant="outline"
+                      >
+                        View All Roadmaps
+                      </Button>
+                      <Button 
+                        onClick={() => {
+                          setGeneratedRoadmap(null);
+                          setTargetRole('');
+                          setTimeframe('');
+                        }}
+                      >
+                        Generate Another
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>

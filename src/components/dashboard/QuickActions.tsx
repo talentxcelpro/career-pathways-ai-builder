@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Search, Users, BookOpen, ArrowRight, Eye } from "lucide-react";
+import { FileText, Search, Users, BookOpen, ArrowRight, Eye, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export const QuickActions = () => {
@@ -9,12 +9,12 @@ export const QuickActions = () => {
 
   const actions = [
     {
-      title: "Profile Views",
-      description: "See who viewed your profile",
-      icon: Eye,
-      href: "/network/profile/analytics",
-      color: "from-indigo-500 to-indigo-600",
-      textColor: "text-indigo-700"
+      title: "AI Career Map",
+      description: "Generate career roadmap",
+      icon: Brain,
+      href: "/career-map/generate",
+      color: "from-violet-500 to-purple-600",
+      textColor: "text-violet-700"
     },
     {
       title: "Build Resume",
