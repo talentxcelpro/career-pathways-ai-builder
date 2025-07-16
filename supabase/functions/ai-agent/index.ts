@@ -24,32 +24,48 @@ serve(async (req) => {
   const startTime = Date.now();
   let requestId = crypto.randomUUID();
   
-  // Enhanced startup validation
-  if (!openAIApiKey) {
-    console.error(`❌ CRITICAL: OpenAI API key not configured`);
-    return new Response(JSON.stringify({
-      success: false,
-      error: 'AI service configuration error - OpenAI API key missing',
-      requestId: requestId
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
+  console.log(`🚀 [${requestId}] AI Agent function started`);
+  console.log(`🔍 [${requestId}] Request method: ${req.method}`);
+  console.log(`🔍 [${requestId}] Request URL: ${req.url}`);
   
-  if (!supabaseUrl || !supabaseServiceKey) {
-    console.error(`❌ CRITICAL: Supabase configuration missing`);
-    return new Response(JSON.stringify({
-      success: false,
-      error: 'Database configuration error',
-      requestId: requestId
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-
   try {
+    // Enhanced startup validation with detailed logging
+    console.log(`🔑 [${requestId}] Checking environment variables...`);
+    
+    if (!openAIApiKey) {
+      console.error(`❌ [${requestId}] CRITICAL: OpenAI API key not found in environment`);
+      console.error(`❌ [${requestId}] Available env vars: ${Object.keys(Deno.env.toObject()).join(', ')}`);
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'AI service configuration error - OpenAI API key missing',
+        requestId: requestId,
+        debug: 'OpenAI API key not found in environment variables'
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    console.log(`✅ [${requestId}] OpenAI API key found: ${openAIApiKey.substring(0, 10)}...`);
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error(`❌ [${requestId}] CRITICAL: Supabase configuration missing`);
+      console.error(`❌ [${requestId}] Supabase URL: ${supabaseUrl ? 'found' : 'missing'}`);
+      console.error(`❌ [${requestId}] Supabase Service Key: ${supabaseServiceKey ? 'found' : 'missing'}`);
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Database configuration error',
+        requestId: requestId,
+        debug: 'Supabase configuration missing'
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    console.log(`✅ [${requestId}] Supabase configuration found`);
+    console.log(`✅ [${requestId}] All environment variables validated successfully`);
+    // Continue with the main request processing
     console.log(`🚀 [${requestId}] New AI Agent request received`);
     
     // Parse and validate request body
