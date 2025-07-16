@@ -248,23 +248,9 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
                   
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">{tier.name}</h3>
                   
-                  {/* Early Bird Discount Badge */}
-                  <div className="flex justify-center mb-2">
-                    <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
-                      🔥 Early Bird - 40% OFF
-                    </div>
-                  </div>
-                  
                   <div className="flex items-baseline justify-center mb-1">
-                    {/* Original Price with Strikethrough */}
-                    <span className="text-lg text-gray-400 line-through mr-2">₹{tier.price_monthly.toLocaleString()}</span>
-                    {/* Discounted Price */}
-                    <span className="text-4xl font-bold text-gray-900">₹{Math.floor(tier.price_monthly * 0.6).toLocaleString()}</span>
+                    <span className="text-4xl font-bold text-gray-900">₹{tier.price_monthly.toLocaleString()}</span>
                     <span className="text-gray-500 ml-2">/month</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-center mb-1">
-                    <span className="text-sm font-semibold text-green-600">Save ₹{Math.floor(tier.price_monthly * 0.4).toLocaleString()}/month</span>
                   </div>
                   
                   <p className="text-sm text-gray-500">
