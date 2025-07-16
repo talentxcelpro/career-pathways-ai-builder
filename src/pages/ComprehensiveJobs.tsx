@@ -58,7 +58,7 @@ const ComprehensiveJobs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-accent/10">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50/50 to-blue-50/30">
       {/* Advanced Hero Section */}
       <AdvancedHeroSection />
       

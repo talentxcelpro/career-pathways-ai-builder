@@ -70,6 +70,17 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				// Apple-inspired dark text colors
+				text: {
+					primary: 'hsl(0, 0%, 10%)', // #1a1a1a - Primary dark text
+					secondary: 'hsl(0, 0%, 29%)', // #4a4a4a - Secondary dark text
+					tertiary: 'hsl(0, 0%, 50%)', // #808080 - Tertiary dark text
+				},
+				// Glass effect backgrounds
+				glass: {
+					light: 'hsl(0, 0%, 100%, 0.8)', // White with 80% opacity
+					dark: 'hsl(0, 0%, 0%, 0.05)', // Black with 5% opacity
+				},
 				// Highlight colors
 				orange: {
 					DEFAULT: 'hsl(35, 100%, 63%)', // #FFB84C
@@ -108,6 +119,12 @@ export default {
 			},
 			boxShadow: {
 				card: 'var(--shadow-card)',
+				'apple-light': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+				'apple-medium': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+				'apple-heavy': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+			},
+			backdropBlur: {
+				'apple': '20px',
 			},
 			spacing: {
 				'18': '4.5rem',

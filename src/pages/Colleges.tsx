@@ -113,50 +113,52 @@ const Colleges = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Discover Colleges</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Header with Apple-inspired styling */}
+        <div className="text-center mb-16">
+          <h1 className="text-5xl font-bold text-text-primary mb-6 font-display">
+            Discover Colleges
+          </h1>
+          <p className="text-2xl text-text-secondary max-w-4xl mx-auto leading-relaxed">
             Connect with your alma mater, discover alumni networks, and explore career opportunities 
             through academic partnerships.
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {/* Stats with glassmorphism */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
           {stats.map((stat, index) => (
-            <Card key={index} className="text-center">
-              <CardContent className="p-6">
-                <stat.icon className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                <div className="text-sm text-gray-600">{stat.label}</div>
+            <Card key={index} className="text-center border-0 bg-white/80 backdrop-blur-apple shadow-apple-light rounded-2xl hover:shadow-apple-medium transition-all duration-300">
+              <CardContent className="p-8">
+                <stat.icon className="h-12 w-12 text-primary mx-auto mb-4" />
+                <div className="text-3xl font-bold text-text-primary font-display mb-2">{stat.value}</div>
+                <div className="text-base text-text-secondary font-medium">{stat.label}</div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Search and Filters */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Search and Filters with glassmorphism */}
+        <Card className="mb-12 border-0 bg-white/90 backdrop-blur-apple shadow-apple-medium rounded-2xl">
+          <CardContent className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="md:col-span-2">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-tertiary h-5 w-5" />
                   <Input
                     placeholder="Search colleges, universities, or programs..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-12 h-12 text-base border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
                 </div>
               </div>
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger>
+                <SelectTrigger className="h-12 rounded-xl border-gray-200 text-base">
                   <SelectValue placeholder="Institution Type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl">
                   <SelectItem value="">All Types</SelectItem>
                   {collegeTypes.map(type => (
                     <SelectItem key={type} value={type}>{type}</SelectItem>
@@ -164,10 +166,10 @@ const Colleges = () => {
                 </SelectContent>
               </Select>
               <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                <SelectTrigger>
+                <SelectTrigger className="h-12 rounded-xl border-gray-200 text-base">
                   <SelectValue placeholder="Location" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl">
                   <SelectItem value="">All Locations</SelectItem>
                   {locations.map(location => (
                     <SelectItem key={location} value={location}>{location}</SelectItem>
@@ -179,77 +181,81 @@ const Colleges = () => {
         </Card>
 
         {/* Colleges Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredColleges.map((college) => (
-            <Card key={college.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
+            <Card key={college.id} className="hover:shadow-apple-heavy transition-all duration-300 border-0 bg-white/90 backdrop-blur-sm rounded-2xl group">
+              <CardHeader className="p-8">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="h-16 w-16">
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-20 w-20 shadow-apple-light">
                       <AvatarImage src={college.logo_url} alt={college.name} />
-                      <AvatarFallback className="text-lg font-bold">
+                      <AvatarFallback className="text-2xl font-bold text-text-primary bg-gray-100">
                         {college.name.split(' ').map(word => word[0]).join('').substring(0, 2)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <CardTitle className="text-xl">{college.name}</CardTitle>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <Badge variant="secondary">#{college.ranking} Ranked</Badge>
+                      <CardTitle className="text-2xl font-bold text-text-primary font-display group-hover:text-primary transition-colors">
+                        {college.name}
+                      </CardTitle>
+                      <div className="flex items-center space-x-3 mt-2">
+                        <Badge variant="secondary" className="bg-primary/10 text-primary border-0 px-3 py-1 rounded-xl">
+                          #{college.ranking} Ranked
+                        </Badge>
                         <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span className="text-sm font-medium ml-1">{college.rating}</span>
+                          <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                          <span className="text-base font-semibold ml-2 text-text-primary">{college.rating}</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <CardDescription className="mt-3">
+                <CardDescription className="mt-6 text-base leading-relaxed text-text-secondary">
                   {college.description}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+              <CardContent className="px-8 pb-8">
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-6 text-base text-text-secondary">
                     <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" />
+                      <MapPin className="h-5 w-5 mr-2" />
                       {college.location}
                     </div>
                     <div className="flex items-center">
-                      <Users className="h-4 w-4 mr-1" />
+                      <Users className="h-5 w-5 mr-2" />
                       {college.students_count.toLocaleString()} students
                     </div>
                   </div>
                   
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Notable Programs</h4>
-                    <div className="flex flex-wrap gap-1">
+                    <h4 className="font-semibold text-text-primary mb-3 text-lg">Notable Programs</h4>
+                    <div className="flex flex-wrap gap-2">
                       {college.notable_programs.slice(0, 3).map((program, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
+                        <Badge key={index} variant="outline" className="text-sm px-3 py-1 border-gray-200 text-text-secondary rounded-xl">
                           {program}
                         </Badge>
                       ))}
                       {college.notable_programs.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-sm px-3 py-1 border-gray-200 text-text-secondary rounded-xl">
                           +{college.notable_programs.length - 3} more
                         </Badge>
                       )}
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="flex items-center text-blue-600">
-                      <GraduationCap className="h-4 w-4 mr-1" />
+                  <div className="grid grid-cols-2 gap-4 text-base">
+                    <div className="flex items-center text-primary">
+                      <GraduationCap className="h-5 w-5 mr-2" />
                       {college.verified_alumni.toLocaleString()} verified alumni
                     </div>
                     <div className="flex items-center text-green-600">
-                      <Calendar className="h-4 w-4 mr-1" />
+                      <Calendar className="h-5 w-5 mr-2" />
                       {college.upcoming_events} events
                     </div>
                   </div>
                   
-                  <div className="pt-2">
+                  <div className="pt-4">
                     <Link to={`/colleges/${college.id}`}>
-                      <Button className="w-full">
+                      <Button className="w-full h-12 text-base font-semibold rounded-xl shadow-apple-light hover:shadow-apple-medium transition-all duration-200">
                         Explore Network
                       </Button>
                     </Link>
@@ -261,10 +267,10 @@ const Colleges = () => {
         </div>
 
         {filteredColleges.length === 0 && (
-          <div className="text-center py-12">
-            <GraduationCap className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No colleges found</h3>
-            <p className="text-gray-600">Try adjusting your search criteria or filters.</p>
+          <div className="text-center py-20">
+            <GraduationCap className="h-24 w-24 text-gray-300 mx-auto mb-8" />
+            <h3 className="text-2xl font-bold text-text-primary mb-4 font-display">No colleges found</h3>
+            <p className="text-xl text-text-secondary">Try adjusting your search criteria or filters.</p>
           </div>
         )}
       </div>
