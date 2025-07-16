@@ -13,7 +13,7 @@ import {
   Search, Star, Clock, DollarSign, User, MessageSquare, Filter, TrendingUp, Plus, 
   IndianRupee, Sparkles, Timer, Shield, Zap, Trophy, Heart, Phone, Video,
   CheckCircle, Award, Target, Flame, Users, ArrowRight, Eye, ThumbsUp,
-  BookOpen, Briefcase, Headphones, Camera, PenTool, Code
+  BookOpen, Briefcase, Headphones, Camera, PenTool, Code, Crown
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -799,16 +799,16 @@ export default function EnhancedServiceMarketplace() {
           </Card>
         </motion.div>
 
-        {/* Apple-inspired Subscription Section */}
-        <div className="my-16">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="bg-gradient-to-br from-white/95 via-blue-50/95 to-purple-50/95 rounded-3xl shadow-2xl border border-gray-200/60 backdrop-blur-md p-8 md:p-12"
+        {/* Subscription CTA Button */}
+        <div className="my-16 text-center">
+          <Button 
+            onClick={() => window.open('/pro/subscription', '_blank')}
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >
-            <AppleSubscriptionUI compact={true} />
-          </motion.div>
+            <Crown className="h-5 w-5 mr-2" />
+            Upgrade to Pro
+            <ArrowRight className="h-5 w-5 ml-2" />
+          </Button>
         </div>
 
         {/* Search and Filters */}
