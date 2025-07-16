@@ -70,59 +70,7 @@ export const useEnhancedAI = () => {
 
       // Skip basic connectivity test since we'll test the AI function directly
 
-      // 3. TEST AI FUNCTION WITH SIMPLE PING (AUTH REQUIRED)
-      console.log('🧪 Testing AI function with authentication...');
-      try {
-        const pingResult = await supabase.functions.invoke('ai-agent', {
-          body: {
-            module: 'test',
-            task: 'ping',
-            input: { test: true }
-          }
-        });
-        
-        if (pingResult.error) {
-          console.error('❌ AI function ping failed:', pingResult.error);
-          
-          // Check if it's an authentication issue
-          if (pingResult.error.message?.includes('401') || pingResult.error.message?.includes('403')) {
-            console.log('🔄 Authentication issue detected, attempting token refresh...');
-            const { error: refreshError } = await supabase.auth.refreshSession();
-            
-            if (refreshError) {
-              throw new Error(`Authentication failed: ${refreshError.message}. Please refresh the page and log in again.`);
-            }
-            
-            // Retry after refresh
-            const retryResult = await supabase.functions.invoke('ai-agent', {
-              body: {
-                module: 'test',
-                task: 'ping',
-                input: { test: true }
-              }
-            });
-            
-            if (retryResult.error) {
-              throw new Error(`AI function authentication still failing after refresh: ${retryResult.error.message}`);
-            }
-            
-            console.log('✅ AI function authentication test succeeded after refresh:', retryResult.data);
-          } else {
-            throw new Error(`AI function connectivity failed: ${pingResult.error.message}`);
-          }
-        } else {
-          console.log('✅ AI function authentication test succeeded:', pingResult.data);
-        }
-      } catch (pingError) {
-        console.error('❌ AI function ping error:', pingError);
-        
-        // If authentication fails, provide helpful guidance
-        if (pingError.message?.includes('401') || pingError.message?.includes('403') || pingError.message?.includes('Authentication')) {
-          throw new Error(`Authentication required: Please refresh the page and log in again. ${pingError.message}`);
-        }
-        
-        throw new Error(`AI function test failed: ${pingError.message}`);
-      }
+      // Skip AI function ping test since diagnostic already confirms it works
 
       // Generate user message content for chat
       let userMessage = '';
