@@ -11,6 +11,8 @@ import { Footer } from "./components/layout/Footer";
 import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
+import { AIProvider } from "./contexts/AIContext";
+import { FloatingAIWidget } from "./components/ai/FloatingAIWidget";
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -61,6 +63,7 @@ const App = () => (
       <BrowserRouter>
         <AnalyticsProvider>
           <AuthProvider>
+            <AIProvider>
             <MobileAppInitializer />
             <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
             <SearchConsoleVerification verificationCode="your-search-console-verification-code" />
@@ -98,6 +101,8 @@ const App = () => (
               </main>
               <Footer />
             </div>
+            <FloatingAIWidget />
+            </AIProvider>
           </AuthProvider>
         </AnalyticsProvider>
         <Analytics />
