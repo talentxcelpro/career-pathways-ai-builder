@@ -283,123 +283,141 @@ export default function ServiceMarketplace() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-slate-50/90 space-y-8">
       {/* Header */}
-      <div className="text-center bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-8">
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <Sparkles className="h-8 w-8 text-primary" />
-          <h1 className="text-4xl font-bold text-primary">Professional Services Marketplace</h1>
-        </div>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-          Connect with verified Indian professionals and experts. All prices in INR. Quality guaranteed.
-        </p>
-        
-        {/* Request Service Button */}
-        <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="bg-white/50 backdrop-blur-sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Can't find what you need? Request a service
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Request a Service</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="title">Service Title</Label>
-                <Input
-                  id="title"
-                  value={serviceRequest.title}
-                  onChange={(e) => setServiceRequest(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="What service do you need?"
-                />
-              </div>
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={serviceRequest.description}
-                  onChange={(e) => setServiceRequest(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Describe your requirements in detail..."
-                  rows={3}
-                />
-              </div>
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <Select value={serviceRequest.category} onValueChange={(value) => setServiceRequest(prev => ({ ...prev, category: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map(category => (
-                      <SelectItem key={category} value={category}>{category}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="budget">Budget (INR)</Label>
-                <Input
-                  id="budget"
-                  value={serviceRequest.budget}
-                  onChange={(e) => setServiceRequest(prev => ({ ...prev, budget: e.target.value }))}
-                  placeholder="Your budget range (e.g., ₹5,000 - ₹10,000)"
-                />
-              </div>
-              <div>
-                <Label htmlFor="timeline">Timeline</Label>
-                <Input
-                  id="timeline"
-                  value={serviceRequest.timeline}
-                  onChange={(e) => setServiceRequest(prev => ({ ...prev, timeline: e.target.value }))}
-                  placeholder="When do you need this? (e.g., Within 1 week)"
-                />
-              </div>
-              <Button 
-                onClick={handleServiceRequest} 
-                className="w-full"
-                disabled={!serviceRequest.title || !serviceRequest.description}
-              >
-                Submit Request
-              </Button>
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-50/95 via-gray-50/95 to-zinc-50/95 border border-gray-200/60 shadow-xl rounded-3xl backdrop-blur-md p-8 sm:p-12">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-indigo-500/5 pointer-events-none" />
+        <div className="relative text-center">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-3 rounded-2xl shadow-lg border border-white/20">
+              <Sparkles className="h-8 w-8 text-white" />
             </div>
-          </DialogContent>
-        </Dialog>
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">Professional Services</h1>
+          </div>
+          <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-8 font-medium leading-relaxed">
+            Connect with verified Indian professionals and experts. All prices in INR. Quality guaranteed.
+          </p>
+          
+          {/* Request Service Button */}
+          <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
+            <DialogTrigger asChild>
+              <Button className="bg-white/90 backdrop-blur-sm text-gray-900 hover:bg-white border border-gray-200/60 shadow-lg font-semibold rounded-2xl px-6 py-3 transition-all duration-200">
+                <Plus className="h-4 w-4 mr-2" />
+                Can't find what you need? Request a service
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px] bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-2xl rounded-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-gray-900 font-semibold">Request a Service</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-5">
+                <div>
+                  <Label htmlFor="title" className="text-gray-800 font-medium">Service Title</Label>
+                  <Input
+                    id="title"
+                    value={serviceRequest.title}
+                    onChange={(e) => setServiceRequest(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="What service do you need?"
+                    className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description" className="text-gray-800 font-medium">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={serviceRequest.description}
+                    onChange={(e) => setServiceRequest(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Describe your requirements in detail..."
+                    rows={3}
+                    className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="category" className="text-gray-800 font-medium">Category</Label>
+                  <Select value={serviceRequest.category} onValueChange={(value) => setServiceRequest(prev => ({ ...prev, category: value }))}>
+                    <SelectTrigger className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-xl">
+                      {categories.map(category => (
+                        <SelectItem key={category} value={category} className="text-gray-900 font-medium">{category}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="budget" className="text-gray-800 font-medium">Budget (INR)</Label>
+                  <Input
+                    id="budget"
+                    value={serviceRequest.budget}
+                    onChange={(e) => setServiceRequest(prev => ({ ...prev, budget: e.target.value }))}
+                    placeholder="Your budget range (e.g., ₹5,000 - ₹10,000)"
+                    className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="timeline" className="text-gray-800 font-medium">Timeline</Label>
+                  <Input
+                    id="timeline"
+                    value={serviceRequest.timeline}
+                    onChange={(e) => setServiceRequest(prev => ({ ...prev, timeline: e.target.value }))}
+                    placeholder="When do you need this? (e.g., Within 1 week)"
+                    className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
+                  />
+                </div>
+                <Button 
+                  onClick={handleServiceRequest} 
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-200"
+                  disabled={!serviceRequest.title || !serviceRequest.description}
+                >
+                  Submit Request
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Stats Bar */}
-      <Card className="border-border/40 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
-        <CardContent className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="flex flex-col items-center">
-              <div className="text-3xl font-bold text-primary flex items-center gap-1">
-                <User className="h-6 w-6" />
+      <Card className="border border-gray-200/60 bg-gradient-to-br from-slate-50/95 via-gray-50/95 to-zinc-50/95 shadow-xl rounded-2xl backdrop-blur-md overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-indigo-500/5 pointer-events-none" />
+        <CardContent className="p-6 sm:p-8 relative">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="flex flex-col items-center space-y-2">
+              <div className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+                <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-2 rounded-xl">
+                  <User className="h-5 w-5 text-white" />
+                </div>
                 {stats.totalProviders}+
               </div>
-              <div className="text-sm text-muted-foreground">Verified Experts</div>
+              <div className="text-sm text-gray-600 font-medium">Verified Experts</div>
             </div>
-            <div className="flex flex-col items-center">
-              <div className="text-3xl font-bold text-primary flex items-center gap-1">
-                <Sparkles className="h-6 w-6" />
+            <div className="flex flex-col items-center space-y-2">
+              <div className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+                <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-2 rounded-xl">
+                  <Sparkles className="h-5 w-5 text-white" />
+                </div>
                 {stats.totalServices}+
               </div>
-              <div className="text-sm text-muted-foreground">Services Available</div>
+              <div className="text-sm text-gray-600 font-medium">Services Available</div>
             </div>
-            <div className="flex flex-col items-center">
-              <div className="text-3xl font-bold text-primary flex items-center gap-1">
-                <Star className="h-6 w-6" />
+            <div className="flex flex-col items-center space-y-2">
+              <div className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+                <div className="bg-gradient-to-r from-yellow-500 to-orange-500 p-2 rounded-xl">
+                  <Star className="h-5 w-5 text-white" />
+                </div>
                 {stats.averageRating}
               </div>
-              <div className="text-sm text-muted-foreground">Average Rating</div>
+              <div className="text-sm text-gray-600 font-medium">Average Rating</div>
             </div>
-            <div className="flex flex-col items-center">
-              <div className="text-3xl font-bold text-primary flex items-center gap-1">
-                <Clock className="h-6 w-6" />
+            <div className="flex flex-col items-center space-y-2">
+              <div className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+                <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-2 rounded-xl">
+                  <Clock className="h-5 w-5 text-white" />
+                </div>
                 {stats.averageResponseTime}
               </div>
-              <div className="text-sm text-muted-foreground">Avg Response Time</div>
+              <div className="text-sm text-gray-600 font-medium">Avg Response Time</div>
             </div>
           </div>
         </CardContent>
@@ -432,40 +450,44 @@ export default function ServiceMarketplace() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Services Grid */}
         <div className="lg:col-span-3">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <IndianRupee className="h-6 w-6 text-primary" />
+          <div className="mb-8 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3 tracking-tight">
+              <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-2 rounded-xl">
+                <IndianRupee className="h-5 w-5 text-white" />
+              </div>
               {filteredServices.length} Service{filteredServices.length !== 1 ? 's' : ''} Found
             </h2>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">All prices in INR</span>
+            <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-xl px-3 py-2 border border-gray-200/60">
+              <TrendingUp className="h-4 w-4 text-gray-600" />
+              <span className="text-sm text-gray-700 font-medium">All prices in INR</span>
             </div>
           </div>
 
           {filteredServices.length === 0 ? (
-            <Card className="border-dashed border-2">
+            <Card className="border-dashed border-2 border-gray-300/60 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg">
               <CardContent className="p-12 text-center">
-                <MessageSquare className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Services Found</h3>
-                <p className="text-muted-foreground mb-6">
+                <div className="bg-gradient-to-r from-gray-500 to-slate-500 p-4 rounded-2xl mx-auto mb-6 w-fit">
+                  <MessageSquare className="h-12 w-12 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 tracking-tight">No Services Found</h3>
+                <p className="text-gray-700 mb-8 font-medium leading-relaxed max-w-md mx-auto">
                   {searchTerm || getActiveFiltersCount() > 0 
                     ? "No services match your criteria. Try adjusting your search or filters."
                     : "No services are currently available. Check back later!"}
                 </p>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {(searchTerm || getActiveFiltersCount() > 0) && (
                     <Button 
                       variant="outline" 
                       onClick={clearFilters}
-                      className="mr-4"
+                      className="mr-4 bg-white/90 border-gray-200/60 text-gray-900 hover:bg-white font-semibold rounded-xl"
                     >
                       Clear All Filters
                     </Button>
                   )}
                   <Button 
                     onClick={() => setShowRequestDialog(true)}
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-xl shadow-lg"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Request a Service
