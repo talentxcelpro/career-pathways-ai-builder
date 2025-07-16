@@ -72,6 +72,24 @@ serve(async (req) => {
       hasPrompt: !!prompt
     });
 
+    // Handle diagnostic test requests
+    if (module === 'test' && task === 'ping') {
+      console.log(`🧪 [${requestId}] Diagnostic ping request received`);
+      return new Response(JSON.stringify({
+        success: true,
+        response: 'AI Agent function is working properly',
+        data: {
+          message: 'AI Agent function is working properly',
+          timestamp: new Date().toISOString(),
+          requestId: requestId,
+          processingTime: Date.now() - startTime
+        },
+        requestId: requestId
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     // Validate required fields
     if (!module || !task) {
       throw new Error('Missing required fields: module and task are required');

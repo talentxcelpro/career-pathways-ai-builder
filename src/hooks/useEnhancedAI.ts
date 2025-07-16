@@ -35,6 +35,57 @@ export const useEnhancedAI = () => {
         throw new Error('Module and task are required');
       }
 
+      // 1. TEST AUTHENTICATION STATUS FIRST
+      console.log('🔐 Checking authentication status...');
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('❌ Session error:', sessionError);
+        throw new Error('Authentication error: Unable to verify session');
+      }
+      
+      if (!session) {
+        console.error('❌ No active session');
+        throw new Error('Authentication required: Please log in and try again');
+      }
+      
+      console.log('✅ Authentication verified, user:', session.user.email);
+      console.log('🔑 Token expires at:', new Date(session.expires_at * 1000));
+      
+      // Check if token is about to expire (within 5 minutes)
+      const now = Math.floor(Date.now() / 1000);
+      const timeUntilExpiry = session.expires_at - now;
+      
+      if (timeUntilExpiry < 300) { // Less than 5 minutes
+        console.log('⚠️ Token expiring soon, attempting refresh...');
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        
+        if (refreshError) {
+          console.error('❌ Token refresh failed:', refreshError);
+          throw new Error('Session expired: Please refresh the page and log in again');
+        }
+        
+        console.log('✅ Token refreshed successfully');
+      }
+
+      // 2. TEST WITH SIMPLER FUNCTION FIRST
+      console.log('🧪 Testing connectivity with test function...');
+      try {
+        const testResult = await supabase.functions.invoke('test-function', {
+          body: { test: true }
+        });
+        
+        if (testResult.error) {
+          console.error('❌ Test function failed:', testResult.error);
+          throw new Error(`Connectivity test failed: ${testResult.error.message}`);
+        }
+        
+        console.log('✅ Test function succeeded:', testResult.data);
+      } catch (testError) {
+        console.error('❌ Test function error:', testError);
+        throw new Error(`Network connectivity test failed: ${testError.message}`);
+      }
+
       // Generate user message content for chat
       let userMessage = '';
       if (request.task === 'chat' && request.input?.message) {

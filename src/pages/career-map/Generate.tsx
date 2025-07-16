@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Sparkles, User, FileText, Target, Calendar, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEnhancedAI } from '@/hooks/useEnhancedAI';
+import { AIDebugMonitor } from '@/components/ui/ai-debug-monitor';
 import { toast } from 'sonner';
 
 const Generate = () => {
@@ -328,6 +329,9 @@ const Generate = () => {
           </div>
         </div>
       </div>
+      
+      {/* Debug Monitor */}
+      <AIDebugMonitor />
     </div>
   );
 };
