@@ -1,12 +1,8 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
+import { UnifiedAuthForm } from '../auth/UnifiedAuthForm';
 
 export const HeroSection = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="relative overflow-hidden">
       {/* Background Elements */}
@@ -18,9 +14,9 @@ export const HeroSection = () => {
       {/* Main Hero Section */}
       <section className="relative pt-20 pb-20 sm:pt-24 sm:pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="min-h-screen flex flex-col md:flex-row items-center">
-            {/* Left Section - Text + Simple CTA */}
-            <div className="flex-1 flex flex-col justify-center px-4 md:px-10 py-10 md:py-20">
+          <div className="min-h-screen flex flex-col lg:flex-row items-center gap-12">
+            {/* Left Section - Text Content */}
+            <div className="flex-1 flex flex-col justify-center text-center lg:text-left">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Powering Global
                 <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
@@ -28,47 +24,35 @@ export const HeroSection = () => {
                 </span>
               </h1>
               
-              <p className="text-gray-600 text-lg md:text-xl mb-8 max-w-lg leading-relaxed">
+              <p className="text-gray-600 text-lg md:text-xl mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
                 Your all-in-one platform for networking, skill-building, and finding the perfect career opportunities tailored to your unique journey.
               </p>
               
-              {/* Simple CTA Buttons */}
-              <div className="space-y-4 mb-8 max-w-md">
-                <Button 
-                  onClick={() => navigate('/auth/register')}
-                  className="w-full bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 text-base font-semibold"
-                >
-                  Get Started Free
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/auth/login')}
-                  className="w-full border-2 border-blue-600 text-blue-600 p-4 rounded-lg hover:bg-blue-50 transition-all duration-300 text-base font-semibold"
-                >
-                  Sign In
-                </Button>
+              <div className="text-sm text-gray-500 max-w-lg mx-auto lg:mx-0 mb-8">
+                Join thousands of professionals accelerating their careers with TalentXcel
               </div>
 
-              <div className="text-sm text-gray-500 max-w-md">
-                Join thousands of professionals accelerating their careers with TalentXcel
+              {/* Social Proof */}
+              <div className="flex items-center justify-center lg:justify-start space-x-6 text-sm text-gray-500">
+                <div className="flex items-center">
+                  <span className="font-semibold text-gray-900">10K+</span>
+                  <span className="ml-1">Professionals</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="font-semibold text-gray-900">500+</span>
+                  <span className="ml-1">Companies</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="font-semibold text-gray-900">95%</span>
+                  <span className="ml-1">Success Rate</span>
+                </div>
               </div>
             </div>
 
-            {/* Right Section - Visual Appeal */}
-            <div className="flex-1 flex items-center justify-center p-6 md:p-10">
-              <div className="relative">
-                <div className="rounded-3xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                  <img
-                    src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80"
-                    alt="Professional handshake representing career growth and networking"
-                    className="w-full h-auto object-cover max-w-lg"
-                  />
-                </div>
-                {/* Decorative elements */}
-                <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 blur-xl"></div>
-                <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full opacity-20 blur-lg"></div>
+            {/* Right Section - Auth Form */}
+            <div className="flex-1 flex items-center justify-center lg:justify-end">
+              <div className="w-full max-w-md">
+                <UnifiedAuthForm />
               </div>
             </div>
           </div>
