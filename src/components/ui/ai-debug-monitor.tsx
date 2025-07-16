@@ -7,7 +7,7 @@ import { CheckCircle, XCircle, AlertTriangle, Clock, Wifi, WifiOff } from 'lucid
 
 interface DebugLog {
   timestamp: string;
-  type: 'auth' | 'connectivity' | 'request' | 'response' | 'error';
+  type: 'auth' | 'connectivity' | 'request' | 'response' | 'error' | 'info';
   message: string;
   status: 'success' | 'warning' | 'error' | 'info';
   details?: any;
@@ -123,7 +123,7 @@ export const AIDebugMonitor = () => {
   };
 
   const testAIFunction = async () => {
-    addLog({ type: 'request', message: 'Testing AI agent function...', status: 'info' });
+    addLog({ type: 'request', message: 'Testing AI agent function (requires auth)...', status: 'info' });
     
     try {
       const result = await supabase.functions.invoke('ai-agent', {
@@ -135,12 +135,67 @@ export const AIDebugMonitor = () => {
       });
       
       if (result.error) {
+        let errorMessage = `AI function failed: ${result.error.message}`;
+        let shouldRetry = false;
+        
+        // Check for authentication issues
+        if (result.error.message?.includes('401') || result.error.message?.includes('403')) {
+          errorMessage += ' (Authentication issue detected)';
+          shouldRetry = true;
+        }
+        
         addLog({ 
           type: 'request', 
-          message: `AI function failed: ${result.error.message}`, 
+          message: errorMessage, 
           status: 'error',
           details: result.error 
         });
+        
+        // Try token refresh if auth issue
+        if (shouldRetry) {
+          addLog({ type: 'auth', message: 'Attempting token refresh...', status: 'info' });
+          
+          const { error: refreshError } = await supabase.auth.refreshSession();
+          
+          if (refreshError) {
+            addLog({ 
+              type: 'auth', 
+              message: `Token refresh failed: ${refreshError.message}`, 
+              status: 'error',
+              details: refreshError 
+            });
+            return;
+          }
+          
+          addLog({ type: 'auth', message: 'Token refreshed, retrying AI function...', status: 'success' });
+          
+          // Retry the request
+          const retryResult = await supabase.functions.invoke('ai-agent', {
+            body: {
+              module: 'test',
+              task: 'ping',
+              input: { test: true }
+            }
+          });
+          
+          if (retryResult.error) {
+            addLog({ 
+              type: 'request', 
+              message: `AI function still failed after refresh: ${retryResult.error.message}`, 
+              status: 'error',
+              details: retryResult.error 
+            });
+            return;
+          }
+          
+          addLog({ 
+            type: 'response', 
+            message: 'AI function succeeded after token refresh', 
+            status: 'success',
+            details: retryResult.data 
+          });
+        }
+        
         return;
       }
       
@@ -163,11 +218,32 @@ export const AIDebugMonitor = () => {
 
   const runFullDiagnostic = async () => {
     setLogs([]);
+    addLog({ type: 'info', message: 'Starting comprehensive diagnostic...', status: 'info' });
+    
+    // Step 1: Check authentication
     await checkAuthStatus();
     await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Step 2: Test basic connectivity (no auth required)
     await checkConnectivity();
     await new Promise(resolve => setTimeout(resolve, 500));
-    await testAIFunction();
+    
+    // Step 3: Test authenticated AI function
+    if (authStatus === 'authenticated') {
+      await testAIFunction();
+    } else {
+      addLog({ 
+        type: 'request', 
+        message: 'Skipping AI function test - authentication required', 
+        status: 'warning' 
+      });
+    }
+    
+    addLog({ 
+      type: 'info', 
+      message: 'Diagnostic complete', 
+      status: authStatus === 'authenticated' && connectivityStatus === 'online' ? 'success' : 'warning' 
+    });
   };
 
   useEffect(() => {

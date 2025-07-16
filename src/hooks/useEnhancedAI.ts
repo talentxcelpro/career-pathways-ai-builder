@@ -68,22 +68,76 @@ export const useEnhancedAI = () => {
         console.log('✅ Token refreshed successfully');
       }
 
-      // 2. TEST WITH SIMPLER FUNCTION FIRST
-      console.log('🧪 Testing connectivity with test function...');
+      // 2. TEST WITH SIMPLER FUNCTION FIRST (NO AUTH REQUIRED)
+      console.log('🧪 Testing connectivity with test function (no auth)...');
       try {
         const testResult = await supabase.functions.invoke('test-function', {
-          body: { test: true }
+          body: { test: true, timestamp: Date.now() }
         });
         
         if (testResult.error) {
           console.error('❌ Test function failed:', testResult.error);
-          throw new Error(`Connectivity test failed: ${testResult.error.message}`);
+          throw new Error(`Basic connectivity failed: ${testResult.error.message}`);
         }
         
-        console.log('✅ Test function succeeded:', testResult.data);
+        console.log('✅ Basic connectivity test succeeded:', testResult.data);
       } catch (testError) {
         console.error('❌ Test function error:', testError);
         throw new Error(`Network connectivity test failed: ${testError.message}`);
+      }
+
+      // 3. TEST AI FUNCTION WITH SIMPLE PING (AUTH REQUIRED)
+      console.log('🧪 Testing AI function with authentication...');
+      try {
+        const pingResult = await supabase.functions.invoke('ai-agent', {
+          body: {
+            module: 'test',
+            task: 'ping',
+            input: { test: true }
+          }
+        });
+        
+        if (pingResult.error) {
+          console.error('❌ AI function ping failed:', pingResult.error);
+          
+          // Check if it's an authentication issue
+          if (pingResult.error.message?.includes('401') || pingResult.error.message?.includes('403')) {
+            console.log('🔄 Authentication issue detected, attempting token refresh...');
+            const { error: refreshError } = await supabase.auth.refreshSession();
+            
+            if (refreshError) {
+              throw new Error(`Authentication failed: ${refreshError.message}. Please refresh the page and log in again.`);
+            }
+            
+            // Retry after refresh
+            const retryResult = await supabase.functions.invoke('ai-agent', {
+              body: {
+                module: 'test',
+                task: 'ping',
+                input: { test: true }
+              }
+            });
+            
+            if (retryResult.error) {
+              throw new Error(`AI function authentication still failing after refresh: ${retryResult.error.message}`);
+            }
+            
+            console.log('✅ AI function authentication test succeeded after refresh:', retryResult.data);
+          } else {
+            throw new Error(`AI function connectivity failed: ${pingResult.error.message}`);
+          }
+        } else {
+          console.log('✅ AI function authentication test succeeded:', pingResult.data);
+        }
+      } catch (pingError) {
+        console.error('❌ AI function ping error:', pingError);
+        
+        // If authentication fails, provide helpful guidance
+        if (pingError.message?.includes('401') || pingError.message?.includes('403') || pingError.message?.includes('Authentication')) {
+          throw new Error(`Authentication required: Please refresh the page and log in again. ${pingError.message}`);
+        }
+        
+        throw new Error(`AI function test failed: ${pingError.message}`);
       }
 
       // Generate user message content for chat
