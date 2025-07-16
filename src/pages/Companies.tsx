@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CompanyFollowButton } from '@/components/company/CompanyFollowButton';
-import { Building2, MapPin, Users, Globe, Heart, Search } from 'lucide-react';
+import { Building2, MapPin, Users, Globe, Heart, Search, Award, Briefcase, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
@@ -49,14 +49,43 @@ const Companies = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header with Apple-inspired styling - more compact and engaging */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-text-primary mb-2 font-display">
-            Discover Top Companies
-          </h1>
-          <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-            Find your next opportunity with amazing companies
-          </p>
+        {/* Header with Apple-inspired styling - left-aligned and compact */}
+        <div className="flex items-center justify-between mb-8">
+          {/* Left side - Title and description */}
+          <div className="flex-1 max-w-md">
+            <h1 className="text-2xl font-bold text-text-primary mb-1 font-display">
+              Discover Top Companies
+            </h1>
+            <p className="text-sm text-text-secondary">
+              Find your next opportunity with amazing companies
+            </p>
+          </div>
+          
+          {/* Right side - Stats */}
+          <div className="flex-1 max-w-2xl">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white/80 backdrop-blur-apple rounded-2xl shadow-apple-light p-4 text-center border border-gray-100">
+                <Building2 className="h-6 w-6 text-primary mx-auto mb-2" />
+                <div className="text-xl font-bold text-text-primary font-display">500+</div>
+                <div className="text-xs text-text-secondary">Companies</div>
+              </div>
+              <div className="bg-white/80 backdrop-blur-apple rounded-2xl shadow-apple-light p-4 text-center border border-gray-100">
+                <Briefcase className="h-6 w-6 text-primary mx-auto mb-2" />
+                <div className="text-xl font-bold text-text-primary font-display">10K+</div>
+                <div className="text-xs text-text-secondary">Open Jobs</div>
+              </div>
+              <div className="bg-white/80 backdrop-blur-apple rounded-2xl shadow-apple-light p-4 text-center border border-gray-100">
+                <TrendingUp className="h-6 w-6 text-primary mx-auto mb-2" />
+                <div className="text-xl font-bold text-text-primary font-display">4.5</div>
+                <div className="text-xs text-text-secondary">Avg Rating</div>
+              </div>
+              <div className="bg-white/80 backdrop-blur-apple rounded-2xl shadow-apple-light p-4 text-center border border-gray-100">
+                <Award className="h-6 w-6 text-primary mx-auto mb-2" />
+                <div className="text-xl font-bold text-text-primary font-display">95%</div>
+                <div className="text-xs text-text-secondary">Success Rate</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* AI-Powered Company Search with glassmorphism - more compact */}
