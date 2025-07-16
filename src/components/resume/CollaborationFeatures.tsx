@@ -24,7 +24,7 @@ interface Comment {
   };
   created_at: string;
   section: string;
-  status: 'pending' | 'resolved' | 'dismissed';
+  is_resolved: boolean;
   likes: number;
   is_suggestion: boolean;
 }
@@ -70,7 +70,7 @@ export const CollaborationFeatures: React.FC<CollaborationFeaturesProps> = ({
           author: { id: '1', name: 'John Expert', avatar: '' },
           created_at: new Date().toISOString(),
           section: 'general',
-          status: 'pending' as const,
+          is_resolved: false,
           likes: 3,
           is_suggestion: false
         }
@@ -92,7 +92,7 @@ export const CollaborationFeatures: React.FC<CollaborationFeaturesProps> = ({
         author: { id: 'current', name: 'You', avatar: '' },
         created_at: new Date().toISOString(),
         section: selectedSection,
-        status: 'pending' as const,
+        is_resolved: false,
         likes: 0,
         is_suggestion: false
       };
@@ -132,20 +132,14 @@ export const CollaborationFeatures: React.FC<CollaborationFeaturesProps> = ({
     }
   };
 
-  const updateCommentStatus = async (commentId: string, status: string) => {
+  const updateCommentStatus = async (commentId: string, resolved: boolean) => {
     try {
-      const { error } = await supabase
-        .from('resume_comments')
-        .update({ status })
-        .eq('id', commentId);
-
-      if (error) throw error;
-
+      // Update local state since we're using mock data
       setComments(comments.map(comment => 
-        comment.id === commentId ? { ...comment, status: status as any } : comment
+        comment.id === commentId ? { ...comment, is_resolved: resolved } : comment
       ));
 
-      toast.success(`Comment ${status}`);
+      toast.success(resolved ? 'Comment resolved' : 'Comment reopened');
     } catch (error) {
       console.error('Failed to update comment:', error);
       toast.error('Failed to update comment');
@@ -262,12 +256,10 @@ export const CollaborationFeatures: React.FC<CollaborationFeaturesProps> = ({
                           <Badge 
                             className={cn(
                               "text-xs",
-                              comment.status === 'resolved' && "bg-green-100 text-green-800",
-                              comment.status === 'pending' && "bg-yellow-100 text-yellow-800",
-                              comment.status === 'dismissed' && "bg-gray-100 text-gray-800"
+                              comment.is_resolved ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
                             )}
                           >
-                            {comment.status}
+                            {comment.is_resolved ? 'Resolved' : 'Pending'}
                           </Badge>
                         </div>
                         <div className="flex items-center space-x-1 text-xs text-gray-500">
@@ -282,22 +274,11 @@ export const CollaborationFeatures: React.FC<CollaborationFeaturesProps> = ({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => updateCommentStatus(comment.id, 'resolved')}
-                          disabled={comment.status === 'resolved'}
+                          onClick={() => updateCommentStatus(comment.id, !comment.is_resolved)}
                           className="text-xs h-7"
                         >
                           <CheckCircle className="h-3 w-3 mr-1" />
-                          Resolve
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => updateCommentStatus(comment.id, 'dismissed')}
-                          disabled={comment.status === 'dismissed'}
-                          className="text-xs h-7"
-                        >
-                          <AlertCircle className="h-3 w-3 mr-1" />
-                          Dismiss
+                          {comment.is_resolved ? 'Reopen' : 'Resolve'}
                         </Button>
                         <div className="flex items-center space-x-1">
                           <Button variant="ghost" size="sm" className="text-xs h-7 px-2">
@@ -324,24 +305,18 @@ export const CollaborationFeatures: React.FC<CollaborationFeaturesProps> = ({
           {/* Comment Stats */}
           {comments.length > 0 && (
             <div className="pt-4 border-t border-gray-200">
-              <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <div className="text-lg font-bold text-blue-600">
-                    {comments.filter(c => c.status === 'pending').length}
+                  <div className="text-lg font-bold text-yellow-600">
+                    {comments.filter(c => !c.is_resolved).length}
                   </div>
                   <div className="text-xs text-gray-600">Pending</div>
                 </div>
                 <div>
                   <div className="text-lg font-bold text-green-600">
-                    {comments.filter(c => c.status === 'resolved').length}
+                    {comments.filter(c => c.is_resolved).length}
                   </div>
                   <div className="text-xs text-gray-600">Resolved</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold text-purple-600">
-                    {comments.reduce((sum, c) => sum + c.likes, 0)}
-                  </div>
-                  <div className="text-xs text-gray-600">Total Likes</div>
                 </div>
               </div>
             </div>
