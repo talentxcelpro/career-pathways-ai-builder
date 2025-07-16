@@ -44,10 +44,40 @@ export default function LearningHub() {
     <div className="container mx-auto p-6 space-y-8">
       <div className="space-y-4">
         <div>
-          <h1 className="text-3xl font-bold">Learning & Development Hub</h1>
+          <h1 className="text-3xl font-bold">Accelerate Your Career with TalentXcel Academy</h1>
           <p className="text-lg text-muted-foreground">
-            Accelerate your career with AI-powered learning paths, skill assessments, and expert services
+            AI-Powered Career Tools with TalentXcel Careers
           </p>
+        </div>
+
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-6 rounded-2xl border border-blue-200/50 dark:border-blue-800/50">
+            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
+              Discover Top Companies on TalentXcel
+            </h3>
+            <p className="text-blue-700 dark:text-blue-300 text-sm">
+              Explore leading companies and their career opportunities
+            </p>
+          </div>
+          
+          <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 p-6 rounded-2xl border border-purple-200/50 dark:border-purple-800/50">
+            <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100 mb-2">
+              Discover Your Perfect College with TalentXcel
+            </h3>
+            <p className="text-purple-700 dark:text-purple-300 text-sm">
+              AI-powered guidance meets real-world insights — explore programs, placements, student reviews, and personalized recommendations to find your ideal college match.
+            </p>
+          </div>
+          
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 p-6 rounded-2xl border border-green-200/50 dark:border-green-800/50">
+            <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-2">
+              AI Career Roadmap with TalentXcel
+            </h3>
+            <p className="text-green-700 dark:text-green-300 text-sm">
+              Unlock your future with AI-powered insights. Get personalized, step-by-step career roadmaps tailored to your goals, skills, and industry trends.
+            </p>
+          </div>
         </div>
 
         {/* Stats Overview */}
