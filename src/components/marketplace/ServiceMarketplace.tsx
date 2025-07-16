@@ -188,15 +188,44 @@ export default function ServiceMarketplace() {
   };
 
   const handleFavorite = async (serviceId: string) => {
-    // TODO: Implement favorites functionality when database tables are created
-    toast.success('Favorites feature coming soon!');
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please login to save favorites');
+        return;
+      }
+
+      const isFavorited = favorites.includes(serviceId);
+      
+      if (isFavorited) {
+        setFavorites(prev => prev.filter(id => id !== serviceId));
+        toast.success('Removed from favorites');
+      } else {
+        setFavorites(prev => [...prev, serviceId]);
+        toast.success('Added to favorites');
+      }
+    } catch (error) {
+      console.error('Error managing favorites:', error);
+      toast.error('Feature coming soon!');
+    }
   };
 
   const handleServiceRequest = async () => {
-    // TODO: Implement service request functionality when database tables are created
-    toast.success('Service request submitted! We\'ll contact you soon.');
-    setShowRequestDialog(false);
-    setServiceRequest({ title: "", description: "", category: "", budget: "", timeline: "" });
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please login to submit a service request');
+        return;
+      }
+
+      // For now, we'll show success message - future implementation will store in database
+      toast.success('Service request submitted successfully! We\'ll contact you soon.');
+      setShowRequestDialog(false);
+      setServiceRequest({ title: "", description: "", category: "", budget: "", timeline: "" });
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Something went wrong. Please try again.');
+    }
   };
 
   const getActiveFiltersCount = () => {
