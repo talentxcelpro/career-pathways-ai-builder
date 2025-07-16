@@ -293,32 +293,43 @@ const Colleges = () => {
                   </div>
                   
                   {/* Action Buttons */}
-                  <div className="flex gap-2 pt-2">
+                  <div className="space-y-2 pt-2">
+                    {/* Primary Apply Button */}
                     <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="flex-1 rounded-xl text-xs h-8 border-gray-200 hover:bg-gray-50"
+                      className="w-full rounded-xl text-sm h-10 bg-primary hover:bg-primary/90 font-semibold"
                     >
-                      <MessageCircle className="h-3 w-3 mr-1" />
-                      Chat AI
+                      Apply Now
+                      <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="flex-1 rounded-xl text-xs h-8 border-gray-200 hover:bg-gray-50"
-                    >
-                      <GitCompare className="h-3 w-3 mr-1" />
-                      Compare
-                    </Button>
-                    <Link to={`/colleges/${college.id}`} className="flex-1">
+                    
+                    {/* Secondary Action Buttons */}
+                    <div className="flex gap-2">
                       <Button 
                         size="sm" 
-                        className="w-full rounded-xl text-xs h-8 bg-primary hover:bg-primary/90"
+                        variant="outline" 
+                        className="flex-1 rounded-xl text-xs h-8 border-gray-200 hover:bg-gray-50"
                       >
-                        Details
-                        <ArrowRight className="h-3 w-3 ml-1" />
+                        <MessageCircle className="h-3 w-3 mr-1" />
+                        Chat AI
                       </Button>
-                    </Link>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="flex-1 rounded-xl text-xs h-8 border-gray-200 hover:bg-gray-50"
+                      >
+                        <GitCompare className="h-3 w-3 mr-1" />
+                        Compare
+                      </Button>
+                      <Link to={`/colleges/${college.id}`} className="flex-1">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="w-full rounded-xl text-xs h-8 border-gray-200 hover:bg-gray-50"
+                        >
+                          Details
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </CardContent>
