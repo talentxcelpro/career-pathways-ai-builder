@@ -5,6 +5,7 @@ import ServiceManagement from "../pages/pro/ServiceManagement";
 import AIBusinessToolkit from "../pages/pro/AIBusinessToolkit";
 import AdvancedAnalytics from "../pages/pro/AdvancedAnalytics";
 import CRMDashboard from "../pages/pro/CRMDashboard";
+import { ProProfile } from "../pages/pro/ProProfile";
 
 export const proRoutes: NavItem[] = [
   {
@@ -41,6 +42,12 @@ export const proRoutes: NavItem[] = [
     title: "Pro Subscription",
     to: "/pro/subscription",
     page: <ProSubscription />,
+    requiresAuth: true
+  },
+  {
+    title: "Pro Profile",
+    to: "/pro/profile",
+    page: <ProProfile />,
     requiresAuth: true
   }
 ];
