@@ -35,42 +35,11 @@ export const useEnhancedAI = () => {
         throw new Error('Module and task are required');
       }
 
-      // 1. TEST AUTHENTICATION STATUS FIRST
-      console.log('🔐 Checking authentication status...');
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error('❌ Session error:', sessionError);
-        throw new Error('Authentication error: Unable to verify session');
-      }
-      
+      // Simplified authentication check
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        console.error('❌ No active session');
         throw new Error('Authentication required: Please log in and try again');
       }
-      
-      console.log('✅ Authentication verified, user:', session.user.email);
-      console.log('🔑 Token expires at:', new Date(session.expires_at * 1000));
-      
-      // Check if token is about to expire (within 5 minutes)
-      const now = Math.floor(Date.now() / 1000);
-      const timeUntilExpiry = session.expires_at - now;
-      
-      if (timeUntilExpiry < 300) { // Less than 5 minutes
-        console.log('⚠️ Token expiring soon, attempting refresh...');
-        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-        
-        if (refreshError) {
-          console.error('❌ Token refresh failed:', refreshError);
-          throw new Error('Session expired: Please refresh the page and log in again');
-        }
-        
-        console.log('✅ Token refreshed successfully');
-      }
-
-      // Skip basic connectivity test since we'll test the AI function directly
-
-      // Skip AI function ping test since diagnostic already confirms it works
 
       // Generate user message content for chat
       let userMessage = '';
@@ -99,104 +68,17 @@ export const useEnhancedAI = () => {
 
       console.log('🚀 Sending AI request:', JSON.stringify(requestPayload, null, 2));
 
-      // Add timeout and retry logic with exponential backoff and direct fetch fallback
-      const makeRequest = async (attempt = 1): Promise<any> => {
-        try {
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Request timed out after 30 seconds')), 30000)
-          );
+      // Simplified Supabase client call
+      const result = await supabase.functions.invoke('ai-agent', {
+        body: requestPayload
+      });
 
-          // Try Supabase client first
-          console.log(`🔄 Attempt ${attempt}: Using Supabase client...`);
-          const requestPromise = supabase.functions.invoke('ai-agent', {
-            body: requestPayload,
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
-
-          const result = await Promise.race([requestPromise, timeoutPromise]);
-          console.log('✅ Supabase client request succeeded');
-          return result;
-
-        } catch (error) {
-          console.log(`❌ Supabase client failed on attempt ${attempt}:`, error.message);
-          
-          // Try direct fetch as fallback
-          try {
-            console.log(`🔄 Attempt ${attempt}: Falling back to direct fetch...`);
-            
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-              throw new Error('No session for direct fetch');
-            }
-
-            const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-agent`;
-            
-            const timeoutPromise = new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Direct fetch timed out after 30 seconds')), 30000)
-            );
-
-            const fetchPromise = fetch(functionUrl, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${session.access_token}`,
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-                'Content-Type': 'application/json',
-                'cache-control': 'no-cache'
-              },
-              body: JSON.stringify(requestPayload)
-            });
-
-            const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
-            
-            if (!response.ok) {
-              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            console.log('✅ Direct fetch request succeeded');
-            return { data, error: null };
-
-          } catch (fetchError) {
-            console.log(`❌ Direct fetch failed on attempt ${attempt}:`, fetchError.message);
-            
-            // Retry with exponential backoff if we haven't exhausted attempts
-            if (attempt < 3) {
-              const delay = Math.pow(2, attempt) * 1000;
-              console.log(`⏳ Retry attempt ${attempt + 1} after ${delay}ms delay`);
-              await new Promise(resolve => setTimeout(resolve, delay));
-              return makeRequest(attempt + 1);
-            }
-            
-            // If all attempts failed, throw the most informative error
-            throw new Error(`Both Supabase client and direct fetch failed. Last errors: Supabase: ${error.message}, Direct: ${fetchError.message}`);
-          }
-        }
-      };
-
-      const result = await makeRequest();
       const { data, error } = result;
-
       console.log('📡 Raw response:', { data, error });
 
       if (error) {
-        console.error('❌ Supabase function invoke error:', error);
-        
-        // Enhanced error handling with specific messages
-        if (error.message?.includes('Failed to fetch')) {
-          throw new Error('Failed to send a request to the Edge Function\nIncorrect or Missing Supabase Service URL');
-        } else if (error.message?.includes('Function not found') || error.message?.includes('404')) {
-          throw new Error('AI service function not found or not deployed properly');
-        } else if (error.message?.includes('403') || error.message?.includes('Unauthorized')) {
-          throw new Error('Authentication failed - please refresh the page and try again');
-        } else if (error.message?.includes('timeout')) {
-          throw new Error('Request timed out - the AI service may be overloaded');
-        } else if (error.message?.includes('CORS')) {
-          throw new Error('Cross-origin request blocked - check function CORS configuration');
-        } else {
-          throw new Error(`Service error: ${error.message}`);
-        }
+        console.error('❌ AI function error:', error);
+        throw new Error(`AI service error: ${error.message}`);
       }
 
       if (!data) {
