@@ -300,8 +300,8 @@ const Tools = () => {
                 <Brain className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">AI Career Tools</h1>
-                <p className="text-blue-100 text-sm">Accelerate your career with intelligent tools</p>
+                <h1 className="text-xl font-bold">AI-Powered Career Tools by TalentXcel</h1>
+                <p className="text-blue-100 text-sm">Transform your career with intelligent tools built to accelerate growth, enhance decisions, and guide you every step of the way.</p>
               </div>
             </div>
             <div className="hidden md:flex items-center gap-4 text-sm">
