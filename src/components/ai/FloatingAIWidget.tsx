@@ -150,81 +150,92 @@ export const FloatingAIWidget = () => {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-8 right-8 z-50">
         <Button
           onClick={() => setIsOpen(true)}
-          className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="h-16 w-16 rounded-full shadow-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 hover:from-blue-600 hover:via-blue-700 hover:to-indigo-700 text-white border-0 transition-all duration-300 hover:scale-110 hover:shadow-xl"
           size="icon"
         >
-          <Bot className="h-6 w-6" />
+          <Bot className="h-7 w-7" />
         </Button>
+        <div className="absolute -top-2 -right-2 h-6 w-6 bg-emerald-500 rounded-full flex items-center justify-center">
+          <Sparkles className="h-3 w-3 text-white" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-8 right-8 z-50">
       <Card className={cn(
-        "transition-all duration-300 shadow-xl border",
-        isMinimized ? "w-80 h-16" : "w-96 h-[600px]"
+        "transition-all duration-500 ease-out shadow-2xl border-0 bg-white/95 backdrop-blur-xl",
+        isMinimized ? "w-80 h-20" : "w-[420px] h-[640px]"
       )}>
-        <CardHeader className="p-4 border-b bg-primary text-primary-foreground">
+        <CardHeader className="p-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100/50">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center text-sm font-medium">
-              <Bot className="h-4 w-4 mr-2" />
-              TalentXcel AI
-              <Badge variant="secondary" className="ml-2 text-xs">
-                {currentModule.replace('_', ' ')}
-              </Badge>
+            <CardTitle className="flex items-center text-base font-semibold text-gray-900">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mr-3">
+                <Bot className="h-4 w-4 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <span>TalentXcel AI</span>
+                <Badge variant="secondary" className="w-fit text-xs mt-1 bg-blue-50 text-blue-700 border-0">
+                  {currentModule.replace('_', ' ')}
+                </Badge>
+              </div>
             </CardTitle>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 text-primary-foreground hover:bg-primary-foreground/20"
+                className="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full"
                 onClick={() => setIsMinimized(!isMinimized)}
               >
-                {isMinimized ? <Maximize2 className="h-3 w-3" /> : <Minimize2 className="h-3 w-3" />}
+                {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 text-primary-foreground hover:bg-primary-foreground/20"
+                className="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full"
                 onClick={() => setIsOpen(false)}
               >
-                <X className="h-3 w-3" />
+                <X className="h-4 w-4" />
               </Button>
             </div>
           </div>
         </CardHeader>
         
         {!isMinimized && (
-          <CardContent className="p-0 flex flex-col h-[544px]">
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
+          <CardContent className="p-0 flex flex-col h-[584px]">
+            <ScrollArea className="flex-1 p-6">
+              <div className="space-y-6">
                 {conversationHistory.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Bot className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="font-medium text-sm mb-2">AI Assistant Ready</h3>
-                    <p className="text-xs text-muted-foreground mb-4">
+                  <div className="text-center py-12">
+                    <div className="h-16 w-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
+                      <Bot className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <h3 className="font-semibold text-lg text-gray-900 mb-2">AI Assistant Ready</h3>
+                    <p className="text-sm text-gray-600 mb-8 leading-relaxed">
                       Ask me anything about {currentModule.replace('_', ' ')} or try a quick action below
                     </p>
                     
                     {showQuickActions && currentQuickActions.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground">Quick Actions:</p>
-                        <div className="grid grid-cols-1 gap-2">
+                      <div className="space-y-4">
+                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Quick Actions</p>
+                        <div className="grid grid-cols-1 gap-3">
                           {currentQuickActions.map((action) => (
                             <Button
                               key={action.id}
                               variant="outline"
                               size="sm"
-                              className="justify-start text-xs h-8"
+                              className="justify-start h-12 bg-gradient-to-r from-gray-50 to-white hover:from-blue-50 hover:to-indigo-50 border-gray-200 hover:border-blue-200 transition-all duration-200"
                               onClick={() => handleQuickAction(action)}
                               disabled={isLoading}
                             >
-                              {action.icon}
-                              <span className="ml-2">{action.label}</span>
+                              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white mr-3">
+                                {action.icon}
+                              </div>
+                              <span className="text-sm font-medium text-gray-700">{action.label}</span>
                             </Button>
                           ))}
                         </div>
@@ -243,22 +254,24 @@ export const FloatingAIWidget = () => {
                       >
                         <div
                           className={cn(
-                            "max-w-[85%] rounded-lg px-3 py-2 text-sm",
+                            "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
                             message.type === 'user'
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted text-muted-foreground'
+                              ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'
+                              : 'bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-800'
                           )}
                         >
                           {message.type === 'ai' && (
-                            <div className="flex items-center mb-1">
-                              <Bot className="h-3 w-3 mr-1" />
-                              <span className="text-xs font-medium">AI</span>
+                            <div className="flex items-center mb-2">
+                              <div className="h-5 w-5 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mr-2">
+                                <Bot className="h-3 w-3 text-white" />
+                              </div>
+                              <span className="text-xs font-medium text-blue-600">AI Assistant</span>
                             </div>
                           )}
                           <div className="whitespace-pre-wrap">{message.content}</div>
                           <div className={cn(
-                            "text-xs mt-1 opacity-70",
-                            message.type === 'user' ? 'text-primary-foreground' : 'text-muted-foreground'
+                            "text-xs mt-2 opacity-70",
+                            message.type === 'user' ? 'text-blue-100' : 'text-gray-500'
                           )}>
                             {new Date(message.timestamp).toLocaleTimeString([], { 
                               hour: '2-digit', 
@@ -271,10 +284,10 @@ export const FloatingAIWidget = () => {
                     
                     {isLoading && (
                       <div className="flex justify-start">
-                        <div className="bg-muted rounded-lg px-3 py-2 text-sm">
+                        <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl px-4 py-3">
                           <div className="flex items-center">
-                            <Loader2 className="h-3 w-3 animate-spin mr-2" />
-                            <span className="text-muted-foreground">AI is thinking...</span>
+                            <Loader2 className="h-4 w-4 animate-spin mr-2 text-blue-600" />
+                            <span className="text-gray-600 text-sm">AI is thinking...</span>
                           </div>
                         </div>
                       </div>
@@ -285,37 +298,37 @@ export const FloatingAIWidget = () => {
               </div>
             </ScrollArea>
             
-            <div className="border-t p-3">
-              <div className="flex items-center gap-2">
+            <div className="border-t border-gray-100/50 p-4 bg-gradient-to-r from-gray-50/50 to-white/50">
+              <div className="flex items-center gap-3">
                 <Input
                   placeholder={`Ask about ${currentModule.replace('_', ' ')}...`}
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   disabled={isLoading}
-                  className="flex-1 text-sm h-8"
+                  className="flex-1 border-gray-200 bg-white/80 backdrop-blur-sm rounded-xl h-11 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
                 />
                 <Button 
                   onClick={handleSendMessage}
                   disabled={!inputMessage.trim() || isLoading}
+                  className="h-11 w-11 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 border-0 shadow-lg hover:shadow-xl transition-all duration-200"
                   size="icon"
-                  className="h-8 w-8"
                 >
                   {isLoading ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <Send className="h-3 w-3" />
+                    <Send className="h-4 w-4" />
                   )}
                 </Button>
               </div>
               
               {error && (
-                <p className="text-xs text-destructive mt-2">
+                <p className="text-xs text-red-500 mt-2">
                   {error}
                 </p>
               )}
               
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-xs text-gray-500 mt-3 leading-relaxed">
                 AI-powered by TalentXcel • Context-aware assistance
               </p>
             </div>
