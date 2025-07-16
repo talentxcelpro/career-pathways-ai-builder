@@ -65,3 +65,12 @@ verify_jwt = true
 
 [functions.health-check]
 verify_jwt = false
+
+[functions.unified-email-service]
+verify_jwt = true
+
+[functions.email-webhook]
+verify_jwt = false
+
+[functions.smart-email-processor]
+verify_jwt = false

@@ -48,24 +48,29 @@ export const useEmailService = (): EmailServiceHook => {
       }
       
       try {
-        // First try edge function
-        const { data, error } = await supabase.functions.invoke('send-email', {
+        // First try unified email service
+        const { data, error } = await supabase.functions.invoke('unified-email-service', {
           body: {
             to: emailData.to,
             subject: emailData.subject,
-            html: html
+            html: html,
+            template: emailData.template,
+            templateData: emailData.data,
+            priority: emailData.immediate ? 'high' : 'medium',
+            provider: 'auto'
           },
         });
 
-        console.log('Edge function response:', { data, error });
+        console.log('Unified email service response:', { data, error });
 
         if (error) {
-          console.log('Edge function failed, falling back to database queue');
+          console.log('Unified email service failed, falling back to database queue');
           throw error;
         }
 
         if (data?.success) {
-          toast.success('Email sent successfully!');
+          const providerMsg = data.fallback ? `via ${data.provider} (fallback)` : `via ${data.provider}`;
+          toast.success(`Email sent successfully ${providerMsg}!`);
           return true;
         }
       } catch (edgeFunctionError) {

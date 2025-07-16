@@ -112,7 +112,7 @@ export const EmailAutomationManager = () => {
         setTimeout(() => reject(new Error('Request timeout after 30 seconds')), 30000)
       );
 
-      const requestPromise = supabase.functions.invoke('process-email-queue', {
+      const requestPromise = supabase.functions.invoke('smart-email-processor', {
         body: { manual: true }
       });
 
@@ -466,10 +466,10 @@ export const EmailAutomationManager = () => {
       </div>
 
       {/* API Configuration Alert */}
-      <Alert className="border-yellow-200 bg-yellow-50">
-        <Zap className="h-4 w-4 text-yellow-600" />
-        <AlertDescription className="text-yellow-800">
-          <strong>Email Service Setup Required:</strong> To send emails, configure either RESEND_API_KEY or SENDGRID_API_KEY in your Supabase Edge Functions secrets.
+      <Alert className="border-green-200 bg-green-50">
+        <Zap className="h-4 w-4 text-green-600" />
+        <AlertDescription className="text-green-800">
+          <strong>Unified Email System Active:</strong> Configure both RESEND_API_KEY and SENDGRID_API_KEY for maximum reliability with automatic fallback.
           <div className="mt-2 flex flex-wrap gap-4">
             <a 
               href="https://resend.com/api-keys" 
