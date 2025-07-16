@@ -284,97 +284,104 @@ export default function ServiceMarketplace() {
 
   return (
     <div className="min-h-screen bg-slate-50/90 space-y-8">
-      {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-50/95 via-gray-50/95 to-zinc-50/95 border border-gray-200/60 shadow-xl rounded-3xl backdrop-blur-md p-8 sm:p-12">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-indigo-500/5 pointer-events-none" />
-        <div className="relative text-center">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-3 rounded-2xl shadow-lg border border-white/20">
-              <Sparkles className="h-8 w-8 text-white" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">Professional Services</h1>
-          </div>
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-8 font-medium leading-relaxed">
-            Connect with verified Indian professionals and experts. All prices in INR. Quality guaranteed.
-          </p>
-          
-          {/* Request Service Button */}
-          <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
-            <DialogTrigger asChild>
-              <Button className="bg-white/90 backdrop-blur-sm text-gray-900 hover:bg-white border border-gray-200/60 shadow-lg font-semibold rounded-2xl px-6 py-3 transition-all duration-200">
-                <Plus className="h-4 w-4 mr-2" />
-                Can't find what you need? Request a service
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-2xl rounded-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-gray-900 font-semibold">Request a Service</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-5">
-                <div>
-                  <Label htmlFor="title" className="text-gray-800 font-medium">Service Title</Label>
-                  <Input
-                    id="title"
-                    value={serviceRequest.title}
-                    onChange={(e) => setServiceRequest(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="What service do you need?"
-                    className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="description" className="text-gray-800 font-medium">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={serviceRequest.description}
-                    onChange={(e) => setServiceRequest(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Describe your requirements in detail..."
-                    rows={3}
-                    className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="category" className="text-gray-800 font-medium">Category</Label>
-                  <Select value={serviceRequest.category} onValueChange={(value) => setServiceRequest(prev => ({ ...prev, category: value }))}>
-                    <SelectTrigger className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium">
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-xl">
-                      {categories.map(category => (
-                        <SelectItem key={category} value={category} className="text-gray-900 font-medium">{category}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="budget" className="text-gray-800 font-medium">Budget (INR)</Label>
-                  <Input
-                    id="budget"
-                    value={serviceRequest.budget}
-                    onChange={(e) => setServiceRequest(prev => ({ ...prev, budget: e.target.value }))}
-                    placeholder="Your budget range (e.g., ₹5,000 - ₹10,000)"
-                    className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="timeline" className="text-gray-800 font-medium">Timeline</Label>
-                  <Input
-                    id="timeline"
-                    value={serviceRequest.timeline}
-                    onChange={(e) => setServiceRequest(prev => ({ ...prev, timeline: e.target.value }))}
-                    placeholder="When do you need this? (e.g., Within 1 week)"
-                    className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
-                  />
-                </div>
-                <Button 
-                  onClick={handleServiceRequest} 
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-200"
-                  disabled={!serviceRequest.title || !serviceRequest.description}
-                >
-                  Submit Request
-                </Button>
+      {/* Header - Compact Ecommerce Style */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Sparkles className="h-5 w-5 text-blue-600" />
+                <h1 className="text-xl font-bold text-gray-900">Services</h1>
               </div>
-            </DialogContent>
-          </Dialog>
+              <div className="hidden md:block text-sm text-gray-600">
+                Professional services marketplace
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="hidden sm:flex items-center space-x-6 text-sm text-gray-600">
+                <span className="flex items-center"><User className="h-4 w-4 mr-1" />{stats.totalProviders}+ Experts</span>
+                <span className="flex items-center"><Star className="h-4 w-4 mr-1 text-yellow-500" />{stats.averageRating}</span>
+              </div>
+              
+              <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">
+                    <Plus className="h-4 w-4 mr-1" />
+                    Request Service
+                  </Button>
+                 </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px] bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-2xl rounded-2xl">
+                  <DialogHeader>
+                    <DialogTitle className="text-gray-900 font-semibold">Request a Service</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-5">
+                    <div>
+                      <Label htmlFor="title" className="text-gray-800 font-medium">Service Title</Label>
+                      <Input
+                        id="title"
+                        value={serviceRequest.title}
+                        onChange={(e) => setServiceRequest(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder="What service do you need?"
+                        className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="description" className="text-gray-800 font-medium">Description</Label>
+                      <Textarea
+                        id="description"
+                        value={serviceRequest.description}
+                        onChange={(e) => setServiceRequest(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Describe your requirements in detail..."
+                        rows={3}
+                        className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="category" className="text-gray-800 font-medium">Category</Label>
+                      <Select value={serviceRequest.category} onValueChange={(value) => setServiceRequest(prev => ({ ...prev, category: value }))}>
+                        <SelectTrigger className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-xl">
+                          {categories.map(category => (
+                            <SelectItem key={category} value={category} className="text-gray-900 font-medium">{category}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="budget" className="text-gray-800 font-medium">Budget (INR)</Label>
+                      <Input
+                        id="budget"
+                        value={serviceRequest.budget}
+                        onChange={(e) => setServiceRequest(prev => ({ ...prev, budget: e.target.value }))}
+                        placeholder="Your budget range (e.g., ₹5,000 - ₹10,000)"
+                        className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="timeline" className="text-gray-800 font-medium">Timeline</Label>
+                      <Input
+                        id="timeline"
+                        value={serviceRequest.timeline}
+                        onChange={(e) => setServiceRequest(prev => ({ ...prev, timeline: e.target.value }))}
+                        placeholder="When do you need this? (e.g., Within 1 week)"
+                        className="bg-white/90 border-gray-200/60 text-gray-900 rounded-xl font-medium"
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleServiceRequest} 
+                      className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-200"
+                      disabled={!serviceRequest.title || !serviceRequest.description}
+                    >
+                      Submit Request
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
         </div>
       </div>
 
