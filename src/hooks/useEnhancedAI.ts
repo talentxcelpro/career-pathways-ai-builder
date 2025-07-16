@@ -51,7 +51,7 @@ export const useEnhancedAI = () => {
         userId: userProfile?.id
       };
 
-      const { data, error } = await supabase.functions.invoke('ai-service', {
+      const { data, error } = await supabase.functions.invoke('ai-agent', {
         body: enhancedRequest
       });
 
