@@ -296,10 +296,10 @@ const Colleges = () => {
                   <div className="space-y-2 pt-2">
                     {/* Primary Apply Button */}
                     <Button 
-                      className="w-full rounded-xl text-sm h-10 bg-primary hover:bg-primary/90 font-semibold"
+                      className="w-full rounded-xl text-xs h-8 bg-primary hover:bg-primary/90 font-semibold"
                     >
                       Apply Now
-                      <ArrowRight className="h-4 w-4 ml-2" />
+                      <ArrowRight className="h-3 w-3 ml-2" />
                     </Button>
                     
                     {/* Secondary Action Buttons */}
