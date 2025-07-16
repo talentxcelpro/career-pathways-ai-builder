@@ -148,47 +148,126 @@ export const NetworkDiagnostic = () => {
           message: `Authentication error: ${sessionError.message}`,
           details: { error: sessionError }
         });
-      } else if (!session) {
+      } else if (!session?.access_token) {
         updateResult(5, { 
           status: 'error', 
           message: 'No active session - authentication required',
-          details: { error: 'No session' }
+          details: { error: 'No session or access token' }
         });
       } else {
-        // Test the ai-agent function with authentication
-        const { data, error } = await supabase.functions.invoke('ai-agent', {
-          body: { 
-            module: 'test', 
-            task: 'ping', 
-            input: { test: true } 
+        // Try method 1: Direct HTTP call with proper auth headers
+        try {
+          const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-agent', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jphePlnCAuFnVYarc',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              module: 'test', 
+              task: 'ping', 
+              input: { test: true } 
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            updateResult(5, { 
+              status: 'success', 
+              message: `AI function working: ${data.data?.message || data.response || 'Direct HTTP call successful'}`,
+              details: { response: data, method: 'direct-http' }
+            });
+          } else {
+            const errorText = await response.text();
+            updateResult(5, { 
+              status: 'error', 
+              message: `AI function HTTP error: ${response.status} ${response.statusText}`,
+              details: { 
+                status: response.status, 
+                statusText: response.statusText,
+                error: errorText,
+                method: 'direct-http'
+              }
+            });
           }
-        });
-        
-        if (error) {
-          updateResult(5, { 
-            status: 'error', 
-            message: `AI function error: ${error.message}`,
-            details: { error: error }
-          });
-        } else if (data && data.success) {
-          updateResult(5, { 
-            status: 'success', 
-            message: `AI function working: ${data.data?.message || data.response || 'OK'}`,
-            details: { response: data }
-          });
-        } else {
-          updateResult(5, { 
-            status: 'error', 
-            message: `AI function failed: ${data?.error || 'Unknown error'}`,
-            details: { response: data }
-          });
+        } catch (directError) {
+          // If direct HTTP fails, try Supabase client method
+          console.log('Direct HTTP failed, trying Supabase client method:', directError);
+          
+          try {
+            const { data, error } = await supabase.functions.invoke('ai-agent', {
+              body: { 
+                module: 'test', 
+                task: 'ping', 
+                input: { test: true } 
+              }
+            });
+            
+            if (error) {
+              updateResult(5, { 
+                status: 'error', 
+                message: `AI function error: ${error.message}`,
+                details: { 
+                  error: error,
+                  method: 'supabase-client-fallback',
+                  previousError: {
+                    name: directError.name,
+                    message: directError.message
+                  }
+                }
+              });
+            } else if (data && data.success) {
+              updateResult(5, { 
+                status: 'success', 
+                message: `AI function working: ${data.data?.message || data.response || 'Supabase client method successful'}`,
+                details: { response: data, method: 'supabase-client-fallback' }
+              });
+            } else {
+              updateResult(5, { 
+                status: 'error', 
+                message: `AI function failed: ${data?.error || 'Unknown error'}`,
+                details: { 
+                  response: data, 
+                  method: 'supabase-client-fallback',
+                  previousError: {
+                    name: directError.name,
+                    message: directError.message
+                  }
+                }
+              });
+            }
+          } catch (clientError) {
+            updateResult(5, { 
+              status: 'error', 
+              message: `Both methods failed - Direct: ${directError.message}, Client: ${clientError.message}`,
+              details: { 
+                directError: {
+                  name: directError.name,
+                  message: directError.message
+                },
+                clientError: {
+                  name: clientError.name,
+                  message: clientError.message
+                },
+                session: {
+                  userId: session.user?.id,
+                  hasToken: !!session.access_token
+                }
+              }
+            });
+          }
         }
       }
     } catch (error) {
       updateResult(5, { 
         status: 'error', 
         message: `AI function request failed: ${error.message}`,
-        details: { error: error.name, message: error.message }
+        details: { 
+          error: error.name, 
+          message: error.message,
+          stack: error.stack
+        }
       });
     }
 
