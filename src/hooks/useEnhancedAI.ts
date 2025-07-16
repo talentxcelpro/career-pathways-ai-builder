@@ -68,10 +68,33 @@ export const useEnhancedAI = () => {
 
       console.log('🚀 Sending AI request:', JSON.stringify(requestPayload, null, 2));
 
-      // Simplified Supabase client call
-      const result = await supabase.functions.invoke('ai-agent', {
-        body: requestPayload
-      });
+      // Try Supabase client first, fallback to direct fetch
+      let result;
+      try {
+        result = await supabase.functions.invoke('ai-agent', {
+          body: requestPayload
+        });
+      } catch (clientError) {
+        console.warn('⚠️ Supabase client failed, using direct fetch fallback:', clientError);
+        
+        // Direct fetch fallback
+        const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-agent', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestPayload)
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        result = { data, error: null };
+      }
 
       const { data, error } = result;
       console.log('📡 Raw response:', { data, error });
