@@ -12,13 +12,13 @@ const JobPromote = () => {
   const promotionOptions = [
     {
       title: "Featured Job",
-      price: "$49/week",
+      price: "₹49/week",
       description: "Highlight your job with a colored border and badge",
       features: ["Premium placement", "Colored highlighting", "Featured badge"]
     },
     {
       title: "Top Spot",
-      price: "$99/week", 
+      price: "₹99/week", 
       description: "Place your job at the top of search results",
       features: ["Top position", "Featured highlighting", "Priority visibility"]
     }

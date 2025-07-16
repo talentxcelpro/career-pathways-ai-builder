@@ -143,7 +143,7 @@ export default function MarketplaceFilters({
             {/* Price Range */}
             <div>
               <Label className="text-sm font-medium mb-3 block">
-                Price Range: ${priceRange[0]} - ${priceRange[1]}
+                Price Range: ₹{priceRange[0]} - ₹{priceRange[1]}
               </Label>
               <Slider
                 value={priceRange}
@@ -154,8 +154,8 @@ export default function MarketplaceFilters({
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>$0</span>
-                <span>$500+</span>
+                <span>₹0</span>
+                <span>₹500+</span>
               </div>
             </div>
 

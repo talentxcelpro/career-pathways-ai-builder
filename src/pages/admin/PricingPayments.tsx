@@ -31,14 +31,14 @@ const PricingPayments = () => {
   const stats = [
     { 
       title: 'Total Revenue', 
-      value: `$${paymentStats?.totalRevenue?.toLocaleString() || '0'}`, 
+      value: `₹${paymentStats?.totalRevenue?.toLocaleString() || '0'}`, 
       icon: DollarSign,
       trend: '+12.5%',
       color: 'text-green-600'
     },
     { 
       title: 'Monthly Revenue', 
-      value: `$${paymentStats?.monthlyRevenue?.toLocaleString() || '0'}`, 
+      value: `₹${paymentStats?.monthlyRevenue?.toLocaleString() || '0'}`, 
       icon: TrendingUp,
       trend: '+8.2%',
       color: 'text-blue-600'
@@ -66,7 +66,7 @@ const PricingPayments = () => {
     },
     {
       title: 'Avg Order Value',
-      value: `$${paymentStats?.averageOrderValue?.toFixed(2) || '0'}`,
+      value: `₹${paymentStats?.averageOrderValue?.toFixed(2) || '0'}`,
       icon: Award,
       trend: '+4.3%',
       color: 'text-indigo-600'
@@ -145,7 +145,7 @@ const PricingPayments = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
-                    <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Revenue']} />
+                    <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']} />
                     <Line 
                       type="monotone" 
                       dataKey="revenue" 
@@ -197,7 +197,7 @@ const PricingPayments = () => {
                     </Badge>
                   </div>
                   <div className="text-3xl font-bold">
-                    ${plan.price}
+                    ₹{plan.price}
                     <span className="text-sm font-normal text-muted-foreground">/{plan.interval}</span>
                   </div>
                 </CardHeader>
@@ -209,7 +209,7 @@ const PricingPayments = () => {
                     </div>
                     <div className="flex justify-between">
                       <span>Monthly Revenue</span>
-                      <span className="font-bold text-green-600">${plan.revenue.toLocaleString()}</span>
+                      <span className="font-bold text-green-600">₹{plan.revenue.toLocaleString()}</span>
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium">Features:</p>
@@ -280,7 +280,7 @@ const PricingPayments = () => {
                       <TableCell>{transaction.user_email}</TableCell>
                       <TableCell>{transaction.plan_name}</TableCell>
                       <TableCell className="font-mono">
-                        ${transaction.amount.toFixed(2)}
+                        ₹{transaction.amount.toFixed(2)}
                       </TableCell>
                       <TableCell>
                         <Badge variant={
@@ -309,7 +309,7 @@ const PricingPayments = () => {
                 <CardTitle className="text-sm">Monthly Recurring Revenue</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${paymentStats?.monthlyRevenue?.toLocaleString() || '0'}</div>
+                <div className="text-2xl font-bold">₹{paymentStats?.monthlyRevenue?.toLocaleString() || '0'}</div>
                 <p className="text-xs text-green-600">+12.5% from last month</p>
               </CardContent>
             </Card>
@@ -318,7 +318,7 @@ const PricingPayments = () => {
                 <CardTitle className="text-sm">Customer Lifetime Value</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">$456</div>
+                <div className="text-2xl font-bold">₹456</div>
                 <p className="text-xs text-green-600">+8.2% from last month</p>
               </CardContent>
             </Card>

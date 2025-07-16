@@ -196,7 +196,7 @@ const CareerMap = () => {
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <BarChart className="h-6 w-6 text-white" />
                 </div>
-                <div className="text-3xl font-bold text-blue-600 mb-1">$125K</div>
+                <div className="text-3xl font-bold text-blue-600 mb-1">₹125K</div>
                 <div className="text-sm font-medium text-gray-900 mb-1">Salary Potential</div>
                 <div className="text-xs text-gray-500">With skill upgrades</div>
               </div>

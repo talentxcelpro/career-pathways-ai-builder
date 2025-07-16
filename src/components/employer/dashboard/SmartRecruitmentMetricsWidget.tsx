@@ -34,8 +34,8 @@ export const SmartRecruitmentMetricsWidget = () => {
     {
       id: '2',
       name: 'Cost per Hire',
-      value: '$3,200',
-      target: '≤ $3,500',
+      value: '₹3,200',
+      target: '≤ ₹3,500',
       percentage: 91,
       trend: 'up',
       status: 'excellent',

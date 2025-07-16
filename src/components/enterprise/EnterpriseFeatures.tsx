@@ -652,7 +652,7 @@ export const EnterpriseFeatures: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-medium">Enterprise Plan</h3>
-                    <p className="text-sm text-muted-foreground">$499/month • Billed annually</p>
+                    <p className="text-sm text-muted-foreground">₹499/month • Billed annually</p>
                   </div>
                   <Badge variant="secondary">Active</Badge>
                 </div>

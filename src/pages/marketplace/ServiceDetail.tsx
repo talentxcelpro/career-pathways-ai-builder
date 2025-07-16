@@ -33,7 +33,7 @@ const ServiceDetail = () => {
     provider_name: 'Sarah Johnson',
     provider_avatar: '/placeholder.svg',
     category: 'Mentoring',
-    price_range: '$100-150/hr',
+    price_range: '₹100-150/hr',
     rating: 4.9,
     review_count: 127,
     experience_years: 8,
@@ -268,7 +268,7 @@ I hold an MBA from Stanford and have been featured in TechCrunch and Forbes for 
                         <CardDescription>{pkg.description}</CardDescription>
                       </div>
                       <div className="text-right">
-                        <div className="text-2xl font-bold text-gray-900">${pkg.price}</div>
+                        <div className="text-2xl font-bold text-gray-900">₹{pkg.price}</div>
                         <div className="text-sm text-gray-600">{pkg.duration}</div>
                       </div>
                     </div>

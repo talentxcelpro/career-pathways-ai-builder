@@ -24,7 +24,7 @@ const JobView = () => {
     location: "San Francisco, CA",
     employmentType: "full_time",
     status: "active",
-    salary: "$120,000 - $180,000",
+    salary: "₹120,000 - ₹180,000",
     applicationsCount: 47,
     viewsCount: 234,
     postedAt: "2024-01-15",

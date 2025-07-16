@@ -331,11 +331,11 @@ const CareerSwitch = () => {
                       <SelectValue placeholder="Select salary range" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="30-50">$30,000 - $50,000</SelectItem>
-                      <SelectItem value="50-75">$50,000 - $75,000</SelectItem>
-                      <SelectItem value="75-100">$75,000 - $100,000</SelectItem>
-                      <SelectItem value="100-150">$100,000 - $150,000</SelectItem>
-                      <SelectItem value="150+">$150,000+</SelectItem>
+                      <SelectItem value="30-50">₹30,000 - ₹50,000</SelectItem>
+                      <SelectItem value="50-75">₹50,000 - ₹75,000</SelectItem>
+                      <SelectItem value="75-100">₹75,000 - ₹100,000</SelectItem>
+                      <SelectItem value="100-150">₹100,000 - ₹150,000</SelectItem>
+                      <SelectItem value="150+">₹150,000+</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

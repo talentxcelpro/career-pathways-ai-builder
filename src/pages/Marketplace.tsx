@@ -36,7 +36,7 @@ const Marketplace = () => {
       provider_name: 'Sarah Johnson',
       provider_avatar: '/placeholder.svg',
       category: 'Mentoring',
-      price_range: '$100-150/hr',
+      price_range: '₹100-150/hr',
       rating: 4.9,
       review_count: 127,
       experience_years: 8,
@@ -53,7 +53,7 @@ const Marketplace = () => {
       provider_name: 'Michael Chen',
       provider_avatar: '/placeholder.svg',
       category: 'Writing',
-      price_range: '$75-125',
+      price_range: '₹75-125',
       rating: 4.8,
       review_count: 203,
       experience_years: 6,
@@ -70,7 +70,7 @@ const Marketplace = () => {
       provider_name: 'Dr. Emily Rodriguez',
       provider_avatar: '/placeholder.svg',
       category: 'Training',
-      price_range: '$80-120/hr',
+      price_range: '₹80-120/hr',
       rating: 4.7,
       review_count: 89,
       experience_years: 10,
@@ -87,7 +87,7 @@ const Marketplace = () => {
       provider_name: 'James Thompson',
       provider_avatar: '/placeholder.svg',
       category: 'Coaching',
-      price_range: '$60-90/hr',
+      price_range: '₹60-90/hr',
       rating: 4.6,
       review_count: 156,
       experience_years: 5,
@@ -104,7 +104,7 @@ const Marketplace = () => {
       provider_name: 'Lisa Park',
       provider_avatar: '/placeholder.svg',
       category: 'Marketing',
-      price_range: '$90-140/hr',
+      price_range: '₹90-140/hr',
       rating: 4.9,
       review_count: 94,
       experience_years: 7,
@@ -121,7 +121,7 @@ const Marketplace = () => {
       provider_name: 'Robert Kumar',
       provider_avatar: '/placeholder.svg',
       category: 'Training',
-      price_range: '$120-180/hr',
+      price_range: '₹120-180/hr',
       rating: 4.8,
       review_count: 67,
       experience_years: 12,
@@ -135,7 +135,7 @@ const Marketplace = () => {
   ];
 
   const categories = ['Mentoring', 'Writing', 'Training', 'Coaching', 'Marketing'];
-  const priceRanges = ['Under $50', '$50-100', '$100-150', '$150+'];
+  const priceRanges = ['Under ₹50', '₹50-100', '₹100-150', '₹150+'];
 
   const filteredServices = services.filter(service => {
     const matchesSearch = service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -87,7 +87,7 @@ const JobPostSuccess = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Salary Range</p>
-              <p className="text-lg">{jobData?.salary || "$120,000 - $180,000"}</p>
+              <p className="text-lg">{jobData?.salary || "₹120,000 - ₹180,000"}</p>
             </div>
           </div>
 

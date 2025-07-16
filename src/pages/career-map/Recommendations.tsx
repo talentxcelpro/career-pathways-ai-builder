@@ -48,7 +48,7 @@ const Recommendations = () => {
       expertise: ['System Design', 'Career Growth', 'Technical Leadership'],
       rating: 4.8,
       sessions: 89,
-      price: '$50/hour'
+      price: '₹50/hour'
     }
   ];
 
