@@ -6,6 +6,7 @@ import AIBusinessToolkit from "../pages/pro/AIBusinessToolkit";
 import AdvancedAnalytics from "../pages/pro/AdvancedAnalytics";
 import CRMDashboard from "../pages/pro/CRMDashboard";
 import { ProProfile } from "../pages/pro/ProProfile";
+import ProSubscriptionPolicy from "../pages/pro/ProSubscriptionPolicy";
 import { Settings } from "lucide-react";
 
 export const proRoutes: NavItem[] = [
@@ -51,5 +52,11 @@ export const proRoutes: NavItem[] = [
     to: "/pro/profile",
     page: <ProProfile />,
     requiresAuth: true
+  },
+  {
+    title: "Subscription Policy",
+    to: "/pro/subscription-policy",
+    page: <ProSubscriptionPolicy />,
+    requiresAuth: false
   }
 ];

@@ -12,8 +12,10 @@ import {
   Zap,
   Sparkles,
   ArrowLeft,
-  CreditCard
+  CreditCard,
+  FileText
 } from "lucide-react";
+import { Link } from 'react-router-dom';
 
 interface SubscriptionTier {
   id: string;
@@ -182,6 +184,15 @@ export const ProSubscription: React.FC = () => {
           <p className="text-muted-foreground">
             Choose the perfect plan for your professional needs
           </p>
+          <div className="mt-4">
+            <Link 
+              to="/pro/subscription-policy" 
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              <FileText className="w-4 h-4 mr-1" />
+              View Subscription Policy & Terms
+            </Link>
+          </div>
         </div>
       </div>
 
