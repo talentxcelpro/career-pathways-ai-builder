@@ -45,34 +45,47 @@ interface Tool {
   global?: boolean;
 }
 
+interface ToolCategory {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: React.ComponentType<any>;
+  gradient: string;
+  color: string;
+}
+
 const toolCategories = [
   {
     id: 'essentials',
     title: 'Career Essentials',
     subtitle: 'Core tools for every professional',
     icon: Briefcase,
-    gradient: 'from-blue-500 to-blue-600'
+    gradient: 'from-slate-600 to-slate-700',
+    color: 'text-slate-800'
   },
   {
     id: 'ai-powered',
     title: 'AI-Powered Insights',
     subtitle: 'Advanced intelligence for career growth',
     icon: Brain,
-    gradient: 'from-purple-500 to-purple-600'
+    gradient: 'from-indigo-600 to-indigo-700',
+    color: 'text-indigo-900'
   },
   {
     id: 'market-analysis',
     title: 'Market Intelligence',
     subtitle: 'Global market trends and analytics',
     icon: BarChart3,
-    gradient: 'from-green-500 to-green-600'
+    gradient: 'from-emerald-600 to-emerald-700',
+    color: 'text-emerald-900'
   },
   {
     id: 'interview-suite',
     title: 'Interview Excellence',
     subtitle: 'Master any interview worldwide',
     icon: MessageSquare,
-    gradient: 'from-orange-500 to-orange-600'
+    gradient: 'from-amber-600 to-amber-700',
+    color: 'text-amber-900'
   }
 ];
 
@@ -227,72 +240,71 @@ const ToolsTabsInterface = () => {
 
           {/* Category Sections */}
           {selectedCategory === 'all' ? (
-            <div className="space-y-12">
+            <div className="space-y-8">
               {toolCategories.map((category) => {
                 const categoryTools = getToolsByCategory(category.id);
                 if (categoryTools.length === 0) return null;
 
                 return (
-                  <div key={category.id} className="space-y-6">
-                    <div className="flex items-center gap-4">
-                      <div className={`p-3 bg-gradient-to-br ${category.gradient} rounded-xl`}>
-                        <category.icon className="h-6 w-6 text-white" />
+                  <div key={category.id} className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 bg-gradient-to-br ${category.gradient} rounded-lg`}>
+                        <category.icon className="h-5 w-5 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-xl font-semibold text-foreground">{category.title}</h2>
-                        <p className="text-sm text-muted-foreground">{category.subtitle}</p>
+                        <h2 className={`text-lg font-bold ${category.color}`}>{category.title}</h2>
+                        <p className="text-xs text-muted-foreground">{category.subtitle}</p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                       {categoryTools.map((tool) => (
                         <Card 
                           key={tool.id}
-                          className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80"
+                          className="group hover:shadow-lg transition-all duration-200 cursor-pointer border-border/40 bg-card/60 backdrop-blur-sm hover:bg-card/90 hover:scale-[1.02]"
                           onClick={() => setActiveTool(tool.id)}
                         >
-                          <div className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div className={`p-3 bg-gradient-to-br ${category.gradient} rounded-xl group-hover:scale-110 transition-transform duration-300`}>
-                                <tool.icon className="h-6 w-6 text-white" />
+                          <div className="p-3">
+                            <div className="flex flex-col items-center text-center space-y-2">
+                              <div className={`p-2 bg-gradient-to-br ${category.gradient} rounded-lg group-hover:scale-110 transition-transform duration-200`}>
+                                <tool.icon className="h-4 w-4 text-white" />
                               </div>
-                              <div className="flex gap-2">
+                              
+                              <div className="space-y-1">
+                                <h3 className={`font-semibold text-xs ${category.color} group-hover:text-primary transition-colors leading-tight`}>
+                                  {tool.title}
+                                </h3>
+                                <p className="text-xs text-muted-foreground leading-tight">{tool.subtitle}</p>
+                              </div>
+
+                              <div className="flex flex-wrap gap-1 justify-center">
                                 {tool.popular && (
-                                  <Badge variant="secondary" className="gap-1">
-                                    <Star className="h-3 w-3" />
+                                  <Badge variant="secondary" className="text-xs px-1 py-0 h-4">
+                                    <Star className="h-2 w-2 mr-1" />
                                     Popular
                                   </Badge>
                                 )}
                                 {tool.premium && (
-                                  <Badge className="gap-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
-                                    <Shield className="h-3 w-3" />
+                                  <Badge className="text-xs px-1 py-0 h-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+                                    <Shield className="h-2 w-2 mr-1" />
                                     Pro
                                   </Badge>
                                 )}
                                 {tool.global && (
-                                  <Badge variant="outline" className="gap-1">
-                                    <Globe className="h-3 w-3" />
+                                  <Badge variant="outline" className="text-xs px-1 py-0 h-4">
+                                    <Globe className="h-2 w-2 mr-1" />
                                     Global
                                   </Badge>
                                 )}
                               </div>
-                            </div>
-
-                            <div className="space-y-3">
-                              <div>
-                                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                                  {tool.title}
-                                </h3>
-                                <p className="text-sm text-muted-foreground">{tool.subtitle}</p>
-                              </div>
 
                               <Button 
                                 size="sm" 
-                                className="w-full gap-2 group-hover:gap-3 transition-all"
+                                className="w-full h-6 text-xs px-2 gap-1 group-hover:gap-2 transition-all"
                                 variant={tool.premium ? "default" : "outline"}
                               >
-                                {tool.premium ? 'Try Pro' : 'Launch Tool'}
-                                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                {tool.premium ? 'Try Pro' : 'Launch'}
+                                <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
                               </Button>
                             </div>
                           </div>
@@ -304,57 +316,56 @@ const ToolsTabsInterface = () => {
               })}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {filteredTools.map((tool) => {
                 const category = toolCategories.find(cat => cat.id === tool.category);
                 return (
                   <Card 
                     key={tool.id}
-                    className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80"
+                    className="group hover:shadow-lg transition-all duration-200 cursor-pointer border-border/40 bg-card/60 backdrop-blur-sm hover:bg-card/90 hover:scale-[1.02]"
                     onClick={() => setActiveTool(tool.id)}
                   >
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className={`p-3 bg-gradient-to-br ${category?.gradient} rounded-xl group-hover:scale-110 transition-transform duration-300`}>
-                          <tool.icon className="h-6 w-6 text-white" />
+                    <div className="p-3">
+                      <div className="flex flex-col items-center text-center space-y-2">
+                        <div className={`p-2 bg-gradient-to-br ${category?.gradient} rounded-lg group-hover:scale-110 transition-transform duration-200`}>
+                          <tool.icon className="h-4 w-4 text-white" />
                         </div>
-                        <div className="flex gap-2">
+                        
+                        <div className="space-y-1">
+                          <h3 className={`font-semibold text-xs ${category?.color} group-hover:text-primary transition-colors leading-tight`}>
+                            {tool.title}
+                          </h3>
+                          <p className="text-xs text-muted-foreground leading-tight">{tool.subtitle}</p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-1 justify-center">
                           {tool.popular && (
-                            <Badge variant="secondary" className="gap-1">
-                              <Star className="h-3 w-3" />
+                            <Badge variant="secondary" className="text-xs px-1 py-0 h-4">
+                              <Star className="h-2 w-2 mr-1" />
                               Popular
                             </Badge>
                           )}
                           {tool.premium && (
-                            <Badge className="gap-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
-                              <Shield className="h-3 w-3" />
+                            <Badge className="text-xs px-1 py-0 h-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+                              <Shield className="h-2 w-2 mr-1" />
                               Pro
                             </Badge>
                           )}
                           {tool.global && (
-                            <Badge variant="outline" className="gap-1">
-                              <Globe className="h-3 w-3" />
+                            <Badge variant="outline" className="text-xs px-1 py-0 h-4">
+                              <Globe className="h-2 w-2 mr-1" />
                               Global
                             </Badge>
                           )}
                         </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <div>
-                          <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                            {tool.title}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">{tool.subtitle}</p>
-                        </div>
 
                         <Button 
                           size="sm" 
-                          className="w-full gap-2 group-hover:gap-3 transition-all"
+                          className="w-full h-6 text-xs px-2 gap-1 group-hover:gap-2 transition-all"
                           variant={tool.premium ? "default" : "outline"}
                         >
-                          {tool.premium ? 'Try Pro' : 'Launch Tool'}
-                          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                          {tool.premium ? 'Try Pro' : 'Launch'}
+                          <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
                         </Button>
                       </div>
                     </div>
