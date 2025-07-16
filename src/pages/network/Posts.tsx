@@ -271,26 +271,25 @@ const Posts = () => {
 
         {/* Pro Success Banner for New Pro Users */}
         {isProUser && currentUserProfile?.pro_plan && (
-          <Card className="mb-4 bg-gradient-to-r from-emerald-500 to-green-500 text-white border-0 shadow-lg">
-            <CardContent className="p-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <Sparkles className="h-4 w-4 text-yellow-300" />
-                    <span className="text-xs font-medium">PRO</span>
+          <Card className="mb-2 bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 text-white border-0 shadow-lg rounded-2xl backdrop-blur-sm">
+            <CardContent className="p-2 sm:p-3">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                  <div className="bg-white/20 p-1 rounded-full">
+                    <Sparkles className="h-3 w-3 text-yellow-200" />
                   </div>
-                  <div>
-                    <h3 className="font-medium text-sm">Welcome to TalentXcel Pro!</h3>
-                    <p className="text-emerald-100 text-xs">
-                      Start setting up your services to get clients
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-xs sm:text-sm text-white/95 truncate">🎉 Welcome to Pro!</h3>
+                    <p className="text-white/80 text-[10px] sm:text-xs leading-tight hidden sm:block">
+                      Set up services to get clients
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
                   <ProBadge plan={currentUserProfile.pro_plan as any} size="sm" />
                   <Link to="/pro/services">
-                    <Button size="sm" className="bg-white text-emerald-600 hover:bg-emerald-50 text-xs px-3 py-1 h-7">
-                      Set Up Services
+                    <Button size="sm" className="bg-white/90 text-emerald-600 hover:bg-white text-[10px] sm:text-xs px-2 sm:px-3 py-1 h-6 sm:h-7 font-medium rounded-full shadow-sm">
+                      Set Up
                     </Button>
                   </Link>
                 </div>

@@ -21,37 +21,39 @@ const ProBanner: React.FC<ProBannerProps> = ({ variant, onDismiss }) => {
   if (variant === 'top') {
     return (
       <>
-        <Card className="mb-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-md">
-          <CardContent className="p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Crown className="h-4 w-4 text-yellow-300" />
-                <div>
-                  <h3 className="font-medium text-sm">Promote your services on TalentXcel</h3>
-                  <p className="text-blue-100 text-xs">
-                    Pro features: Service pages, profile boosting & CRM tools
+        <Card className="mb-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-white border-0 shadow-lg rounded-2xl backdrop-blur-sm">
+          <CardContent className="p-2 sm:p-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                <div className="bg-white/20 p-1 rounded-full">
+                  <Crown className="h-3 w-3 text-yellow-200" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-xs sm:text-sm text-white/95 truncate">Promote your services</h3>
+                  <p className="text-white/80 text-[10px] sm:text-xs leading-tight hidden sm:block">
+                    Pro features & CRM tools
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="bg-white/20 text-white text-xs px-2 py-0.5">
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <Badge variant="secondary" className="bg-white/25 text-white text-[10px] px-1.5 py-0.5 font-medium border-0 rounded-full">
                   ₹399/mo
                 </Badge>
                 <Button 
                   onClick={() => setShowModal(true)}
                   size="sm"
-                  className="bg-white text-blue-600 hover:bg-blue-50 text-xs px-3 py-1 h-7"
+                  className="bg-white/90 text-blue-600 hover:bg-white text-[10px] sm:text-xs px-2 sm:px-3 py-1 h-6 sm:h-7 font-medium rounded-full shadow-sm"
                 >
-                  Unlock Pro
+                  Get Pro
                 </Button>
                 {onDismiss && (
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={onDismiss}
-                    className="text-white hover:bg-white/10 h-6 w-6 p-0"
+                    className="text-white/80 hover:bg-white/10 h-5 w-5 sm:h-6 sm:w-6 p-0 rounded-full"
                   >
-                    <X className="h-3 w-3" />
+                    <X className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                   </Button>
                 )}
               </div>
@@ -71,29 +73,31 @@ const ProBanner: React.FC<ProBannerProps> = ({ variant, onDismiss }) => {
   if (variant === 'sidebar') {
     return (
       <>
-        <Card className="mb-3 bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200 shadow-sm">
-          <CardContent className="p-3">
+        <Card className="mb-2 bg-gradient-to-br from-purple-50/80 via-blue-50/80 to-indigo-50/80 border-purple-200/50 shadow-md rounded-xl backdrop-blur-sm">
+          <CardContent className="p-2.5">
             <div className="text-center">
-              <div className="flex justify-center mb-1">
-                <Crown className="h-5 w-5 text-purple-600" />
+              <div className="flex justify-center mb-1.5">
+                <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-1.5 rounded-full">
+                  <Crown className="h-3.5 w-3.5 text-white" />
+                </div>
               </div>
-              <h3 className="font-medium text-gray-900 mb-1 text-sm">Upgrade to Pro</h3>
-              <p className="text-xs text-gray-600 mb-2">
+              <h3 className="font-semibold text-gray-900 mb-1 text-xs">Upgrade to Pro</h3>
+              <p className="text-[10px] text-gray-600 mb-2 leading-tight">
                 Showcase services & get clients
               </p>
-              <div className="space-y-1 text-xs text-gray-500 mb-3">
+              <div className="space-y-0.5 text-[10px] text-gray-500 mb-2.5">
                 <div className="flex items-center justify-center gap-1">
-                  <TrendingUp className="h-3 w-3" />
+                  <TrendingUp className="h-2.5 w-2.5" />
                   <span>Profile boost</span>
                 </div>
                 <div className="flex items-center justify-center gap-1">
-                  <Sparkles className="h-3 w-3" />
+                  <Sparkles className="h-2.5 w-2.5" />
                   <span>Service pages</span>
                 </div>
               </div>
               <Button 
                 onClick={() => setShowModal(true)}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-xs h-7"
+                className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-[10px] h-6 font-medium rounded-lg shadow-sm"
                 size="sm"
               >
                 Get Pro
@@ -114,28 +118,28 @@ const ProBanner: React.FC<ProBannerProps> = ({ variant, onDismiss }) => {
   if (variant === 'feed') {
     return (
       <>
-        <Card className="mb-3 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-sm">
-          <CardContent className="p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-green-100 rounded-full">
-                  <Sparkles className="h-3 w-3 text-green-600" />
+        <Card className="mb-2 bg-gradient-to-r from-green-50/90 via-emerald-50/90 to-teal-50/90 border-green-200/60 shadow-md rounded-xl backdrop-blur-sm">
+          <CardContent className="p-2.5">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <div className="p-1 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full">
+                  <Sparkles className="h-3 w-3 text-white" />
                 </div>
-                <div>
-                  <h4 className="font-medium text-gray-900 text-sm">Sell your services</h4>
-                  <p className="text-xs text-gray-600">
-                    Get listed in TalentXcel Marketplace
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-semibold text-gray-900 text-xs truncate">Sell your services</h4>
+                  <p className="text-[10px] text-gray-600 leading-tight hidden sm:block">
+                    Get listed in marketplace
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="border-green-500 text-green-700 text-xs px-2 py-0.5">
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <Badge variant="outline" className="border-green-400/60 text-green-700 text-[10px] px-1.5 py-0.5 font-medium rounded-full bg-white/80">
                   ₹399/mo
                 </Badge>
                 <Button 
                   onClick={() => setShowModal(true)}
                   size="sm" 
-                  className="bg-green-600 hover:bg-green-700 text-xs px-3 py-1 h-7"
+                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-[10px] px-2 sm:px-3 py-1 h-6 sm:h-7 font-medium rounded-full shadow-sm text-white"
                 >
                   Try Pro
                 </Button>
