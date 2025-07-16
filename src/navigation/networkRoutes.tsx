@@ -15,7 +15,7 @@ import MessageConversation from "../pages/network/MessageConversation";
 import MessageRequests from "../pages/network/MessageRequests";
 import ArchivedMessages from "../pages/network/ArchivedMessages";
 import MessageSettings from "../pages/network/MessageSettings";
-import AIAssistant from "../pages/ai/AIAssistant";
+
 import ProfileAnalytics from "../pages/profile/ProfileAnalytics";
 import Notifications from "../pages/network/Notifications";
 import Suggestions from "../pages/network/Suggestions";
@@ -108,11 +108,6 @@ export const networkRoutes = [
     title: "Message Settings",
     to: "/network/messages/settings",
     page: <MessageSettings />,
-  },
-  {
-    title: "AI Assistant",
-    to: "/network/messages/ai",
-    page: <AIAssistant />,
   },
   {
     title: "Profile Analytics",

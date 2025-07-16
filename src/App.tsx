@@ -12,7 +12,7 @@ import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import { AIProvider } from "./contexts/AIContext";
-import { SimpleAIWidget } from "./components/ai/SimpleAIWidget";
+
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -101,7 +101,7 @@ const App = () => (
               </main>
               <Footer />
             </div>
-            <SimpleAIWidget />
+            
             </AIProvider>
           </AuthProvider>
         </AnalyticsProvider>

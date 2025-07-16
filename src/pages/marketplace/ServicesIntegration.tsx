@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AITrainingIntegration } from '@/components/marketplace/integrations/AITrainingIntegration';
-import { JobMatchingIntegration } from '@/components/marketplace/integrations/JobMatchingIntegration';
+
 import { NetworkIntegration } from '@/components/marketplace/integrations/NetworkIntegration';
 import { ProNotificationIntegration } from '@/components/marketplace/integrations/ProNotificationIntegration';
 import { 
@@ -216,10 +216,9 @@ const ServicesIntegration = () => {
               </p>
             </div>
           </div>
-          <JobMatchingIntegration
-            userProfile={userProfile}
-            onServiceSelect={handleServiceSelect}
-          />
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Job Matching Integration is not available</p>
+          </div>
         </TabsContent>
 
         <TabsContent value="network" className="space-y-6">

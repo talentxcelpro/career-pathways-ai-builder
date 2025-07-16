@@ -59,7 +59,7 @@ import { ModelTrainingManager } from '@/components/admin/ai/ModelTrainingManager
 import { AIDeploymentManager } from '@/components/admin/ai/AIDeploymentManager';
 import { AIMonitoringDashboard } from '@/components/admin/ai/AIMonitoringDashboard';
 import { AIModelVersionManager } from '@/components/admin/ai/AIModelVersionManager';
-import { AITestingCenter } from '@/components/admin/ai/AITestingCenter';
+
 import { AILogsViewer } from '@/components/admin/ai/AILogsViewer';
 import { AISettingsManager } from '@/components/admin/ai/AISettingsManager';
 
@@ -346,7 +346,9 @@ const AIMLTrainingCenter = () => {
         </TabsContent>
 
         <TabsContent value="test" className="space-y-6">
-          <AITestingCenter />
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">AI Testing Center is not available</p>
+          </div>
         </TabsContent>
 
         <TabsContent value="logs" className="space-y-6">

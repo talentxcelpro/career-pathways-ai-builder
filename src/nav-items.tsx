@@ -8,7 +8,7 @@ import { networkRoutes } from "./navigation/networkRoutes";
 import { profileRoutes } from "./navigation/profileRoutes";
 import { careerMapRoutes } from "./navigation/careerMapRoutes";
 import { toolsRoutes } from "./navigation/toolsRoutes";
-import { aiRoutes } from "./navigation/aiRoutes";
+
 import { employerRoutes } from "./navigation/employerRoutes";
 import { collegesRoutes } from "./navigation/collegesRoutes";
 import { marketplaceRoutes } from "./navigation/marketplaceRoutes";
@@ -33,7 +33,7 @@ export const navItems = [
   ...employerRoutes,
   ...marketplaceRoutes,
   ...proRoutes,
-  ...aiRoutes,
+  
   ...seoRoutes,
   ...adminRoutes,
   ...enterpriseRoutes,
