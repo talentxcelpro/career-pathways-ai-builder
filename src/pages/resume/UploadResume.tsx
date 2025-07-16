@@ -1,11 +1,13 @@
-import { UnifiedResumeBuilder } from "@/components/resume/UnifiedResumeBuilder";
+import { AppleInspiredResumeBuilder } from "@/components/resume/AppleInspiredResumeBuilder";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const UploadResume = () => {
   return (
-    <ErrorBoundary>
-      <UnifiedResumeBuilder />
-    </ErrorBoundary>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <ErrorBoundary>
+        <AppleInspiredResumeBuilder />
+      </ErrorBoundary>
+    </div>
   );
 };
 

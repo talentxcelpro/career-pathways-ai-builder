@@ -155,77 +155,97 @@ const ResumeDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
+      </div>
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Resume Builder Dashboard</h1>
-            <p className="text-gray-600">Create, manage, and optimize your professional resumes with AI</p>
+        <div className="flex items-center justify-between mb-12 animate-slideInUp">
+          <div className="space-y-3">
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
+              Resume Builder
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl">
+              Create, manage, and optimize your professional resumes with AI-powered intelligence
+            </p>
           </div>
-          <div className="flex space-x-3">
+          <div className="flex space-x-4">
             <Button 
               onClick={() => navigate('/resume-builder/upload')}
               variant="outline"
-              className="flex items-center"
+              size="lg"
+              className="bg-white/80 backdrop-blur-sm border-gray-200 hover:bg-white hover:shadow-lg transition-all duration-300 px-6 py-3 rounded-xl"
             >
-              <Upload className="h-4 w-4 mr-2" />
+              <Upload className="h-5 w-5 mr-2" />
               Upload Resume
             </Button>
             <Button 
               onClick={() => navigate('/resume-builder/new')}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/25 transition-all duration-300 hover:scale-105"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-5 w-5 mr-2" />
               Create New Resume
             </Button>
           </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12 animate-fadeInScale">
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <FileText className="h-8 w-8 text-blue-600" />
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                  <FileText className="h-6 w-6 text-white" />
+                </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Total Resumes</p>
-                  <p className="text-2xl font-bold text-gray-900">{resumes?.length || 0}</p>
+                  <p className="text-3xl font-bold text-gray-900">{resumes?.length || 0}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <Star className="h-8 w-8 text-yellow-600" />
+                <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl shadow-lg">
+                  <Star className="h-6 w-6 text-white" />
+                </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Avg ATS Score</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-3xl font-bold text-gray-900">
                     {resumes?.length ? Math.round(resumes.reduce((acc, r) => acc + (r.ats_score || 0), 0) / resumes.length) : 0}
                   </p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <Download className="h-8 w-8 text-green-600" />
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg">
+                  <Download className="h-6 w-6 text-white" />
+                </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Downloads</p>
-                  <p className="text-2xl font-bold text-gray-900">0</p>
+                  <p className="text-3xl font-bold text-gray-900">0</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <Share2 className="h-8 w-8 text-purple-600" />
+                <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl shadow-lg">
+                  <Share2 className="h-6 w-6 text-white" />
+                </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Shared</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-3xl font-bold text-gray-900">
                     {resumes?.filter(r => r.is_public).length || 0}
                   </p>
                 </div>
@@ -237,10 +257,10 @@ const ResumeDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* My Resumes */}
           <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>My Resumes</CardTitle>
-                <CardDescription>Manage your professional resumes and track their performance</CardDescription>
+            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-2xl font-bold text-gray-900">My Resumes</CardTitle>
+                <CardDescription className="text-gray-600">Manage your professional resumes and track their performance</CardDescription>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
@@ -263,8 +283,12 @@ const ResumeDashboard = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {resumes?.map((resume) => (
-                      <div key={resume.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                    {resumes?.map((resume, index) => (
+                      <div 
+                        key={resume.id} 
+                        className="bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl p-6 hover:shadow-lg hover:bg-white/80 transition-all duration-300 hover:scale-102 animate-slideInUp"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
                             <div className="flex items-center space-x-3">
@@ -335,33 +359,33 @@ const ResumeDashboard = () => {
           {/* Quick Actions & Templates */}
           <div className="space-y-6">
             {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl font-bold text-gray-900">Quick Actions</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-4">
                 <Button 
                   onClick={() => navigate('/resume-builder/new')} 
-                  className="w-full justify-start"
+                  className="w-full justify-start bg-white/80 backdrop-blur-sm border border-gray-200 hover:bg-white hover:shadow-md transition-all duration-300 text-gray-700 py-3 rounded-xl"
                   variant="outline"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="h-4 w-4 mr-3" />
                   Start from Scratch
                 </Button>
                 <Button 
                   onClick={() => navigate('/resume-builder/upload')} 
-                  className="w-full justify-start"
+                  className="w-full justify-start bg-white/80 backdrop-blur-sm border border-gray-200 hover:bg-white hover:shadow-md transition-all duration-300 text-gray-700 py-3 rounded-xl"
                   variant="outline"
                 >
-                  <Upload className="h-4 w-4 mr-2" />
+                  <Upload className="h-4 w-4 mr-3" />
                   Upload Existing Resume
                 </Button>
                 <Button 
                   onClick={() => navigate('/resume-builder/cover-letter')} 
-                  className="w-full justify-start"
+                  className="w-full justify-start bg-white/80 backdrop-blur-sm border border-gray-200 hover:bg-white hover:shadow-md transition-all duration-300 text-gray-700 py-3 rounded-xl"
                   variant="outline"
                 >
-                  <FileText className="h-4 w-4 mr-2" />
+                  <FileText className="h-4 w-4 mr-3" />
                   Generate Cover Letter
                 </Button>
               </CardContent>
