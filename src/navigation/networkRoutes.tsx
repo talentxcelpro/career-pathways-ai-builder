@@ -27,7 +27,7 @@ export const networkRoutes = [
     title: "Network",
     to: "/network",
     icon: <Users className="h-4 w-4" />,
-    page: <Posts />,
+    page: <NetworkMain />,
   },
   {
     title: "Network People",
