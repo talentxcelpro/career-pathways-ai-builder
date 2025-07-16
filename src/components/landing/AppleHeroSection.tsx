@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
-import { ChevronRight, Play } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 export const AppleHeroSection = () => {
   return (
@@ -41,15 +41,6 @@ export const AppleHeroSection = () => {
                   <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </AuthDialog>
-              
-              <Button 
-                variant="ghost" 
-                size="lg" 
-                className="rounded-full px-8 py-6 text-lg font-medium text-slate-700 hover:bg-slate-100 transition-all duration-300 group"
-              >
-                <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                Watch Demo
-              </Button>
             </div>
 
             {/* Social Proof */}
@@ -74,37 +65,54 @@ export const AppleHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Side - Dynamic Visual Story */}
+          {/* Right Side - Dynamic Visual Story with More Images */}
           <div className="relative">
             {/* Multiple hovering images with advanced animations */}
-            <div className="relative z-10 grid grid-cols-2 gap-4 h-[600px]">
-              {/* Main central image */}
+            <div className="relative z-10 grid grid-cols-3 gap-4 h-[600px]">
+              {/* Top row - 3 images */}
+              <div className="relative group hover:scale-110 transition-all duration-500 hover:-rotate-1">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
+                <img 
+                  src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  alt="Professional woman working"
+                  className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[180px] object-cover"
+                />
+              </div>
+
+              <div className="relative group hover:scale-110 transition-all duration-500 hover:rotate-1">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
+                <img 
+                  src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  alt="Team collaboration"
+                  className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[180px] object-cover"
+                />
+              </div>
+
+              <div className="relative group hover:scale-110 transition-all duration-500 hover:-rotate-1">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
+                <img 
+                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  alt="Professional presentation"
+                  className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[180px] object-cover"
+                />
+              </div>
+
+              {/* Bottom row - 2 larger images */}
               <div className="col-span-2 relative group hover:scale-105 transition-all duration-700 hover:rotate-1">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-3xl blur-2xl group-hover:blur-xl transition-all duration-500 animate-pulse"></div>
                 <img 
                   src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
                   alt="Professionals collaborating"
-                  className="relative rounded-3xl shadow-2xl group-hover:shadow-3xl transition-all duration-500 w-full h-[280px] object-cover"
+                  className="relative rounded-3xl shadow-2xl group-hover:shadow-3xl transition-all duration-500 w-full h-[380px] object-cover"
                 />
               </div>
 
-              {/* Bottom left - smaller image */}
-              <div className="relative group hover:scale-110 transition-all duration-500 hover:-rotate-2">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
-                <img 
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                  alt="Professional growth"
-                  className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[280px] object-cover"
-                />
-              </div>
-
-              {/* Bottom right - smaller image */}
               <div className="relative group hover:scale-110 transition-all duration-500 hover:rotate-2">
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-pink-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-amber-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
                 <img 
-                  src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                  alt="Team collaboration"
-                  className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[280px] object-cover"
+                  src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  alt="Professional at work"
+                  className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[380px] object-cover"
                 />
               </div>
             </div>

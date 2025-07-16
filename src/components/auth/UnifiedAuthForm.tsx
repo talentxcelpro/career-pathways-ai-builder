@@ -102,6 +102,20 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
   return (
     <Card className="w-full bg-white/95 backdrop-blur-sm border-0 shadow-none">
       <CardContent className="p-0 space-y-6">
+        {/* TalentXcel Branding Header */}
+        <div className="text-center space-y-3 pb-4 border-b border-slate-100">
+          <div className="flex items-center justify-center space-x-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-xl">T</span>
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                TalentXcel
+              </h2>
+              <p className="text-xs text-slate-500 font-medium">Powering Global Career Growth</p>
+            </div>
+          </div>
+        </div>
         {/* Tab Toggle */}
         <div className="flex bg-slate-100 rounded-lg p-1 mb-6">
           <button
