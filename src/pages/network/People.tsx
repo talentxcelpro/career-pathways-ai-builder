@@ -182,6 +182,25 @@ const People = () => {
     return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
   };
 
+  const getCompanyLogo = (companyName: string) => {
+    if (!companyName) return null;
+    
+    const companyLogos: { [key: string]: string } = {
+      'TalentXcel Services': 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=64&h=64&fit=crop&crop=faces',
+      'Google': 'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=64&h=64&fit=crop&crop=faces',
+      'Microsoft': 'https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=64&h=64&fit=crop&crop=faces',
+      'Apple': 'https://images.unsplash.com/photo-1621768216002-5ac171876625?w=64&h=64&fit=crop&crop=faces',
+      'Amazon': 'https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?w=64&h=64&fit=crop&crop=faces',
+      'Meta': 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=64&h=64&fit=crop&crop=faces',
+      'Netflix': 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=64&h=64&fit=crop&crop=faces',
+      'Tesla': 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=64&h=64&fit=crop&crop=faces',
+      'OpenAI': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=64&h=64&fit=crop&crop=faces',
+      'Spotify': 'https://images.unsplash.com/photo-1611348586804-61bf6c080437?w=64&h=64&fit=crop&crop=faces',
+    };
+    
+    return companyLogos[companyName] || `https://ui-avatars.com/api/?name=${encodeURIComponent(companyName)}&background=random&color=fff&size=64`;
+  };
+
   const shouldShowProfilePrompt = (profile: any) => {
     return !profile.full_name || !profile.title || !profile.profile_picture_url;
   };
@@ -238,17 +257,17 @@ const People = () => {
             <p className="text-slate-700 mt-2 font-medium">Discover and connect with professionals in your field</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="animate-pulse bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl shadow-lg">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="w-16 h-16 bg-slate-300 rounded-full mx-auto"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <Card key={i} className="animate-pulse bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-3xl shadow-lg overflow-hidden">
+                <CardContent className="p-5">
+                  <div className="space-y-3">
+                    <div className="w-12 h-12 bg-slate-300 rounded-full mx-auto"></div>
                     <div className="h-4 bg-slate-300 rounded"></div>
                     <div className="h-3 bg-slate-300 rounded w-3/4 mx-auto"></div>
                     <div className="flex justify-center space-x-2">
-                      <div className="h-8 bg-slate-300 rounded w-20"></div>
-                      <div className="h-8 bg-slate-300 rounded w-20"></div>
+                      <div className="h-6 bg-slate-300 rounded w-16"></div>
+                      <div className="h-6 bg-slate-300 rounded w-16"></div>
                     </div>
                   </div>
                 </CardContent>
@@ -280,25 +299,25 @@ const People = () => {
         />
 
         {/* Results */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">{/* Changed gap from 6 to 4 for tighter layout */}
           {profiles?.map((profile) => (
-            <Card key={profile.id} className="hover:shadow-xl transition-all duration-300 bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl">
-              <CardContent className="p-6">
-                <div className="text-center space-y-4">
-                  {/* Profile Picture - Clickable */}
-                  <div className="relative mx-auto w-16 h-16">
+            <Card key={profile.id} className="group hover:shadow-2xl hover:scale-[1.02] transition-all duration-500 bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-3xl overflow-hidden">
+              <CardContent className="p-5">
+                <div className="text-center space-y-3">
+                  {/* Profile Picture - Smaller and more engaging */}
+                  <div className="relative mx-auto w-12 h-12">
                     <Link 
                       to={`/network/people/${profile.id}`}
-                      className="block w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center hover:scale-105 transition-transform"
+                      className="block w-12 h-12 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-xl"
                     >
                       {profile.profile_picture_url ? (
                         <img 
                           src={profile.profile_picture_url} 
                           alt={formatDisplayName(profile)}
-                          className="w-full h-full rounded-full object-cover"
+                          className="w-full h-full rounded-full object-cover border-2 border-white/20"
                         />
                       ) : (
-                        <span className="text-white font-semibold text-lg">
+                        <span className="text-white font-semibold text-sm">
                           {generateInitials(profile)}
                         </span>
                       )}
@@ -311,17 +330,17 @@ const People = () => {
                     )}
                   </div>
 
-                  {/* Basic Info - Clickable */}
+                  {/* Basic Info - More compact */}
                   <div>
                     <Link 
                       to={`/network/people/${profile.id}`}
                       className="block hover:text-blue-600 transition-colors"
                     >
-                      <h3 className="font-semibold text-lg text-slate-900 tracking-tight">
+                      <h3 className="font-semibold text-base text-slate-900 tracking-tight leading-tight">
                         {formatDisplayName(profile)}
                       </h3>
                     </Link>
-                    <p className="text-slate-700 text-sm font-medium">
+                    <p className="text-slate-700 text-xs font-medium mt-1">
                       {profile.title || 'Professional'}
                     </p>
                     {shouldShowProfilePrompt(profile) && (
@@ -331,47 +350,61 @@ const People = () => {
                     )}
                   </div>
 
-                  {/* Location and Company */}
+                  {/* Location and Company with Logo */}
                   <div className="space-y-1">
                     {profile.location && (
-                      <div className="flex items-center justify-center text-sm text-slate-600 font-medium">
-                        <MapPin className="h-4 w-4 mr-1" />
+                      <div className="flex items-center justify-center text-xs text-slate-600 font-medium">
+                        <MapPin className="h-3 w-3 mr-1" />
                         {profile.location}
                       </div>
                     )}
                     {profile.current_company && (
-                      <div className="flex items-center justify-center text-sm text-slate-600 font-medium">
-                        <Building className="h-4 w-4 mr-1" />
-                        {profile.current_company}
+                      <div className="flex items-center justify-center text-xs text-slate-600 font-medium">
+                        <div className="flex items-center">
+                          <img 
+                            src={getCompanyLogo(profile.current_company)} 
+                            alt={profile.current_company}
+                            className="h-4 w-4 mr-1.5 rounded-full object-cover border border-slate-200"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.nextElementSibling?.setAttribute('style', 'display: inline;');
+                            }}
+                          />
+                          <Building className="h-3 w-3 mr-1 hidden" />
+                          <span className="truncate max-w-[120px]">{profile.current_company}</span>
+                        </div>
                       </div>
                     )}
                   </div>
 
-                  {/* Skills */}
+                  {/* Skills - More compact */}
                   {profile.skills && profile.skills.length > 0 && (
                     <div className="flex flex-wrap justify-center gap-1">
-                      {profile.skills.slice(0, 3).map((skill: string, index: number) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
+                      {profile.skills.slice(0, 2).map((skill: string, index: number) => (
+                        <Badge key={index} variant="secondary" className="text-xs px-2 py-0.5 bg-slate-100 text-slate-700 border-slate-200 rounded-full">
                           {skill}
                         </Badge>
                       ))}
-                      {profile.skills.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{profile.skills.length - 3} more
+                      {profile.skills.length > 2 && (
+                        <Badge variant="outline" className="text-xs px-2 py-0.5 border-slate-300 text-slate-500 rounded-full">
+                          +{profile.skills.length - 2}
                         </Badge>
                       )}
                     </div>
                   )}
 
-                  {/* Action Buttons */}
-                  <div className="flex justify-center space-x-2">
-                    {getConnectionButton(profile)}
+                  {/* Action Buttons - More compact */}
+                  <div className="flex justify-center space-x-2 pt-1">
+                    <div className="scale-90">
+                      {getConnectionButton(profile)}
+                    </div>
                     <Button 
                       size="sm" 
                       variant="outline"
                       onClick={() => handleMessage(profile.id)}
+                      className="scale-90 hover:scale-95 transition-transform"
                     >
-                      <MessageCircle className="h-4 w-4 mr-1" />
+                      <MessageCircle className="h-3 w-3 mr-1" />
                       Message
                     </Button>
                   </div>
