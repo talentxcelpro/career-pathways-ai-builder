@@ -27,7 +27,9 @@ import { useNavigate } from 'react-router-dom';
 import { AppleInspiredFileUpload } from './AppleInspiredFileUpload';
 import { AppleInspiredProcessing } from './AppleInspiredProcessing';
 import { AppleInspiredTemplateGallery } from './AppleInspiredTemplateGallery';
+import { MobileResumeViewer, MobileTouchFileUpload } from './MobileOptimizedComponents';
 import { useEnhancedResumeUpload } from '@/hooks/useEnhancedResumeUpload';
+import { useAdvancedAIFeatures } from '@/hooks/useAdvancedAIFeatures';
 
 interface ResumeData {
   personalInfo: {
@@ -73,6 +75,18 @@ export const AppleInspiredResumeBuilder = () => {
   });
   const [resumeId, setResumeId] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('modern');
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // File upload handlers
   const handleFileUpload = useCallback(async (files: FileList | null) => {
@@ -233,12 +247,19 @@ export const AppleInspiredResumeBuilder = () => {
                 </p>
               </div>
               
-              <AppleInspiredFileUpload
-                onFileSelect={handleFileUpload}
-                uploadedFile={uploadedFile}
-                onRemoveFile={() => setUploadedFile(null)}
-                className="animate-fadeInScale"
-              />
+              {isMobile ? (
+                <MobileTouchFileUpload
+                  onFileSelect={handleFileUpload}
+                  className="animate-fadeInScale"
+                />
+              ) : (
+                <AppleInspiredFileUpload
+                  onFileSelect={handleFileUpload}
+                  uploadedFile={uploadedFile}
+                  onRemoveFile={() => setUploadedFile(null)}
+                  className="animate-fadeInScale"
+                />
+              )}
               
               <div className="mt-8 text-center">
                 <Button
