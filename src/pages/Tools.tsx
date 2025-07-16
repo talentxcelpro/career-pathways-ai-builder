@@ -301,7 +301,7 @@ const Tools = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold">AI-Powered Career Tools by TalentXcel</h1>
-                <p className="text-blue-100 text-sm">Transform your career with intelligent tools built to accelerate growth, enhance decisions, and guide you every step of the way.</p>
+                <p className="text-blue-100 text-sm max-w-2xl">Transform your career with intelligent tools built to accelerate growth, enhance decisions, and guide you every step of the way.</p>
               </div>
             </div>
             <div className="hidden md:flex items-center gap-4 text-sm">
