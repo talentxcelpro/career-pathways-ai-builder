@@ -23,7 +23,7 @@ const handler = async (req: Request): Promise<Response> => {
     const [automationQueue, simpleQueue] = await Promise.all([
       supabase
         .from('email_automation_queue')
-        .select('*')
+        .select('*, settings:email_automation_settings!inner(html_template)')
         .eq('status', 'pending')
         .lte('scheduled_at', new Date().toISOString())
         .lt('attempts', 3)
@@ -67,8 +67,14 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         console.log(`Processing automation email ${email.id} to ${email.recipient_email}`);
 
-        // Generate HTML from template
-        const html = generateEmailHTML(email.trigger_type, email.template_data || {}, email.recipient_name);
+        // Use HTML template from settings or generate from template type
+        let html = email.settings?.html_template;
+        if (!html) {
+          html = generateEmailHTML(email.trigger_type, email.template_data || {}, email.recipient_name);
+        } else {
+          // Replace variables in the HTML template
+          html = replaceTemplateVariables(html, email.template_data || {}, email.recipient_name);
+        }
         
         // Send via unified email service
         const { data, error } = await supabase.functions.invoke('unified-email-service', {
@@ -300,6 +306,35 @@ function getPriority(triggerType: string): 'low' | 'medium' | 'high' {
   };
 
   return priorities[triggerType] || 'medium';
+}
+
+function replaceTemplateVariables(html: string, data: any, recipientName?: string): string {
+  const name = recipientName || data.name || 'there';
+  
+  // Replace all template variables
+  return html
+    .replace(/\{\{name\}\}/g, name)
+    .replace(/\{\{recipient_name\}\}/g, name)
+    .replace(/\{\{email\}\}/g, data.email || '')
+    .replace(/\{\{company_name\}\}/g, data.company_name || '')
+    .replace(/\{\{job_title\}\}/g, data.job_title || '')
+    .replace(/\{\{requester_name\}\}/g, data.requester_name || '')
+    .replace(/\{\{requester_title\}\}/g, data.requester_title || '')
+    .replace(/\{\{requester_company\}\}/g, data.requester_company || '')
+    .replace(/\{\{salary_range\}\}/g, data.salary_range || '')
+    .replace(/\{\{location\}\}/g, data.location || '')
+    .replace(/\{\{job_id\}\}/g, data.job_id || '')
+    .replace(/\{\{application_id\}\}/g, data.application_id || '')
+    .replace(/\{\{invite_token\}\}/g, data.invite_token || '')
+    .replace(/\{\{reset_link\}\}/g, data.reset_link || '')
+    .replace(/\{\{interview_date\}\}/g, data.interview_date ? new Date(data.interview_date).toLocaleDateString() : '')
+    .replace(/\{\{interview_time\}\}/g, data.interview_time || '')
+    .replace(/\{\{interview_type\}\}/g, data.interview_type || '')
+    .replace(/\{\{meeting_link\}\}/g, data.meeting_link || '')
+    .replace(/\{\{profile_views\}\}/g, data.profile_views?.toString() || '0')
+    .replace(/\{\{applications_sent\}\}/g, data.applications_sent?.toString() || '0')
+    .replace(/\{\{new_connections\}\}/g, data.new_connections?.toString() || '0')
+    .replace(/\{\{interviews\}\}/g, data.interviews?.toString() || '0');
 }
 
 serve(handler);

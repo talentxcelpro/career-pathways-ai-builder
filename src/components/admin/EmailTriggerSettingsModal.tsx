@@ -15,6 +15,7 @@ interface EmailTrigger {
   is_enabled: boolean;
   template_name: string;
   subject_template: string;
+  html_template?: string;
   delay_minutes: number;
   name: string;
   description: string;
@@ -37,6 +38,7 @@ export const EmailTriggerSettingsModal: React.FC<EmailTriggerSettingsModalProps>
     is_enabled: false,
     template_name: '',
     subject_template: '',
+    html_template: '',
     delay_minutes: 0,
   });
   const [isSaving, setIsSaving] = useState(false);
@@ -47,6 +49,7 @@ export const EmailTriggerSettingsModal: React.FC<EmailTriggerSettingsModalProps>
         is_enabled: trigger.is_enabled,
         template_name: trigger.template_name || '',
         subject_template: trigger.subject_template || '',
+        html_template: trigger.html_template || '',
         delay_minutes: trigger.delay_minutes || 0,
       });
     }
@@ -64,6 +67,7 @@ export const EmailTriggerSettingsModal: React.FC<EmailTriggerSettingsModalProps>
           is_enabled: formData.is_enabled,
           template_name: formData.template_name,
           subject_template: formData.subject_template,
+          html_template: formData.html_template,
           delay_minutes: formData.delay_minutes,
         })
         .eq('id', trigger.id);
@@ -164,6 +168,38 @@ export const EmailTriggerSettingsModal: React.FC<EmailTriggerSettingsModalProps>
             <p className="text-sm text-muted-foreground">
               Delay before sending email (0 = immediate)
             </p>
+          </div>
+
+          {/* HTML Template */}
+          <div className="space-y-2">
+            <Label htmlFor="html_template">Email Template (HTML)</Label>
+            <Textarea
+              id="html_template"
+              value={formData.html_template}
+              onChange={(e) => 
+                setFormData(prev => ({ ...prev, html_template: e.target.value }))
+              }
+              placeholder="HTML email template with {{variables}}"
+              rows={12}
+              className="font-mono text-sm"
+            />
+            <p className="text-sm text-muted-foreground">
+              Use HTML with inline CSS for styling. Variables: {'{{name}}'}, {'{{company}}'}, {'{{job_title}}'}, etc.
+            </p>
+          </div>
+
+          {/* Description */}
+          <div className="p-4 bg-muted rounded-lg">
+            <h4 className="font-medium mb-2">Available Variables</h4>
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p><code>{'{{name}}'}</code> - Recipient's name</p>
+              <p><code>{'{{email}}'}</code> - Recipient's email</p>
+              <p><code>{'{{company_name}}'}</code> - Company name</p>
+              <p><code>{'{{job_title}}'}</code> - Job title</p>
+              <p><code>{'{{requester_name}}'}</code> - Person making request</p>
+              <p><code>{'{{salary_range}}'}</code> - Salary information</p>
+              <p><code>{'{{location}}'}</code> - Job/Company location</p>
+            </div>
           </div>
 
           {/* Description */}

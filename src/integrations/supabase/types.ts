@@ -5085,6 +5085,7 @@ export type Database = {
           conditions: Json | null
           created_at: string | null
           delay_minutes: number | null
+          html_template: string | null
           id: string
           is_enabled: boolean | null
           subject_template: string
@@ -5096,6 +5097,7 @@ export type Database = {
           conditions?: Json | null
           created_at?: string | null
           delay_minutes?: number | null
+          html_template?: string | null
           id?: string
           is_enabled?: boolean | null
           subject_template: string
@@ -5107,6 +5109,7 @@ export type Database = {
           conditions?: Json | null
           created_at?: string | null
           delay_minutes?: number | null
+          html_template?: string | null
           id?: string
           is_enabled?: boolean | null
           subject_template?: string
