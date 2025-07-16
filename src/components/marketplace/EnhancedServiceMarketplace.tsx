@@ -20,6 +20,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/utils/currencyUtils";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Load Razorpay script
+const loadRazorpayScript = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if (document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
+      resolve(true);
+      return;
+    }
+    
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 interface Service {
   id: string;
   title: string;
@@ -129,6 +145,7 @@ export default function EnhancedServiceMarketplace() {
     fetchServices();
     fetchCategories();
     fetchStats();
+    loadRazorpayScript();
   }, []);
 
   const fetchServices = async () => {
@@ -288,6 +305,90 @@ export default function EnhancedServiceMarketplace() {
     } catch (error) {
       console.error('Error managing favorites:', error);
       toast.error('Feature coming soon!');
+    }
+  };
+
+  const handleBookNow = async (service: Service, packageType?: string) => {
+    try {
+      setLoading(true);
+      
+      const selectedPackage = service.packages?.[0] || { name: 'Basic', price: service.base_price };
+      const packageToUse = service.packages?.find(p => p.name === packageType) || selectedPackage;
+      
+      // Create Razorpay order via edge function
+      const { data, error } = await supabase.functions.invoke('razorpay-payment', {
+        body: { 
+          action: 'create_service_order',
+          amount: packageToUse.price,
+          currency: 'INR',
+          service_id: service.id,
+          package_type: packageType || 'Basic'
+        }
+      });
+
+      if (error) throw error;
+
+      // Initialize Razorpay
+      const options = {
+        key: 'rzp_test_9999999999999999', // Demo key for testing
+        amount: data.amount || packageToUse.price * 100,
+        currency: data.currency || 'INR',
+        name: 'TalentXcel Pro',
+        description: `${service.title} - ${packageToUse.name} Package`,
+        order_id: data.id || `order_demo_${Date.now()}`,
+        handler: async function (response: any) {
+          try {
+            // Verify payment via edge function
+            const verifyResult = await supabase.functions.invoke('razorpay-payment', {
+              body: {
+                action: 'verify_service_payment',
+                orderId: response.razorpay_order_id,
+                paymentId: response.razorpay_payment_id,
+                signature: response.razorpay_signature,
+                service_id: service.id,
+                package_type: packageType || 'Basic'
+              }
+            });
+
+            if (verifyResult.error) throw verifyResult.error;
+
+            toast.success(`Payment successful! Booking confirmed for ${service.title}`);
+            setSelectedService(null);
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            toast.error('Payment verification failed');
+          }
+        },
+        prefill: {
+          name: 'User Name',
+          email: 'user@example.com'
+        },
+        theme: {
+          color: '#3B82F6'
+        },
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+          }
+        }
+      };
+
+      // Check if Razorpay is loaded
+      if (typeof (window as any).Razorpay === 'undefined') {
+        const scriptLoaded = await loadRazorpayScript();
+        if (!scriptLoaded) {
+          throw new Error('Razorpay SDK failed to load');
+        }
+      }
+
+      // Open Razorpay checkout
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+      
+    } catch (error) {
+      console.error('Payment initiation error:', error);
+      toast.error('Failed to initiate payment. Please try again.');
+      setLoading(false);
     }
   };
 
@@ -455,9 +556,10 @@ export default function EnhancedServiceMarketplace() {
                 <Button
                   size="sm"
                   className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold"
-                  onClick={() => setSelectedService(service)}
+                  onClick={() => handleBookNow(service)}
+                  disabled={loading}
                 >
-                  Book Now
+                  {loading ? 'Processing...' : 'Book Now'}
                   <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
