@@ -22,6 +22,7 @@ import {
   Award
 } from "lucide-react";
 import { toast } from "sonner";
+import { formatCompactCurrency } from "@/utils/currencyUtils";
 
 interface ServiceCardProps {
   service: {
@@ -208,7 +209,7 @@ export default function EnhancedServiceCard({ service, onFavorite, isFavorited }
             <div className="flex items-center gap-1">
               <DollarSign className="h-4 w-4" />
               <span className="font-bold text-lg">
-                ${service.base_price}
+                ₹{formatCompactCurrency(service.base_price)}
               </span>
               <span className="text-sm text-muted-foreground">
                 {service.price_type === 'hourly' ? '/hour' : ''}
@@ -320,7 +321,7 @@ export default function EnhancedServiceCard({ service, onFavorite, isFavorited }
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                     <span className="text-sm">Total Cost:</span>
-                    <span className="font-bold text-lg">${service.base_price}</span>
+                    <span className="font-bold text-lg">₹{formatCompactCurrency(service.base_price)}</span>
                   </div>
                   <Button onClick={handleBookNow} className="w-full">
                     Confirm Booking

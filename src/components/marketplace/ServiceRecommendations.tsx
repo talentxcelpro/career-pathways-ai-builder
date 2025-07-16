@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Star, TrendingUp, Users, Award, CheckCircle } from "lucide-react";
+import { formatCompactCurrency } from "@/utils/currencyUtils";
 
 interface RecommendationProps {
   type: 'trending' | 'featured' | 'recommended';
@@ -96,7 +97,7 @@ export default function ServiceRecommendations({ type, services, onServiceClick 
               </div>
               
               <div className="text-right">
-                <p className="font-semibold text-sm">${service.base_price}</p>
+                <p className="font-semibold text-sm">₹{formatCompactCurrency(service.base_price)}</p>
                 <p className="text-xs text-muted-foreground">
                   {service.price_type === 'hourly' ? '/hour' : 'fixed'}
                 </p>
