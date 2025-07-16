@@ -271,22 +271,25 @@ const Posts = () => {
 
         {/* Pro Success Banner for New Pro Users */}
         {isProUser && currentUserProfile?.pro_plan && (
-          <Card className="mb-6 bg-gradient-to-r from-green-600 to-emerald-600 text-white border-0">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
+          <Card className="mb-4 bg-gradient-to-r from-emerald-500 to-green-500 text-white border-0 shadow-lg">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="h-6 w-6 text-yellow-300" />
+                  <div className="flex items-center gap-1">
+                    <Sparkles className="h-4 w-4 text-yellow-300" />
+                    <span className="text-xs font-medium">PRO</span>
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-lg">🎉 You're now a Pro Member!</h3>
-                    <p className="text-green-100 text-sm">
-                      Start building your service page and unlock advanced features
+                    <h3 className="font-medium text-sm">Welcome to TalentXcel Pro!</h3>
+                    <p className="text-emerald-100 text-xs">
+                      Start setting up your services to get clients
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 ml-auto">
-                  <ProBadge plan={currentUserProfile.pro_plan as any} />
+                <div className="flex items-center gap-2">
+                  <ProBadge plan={currentUserProfile.pro_plan as any} size="sm" />
                   <Link to="/pro/services">
-                    <Button className="bg-white text-green-600 hover:bg-gray-100">
+                    <Button size="sm" className="bg-white text-emerald-600 hover:bg-emerald-50 text-xs px-3 py-1 h-7">
                       Set Up Services
                     </Button>
                   </Link>
