@@ -359,19 +359,19 @@ const Posts = () => {
   const missingFields = currentUserProfile ? getMissingProfileFields(currentUserProfile) : [];
 
   return (
-    <div className="min-h-screen bg-slate-50/90">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Simplified Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 bg-white/90 backdrop-blur-md p-1 rounded-2xl border border-gray-200/60 shadow-lg">
+            <div className="flex items-center gap-3 bg-white/95 backdrop-blur-md p-1 rounded-2xl border border-slate-200/60 shadow-lg">
               <Button
                 variant={feedFilter === 'all' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setFeedFilter('all')}
                 className={feedFilter === 'all' 
                   ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-xl shadow-md" 
-                  : "text-gray-700 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl"
+                  : "text-slate-800 hover:text-slate-900 hover:bg-slate-100/80 font-medium rounded-xl"
                 }
               >
                 All Posts
@@ -382,7 +382,7 @@ const Posts = () => {
                 onClick={() => setFeedFilter('smart')}
                 className={feedFilter === 'smart' 
                   ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-xl shadow-md" 
-                  : "text-gray-700 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl"
+                  : "text-slate-800 hover:text-slate-900 hover:bg-slate-100/80 font-medium rounded-xl"
                 }
               >
                 Smart Feed
@@ -391,9 +391,9 @@ const Posts = () => {
             
             {/* Smart Feed Indicator */}
             {feedFilter === 'smart' && (
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-slate-700">
                 <span className="mr-2">🎯 Smart Feed is personalized.</span>
-                <Link to="/profile/preferences" className="text-blue-600 hover:text-blue-700 underline">
+                <Link to="/profile/preferences" className="text-blue-600 hover:text-blue-700 underline font-medium">
                   Edit Preferences
                 </Link>
               </div>

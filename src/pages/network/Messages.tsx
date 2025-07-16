@@ -37,13 +37,13 @@ const Messages = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Messages</h1>
-            <p className="text-gray-600 mt-2">Connect with your professional network</p>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Messages</h1>
+            <p className="text-slate-700 mt-2 font-medium">Connect with your professional network</p>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -97,9 +97,9 @@ const Messages = () => {
         </div>
 
         {/* Main Content */}
-        <Card>
+        <Card className="bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl shadow-lg">
           <CardHeader>
-            <CardTitle>Conversations</CardTitle>
+            <CardTitle className="text-slate-900 font-semibold tracking-tight">Conversations</CardTitle>
           </CardHeader>
           
           <CardContent className="p-0">
@@ -119,7 +119,7 @@ const Messages = () => {
                 {isLoading ? (
                   <div className="p-8 text-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="text-gray-600 mt-4">Loading conversations...</p>
+                    <p className="text-slate-700 mt-4 font-medium">Loading conversations...</p>
                   </div>
                 ) : filteredConversations && filteredConversations.length > 0 ? (
                   <ConversationsList
@@ -128,11 +128,11 @@ const Messages = () => {
                   />
                 ) : (
                   <div className="p-12 text-center">
-                    <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <MessageCircle className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-slate-900 mb-2 tracking-tight">
                       No conversations yet
                     </h3>
-                    <p className="text-gray-600 mb-6">
+                    <p className="text-slate-600 mb-6 font-medium">
                       Start connecting with your professional network
                     </p>
                     <Link to="/network/messages/new">
@@ -184,13 +184,13 @@ const Messages = () => {
         {/* Quick Access Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
           <Link to="/network/messages/ai">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl">
               <CardContent className="p-6">
                 <div className="flex items-center">
                   <Bot className="h-8 w-8 text-blue-600 mr-4" />
                   <div>
-                    <h3 className="font-semibold">AI Career Assistant</h3>
-                    <p className="text-sm text-gray-600">Get career advice and tips</p>
+                    <h3 className="font-semibold text-slate-900 tracking-tight">AI Career Assistant</h3>
+                    <p className="text-sm text-slate-600 font-medium">Get career advice and tips</p>
                   </div>
                 </div>
               </CardContent>
@@ -198,14 +198,14 @@ const Messages = () => {
           </Link>
 
           <Link to="/network/messages/requests">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Users className="h-8 w-8 text-green-600 mr-4" />
                     <div>
-                      <h3 className="font-semibold">Connection Requests</h3>
-                      <p className="text-sm text-gray-600">Pending messages</p>
+                      <h3 className="font-semibold text-slate-900 tracking-tight">Connection Requests</h3>
+                      <p className="text-sm text-slate-600 font-medium">Pending messages</p>
                     </div>
                   </div>
                   <Badge variant="secondary">2</Badge>
@@ -215,13 +215,13 @@ const Messages = () => {
           </Link>
 
           <Link to="/network/messages/archived">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl">
               <CardContent className="p-6">
                 <div className="flex items-center">
                   <Archive className="h-8 w-8 text-purple-600 mr-4" />
                   <div>
-                    <h3 className="font-semibold">Archived</h3>
-                    <p className="text-sm text-gray-600">View old conversations</p>
+                    <h3 className="font-semibold text-slate-900 tracking-tight">Archived</h3>
+                    <p className="text-sm text-slate-600 font-medium">View old conversations</p>
                   </div>
                 </div>
               </CardContent>

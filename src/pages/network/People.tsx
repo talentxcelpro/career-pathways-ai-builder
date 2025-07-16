@@ -230,25 +230,25 @@ const People = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Find People</h1>
-            <p className="text-gray-600 mt-2">Discover and connect with professionals in your field</p>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Find People</h1>
+            <p className="text-slate-700 mt-2 font-medium">Discover and connect with professionals in your field</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="animate-pulse">
+              <Card key={i} className="animate-pulse bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl shadow-lg">
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto"></div>
-                    <div className="h-4 bg-gray-300 rounded"></div>
-                    <div className="h-3 bg-gray-300 rounded w-3/4 mx-auto"></div>
+                    <div className="w-16 h-16 bg-slate-300 rounded-full mx-auto"></div>
+                    <div className="h-4 bg-slate-300 rounded"></div>
+                    <div className="h-3 bg-slate-300 rounded w-3/4 mx-auto"></div>
                     <div className="flex justify-center space-x-2">
-                      <div className="h-8 bg-gray-300 rounded w-20"></div>
-                      <div className="h-8 bg-gray-300 rounded w-20"></div>
+                      <div className="h-8 bg-slate-300 rounded w-20"></div>
+                      <div className="h-8 bg-slate-300 rounded w-20"></div>
                     </div>
                   </div>
                 </CardContent>
@@ -261,12 +261,12 @@ const People = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Find People</h1>
-          <p className="text-gray-600 mt-2">Discover and connect with professionals in your field</p>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Find People</h1>
+          <p className="text-slate-700 mt-2 font-medium">Discover and connect with professionals in your field</p>
         </div>
 
         {/* Search and Filters */}
@@ -282,7 +282,7 @@ const People = () => {
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {profiles?.map((profile) => (
-            <Card key={profile.id} className="hover:shadow-lg transition-shadow">
+            <Card key={profile.id} className="hover:shadow-xl transition-all duration-300 bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl">
               <CardContent className="p-6">
                 <div className="text-center space-y-4">
                   {/* Profile Picture - Clickable */}
@@ -317,15 +317,15 @@ const People = () => {
                       to={`/network/people/${profile.id}`}
                       className="block hover:text-blue-600 transition-colors"
                     >
-                      <h3 className="font-semibold text-lg text-gray-900">
+                      <h3 className="font-semibold text-lg text-slate-900 tracking-tight">
                         {formatDisplayName(profile)}
                       </h3>
                     </Link>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-slate-700 text-sm font-medium">
                       {profile.title || 'Professional'}
                     </p>
                     {shouldShowProfilePrompt(profile) && (
-                      <p className="text-xs text-orange-600 mt-1">
+                      <p className="text-xs text-orange-600 mt-1 font-medium">
                         Incomplete profile
                       </p>
                     )}
@@ -334,13 +334,13 @@ const People = () => {
                   {/* Location and Company */}
                   <div className="space-y-1">
                     {profile.location && (
-                      <div className="flex items-center justify-center text-sm text-gray-500">
+                      <div className="flex items-center justify-center text-sm text-slate-600 font-medium">
                         <MapPin className="h-4 w-4 mr-1" />
                         {profile.location}
                       </div>
                     )}
                     {profile.current_company && (
-                      <div className="flex items-center justify-center text-sm text-gray-500">
+                      <div className="flex items-center justify-center text-sm text-slate-600 font-medium">
                         <Building className="h-4 w-4 mr-1" />
                         {profile.current_company}
                       </div>
@@ -382,11 +382,11 @@ const People = () => {
         </div>
 
         {profiles && profiles.length === 0 && !isLoading && (
-          <Card>
+          <Card className="bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl shadow-lg">
             <CardContent className="p-12 text-center">
-              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No people found</h3>
-              <p className="text-gray-600">Try adjusting your search criteria to find more professionals.</p>
+              <Users className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-slate-900 mb-2 tracking-tight">No people found</h3>
+              <p className="text-slate-600 font-medium">Try adjusting your search criteria to find more professionals.</p>
             </CardContent>
           </Card>
         )}
