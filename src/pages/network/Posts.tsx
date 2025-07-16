@@ -237,23 +237,31 @@ const Posts = () => {
   const missingFields = currentUserProfile ? getMissingProfileFields(currentUserProfile) : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50/90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Simplified Header */}
-        <div className="mb-6">
+        <div className="mb-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 bg-white/90 backdrop-blur-md p-1 rounded-2xl border border-gray-200/60 shadow-lg">
               <Button
-                variant={feedFilter === 'all' ? 'default' : 'outline'}
+                variant={feedFilter === 'all' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setFeedFilter('all')}
+                className={feedFilter === 'all' 
+                  ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-xl shadow-md" 
+                  : "text-gray-700 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl"
+                }
               >
                 All Posts
               </Button>
               <Button
-                variant={feedFilter === 'smart' ? 'default' : 'outline'}
+                variant={feedFilter === 'smart' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setFeedFilter('smart')}
+                className={feedFilter === 'smart' 
+                  ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-xl shadow-md" 
+                  : "text-gray-700 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl"
+                }
               >
                 Smart Feed
               </Button>
@@ -301,9 +309,9 @@ const Posts = () => {
 
 
         {/* Three Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Sidebar - Profile Information */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 space-y-6">
             {/* LinkedIn Style Profile Banner */}
             <LinkedInStyleBanner
               profile={currentUserProfile}
@@ -315,94 +323,94 @@ const Posts = () => {
             />
             
             {/* Navigation Menu */}
-            <Card className="p-3">
-              <div className="space-y-1">
-                <h3 className="font-semibold text-sm mb-2 px-2">Navigation</h3>
+            <Card className="bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-2xl overflow-hidden">
+              <div className="p-4 space-y-1">
+                <h3 className="font-bold text-gray-900 text-sm mb-3 px-2 tracking-tight">Navigation</h3>
                 <Link to="/network" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <MessageCircle className="h-3 w-3 mr-2" />
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <MessageCircle className="h-3.5 w-3.5 mr-3" />
                     Feed
                   </Button>
                 </Link>
                 <Link to="/dashboard" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <Sparkles className="h-3 w-3 mr-2" />
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <Sparkles className="h-3.5 w-3.5 mr-3" />
                     Dashboard
                   </Button>
                 </Link>
                 <Link to="/network/people" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <Users className="h-3 w-3 mr-2" />
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <Users className="h-3.5 w-3.5 mr-3" />
                     My Network
                   </Button>
                 </Link>
                 <Link to="/jobs" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <Briefcase className="h-3 w-3 mr-2" />
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <Briefcase className="h-3.5 w-3.5 mr-3" />
                     Jobs
                   </Button>
                 </Link>
                 <Link to="/network/messages" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <MessageCircle className="h-3 w-3 mr-2" />
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <MessageCircle className="h-3.5 w-3.5 mr-3" />
                     Messaging
                   </Button>
                 </Link>
                 <Link to="/network/notifications" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <Bell className="h-3 w-3 mr-2" />
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <Bell className="h-3.5 w-3.5 mr-3" />
                     Notifications
                   </Button>
                 </Link>
                 {hasEmployerAccess && (
                   <Link to="/pro/services" className="block">
-                    <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                      <Settings className="h-3 w-3 mr-2" />
+                    <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                      <Settings className="h-3.5 w-3.5 mr-3" />
                       Set Up Services
                     </Button>
                   </Link>
                 )}
               </div>
               
-              <div className="space-y-1 mt-3">
-                <h3 className="font-semibold text-sm mb-2 px-2">Discover</h3>
+              <div className="space-y-1 mt-4 pt-3 border-t border-gray-200/60">
+                <h3 className="font-bold text-gray-900 text-sm mb-3 px-2 tracking-tight">Discover</h3>
                 <Link to="/career-map" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <MapPin className="h-3 w-3 mr-2" />
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <MapPin className="h-3.5 w-3.5 mr-3" />
                     Career mapping
                   </Button>
                 </Link>
                 <Link to="/network/events" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <Calendar className="h-3 w-3 mr-2" />
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <Calendar className="h-3.5 w-3.5 mr-3" />
                     Events
                   </Button>
                 </Link>
                 <Link to="/learning" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <span className="h-3 w-3 mr-2">📚</span>
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <span className="h-3.5 w-3.5 mr-3 text-sm">📚</span>
                     Courses
                   </Button>
                 </Link>
               </div>
               
-              <div className="space-y-1 mt-3">
-                <h3 className="font-semibold text-sm mb-2 px-2">Settings</h3>
+              <div className="space-y-1 mt-4 pt-3 border-t border-gray-200/60">
+                <h3 className="font-bold text-gray-900 text-sm mb-3 px-2 tracking-tight">Settings</h3>
                 <Link to="/profile/edit" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <span className="h-3 w-3 mr-2">✏️</span>
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <span className="h-3.5 w-3.5 mr-3 text-sm">✏️</span>
                     Edit Profile
                   </Button>
                 </Link>
                 <Link to="/profile/analytics" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <Eye className="h-3 w-3 mr-2" />
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <Eye className="h-3.5 w-3.5 mr-3" />
                     Edit Views
                   </Button>
                 </Link>
                 <Link to="/profile/settings" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <span className="h-3 w-3 mr-2">🔒</span>
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <span className="h-3.5 w-3.5 mr-3 text-sm">🔒</span>
                     Privacy
                   </Button>
                 </Link>
@@ -702,105 +710,111 @@ const Posts = () => {
           </div>
 
           {/* Right Sidebar - Network Activity */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 space-y-6">
             {/* Connection Requests */}
             <ConnectionRequests />
 
             {/* Quick Actions */}
-            <Card className="p-3">
-              <h3 className="font-semibold text-sm mb-3">Quick Actions</h3>
-              <div className="space-y-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-start h-8 text-xs"
-                  onClick={() => setShowAIAssistant(!showAIAssistant)}
-                >
-                  <Sparkles className="h-3 w-3 mr-2" />
-                  AI Assistant
-                </Button>
-                <Link to="/network/people" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <Users className="h-3 w-3 mr-2" />
-                    Find People
+            <Card className="bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-2xl overflow-hidden">
+              <div className="p-4">
+                <h3 className="font-bold text-gray-900 text-sm mb-4 tracking-tight">Quick Actions</h3>
+                <div className="space-y-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200"
+                    onClick={() => setShowAIAssistant(!showAIAssistant)}
+                  >
+                    <Sparkles className="h-3.5 w-3.5 mr-3" />
+                    AI Assistant
                   </Button>
-                </Link>
-                <Link to="/network/events" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <Calendar className="h-3 w-3 mr-2" />
-                    Events
-                  </Button>
-                </Link>
-                <Link to="/companies" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
-                    <Briefcase className="h-3 w-3 mr-2" />
-                    Companies
-                  </Button>
-                </Link>
+                  <Link to="/network/people" className="block">
+                    <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                      <Users className="h-3.5 w-3.5 mr-3" />
+                      Find People
+                    </Button>
+                  </Link>
+                  <Link to="/network/events" className="block">
+                    <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                      <Calendar className="h-3.5 w-3.5 mr-3" />
+                      Events
+                    </Button>
+                  </Link>
+                  <Link to="/companies" className="block">
+                    <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                      <Briefcase className="h-3.5 w-3.5 mr-3" />
+                      Companies
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </Card>
 
             {/* Network Stats */}
-            <Card className="p-3">
-              <h3 className="font-semibold text-sm mb-3">Activity</h3>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">Posts Shared</span>
-                  <span className="text-sm font-bold">12</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">Comments</span>
-                  <span className="text-sm font-bold">8</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">Likes Given</span>
-                  <span className="text-sm font-bold">24</span>
+            <Card className="bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-2xl overflow-hidden">
+              <div className="p-4">
+                <h3 className="font-bold text-gray-900 text-sm mb-4 tracking-tight">Activity</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-700 font-medium">Posts Shared</span>
+                    <span className="text-sm font-bold text-gray-900">12</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-700 font-medium">Comments</span>
+                    <span className="text-sm font-bold text-gray-900">8</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-700 font-medium">Likes Given</span>
+                    <span className="text-sm font-bold text-gray-900">24</span>
+                  </div>
                 </div>
               </div>
             </Card>
 
             {/* Recent Connections */}
-            <Card className="p-3">
-              <h3 className="font-semibold text-sm mb-3">Recent Connections</h3>
-              <div className="space-y-2">
-                {connectionsLoading ? (
-                  [...Array(2)].map((_, index) => (
-                    <div key={index} className="flex items-center space-x-2 animate-pulse">
-                      <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-                      <div className="flex-1">
-                        <div className="h-3 bg-gray-300 rounded w-3/4 mb-1"></div>
-                        <div className="h-2 bg-gray-300 rounded w-1/2"></div>
+            <Card className="bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-2xl overflow-hidden">
+              <div className="p-4">
+                <h3 className="font-bold text-gray-900 text-sm mb-4 tracking-tight">Recent Connections</h3>
+                <div className="space-y-3">
+                  {connectionsLoading ? (
+                    [...Array(2)].map((_, index) => (
+                      <div key={index} className="flex items-center space-x-3 animate-pulse">
+                        <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                        <div className="flex-1">
+                          <div className="h-3 bg-gray-300 rounded w-3/4 mb-1"></div>
+                          <div className="h-2 bg-gray-300 rounded w-1/2"></div>
+                        </div>
                       </div>
-                    </div>
-                  ))
-                ) : connections && connections.length > 0 ? (
-                  connections.slice(0, 2).map((connection, index) => (
-                    <div key={connection.id} className="flex items-center space-x-2">
-                      <Avatar className="w-8 h-8">
-                        <AvatarImage src={connection.otherUser?.profile_picture_url} />
-                        <AvatarFallback className="text-xs">
-                          {generateInitials(connection.otherUser)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-xs truncate">
-                          {formatDisplayName(connection.otherUser)}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate">
-                          {connection.otherUser?.title || 'Professional'}
-                        </p>
+                    ))
+                  ) : connections && connections.length > 0 ? (
+                    connections.slice(0, 2).map((connection, index) => (
+                      <div key={connection.id} className="flex items-center space-x-3">
+                        <Avatar className="w-8 h-8">
+                          <AvatarImage src={connection.otherUser?.profile_picture_url} />
+                          <AvatarFallback className="text-xs bg-gray-100 text-gray-800 font-medium">
+                            {generateInitials(connection.otherUser)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-xs truncate text-gray-900">
+                            {formatDisplayName(connection.otherUser)}
+                          </p>
+                          <p className="text-xs text-gray-600 truncate font-medium">
+                            {connection.otherUser?.title || 'Professional'}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-xs text-gray-500 text-center py-2">No connections yet</p>
-                )}
+                    ))
+                  ) : (
+                    <p className="text-xs text-gray-600 text-center py-2 font-medium">No connections yet</p>
+                  )}
+                </div>
+                <Link to="/network/people" className="block mt-3">
+                  <Button variant="ghost" size="sm" className="w-full text-xs h-8 text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    View All
+                  </Button>
+                </Link>
               </div>
-              <Link to="/network/people" className="block mt-2">
-                <Button variant="ghost" size="sm" className="w-full text-xs h-7">
-                  View All
-                </Button>
-              </Link>
             </Card>
 
             {/* Pro Sidebar Banner */}
