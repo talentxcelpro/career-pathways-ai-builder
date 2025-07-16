@@ -28,6 +28,9 @@ import { AppleInspiredFileUpload } from './AppleInspiredFileUpload';
 import { AppleInspiredProcessing } from './AppleInspiredProcessing';
 import { AppleInspiredTemplateGallery } from './AppleInspiredTemplateGallery';
 import { MobileResumeViewer, MobileTouchFileUpload } from './MobileOptimizedComponents';
+import { AdvancedExportFeatures } from './AdvancedExportFeatures';
+import { ProfessionalPortfolioBuilder } from './ProfessionalPortfolioBuilder';
+import { RealTimeCollaboration } from './RealTimeCollaboration';
 import { useEnhancedResumeUpload } from '@/hooks/useEnhancedResumeUpload';
 import { useAdvancedAIFeatures } from '@/hooks/useAdvancedAIFeatures';
 
@@ -62,7 +65,7 @@ export const AppleInspiredResumeBuilder = () => {
     resetUpload
   } = useEnhancedResumeUpload();
 
-  const [currentStep, setCurrentStep] = useState<'welcome' | 'upload' | 'processing' | 'templates' | 'complete'>('welcome');
+  const [currentStep, setCurrentStep] = useState<'welcome' | 'upload' | 'processing' | 'templates' | 'export' | 'portfolio' | 'collaborate' | 'complete'>('welcome');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [resumeData, setResumeData] = useState<ResumeData>({
     personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
@@ -308,6 +311,130 @@ export const AppleInspiredResumeBuilder = () => {
           </div>
         )}
 
+        {currentStep === 'export' && (
+          <div className="min-h-screen py-8 px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-8 animate-slideInUp">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Export Your Resume</h2>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  Choose from multiple export formats and sharing options to get your resume to employers.
+                </p>
+              </div>
+              
+              <AdvancedExportFeatures
+                resumeData={resumeData}
+                resumeId={resumeId || 'resume'}
+                className="animate-fadeInScale"
+              />
+              
+              <div className="mt-8 text-center space-x-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep('portfolio')}
+                  className="bg-white/80 backdrop-blur-sm"
+                >
+                  <Briefcase className="h-4 w-4 mr-2" />
+                  Build Portfolio
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep('collaborate')}
+                  className="bg-white/80 backdrop-blur-sm"
+                >
+                  <Globe className="h-4 w-4 mr-2" />
+                  Share & Collaborate
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 'portfolio' && (
+          <div className="min-h-screen py-8 px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-8 animate-slideInUp">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Build Your Portfolio</h2>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  Showcase your projects and create an interactive portfolio that complements your resume.
+                </p>
+              </div>
+              
+              <ProfessionalPortfolioBuilder
+                resumeData={resumeData}
+                onUpdate={(portfolioData) => {
+                  console.log('Portfolio updated:', portfolioData);
+                  toast.success('Portfolio updated successfully!');
+                }}
+                className="animate-fadeInScale"
+              />
+              
+              <div className="mt-8 text-center space-x-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep('export')}
+                  className="bg-white/80 backdrop-blur-sm"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Options
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep('collaborate')}
+                  className="bg-white/80 backdrop-blur-sm"
+                >
+                  <Globe className="h-4 w-4 mr-2" />
+                  Share & Collaborate
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 'collaborate' && (
+          <div className="min-h-screen py-8 px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-8 animate-slideInUp">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Share & Collaborate</h2>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  Invite others to review your resume, get feedback, and collaborate in real-time.
+                </p>
+              </div>
+              
+              <RealTimeCollaboration
+                resumeId={resumeId || 'resume'}
+                isOwner={true}
+                className="animate-fadeInScale"
+              />
+              
+              <div className="mt-8 text-center space-x-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep('export')}
+                  className="bg-white/80 backdrop-blur-sm"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Options
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep('portfolio')}
+                  className="bg-white/80 backdrop-blur-sm"
+                >
+                  <Briefcase className="h-4 w-4 mr-2" />
+                  Build Portfolio
+                </Button>
+                <Button
+                  onClick={() => setCurrentStep('complete')}
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Complete Resume
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {currentStep === 'complete' && (
           <div className="min-h-screen flex items-center justify-center p-4">
             <div className="max-w-2xl mx-auto text-center space-y-8 animate-fadeInScale">
@@ -316,17 +443,18 @@ export const AppleInspiredResumeBuilder = () => {
               </div>
               
               <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-gray-900">Resume Created Successfully!</h2>
+                <h2 className="text-3xl font-bold text-gray-900">Resume Complete!</h2>
                 <p className="text-gray-600 max-w-lg mx-auto">
-                  Your resume has been created and optimized. You'll be redirected to the editor where you can make final adjustments.
+                  Your professional resume with portfolio and collaboration features is ready to help you land your dream job.
                 </p>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {[
                   { icon: <Target className="h-5 w-5" />, label: "ATS Optimized", value: "98%" },
                   { icon: <Brain className="h-5 w-5" />, label: "AI Enhanced", value: "100%" },
-                  { icon: <Sparkles className="h-5 w-5" />, label: "Ready to Export", value: "✓" }
+                  { icon: <Briefcase className="h-5 w-5" />, label: "Portfolio Ready", value: "✓" },
+                  { icon: <Globe className="h-5 w-5" />, label: "Collaboration", value: "✓" }
                 ].map((stat, index) => (
                   <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
                     <CardContent className="p-4 text-center">
@@ -340,8 +468,24 @@ export const AppleInspiredResumeBuilder = () => {
                 ))}
               </div>
               
-              <div className="text-sm text-gray-500">
-                Redirecting to editor in 3 seconds...
+              <div className="flex gap-4 justify-center">
+                <Button
+                  onClick={() => navigate('/resume-builder/dashboard')}
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  View Dashboard
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep('export')}
+                  size="lg"
+                  className="bg-white/80 backdrop-blur-sm"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download Resume
+                </Button>
               </div>
             </div>
           </div>
