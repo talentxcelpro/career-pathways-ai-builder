@@ -68,32 +68,45 @@ export const useEnhancedAI = () => {
 
       console.log('🚀 Sending AI request:', JSON.stringify(requestPayload, null, 2));
 
-      // Try Supabase client first, fallback to direct fetch
+      // Try Supabase client first, fallback to direct fetch if it fails
       let result;
+      let clientError = null;
+      let fetchError = null;
+      
       try {
         result = await supabase.functions.invoke('ai-agent', {
           body: requestPayload
         });
-      } catch (clientError) {
-        console.warn('⚠️ Supabase client failed, using direct fetch fallback:', clientError);
+        console.log('✅ Supabase client succeeded');
+      } catch (error) {
+        clientError = error;
+        console.warn('⚠️ Supabase client failed, trying direct fetch fallback:', error);
         
         // Direct fetch fallback
-        const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-agent', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(requestPayload)
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        try {
+          const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-agent', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestPayload)
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          
+          const data = await response.json();
+          result = { data, error: null };
+          console.log('✅ Direct fetch fallback succeeded');
+        } catch (error) {
+          fetchError = error;
+          console.error('❌ Direct fetch fallback also failed:', error);
+          // If both client and direct fetch fail, throw the direct fetch error
+          throw new Error(`Failed to send a request to the Edge Function. Client error: ${clientError?.message || 'Unknown'}. Fetch error: ${fetchError?.message || 'Unknown'}`);
         }
-        
-        const data = await response.json();
-        result = { data, error: null };
       }
 
       const { data, error } = result;
