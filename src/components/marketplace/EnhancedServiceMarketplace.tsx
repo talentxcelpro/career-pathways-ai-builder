@@ -786,16 +786,15 @@ export default function EnhancedServiceMarketplace() {
           </Card>
         </motion.div>
 
-        {/* Subscription CTA Button */}
-        <div className="my-16 text-center">
-          <Button 
-            onClick={() => window.open('/pro/subscription', '_blank')}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+        {/* Pro Upgrade Placeholder */}
+        <div className="my-2 text-center">
+          <a 
+            href="/pro/subscription"
+            className="inline-flex items-center text-xs text-purple-600 hover:text-purple-700 transition-colors"
           >
-            <Crown className="h-5 w-5 mr-2" />
+            <Crown className="h-3 w-3 mr-1" />
             Upgrade to Pro
-            <ArrowRight className="h-5 w-5 ml-2" />
-          </Button>
+          </a>
         </div>
 
         {/* Search and Filters */}
