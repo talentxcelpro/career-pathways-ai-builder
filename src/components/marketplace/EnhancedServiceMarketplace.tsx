@@ -757,7 +757,7 @@ export default function EnhancedServiceMarketplace() {
                   <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-3 rounded-2xl shadow-lg">
                     <User className="h-6 w-6 text-white" />
                   </div>
-                  <div className="text-4xl font-bold text-gray-900">{stats.totalProviders}+</div>
+                  <div className="text-2xl font-bold text-gray-900">{stats.totalProviders}+</div>
                   <div className="text-sm text-gray-600 font-medium">Verified Experts</div>
                 </motion.div>
                 
@@ -768,7 +768,7 @@ export default function EnhancedServiceMarketplace() {
                   <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-2xl shadow-lg">
                     <Sparkles className="h-6 w-6 text-white" />
                   </div>
-                  <div className="text-4xl font-bold text-gray-900">{stats.totalServices}+</div>
+                  <div className="text-2xl font-bold text-gray-900">{stats.totalServices}+</div>
                   <div className="text-sm text-gray-600 font-medium">Services</div>
                 </motion.div>
                 
@@ -779,7 +779,7 @@ export default function EnhancedServiceMarketplace() {
                   <div className="bg-gradient-to-r from-yellow-500 to-orange-500 p-3 rounded-2xl shadow-lg">
                     <Star className="h-6 w-6 text-white" />
                   </div>
-                  <div className="text-4xl font-bold text-gray-900">{stats.averageRating}</div>
+                  <div className="text-2xl font-bold text-gray-900">{stats.averageRating}</div>
                   <div className="text-sm text-gray-600 font-medium">Avg Rating</div>
                 </motion.div>
                 
@@ -790,7 +790,7 @@ export default function EnhancedServiceMarketplace() {
                   <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-2xl shadow-lg">
                     <Trophy className="h-6 w-6 text-white" />
                   </div>
-                  <div className="text-4xl font-bold text-gray-900">{stats.totalOrders}+</div>
+                  <div className="text-2xl font-bold text-gray-900">{stats.totalOrders}+</div>
                   <div className="text-sm text-gray-600 font-medium">Orders Completed</div>
                 </motion.div>
               </div>
