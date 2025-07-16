@@ -74,62 +74,96 @@ export const AppleHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Side - Visual Story */}
+          {/* Right Side - Dynamic Visual Story */}
           <div className="relative">
-            <div className="relative z-10">
-              {/* Main handshake image */}
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-2xl group-hover:blur-xl transition-all duration-500"></div>
+            {/* Multiple hovering images with advanced animations */}
+            <div className="relative z-10 grid grid-cols-2 gap-4 h-[600px]">
+              {/* Main central image */}
+              <div className="col-span-2 relative group hover:scale-105 transition-all duration-700 hover:rotate-1">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-3xl blur-2xl group-hover:blur-xl transition-all duration-500 animate-pulse"></div>
                 <img 
                   src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
                   alt="Professionals collaborating"
-                  className="relative rounded-3xl shadow-2xl group-hover:shadow-3xl transition-all duration-500 w-full h-[500px] object-cover"
+                  className="relative rounded-3xl shadow-2xl group-hover:shadow-3xl transition-all duration-500 w-full h-[280px] object-cover"
                 />
               </div>
 
-              {/* Floating achievement cards */}
-              <div className="absolute -top-6 -left-6 bg-white rounded-2xl p-4 shadow-xl animate-fade-in">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                    ✅
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm text-slate-900">Upskill with Confidence</p>
-                    <p className="text-xs text-slate-600">AI-powered learning paths</p>
-                  </div>
-                </div>
+              {/* Bottom left - smaller image */}
+              <div className="relative group hover:scale-110 transition-all duration-500 hover:-rotate-2">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
+                <img 
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  alt="Professional growth"
+                  className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[280px] object-cover"
+                />
               </div>
 
-              <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-4 shadow-xl animate-fade-in delay-1000">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                    🎯
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm text-slate-900">Land Your Dream Role</p>
-                    <p className="text-xs text-slate-600">Personalized job matching</p>
-                  </div>
-                </div>
+              {/* Bottom right - smaller image */}
+              <div className="relative group hover:scale-110 transition-all duration-500 hover:rotate-2">
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-pink-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
+                <img 
+                  src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  alt="Team collaboration"
+                  className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[280px] object-cover"
+                />
               </div>
+            </div>
 
-              <div className="absolute top-1/2 -right-8 bg-white rounded-2xl p-4 shadow-xl animate-fade-in delay-2000">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                    🤝
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm text-slate-900">Connect. Learn. Grow.</p>
-                    <p className="text-xs text-slate-600">Global professional network</p>
-                  </div>
+            {/* Floating achievement cards with enhanced animations */}
+            <div className="absolute -top-8 -left-8 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-2xl animate-fade-in hover:scale-105 transition-all duration-300 hover:shadow-3xl">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-lg">✅</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-slate-900">Upskill with Confidence</p>
+                  <p className="text-xs text-slate-600">AI-powered learning paths</p>
                 </div>
               </div>
             </div>
 
-            {/* Background decorative elements */}
-            <div className="absolute top-0 left-0 w-full h-full">
-              <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-blue-400 rounded-full opacity-60 animate-pulse"></div>
-              <div className="absolute bottom-1/3 right-1/3 w-3 h-3 bg-purple-400 rounded-full opacity-60 animate-pulse delay-1000"></div>
-              <div className="absolute top-1/2 left-1/6 w-2 h-2 bg-indigo-400 rounded-full opacity-60 animate-pulse delay-2000"></div>
+            <div className="absolute -bottom-8 -right-8 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-2xl animate-fade-in delay-1000 hover:scale-105 transition-all duration-300 hover:shadow-3xl">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-lg">🎯</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-slate-900">Land Your Dream Role</p>
+                  <p className="text-xs text-slate-600">Personalized job matching</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute top-1/2 -right-10 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-2xl animate-fade-in delay-2000 hover:scale-105 transition-all duration-300 hover:shadow-3xl">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-lg">🤝</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-slate-900">Connect. Learn. Grow.</p>
+                  <p className="text-xs text-slate-600">Global professional network</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute top-1/4 -left-6 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-2xl animate-fade-in delay-3000 hover:scale-105 transition-all duration-300 hover:shadow-3xl">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-lg">🚀</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-slate-900">Career Acceleration</p>
+                  <p className="text-xs text-slate-600">Fast-track your growth</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Enhanced floating elements */}
+            <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+              <div className="absolute top-1/6 left-1/5 w-6 h-6 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full opacity-70 animate-bounce" style={{ animationDelay: '0s', animationDuration: '3s' }}></div>
+              <div className="absolute bottom-1/4 right-1/4 w-4 h-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-60 animate-bounce" style={{ animationDelay: '1s', animationDuration: '4s' }}></div>
+              <div className="absolute top-1/2 left-1/8 w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full opacity-50 animate-bounce" style={{ animationDelay: '2s', animationDuration: '5s' }}></div>
+              <div className="absolute top-3/4 right-1/3 w-5 h-5 bg-gradient-to-r from-orange-400 to-red-400 rounded-full opacity-40 animate-bounce" style={{ animationDelay: '3s', animationDuration: '6s' }}></div>
             </div>
           </div>
         </div>

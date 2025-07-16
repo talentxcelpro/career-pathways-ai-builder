@@ -100,8 +100,8 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
   };
 
   return (
-    <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm border-0 shadow-2xl">
-      <CardContent className="p-6 space-y-4">
+    <Card className="w-full bg-white/95 backdrop-blur-sm border-0 shadow-none">
+      <CardContent className="p-0 space-y-6">
         {/* Tab Toggle */}
         <div className="flex bg-slate-100 rounded-lg p-1 mb-6">
           <button
