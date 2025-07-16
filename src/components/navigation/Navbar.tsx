@@ -131,6 +131,7 @@ export const Navbar = () => {
   const { isAdmin } = useAdminAccess();
   const { hasEmployerAccess, employerStatus } = useEmployerAccess();
 
+
   const getEmployerButtonText = () => {
     if (!user) return 'Login';
     if (hasEmployerAccess) return 'Employer Dashboard';
@@ -258,13 +259,21 @@ export const Navbar = () => {
                           <span>Company Dashboard</span>
                         </Link>
                       </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem asChild>
-                      <Link to="/profile/settings" className="flex items-center">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
-                      </Link>
-                    </DropdownMenuItem>
+                     )}
+                     {hasEmployerAccess && (
+                       <DropdownMenuItem asChild>
+                         <Link to="/pro/services" className="flex items-center">
+                           <Settings className="mr-2 h-4 w-4" />
+                           <span>Set Up Services</span>
+                         </Link>
+                       </DropdownMenuItem>
+                     )}
+                     <DropdownMenuItem asChild>
+                       <Link to="/profile/settings" className="flex items-center">
+                         <Settings className="mr-2 h-4 w-4" />
+                         <span>Settings</span>
+                       </Link>
+                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
