@@ -16,7 +16,12 @@ import {
   Award,
   Building,
   Star,
-  Network
+  Network,
+  MessageCircle,
+  ArrowRight,
+  CheckCircle,
+  Share2,
+  GitCompare
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -29,72 +34,96 @@ const Colleges = () => {
   const colleges = [
     {
       id: '1',
-      name: 'Stanford University',
-      type: 'University',
-      location: 'Stanford, CA',
+      name: 'Indian Institute of Technology Delhi',
+      type: 'Government',
+      location: 'New Delhi, Delhi',
       logo_url: '/placeholder.svg',
-      description: 'Leading research university known for innovation and entrepreneurship',
-      ranking: 2,
+      image_url: '/lovable-uploads/effdb875-ad25-42af-8f36-067d9541fc15.png',
+      description: 'Premier engineering institution known for excellence in technical education and cutting-edge research.',
+      ranking: 1,
+      nationalRank: 1,
       alumni_count: 45000,
-      students_count: 17000,
-      established: 1885,
-      notable_programs: ['Computer Science', 'Engineering', 'Business', 'Medicine'],
+      students_count: 8500,
+      established: 1961,
+      notable_programs: ['Computer Science', 'Engineering', 'Electronics', 'Mechanical'],
       upcoming_events: 3,
       verified_alumni: 2340,
-      rating: 4.8
+      rating: 4.9,
+      placementRate: 95,
+      verified: true,
+      featured: true,
+      tags: ['#1 National', 'Government', 'Featured']
     },
     {
       id: '2',
-      name: 'MIT',
-      type: 'Institute',
-      location: 'Cambridge, MA',
+      name: 'Indian Institute of Technology Bombay',
+      type: 'Government',
+      location: 'Mumbai, Maharashtra',
       logo_url: '/placeholder.svg',
-      description: 'Premier institution for science, technology, engineering, and mathematics',
-      ranking: 1,
+      image_url: '/placeholder.svg',
+      description: 'Leading technological institute with strong industry connections and research excellence.',
+      ranking: 2,
+      nationalRank: 2,
       alumni_count: 38000,
       students_count: 11500,
-      established: 1861,
-      notable_programs: ['Engineering', 'Computer Science', 'Physics', 'Economics'],
+      established: 1958,
+      notable_programs: ['Engineering', 'Computer Science', 'Management', 'Design'],
       upcoming_events: 5,
       verified_alumni: 1890,
-      rating: 4.9
+      rating: 4.8,
+      placementRate: 92,
+      verified: true,
+      featured: true,
+      tags: ['#2 National', 'Government', 'Featured']
     },
     {
       id: '3',
-      name: 'UC Berkeley',
-      type: 'University',
-      location: 'Berkeley, CA',
+      name: 'Birla Institute of Technology and Science',
+      type: 'Private',
+      location: 'Pilani, Rajasthan',
       logo_url: '/placeholder.svg',
-      description: 'Top public research university with diverse academic programs',
+      image_url: '/placeholder.svg',
+      description: 'Prestigious private institute known for innovative curriculum and entrepreneurship.',
       ranking: 4,
+      nationalRank: 15,
       alumni_count: 78000,
       students_count: 45000,
-      established: 1868,
-      notable_programs: ['Engineering', 'Business', 'Public Policy', 'Liberal Arts'],
+      established: 1964,
+      notable_programs: ['Engineering', 'Management', 'Pharmacy', 'Sciences'],
       upcoming_events: 8,
       verified_alumni: 4560,
-      rating: 4.6
+      rating: 4.6,
+      placementRate: 88,
+      verified: true,
+      featured: false,
+      tags: ['#15 National', 'Private', 'Innovation Hub']
     },
     {
       id: '4',
-      name: 'Carnegie Mellon',
-      type: 'University',
-      location: 'Pittsburgh, PA',
+      name: 'Vellore Institute of Technology',
+      type: 'Private',
+      location: 'Vellore, Tamil Nadu',
       logo_url: '/placeholder.svg',
-      description: 'Global research university with strength in technology and arts',
+      image_url: '/placeholder.svg',
+      description: 'Modern university with global outlook and strong industry partnerships.',
       ranking: 15,
+      nationalRank: 25,
       alumni_count: 32000,
       students_count: 14500,
-      established: 1900,
-      notable_programs: ['Computer Science', 'Engineering', 'Drama', 'Design'],
+      established: 1984,
+      notable_programs: ['Computer Science', 'Engineering', 'Business', 'Design'],
       upcoming_events: 2,
       verified_alumni: 1230,
-      rating: 4.7
+      rating: 4.4,
+      placementRate: 85,
+      verified: true,
+      featured: false,
+      tags: ['#25 National', 'Private', 'Global']
     }
   ];
 
-  const collegeTypes = ['University', 'Institute', 'College', 'Community College'];
-  const locations = ['California', 'Massachusetts', 'New York', 'Pennsylvania', 'Texas'];
+  const collegeTypes = ['Government', 'Private', 'Deemed', 'Autonomous'];
+  const locations = ['Delhi', 'Mumbai', 'Bangalore', 'Chennai', 'Pune', 'Hyderabad'];
 
   const filteredColleges = colleges.filter(college => {
     const matchesSearch = college.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -184,82 +213,110 @@ const Colleges = () => {
         </Card>
 
         {/* Colleges Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredColleges.map((college) => (
-            <Card key={college.id} className="hover:shadow-apple-heavy transition-all duration-300 border-0 bg-white/90 backdrop-blur-sm rounded-2xl group">
-              <CardHeader className="p-8">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-20 w-20 shadow-apple-light">
-                      <AvatarImage src={college.logo_url} alt={college.name} />
-                      <AvatarFallback className="text-2xl font-bold text-text-primary bg-gray-100">
-                        {college.name.split(' ').map(word => word[0]).join('').substring(0, 2)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <CardTitle className="text-2xl font-bold text-text-primary font-display group-hover:text-primary transition-colors">
-                        {college.name}
-                      </CardTitle>
-                      <div className="flex items-center space-x-3 mt-2">
-                        <Badge variant="secondary" className="bg-primary/10 text-primary border-0 px-3 py-1 rounded-xl">
-                          #{college.ranking} Ranked
-                        </Badge>
-                        <div className="flex items-center">
-                          <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                          <span className="text-base font-semibold ml-2 text-text-primary">{college.rating}</span>
-                        </div>
-                      </div>
-                    </div>
+            <Card key={college.id} className="overflow-hidden hover:shadow-apple-heavy transition-all duration-300 border-0 bg-white/90 backdrop-blur-sm rounded-2xl group">
+              {/* College Image */}
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src={college.image_url} 
+                  alt={college.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                {college.verified && (
+                  <div className="absolute top-4 left-4">
+                    <Badge className="bg-green-500 text-white border-0 px-3 py-1 rounded-full flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3" />
+                      Verified
+                    </Badge>
                   </div>
+                )}
+                <div className="absolute top-4 right-4">
+                  <Button size="icon" variant="ghost" className="h-8 w-8 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
                 </div>
-                <CardDescription className="mt-6 text-base leading-relaxed text-text-secondary">
+              </div>
+
+              <CardHeader className="p-6">
+                <CardTitle className="text-xl font-bold text-text-primary font-display group-hover:text-primary transition-colors leading-tight">
+                  {college.name}
+                </CardTitle>
+                
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {college.tags.map((tag, index) => (
+                    <Badge 
+                      key={index} 
+                      variant={tag.includes('National') ? 'default' : tag === 'Government' ? 'secondary' : 'outline'}
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        tag.includes('National') ? 'bg-yellow-500 text-white' : 
+                        tag === 'Government' ? 'bg-blue-100 text-blue-700' :
+                        tag === 'Featured' ? 'bg-purple-500 text-white' :
+                        'border-gray-200 text-gray-600'
+                      }`}
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+
+                <CardDescription className="mt-3 text-sm leading-relaxed text-text-secondary line-clamp-2">
                   {college.description}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="px-8 pb-8">
-                <div className="space-y-6">
-                  <div className="flex items-center space-x-6 text-base text-text-secondary">
+
+              <CardContent className="px-6 pb-6">
+                <div className="space-y-4">
+                  {/* Location and Established */}
+                  <div className="flex items-center justify-between text-sm text-text-secondary">
                     <div className="flex items-center">
-                      <MapPin className="h-5 w-5 mr-2" />
+                      <MapPin className="h-4 w-4 mr-2" />
                       {college.location}
                     </div>
                     <div className="flex items-center">
-                      <Users className="h-5 w-5 mr-2" />
-                      {college.students_count.toLocaleString()} students
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Est. {college.established}
                     </div>
                   </div>
                   
-                  <div>
-                    <h4 className="font-semibold text-text-primary mb-3 text-lg">Notable Programs</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {college.notable_programs.slice(0, 3).map((program, index) => (
-                        <Badge key={index} variant="outline" className="text-sm px-3 py-1 border-gray-200 text-text-secondary rounded-xl">
-                          {program}
-                        </Badge>
-                      ))}
-                      {college.notable_programs.length > 3 && (
-                        <Badge variant="outline" className="text-sm px-3 py-1 border-gray-200 text-text-secondary rounded-xl">
-                          +{college.notable_programs.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 text-base">
-                    <div className="flex items-center text-primary">
-                      <GraduationCap className="h-5 w-5 mr-2" />
-                      {college.verified_alumni.toLocaleString()} verified alumni
+                  {/* Stats */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-text-primary">
+                      <Users className="h-4 w-4 mr-2 text-primary" />
+                      <span className="font-semibold">{college.students_count.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center text-green-600">
-                      <Calendar className="h-5 w-5 mr-2" />
-                      {college.upcoming_events} events
+                      <Award className="h-4 w-4 mr-2" />
+                      <span className="font-semibold">{college.placementRate}%</span>
                     </div>
                   </div>
                   
-                  <div className="pt-4">
-                    <Link to={`/colleges/${college.id}`}>
-                      <Button className="w-full h-12 text-base font-semibold rounded-xl shadow-apple-light hover:shadow-apple-medium transition-all duration-200">
-                        Explore Network
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1 rounded-xl text-xs h-8 border-gray-200 hover:bg-gray-50"
+                    >
+                      <MessageCircle className="h-3 w-3 mr-1" />
+                      Chat AI
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1 rounded-xl text-xs h-8 border-gray-200 hover:bg-gray-50"
+                    >
+                      <GitCompare className="h-3 w-3 mr-1" />
+                      Compare
+                    </Button>
+                    <Link to={`/colleges/${college.id}`} className="flex-1">
+                      <Button 
+                        size="sm" 
+                        className="w-full rounded-xl text-xs h-8 bg-primary hover:bg-primary/90"
+                      >
+                        Details
+                        <ArrowRight className="h-3 w-3 ml-1" />
                       </Button>
                     </Link>
                   </div>
