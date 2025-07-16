@@ -9081,6 +9081,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_pro_service_profiles_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "pro_service_profiles_subscription_tier_fkey"
             columns: ["subscription_tier"]
             isOneToOne: false
