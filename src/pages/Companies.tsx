@@ -49,19 +49,19 @@ const Companies = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header with Apple-inspired styling */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-text-primary mb-4 font-display">
-            Top Companies
+        {/* Header with Apple-inspired styling - more compact and engaging */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-text-primary mb-2 font-display">
+            Discover Top Companies
           </h1>
-          <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-            Discover amazing companies, learn about their culture, and find your next opportunity
+          <p className="text-lg text-text-secondary max-w-2xl mx-auto">
+            Find your next opportunity with amazing companies
           </p>
         </div>
 
-        {/* AI-Powered Company Search with glassmorphism */}
-        <div className="max-w-2xl mx-auto mb-12">
-          <div className="bg-white/80 backdrop-blur-apple rounded-2xl shadow-apple-medium p-6 border border-gray-100">
+        {/* AI-Powered Company Search with glassmorphism - more compact */}
+        <div className="max-w-2xl mx-auto mb-8">
+          <div className="bg-white/80 backdrop-blur-apple rounded-2xl shadow-apple-light p-4 border border-gray-100">
             <UniversalSearchBar
               searchType="companies"
               onSearch={handleUniversalSearch}
