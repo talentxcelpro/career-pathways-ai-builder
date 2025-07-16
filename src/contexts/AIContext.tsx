@@ -75,11 +75,22 @@ function getModuleFromPath(pathname: string): string {
 
 export function AIProvider({ children }: { children: ReactNode }) {
   const location = useLocation();
+  
+  // Load conversation history from localStorage
+  const loadConversationHistory = (): ConversationMessage[] => {
+    try {
+      const saved = localStorage.getItem('talentxcel_ai_conversation');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  };
+
   const [state, setState] = useState<AIContextState>({
     currentModule: 'general',
     userProfile: null,
     sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    conversationHistory: [],
+    conversationHistory: loadConversationHistory(),
     isLoading: false,
     error: null
   });
@@ -125,14 +136,29 @@ export function AIProvider({ children }: { children: ReactNode }) {
       timestamp: new Date().toISOString()
     };
 
-    setState(prev => ({
-      ...prev,
-      conversationHistory: [...prev.conversationHistory, newMessage]
-    }));
+    setState(prev => {
+      const updatedHistory = [...prev.conversationHistory, newMessage];
+      // Save to localStorage
+      try {
+        localStorage.setItem('talentxcel_ai_conversation', JSON.stringify(updatedHistory));
+      } catch (error) {
+        console.warn('Failed to save conversation to localStorage:', error);
+      }
+      return {
+        ...prev,
+        conversationHistory: updatedHistory
+      };
+    });
   };
 
   const clearHistory = () => {
     setState(prev => ({ ...prev, conversationHistory: [] }));
+    // Clear from localStorage
+    try {
+      localStorage.removeItem('talentxcel_ai_conversation');
+    } catch (error) {
+      console.warn('Failed to clear conversation from localStorage:', error);
+    }
   };
 
   const setUserProfile = (profile: UserProfile | null) => {

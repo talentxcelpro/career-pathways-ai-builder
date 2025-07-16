@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,7 +16,9 @@ import {
   Sparkles,
   Loader2,
   Lightbulb,
-  Zap
+  Zap,
+  RotateCcw,
+  Plus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +43,8 @@ export const FloatingAIWidget = () => {
     conversationHistory, 
     isLoading, 
     error,
-    addMessage
+    addMessage,
+    clearHistory
   } = useAI();
   
   const { callEnhancedAI } = useEnhancedAI();
@@ -107,7 +110,7 @@ export const FloatingAIWidget = () => {
     ]
   };
 
-  const currentQuickActions = moduleQuickActions[currentModule] || moduleQuickActions.general || [];
+  const currentQuickActions = moduleQuickActions[currentModule] || [];
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -148,94 +151,112 @@ export const FloatingAIWidget = () => {
     }
   };
 
+  const handleNewConversation = () => {
+    clearHistory();
+    setShowQuickActions(true);
+  };
+
   if (!isOpen) {
     return (
-      <div className="fixed bottom-8 right-8 z-50">
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="h-16 w-16 rounded-full shadow-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 hover:from-blue-600 hover:via-blue-700 hover:to-indigo-700 text-white border-0 transition-all duration-300 hover:scale-110 hover:shadow-xl"
-          size="icon"
-        >
-          <Bot className="h-7 w-7" />
-        </Button>
-        <div className="absolute -top-2 -right-2 h-6 w-6 bg-emerald-500 rounded-full flex items-center justify-center">
-          <Sparkles className="h-3 w-3 text-white" />
+      <div className="fixed bottom-6 right-6 z-50">
+        <div className="relative">
+          <Button
+            onClick={() => setIsOpen(true)}
+            className="h-14 w-14 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.12)] bg-white hover:bg-gray-50 text-gray-900 border border-gray-200/50 transition-all duration-300 hover:scale-105 hover:shadow-[0_12px_40px_rgba(0,0,0,0.16)] backdrop-blur-xl"
+            size="icon"
+          >
+            <Bot className="h-6 w-6" />
+          </Button>
+          <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center animate-pulse">
+            <Sparkles className="h-3 w-3 text-white" />
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed bottom-8 right-8 z-50">
+    <div className="fixed bottom-6 right-6 z-50">
       <Card className={cn(
-        "transition-all duration-500 ease-out shadow-2xl border-0 bg-white/95 backdrop-blur-xl",
-        isMinimized ? "w-80 h-20" : "w-[420px] h-[640px]"
+        "transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] shadow-[0_20px_64px_rgba(0,0,0,0.12)] border-0 bg-white/95 backdrop-blur-2xl rounded-2xl overflow-hidden",
+        isMinimized ? "w-80 h-16" : "w-[400px] h-[600px]"
       )}>
-        <CardHeader className="p-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100/50">
+        <CardHeader className="p-4 bg-gradient-to-r from-white/90 to-gray-50/90 border-b border-gray-100/50 backdrop-blur-xl">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center text-base font-semibold text-gray-900">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mr-3">
+            <div className="flex items-center">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 flex items-center justify-center mr-3 shadow-lg">
                 <Bot className="h-4 w-4 text-white" />
               </div>
               <div className="flex flex-col">
-                <span>TalentXcel AI</span>
-                <Badge variant="secondary" className="w-fit text-xs mt-1 bg-blue-50 text-blue-700 border-0">
+                <span className="font-semibold text-gray-900 text-sm">TalentXcel AI</span>
+                <Badge variant="secondary" className="w-fit text-xs mt-0.5 bg-blue-50/70 text-blue-700 border-0 rounded-full px-2 py-0.5">
                   {currentModule.replace('_', ' ')}
                 </Badge>
               </div>
-            </CardTitle>
-            <div className="flex items-center gap-2">
+            </div>
+            <div className="flex items-center gap-1">
+              {conversationHistory.length > 0 && !isMinimized && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-gray-400 hover:text-gray-600 hover:bg-gray-100/70 rounded-full"
+                  onClick={handleNewConversation}
+                  title="New conversation"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full"
+                className="h-7 w-7 text-gray-400 hover:text-gray-600 hover:bg-gray-100/70 rounded-full"
                 onClick={() => setIsMinimized(!isMinimized)}
               >
-                {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
+                {isMinimized ? <Maximize2 className="h-3 w-3" /> : <Minimize2 className="h-3 w-3" />}
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full"
+                className="h-7 w-7 text-gray-400 hover:text-gray-600 hover:bg-gray-100/70 rounded-full"
                 onClick={() => setIsOpen(false)}
               >
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3" />
               </Button>
             </div>
           </div>
         </CardHeader>
         
         {!isMinimized && (
-          <CardContent className="p-0 flex flex-col h-[584px]">
-            <ScrollArea className="flex-1 p-6">
-              <div className="space-y-6">
+          <CardContent className="p-0 flex flex-col h-[552px]">
+            <ScrollArea className="flex-1 p-5">
+              <div className="space-y-4">
                 {conversationHistory.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="h-16 w-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
+                  <div className="text-center py-8">
+                    <div className="h-16 w-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
                       <Bot className="h-8 w-8 text-blue-600" />
                     </div>
-                    <h3 className="font-semibold text-lg text-gray-900 mb-2">AI Assistant Ready</h3>
-                    <p className="text-sm text-gray-600 mb-8 leading-relaxed">
-                      Ask me anything about {currentModule.replace('_', ' ')} or try a quick action below
+                    <h3 className="font-semibold text-lg text-gray-900 mb-1">AI Assistant Ready</h3>
+                    <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                      Ask me anything about {currentModule.replace('_', ' ')} or try a quick action
                     </p>
                     
                     {showQuickActions && currentQuickActions.length > 0 && (
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Quick Actions</p>
-                        <div className="grid grid-cols-1 gap-3">
+                        <div className="grid grid-cols-1 gap-2">
                           {currentQuickActions.map((action) => (
                             <Button
                               key={action.id}
                               variant="outline"
                               size="sm"
-                              className="justify-start h-12 bg-gradient-to-r from-gray-50 to-white hover:from-blue-50 hover:to-indigo-50 border-gray-200 hover:border-blue-200 transition-all duration-200"
+                              className="justify-start h-11 bg-white/60 hover:bg-white border-gray-200/70 hover:border-blue-200 transition-all duration-200 rounded-xl text-gray-700 hover:text-blue-700"
                               onClick={() => handleQuickAction(action)}
                               disabled={isLoading}
                             >
-                              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white mr-3">
+                              <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white mr-3 shadow-sm">
                                 {action.icon}
                               </div>
-                              <span className="text-sm font-medium text-gray-700">{action.label}</span>
+                              <span className="text-sm font-medium">{action.label}</span>
                             </Button>
                           ))}
                         </div>
@@ -248,29 +269,29 @@ export const FloatingAIWidget = () => {
                       <div
                         key={message.id}
                         className={cn(
-                          "flex",
+                          "flex animate-fade-in",
                           message.type === 'user' ? 'justify-end' : 'justify-start'
                         )}
                       >
                         <div
                           className={cn(
-                            "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
+                            "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm",
                             message.type === 'user'
-                              ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'
-                              : 'bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-800'
+                              ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white ml-auto'
+                              : 'bg-white border border-gray-100 text-gray-800'
                           )}
                         >
                           {message.type === 'ai' && (
                             <div className="flex items-center mb-2">
-                              <div className="h-5 w-5 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mr-2">
-                                <Bot className="h-3 w-3 text-white" />
+                              <div className="h-4 w-4 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mr-2">
+                                <Bot className="h-2.5 w-2.5 text-white" />
                               </div>
                               <span className="text-xs font-medium text-blue-600">AI Assistant</span>
                             </div>
                           )}
                           <div className="whitespace-pre-wrap">{message.content}</div>
                           <div className={cn(
-                            "text-xs mt-2 opacity-70",
+                            "text-xs mt-2 opacity-60",
                             message.type === 'user' ? 'text-blue-100' : 'text-gray-500'
                           )}>
                             {new Date(message.timestamp).toLocaleTimeString([], { 
@@ -283,11 +304,15 @@ export const FloatingAIWidget = () => {
                     ))}
                     
                     {isLoading && (
-                      <div className="flex justify-start">
-                        <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl px-4 py-3">
+                      <div className="flex justify-start animate-fade-in">
+                        <div className="bg-white border border-gray-100 rounded-2xl px-4 py-3 shadow-sm">
                           <div className="flex items-center">
-                            <Loader2 className="h-4 w-4 animate-spin mr-2 text-blue-600" />
-                            <span className="text-gray-600 text-sm">AI is thinking...</span>
+                            <div className="flex space-x-1">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse [animation-delay:0.2s]"></div>
+                              <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse [animation-delay:0.4s]"></div>
+                            </div>
+                            <span className="text-gray-600 text-sm ml-3">AI is thinking...</span>
                           </div>
                         </div>
                       </div>
@@ -298,7 +323,7 @@ export const FloatingAIWidget = () => {
               </div>
             </ScrollArea>
             
-            <div className="border-t border-gray-100/50 p-4 bg-gradient-to-r from-gray-50/50 to-white/50">
+            <div className="border-t border-gray-100/50 p-4 bg-white/50 backdrop-blur-xl">
               <div className="flex items-center gap-3">
                 <Input
                   placeholder={`Ask about ${currentModule.replace('_', ' ')}...`}
@@ -306,12 +331,12 @@ export const FloatingAIWidget = () => {
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   disabled={isLoading}
-                  className="flex-1 border-gray-200 bg-white/80 backdrop-blur-sm rounded-xl h-11 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200"
+                  className="flex-1 border-gray-200/70 bg-white/70 backdrop-blur-sm rounded-xl h-10 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 text-sm"
                 />
                 <Button 
                   onClick={handleSendMessage}
                   disabled={!inputMessage.trim() || isLoading}
-                  className="h-11 w-11 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 border-0 shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 shadow-lg hover:shadow-xl transition-all duration-200"
                   size="icon"
                 >
                   {isLoading ? (
@@ -323,13 +348,13 @@ export const FloatingAIWidget = () => {
               </div>
               
               {error && (
-                <p className="text-xs text-red-500 mt-2">
+                <p className="text-xs text-red-500 mt-2 animate-fade-in">
                   {error}
                 </p>
               )}
               
-              <p className="text-xs text-gray-500 mt-3 leading-relaxed">
-                AI-powered by TalentXcel • Context-aware assistance
+              <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                AI-powered by TalentXcel • Conversations are saved
               </p>
             </div>
           </CardContent>
