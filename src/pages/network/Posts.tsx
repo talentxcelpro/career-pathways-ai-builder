@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText, Share2 } from "lucide-react";
+import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText, Share2, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostActions } from "@/components/posts/PostActions";
@@ -29,6 +29,7 @@ import { AICommentGenerator } from "@/components/network/AICommentGenerator";
 import ProBanner from "@/components/network/ProBanner";
 import ProBadge from "@/components/network/ProBadge";
 import ProPostCTA from "@/components/network/ProPostCTA";
+import { useEmployerAccess } from "@/hooks/useEmployerAccess";
 
 
 const Posts = () => {
@@ -56,6 +57,7 @@ const Posts = () => {
   // Use real-time hooks
   const { connections, stats, isLoading: connectionsLoading } = useRealtimeConnections();
   const { recentActivity, isLoading: activityLoading } = useRealtimeActivity();
+  const { hasEmployerAccess } = useEmployerAccess();
 
   // Get current user profile first for Smart Feed filtering
   const { data: currentUserProfile } = useQuery({
@@ -349,6 +351,14 @@ const Posts = () => {
                     Notifications
                   </Button>
                 </Link>
+                {hasEmployerAccess && (
+                  <Link to="/pro/services" className="block">
+                    <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs">
+                      <Settings className="h-3 w-3 mr-2" />
+                      Set Up Services
+                    </Button>
+                  </Link>
+                )}
               </div>
               
               <div className="space-y-1 mt-3">
