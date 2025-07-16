@@ -1,19 +1,21 @@
 
 import React from 'react';
-import { HeroSection } from './HeroSection';
-import { FeaturesSection } from './FeaturesSection';
-import { StatsSection } from './StatsSection';
-import { CTASection } from './CTASection';
-import { SEOLandingPageLinks } from '@/components/seo/SEOLandingPageLinks';
+import { AppleHeroSection } from './AppleHeroSection';
+import { WhyTalentXcel } from './WhyTalentXcel';
+import { CTABanner } from './CTABanner';
+import { TestimonialsSection } from './TestimonialsSection';
+import { MobileAppPreview } from './MobileAppPreview';
+import { AppleFooter } from './AppleFooter';
 
 export const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <HeroSection />
-      <FeaturesSection />
-      <StatsSection />
-      <SEOLandingPageLinks />
-      <CTASection />
+    <div className="min-h-screen">
+      <AppleHeroSection />
+      <WhyTalentXcel />
+      <TestimonialsSection />
+      <CTABanner />
+      <MobileAppPreview />
+      <AppleFooter />
     </div>
   );
 };
