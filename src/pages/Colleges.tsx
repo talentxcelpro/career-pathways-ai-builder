@@ -106,34 +106,37 @@ const Colleges = () => {
   });
 
   const stats = [
-    { label: 'Partner Colleges', value: '250+', icon: Building },
-    { label: 'Verified Alumni', value: '50K+', icon: GraduationCap },
-    { label: 'Upcoming Events', value: '120+', icon: Calendar },
-    { label: 'Career Networks', value: '180+', icon: Network }
+    { label: 'Total Colleges', value: '1,200+', icon: Building },
+    { label: 'Verified Programs', value: '100+', icon: GraduationCap },
+    { label: 'Student Reviews', value: '100+', icon: Star },
+    { label: 'Placement Rate', value: '85%+', icon: Award }
   ];
 
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header with Apple-inspired styling */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-text-primary mb-6 font-display">
-            Discover Colleges
+        {/* Header with Apple-inspired styling - more compact and engaging */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-text-primary mb-2 font-display">
+            Discover Your Perfect College
           </h1>
-          <p className="text-2xl text-text-secondary max-w-4xl mx-auto leading-relaxed">
-            Connect with your alma mater, discover alumni networks, and explore career opportunities 
-            through academic partnerships.
+          <p className="text-lg text-text-secondary max-w-2xl mx-auto">
+            AI-powered discovery with comprehensive data on programs, placements, and smart guidance.
           </p>
+          <div className="flex justify-center gap-4 mt-4">
+            <Button variant="outline" size="sm" className="rounded-xl">Add Your College</Button>
+            <Button variant="outline" size="sm" className="rounded-xl">Compare Colleges</Button>
+          </div>
         </div>
 
-        {/* Stats with glassmorphism */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+        {/* Stats with glassmorphism - more compact */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           {stats.map((stat, index) => (
             <Card key={index} className="text-center border-0 bg-white/80 backdrop-blur-apple shadow-apple-light rounded-2xl hover:shadow-apple-medium transition-all duration-300">
-              <CardContent className="p-8">
-                <stat.icon className="h-12 w-12 text-primary mx-auto mb-4" />
-                <div className="text-3xl font-bold text-text-primary font-display mb-2">{stat.value}</div>
-                <div className="text-base text-text-secondary font-medium">{stat.label}</div>
+              <CardContent className="p-4">
+                <stat.icon className="h-8 w-8 text-primary mx-auto mb-2" />
+                <div className="text-2xl font-bold text-text-primary font-display mb-1">{stat.value}</div>
+                <div className="text-sm text-text-secondary font-medium">{stat.label}</div>
               </CardContent>
             </Card>
           ))}
