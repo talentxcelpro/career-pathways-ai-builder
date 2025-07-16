@@ -3,6 +3,9 @@ project_id = "dthlgsnakhoftinssokm"
 [auth]
 enabled = true
 
+[functions.ai-agent]
+verify_jwt = true
+
 [functions.test-function]
 verify_jwt = false
 

@@ -5,6 +5,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.1';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 };
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
@@ -21,6 +23,31 @@ serve(async (req) => {
 
   const startTime = Date.now();
   let requestId = crypto.randomUUID();
+  
+  // Enhanced startup validation
+  if (!openAIApiKey) {
+    console.error(`❌ CRITICAL: OpenAI API key not configured`);
+    return new Response(JSON.stringify({
+      success: false,
+      error: 'AI service configuration error - OpenAI API key missing',
+      requestId: requestId
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+  
+  if (!supabaseUrl || !supabaseServiceKey) {
+    console.error(`❌ CRITICAL: Supabase configuration missing`);
+    return new Response(JSON.stringify({
+      success: false,
+      error: 'Database configuration error',
+      requestId: requestId
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
 
   try {
     console.log(`🚀 [${requestId}] New AI Agent request received`);
@@ -50,10 +77,6 @@ serve(async (req) => {
       throw new Error('Missing required fields: module and task are required');
     }
 
-    if (!openAIApiKey) {
-      console.error(`❌ [${requestId}] OpenAI API key not configured`);
-      throw new Error('AI service configuration error');
-    }
 
     let systemMessage = '';
     let userMessage = prompt || '';
