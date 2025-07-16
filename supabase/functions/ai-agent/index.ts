@@ -21,7 +21,7 @@ serve(async (req) => {
   try {
     const { module, task, input, userId, prompt } = await req.json();
     
-    console.log('AI Agent request:', { module, task, input: Object.keys(input || {}), userId });
+    console.log('AI Agent request:', { module, task, input: Object.keys(input || {}), userId, prompt });
 
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
@@ -29,6 +29,11 @@ serve(async (req) => {
 
     let systemMessage = '';
     let userMessage = prompt || '';
+
+    // Handle chat messages with direct prompt
+    if (task === 'chat' && prompt) {
+      userMessage = prompt;
+    }
 
     // Module-specific AI prompts and logic
     switch (module) {
@@ -88,7 +93,14 @@ serve(async (req) => {
         break;
 
       default:
-        systemMessage = 'You are TalentXcel AI, a comprehensive career development assistant.';
+        systemMessage = 'You are TalentXcel AI, a comprehensive career development assistant. Help users with career advice, job search strategies, resume optimization, and professional development.';
+        
+        // If no specific prompt is provided for chat, use the task/input combination
+        if (!userMessage && task === 'chat' && input?.message) {
+          userMessage = input.message;
+        } else if (!userMessage) {
+          userMessage = `Help me with ${task} related to ${module}. Context: ${JSON.stringify(input)}`;
+        }
     }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -131,6 +143,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       success: true,
       response: aiResponse,
+      data: aiResponse, // Include both for compatibility
       tokens_used: data.usage?.total_tokens || 0
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

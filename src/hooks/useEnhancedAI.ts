@@ -30,50 +30,67 @@ export const useEnhancedAI = () => {
     setError(null);
 
     try {
+      // Generate user message content for chat
+      let userMessage = '';
+      if (request.task === 'chat' && request.input?.message) {
+        userMessage = request.input.message;
+      } else {
+        userMessage = `${request.task} in ${request.module}`;
+      }
+
       // Add user message to context
       addMessage({
         type: 'user',
-        content: `${request.task} in ${request.module}`,
+        content: userMessage,
         module: request.module,
         metadata: request.input
       });
 
-      const enhancedRequest = {
-        ...request,
+      // Create simplified request that matches Edge Function expectations
+      const simplifiedRequest = {
         module: request.module || currentModule,
-        context: {
-          userProfile,
-          sessionId,
-          currentModule,
-          timestamp: new Date().toISOString(),
-          ...request.context
-        },
-        userId: userProfile?.id
+        task: request.task,
+        input: request.input || {},
+        userId: userProfile?.id,
+        prompt: request.task === 'chat' ? request.input?.message : undefined
       };
 
+      console.log('Sending AI request:', simplifiedRequest);
+
       const { data, error } = await supabase.functions.invoke('ai-agent', {
-        body: enhancedRequest
+        body: simplifiedRequest
       });
 
       if (error) {
+        console.error('Supabase function error:', error);
         throw new Error(error.message);
       }
 
-      const response = data as EnhancedAIResponse;
+      console.log('AI response received:', data);
 
-      // Add AI response to context
-      if (response.success && response.data) {
+      // Handle the response structure from Edge Function
+      if (data.success) {
+        const aiResponse = data.response || data.data;
+        
+        // Add AI response to context
         addMessage({
           type: 'ai',
-          content: typeof response.data === 'string' ? response.data : JSON.stringify(response.data, null, 2),
+          content: typeof aiResponse === 'string' ? aiResponse : JSON.stringify(aiResponse, null, 2),
           module: request.module || currentModule,
-          metadata: response
+          metadata: { tokens_used: data.tokens_used }
         });
-      }
 
-      return response;
+        return {
+          success: true,
+          data: aiResponse,
+          requestId: data.requestId
+        };
+      } else {
+        throw new Error(data.error || 'AI request failed');
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      console.error('AI request failed:', errorMessage, err);
       setError(errorMessage);
       toast.error(`AI Error: ${errorMessage}`);
       

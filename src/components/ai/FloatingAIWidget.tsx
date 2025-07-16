@@ -119,12 +119,18 @@ export const FloatingAIWidget = () => {
     setInputMessage('');
     setShowQuickActions(false);
 
+    console.log('Sending chat message:', userInput);
+
     try {
-      await callEnhancedAI({
+      const result = await callEnhancedAI({
         module: currentModule,
         task: 'chat',
         input: { message: userInput }
       });
+      
+      if (!result.success) {
+        console.error('AI request failed:', result.error);
+      }
     } catch (error) {
       console.error('Failed to send message:', error);
     }
