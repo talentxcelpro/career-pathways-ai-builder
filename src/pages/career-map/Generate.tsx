@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, User, FileText, Target, Calendar, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useEnhancedAI } from '@/hooks/useEnhancedAI';
+import { useSimpleAI } from '@/hooks/useSimpleAI';
 import { AIDebugMonitor } from '@/components/ui/ai-debug-monitor';
 import { toast } from 'sonner';
 
@@ -21,7 +21,7 @@ const Generate = () => {
   const [error, setError] = useState('');
   
   const navigate = useNavigate();
-  const { generateCareerRoadmap, processing } = useEnhancedAI();
+  const { callAI, isLoading: processing } = useSimpleAI();
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -53,11 +53,13 @@ const Generate = () => {
     try {
       const currentRole = profile?.title || 'Current Professional';
       
-      const result = await generateCareerRoadmap(
-        currentRole,
-        targetRole,
-        timeframe,
-        {
+      const result = await callAI({
+        module: 'career_map',
+        task: 'generate_roadmap',
+        input: {
+          currentRole,
+          targetRole,
+          timeframe,
           currentSkills: profile?.skills || [],
           experience: profile?.experience_years || 0,
           industry: profile?.industry || 'General',
@@ -66,10 +68,10 @@ const Generate = () => {
             timeline: 'flexible'
           }
         }
-      );
+      });
 
-      if (result.success && result.data) {
-        setGeneratedRoadmap(result.data);
+      if (result.success && result.response) {
+        setGeneratedRoadmap(result.response);
         toast.success('Career roadmap generated successfully!');
         
         // Save to career goals
@@ -80,8 +82,8 @@ const Generate = () => {
             target_role: targetRole,
             current_position: currentRole,
             timeline_months: parseInt(timeframe),
-            skills_needed: result.data.skills_needed || [],
-            milestones: result.data.milestones || [],
+            skills_needed: [],
+            milestones: [],
             is_active: true
           });
         }

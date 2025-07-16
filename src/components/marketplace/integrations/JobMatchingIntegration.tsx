@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { useAIService } from '@/hooks/useAIService';
+import { useSimpleAI } from '@/hooks/useSimpleAI';
 import { supabase } from '@/integrations/supabase/client';
 import { Target, Briefcase, TrendingUp, Users, Star } from 'lucide-react';
 import { toast } from 'sonner';
@@ -38,7 +38,7 @@ export const JobMatchingIntegration: React.FC<JobMatchingIntegrationProps> = ({
     topSkillGaps: [] as string[]
   });
 
-  const { matchJobs, loading: aiLoading } = useAIService();
+  const { callAI, isLoading: aiLoading } = useSimpleAI();
 
   useEffect(() => {
     if (userProfile) {

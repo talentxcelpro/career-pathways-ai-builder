@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAI } from '@/contexts/AIContext';
-import { useEnhancedAI } from '@/hooks/useEnhancedAI';
+import { useSimpleAI } from '@/hooks/useSimpleAI';
 import { 
   Bot, 
   Send, 
@@ -41,7 +41,7 @@ export const ModuleAIPromptBar: React.FC<ModuleAIPromptBarProps> = ({
   const [showPromptSuggestions, setShowPromptSuggestions] = useState(false);
   
   const { currentModule, isLoading } = useAI();
-  const { callEnhancedAI } = useEnhancedAI();
+  const { callAI, isLoading: aiLoading } = useSimpleAI();
 
   const modulePrompts: Record<string, PromptSuggestion[]> = {
     network: [
@@ -106,10 +106,10 @@ export const ModuleAIPromptBar: React.FC<ModuleAIPromptBarProps> = ({
     setShowPromptSuggestions(false);
 
     try {
-      await callEnhancedAI({
+      await callAI({
         module: currentModule,
         task: 'chat',
-        input: { message: userPrompt }
+        prompt: userPrompt
       });
     } catch (error) {
       console.error('Failed to submit prompt:', error);
@@ -121,7 +121,7 @@ export const ModuleAIPromptBar: React.FC<ModuleAIPromptBarProps> = ({
     setShowPromptSuggestions(false);
 
     try {
-      await callEnhancedAI({
+      await callAI({
         module: currentModule,
         task: suggestion.task,
         input: suggestion.input || {}

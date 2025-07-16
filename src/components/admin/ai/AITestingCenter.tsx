@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useAIService } from '@/hooks/useAIService';
+import { useSimpleAI } from '@/hooks/useSimpleAI';
 
 export const AITestingCenter: React.FC = () => {
   const [models, setModels] = useState<any[]>([]);
@@ -30,7 +30,7 @@ export const AITestingCenter: React.FC = () => {
   const [deployments, setDeployments] = useState<any[]>([]);
   const [selectedDeployment, setSelectedDeployment] = useState<string>('');
   
-  const { callAI } = useAIService();
+  const { callAI } = useSimpleAI();
 
   useEffect(() => {
     fetchModelsAndDeployments();
