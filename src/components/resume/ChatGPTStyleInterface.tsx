@@ -1,341 +1,311 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Send, Wand2, Copy, Download, FileText, AlertCircle, CheckCircle, RefreshCw } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { Separator } from '@/components/ui/separator';
+import { Send, Sparkles, AlertCircle, CheckCircle, Clock, Wifi, WifiOff } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAIResumeEnhancements } from '@/hooks/useAIResumeEnhancements';
 
 interface Message {
   id: string;
-  type: 'user' | 'ai' | 'system';
+  type: 'user' | 'assistant';
   content: string;
   timestamp: Date;
-  status?: 'sending' | 'sent' | 'error';
+  isTyping?: boolean;
+  enhancement?: any;
 }
 
 interface ChatGPTStyleInterfaceProps {
-  extractedData: any;
-  onEnhancementComplete: (enhancedData: any) => void;
+  resumeData: any;
+  onEnhancementApplied: (enhancement: any) => void;
 }
 
-const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
-  extractedData,
-  onEnhancementComplete
+export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
+  resumeData,
+  onEnhancementApplied
 }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      type: 'assistant',
+      content: "Hi! I'm your AI resume enhancement assistant. I can help you:\n\n• Generate smart resume titles\n• Adjust tone and style\n• Optimize keywords for ATS\n• Improve content clarity\n\nWhat would you like to work on today?",
+      timestamp: new Date()
+    }
+  ]);
+  
   const [inputValue, setInputValue] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  const { generateSmartTitles, adjustTone, optimizeKeywords } = useAIResumeEnhancements();
 
-  // Scroll to bottom when new messages are added
-  useEffect(() => {
+  const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages]);
 
-  // Check connection status on mount
-  useEffect(() => {
-    checkConnectionStatus();
-  }, []);
-
-  const checkConnectionStatus = async () => {
-    setConnectionStatus('checking');
+  // Test connection to Supabase
+  const testConnection = async () => {
     try {
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/enhance-resume', {
+      const response = await fetch('/api/health', { 
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
-        }
+        signal: AbortSignal.timeout(5000)
       });
-      
-      if (response.ok) {
-        setConnectionStatus('connected');
-        console.log('✅ Connection check successful');
-      } else {
-        setConnectionStatus('disconnected');
-        console.log('❌ Connection check failed:', response.status);
-      }
+      setIsConnected(response.ok);
+      return response.ok;
     } catch (error) {
-      setConnectionStatus('disconnected');
-      console.log('❌ Connection check error:', error);
+      setIsConnected(false);
+      return false;
     }
   };
 
-  const addMessage = (type: 'user' | 'ai' | 'system', content: string, status?: 'sending' | 'sent' | 'error') => {
+  useEffect(() => {
+    testConnection();
+    const interval = setInterval(testConnection, 30000); // Check every 30 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const addMessage = (content: string, type: 'user' | 'assistant', enhancement?: any) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       type,
       content,
       timestamp: new Date(),
-      status
+      enhancement
     };
     setMessages(prev => [...prev, newMessage]);
-    return newMessage.id;
   };
 
-  const updateMessageStatus = (messageId: string, status: 'sending' | 'sent' | 'error') => {
-    setMessages(prev => prev.map(msg => 
-      msg.id === messageId ? { ...msg, status } : msg
-    ));
+  const addTypingMessage = () => {
+    const typingMessage: Message = {
+      id: 'typing',
+      type: 'assistant',
+      content: '',
+      timestamp: new Date(),
+      isTyping: true
+    };
+    setMessages(prev => [...prev, typingMessage]);
   };
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim() || isProcessing) return;
-    
-    if (connectionStatus === 'disconnected') {
-      toast.error('Service is currently unavailable. Please try again later.');
+  const removeTypingMessage = () => {
+    setMessages(prev => prev.filter(msg => msg.id !== 'typing'));
+  };
+
+  const handleEnhancement = async (userMessage: string) => {
+    if (!isConnected) {
+      toast.error('No connection to AI service. Please check your internet connection.');
       return;
     }
 
-    const userMessageId = addMessage('user', inputValue, 'sent');
-    const currentInput = inputValue;
-    setInputValue('');
-    setIsProcessing(true);
+    setIsLoading(true);
+    addTypingMessage();
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-      console.log('🚀 Starting enhancement request...');
+      const lowerMessage = userMessage.toLowerCase();
       
-      const requestPayload = {
-        extractedData,
-        userPrompt: currentInput,
-        enhancementType: 'general',
-        provider: 'deepseek',
-        requestId
-      };
-
-      console.log('📤 Sending enhancement request with payload size:', JSON.stringify(requestPayload).length);
-
-      const aiMessageId = addMessage('ai', 'Processing your request...', 'sending');
-
-      // Make the request with timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout
-
-      try {
-        const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/enhance-resume', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
-            'Content-Type': 'application/json',
-            'X-Request-ID': requestId,
-            'X-User-ID': user?.id || 'anonymous'
-          },
-          body: JSON.stringify(requestPayload),
-          signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      // Determine enhancement type based on user input
+      if (lowerMessage.includes('title') || lowerMessage.includes('headline')) {
+        const result = await generateSmartTitles(resumeData);
+        if (result) {
+          removeTypingMessage();
+          const response = `I've generated smart resume titles for you:\n\n${result.titles.map((t, i) => `${i + 1}. ${t.title} (ATS Score: ${t.atsScore}/100)`).join('\n')}\n\nBest recommendation: ${result.recommendations.bestTitle}`;
+          addMessage(response, 'assistant', { type: 'titles', data: result });
         }
-
-        const responseData = await response.json();
-        console.log('✅ Enhancement request successful');
-
-        if (responseData.error) {
-          throw new Error(responseData.error);
+      } else if (lowerMessage.includes('tone') || lowerMessage.includes('style')) {
+        const result = await adjustTone(
+          resumeData.personalInfo?.summary || 'Professional summary section', 
+          'professional', 
+          'summary'
+        );
+        if (result) {
+          removeTypingMessage();
+          const response = `I've adjusted the tone of your content:\n\n**Adjusted Content:**\n${result.adjustedContent}\n\n**Impact Score:** ${result.impactScore}/100\n\n**Key Changes:**\n${result.changes.map(c => `• ${c.reason}`).join('\n')}`;
+          addMessage(response, 'assistant', { type: 'tone', data: result });
         }
-
-        // Update the AI message with the response
-        setMessages(prev => prev.map(msg => 
-          msg.id === aiMessageId 
-            ? { ...msg, content: responseData.enhancement || 'Enhancement completed successfully!', status: 'sent' }
-            : msg
-        ));
-
-        // Call the completion handler with the enhanced data
-        if (responseData.enhancement) {
-          onEnhancementComplete(responseData);
-          toast.success('Resume enhancement completed!');
+      } else if (lowerMessage.includes('keyword') || lowerMessage.includes('ats')) {
+        const result = await optimizeKeywords(resumeData);
+        if (result) {
+          removeTypingMessage();
+          const response = `I've analyzed your resume for ATS optimization:\n\n**ATS Score:** ${result.atsScore}/100\n\n**Keywords Analysis:**\n• Matched: ${result.keywordAnalysis.matched.join(', ')}\n• Missing: ${result.keywordAnalysis.missing.join(', ')}\n\n**Top Recommendations:**\n${result.recommendations.slice(0, 3).map(r => `• ${r.suggestion} (${r.priority} priority)`).join('\n')}`;
+          addMessage(response, 'assistant', { type: 'keywords', data: result });
         }
-
-      } catch (fetchError: any) {
-        clearTimeout(timeoutId);
-        console.error('❌ Enhancement request failed:', fetchError);
-        
-        let errorMessage = 'Enhancement failed. ';
-        if (fetchError.name === 'AbortError') {
-          errorMessage += 'Request timed out. Please try again.';
-        } else if (fetchError.message?.includes('fetch')) {
-          errorMessage += 'Unable to connect to AI service. Please check your connection.';
-        } else {
-          errorMessage += fetchError.message || 'Unknown error occurred.';
-        }
-
-        setMessages(prev => prev.map(msg => 
-          msg.id === aiMessageId 
-            ? { ...msg, content: errorMessage, status: 'error' }
-            : msg
-        ));
-
-        toast.error(errorMessage);
+      } else {
+        removeTypingMessage();
+        addMessage(
+          "I can help you with:\n\n• **Resume titles** - Say 'generate titles' or 'create headline'\n• **Tone adjustment** - Say 'adjust tone' or 'improve style'\n• **Keyword optimization** - Say 'optimize keywords' or 'improve ATS score'\n\nWhat specific area would you like to focus on?",
+          'assistant'
+        );
       }
-
-    } catch (error: any) {
-      console.error('❌ General error:', error);
-      addMessage('system', `Error: ${error.message}`, 'error');
-      toast.error('An unexpected error occurred. Please try again.');
+    } catch (error) {
+      removeTypingMessage();
+      console.error('Enhancement error:', error);
+      
+      let errorMessage = "I encountered an issue enhancing your resume.";
+      
+      if (error instanceof Error) {
+        if (error.message.includes('timeout') || error.message.includes('network')) {
+          errorMessage = "Connection timeout. Please check your internet connection and try again.";
+        } else if (error.message.includes('service')) {
+          errorMessage = "AI service is temporarily unavailable. Please try again in a moment.";
+        }
+      }
+      
+      addMessage(`❌ **Enhancement Failed**\n\n${errorMessage}\n\n🔄 **You can try again** - this might be a temporary issue.`, 'assistant');
+      toast.error(errorMessage);
     } finally {
-      setIsProcessing(false);
+      setIsLoading(false);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim() || isLoading) return;
+
+    const userMessage = inputValue.trim();
+    addMessage(userMessage, 'user');
+    setInputValue('');
+    
+    await handleEnhancement(userMessage);
   };
 
-  const renderMessage = (message: Message) => {
-    const isUser = message.type === 'user';
-    const isSystem = message.type === 'system';
-    const isError = message.status === 'error';
+  const handleApplyEnhancement = (enhancement: any) => {
+    onEnhancementApplied(enhancement);
+    addMessage('✅ Enhancement applied to your resume!', 'assistant');
+    toast.success('Enhancement applied successfully!');
+  };
 
-    return (
-      <div key={message.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
-        <div className={`max-w-[80%] rounded-lg p-3 ${
-          isUser 
-            ? 'bg-primary text-primary-foreground' 
-            : isSystem || isError
-              ? 'bg-red-50 text-red-800 border border-red-200'
-              : 'bg-muted text-muted-foreground'
-        }`}>
-          <div className="flex items-start gap-2">
-            {!isUser && (
-              <div className="mt-1">
-                {isError ? (
-                  <AlertCircle className="h-4 w-4 text-red-500" />
-                ) : message.status === 'sending' ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Wand2 className="h-4 w-4" />
-                )}
-              </div>
-            )}
-            <div className="flex-1">
-              <p className="whitespace-pre-wrap text-sm">{message.content}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs opacity-70">
-                  {message.timestamp.toLocaleTimeString()}
-                </span>
-                {message.status === 'sending' && (
-                  <Badge variant="secondary" className="text-xs">
-                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                    Processing
-                  </Badge>
-                )}
-                {message.status === 'error' && (
-                  <Badge variant="destructive" className="text-xs">
-                    Failed
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+  const formatMessage = (content: string) => {
+    return content.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line.startsWith('**') && line.endsWith('**') ? (
+          <strong className="font-semibold">{line.slice(2, -2)}</strong>
+        ) : line.startsWith('• ') ? (
+          <div className="ml-4">{line}</div>
+        ) : (
+          line
+        )}
+        {index < content.split('\n').length - 1 && <br />}
+      </React.Fragment>
+    ));
   };
 
   return (
-    <Card className="w-full h-[600px] flex flex-col">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Wand2 className="h-5 w-5" />
-            AI Resume Enhancement
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={checkConnectionStatus}
-              disabled={connectionStatus === 'checking'}
-            >
-              {connectionStatus === 'checking' ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-1" />
-              ) : (
-                <RefreshCw className="h-4 w-4 mr-1" />
-              )}
-              {connectionStatus === 'checking' ? 'Checking...' : 'Check Status'}
-            </Button>
-            <Badge 
-              variant={connectionStatus === 'connected' ? 'default' : 'destructive'}
-              className="flex items-center gap-1"
-            >
-              {connectionStatus === 'connected' ? (
-                <CheckCircle className="h-3 w-3" />
-              ) : (
-                <AlertCircle className="h-3 w-3" />
-              )}
-              {connectionStatus === 'connected' ? 'Connected' : 
-               connectionStatus === 'disconnected' ? 'Offline' : 'Checking'}
+    <div className="flex flex-col h-[600px] bg-background border rounded-lg">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-primary" />
+          <h3 className="font-semibold">AI Resume Assistant</h3>
+        </div>
+        <div className="flex items-center gap-2">
+          {isConnected ? (
+            <Badge variant="secondary" className="gap-1">
+              <Wifi className="h-3 w-3" />
+              Connected
             </Badge>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="flex-1 flex flex-col p-0">
-        <ScrollArea className="flex-1 p-4">
-          {messages.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">
-              <Wand2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium mb-2">Ready to enhance your resume!</p>
-              <p className="text-sm">
-                Ask me to improve specific sections, adjust the tone, or make other enhancements.
-              </p>
-            </div>
           ) : (
-            <div>
-              {messages.map(renderMessage)}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </ScrollArea>
-
-        <div className="border-t p-4">
-          <div className="flex gap-2">
-            <Textarea
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask me to enhance your resume... (e.g., 'Make my summary more professional' or 'Add action verbs to my experience')"
-              className="flex-1 min-h-[60px] resize-none"
-              disabled={isProcessing || connectionStatus === 'disconnected'}
-            />
-            <Button
-              onClick={handleSendMessage}
-              disabled={!inputValue.trim() || isProcessing || connectionStatus === 'disconnected'}
-              size="lg"
-              className="px-6"
-            >
-              {isProcessing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-          {connectionStatus === 'disconnected' && (
-            <p className="text-sm text-red-600 mt-2">
-              Service is currently unavailable. Please check your connection and try again.
-            </p>
+            <Badge variant="destructive" className="gap-1">
+              <WifiOff className="h-3 w-3" />
+              Disconnected
+            </Badge>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-[80%] rounded-lg p-3 ${
+                message.type === 'user'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted'
+              }`}
+            >
+              {message.isTyping ? (
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                  </div>
+                  <span className="text-sm text-muted-foreground">AI is thinking...</span>
+                </div>
+              ) : (
+                <>
+                  <div className="text-sm whitespace-pre-wrap">
+                    {formatMessage(message.content)}
+                  </div>
+                  {message.enhancement && (
+                    <div className="mt-3 pt-3 border-t border-border/20">
+                      <Button
+                        size="sm"
+                        onClick={() => handleApplyEnhancement(message.enhancement)}
+                        className="w-full"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Apply Enhancement
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input */}
+      <div className="p-4 border-t">
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <Textarea
+            ref={textareaRef}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Ask me to improve your resume... (e.g., 'generate titles', 'optimize keywords')"
+            className="min-h-[44px] max-h-32 resize-none"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+              }
+            }}
+            disabled={isLoading || !isConnected}
+          />
+          <Button 
+            type="submit" 
+            size="icon" 
+            disabled={!inputValue.trim() || isLoading || !isConnected}
+            className="shrink-0"
+          >
+            {isLoading ? (
+              <Clock className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+          </Button>
+        </form>
+        
+        {!isConnected && (
+          <div className="mt-2 text-sm text-muted-foreground flex items-center gap-2">
+            <AlertCircle className="h-4 w-4" />
+            Connection lost. Please check your internet connection.
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
-
-export default ChatGPTStyleInterface;
