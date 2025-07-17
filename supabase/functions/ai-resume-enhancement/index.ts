@@ -6,13 +6,240 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// ChatGPT-style enhancement handler
+async function handleChatGPTStyleEnhancement(extractedData: any, userPrompt: string, enhancementType: string) {
+  const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+  
+  if (!openAIApiKey) {
+    throw new Error('OpenAI API key not configured');
+  }
+
+  console.log('🚀 Starting ChatGPT-style AI resume enhancement...');
+  console.log('Enhancement type:', enhancementType);
+  console.log('User prompt:', userPrompt);
+
+  const systemPrompt = `You are an expert resume writer and career coach. Your task is to enhance and rewrite resumes based on user requests while maintaining professionalism and ATS optimization.
+
+CRITICAL INSTRUCTIONS:
+1. Create a COMPLETE, PROFESSIONAL resume that matches the user's request
+2. Use the extracted data as foundation but enhance and expand it significantly
+3. Generate realistic, professional content that fits the requested role/industry
+4. Optimize for ATS (Applicant Tracking Systems) with relevant keywords
+5. Use professional formatting and structure
+6. Include quantified achievements where possible
+7. Ensure chronological consistency
+8. Return a structured JSON response
+
+RESPONSE FORMAT:
+Return ONLY a valid JSON object with this exact structure:
+{
+  "success": true,
+  "enhancedResume": {
+    "personalInfo": {
+      "fullName": "string",
+      "email": "string", 
+      "phone": "string",
+      "location": "string",
+      "summary": "string (3-4 sentences, compelling professional summary)",
+      "linkedin": "string (optional)",
+      "website": "string (optional)",
+      "confidence": 0.9
+    },
+    "experience": [
+      {
+        "title": "string (specific job title)",
+        "company": "string (real or realistic company name)",
+        "location": "string",
+        "startDate": "string (MM/YYYY format)",
+        "endDate": "string (MM/YYYY format or 'Present')",
+        "description": "string (comprehensive 2-3 sentence description)",
+        "achievements": ["string", "string", "string (3-5 quantified achievements)"],
+        "technologies": ["string", "string (relevant technologies)"],
+        "keywords": ["string", "string (ATS keywords)"],
+        "confidence": 0.9
+      }
+    ],
+    "education": [
+      {
+        "degree": "string (full degree name)",
+        "school": "string (university/institution name)",
+        "location": "string",
+        "startDate": "string",
+        "endDate": "string",
+        "gpa": "string (optional)",
+        "honors": "string (optional)",
+        "relevantCoursework": ["string", "string"],
+        "confidence": 0.9
+      }
+    ],
+    "skills": {
+      "technical": {
+        "programming": [{"skill": "string", "proficiency": "Expert|Advanced|Intermediate", "category": "string"}],
+        "frameworks": [{"skill": "string", "proficiency": "Expert|Advanced|Intermediate", "category": "string"}],
+        "databases": [{"skill": "string", "proficiency": "Expert|Advanced|Intermediate", "category": "string"}],
+        "tools": [{"skill": "string", "proficiency": "Expert|Advanced|Intermediate", "category": "string"}],
+        "cloud": [{"skill": "string", "proficiency": "Expert|Advanced|Intermediate", "category": "string"}],
+        "confidence": 0.9
+      },
+      "soft": [{"skill": "string", "proficiency": "Expert|Advanced|Intermediate"}],
+      "languages": [{"language": "string", "proficiency": "Native|Fluent|Conversational|Basic"}],
+      "certifications": ["string", "string"]
+    },
+    "projects": [
+      {
+        "title": "string",
+        "description": "string (detailed project description)",
+        "technologies": ["string", "string"],
+        "startDate": "string (optional)",
+        "endDate": "string (optional)",
+        "url": "string (optional)",
+        "github": "string (optional)",
+        "achievements": ["string", "string"],
+        "confidence": 0.9
+      }
+    ],
+    "certifications": [
+      {
+        "name": "string",
+        "issuer": "string",
+        "date": "string",
+        "expiryDate": "string (optional)",
+        "credentialId": "string (optional)",
+        "url": "string (optional)",
+        "confidence": 0.9
+      }
+    ],
+    "awards": [
+      {
+        "name": "string",
+        "issuer": "string", 
+        "date": "string",
+        "description": "string",
+        "confidence": 0.9
+      }
+    ],
+    "atsOptimization": {
+      "score": 85,
+      "keywordDensity": 15,
+      "sectionCompleteness": 90,
+      "readabilityScore": 85,
+      "suggestions": [
+        {
+          "category": "keywords",
+          "priority": "high",
+          "issue": "string",
+          "suggestion": "string",
+          "impact": 10
+        }
+      ]
+    },
+    "confidenceMetrics": {
+      "overall": 0.9,
+      "personalInfo": 0.9,
+      "experience": 0.9,
+      "education": 0.9,
+      "skills": 0.9,
+      "sections": {}
+    },
+    "metadata": {
+      "fileName": "Enhanced Resume",
+      "extractionTimestamp": "${new Date().toISOString()}",
+      "extractionMethod": "AI Enhancement",
+      "processingVersion": "2.0"
+    }
+  }
+}`;
+
+  const userMessage = `EXTRACTED RESUME DATA:
+${JSON.stringify(extractedData, null, 2)}
+
+USER REQUEST:
+${userPrompt}
+
+Please enhance this resume according to the user's request. Create a complete, professional, and ATS-optimized resume that fulfills their requirements. Ensure all sections are populated with realistic, high-quality content.`;
+
+  console.log('📤 Sending request to OpenAI...');
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${openAIApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userMessage }
+      ],
+      temperature: 0.7,
+      max_tokens: 4000,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('OpenAI API error:', response.status, errorText);
+    throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+  }
+
+  const aiResponse = await response.json();
+  console.log('📥 Received response from OpenAI');
+
+  const enhancedContent = aiResponse.choices[0].message.content;
+  
+  // Parse the JSON response
+  let parsedResponse;
+  try {
+    // Try to extract JSON from the response
+    const jsonMatch = enhancedContent.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      parsedResponse = JSON.parse(jsonMatch[0]);
+    } else {
+      throw new Error('No JSON found in response');
+    }
+  } catch (parseError) {
+    console.error('Failed to parse AI response:', parseError);
+    console.log('Raw response:', enhancedContent);
+    throw new Error('Failed to parse AI response as JSON');
+  }
+
+  // Validate the response structure
+  if (!parsedResponse.success || !parsedResponse.enhancedResume) {
+    throw new Error('Invalid response structure from AI');
+  }
+
+  console.log('✅ Resume enhancement completed successfully');
+
+  return new Response(JSON.stringify(parsedResponse), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { prompt, resumeData, category } = await req.json();
+    const body = await req.json();
+    
+    // Support both old and new API formats
+    const { 
+      prompt, 
+      resumeData, 
+      category,
+      extractedData, 
+      userPrompt, 
+      enhancementType = 'complete_rewrite' 
+    } = body;
+    
+    // Check if this is the new ChatGPT-style interface
+    if (extractedData && userPrompt) {
+      return await handleChatGPTStyleEnhancement(extractedData, userPrompt, enhancementType);
+    }
+    
+    // Handle legacy enhancement format
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
