@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 
 interface ResumePreviewProps {
@@ -118,43 +119,32 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
   const renderSkills = () => {
     const skills = content?.skills || {};
     
+    // Helper function to extract skill name from various formats
+    const extractSkillName = (skill: any): string => {
+      if (typeof skill === 'string') {
+        return skill;
+      } else if (skill && typeof skill === 'object') {
+        // Handle different object structures
+        return skill.skill || skill.name || skill.title || String(skill);
+      }
+      return String(skill);
+    };
+    
     // Handle skills as array (new format) or object (legacy format)
-    let technicalSkills = [];
-    let softSkills = [];
+    let technicalSkills: string[] = [];
+    let softSkills: string[] = [];
     
     if (Array.isArray(skills)) {
       // Skills is an array - extract skill names properly
-      technicalSkills = skills.map(skill => {
-        if (typeof skill === 'string') {
-          return skill;
-        } else if (skill && typeof skill === 'object') {
-          // Handle objects with skill, name, or other property structures
-          return skill.skill || skill.name || skill.title || String(skill);
-        }
-        return String(skill);
-      }).filter(Boolean);
+      technicalSkills = skills.map(extractSkillName).filter(Boolean);
     } else if (skills.technical) {
       // Legacy object format
       technicalSkills = Array.isArray(skills.technical) 
-        ? skills.technical.map(skill => {
-            if (typeof skill === 'string') {
-              return skill;
-            } else if (skill && typeof skill === 'object') {
-              return skill.skill || skill.name || skill.title || String(skill);
-            }
-            return String(skill);
-          }).filter(Boolean)
+        ? skills.technical.map(extractSkillName).filter(Boolean)
         : [];
       
       softSkills = Array.isArray(skills.soft) 
-        ? skills.soft.map(skill => {
-            if (typeof skill === 'string') {
-              return skill;
-            } else if (skill && typeof skill === 'object') {
-              return skill.skill || skill.name || skill.title || String(skill);
-            }
-            return String(skill);
-          }).filter(Boolean)
+        ? skills.soft.map(extractSkillName).filter(Boolean)
         : [];
     }
     
