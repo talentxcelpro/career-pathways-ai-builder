@@ -1,297 +1,395 @@
 
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders } from '../_shared/cors.ts';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
 
-console.log('🚀 Enhanced Resume Function Starting...');
+interface EnhancementRequest {
+  text: string;
+  provider?: string;
+  options?: {
+    tone?: string;
+    focus?: string;
+    targetRole?: string;
+    industry?: string;
+  };
+}
 
 serve(async (req) => {
-  console.log(`📍 Request received: ${req.method} from ${req.headers.get('Origin')}`);
+  console.log('🚀 Enhanced Resume Function Starting...');
   
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     console.log('✅ CORS preflight request handled');
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('📝 Processing resume enhancement request...');
+    console.log('📍 Request received:', req.method, 'from', req.headers.get('origin'));
     
-    const body = await req.json();
-    console.log('📋 Request body keys:', Object.keys(body));
-    
-    const { text, provider = 'openai' } = body;
-
-    // Check if OpenAI API key is available
-    if (!openAIApiKey) {
-      console.error('❌ OpenAI API key not found in environment variables');
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'OpenAI API key not configured. Please contact support.' 
-      }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+    if (req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Method not allowed' }),
+        { 
+          status: 405, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
-    // Validate input
-    if (!text || typeof text !== 'string') {
-      console.error('❌ Invalid input: text is required and must be a string');
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'Resume text is required and must be a string' 
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
-
-    // Check for empty content
-    const trimmedText = text.trim();
-    if (!trimmedText || trimmedText === '{}' || trimmedText === 'null') {
-      console.error('❌ Resume content is empty or invalid');
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'Resume content is empty. Please add some content to your resume first.' 
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
-
-    console.log(`📊 Processing ${trimmedText.length} characters of resume content`);
-
-    // Convert structured data to readable text if needed
-    let resumeText = trimmedText;
-    
-    // Try to parse as JSON and convert to readable format
+    // Parse request body
+    let requestData: EnhancementRequest;
     try {
-      const parsed = JSON.parse(trimmedText);
-      if (typeof parsed === 'object' && parsed !== null) {
-        resumeText = convertResumeDataToText(parsed);
-        console.log('✅ Successfully converted structured data to readable text');
+      const body = await req.text();
+      console.log('📦 Raw request body length:', body.length);
+      
+      if (!body || body.trim() === '') {
+        throw new Error('Empty request body');
       }
-    } catch (e) {
-      // Not JSON, treat as plain text
-      console.log('📝 Processing as plain text (not JSON)');
-    }
-
-    // Prepare the prompt for OpenAI
-    const prompt = `
-    You are an expert resume writer and ATS optimization specialist. Please enhance the following resume content to make it more professional, impactful, and ATS-friendly.
-
-    Focus on:
-    1. **ATS Optimization**: Use relevant keywords and industry-standard terms
-    2. **Achievement Focus**: Transform responsibilities into quantifiable achievements
-    3. **Professional Tone**: Ensure consistent, professional language throughout
-    4. **Action Verbs**: Use strong, specific action verbs
-    5. **Impact Metrics**: Add or enhance quantifiable results where possible
-    6. **Clarity**: Improve readability and structure
-
-    Resume Content:
-    ${resumeText}
-
-    Please return the enhanced resume content in a clear, professional format. Keep the overall structure but improve the language, add impact metrics where appropriate, and optimize for ATS systems.
-    `;
-
-    console.log('🤖 Sending request to OpenAI API...');
-    
-    // Add timeout and retry logic
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
-    
-    try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { 
-              role: 'system', 
-              content: 'You are an expert resume writer and ATS optimization specialist. Provide enhanced resume content that is professional, impactful, and optimized for applicant tracking systems.' 
-            },
-            { role: 'user', content: prompt }
-          ],
-          max_tokens: 2000,
-          temperature: 0.7,
+      
+      requestData = JSON.parse(body);
+      console.log('✅ Request data parsed successfully');
+    } catch (parseError) {
+      console.error('❌ Error parsing request body:', parseError);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Invalid JSON in request body'
         }),
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      console.log(`📡 OpenAI API response status: ${response.status}`);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ OpenAI API error:', errorText);
-        
-        return new Response(JSON.stringify({ 
-          success: false, 
-          error: `OpenAI API error: ${response.status} - ${errorText}` 
-        }), {
-          status: 500,
+        { 
+          status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-      }
-
-      const data = await response.json();
-      console.log('✅ OpenAI API response received successfully');
-      
-      const enhancedContent = data.choices[0].message.content;
-      
-      if (!enhancedContent) {
-        console.error('❌ No enhanced content returned from OpenAI');
-        return new Response(JSON.stringify({ 
-          success: false, 
-          error: 'No enhanced content returned from AI service' 
-        }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-      }
-
-      console.log(`✅ Enhancement completed successfully, ${enhancedContent.length} characters generated`);
-      
-      return new Response(JSON.stringify({ 
-        success: true, 
-        enhancedContent,
-        originalLength: trimmedText.length,
-        enhancedLength: enhancedContent.length
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-
-    } catch (fetchError) {
-      clearTimeout(timeoutId);
-      console.error('❌ OpenAI API request failed:', fetchError);
-      
-      if (fetchError.name === 'AbortError') {
-        return new Response(JSON.stringify({ 
-          success: false, 
-          error: 'Request timed out. Please try again.' 
-        }), {
-          status: 408,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-      }
-      
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: `Network error: ${fetchError.message}` 
-      }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+        }
+      );
     }
+
+    // Validate required fields
+    if (!requestData.text) {
+      console.error('❌ Missing required field: text');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Missing required field: text'
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    console.log('📝 Processing resume text of length:', requestData.text.length);
+
+    // Convert resume data to readable text
+    const resumeText = convertResumeDataToText(requestData.text);
+    console.log('📋 Converted resume text length:', resumeText.length);
+
+    if (!resumeText || resumeText.trim() === '') {
+      console.error('❌ Empty resume text after conversion');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Resume content is empty after processing'
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Get OpenAI API key
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openaiApiKey) {
+      console.error('❌ OpenAI API key not found');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'OpenAI API key not configured'
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Prepare enhancement prompt
+    const enhancementPrompt = createEnhancementPrompt(resumeText, requestData.options);
+    console.log('🎯 Enhancement prompt prepared');
+
+    // Call OpenAI API with retry logic
+    let enhancedContent: string;
+    try {
+      enhancedContent = await callOpenAIWithRetry(openaiApiKey, enhancementPrompt);
+      console.log('✅ OpenAI API call successful, response length:', enhancedContent.length);
+    } catch (openaiError) {
+      console.error('❌ OpenAI API error:', openaiError);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: `AI enhancement failed: ${openaiError.message}`
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Validate enhanced content
+    if (!enhancedContent || enhancedContent.trim() === '') {
+      console.error('❌ Empty enhanced content received');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'No enhanced content generated'
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Return successful response
+    const response = {
+      success: true,
+      enhancedContent: enhancedContent.trim(),
+      metadata: {
+        originalLength: resumeText.length,
+        enhancedLength: enhancedContent.length,
+        provider: requestData.provider || 'openai',
+        timestamp: new Date().toISOString()
+      }
+    };
+
+    console.log('✅ Enhancement completed successfully');
+    return new Response(
+      JSON.stringify(response),
+      { 
+        status: 200, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
 
   } catch (error) {
-    console.error('❌ Error in enhance-resume function:', error);
-    
-    let errorMessage = 'Unknown error occurred';
-    
-    if (error.message) {
-      errorMessage = error.message;
-    } else if (typeof error === 'string') {
-      errorMessage = error;
-    }
-    
-    return new Response(JSON.stringify({ 
-      success: false, 
-      error: `Enhancement failed: ${errorMessage}` 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
+    console.error('❌ Unexpected error in enhance-resume function:', error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: 'Internal server error occurred'
+      }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
   }
 });
 
-/**
- * Convert structured resume data to readable text format
- */
-function convertResumeDataToText(data: any): string {
-  const sections: string[] = [];
+function convertResumeDataToText(input: string): string {
+  console.log('🔄 Converting resume data to text...');
   
-  // Handle different data structures
-  if (data.personalInfo || data.personal_info) {
-    const personal = data.personalInfo || data.personal_info;
-    sections.push('PERSONAL INFORMATION');
-    if (personal.name) sections.push(`Name: ${personal.name}`);
-    if (personal.email) sections.push(`Email: ${personal.email}`);
-    if (personal.phone) sections.push(`Phone: ${personal.phone}`);
-    if (personal.location) sections.push(`Location: ${personal.location}`);
-    sections.push('');
-  }
-
-  if (data.summary || data.professionalSummary) {
-    const summary = data.summary || data.professionalSummary;
-    sections.push('PROFESSIONAL SUMMARY');
-    sections.push(typeof summary === 'string' ? summary : JSON.stringify(summary));
-    sections.push('');
-  }
-
-  if (data.experience || data.workExperience) {
-    const experience = data.experience || data.workExperience;
-    sections.push('WORK EXPERIENCE');
-    if (Array.isArray(experience)) {
-      experience.forEach((job: any, index: number) => {
-        sections.push(`${index + 1}. ${job.title || job.position || 'Position'} at ${job.company || 'Company'}`);
-        if (job.duration || job.dates) sections.push(`Duration: ${job.duration || job.dates}`);
-        if (job.description) sections.push(`Description: ${job.description}`);
-        if (job.responsibilities) sections.push(`Responsibilities: ${Array.isArray(job.responsibilities) ? job.responsibilities.join('; ') : job.responsibilities}`);
-        if (job.achievements) sections.push(`Achievements: ${Array.isArray(job.achievements) ? job.achievements.join('; ') : job.achievements}`);
-        sections.push('');
-      });
-    } else if (typeof experience === 'string') {
-      sections.push(experience);
-      sections.push('');
+  try {
+    // Try to parse as JSON first
+    const data = JSON.parse(input);
+    console.log('📋 Parsed JSON data, extracting text...');
+    
+    let text = '';
+    
+    // Extract personal information
+    if (data.personalInfo) {
+      text += `Name: ${data.personalInfo.fullName || 'N/A'}\n`;
+      text += `Email: ${data.personalInfo.email || 'N/A'}\n`;
+      text += `Phone: ${data.personalInfo.phone || 'N/A'}\n`;
+      text += `Location: ${data.personalInfo.location || 'N/A'}\n`;
+      if (data.personalInfo.summary) {
+        text += `Summary: ${data.personalInfo.summary}\n`;
+      }
+      text += '\n';
     }
-  }
-
-  if (data.education) {
-    sections.push('EDUCATION');
-    if (Array.isArray(data.education)) {
+    
+    // Extract experience
+    if (data.experience && Array.isArray(data.experience)) {
+      text += 'EXPERIENCE:\n';
+      data.experience.forEach((exp: any, index: number) => {
+        text += `${index + 1}. ${exp.title || 'N/A'} at ${exp.company || 'N/A'}\n`;
+        text += `   Duration: ${exp.startDate || 'N/A'} - ${exp.endDate || 'N/A'}\n`;
+        text += `   Location: ${exp.location || 'N/A'}\n`;
+        if (exp.description) {
+          text += `   Description: ${exp.description}\n`;
+        }
+        if (exp.achievements && Array.isArray(exp.achievements)) {
+          text += '   Achievements:\n';
+          exp.achievements.forEach((achievement: string) => {
+            text += `   - ${achievement}\n`;
+          });
+        }
+        text += '\n';
+      });
+    }
+    
+    // Extract education
+    if (data.education && Array.isArray(data.education)) {
+      text += 'EDUCATION:\n';
       data.education.forEach((edu: any, index: number) => {
-        sections.push(`${index + 1}. ${edu.degree || edu.qualification || 'Degree'} from ${edu.institution || edu.school || 'Institution'}`);
-        if (edu.year || edu.graduation) sections.push(`Year: ${edu.year || edu.graduation}`);
-        if (edu.gpa) sections.push(`GPA: ${edu.gpa}`);
-        sections.push('');
+        text += `${index + 1}. ${edu.degree || 'N/A'} from ${edu.school || 'N/A'}\n`;
+        text += `   Duration: ${edu.startDate || 'N/A'} - ${edu.endDate || 'N/A'}\n`;
+        text += `   Location: ${edu.location || 'N/A'}\n`;
+        if (edu.gpa) {
+          text += `   GPA: ${edu.gpa}\n`;
+        }
+        text += '\n';
       });
-    } else if (typeof data.education === 'string') {
-      sections.push(data.education);
-      sections.push('');
+    }
+    
+    // Extract skills
+    if (data.skills) {
+      text += 'SKILLS:\n';
+      if (Array.isArray(data.skills)) {
+        data.skills.forEach((skill: string) => {
+          text += `- ${skill}\n`;
+        });
+      } else if (typeof data.skills === 'object') {
+        // Handle structured skills object
+        Object.entries(data.skills).forEach(([category, skills]) => {
+          if (Array.isArray(skills)) {
+            text += `${category.toUpperCase()}:\n`;
+            skills.forEach((skill: any) => {
+              const skillName = typeof skill === 'string' ? skill : skill.skill || skill.name;
+              text += `- ${skillName}\n`;
+            });
+          }
+        });
+      }
+      text += '\n';
+    }
+    
+    // Extract projects
+    if (data.projects && Array.isArray(data.projects)) {
+      text += 'PROJECTS:\n';
+      data.projects.forEach((project: any, index: number) => {
+        text += `${index + 1}. ${project.title || 'N/A'}\n`;
+        if (project.description) {
+          text += `   Description: ${project.description}\n`;
+        }
+        if (project.technologies && Array.isArray(project.technologies)) {
+          text += `   Technologies: ${project.technologies.join(', ')}\n`;
+        }
+        text += '\n';
+      });
+    }
+    
+    // Extract certifications
+    if (data.certifications && Array.isArray(data.certifications)) {
+      text += 'CERTIFICATIONS:\n';
+      data.certifications.forEach((cert: any, index: number) => {
+        text += `${index + 1}. ${cert.name || 'N/A'} from ${cert.issuer || 'N/A'}\n`;
+        text += `   Date: ${cert.date || 'N/A'}\n`;
+        text += '\n';
+      });
+    }
+    
+    console.log('✅ JSON data converted to text successfully');
+    return text.trim();
+    
+  } catch (jsonError) {
+    console.log('📝 Input is not JSON, treating as plain text');
+    // If it's not JSON, treat as plain text
+    return input.trim();
+  }
+}
+
+function createEnhancementPrompt(resumeText: string, options?: any): string {
+  const tone = options?.tone || 'professional';
+  const focus = options?.focus || 'general improvement';
+  const targetRole = options?.targetRole || '';
+  const industry = options?.industry || '';
+  
+  return `You are an expert resume writer and career coach. Please enhance the following resume content to make it more professional, impactful, and ATS-friendly.
+
+Focus areas:
+- ${focus}
+- Tone: ${tone}
+${targetRole ? `- Target Role: ${targetRole}` : ''}
+${industry ? `- Industry: ${industry}` : ''}
+
+Please improve the resume by:
+1. Enhancing the language to be more professional and impactful
+2. Adding quantifiable achievements where appropriate
+3. Improving the overall structure and flow
+4. Making it more ATS-friendly with relevant keywords
+5. Ensuring consistency in formatting and style
+
+Here is the resume content to enhance:
+
+${resumeText}
+
+Please provide the enhanced resume content:`;
+}
+
+async function callOpenAIWithRetry(apiKey: string, prompt: string, maxRetries = 3): Promise<string> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`🔄 OpenAI API attempt ${attempt}/${maxRetries}`);
+      
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          max_tokens: 2000,
+          temperature: 0.7
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`OpenAI API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('Invalid response structure from OpenAI API');
+      }
+
+      const enhancedContent = data.choices[0].message.content;
+      
+      if (!enhancedContent || enhancedContent.trim() === '') {
+        throw new Error('Empty content received from OpenAI API');
+      }
+
+      console.log('✅ OpenAI API call successful');
+      return enhancedContent;
+
+    } catch (error) {
+      console.error(`❌ OpenAI API attempt ${attempt} failed:`, error);
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      if (attempt < maxRetries) {
+        const delay = Math.pow(2, attempt) * 1000; // Exponential backoff
+        console.log(`⏳ Retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
     }
   }
-
-  if (data.skills) {
-    sections.push('SKILLS');
-    if (Array.isArray(data.skills)) {
-      const skillsList = data.skills.map((skill: any) => {
-        if (typeof skill === 'string') return skill;
-        if (skill.name) return `${skill.name}${skill.level ? ` (${skill.level})` : ''}`;
-        if (skill.skill) return `${skill.skill}${skill.proficiency ? ` (${skill.proficiency})` : ''}`;
-        return JSON.stringify(skill);
-      });
-      sections.push(skillsList.join(', '));
-    } else if (typeof data.skills === 'string') {
-      sections.push(data.skills);
-    }
-    sections.push('');
-  }
-
-  // Handle any other sections
-  Object.keys(data).forEach(key => {
-    if (!['personalInfo', 'personal_info', 'summary', 'professionalSummary', 'experience', 'workExperience', 'education', 'skills'].includes(key)) {
-      sections.push(key.toUpperCase().replace(/([A-Z])/g, ' $1').trim());
-      sections.push(typeof data[key] === 'string' ? data[key] : JSON.stringify(data[key]));
-      sections.push('');
-    }
-  });
-
-  return sections.join('\n');
+  
+  throw lastError || new Error('All retry attempts failed');
 }
