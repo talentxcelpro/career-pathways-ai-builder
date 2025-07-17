@@ -1,11 +1,16 @@
 import { Card, CardContent } from "@/components/ui/card";
 
 interface ResumePreviewProps {
-  data: any;
+  data?: any;
+  content?: any;
+  template?: any;
+  fullPage?: boolean;
 }
 
-export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
-  if (!data) {
+export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, template, fullPage }) => {
+  // Use content if provided, otherwise use data
+  const resumeData = content || data;
+  if (!resumeData) {
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardContent className="p-8">
@@ -18,7 +23,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   }
 
   const renderPersonalInfo = () => {
-    const { personalInfo } = data;
+    const { personalInfo } = resumeData;
     if (!personalInfo) return null;
 
     return (
@@ -42,7 +47,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   };
 
   const renderExperience = () => {
-    const { experience } = data;
+    const { experience } = resumeData;
     if (!experience || !Array.isArray(experience) || experience.length === 0) return null;
 
     return (
@@ -81,7 +86,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   };
 
   const renderEducation = () => {
-    const { education } = data;
+    const { education } = resumeData;
     if (!education || !Array.isArray(education) || education.length === 0) return null;
 
     return (
@@ -113,7 +118,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   };
 
   const renderProjects = () => {
-    const { projects } = data;
+    const { projects } = resumeData;
     if (!projects || !Array.isArray(projects) || projects.length === 0) return null;
 
     return (
@@ -139,7 +144,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   };
 
   const renderCertifications = () => {
-    const { certifications } = data;
+    const { certifications } = resumeData;
     if (!certifications || !Array.isArray(certifications) || certifications.length === 0) return null;
 
     return (
@@ -163,7 +168,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   };
 
   const renderAwards = () => {
-    const { awards } = data;
+    const { awards } = resumeData;
     if (!awards || !Array.isArray(awards) || awards.length === 0) return null;
 
     return (
@@ -190,7 +195,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   };
 
   const renderSkills = () => {
-    const { skills } = data;
+    const { skills } = resumeData;
     if (!skills) return null;
 
     // Enhanced skill extraction function that handles all possible formats
@@ -332,8 +337,8 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardContent className="p-8">
+    <Card className={fullPage ? "w-full" : "w-full max-w-2xl mx-auto"}>
+      <CardContent className={fullPage ? "p-12" : "p-8"}>
         <div className="space-y-6">
           {renderPersonalInfo()}
           {renderExperience()}

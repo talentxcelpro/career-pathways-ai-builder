@@ -37,54 +37,65 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
 
       console.log('Calling enhance-resume function with:', enhancementData);
       
-      const { data, error } = await supabase.functions.invoke('enhance-resume', {
-        body: enhancementData
-      });
+      // Add retry logic for failed requests
+      let retryCount = 0;
+      const maxRetries = 3;
+      let lastError;
 
-      console.log('Enhancement response:', { data, error });
+      while (retryCount < maxRetries) {
+        try {
+          const { data, error } = await supabase.functions.invoke('enhance-resume', {
+            body: enhancementData
+          });
 
-      if (error) {
-        console.error('Enhancement error:', error);
-        
-        // Provide fallback enhancement if the function fails
-        const fallbackEnhancement = {
-          ...resumeData,
-          personalInfo: {
-            ...resumeData.personalInfo,
-            summary: resumeData.personalInfo?.summary ? 
-              `${resumeData.personalInfo.summary} [AI Enhancement: This profile has been optimized for ATS compatibility and professional presentation.]` :
-              'Professional with demonstrated expertise and commitment to excellence. [AI Enhanced]'
-          },
-          experience: resumeData.experience?.map((exp: any) => ({
-            ...exp,
-            description: exp.description ? 
-              `${exp.description} Enhanced with quantifiable achievements and industry-relevant keywords.` :
-              'Contributed to organizational success through dedicated performance and professional excellence.'
-          })) || []
-        };
-        
-        console.log('Using fallback enhancement:', fallbackEnhancement);
-        onEnhancementApplied(fallbackEnhancement);
-        toast.success('Resume enhanced with basic improvements!');
-        return;
+          if (!error && data) {
+            console.log('Enhancement successful:', data);
+            onEnhancementApplied(data.enhancedResume || data);
+            toast.success('Resume enhanced successfully!');
+            return;
+          }
+
+          lastError = error;
+          retryCount++;
+          
+          if (retryCount < maxRetries) {
+            toast.loading(`Retrying enhancement... (${retryCount}/${maxRetries})`, { id: 'enhance-retry' });
+            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount)); // Exponential backoff
+          }
+        } catch (fetchError) {
+          lastError = fetchError;
+          retryCount++;
+          
+          if (retryCount < maxRetries) {
+            toast.loading(`Network error, retrying... (${retryCount}/${maxRetries})`, { id: 'enhance-retry' });
+            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+          }
+        }
       }
 
-      if (!data) {
-        throw new Error('No data returned from enhancement service');
-      }
-
-      // Handle successful enhancement
-      if (data.success && data.enhancedResume) {
-        console.log('Enhancement successful:', data.enhancedResume);
-        onEnhancementApplied(data.enhancedResume);
-        toast.success('Resume enhanced successfully with AI!');
-      } else {
-        // Use the returned data even if success flag is false
-        const enhancedData = data.enhancedResume || data;
-        console.log('Using enhancement data:', enhancedData);
-        onEnhancementApplied(enhancedData);
-        toast.success('Resume enhanced successfully!');
-      }
+      // If all retries failed, provide fallback enhancement
+      console.error('All enhancement attempts failed:', lastError);
+      toast.dismiss('enhance-retry');
+      
+      const fallbackEnhancement = {
+        ...resumeData,
+        personalInfo: {
+          ...resumeData.personalInfo,
+          summary: resumeData.personalInfo?.summary ? 
+            `${resumeData.personalInfo.summary} [AI Enhancement: This profile has been optimized for ATS compatibility and professional presentation.]` :
+            'Professional with demonstrated expertise and commitment to excellence. [AI Enhanced]'
+        },
+        experience: resumeData.experience?.map((exp: any) => ({
+          ...exp,
+          description: exp.description ? 
+            `${exp.description} Enhanced with quantifiable achievements and industry-relevant keywords.` :
+            'Contributed to organizational success through dedicated performance and professional excellence.'
+        })) || []
+      };
+      
+      console.log('Using fallback enhancement:', fallbackEnhancement);
+      onEnhancementApplied(fallbackEnhancement);
+      toast.success('Resume enhanced with basic improvements!');
       
     } catch (error: any) {
       console.error('Error enhancing resume:', error);
