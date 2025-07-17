@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -7,19 +8,63 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log(`Keyword optimizer called: ${req.method} from ${req.headers.get('Origin')}`);
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { resumeContent, jobDescription, targetRole, industry } = await req.json();
+    const requestBody = await req.json();
+    const { resumeContent, jobDescription, targetRole, industry } = requestBody;
+
+    console.log('Optimizing keywords for:', { targetRole, industry, hasResumeContent: !!resumeContent });
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
+      console.error('OpenAI API key not configured');
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('Optimizing keywords for:', { targetRole, industry });
+    // Handle null or undefined resume content
+    if (!resumeContent) {
+      console.log('No resume content provided, returning default response');
+      return new Response(
+        JSON.stringify({ 
+          success: true,
+          atsScore: 0,
+          keywordAnalysis: {
+            matched: [],
+            missing: [],
+            density: 0,
+            distribution: "needs_content"
+          },
+          recommendations: [{
+            keyword: "Resume Content Required",
+            priority: "high",
+            suggestion: "Please upload or provide resume content first",
+            naturalIntegration: "Upload your resume to get keyword optimization recommendations",
+            section: "general"
+          }],
+          optimizedSections: {
+            summary: "Please provide resume content for optimization",
+            skills: "Upload resume to analyze skills section",
+            experience: "Resume content needed for experience optimization"
+          },
+          industryKeywords: {
+            technical: [],
+            soft: [],
+            industry: []
+          },
+          improvementTips: [
+            "Upload your resume first to get personalized keyword optimization",
+            "Provide a job description for better keyword matching",
+            "Specify your target role and industry for tailored recommendations"
+          ]
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     const systemPrompt = `You are an expert ATS (Applicant Tracking System) optimizer with deep knowledge of keyword matching and resume optimization.
 
@@ -84,7 +129,7 @@ JOB DESCRIPTION:
 ${jobDescription || 'No specific job description provided'}
 
 CURRENT RESUME CONTENT:
-${JSON.stringify(resumeContent, null, 2)}
+${typeof resumeContent === 'string' ? resumeContent : JSON.stringify(resumeContent, null, 2)}
 
 Please provide:
 1. Comprehensive keyword analysis comparing resume to job requirements
@@ -95,6 +140,8 @@ Please provide:
 
 Focus on helping the candidate match job requirements while maintaining authenticity.`;
 
+    console.log('Making request to OpenAI API...');
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -102,7 +149,7 @@ Focus on helping the candidate match job requirements while maintaining authenti
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -115,10 +162,12 @@ Focus on helping the candidate match job requirements while maintaining authenti
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenAI API error:', errorData);
-      throw new Error(`AI keyword optimization failed: ${response.status}`);
+      throw new Error(`AI keyword optimization failed: ${response.status} - ${errorData}`);
     }
 
     const data = await response.json();
+    console.log('OpenAI API response received successfully');
+    
     const optimizationData = data.choices[0].message.content;
 
     let parsedData;
@@ -126,8 +175,11 @@ Focus on helping the candidate match job requirements while maintaining authenti
       parsedData = JSON.parse(optimizationData);
     } catch (parseError) {
       console.error('Failed to parse AI response as JSON:', parseError);
+      console.log('Raw AI response:', optimizationData);
       throw new Error('AI returned invalid JSON format');
     }
+
+    console.log('Keyword optimization completed successfully');
 
     return new Response(
       JSON.stringify({ 
