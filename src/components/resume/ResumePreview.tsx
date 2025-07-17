@@ -1,78 +1,77 @@
-
-
 import { Card, CardContent } from "@/components/ui/card";
 
 interface ResumePreviewProps {
-  content: any;
-  template?: any;
-  fullPage?: boolean;
+  data: any;
 }
 
-export const ResumePreview = ({ content, template, fullPage = false }: ResumePreviewProps) => {
-  const containerClass = fullPage 
-    ? "w-full max-w-4xl mx-auto bg-white text-black shadow-xl" 
-    : "w-full bg-white text-black border rounded-lg overflow-hidden";
-
-  const primaryColor = template?.css_config?.primaryColor || '#2563eb';
-  const fontFamily = template?.css_config?.fontFamily || 'Inter, sans-serif';
+export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
+  if (!data) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardContent className="p-8">
+          <div className="text-center text-muted-foreground">
+            No resume data available
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const renderPersonalInfo = () => {
-    const info = content?.personalInfo || {};
-    return (
-      <div className="text-center border-b-4 pb-6 mb-6" style={{ borderColor: primaryColor }}>
-        <h1 className="text-3xl font-bold mb-2" style={{ color: primaryColor, fontFamily }}>
-          {info.fullName || 'Your Name'}
-        </h1>
-        <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
-          {info.email && <span>{info.email}</span>}
-          {info.phone && <span>{info.phone}</span>}
-          {info.location && <span>{info.location}</span>}
-          {info.linkedin && <span>{info.linkedin}</span>}
-          {info.website && <span>{info.website}</span>}
-        </div>
-      </div>
-    );
-  };
-
-  const renderSummary = () => {
-    const summary = content?.personalInfo?.summary;
-    if (!summary) return null;
+    const { personalInfo } = data;
+    if (!personalInfo) return null;
 
     return (
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-3 border-b-2 pb-1" style={{ color: primaryColor, borderColor: '#e5e7eb' }}>
-          Professional Summary
-        </h2>
-        <p className="text-gray-700 leading-relaxed">{summary}</p>
+        <h1 className="text-2xl font-bold mb-2">
+          {personalInfo.fullName || 'Your Name'}
+        </h1>
+        <div className="text-sm text-muted-foreground space-y-1">
+          {personalInfo.email && <div>{personalInfo.email}</div>}
+          {personalInfo.phone && <div>{personalInfo.phone}</div>}
+          {personalInfo.location && <div>{personalInfo.location}</div>}
+        </div>
+        {personalInfo.summary && (
+          <div className="mt-4">
+            <h2 className="text-lg font-semibold mb-2">Professional Summary</h2>
+            <p className="text-sm">{personalInfo.summary}</p>
+          </div>
+        )}
       </div>
     );
   };
 
   const renderExperience = () => {
-    const experience = content?.experience || [];
-    if (!experience.length) return null;
+    const { experience } = data;
+    if (!experience || !Array.isArray(experience) || experience.length === 0) return null;
 
     return (
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4 border-b-2 pb-1" style={{ color: primaryColor, borderColor: '#e5e7eb' }}>
-          Professional Experience
-        </h2>
+        <h2 className="text-lg font-semibold mb-3">Experience</h2>
         <div className="space-y-4">
-          {experience.map((exp: any, index: number) => (
-            <div key={index} className="mb-4">
-              <div className="flex justify-between items-baseline mb-2">
-                <h3 className="text-lg font-medium" style={{ color: '#1f2937' }}>
-                  {exp.title}
-                </h3>
-                <span className="text-sm text-gray-600">
-                  {exp.startDate} - {exp.endDate}
+          {experience.map((exp, index) => (
+            <div key={index} className="border-l-2 border-gray-200 pl-4">
+              <div className="flex justify-between items-start mb-1">
+                <h3 className="font-medium">{exp.title || 'Position'}</h3>
+                <span className="text-sm text-muted-foreground">
+                  {exp.startDate} - {exp.endDate || 'Present'}
                 </span>
               </div>
-              <div className="font-medium mb-2" style={{ color: primaryColor }}>
-                {exp.company} • {exp.location}
+              <div className="text-sm text-muted-foreground mb-2">
+                {exp.company} {exp.location && `• ${exp.location}`}
               </div>
               {exp.description && (
-                <p className="text-gray-700 leading-relaxed">{exp.description}</p>
+                <p className="text-sm mb-2">{exp.description}</p>
+              )}
+              {exp.achievements && exp.achievements.length > 0 && (
+                <ul className="text-sm space-y-1">
+                  {exp.achievements.map((achievement, achIndex) => (
+                    <li key={achIndex} className="flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>{achievement}</span>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
           ))}
@@ -82,33 +81,29 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
   };
 
   const renderEducation = () => {
-    const education = content?.education || [];
-    if (!education.length) return null;
+    const { education } = data;
+    if (!education || !Array.isArray(education) || education.length === 0) return null;
 
     return (
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4 border-b-2 pb-1" style={{ color: primaryColor, borderColor: '#e5e7eb' }}>
-          Education
-        </h2>
+        <h2 className="text-lg font-semibold mb-3">Education</h2>
         <div className="space-y-3">
-          {education.map((edu: any, index: number) => (
+          {education.map((edu, index) => (
             <div key={index}>
-              <div className="flex justify-between items-baseline mb-1">
-                <h3 className="text-lg font-medium" style={{ color: '#1f2937' }}>
-                  {edu.degree}
-                </h3>
-                <span className="text-sm text-gray-600">
-                  {edu.startDate} - {edu.endDate}
+              <div className="flex justify-between items-start mb-1">
+                <h3 className="font-medium">{edu.degree || 'Degree'}</h3>
+                <span className="text-sm text-muted-foreground">
+                  {edu.endDate || edu.graduationDate || 'Year'}
                 </span>
               </div>
-              <div className="font-medium" style={{ color: primaryColor }}>
-                {edu.school} • {edu.location}
+              <div className="text-sm text-muted-foreground">
+                {edu.school || edu.institution} {edu.location && `• ${edu.location}`}
               </div>
               {edu.gpa && (
-                <div className="text-sm text-gray-600">GPA: {edu.gpa}</div>
+                <div className="text-sm text-muted-foreground">GPA: {edu.gpa}</div>
               )}
               {edu.honors && (
-                <div className="text-sm text-gray-600">{edu.honors}</div>
+                <div className="text-sm text-muted-foreground">{edu.honors}</div>
               )}
             </div>
           ))}
@@ -117,142 +112,23 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
     );
   };
 
-  const renderSkills = () => {
-    const skills = content?.skills || {};
-    
-    // Helper function to extract skill name from various formats
-    const extractSkillName = (skill: any): string => {
-      if (typeof skill === 'string') {
-        return skill;
-      } else if (skill && typeof skill === 'object') {
-        // Handle different object structures - check for all possible property names
-        const skillName = skill.skill || skill.name || skill.title || skill.skillName;
-        if (skillName && typeof skillName === 'string') {
-          return skillName;
-        }
-        // If no valid string property found, return empty string to filter out
-        console.warn('Invalid skill object structure:', skill);
-        return '';
-      }
-      return String(skill);
-    };
-    
-    // Handle skills as array (new format) or object (legacy format)
-    let technicalSkills: string[] = [];
-    let softSkills: string[] = [];
-    
-    if (Array.isArray(skills)) {
-      // Skills is an array - extract skill names properly
-      technicalSkills = skills
-        .map(extractSkillName)
-        .filter(skillName => skillName && skillName.trim() !== '');
-    } else if (skills && typeof skills === 'object') {
-      // Legacy object format or enhanced skills object
-      if (skills.technical) {
-        technicalSkills = Array.isArray(skills.technical) 
-          ? skills.technical
-              .map(extractSkillName)
-              .filter(skillName => skillName && skillName.trim() !== '')
-          : [];
-      }
-      
-      if (skills.soft) {
-        softSkills = Array.isArray(skills.soft) 
-          ? skills.soft
-              .map(extractSkillName)
-              .filter(skillName => skillName && skillName.trim() !== '')
-          : [];
-      }
-      
-      // Handle case where skills object contains direct skill arrays
-      if (!skills.technical && !skills.soft && Object.keys(skills).length > 0) {
-        // Treat all values as technical skills
-        technicalSkills = Object.values(skills)
-          .flat()
-          .map(extractSkillName)
-          .filter(skillName => skillName && skillName.trim() !== '');
-      }
-    }
-    
-    if (!technicalSkills.length && !softSkills.length) return null;
-
-    return (
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4 border-b-2 pb-1" style={{ color: primaryColor, borderColor: '#e5e7eb' }}>
-          Core Skills
-        </h2>
-        {technicalSkills.length > 0 && (
-          <div className="mb-3">
-            <h3 className="font-medium mb-2">{softSkills.length > 0 ? 'Technical Skills' : 'Skills'}</h3>
-            <div className="flex flex-wrap gap-2">
-              {technicalSkills.map((skillName: string, index: number) => (
-                <span 
-                  key={index}
-                  className="px-3 py-1 text-sm rounded-full"
-                  style={{ 
-                    backgroundColor: `${primaryColor}15`, 
-                    color: primaryColor,
-                    border: `1px solid ${primaryColor}30`
-                  }}
-                >
-                  {skillName}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-        {softSkills.length > 0 && (
-          <div>
-            <h3 className="font-medium mb-2">Soft Skills</h3>
-            <div className="flex flex-wrap gap-2">
-              {softSkills.map((skillName: string, index: number) => (
-                <span 
-                  key={index}
-                  className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-700"
-                >
-                  {skillName}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   const renderProjects = () => {
-    const projects = content?.projects || [];
-    if (!projects.length) return null;
+    const { projects } = data;
+    if (!projects || !Array.isArray(projects) || projects.length === 0) return null;
 
     return (
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4 border-b-2 pb-1" style={{ color: primaryColor, borderColor: '#e5e7eb' }}>
-          Projects
-        </h2>
+        <h2 className="text-lg font-semibold mb-3">Projects</h2>
         <div className="space-y-3">
-          {projects.map((project: any, index: number) => (
+          {projects.map((project, index) => (
             <div key={index}>
-              <div className="flex justify-between items-baseline mb-1">
-                <h3 className="text-lg font-medium" style={{ color: '#1f2937' }}>
-                  {project.title}
-                </h3>
-                <span className="text-sm text-gray-600">
-                  {project.startDate} - {project.endDate}
-                </span>
-              </div>
+              <h3 className="font-medium mb-1">{project.title || 'Project'}</h3>
               {project.description && (
-                <p className="text-gray-700 mb-2">{project.description}</p>
+                <p className="text-sm mb-2">{project.description}</p>
               )}
               {project.technologies && project.technologies.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {project.technologies.map((tech: string, techIndex: number) => (
-                    <span 
-                      key={techIndex}
-                      className="px-2 py-1 text-xs rounded bg-gray-100 text-gray-600"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+                <div className="text-sm text-muted-foreground">
+                  Technologies: {project.technologies.join(', ')}
                 </div>
               )}
             </div>
@@ -262,24 +138,212 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
     );
   };
 
-  return (
-    <div className={containerClass} style={{ fontFamily }}>
-      <div className={fullPage ? "p-12" : "p-6"}>
-        {renderPersonalInfo()}
-        {renderSummary()}
-        {renderExperience()}
-        {renderEducation()}
-        {renderSkills()}
-        {renderProjects()}
-        
-        {/* Empty state */}
-        {!content?.personalInfo?.fullName && (
-          <div className="text-center py-12 text-gray-500">
-            <p>Start editing your resume to see the preview</p>
-          </div>
-        )}
+  const renderCertifications = () => {
+    const { certifications } = data;
+    if (!certifications || !Array.isArray(certifications) || certifications.length === 0) return null;
+
+    return (
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-3">Certifications</h2>
+        <div className="space-y-2">
+          {certifications.map((cert, index) => (
+            <div key={index}>
+              <div className="flex justify-between items-start">
+                <span className="font-medium">{cert.name || 'Certification'}</span>
+                <span className="text-sm text-muted-foreground">{cert.date}</span>
+              </div>
+              {cert.issuer && (
+                <div className="text-sm text-muted-foreground">{cert.issuer}</div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    );
+  };
+
+  const renderAwards = () => {
+    const { awards } = data;
+    if (!awards || !Array.isArray(awards) || awards.length === 0) return null;
+
+    return (
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-3">Awards</h2>
+        <div className="space-y-2">
+          {awards.map((award, index) => (
+            <div key={index}>
+              <div className="flex justify-between items-start">
+                <span className="font-medium">{award.name || 'Award'}</span>
+                <span className="text-sm text-muted-foreground">{award.date}</span>
+              </div>
+              {award.issuer && (
+                <div className="text-sm text-muted-foreground">{award.issuer}</div>
+              )}
+              {award.description && (
+                <div className="text-sm">{award.description}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderSkills = () => {
+    const { skills } = data;
+    if (!skills) return null;
+
+    // Enhanced skill extraction function that handles all possible formats
+    const extractSkillName = (skill: any): string => {
+      if (!skill) return '';
+      
+      if (typeof skill === 'string') {
+        return skill.trim();
+      } else if (skill && typeof skill === 'object') {
+        // Handle different object structures - check for all possible property names
+        const skillName = skill.skill || skill.name || skill.title || skill.skillName || skill.text || skill.value;
+        if (skillName && typeof skillName === 'string') {
+          return skillName.trim();
+        }
+        
+        // If object has a toString method or can be converted to string meaningfully
+        if (skill.toString && typeof skill.toString === 'function') {
+          const stringified = skill.toString();
+          if (stringified !== '[object Object]') {
+            return stringified.trim();
+          }
+        }
+        
+        // Last resort: log warning and return empty string
+        console.warn('Invalid skill object structure, cannot extract string:', skill);
+        return '';
+      }
+      
+      // Convert other types to string safely
+      return String(skill).trim();
+    };
+
+    // Process skills into proper string arrays
+    let technicalSkills: string[] = [];
+    let softSkills: string[] = [];
+    let allSkills: string[] = [];
+    
+    if (Array.isArray(skills)) {
+      // Skills is a direct array - extract skill names properly
+      allSkills = skills
+        .map(extractSkillName)
+        .filter(skillName => skillName && skillName.length > 0);
+    } else if (skills && typeof skills === 'object') {
+      // Handle object-based skills structure
+      if (skills.technical && Array.isArray(skills.technical)) {
+        technicalSkills = skills.technical
+          .map(extractSkillName)
+          .filter(skillName => skillName && skillName.length > 0);
+      }
+      
+      if (skills.soft && Array.isArray(skills.soft)) {
+        softSkills = skills.soft
+          .map(extractSkillName)
+          .filter(skillName => skillName && skillName.length > 0);
+      }
+      
+      // Handle nested technical skills object
+      if (skills.technical && typeof skills.technical === 'object' && !Array.isArray(skills.technical)) {
+        const nestedTechnical = Object.values(skills.technical)
+          .flat()
+          .map(extractSkillName)
+          .filter(skillName => skillName && skillName.length > 0);
+        technicalSkills = [...technicalSkills, ...nestedTechnical];
+      }
+      
+      // Handle case where skills object contains direct skill arrays or values
+      if (!skills.technical && !skills.soft && Object.keys(skills).length > 0) {
+        // Treat all values as general skills
+        allSkills = Object.values(skills)
+          .flat()
+          .map(extractSkillName)
+          .filter(skillName => skillName && skillName.length > 0);
+      }
+    }
+    
+    // Remove duplicates and ensure we have valid skills to display
+    technicalSkills = [...new Set(technicalSkills)];
+    softSkills = [...new Set(softSkills)];
+    allSkills = [...new Set(allSkills)];
+    
+    // Don't render if no valid skills found
+    if (!technicalSkills.length && !softSkills.length && !allSkills.length) {
+      return null;
+    }
+    
+    return (
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-3">Skills</h2>
+        <div className="space-y-3">
+          {allSkills.length > 0 && (
+            <div>
+              <div className="flex flex-wrap gap-2">
+                {allSkills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {technicalSkills.length > 0 && (
+            <div>
+              <h3 className="font-medium mb-2">Technical Skills</h3>
+              <div className="flex flex-wrap gap-2">
+                {technicalSkills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {softSkills.length > 0 && (
+            <div>
+              <h3 className="font-medium mb-2">Soft Skills</h3>
+              <div className="flex flex-wrap gap-2">
+                {softSkills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-secondary/10 text-secondary-foreground rounded-md text-sm"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardContent className="p-8">
+        <div className="space-y-6">
+          {renderPersonalInfo()}
+          {renderExperience()}
+          {renderEducation()}
+          {renderSkills()}
+          {renderProjects()}
+          {renderCertifications()}
+          {renderAwards()}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
-
