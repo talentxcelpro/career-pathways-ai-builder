@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Loader2, Sparkles, RefreshCw, Copy, Check } from 'lucide-react';
+import { Loader2, Sparkles, RefreshCw, Copy, Check, AlertCircle } from 'lucide-react';
 
 interface AIResumeEnhancerProps {
   resumeData?: any;
@@ -20,6 +20,54 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
   const [enhancedContent, setEnhancedContent] = useState<string>('');
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [lastError, setLastError] = useState<string>('');
+
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000;
+
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const enhanceWithRetry = async (requestBody: any, attempt: number = 1): Promise<any> => {
+    console.log(`Enhancement attempt ${attempt}/${MAX_RETRIES}`);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('enhance-resume', {
+        body: requestBody
+      });
+
+      if (error) {
+        console.error(`Attempt ${attempt} failed:`, error);
+        
+        // Check if it's a network/connectivity error that might be retryable
+        if ((error.message?.includes('Failed to send a request') || 
+             error.message?.includes('Failed to fetch') ||
+             error.message?.includes('Network request failed')) && 
+            attempt < MAX_RETRIES) {
+          
+          console.log(`Retrying in ${RETRY_DELAY}ms...`);
+          await delay(RETRY_DELAY);
+          return enhanceWithRetry(requestBody, attempt + 1);
+        }
+        
+        throw error;
+      }
+
+      return data;
+    } catch (error: any) {
+      if (attempt < MAX_RETRIES && 
+          (error.message?.includes('Failed to send a request') || 
+           error.message?.includes('Failed to fetch') ||
+           error.message?.includes('Network request failed'))) {
+        
+        console.log(`Retrying in ${RETRY_DELAY}ms...`);
+        await delay(RETRY_DELAY);
+        return enhanceWithRetry(requestBody, attempt + 1);
+      }
+      
+      throw error;
+    }
+  };
 
   const handleEnhance = async () => {
     if (!resumeData) {
@@ -28,6 +76,9 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
     }
 
     setIsEnhancing(true);
+    setLastError('');
+    setRetryCount(0);
+    
     try {
       console.log('Starting enhancement with resume data:', resumeData);
       
@@ -56,28 +107,10 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
 
       console.log('Making request to enhance-resume function...');
 
-      // Try to enhance the resume using Supabase functions
-      const { data, error } = await supabase.functions.invoke('enhance-resume', {
-        body: requestBody
-      });
+      // Try to enhance the resume with retry logic
+      const data = await enhanceWithRetry(requestBody);
 
-      console.log('Response received:', { data, error });
-
-      if (error) {
-        console.error('Enhancement error:', error);
-        
-        // Check if it's a network/connection error
-        if (error.message?.includes('Failed to send a request') || 
-            error.message?.includes('Failed to fetch') ||
-            error.message?.includes('Network request failed')) {
-          
-          toast.error('Network connection issue. Please check your internet connection and try again.');
-          setEnhancedContent('Enhancement failed due to network connectivity. Please check your internet connection and try again.');
-          return;
-        }
-        
-        throw new Error(`Enhancement failed: ${error.message || 'Unknown error'}`);
-      }
+      console.log('Response received:', { data });
 
       if (!data) {
         throw new Error('No response from enhancement service');
@@ -123,6 +156,7 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
         }
       }
       
+      setLastError(errorMessage);
       toast.error(errorMessage);
       setEnhancedContent(`Enhancement failed: ${errorMessage}`);
     } finally {
@@ -170,6 +204,12 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
             Resume data detected: {typeof resumeData === 'object' ? Object.keys(resumeData).length + ' sections' : 'text content'}
           </p>
         )}
+        {lastError && (
+          <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md">
+            <AlertCircle className="h-4 w-4 text-red-500" />
+            <span className="text-sm text-red-700">{lastError}</span>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-2">
@@ -181,7 +221,7 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
             {isEnhancing ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Enhancing...
+                Enhancing... {retryCount > 0 && `(Retry ${retryCount}/${MAX_RETRIES})`}
               </>
             ) : (
               <>

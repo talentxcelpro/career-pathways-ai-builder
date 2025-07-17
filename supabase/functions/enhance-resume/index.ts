@@ -97,67 +97,98 @@ serve(async (req) => {
 
     console.log('🤖 Sending request to OpenAI API...');
     
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are an expert resume writer and ATS optimization specialist. Provide enhanced resume content that is professional, impactful, and optimized for applicant tracking systems.' 
-          },
-          { role: 'user', content: prompt }
-        ],
-        max_tokens: 2000,
-        temperature: 0.7,
-      }),
-    });
+    // Add timeout and retry logic
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+    
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { 
+              role: 'system', 
+              content: 'You are an expert resume writer and ATS optimization specialist. Provide enhanced resume content that is professional, impactful, and optimized for applicant tracking systems.' 
+            },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 2000,
+          temperature: 0.7,
+        }),
+        signal: controller.signal
+      });
 
-    console.log(`📡 OpenAI API response status: ${response.status}`);
+      clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ OpenAI API error:', errorText);
+      console.log(`📡 OpenAI API response status: ${response.status}`);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ OpenAI API error:', errorText);
+        
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: `OpenAI API error: ${response.status} - ${errorText}` 
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      const data = await response.json();
+      console.log('✅ OpenAI API response received successfully');
+      
+      const enhancedContent = data.choices[0].message.content;
+      
+      if (!enhancedContent) {
+        console.error('❌ No enhanced content returned from OpenAI');
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'No enhanced content returned from AI service' 
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      console.log(`✅ Enhancement completed successfully, ${enhancedContent.length} characters generated`);
+      
+      return new Response(JSON.stringify({ 
+        success: true, 
+        enhancedContent,
+        originalLength: trimmedText.length,
+        enhancedLength: enhancedContent.length
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      console.error('❌ OpenAI API request failed:', fetchError);
+      
+      if (fetchError.name === 'AbortError') {
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Request timed out. Please try again.' 
+        }), {
+          status: 408,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
       
       return new Response(JSON.stringify({ 
         success: false, 
-        error: `OpenAI API error: ${response.status} - ${errorText}` 
+        error: `Network error: ${fetchError.message}` 
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
-
-    const data = await response.json();
-    console.log('✅ OpenAI API response received successfully');
-    
-    const enhancedContent = data.choices[0].message.content;
-    
-    if (!enhancedContent) {
-      console.error('❌ No enhanced content returned from OpenAI');
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'No enhanced content returned from AI service' 
-      }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
-
-    console.log(`✅ Enhancement completed successfully, ${enhancedContent.length} characters generated`);
-    
-    return new Response(JSON.stringify({ 
-      success: true, 
-      enhancedContent,
-      originalLength: trimmedText.length,
-      enhancedLength: enhancedContent.length
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
 
   } catch (error) {
     console.error('❌ Error in enhance-resume function:', error);
