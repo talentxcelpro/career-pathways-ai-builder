@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -76,7 +77,7 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
                       <Label htmlFor={`skill-name-${skill.id}`}>Skill Name *</Label>
                       <Input
                         id={`skill-name-${skill.id}`}
-                        value={skill.name}
+                        value={skill.name || ""}
                         onChange={(e) => updateSkill(skill.id, "name", e.target.value)}
                         placeholder="e.g., JavaScript"
                       />
@@ -106,7 +107,7 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
                                     />
                                   ))}
                                 </div>
-                                {level}
+                                <span>{level}</span>
                               </div>
                             </SelectItem>
                           ))}
@@ -139,7 +140,7 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
                           type="number"
                           min="0"
                           max="50"
-                          value={skill.years}
+                          value={skill.years || 0}
                           onChange={(e) => updateSkill(skill.id, "years", parseInt(e.target.value) || 0)}
                           placeholder="0"
                         />
