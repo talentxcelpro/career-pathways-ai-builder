@@ -38,6 +38,11 @@ interface ResumeData {
 
 serve(async (req) => {
   console.log('🚀 Enhanced Resume Function Starting...');
+  console.log('📋 Request details:', {
+    method: req.method,
+    url: req.url,
+    headers: Object.fromEntries(req.headers.entries())
+  });
   
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -45,11 +50,55 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    console.log('❌ Invalid method:', req.method);
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: 'Method not allowed. Use POST.',
+        enhancedResume: null
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 405 
+      }
+    );
+  }
+
   try {
     console.log('📝 Processing resume enhancement request...');
     
-    const { resumeData, enhancementType = 'comprehensive' } = await req.json();
-    console.log('📊 Input data received:', { resumeData: !!resumeData, enhancementType });
+    // Parse request body with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      clearTimeout(timeoutId);
+    } catch (parseError) {
+      clearTimeout(timeoutId);
+      console.error('❌ Failed to parse request body:', parseError);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid JSON in request body',
+          enhancedResume: null
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      );
+    }
+    
+    const { resumeData, enhancementType = 'comprehensive' } = requestBody;
+    console.log('📊 Input data received:', { 
+      resumeData: !!resumeData, 
+      enhancementType,
+      dataKeys: resumeData ? Object.keys(resumeData) : []
+    });
 
     if (!resumeData) {
       console.log('❌ No resume data provided');
@@ -66,6 +115,24 @@ serve(async (req) => {
       );
     }
 
+    // Validate resume data structure
+    if (typeof resumeData !== 'object') {
+      console.log('❌ Invalid resume data structure');
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Resume data must be an object',
+          enhancedResume: null
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      );
+    }
+
+    console.log('🔧 Starting enhancement processing...');
+    
     // Enhanced resume processing with professional improvements
     const enhancedResume: ResumeData = {
       personalInfo: {
@@ -79,33 +146,54 @@ serve(async (req) => {
     };
 
     console.log('✅ Resume enhancement completed successfully');
+    console.log('📊 Enhanced data structure:', {
+      hasPersonalInfo: !!enhancedResume.personalInfo,
+      experienceCount: enhancedResume.experience?.length || 0,
+      educationCount: enhancedResume.education?.length || 0,
+      skillsCount: enhancedResume.skills?.length || 0,
+      projectsCount: enhancedResume.projects?.length || 0
+    });
+    
+    const response = {
+      success: true,
+      enhancedResume,
+      enhancements: {
+        summary: 'Optimized for ATS compatibility and professional presentation',
+        experience: 'Enhanced with action verbs and quantifiable achievements',
+        skills: 'Organized and prioritized for industry relevance',
+        overall: 'Improved readability and professional impact'
+      },
+      metadata: {
+        processedAt: new Date().toISOString(),
+        enhancementType,
+        version: '1.0.0'
+      }
+    };
     
     return new Response(
-      JSON.stringify({
-        success: true,
-        enhancedResume,
-        enhancements: {
-          summary: 'Optimized for ATS compatibility and professional presentation',
-          experience: 'Enhanced with action verbs and quantifiable achievements',
-          skills: 'Organized and prioritized for industry relevance',
-          overall: 'Improved readability and professional impact'
-        }
-      }),
+      JSON.stringify(response),
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
       }
     );
 
   } catch (error) {
     console.error('❌ Enhancement error:', error);
+    console.error('❌ Error stack:', error.stack);
+    
+    // Create a fallback response even on error
+    const fallbackResponse = {
+      success: false,
+      error: 'Enhancement processing failed',
+      details: error.message,
+      enhancedResume: null,
+      fallback: true,
+      timestamp: new Date().toISOString()
+    };
     
     return new Response(
-      JSON.stringify({
-        success: false,
-        error: 'Enhancement processing failed',
-        details: error.message,
-        enhancedResume: null
-      }),
+      JSON.stringify(fallbackResponse),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
