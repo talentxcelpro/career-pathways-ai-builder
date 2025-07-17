@@ -22,10 +22,7 @@ export const TestimonialsManagement: React.FC = () => {
     queryFn: async () => {
       let query = supabase
         .from('service_testimonials')
-        .select(`
-          *,
-          profiles!user_id(full_name, avatar_url)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (statusFilter !== 'all') {
@@ -83,8 +80,7 @@ export const TestimonialsManagement: React.FC = () => {
   });
 
   const filteredTestimonials = testimonials?.filter(testimonial =>
-    testimonial.testimonial_text?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    testimonial.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
+    testimonial.testimonial_text?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStatusColor = (testimonial: any) => {
@@ -160,13 +156,10 @@ export const TestimonialsManagement: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <Avatar>
-                    <AvatarImage src={testimonial.profiles?.avatar_url} />
-                    <AvatarFallback>
-                      {testimonial.profiles?.full_name?.charAt(0) || 'U'}
-                    </AvatarFallback>
+                    <AvatarFallback>U</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold">{testimonial.profiles?.full_name || 'Anonymous'}</h3>
+                    <h3 className="font-semibold">User ID: {testimonial.user_id}</h3>
                     <div className="flex items-center">
                       {[...Array(testimonial.rating)].map((_, i) => (
                         <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />

@@ -39,10 +39,7 @@ export const VerificationManagement: React.FC = () => {
     queryFn: async () => {
       let query = supabase
         .from('user_verification_requests')
-        .select(`
-          *,
-          profiles!user_id(full_name, avatar_url, email, verification_status, verification_badges)
-        `)
+        .select('*')
         .order('submitted_at', { ascending: false });
 
       if (statusFilter !== 'all') {
@@ -77,8 +74,14 @@ export const VerificationManagement: React.FC = () => {
       // Update user profile verification status
       const request = requests?.find(r => r.id === id);
       if (request) {
-        const currentBadges = request.profiles?.verification_badges;
-        const badges = Array.isArray(currentBadges) ? currentBadges : [];
+        // Get current user badges
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('verification_badges')
+          .eq('id', request.user_id)
+          .single();
+        
+        const badges = Array.isArray(profile?.verification_badges) ? profile.verification_badges : [];
         const newBadges = [...badges, request.verification_type];
         
         await supabase
@@ -130,7 +133,6 @@ export const VerificationManagement: React.FC = () => {
   });
 
   const filteredRequests = requests?.filter(request =>
-    request.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     request.verification_type?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -241,13 +243,10 @@ export const VerificationManagement: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <Avatar>
-                    <AvatarImage src={request.profiles?.avatar_url} />
-                    <AvatarFallback>
-                      {request.profiles?.full_name?.charAt(0) || 'U'}
-                    </AvatarFallback>
+                    <AvatarFallback>U</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold">{request.profiles?.full_name || 'Unknown User'}</h3>
+                    <h3 className="font-semibold">User ID: {request.user_id}</h3>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       {getTypeIcon(request.verification_type)}
                       <span className="capitalize">{request.verification_type}</span>
@@ -321,17 +320,11 @@ export const VerificationManagement: React.FC = () => {
               {/* User Info */}
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded">
                 <Avatar>
-                  <AvatarImage src={selectedRequest.profiles?.avatar_url} />
-                  <AvatarFallback>
-                    {selectedRequest.profiles?.full_name?.charAt(0) || 'U'}
-                  </AvatarFallback>
+                  <AvatarFallback>U</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-semibold">{selectedRequest.profiles?.full_name}</h3>
-                  <p className="text-sm text-muted-foreground">{selectedRequest.profiles?.email}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Current Status: {selectedRequest.profiles?.verification_status}
-                  </p>
+                  <h3 className="font-semibold">User ID: {selectedRequest.user_id}</h3>
+                  <p className="text-sm text-muted-foreground">Verification Type: {selectedRequest.verification_type}</p>
                 </div>
               </div>
 
