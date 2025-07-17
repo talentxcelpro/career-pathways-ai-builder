@@ -208,88 +208,58 @@ export const StreamlinedResumeBuilder = () => {
   // AI Enhancement function
   const enhanceSection = useCallback(async (sectionType: string, enhanceType: string) => {
     try {
-      let promptText = '';
-      let sectionData = '';
+      toast.loading(`Enhancing ${sectionType}...`, { id: 'section-enhance' });
 
-      // Map section types to data and prompts
-      switch (sectionType) {
-        case 'summary':
-          sectionData = resumeData.personalInfo.summary;
-          promptText = enhanceType === 'ats' 
-            ? 'Make this professional summary ATS-friendly with relevant keywords'
-            : enhanceType === 'achievements'
-            ? 'Rewrite this summary to focus on quantifiable achievements and impact'
-            : 'Enhance this professional summary to be more compelling and professional';
-          break;
-        case 'experience':
-          sectionData = JSON.stringify(resumeData.experience);
-          promptText = enhanceType === 'ats'
-            ? 'Optimize these work experiences for ATS with relevant keywords and formatting'
-            : enhanceType === 'achievements'
-            ? 'Rewrite these experiences to focus on quantifiable achievements using metrics and results'
-            : 'Enhance these work experiences to be more professional and impactful';
-          break;
-        case 'skills':
-          sectionData = resumeData.skills.join(', ');
-          promptText = enhanceType === 'ats'
-            ? 'Optimize this skills list for ATS compatibility and add relevant industry keywords'
-            : 'Improve and expand this skills list for better professional presentation';
-          break;
-        default:
-          return;
-      }
+      // Create focused resume data for section enhancement
+      const focusedData = {
+        personalInfo: resumeData.personalInfo,
+        experience: resumeData.experience,
+        education: resumeData.education,
+        skills: resumeData.skills,
+        projects: resumeData.projects,
+        certifications: resumeData.certifications,
+        awards: resumeData.awards
+      };
 
       const { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: {
-          [sectionType]: sectionData,
-          sectionType: sectionType,
-          provider: 'deepseek'
+          resumeData: focusedData,
+          enhancementType: `${sectionType}_${enhanceType}`
         }
       });
 
       if (error) throw error;
 
-      // Apply the enhancement
+      // Check for valid response
+      if (!data || !data.enhancedResume) {
+        throw new Error('Invalid response from enhancement service');
+      }
+
+      // Apply the enhancement to the specific section
       if (sectionType === 'summary') {
         setResumeData(prev => ({
           ...prev,
           personalInfo: {
             ...prev.personalInfo,
-            summary: data.enhancement
+            summary: data.enhancedResume.personalInfo?.summary || prev.personalInfo.summary
           }
         }));
       } else if (sectionType === 'experience') {
-        try {
-          const enhancedExperience = JSON.parse(data.enhancement);
-          if (Array.isArray(enhancedExperience)) {
-            setResumeData(prev => ({
-              ...prev,
-              experience: enhancedExperience
-            }));
-          }
-        } catch (parseError) {
-          // If parsing fails, treat as description text for first experience
-          if (resumeData.experience.length > 0) {
-            setResumeData(prev => ({
-              ...prev,
-              experience: prev.experience.map((exp, index) => 
-                index === 0 ? { ...exp, description: data.enhancement } : exp
-              )
-            }));
-          }
-        }
-      } else if (sectionType === 'skills') {
-        const enhancedSkills = data.enhancement.split(',').map((skill: string) => skill.trim()).filter((skill: string) => skill);
         setResumeData(prev => ({
           ...prev,
-          skills: enhancedSkills
+          experience: data.enhancedResume.experience || prev.experience
+        }));
+      } else if (sectionType === 'skills') {
+        setResumeData(prev => ({
+          ...prev,
+          skills: data.enhancedResume.skills || prev.skills
         }));
       }
 
-      toast.success(`${sectionType} enhanced successfully!`);
+      toast.success(`${sectionType} enhanced successfully!`, { id: 'section-enhance' });
     } catch (error) {
       console.error('Enhancement error:', error);
-      toast.error('Failed to enhance section');
+      toast.error('Failed to enhance section', { id: 'section-enhance' });
     }
   }, [resumeData]);
 
@@ -298,60 +268,31 @@ export const StreamlinedResumeBuilder = () => {
     try {
       toast.loading(`Applying ${type} enhancement...`, { id: 'global-enhance' });
       
-      let promptText = '';
-      
-      switch (type) {
-        case 'ats':
-          promptText = 'Optimize this entire resume for ATS systems with proper keywords, formatting, and structure. Return the complete enhanced resume in JSON format with the same structure.';
-          break;
-        case 'achievements':
-          promptText = 'Rewrite this resume to focus on quantifiable achievements, metrics, and impact across all sections. Return the complete enhanced resume in JSON format with the same structure.';
-          break;
-        case 'professional':
-          promptText = 'Enhance this resume for professional tone, clarity, and modern language across all sections. Return the complete enhanced resume in JSON format with the same structure.';
-          break;
-        case 'job-specific':
-          promptText = 'Tailor this resume for maximum job relevance and keyword optimization. Return the complete enhanced resume in JSON format with the same structure.';
-          break;
-      }
-
       const { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: {
-          text: JSON.stringify(resumeData),
-          provider: 'deepseek'
+          resumeData: resumeData,
+          enhancementType: type
         }
       });
 
       if (error) throw error;
 
-      // Try to parse the enhanced resume data
-      try {
-        const enhancedData = JSON.parse(data.enhancement);
-        if (enhancedData.personalInfo || enhancedData.experience || enhancedData.skills) {
-          setResumeData(prev => ({
-            ...prev,
-            ...enhancedData,
-            personalInfo: { ...prev.personalInfo, ...enhancedData.personalInfo },
-            experience: enhancedData.experience || prev.experience,
-            education: enhancedData.education || prev.education,
-            skills: enhancedData.skills || prev.skills,
-            projects: enhancedData.projects || prev.projects,
-            certifications: enhancedData.certifications || prev.certifications,
-            awards: enhancedData.awards || prev.awards
-          }));
-        } else {
-          throw new Error('Invalid enhancement format');
-        }
-      } catch (parseError) {
-        // If parsing fails, apply text improvements to summary
-        setResumeData(prev => ({
-          ...prev,
-          personalInfo: {
-            ...prev.personalInfo,
-            summary: data.enhancement
-          }
-        }));
+      // Check for valid response
+      if (!data || !data.enhancedResume) {
+        throw new Error('Invalid response from enhancement service');
       }
+
+      // Apply the enhanced resume data
+      setResumeData(prev => ({
+        ...prev,
+        personalInfo: { ...prev.personalInfo, ...data.enhancedResume.personalInfo },
+        experience: data.enhancedResume.experience || prev.experience,
+        education: data.enhancedResume.education || prev.education,
+        skills: data.enhancedResume.skills || prev.skills,
+        projects: data.enhancedResume.projects || prev.projects,
+        certifications: data.enhancedResume.certifications || prev.certifications,
+        awards: data.enhancedResume.awards || prev.awards
+      }));
 
       toast.success(`Resume enhanced globally for ${type}!`, { id: 'global-enhance' });
     } catch (error) {
