@@ -18,13 +18,21 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
 
   const testConnection = async (): Promise<boolean> => {
     try {
-      const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/health-check`, {
+      // Use direct fetch for health check since supabase.functions.invoke only makes POST requests
+      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/enhance-resume', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token || ''}`,
         },
       });
-      return response.ok;
+      
+      if (response.ok) {
+        const data = await response.json();
+        return data.status === 'healthy';
+      }
+      
+      return false;
     } catch (error) {
       console.error('Connection test failed:', error);
       return false;
@@ -44,34 +52,38 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
       
       // Test connection first
       const isConnected = await testConnection();
+      
       if (!isConnected) {
-        console.warn('Connection test failed, proceeding with fallback');
+        console.warn('Connection test failed, using offline enhancement');
         toast.info('Using offline enhancement mode');
         
-        // Provide immediate fallback enhancement
+        // Provide immediate offline fallback enhancement
         const offlineEnhancement = {
           ...resumeData,
           personalInfo: {
             ...resumeData.personalInfo,
             summary: resumeData.personalInfo?.summary ? 
-              `${resumeData.personalInfo.summary}. This profile demonstrates professional excellence and commitment to continuous improvement.` :
+              `${resumeData.personalInfo.summary}. Professional with demonstrated expertise in delivering high-quality solutions and driving organizational success through innovative approaches and collaborative leadership.` :
               'Results-driven professional with proven expertise in delivering high-quality solutions and driving organizational success through innovative approaches and collaborative leadership.'
           },
           experience: resumeData.experience?.map((exp: any) => ({
             ...exp,
             description: exp.description ? 
-              `• ${exp.description}\n• Collaborated with cross-functional teams to deliver impactful results\n• Demonstrated leadership and problem-solving capabilities` :
-              '• Contributed to organizational objectives through dedicated performance\n• Collaborated with team members to achieve project goals\n• Demonstrated professional excellence and commitment to quality'
+              `• ${exp.description}\n• Achieved measurable results through strategic planning and execution\n• Collaborated with cross-functional teams to deliver impactful solutions\n• Demonstrated leadership and problem-solving capabilities in challenging environments` :
+              '• Contributed to organizational objectives through dedicated performance and strategic thinking\n• Collaborated with team members to achieve project goals and exceed expectations\n• Demonstrated professional excellence and commitment to quality deliverables'
           })) || [],
           skills: resumeData.skills?.length ? 
-            [...resumeData.skills, 'Professional Communication', 'Problem Solving', 'Team Leadership'] :
-            ['Professional Communication', 'Problem Solving', 'Team Leadership', 'Project Management']
+            [...new Set([...resumeData.skills, 'Professional Communication', 'Problem Solving', 'Team Leadership', 'Strategic Planning'])] :
+            ['Professional Communication', 'Problem Solving', 'Team Leadership', 'Strategic Planning', 'Project Management']
         };
         
         onEnhancementApplied(offlineEnhancement);
         toast.success('Resume enhanced with offline improvements!');
         return;
       }
+      
+      // Connection successful, try AI enhancement
+      toast.loading('Enhancing resume with AI...', { id: 'enhance-progress' });
       
       // Create a comprehensive enhancement request
       const enhancementData = {
@@ -104,11 +116,13 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
             
             // Validate response structure
             if (data.success && data.enhancedResume) {
+              toast.dismiss('enhance-progress');
               onEnhancementApplied(data.enhancedResume);
               toast.success('Resume enhanced successfully with AI!');
               return;
             } else if (data.enhancedResume) {
               // Fallback to direct data if success flag is missing
+              toast.dismiss('enhance-progress');
               onEnhancementApplied(data.enhancedResume);
               toast.success('Resume enhanced successfully!');
               return;
@@ -116,6 +130,11 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
               console.warn('Invalid response structure:', data);
               throw new Error('Invalid response structure from enhancement service');
             }
+          }
+
+          if (error) {
+            console.error('Supabase function error:', error);
+            throw error;
           }
 
           lastError = error;
@@ -142,7 +161,9 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
       // If all retries failed, provide smart fallback enhancement
       console.error('All enhancement attempts failed:', lastError);
       toast.dismiss('enhance-retry');
+      toast.dismiss('enhance-progress');
       
+      // Enhanced offline fallback with better content
       const fallbackEnhancement = {
         ...resumeData,
         personalInfo: {
@@ -162,12 +183,13 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
           ['Professional Communication', 'Problem Solving', 'Team Leadership', 'Strategic Planning', 'Project Management']
       };
       
-      console.log('Using smart fallback enhancement:', fallbackEnhancement);
+      console.log('Using enhanced offline fallback:', fallbackEnhancement);
       onEnhancementApplied(fallbackEnhancement);
-      toast.success('Resume enhanced with advanced fallback improvements!');
+      toast.success('Resume enhanced with offline improvements!');
       
     } catch (error: any) {
       console.error('Error enhancing resume:', error);
+      toast.dismiss('enhance-progress');
       
       // Always provide a basic fallback enhancement to ensure user gets some value
       const basicEnhancement = {

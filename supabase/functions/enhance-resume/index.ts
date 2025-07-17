@@ -50,13 +50,29 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Only allow POST requests
+  // Health check endpoint
+  if (req.method === 'GET') {
+    console.log('🏥 Health check requested');
+    return new Response(
+      JSON.stringify({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        service: 'enhance-resume'
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200 
+      }
+    );
+  }
+
+  // Only allow POST requests for enhancement
   if (req.method !== 'POST') {
     console.log('❌ Invalid method:', req.method);
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: 'Method not allowed. Use POST.',
+        error: 'Method not allowed. Use POST for enhancement or GET for health check.',
         enhancedResume: null
       }),
       { 
