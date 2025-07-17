@@ -7,32 +7,20 @@ import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-
-interface Review {
-  id: string;
-  rating: number;
-  review_text: string;
-  is_verified: boolean;
-  created_at: string;
-  reviewer_id: string;
-  profiles?: {
-    full_name: string;
-    avatar_url: string;
-  };
-}
+import { ServiceReview } from "@/types/service";
 
 interface ServiceReviewsProps {
   serviceId: string;
 }
 
 export default function ServiceReviews({ serviceId }: ServiceReviewsProps) {
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<ServiceReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [userReview, setUserReview] = useState<Review | null>(null);
+  const [userReview, setUserReview] = useState<ServiceReview | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -42,22 +30,35 @@ export default function ServiceReviews({ serviceId }: ServiceReviewsProps) {
 
   const fetchReviews = async () => {
     try {
-      const { data, error } = await supabase
+      // First get reviews with basic data
+      const { data: reviewsData, error: reviewsError } = await supabase
         .from('service_reviews')
-        .select(`
-          *,
-          profiles:reviewer_id(full_name, avatar_url)
-        `)
+        .select('*')
         .eq('service_id', serviceId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (reviewsError) throw reviewsError;
 
-      setReviews(data || []);
+      // Get profile data for reviewers
+      const reviewerIds = reviewsData?.map(review => review.reviewer_id) || [];
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', reviewerIds);
+
+      if (profilesError) throw profilesError;
+
+      // Combine reviews with profile data
+      const reviewsWithProfiles = reviewsData?.map(review => ({
+        ...review,
+        profiles: profilesData?.find(profile => profile.id === review.reviewer_id)
+      })) || [];
+
+      setReviews(reviewsWithProfiles);
       
       // Check if current user has already reviewed
       if (user) {
-        const existingReview = data?.find(review => review.reviewer_id === user.id);
+        const existingReview = reviewsWithProfiles.find(review => review.reviewer_id === user.id);
         setUserReview(existingReview || null);
       }
     } catch (error) {

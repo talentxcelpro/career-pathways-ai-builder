@@ -3,13 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Upload, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { X, Plus, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { ServiceFormData } from "@/types/service";
 
 interface ServiceFormProps {
   serviceId?: string | null;
@@ -17,31 +18,16 @@ interface ServiceFormProps {
   onSaved: () => void;
 }
 
-interface ServiceData {
-  title: string;
-  professional_title: string;
-  years_experience: string;
-  location: string;
-  description: string;
-  whats_included: string[];
-  client_requirements: string;
-  delivery_time_days: number;
-  price: number;
-  currency: string;
-  payment_methods: string[];
-  contact_email: boolean;
-  contact_phone: boolean;
-  contact_website: boolean;
-  website_url: string;
-  phone_number: string;
-  tags: string[];
-  portfolio_files: string[];
-}
+const paymentMethodOptions = [
+  'UPI', 'Bank Transfer', 'PayPal', 'Cash on Delivery', 'Credit Card', 'Razorpay'
+];
 
-const paymentMethodOptions = ['UPI', 'Bank Transfer', 'PayPal', 'Cash on Delivery', 'Cryptocurrency'];
+const experienceOptions = [
+  '1-2 Years', '3-5 Years', '6-10 Years', '10+ Years', '15+ Years'
+];
 
 export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFormProps) {
-  const [formData, setFormData] = useState<ServiceData>({
+  const [formData, setFormData] = useState<ServiceFormData>({
     title: '',
     professional_title: '',
     years_experience: '',
@@ -49,7 +35,7 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
     description: '',
     whats_included: [],
     client_requirements: '',
-    delivery_time_days: 3,
+    delivery_time_days: 1,
     price: 0,
     currency: 'INR',
     payment_methods: [],
@@ -62,10 +48,10 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
     portfolio_files: []
   });
 
-  const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [newIncluded, setNewIncluded] = useState('');
   const [newTag, setNewTag] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -76,6 +62,8 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
   }, [serviceId]);
 
   const fetchService = async () => {
+    if (!serviceId) return;
+    
     try {
       const { data, error } = await supabase
         .from('services')
@@ -85,7 +73,26 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
 
       if (error) throw error;
       if (data) {
-        setFormData(data);
+        setFormData({
+          title: data.title,
+          professional_title: data.professional_title,
+          years_experience: data.years_experience,
+          location: data.location,
+          description: data.description,
+          whats_included: data.whats_included || [],
+          client_requirements: data.client_requirements,
+          delivery_time_days: data.delivery_time_days,
+          price: data.price,
+          currency: data.currency,
+          payment_methods: data.payment_methods || [],
+          contact_email: data.contact_email,
+          contact_phone: data.contact_phone,
+          contact_website: data.contact_website,
+          website_url: data.website_url || '',
+          phone_number: data.phone_number || '',
+          tags: data.tags || [],
+          portfolio_files: data.portfolio_files || []
+        });
       }
     } catch (error) {
       console.error('Error fetching service:', error);
@@ -97,93 +104,20 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
     }
   };
 
-  const handleInputChange = (field: keyof ServiceData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleArrayAdd = (field: 'whats_included' | 'tags', value: string, setValue: (value: string) => void) => {
-    if (value.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        [field]: [...prev[field], value.trim()]
-      }));
-      setValue('');
-    }
-  };
-
-  const handleArrayRemove = (field: 'whats_included' | 'tags', index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
-    }));
-  };
-
-  const handlePaymentMethodChange = (method: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      payment_methods: checked
-        ? [...prev.payment_methods, method]
-        : prev.payment_methods.filter(m => m !== method)
-    }));
-  };
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-
-    setUploading(true);
-    try {
-      const uploadPromises = Array.from(files).map(async (file) => {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${user?.id}/${Date.now()}.${fileExt}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('service-portfolios')
-          .upload(fileName, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('service-portfolios')
-          .getPublicUrl(fileName);
-
-        return publicUrl;
-      });
-
-      const uploadedUrls = await Promise.all(uploadPromises);
-      setFormData(prev => ({
-        ...prev,
-        portfolio_files: [...prev.portfolio_files, ...uploadedUrls]
-      }));
-
-      toast({
-        title: "Success",
-        description: "Files uploaded successfully",
-      });
-    } catch (error) {
-      console.error('Error uploading files:', error);
-      toast({
-        title: "Error",
-        description: "Failed to upload files",
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    if (!user) return;
 
+    setLoading(true);
     try {
       const serviceData = {
+        provider_id: user.id,
         ...formData,
-        provider_id: user?.id,
         updated_at: new Date().toISOString()
       };
 
       if (serviceId) {
+        // Update existing service
         const { error } = await supabase
           .from('services')
           .update(serviceData)
@@ -191,6 +125,7 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
 
         if (error) throw error;
       } else {
+        // Create new service
         const { error } = await supabase
           .from('services')
           .insert([serviceData]);
@@ -211,328 +146,297 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
     }
   };
 
+  const addIncluded = () => {
+    if (newIncluded.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        whats_included: [...prev.whats_included, newIncluded.trim()]
+      }));
+      setNewIncluded('');
+    }
+  };
+
+  const removeIncluded = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      whats_included: prev.whats_included.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addTag = () => {
+    if (newTag.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()]
+      }));
+      setNewTag('');
+    }
+  };
+
+  const removeTag = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handlePaymentMethodChange = (method: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      payment_methods: checked 
+        ? [...prev.payment_methods, method]
+        : prev.payment_methods.filter(m => m !== method)
+    }));
+  };
+
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex items-center gap-4 mb-8">
-        <Button variant="ghost" onClick={onCancel}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {serviceId ? 'Edit Service' : 'Create New Service'}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Fill in the details for your professional service
-          </p>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Basic Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="title">Service Title *</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="e.g., Professional Resume Review & Enhancement"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="professional_title">Your Professional Title *</Label>
-                <Input
-                  id="professional_title"
-                  value={formData.professional_title}
-                  onChange={(e) => handleInputChange('professional_title', e.target.value)}
-                  placeholder="e.g., Senior HR Manager & Career Coach"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="years_experience">Years of Experience *</Label>
-                <Input
-                  id="years_experience"
-                  value={formData.years_experience}
-                  onChange={(e) => handleInputChange('years_experience', e.target.value)}
-                  placeholder="e.g., 10+ Years"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="location">Location *</Label>
-                <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  placeholder="e.g., Mumbai, India"
-                  required
-                />
-              </div>
-            </div>
-
+    <Card className="max-w-4xl mx-auto">
+      <CardHeader>
+        <CardTitle>
+          {serviceId ? 'Edit Service' : 'Create New Service'}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="description">Service Description *</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Briefly explain what your service offers, your expertise, and who it's for..."
-                rows={4}
+              <label className="block text-sm font-medium mb-2">Service Title *</label>
+              <Input
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Professional Resume Review & Enhancement"
                 required
               />
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Service Details */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Service Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            
             <div>
-              <Label>What's Included</Label>
-              <div className="flex gap-2 mt-1">
+              <label className="block text-sm font-medium mb-2">Your Professional Title *</label>
+              <Input
+                value={formData.professional_title}
+                onChange={(e) => setFormData(prev => ({ ...prev, professional_title: e.target.value }))}
+                placeholder="Senior HR Manager & Career Coach"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Years of Experience *</label>
+              <select
+                value={formData.years_experience}
+                onChange={(e) => setFormData(prev => ({ ...prev, years_experience: e.target.value }))}
+                className="w-full p-2 border border-input rounded-md"
+                required
+              >
+                <option value="">Select experience</option>
+                {experienceOptions.map(exp => (
+                  <option key={exp} value={exp}>{exp}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">Location *</label>
+              <Input
+                value={formData.location}
+                onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                placeholder="Mumbai, India"
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Service Description *</label>
+            <Textarea
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              placeholder="Describe your service, expertise, and what makes it unique..."
+              rows={4}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">What's Included *</label>
+            <div className="space-y-2">
+              <div className="flex gap-2">
                 <Input
                   value={newIncluded}
                   onChange={(e) => setNewIncluded(e.target.value)}
-                  placeholder="Add service feature"
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleArrayAdd('whats_included', newIncluded, setNewIncluded))}
+                  placeholder="Resume Review"
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addIncluded())}
                 />
-                <Button 
-                  type="button" 
-                  onClick={() => handleArrayAdd('whats_included', newIncluded, setNewIncluded)}
-                >
-                  Add
+                <Button type="button" onClick={addIncluded}>
+                  <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="flex flex-wrap gap-2">
                 {formData.whats_included.map((item, index) => (
-                  <div key={index} className="flex items-center gap-1 bg-secondary px-2 py-1 rounded">
-                    <span className="text-sm">{item}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleArrayRemove('whats_included', index)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
+                  <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                    {item}
+                    <X 
+                      className="h-3 w-3 cursor-pointer" 
+                      onClick={() => removeIncluded(index)}
+                    />
+                  </Badge>
                 ))}
               </div>
             </div>
+          </div>
 
+          <div>
+            <label className="block text-sm font-medium mb-2">Client Requirements *</label>
+            <Textarea
+              value={formData.client_requirements}
+              onChange={(e) => setFormData(prev => ({ ...prev, client_requirements: e.target.value }))}
+              placeholder="Current Resume (PDF or Word), Target Job Titles..."
+              rows={3}
+              required
+            />
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="client_requirements">What You Need from Client *</Label>
-              <Textarea
-                id="client_requirements"
-                value={formData.client_requirements}
-                onChange={(e) => handleInputChange('client_requirements', e.target.value)}
-                placeholder="e.g., Current Resume (PDF or Word), Target Job Titles"
-                rows={3}
+              <label className="block text-sm font-medium mb-2">Delivery Time (Days) *</label>
+              <Input
+                type="number"
+                min="1"
+                value={formData.delivery_time_days}
+                onChange={(e) => setFormData(prev => ({ ...prev, delivery_time_days: parseInt(e.target.value) }))}
                 required
               />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="delivery_time_days">Delivery Time (Days) *</Label>
-                <Input
-                  id="delivery_time_days"
-                  type="number"
-                  min="1"
-                  value={formData.delivery_time_days}
-                  onChange={(e) => handleInputChange('delivery_time_days', parseInt(e.target.value))}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="price">Price *</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => handleInputChange('price', parseFloat(e.target.value))}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="currency">Currency</Label>
-                <Input
-                  id="currency"
-                  value={formData.currency}
-                  onChange={(e) => handleInputChange('currency', e.target.value)}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Payment & Contact */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Payment & Contact Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            
             <div>
-              <Label>Payment Methods Accepted</Label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-                {paymentMethodOptions.map((method) => (
-                  <div key={method} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={method}
-                      checked={formData.payment_methods.includes(method)}
-                      onCheckedChange={(checked) => handlePaymentMethodChange(method, checked as boolean)}
-                    />
-                    <Label htmlFor={method} className="text-sm">{method}</Label>
-                  </div>
-                ))}
-              </div>
+              <label className="block text-sm font-medium mb-2">Price *</label>
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                value={formData.price}
+                onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) }))}
+                required
+              />
             </div>
-
+            
             <div>
-              <Label>Contact Options</Label>
-              <div className="space-y-2 mt-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="contact_email"
-                    checked={formData.contact_email}
-                    onCheckedChange={(checked) => handleInputChange('contact_email', checked)}
-                  />
-                  <Label htmlFor="contact_email">Email</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="contact_phone"
-                    checked={formData.contact_phone}
-                    onCheckedChange={(checked) => handleInputChange('contact_phone', checked)}
-                  />
-                  <Label htmlFor="contact_phone">Phone</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="contact_website"
-                    checked={formData.contact_website}
-                    onCheckedChange={(checked) => handleInputChange('contact_website', checked)}
-                  />
-                  <Label htmlFor="contact_website">Website</Label>
-                </div>
-              </div>
+              <label className="block text-sm font-medium mb-2">Currency</label>
+              <select
+                value={formData.currency}
+                onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value }))}
+                className="w-full p-2 border border-input rounded-md"
+              >
+                <option value="INR">INR (₹)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+              </select>
             </div>
+          </div>
 
-            {formData.contact_phone && (
-              <div>
-                <Label htmlFor="phone_number">Phone Number</Label>
+          <div>
+            <label className="block text-sm font-medium mb-2">Payment Methods *</label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {paymentMethodOptions.map(method => (
+                <div key={method} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={method}
+                    checked={formData.payment_methods.includes(method)}
+                    onCheckedChange={(checked) => handlePaymentMethodChange(method, checked as boolean)}
+                  />
+                  <label htmlFor={method} className="text-sm">{method}</label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Contact Options</label>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="contact_email"
+                  checked={formData.contact_email}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, contact_email: checked as boolean }))}
+                />
+                <label htmlFor="contact_email" className="text-sm">Enable Email Contact</label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="contact_phone"
+                  checked={formData.contact_phone}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, contact_phone: checked as boolean }))}
+                />
+                <label htmlFor="contact_phone" className="text-sm">Enable Phone Contact</label>
+              </div>
+              
+              {formData.contact_phone && (
                 <Input
-                  id="phone_number"
                   value={formData.phone_number}
-                  onChange={(e) => handleInputChange('phone_number', e.target.value)}
-                  placeholder="Your phone number"
+                  onChange={(e) => setFormData(prev => ({ ...prev, phone_number: e.target.value }))}
+                  placeholder="Phone Number"
                 />
+              )}
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="contact_website"
+                  checked={formData.contact_website}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, contact_website: checked as boolean }))}
+                />
+                <label htmlFor="contact_website" className="text-sm">Enable Website Contact</label>
               </div>
-            )}
-
-            {formData.contact_website && (
-              <div>
-                <Label htmlFor="website_url">Website URL</Label>
+              
+              {formData.contact_website && (
                 <Input
-                  id="website_url"
                   value={formData.website_url}
-                  onChange={(e) => handleInputChange('website_url', e.target.value)}
-                  placeholder="https://your-website.com"
+                  onChange={(e) => setFormData(prev => ({ ...prev, website_url: e.target.value }))}
+                  placeholder="Website URL"
                 />
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              )}
+            </div>
+          </div>
 
-        {/* Tags & Portfolio */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Tags & Portfolio</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label>Service Tags</Label>
-              <div className="flex gap-2 mt-1">
+          <div>
+            <label className="block text-sm font-medium mb-2">Tags / Keywords</label>
+            <div className="space-y-2">
+              <div className="flex gap-2">
                 <Input
                   value={newTag}
                   onChange={(e) => setNewTag(e.target.value)}
-                  placeholder="Add relevant tags"
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleArrayAdd('tags', newTag, setNewTag))}
+                  placeholder="Resume Review"
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                 />
-                <Button 
-                  type="button" 
-                  onClick={() => handleArrayAdd('tags', newTag, setNewTag)}
-                >
-                  Add
+                <Button type="button" onClick={addTag}>
+                  <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="flex flex-wrap gap-2">
                 {formData.tags.map((tag, index) => (
-                  <div key={index} className="flex items-center gap-1 bg-primary/10 px-2 py-1 rounded">
-                    <span className="text-sm">{tag}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleArrayRemove('tags', index)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
+                  <Badge key={index} variant="outline" className="flex items-center gap-1">
+                    {tag}
+                    <X 
+                      className="h-3 w-3 cursor-pointer" 
+                      onClick={() => removeTag(index)}
+                    />
+                  </Badge>
                 ))}
               </div>
             </div>
+          </div>
 
-            <div>
-              <Label>Portfolio Files (Optional)</Label>
-              <div className="mt-2">
-                <Input
-                  type="file"
-                  multiple
-                  accept="image/*,.pdf,.doc,.docx"
-                  onChange={handleFileUpload}
-                  disabled={uploading}
-                />
-                {uploading && (
-                  <p className="text-sm text-muted-foreground mt-1">Uploading files...</p>
-                )}
-              </div>
-              {formData.portfolio_files.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-sm text-muted-foreground">
-                    {formData.portfolio_files.length} file(s) uploaded
-                  </p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Saving...' : serviceId ? 'Update Service' : 'Create Service'}
-          </Button>
-        </div>
-      </form>
-    </div>
+          <div className="flex justify-end gap-4">
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Saving...' : serviceId ? 'Update Service' : 'Create Service'}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
