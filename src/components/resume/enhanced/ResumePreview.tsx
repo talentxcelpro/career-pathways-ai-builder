@@ -32,3 +32,6 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
     </Card>
   );
 };
+
+// Export the props interface for other components to use
+export type { ResumePreviewProps };
