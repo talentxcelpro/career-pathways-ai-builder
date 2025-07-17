@@ -123,11 +123,11 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
 
   const getTierGradient = (tierName: string) => {
     switch (tierName) {
-      case 'Pro Starter':
+      case 'Smart Service Page':
         return 'from-blue-500 to-cyan-500';
-      case 'Pro Business':
+      case 'CRM':
         return 'from-purple-500 to-pink-500';
-      case 'Pro Elite':
+      case 'Premium':
         return 'from-orange-500 to-yellow-500';
       default:
         return 'from-gray-500 to-gray-600';
@@ -136,11 +136,11 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
 
   const getTierIcon = (tierName: string) => {
     switch (tierName) {
-      case 'Pro Starter':
+      case 'Smart Service Page':
         return <Star className="h-5 w-5" />;
-      case 'Pro Business':
+      case 'CRM':
         return <Zap className="h-5 w-5" />;
-      case 'Pro Elite':
+      case 'Premium':
         return <Crown className="h-5 w-5" />;
       default:
         return <Star className="h-5 w-5" />;
@@ -213,7 +213,7 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
             key={tier.id}
             variants={itemVariants}
             className={`relative group ${
-              tier.name === 'Pro Business' ? 'md:scale-110 md:z-10' : ''
+              tier.name === 'CRM' ? 'md:scale-110 md:z-10' : ''
             }`}
           >
             <Card className={`
@@ -222,7 +222,7 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
               ${currentTier === tier.name ? 'ring-2 ring-blue-500' : ''}
               ${tier.name === 'Pro Business' ? 'border-2 border-purple-200' : ''}
             `}>
-              {tier.name === 'Pro Business' && (
+              {tier.name === 'CRM' && (
                 <div className="absolute -top-px left-0 right-0">
                   <div className="h-px bg-gradient-to-r from-purple-500 to-pink-500"></div>
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -268,9 +268,9 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
                   </div>
                   
                   <p className="text-sm text-gray-500">
-                    {tier.name === 'Pro Starter' && 'Perfect for getting started'}
-                    {tier.name === 'Pro Business' && 'Best for growing professionals'}
-                    {tier.name === 'Pro Elite' && 'Ultimate professional toolkit'}
+                    {tier.name === 'Smart Service Page' && 'Perfect for getting started with portfolio showcase'}
+                    {tier.name === 'CRM' && 'Best for growing professionals with client management'}
+                    {tier.name === 'Premium' && 'Ultimate professional toolkit with all features'}
                   </p>
                 </div>
 

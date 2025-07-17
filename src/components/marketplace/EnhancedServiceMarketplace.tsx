@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/utils/currencyUtils";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppleSubscriptionUI } from "@/components/subscription/AppleSubscriptionUI";
+import { ServiceDetailDialog } from "./ServiceDetailDialog";
 
 // Load Razorpay script
 const loadRazorpayScript = (): Promise<boolean> => {
@@ -895,22 +896,13 @@ export default function EnhancedServiceMarketplace() {
         )}
       </div>
 
-      {/* Service Detail Modal - placeholder for future implementation */}
-      {selectedService && (
-        <Dialog open={!!selectedService} onOpenChange={() => setSelectedService(null)}>
-          <DialogContent className="max-w-4xl bg-white/95 backdrop-blur-md rounded-2xl">
-            <DialogHeader>
-              <DialogTitle>{selectedService.title}</DialogTitle>
-            </DialogHeader>
-            <div className="p-6">
-              <p>Service details and package selection will be implemented here.</p>
-              <Button onClick={() => setSelectedService(null)} className="mt-4">
-                Close
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+      {/* Service Detail Dialog */}
+      <ServiceDetailDialog
+        service={selectedService}
+        open={!!selectedService}
+        onOpenChange={() => setSelectedService(null)}
+        onBookService={handleBookNow}
+      />
     </div>
   );
 }
