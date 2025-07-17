@@ -208,7 +208,7 @@ export const ChatGPTStyleInterface = () => {
         // Continue with main request despite health check failure
       }
 
-      // Phase 2: Primary Request with Supabase Client
+      // Phase 2: Primary Request with Direct Fetch
       const requestPayload = {
         extractedData,
         userPrompt,
@@ -218,7 +218,7 @@ export const ChatGPTStyleInterface = () => {
         requestId
       };
 
-      console.log('📤 Phase 2: Sending enhancement request via Supabase client...');
+      console.log('📤 Phase 2: Sending enhancement request via direct fetch...');
       console.log('🔧 Request details:', {
         payloadSize: JSON.stringify(requestPayload).length,
         requestId,
@@ -227,32 +227,10 @@ export const ChatGPTStyleInterface = () => {
 
       let data: any, error: any;
 
-      // Attempt 1: Supabase Functions SDK
+      // Use direct fetch as primary method to avoid SDK issues
       try {
-        const result: any = await Promise.race([
-          supabase.functions.invoke('enhance-resume', {
-            body: requestPayload,
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Request-ID': requestId,
-              'X-User-ID': user?.id || 'anonymous'
-            }
-          }),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Request timeout after 30 seconds')), 30000)
-          )
-        ]);
-        
-        data = result.data;
-        error = result.error;
-        console.log('✅ Supabase client request completed');
-      } catch (clientError) {
-        console.warn('⚠️ Supabase client failed, attempting direct fetch fallback...', clientError);
-        fallbackAttempted = true;
-        
-        // Attempt 2: Direct Fetch Fallback
-        try {
-          const response = await fetch(SUPABASE_FUNCTION_URL, {
+        const response = await Promise.race([
+          fetch(SUPABASE_FUNCTION_URL, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
@@ -262,20 +240,23 @@ export const ChatGPTStyleInterface = () => {
               'X-User-ID': user?.id || 'anonymous'
             },
             body: JSON.stringify(requestPayload)
-          });
+          }),
+          new Promise<Response>((_, reject) => 
+            setTimeout(() => reject(new Error('Request timeout after 30 seconds')), 30000)
+          )
+        ]) as Response;
 
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          }
-
-          const fallbackData = await response.json();
-          data = fallbackData;
-          error = null;
-          console.log('✅ Direct fetch fallback successful');
-        } catch (fetchError) {
-          console.error('❌ Both primary and fallback methods failed');
-          error = fetchError;
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+
+        const responseData = await response.json();
+        data = responseData;
+        error = null;
+        console.log('✅ Direct fetch successful');
+      } catch (fetchError) {
+        console.error('❌ Direct fetch failed:', fetchError);
+        error = fetchError;
       }
 
       // Phase 3: Response Analysis and Error Handling
