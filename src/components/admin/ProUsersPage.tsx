@@ -16,28 +16,8 @@ export const ProUsersPage: React.FC = () => {
   const { data: proUsers, isLoading } = useQuery({
     queryKey: ['admin-pro-users'],
     queryFn: async () => {
-      // First, get profiles with Pro status
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select(`
-          id,
-          full_name,
-          pro_status,
-          pro_plan,
-          pro_expires_at,
-          title,
-          location,
-          phone,
-          created_at
-        `)
-        .eq('pro_status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (profilesError) throw profilesError;
-
-      // Then, get pro subscriptions for these users
-      const profileIds = profiles?.map(p => p.id) || [];
-      const { data: subscriptions, error: subscriptionsError } = await supabase
+      // Get active pro subscriptions with user profiles
+      const { data: subscriptionsData, error: subscriptionsError } = await supabase
         .from('pro_subscriptions')
         .select(`
           id,
@@ -50,16 +30,65 @@ export const ProUsersPage: React.FC = () => {
           expires_at,
           features
         `)
-        .in('user_id', profileIds)
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
 
       if (subscriptionsError) throw subscriptionsError;
 
-      // Merge the data
-      const usersWithSubscriptions = profiles?.map(profile => ({
-        ...profile,
-        subscription: subscriptions?.find(sub => sub.user_id === profile.id)
-      })) || [];
+      // Get user IDs for profiles lookup
+      const userIds = subscriptionsData?.map(sub => sub.user_id) || [];
+      
+      // Get user profiles
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select(`
+          id,
+          full_name,
+          title,
+          location,
+          phone,
+          created_at
+        `)
+        .in('id', userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Get pro service profiles for additional data
+      const { data: serviceProfiles, error: serviceProfilesError } = await supabase
+        .from('pro_service_profiles')
+        .select(`
+          user_id,
+          subscription_tier,
+          business_name,
+          bio,
+          location,
+          contact_email,
+          contact_phone,
+          is_verified,
+          total_reviews,
+          average_rating,
+          total_bookings
+        `)
+        .in('user_id', userIds);
+
+      if (serviceProfilesError) throw serviceProfilesError;
+
+      // Merge all data
+      const usersWithSubscriptions = subscriptionsData?.map(subscription => {
+        const profile = profiles?.find(p => p.id === subscription.user_id);
+        const serviceProfile = serviceProfiles?.find(sp => sp.user_id === subscription.user_id);
+        
+        return {
+          id: subscription.user_id,
+          full_name: profile?.full_name,
+          title: profile?.title,
+          location: serviceProfile?.location || profile?.location,
+          phone: serviceProfile?.contact_phone || profile?.phone,
+          created_at: profile?.created_at,
+          subscription,
+          serviceProfile
+        };
+      }) || [];
 
       return usersWithSubscriptions;
     }
@@ -241,17 +270,19 @@ export const ProUsersPage: React.FC = () => {
                     <p className="text-sm text-muted-foreground">ID: {user.id.slice(0, 8)}...</p>
                   </div>
                 </div>
-                <Badge className={getPlanColor(user.pro_plan || 'Basic')}>
-                  {user.pro_plan || 'Basic'}
+                <Badge className={getPlanColor(user.subscription?.plan_name || user.serviceProfile?.subscription_tier || 'Basic')}>
+                  {user.subscription?.plan_name || user.serviceProfile?.subscription_tier || 'Basic'}
                 </Badge>
               </div>
             </CardHeader>
 
             <CardContent className="space-y-3">
-              {user.title && (
+              {(user.title || user.serviceProfile?.business_name) && (
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="font-medium">Title:</span>
-                  <span>{user.title}</span>
+                  <span className="font-medium">
+                    {user.serviceProfile?.business_name ? 'Business:' : 'Title:'}
+                  </span>
+                  <span>{user.serviceProfile?.business_name || user.title}</span>
                 </div>
               )}
 
@@ -266,6 +297,37 @@ export const ProUsersPage: React.FC = () => {
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-4 w-4 text-muted-foreground" />
                   <span>{user.phone}</span>
+                </div>
+              )}
+
+              {user.serviceProfile && (
+                <div className="pt-2 border-t">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium">Pro Service Profile</span>
+                    {user.serviceProfile.is_verified && (
+                      <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                        Verified
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <div className="text-sm space-y-1">
+                    {user.serviceProfile.total_reviews > 0 && (
+                      <div className="flex justify-between">
+                        <span>Reviews:</span>
+                        <span className="font-medium">
+                          {user.serviceProfile.total_reviews} ({user.serviceProfile.average_rating?.toFixed(1)}⭐)
+                        </span>
+                      </div>
+                    )}
+                    
+                    {user.serviceProfile.total_bookings > 0 && (
+                      <div className="flex justify-between">
+                        <span>Bookings:</span>
+                        <span className="font-medium">{user.serviceProfile.total_bookings}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
