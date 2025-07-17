@@ -3,41 +3,49 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-request-id, x-user-id',
 };
 
 console.log('🚀 AI Resume Enhancement function starting...');
 
 serve(async (req) => {
-  console.log(`📍 Request received: ${req.method} ${req.url}`);
+  const requestId = crypto.randomUUID();
+  const timestamp = new Date().toISOString();
+  const method = req.method;
+  const url = req.url;
+  
+  console.log(`📍 [${requestId}] Request received: ${method} ${url} at ${timestamp}`);
   
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    console.log('✅ CORS preflight request handled');
+    console.log(`✅ [${requestId}] CORS preflight request handled`);
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Health check endpoint
+  // Health check endpoint for connectivity testing
   if (req.method === 'GET') {
-    console.log('🏥 Health check request received');
+    console.log(`💚 [${requestId}] Health check requested`);
     try {
       const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
       const health = {
         status: 'healthy',
         openaiConfigured: !!openAIApiKey,
-        timestamp: new Date().toISOString(),
-        service: 'ai-resume-enhancement'
+        timestamp,
+        requestId,
+        service: 'ai-resume-enhancement',
+        version: '2.0.0'
       };
-      console.log('✅ Health check successful:', health);
+      console.log(`✅ [${requestId}] Health check successful:`, health);
       return new Response(JSON.stringify(health), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } catch (error) {
-      console.error('❌ Health check failed:', error);
+      console.error(`❌ [${requestId}] Health check failed:`, error);
       return new Response(JSON.stringify({ 
         status: 'unhealthy', 
         error: error.message,
-        timestamp: new Date().toISOString()
+        timestamp,
+        requestId
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -45,21 +53,48 @@ serve(async (req) => {
     }
   }
 
-  // Main enhancement logic
-  const requestId = crypto.randomUUID();
-  console.log(`🚀 [${requestId}] Enhancement request received`);
+  // Only allow POST requests for enhancement
+  if (req.method !== 'POST') {
+    console.log(`❌ [${requestId}] Method not allowed: ${req.method}`);
+    return new Response(JSON.stringify({ 
+      error: 'Method not allowed',
+      requestId,
+      timestamp 
+    }), {
+      status: 405,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
 
   try {
-    // Validate OpenAI API key
+    console.log(`📝 [${requestId}] Processing resume enhancement request...`);
+    
+    // Get OpenAI API key
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
-      console.error(`❌ [${requestId}] OpenAI API key not configured`);
+      console.error(`❌ [${requestId}] OpenAI API key not found`);
       throw new Error('OpenAI API key not configured');
     }
-
-    // Parse request body
-    const body = await req.json();
-    console.log(`📋 [${requestId}] Request parsed successfully`);
+    console.log(`🔑 [${requestId}] OpenAI API key found`);
+    
+    // Parse request body with detailed logging
+    let body;
+    try {
+      const rawBody = await req.text();
+      console.log(`📏 [${requestId}] Request body size: ${rawBody.length} characters`);
+      
+      body = JSON.parse(rawBody);
+      console.log(`📋 [${requestId}] Request body parsed successfully`);
+      console.log(`🔍 [${requestId}] Request details:`, {
+        hasExtractedData: !!body.extractedData,
+        hasUserPrompt: !!body.userPrompt,
+        enhancementType: body.enhancementType,
+        clientRequestId: body.requestId
+      });
+    } catch (error) {
+      console.error(`❌ [${requestId}] Invalid JSON in request body:`, error);
+      throw new Error('Invalid JSON in request body');
+    }
     
     const { 
       prompt, 

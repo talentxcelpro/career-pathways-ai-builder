@@ -146,12 +146,6 @@ export const ChatGPTStyleInterface = () => {
 
   const handleSendMessage = async (isRetry = false) => {
     if (!userPrompt.trim() || !extractedData) return;
-    
-    // Remove service health check temporarily while function redeploys
-    // if (!isRetry && !servicesHealthy) {
-    //   toast.error('AI services are currently unavailable. Please wait or try again later.');
-    //   return;
-    // }
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -165,33 +159,75 @@ export const ChatGPTStyleInterface = () => {
     setIsGenerating(true);
 
     try {
-      // Add user ID to headers for better logging
-      const headers: any = {};
-      if (user?.id) {
-        headers['user-id'] = user.id;
-      }
+      console.log('🚀 Starting AI resume enhancement...');
+      console.log('📊 Request payload:', {
+        extractedDataSize: JSON.stringify(extractedData).length,
+        userPromptLength: userPrompt.length,
+        userId: user?.id
+      });
 
-      console.log('🚀 Calling AI resume enhancement...');
-      
-      // Call AI enhancement function with retry logic
+      // First, test basic connectivity with a GET request
+      console.log('🔍 Testing function connectivity...');
+      const testResponse = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-resume-enhancement`, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+          'Content-Type': 'application/json',
+        }
+      });
+      console.log('✅ Connectivity test result:', testResponse.status, testResponse.statusText);
+
+      // Prepare request with detailed logging
+      const requestPayload = {
+        extractedData,
+        userPrompt,
+        enhancementType: 'complete_rewrite',
+        timestamp: new Date().toISOString(),
+        requestId: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      };
+
+      console.log('📤 Sending enhancement request...');
+      console.log('🔧 Request details:', {
+        payloadSize: JSON.stringify(requestPayload).length,
+        requestId: requestPayload.requestId
+      });
+
+      // Call AI enhancement function with comprehensive error handling
       const { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
-        body: {
-          extractedData,
-          userPrompt,
-          enhancementType: 'complete_rewrite'
-        },
-        headers
+        body: requestPayload,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-ID': requestPayload.requestId,
+          'X-User-ID': user?.id || 'anonymous'
+        }
+      });
+
+      console.log('📥 Function response received:', { 
+        hasData: !!data, 
+        hasError: !!error,
+        errorDetails: error 
       });
 
       if (error) {
         console.error('❌ Enhancement function error:', error);
-        throw new Error(error.message || 'Failed to enhance resume');
+        
+        // Check for specific error types
+        if (error.message?.includes('Failed to send a request')) {
+          throw new Error('Network connectivity issue - unable to reach AI service. Please check your connection and try again.');
+        } else if (error.message?.includes('API key')) {
+          throw new Error('AI service configuration issue. Please contact support.');
+        } else {
+          throw new Error(error.message || 'Failed to enhance resume');
+        }
       }
 
       if (!data || !data.success) {
         console.error('❌ Enhancement failed:', data);
-        throw new Error(data?.error || 'Enhancement failed - no valid response');
+        throw new Error(data?.error || 'Enhancement failed - no valid response from AI service');
       }
+
+      console.log('✅ Enhancement successful!');
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -222,24 +258,43 @@ export const ChatGPTStyleInterface = () => {
       setPhase('generate');
 
     } catch (error) {
-      console.error('Enhancement failed:', error);
+      console.error('❌ Enhancement failed with error:', error);
       
-      // Check if it's a retryable error
-      const isRetryable = !error.message?.includes('API key') && 
-                         !error.message?.includes('configuration');
+      // Enhanced error categorization and handling
+      const isNetworkError = error.message?.includes('Failed to send a request') || 
+                            error.message?.includes('fetch') ||
+                            error.message?.includes('Network connectivity');
+      const isConfigError = error.message?.includes('API key') || 
+                           error.message?.includes('configuration');
+      const isTimeoutError = error.message?.includes('timeout');
+      const isRetryable = !isConfigError;
       
-      const retryButton = isRetryable ? '\n\n🔄 **You can try again** - this might be a temporary network issue.' : '';
+      // Log diagnostic information
+      console.log('🔍 Error diagnosis:', {
+        isNetworkError,
+        isConfigError,
+        isTimeoutError,
+        isRetryable,
+        retryCount
+      });
+      
+      const retryButton = isRetryable ? '\n\n🔄 **You can try again** - this might be a temporary issue.' : '';
       
       let errorContent = `❌ **Enhancement Failed**\n\nI encountered an issue enhancing your resume.${retryButton}\n\n`;
       
-      if (error.message?.includes('API key')) {
-        errorContent += '**Issue:** AI service configuration problem\n**Solution:** Please contact support for assistance.';
-      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
-        errorContent += '**Issue:** Network connection problem\n**Solution:** Check your internet connection and try again.';
-      } else if (error.message?.includes('timeout')) {
-        errorContent += '**Issue:** Request took too long\n**Solution:** Try with a shorter, more specific prompt.';
+      if (isConfigError) {
+        errorContent += '**Issue:** AI service configuration problem\n**Solution:** The AI service is being configured. Please try again in a few minutes or contact support.';
+      } else if (isNetworkError) {
+        errorContent += '**Issue:** Unable to connect to AI service\n**Solution:** Please check your internet connection. If the problem persists, the service may be restarting.';
+      } else if (isTimeoutError) {
+        errorContent += '**Issue:** Request took too long to process\n**Solution:** Try with a shorter, more specific prompt or try again later.';
       } else {
         errorContent += `**Technical details:** ${error.message}`;
+      }
+      
+      // Add troubleshooting tips for persistent failures
+      if (retryCount >= 2) {
+        errorContent += '\n\n**Persistent Issues?**\n• Refresh the page and try again\n• Try uploading a different resume\n• Check if other features work normally';
       }
       
       const errorMessage: ChatMessage = {
@@ -250,10 +305,16 @@ export const ChatGPTStyleInterface = () => {
       };
       setMessages(prev => [...prev, errorMessage]);
       
-      // Show toast for immediate feedback
-      toast.error('Enhancement failed. Check the chat for details.');
+      // Show different toast messages based on error type
+      if (isNetworkError) {
+        toast.error('Unable to connect to AI service. Please check your connection.');
+      } else if (isConfigError) {
+        toast.error('AI service is being configured. Please try again shortly.');
+      } else {
+        toast.error('Enhancement failed. Check the chat for details.');
+      }
       
-      // Track retry count
+      // Track retry count for retryable errors
       if (isRetryable) {
         setRetryCount(prev => prev + 1);
       }
