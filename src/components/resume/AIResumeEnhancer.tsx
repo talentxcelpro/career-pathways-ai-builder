@@ -32,9 +32,18 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
       console.log('Starting enhancement with resume data:', resumeData);
       
       // Convert resume data to text for enhancement
-      const resumeText = typeof resumeData === 'string' 
-        ? resumeData 
-        : JSON.stringify(resumeData);
+      let resumeText = '';
+      
+      if (typeof resumeData === 'string') {
+        resumeText = resumeData;
+      } else if (resumeData && typeof resumeData === 'object') {
+        // Convert structured resume data to text
+        resumeText = JSON.stringify(resumeData);
+      } else {
+        throw new Error('Invalid resume data format');
+      }
+
+      console.log('Sending resume text for enhancement, length:', resumeText.length);
 
       const { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: {
@@ -43,13 +52,23 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
         }
       });
 
+      console.log('Enhancement response:', { data, error });
+
       if (error) {
         console.error('Enhancement error:', error);
-        throw error;
+        throw new Error(error.message || 'Enhancement request failed');
+      }
+
+      if (!data) {
+        throw new Error('No response from enhancement service');
       }
 
       if (!data.success) {
         throw new Error(data.error || 'Enhancement failed');
+      }
+
+      if (!data.enhancedContent) {
+        throw new Error('No enhanced content returned');
       }
 
       setEnhancedContent(data.enhancedContent);
@@ -63,10 +82,11 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
         });
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Enhancement failed:', error);
-      toast.error(`Enhancement failed: ${error.message}`);
-      setEnhancedContent('Failed to enhance resume. Please try again.');
+      const errorMessage = error.message || 'Unknown error occurred';
+      toast.error(`Enhancement failed: ${errorMessage}`);
+      setEnhancedContent(`Enhancement failed: ${errorMessage}. Please try again.`);
     } finally {
       setIsEnhancing(false);
     }
@@ -74,10 +94,14 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
 
   const handleCopy = async () => {
     if (enhancedContent) {
-      await navigator.clipboard.writeText(enhancedContent);
-      setCopied(true);
-      toast.success('Enhanced content copied to clipboard!');
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(enhancedContent);
+        setCopied(true);
+        toast.success('Enhanced content copied to clipboard!');
+        setTimeout(() => setCopied(false), 2000);
+      } catch (error) {
+        toast.error('Failed to copy to clipboard');
+      }
     }
   };
 
@@ -145,14 +169,16 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
               <h3 className="text-sm font-medium text-muted-foreground">
                 Enhanced Content
               </h3>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleApplyEnhancement}
-              >
-                <RefreshCw className="h-3 w-3 mr-1" />
-                Apply Enhancement
-              </Button>
+              {onEnhancementApplied && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleApplyEnhancement}
+                >
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Apply Enhancement
+                </Button>
+              )}
             </div>
             
             <Textarea
