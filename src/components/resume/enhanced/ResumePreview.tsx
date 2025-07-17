@@ -15,9 +15,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template }) 
         <h3 className="text-lg font-semibold mb-4">Preview</h3>
         <div className="border rounded-lg overflow-hidden">
           <BaseResumePreview 
-            data={data} 
-            template={template}
-            fullPage={false}
+            data={data}
           />
         </div>
       </div>
