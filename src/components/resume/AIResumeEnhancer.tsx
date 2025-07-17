@@ -21,10 +21,6 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Constants for direct fetch fallback
-  const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
-
   const handleEnhance = async () => {
     if (!resumeData) {
       toast.error('Please upload or create your resume first');
@@ -58,43 +54,28 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
         provider: 'openai'
       };
 
-      console.log('Attempting enhancement with Supabase client...');
+      console.log('Making request to enhance-resume function...');
 
-      // First try with Supabase client
-      let { data, error } = await supabase.functions.invoke('enhance-resume', {
+      // Try to enhance the resume using Supabase functions
+      const { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: requestBody
       });
 
-      // If Supabase client fails, try direct fetch
-      if (error && error.message?.includes('Failed to send a request')) {
-        console.log('Supabase client failed, trying direct fetch...');
-        
-        try {
-          const response = await fetch(`${SUPABASE_URL}/functions/v1/enhance-resume`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-              'apikey': SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          }
-
-          data = await response.json();
-          error = null;
-          console.log('Direct fetch successful');
-        } catch (fetchError) {
-          console.error('Direct fetch also failed:', fetchError);
-          throw new Error(`Network request failed: ${fetchError.message}`);
-        }
-      }
+      console.log('Response received:', { data, error });
 
       if (error) {
         console.error('Enhancement error:', error);
+        
+        // Check if it's a network/connection error
+        if (error.message?.includes('Failed to send a request') || 
+            error.message?.includes('Failed to fetch') ||
+            error.message?.includes('Network request failed')) {
+          
+          toast.error('Network connection issue. Please check your internet connection and try again.');
+          setEnhancedContent('Enhancement failed due to network connectivity. Please check your internet connection and try again.');
+          return;
+        }
+        
         throw new Error(`Enhancement failed: ${error.message || 'Unknown error'}`);
       }
 
@@ -126,16 +107,24 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
     } catch (error: any) {
       console.error('Enhancement failed with error:', error);
       
-      let errorMessage = 'Unknown error occurred';
+      let errorMessage = 'Enhancement failed. Please try again.';
       
       if (error.message) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
+        if (error.message.includes('Network request failed') || 
+            error.message.includes('Failed to fetch') ||
+            error.message.includes('Failed to send a request')) {
+          errorMessage = 'Network connection issue. Please check your internet connection and try again.';
+        } else if (error.message.includes('OpenAI API key')) {
+          errorMessage = 'AI service configuration issue. Please contact support.';
+        } else if (error.message.includes('empty')) {
+          errorMessage = 'Resume content is empty. Please add some content to your resume first.';
+        } else {
+          errorMessage = error.message;
+        }
       }
       
-      toast.error(`Enhancement failed: ${errorMessage}`);
-      setEnhancedContent(`Enhancement failed: ${errorMessage}. Please try again or check your internet connection.`);
+      toast.error(errorMessage);
+      setEnhancedContent(`Enhancement failed: ${errorMessage}`);
     } finally {
       setIsEnhancing(false);
     }
