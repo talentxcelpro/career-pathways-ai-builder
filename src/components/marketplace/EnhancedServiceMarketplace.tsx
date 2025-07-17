@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,8 +26,7 @@ export default function EnhancedServiceMarketplace() {
         .select(`
           *,
           profiles:provider_id (
-            full_name,
-            avatar_url
+            full_name
           )
         `)
         .eq('is_active', true);
@@ -43,11 +41,37 @@ export default function EnhancedServiceMarketplace() {
 
       // Transform data to match our interface
       const transformedServices: Service[] = (data || []).map(service => ({
-        ...service,
+        id: service.id,
+        provider_id: service.provider_id,
+        title: service.title,
+        professional_title: service.professional_title,
+        years_experience: service.years_experience,
+        location: service.location,
+        description: service.description,
+        whats_included: service.whats_included,
+        client_requirements: service.client_requirements,
+        delivery_time_days: service.delivery_time_days,
+        price: service.price,
+        currency: service.currency,
+        payment_methods: service.payment_methods,
+        contact_email: service.contact_email,
+        contact_phone: service.contact_phone,
+        contact_website: service.contact_website,
+        website_url: service.website_url,
+        phone_number: service.phone_number,
+        tags: service.tags,
+        portfolio_files: service.portfolio_files,
+        is_active: service.is_active,
+        is_featured: service.is_featured,
+        average_rating: service.average_rating,
+        total_reviews: service.total_reviews,
+        total_orders: service.total_orders,
+        created_at: service.created_at,
+        updated_at: service.updated_at,
         provider_name: service.profiles?.full_name || 'Unknown Provider',
-        provider_avatar: service.profiles?.avatar_url,
+        provider_avatar: null,
         provider_location: service.location,
-        is_verified: false // You can add verification logic later
+        is_verified: false
       }));
 
       setServices(transformedServices);
@@ -64,7 +88,6 @@ export default function EnhancedServiceMarketplace() {
 
   const handleContactProvider = (service: Service, e: React.MouseEvent) => {
     e.stopPropagation();
-    // This would open a contact modal or redirect to provider's contact page
     console.log('Contact provider:', service.provider_name);
   };
 

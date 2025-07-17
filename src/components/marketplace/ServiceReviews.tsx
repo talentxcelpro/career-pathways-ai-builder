@@ -43,7 +43,7 @@ export default function ServiceReviews({ serviceId }: ServiceReviewsProps) {
       const reviewerIds = reviewsData?.map(review => review.reviewer_id) || [];
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url')
+        .select('id, full_name')
         .in('id', reviewerIds);
 
       if (profilesError) throw profilesError;
