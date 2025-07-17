@@ -41,7 +41,7 @@ export const VerificationManagement: React.FC = () => {
         .from('user_verification_requests')
         .select(`
           *,
-          profiles:user_id(full_name, avatar_url, email, verification_status)
+          profiles!user_id(full_name, avatar_url, email, verification_status, verification_badges)
         `)
         .order('submitted_at', { ascending: false });
 
@@ -77,7 +77,8 @@ export const VerificationManagement: React.FC = () => {
       // Update user profile verification status
       const request = requests?.find(r => r.id === id);
       if (request) {
-        const badges = request.profiles?.verification_badges || [];
+        const currentBadges = request.profiles?.verification_badges;
+        const badges = Array.isArray(currentBadges) ? currentBadges : [];
         const newBadges = [...badges, request.verification_type];
         
         await supabase
@@ -264,7 +265,7 @@ export const VerificationManagement: React.FC = () => {
               <div>
                 <span className="text-sm font-medium">Documents:</span>
                 <div className="text-sm text-muted-foreground">
-                  {request.submitted_documents?.length || 0} files submitted
+                  {Array.isArray(request.submitted_documents) ? request.submitted_documents.length : 0} files submitted
                 </div>
               </div>
 

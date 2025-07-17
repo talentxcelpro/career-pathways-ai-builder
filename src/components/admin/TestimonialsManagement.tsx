@@ -24,8 +24,7 @@ export const TestimonialsManagement: React.FC = () => {
         .from('service_testimonials')
         .select(`
           *,
-          profiles:user_id(full_name, avatar_url),
-          service_orders:service_order_id(service_title)
+          profiles!user_id(full_name, avatar_url)
         `)
         .order('created_at', { ascending: false });
 
@@ -186,11 +185,9 @@ export const TestimonialsManagement: React.FC = () => {
 
             <CardContent className="space-y-4">
               {/* Service Info */}
-              {testimonial.service_orders?.service_title && (
-                <div className="text-sm">
-                  <span className="font-medium">Service:</span> {testimonial.service_orders.service_title}
-                </div>
-              )}
+              <div className="text-sm">
+                <span className="font-medium">Service Order ID:</span> {testimonial.service_order_id}
+              </div>
 
               {/* Testimonial Text */}
               <div>

@@ -28,10 +28,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       
       const { data, error } = await supabase
         .from('service_testimonials')
-        .select(`
-          *,
-          service_orders:service_order_id(service_title, service_category)
-        `)
+        .select('*')
         .eq('user_id', targetUserId)
         .eq('is_verified', true)
         .order('created_at', { ascending: false });
@@ -134,18 +131,11 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
             </div>
 
             {/* Service Info */}
-            {testimonial.service_orders && (
-              <div className="mb-2">
-                <Badge variant="outline" className="text-xs">
-                  {testimonial.service_orders.service_category || 'Service'}
-                </Badge>
-                {testimonial.service_orders.service_title && (
-                  <span className="text-xs text-muted-foreground ml-2">
-                    {testimonial.service_orders.service_title}
-                  </span>
-                )}
-              </div>
-            )}
+            <div className="mb-2">
+              <Badge variant="outline" className="text-xs">
+                Service Order: {testimonial.service_order_id}
+              </Badge>
+            </div>
 
             {/* Testimonial Content */}
             <blockquote className="text-gray-700 leading-relaxed mb-3">
