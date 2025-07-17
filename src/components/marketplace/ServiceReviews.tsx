@@ -7,7 +7,21 @@ import { Star, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { ServiceReview } from "@/types/service";
+
+interface ServiceReview {
+  id: string;
+  service_id: string;
+  reviewer_id: string;
+  rating: number;
+  review_text?: string;
+  is_verified: boolean;
+  created_at: string;
+  updated_at: string;
+  profiles?: {
+    full_name: string;
+    avatar_url?: string;
+  };
+}
 
 interface ServiceReviewsProps {
   serviceId: string;
@@ -25,6 +39,7 @@ export default function ServiceReviews({ serviceId }: ServiceReviewsProps) {
 
   const fetchReviews = async () => {
     try {
+      // Since service_reviews table doesn't exist in types yet, we'll use a direct query
       const { data, error } = await supabase
         .from('service_reviews')
         .select(`
