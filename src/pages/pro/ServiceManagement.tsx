@@ -2,26 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Eye, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import ServiceForm from "@/components/pro/ServiceForm";
 import ServiceList from "@/components/pro/ServiceList";
-
-interface Service {
-  id: string;
-  title: string;
-  professional_title: string;
-  location: string;
-  price: number;
-  currency: string;
-  is_active: boolean;
-  average_rating: number;
-  total_reviews: number;
-  total_orders: number;
-  created_at: string;
-}
+import { Service } from "@/types/service";
 
 export default function ServiceManagement() {
   const [services, setServices] = useState<Service[]>([]);
@@ -46,7 +33,16 @@ export default function ServiceManagement() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setServices(data || []);
+      
+      const transformedServices = data?.map(service => ({
+        ...service,
+        provider_name: user?.user_metadata?.full_name || 'Unknown',
+        provider_avatar: user?.user_metadata?.avatar_url,
+        provider_location: service.location,
+        is_verified: false
+      })) || [];
+      
+      setServices(transformedServices);
     } catch (error) {
       console.error('Error fetching services:', error);
       toast({

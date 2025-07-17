@@ -4,21 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Eye, Trash2, ToggleLeft, ToggleRight, Star } from "lucide-react";
-import { formatCompactCurrency } from "@/utils/currencyUtils";
-
-interface Service {
-  id: string;
-  title: string;
-  professional_title: string;
-  location: string;
-  price: number;
-  currency: string;
-  is_active: boolean;
-  average_rating: number;
-  total_reviews: number;
-  total_orders: number;
-  created_at: string;
-}
+import { Service } from "@/types/service";
 
 interface ServiceListProps {
   services: Service[];
@@ -28,6 +14,17 @@ interface ServiceListProps {
 }
 
 export default function ServiceList({ services, onEdit, onDelete, onToggleStatus }: ServiceListProps) {
+  const formatPrice = (price: number, currency: string) => {
+    const currencySymbols: { [key: string]: string } = {
+      USD: '$',
+      EUR: '€',
+      GBP: '£',
+      INR: '₹'
+    };
+    
+    return `${currencySymbols[currency] || currency} ${price.toFixed(2)}`;
+  };
+
   if (services.length === 0) {
     return (
       <Card>
@@ -56,14 +53,20 @@ export default function ServiceList({ services, onEdit, onDelete, onToggleStatus
                     {service.is_active ? "Active" : "Inactive"}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">{service.professional_title}</p>
-                <p className="text-sm text-muted-foreground">{service.location}</p>
+                {service.professional_title && (
+                  <p className="text-sm text-muted-foreground">{service.professional_title}</p>
+                )}
+                {service.location && (
+                  <p className="text-sm text-muted-foreground">{service.location}</p>
+                )}
               </div>
               <div className="text-right">
                 <div className="text-lg font-semibold">
-                  ₹{formatCompactCurrency(service.price)}
+                  {formatPrice(service.price, service.currency)}
                 </div>
-                <div className="text-sm text-muted-foreground">{service.currency}</div>
+                <div className="text-sm text-muted-foreground">
+                  {service.delivery_time_days} days delivery
+                </div>
               </div>
             </div>
           </CardHeader>

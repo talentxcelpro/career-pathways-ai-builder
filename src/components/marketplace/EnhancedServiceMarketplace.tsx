@@ -2,31 +2,20 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, MapPin, Star, Clock, TrendingUp, Users, Award } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, Star, MapPin, Clock, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Service } from "@/types/service";
-import ServiceCard from "./ServiceCard";
-import ServiceRecommendations from "./ServiceRecommendations";
-import MarketplaceFilters from "./MarketplaceFilters";
 
 export default function EnhancedServiceMarketplace() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedServiceType, setSelectedServiceType] = useState("all");
-  const [selectedLocation, setSelectedLocation] = useState("all");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
-  const [minRating, setMinRating] = useState(0);
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
-
-  // Mock data for filters (these would come from your database)
-  const categories = ["consulting", "design", "development", "marketing", "writing"];
-  const serviceTypes = ["one_time", "ongoing", "package"];
-  const locations = ["Mumbai", "Delhi", "Bangalore", "Remote"];
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
 
   useEffect(() => {
     fetchServices();
@@ -38,51 +27,50 @@ export default function EnhancedServiceMarketplace() {
         .from('services')
         .select(`
           *,
-          profiles!provider_id (
-            id,
+          profiles!services_provider_id_fkey (
             full_name,
+            avatar_url,
             location
           )
         `)
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      // Transform the data to match our Service interface
-      const transformedServices: Service[] = (data || []).map((serviceData: any) => ({
-        id: serviceData.id,
-        provider_id: serviceData.provider_id,
-        title: serviceData.title,
-        professional_title: serviceData.professional_title || 'Professional',
-        years_experience: serviceData.years_experience || '1-2 years',
-        location: serviceData.location || serviceData.profiles?.location || 'Remote',
-        description: serviceData.description,
-        whats_included: serviceData.what_included || [],
-        client_requirements: serviceData.client_requirements || '',
-        delivery_time_days: serviceData.delivery_time_days,
-        price: serviceData.base_price,
-        currency: serviceData.currency,
-        payment_methods: serviceData.payment_methods || ['online'],
-        contact_email: serviceData.contact_email || false,
-        contact_phone: serviceData.contact_phone || false,
-        contact_website: serviceData.contact_website || false,
-        website_url: serviceData.website_url || '',
-        phone_number: serviceData.phone_number || '',
-        tags: serviceData.tags || [],
-        portfolio_files: serviceData.portfolio_items || [],
-        is_active: serviceData.is_active,
-        is_featured: serviceData.is_featured,
-        average_rating: serviceData.average_rating || 4.5,
-        total_reviews: serviceData.total_reviews || 0,
-        total_orders: serviceData.orders_completed || 0,
-        created_at: serviceData.created_at,
-        updated_at: serviceData.updated_at,
-        // Provider details
-        provider_name: serviceData.profiles?.full_name || 'Anonymous Provider',
-        provider_avatar: undefined,
-        provider_location: serviceData.location || serviceData.profiles?.location || 'Remote',
+      const transformedServices = data?.map(service => ({
+        id: service.id,
+        provider_id: service.provider_id,
+        title: service.title,
+        professional_title: service.professional_title || '',
+        years_experience: service.years_experience || '',
+        location: service.location || '',
+        description: service.description,
+        whats_included: service.whats_included || [],
+        client_requirements: service.client_requirements || '',
+        delivery_time_days: service.delivery_time_days,
+        price: service.price,
+        currency: service.currency,
+        payment_methods: service.payment_methods || [],
+        contact_email: service.contact_email,
+        contact_phone: service.contact_phone,
+        contact_website: service.contact_website,
+        website_url: service.website_url || '',
+        phone_number: service.phone_number || '',
+        tags: service.tags || [],
+        portfolio_files: service.portfolio_files || [],
+        is_active: service.is_active,
+        is_featured: service.is_featured,
+        average_rating: service.average_rating,
+        total_reviews: service.total_reviews,
+        total_orders: service.total_orders,
+        created_at: service.created_at,
+        updated_at: service.updated_at,
+        provider_name: service.profiles?.full_name || 'Unknown Provider',
+        provider_avatar: service.profiles?.avatar_url,
+        provider_location: service.location || service.profiles?.location,
         is_verified: false
-      }));
+      })) || [];
 
       setServices(transformedServices);
     } catch (error) {
@@ -92,234 +80,172 @@ export default function EnhancedServiceMarketplace() {
     }
   };
 
-  const filteredServices = services.filter((service) => {
-    // Search filter
-    if (searchTerm && !service.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !service.description.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !service.provider_name.toLowerCase().includes(searchTerm.toLowerCase())) {
-      return false;
-    }
-
-    // Category filter
-    if (selectedCategory !== "all" && !service.tags.includes(selectedCategory)) {
-      return false;
-    }
-
-    // Location filter
-    if (selectedLocation !== "all" && selectedLocation !== "remote" && 
-        !service.location.toLowerCase().includes(selectedLocation.toLowerCase())) {
-      return false;
-    }
-
-    // Price range filter
-    if (service.price < priceRange[0] || service.price > priceRange[1]) {
-      return false;
-    }
-
-    // Rating filter
-    if (service.average_rating < minRating) {
-      return false;
-    }
-
-    // Verified filter
-    if (verifiedOnly && !service.is_verified) {
-      return false;
-    }
-
-    return true;
+  const filteredServices = services.filter(service => {
+    const matchesSearch = service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         service.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || service.tags.includes(selectedCategory);
+    return matchesSearch && matchesCategory;
   });
 
-  const activeFiltersCount = [
-    searchTerm,
-    selectedCategory !== "all" ? selectedCategory : null,
-    selectedServiceType !== "all" ? selectedServiceType : null,
-    selectedLocation !== "all" ? selectedLocation : null,
-    priceRange[0] > 0 || priceRange[1] < 500 ? "price" : null,
-    minRating > 0 ? "rating" : null,
-    verifiedOnly ? "verified" : null
-  ].filter(Boolean).length;
+  const sortedServices = [...filteredServices].sort((a, b) => {
+    switch (sortBy) {
+      case 'price-low':
+        return a.price - b.price;
+      case 'price-high':
+        return b.price - a.price;
+      case 'rating':
+        return b.average_rating - a.average_rating;
+      case 'newest':
+      default:
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    }
+  });
 
-  const clearFilters = () => {
-    setSearchTerm("");
-    setSelectedCategory("all");
-    setSelectedServiceType("all");
-    setSelectedLocation("all");
-    setPriceRange([0, 500]);
-    setMinRating(0);
-    setVerifiedOnly(false);
+  const formatPrice = (price: number, currency: string) => {
+    const currencySymbols: { [key: string]: string } = {
+      USD: '$',
+      EUR: '€',
+      GBP: '£',
+      INR: '₹'
+    };
+    
+    return `${currencySymbols[currency] || currency} ${price.toFixed(2)}`;
   };
-
-  const handleServiceClick = (serviceId: string) => {
-    window.open(`/services/${serviceId}`, '_blank');
-  };
-
-  // Mock data for recommendations
-  const trendingServices = services.slice(0, 5).map(service => ({
-    ...service,
-    rating: service.average_rating
-  }));
-
-  const featuredServices = services.filter(s => s.is_featured).slice(0, 5).map(service => ({
-    ...service,
-    rating: service.average_rating
-  }));
-
-  const recommendedServices = services.slice(2, 7).map(service => ({
-    ...service,
-    rating: service.average_rating
-  }));
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="h-64 bg-muted rounded-lg"></div>
-              </div>
-            ))}
-          </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading services...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8 px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight mb-2">Professional Services</h1>
-          <p className="text-xl text-muted-foreground">
-            Discover and connect with verified professionals
-          </p>
-        </div>
-
-        {/* Filters */}
-        <div className="mb-8">
-          <MarketplaceFilters
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            selectedServiceType={selectedServiceType}
-            setSelectedServiceType={setSelectedServiceType}
-            selectedLocation={selectedLocation}
-            setSelectedLocation={setSelectedLocation}
-            priceRange={priceRange}
-            setPriceRange={setPriceRange}
-            minRating={minRating}
-            setMinRating={setMinRating}
-            verifiedOnly={verifiedOnly}
-            setVerifiedOnly={setVerifiedOnly}
-            categories={categories}
-            serviceTypes={serviceTypes}
-            locations={locations}
-            onClearFilters={clearFilters}
-            activeFiltersCount={activeFiltersCount}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            {/* Results Summary */}
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-semibold">
-                  {filteredServices.length} Services Found
-                </h2>
-                <p className="text-muted-foreground">
-                  Showing results for your criteria
-                </p>
-              </div>
-              
-              <Select defaultValue="relevance">
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="relevance">Most Relevant</SelectItem>
-                  <SelectItem value="rating">Highest Rated</SelectItem>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  <SelectItem value="newest">Newest First</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Services Grid */}
-            {filteredServices.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredServices.map((service) => (
-                  <ServiceCard
-                    key={service.id}
-                    service={{
-                      id: service.id,
-                      title: service.title,
-                      description: service.description,
-                      category: service.tags[0] || 'General',
-                      service_type: 'professional',
-                      price_type: 'fixed',
-                      base_price: service.price,
-                      currency: service.currency,
-                      delivery_time_days: service.delivery_time_days,
-                      provider_name: service.provider_name,
-                      provider_avatar: service.provider_avatar,
-                      provider_location: service.provider_location,
-                      rating: service.average_rating,
-                      reviews_count: service.total_reviews,
-                      orders_completed: service.total_orders,
-                      is_featured: service.is_featured,
-                      is_verified: service.is_verified,
-                      tags: service.tags
-                    }}
-                    onServiceClick={handleServiceClick}
-                  />
-                ))}
-              </div>
-            ) : (
-              <Card>
-                <CardContent className="text-center py-12">
-                  <div className="text-muted-foreground">
-                    <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-semibold mb-2">No services found</h3>
-                    <p>Try adjusting your filters or search terms</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+    <div className="container mx-auto py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight mb-4">Professional Services</h1>
+        
+        {/* Search and Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search services..."
+              className="pl-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {trendingServices.length > 0 && (
-              <ServiceRecommendations
-                type="trending"
-                services={trendingServices}
-                onServiceClick={handleServiceClick}
-              />
-            )}
-            
-            {featuredServices.length > 0 && (
-              <ServiceRecommendations
-                type="featured"
-                services={featuredServices}
-                onServiceClick={handleServiceClick}
-              />
-            )}
-            
-            {recommendedServices.length > 0 && (
-              <ServiceRecommendations
-                type="recommended"
-                services={recommendedServices}
-                onServiceClick={handleServiceClick}
-              />
-            )}
-          </div>
+          
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="writing">Writing</SelectItem>
+              <SelectItem value="design">Design</SelectItem>
+              <SelectItem value="marketing">Marketing</SelectItem>
+              <SelectItem value="consulting">Consulting</SelectItem>
+              <SelectItem value="development">Development</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest First</SelectItem>
+              <SelectItem value="price-low">Price: Low to High</SelectItem>
+              <SelectItem value="price-high">Price: High to Low</SelectItem>
+              <SelectItem value="rating">Highest Rated</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
+
+      {/* Services Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {sortedServices.map((service) => (
+          <Card key={service.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <CardTitle className="text-lg mb-2">{service.title}</CardTitle>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={service.provider_avatar} alt={service.provider_name} />
+                      <AvatarFallback>
+                        <User className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm font-medium">{service.provider_name}</p>
+                      {service.professional_title && (
+                        <p className="text-xs text-muted-foreground">{service.professional_title}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-semibold">
+                    {formatPrice(service.price, service.currency)}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {service.delivery_time_days} days
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="pt-0">
+              <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                {service.description}
+              </p>
+              
+              <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <span>{service.average_rating.toFixed(1)}</span>
+                  <span>({service.total_reviews})</span>
+                </div>
+                
+                {service.provider_location && (
+                  <div className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    <span className="text-xs">{service.provider_location}</span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex flex-wrap gap-1 mb-3">
+                {service.tags.slice(0, 3).map((tag) => (
+                  <Badge key={tag} variant="secondary" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+              
+              <Button 
+                className="w-full" 
+                onClick={() => window.open(`/services/${service.id}`, '_blank')}
+              >
+                View Details
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {sortedServices.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">No services found matching your criteria.</p>
+        </div>
+      )}
     </div>
   );
 }

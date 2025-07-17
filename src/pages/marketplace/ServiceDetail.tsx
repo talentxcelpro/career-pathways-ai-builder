@@ -5,11 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, MapPin, Clock, CheckCircle, ExternalLink, Phone, Mail, Globe } from "lucide-react";
+import { Star, MapPin, Clock, User, Mail, Phone, Globe, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Service } from "@/types/service";
 import ServiceReviews from "@/components/marketplace/ServiceReviews";
-import { formatCompactCurrency } from "@/utils/currencyUtils";
 
 export default function ServiceDetail() {
   const { id } = useParams<{ id: string }>();
@@ -23,16 +22,15 @@ export default function ServiceDetail() {
   }, [id]);
 
   const fetchService = async () => {
-    if (!id) return;
-    
     try {
       const { data, error } = await supabase
         .from('services')
         .select(`
           *,
-          profiles:provider_id (
+          profiles!services_provider_id_fkey (
             full_name,
-            avatar_url
+            avatar_url,
+            location
           )
         `)
         .eq('id', id)
@@ -43,12 +41,39 @@ export default function ServiceDetail() {
 
       if (data) {
         const transformedService: Service = {
-          ...data,
+          id: data.id,
+          provider_id: data.provider_id,
+          title: data.title,
+          professional_title: data.professional_title || '',
+          years_experience: data.years_experience || '',
+          location: data.location || '',
+          description: data.description,
+          whats_included: data.whats_included || [],
+          client_requirements: data.client_requirements || '',
+          delivery_time_days: data.delivery_time_days,
+          price: data.price,
+          currency: data.currency,
+          payment_methods: data.payment_methods || [],
+          contact_email: data.contact_email,
+          contact_phone: data.contact_phone,
+          contact_website: data.contact_website,
+          website_url: data.website_url || '',
+          phone_number: data.phone_number || '',
+          tags: data.tags || [],
+          portfolio_files: data.portfolio_files || [],
+          is_active: data.is_active,
+          is_featured: data.is_featured,
+          average_rating: data.average_rating,
+          total_reviews: data.total_reviews,
+          total_orders: data.total_orders,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
           provider_name: data.profiles?.full_name || 'Unknown Provider',
           provider_avatar: data.profiles?.avatar_url,
-          provider_location: data.location,
-          is_verified: false // You can add verification logic later
+          provider_location: data.location || data.profiles?.location,
+          is_verified: false
         };
+
         setService(transformedService);
       }
     } catch (error) {
@@ -58,38 +83,23 @@ export default function ServiceDetail() {
     }
   };
 
-  const handleContactProvider = (method: string) => {
-    if (!service) return;
+  const formatPrice = (price: number, currency: string) => {
+    const currencySymbols: { [key: string]: string } = {
+      USD: '$',
+      EUR: '€',
+      GBP: '£',
+      INR: '₹'
+    };
     
-    switch (method) {
-      case 'email':
-        window.location.href = `mailto:provider@example.com?subject=Inquiry about ${service.title}`;
-        break;
-      case 'phone':
-        if (service.phone_number) {
-          window.location.href = `tel:${service.phone_number}`;
-        }
-        break;
-      case 'website':
-        if (service.website_url) {
-          window.open(service.website_url, '_blank');
-        }
-        break;
-    }
+    return `${currencySymbols[currency] || currency} ${price.toFixed(2)}`;
   };
 
   if (loading) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/2 mb-4"></div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="md:col-span-2 space-y-6">
-              <div className="h-40 bg-gray-200 rounded"></div>
-              <div className="h-32 bg-gray-200 rounded"></div>
-            </div>
-            <div className="h-60 bg-gray-200 rounded"></div>
-          </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading service details...</p>
         </div>
       </div>
     );
@@ -97,70 +107,84 @@ export default function ServiceDetail() {
 
   if (!service) {
     return (
-      <div className="container mx-auto py-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Service Not Found</h1>
-        <p className="text-muted-foreground">The service you're looking for doesn't exist or has been removed.</p>
+      <div className="container mx-auto py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Service Not Found</h1>
+          <p className="text-muted-foreground">The service you're looking for doesn't exist or has been removed.</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto py-8">
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content */}
-        <div className="md:col-span-2 space-y-6">
-          {/* Header */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Service Header */}
           <Card>
             <CardHeader>
-              <div className="flex items-start gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={service.provider_avatar} />
-                  <AvatarFallback>
-                    {service.provider_name?.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h1 className="text-2xl font-bold">{service.title}</h1>
-                    {service.is_featured && (
-                      <Badge className="bg-yellow-100 text-yellow-800">Featured</Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                    <span className="font-medium">{service.provider_name}</span>
-                    <span>•</span>
-                    <span>{service.professional_title}</span>
-                    {service.is_verified && (
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                    )}
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-2xl mb-2">{service.title}</CardTitle>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={service.provider_avatar} alt={service.provider_name} />
+                      <AvatarFallback>
+                        <User className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium">{service.provider_name}</p>
+                      {service.professional_title && (
+                        <p className="text-sm text-muted-foreground">{service.professional_title}</p>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      <span>{service.location}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">{service.average_rating.toFixed(1)}</span>
+                      <span>{service.average_rating.toFixed(1)}</span>
                       <span>({service.total_reviews} reviews)</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{service.delivery_time_days} days delivery</span>
-                    </div>
+                    <div>{service.total_orders} orders completed</div>
+                    {service.provider_location && (
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        <span>{service.provider_location}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold">
+                    {formatPrice(service.price, service.currency)}
+                  </div>
+                  <div className="text-sm text-muted-foreground flex items-center gap-1">
+                    <Clock className="h-4 w-4" />
+                    {service.delivery_time_days} days delivery
                   </div>
                 </div>
               </div>
             </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {service.tags.map((tag) => (
+                  <Badge key={tag} variant="secondary">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
           </Card>
 
-          {/* Description */}
+          {/* Service Description */}
           <Card>
             <CardHeader>
               <CardTitle>About This Service</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground leading-relaxed">{service.description}</p>
+              <p className="text-muted-foreground whitespace-pre-wrap">{service.description}</p>
             </CardContent>
           </Card>
 
@@ -170,40 +194,28 @@ export default function ServiceDetail() {
               <CardTitle>What's Included</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
+              <div className="space-y-2">
                 {service.whats_included.map((item, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
+                  <div key={index} className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                     <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Requirements */}
-          <Card>
-            <CardHeader>
-              <CardTitle>What You Need to Provide</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">{service.client_requirements}</p>
-            </CardContent>
-          </Card>
-
-          {/* Tags */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Service Tags</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {service.tags.map((tag) => (
-                  <Badge key={tag} variant="outline">{tag}</Badge>
+                  </div>
                 ))}
               </div>
             </CardContent>
           </Card>
+
+          {/* Client Requirements */}
+          {service.client_requirements && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Requirements</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground whitespace-pre-wrap">{service.client_requirements}</p>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Reviews */}
           <ServiceReviews serviceId={service.id} />
@@ -211,105 +223,69 @@ export default function ServiceDetail() {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Pricing */}
+          {/* Order Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Service Price
-                <span className="text-2xl font-bold">
-                  ₹{formatCompactCurrency(service.price)}
-                </span>
-              </CardTitle>
+              <CardTitle>Order This Service</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="text-sm text-muted-foreground">
-                <p>• {service.delivery_time_days} days delivery</p>
-                <p>• {service.total_orders} orders completed</p>
-                <p>• Payment handled directly with provider</p>
+              <div className="flex justify-between items-center">
+                <span>Price</span>
+                <span className="font-semibold">{formatPrice(service.price, service.currency)}</span>
               </div>
-              
-              <div className="space-y-2">
-                <h4 className="font-medium">Payment Methods Accepted:</h4>
-                <div className="flex flex-wrap gap-2">
-                  {service.payment_methods.map((method) => (
-                    <Badge key={method} variant="outline" className="text-xs">
-                      {method}
-                    </Badge>
-                  ))}
-                </div>
+              <div className="flex justify-between items-center">
+                <span>Delivery Time</span>
+                <span>{service.delivery_time_days} days</span>
               </div>
+              <Button className="w-full" size="lg">
+                Contact Provider
+              </Button>
             </CardContent>
           </Card>
 
-          {/* Contact */}
+          {/* Payment Methods */}
+          {service.payment_methods.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Payment Methods</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {service.payment_methods.map((method) => (
+                    <div key={method} className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-sm">{method}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Contact Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Contact Provider</CardTitle>
+              <CardTitle>Contact Options</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {service.contact_email && (
-                <Button 
-                  className="w-full" 
-                  onClick={() => handleContactProvider('email')}
-                >
-                  <Mail className="h-4 w-4 mr-2" />
-                  Send Email
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  <span className="text-sm">Email available</span>
+                </div>
               )}
-              
               {service.contact_phone && service.phone_number && (
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => handleContactProvider('phone')}
-                >
-                  <Phone className="h-4 w-4 mr-2" />
-                  Call Provider
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  <span className="text-sm">Phone available</span>
+                </div>
               )}
-              
               {service.contact_website && service.website_url && (
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => handleContactProvider('website')}
-                >
-                  <Globe className="h-4 w-4 mr-2" />
-                  Visit Website
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  <span className="text-sm">Website available</span>
+                </div>
               )}
-              
-              <div className="text-xs text-muted-foreground text-center pt-2 border-t">
-                <p>All payments are handled directly between you and the service provider.</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Provider Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle>About the Provider</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src={service.provider_avatar} />
-                    <AvatarFallback>
-                      {service.provider_name?.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">{service.provider_name}</p>
-                    <p className="text-sm text-muted-foreground">{service.professional_title}</p>
-                  </div>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  <p>• {service.years_experience} of experience</p>
-                  <p>• {service.total_orders} orders completed</p>
-                  <p>• {service.average_rating.toFixed(1)} star rating</p>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>

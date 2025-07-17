@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,10 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, Upload } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
 import { ServiceFormData } from "@/types/service";
 
 interface ServiceFormProps {
@@ -20,45 +20,65 @@ interface ServiceFormProps {
   onSaved: () => void;
 }
 
-export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFormProps) {
-  const [formData, setFormData] = useState<ServiceFormData>({
-    title: '',
-    professional_title: '',
-    years_experience: '',
-    location: '',
-    description: '',
-    whats_included: [],
-    client_requirements: '',
-    delivery_time_days: 7,
-    price: 0,
-    currency: 'INR',
-    payment_methods: [],
-    contact_email: false,
-    contact_phone: false,
-    contact_website: false,
-    website_url: '',
-    phone_number: '',
-    tags: [],
-    portfolio_files: []
-  });
+const currencies = [
+  { value: 'USD', label: 'USD ($)' },
+  { value: 'EUR', label: 'EUR (€)' },
+  { value: 'GBP', label: 'GBP (£)' },
+  { value: 'INR', label: 'INR (₹)' },
+];
 
-  const [newIncluded, setNewIncluded] = useState('');
-  const [newTag, setNewTag] = useState('');
+const paymentMethods = [
+  'PayPal',
+  'Bank Transfer',
+  'Credit Card',
+  'Cryptocurrency',
+  'Cash',
+  'UPI',
+  'Razorpay',
+  'Stripe'
+];
+
+export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFormProps) {
   const [loading, setLoading] = useState(false);
-  const [fetchingData, setFetchingData] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
+  const [newTag, setNewTag] = useState('');
+  const [whatsIncluded, setWhatsIncluded] = useState<string[]>(['']);
+  const [portfolioFiles, setPortfolioFiles] = useState<string[]>([]);
+  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<string[]>([]);
   const { user } = useAuth();
-  const { toast } = useToast();
+
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ServiceFormData>({
+    defaultValues: {
+      title: '',
+      professional_title: '',
+      years_experience: '',
+      location: '',
+      description: '',
+      whats_included: [''],
+      client_requirements: '',
+      delivery_time_days: 7,
+      price: 0,
+      currency: 'USD',
+      payment_methods: [],
+      contact_email: true,
+      contact_phone: false,
+      contact_website: false,
+      website_url: '',
+      phone_number: '',
+      tags: [],
+      portfolio_files: []
+    }
+  });
 
   useEffect(() => {
     if (serviceId) {
-      fetchServiceData();
+      fetchService();
     }
   }, [serviceId]);
 
-  const fetchServiceData = async () => {
+  const fetchService = async () => {
     if (!serviceId) return;
-    
-    setFetchingData(true);
+
     try {
       const { data, error } = await supabase
         .from('services')
@@ -68,71 +88,61 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
 
       if (error) throw error;
 
-      // Transform database data to form data structure
-      setFormData({
-        title: data.title || '',
-        professional_title: data.professional_title || '',
-        years_experience: data.years_experience || '',
-        location: data.location || '',
-        description: data.description || '',
-        whats_included: data.what_included || [],
-        client_requirements: data.client_requirements || '',
-        delivery_time_days: data.delivery_time_days || 7,
-        price: data.base_price || 0,
-        currency: data.currency || 'INR',
-        payment_methods: data.payment_methods || [],
-        contact_email: data.contact_email || false,
-        contact_phone: data.contact_phone || false,
-        contact_website: data.contact_website || false,
-        website_url: data.website_url || '',
-        phone_number: data.phone_number || '',
-        tags: data.tags || [],
-        portfolio_files: data.portfolio_items || []
-      });
+      if (data) {
+        setValue('title', data.title);
+        setValue('professional_title', data.professional_title || '');
+        setValue('years_experience', data.years_experience || '');
+        setValue('location', data.location || '');
+        setValue('description', data.description);
+        setValue('client_requirements', data.client_requirements || '');
+        setValue('delivery_time_days', data.delivery_time_days);
+        setValue('price', data.price);
+        setValue('currency', data.currency);
+        setValue('contact_email', data.contact_email);
+        setValue('contact_phone', data.contact_phone);
+        setValue('contact_website', data.contact_website);
+        setValue('website_url', data.website_url || '');
+        setValue('phone_number', data.phone_number || '');
+        
+        setWhatsIncluded(data.whats_included || ['']);
+        setTags(data.tags || []);
+        setPortfolioFiles(data.portfolio_files || []);
+        setSelectedPaymentMethods(data.payment_methods || []);
+      }
     } catch (error) {
       console.error('Error fetching service:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load service data",
-        variant: "destructive",
-      });
-    } finally {
-      setFetchingData(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: ServiceFormData) => {
     if (!user) return;
 
     setLoading(true);
     try {
-      // Transform form data to database structure
       const serviceData = {
         provider_id: user.id,
-        title: formData.title,
-        professional_title: formData.professional_title,
-        years_experience: formData.years_experience,
-        location: formData.location,
-        description: formData.description,
-        what_included: formData.whats_included,
-        client_requirements: formData.client_requirements,
-        delivery_time_days: formData.delivery_time_days,
-        base_price: formData.price,
-        currency: formData.currency,
-        payment_methods: formData.payment_methods,
-        contact_email: formData.contact_email,
-        contact_phone: formData.contact_phone,
-        contact_website: formData.contact_website,
-        website_url: formData.website_url,
-        phone_number: formData.phone_number,
-        tags: formData.tags,
-        portfolio_items: formData.portfolio_files,
+        title: data.title,
+        professional_title: data.professional_title,
+        years_experience: data.years_experience,
+        location: data.location,
+        description: data.description,
+        whats_included: whatsIncluded.filter(item => item.trim() !== ''),
+        client_requirements: data.client_requirements,
+        delivery_time_days: data.delivery_time_days,
+        price: data.price,
+        currency: data.currency,
+        payment_methods: selectedPaymentMethods,
+        contact_email: data.contact_email,
+        contact_phone: data.contact_phone,
+        contact_website: data.contact_website,
+        website_url: data.website_url,
+        phone_number: data.phone_number,
+        tags: tags,
+        portfolio_files: portfolioFiles,
         updated_at: new Date().toISOString()
       };
 
       if (serviceId) {
-        // Update existing service
         const { error } = await supabase
           .from('services')
           .update(serviceData)
@@ -140,7 +150,6 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
 
         if (error) throw error;
       } else {
-        // Create new service
         const { error } = await supabase
           .from('services')
           .insert([serviceData]);
@@ -151,334 +160,305 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
       onSaved();
     } catch (error) {
       console.error('Error saving service:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save service",
-        variant: "destructive",
-      });
     } finally {
       setLoading(false);
     }
   };
 
-  const addIncluded = () => {
-    if (newIncluded.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        whats_included: [...prev.whats_included, newIncluded.trim()]
-      }));
-      setNewIncluded('');
-    }
-  };
-
-  const removeIncluded = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      whats_included: prev.whats_included.filter((_, i) => i !== index)
-    }));
-  };
-
   const addTag = () => {
-    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...prev.tags, newTag.trim()]
-      }));
+    if (newTag.trim() && !tags.includes(newTag.trim())) {
+      setTags([...tags, newTag.trim()]);
       setNewTag('');
     }
   };
 
-  const removeTag = (tag: string) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(t => t !== tag)
-    }));
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
+  const addWhatsIncluded = () => {
+    setWhatsIncluded([...whatsIncluded, '']);
+  };
+
+  const updateWhatsIncluded = (index: number, value: string) => {
+    const updated = [...whatsIncluded];
+    updated[index] = value;
+    setWhatsIncluded(updated);
+  };
+
+  const removeWhatsIncluded = (index: number) => {
+    if (whatsIncluded.length > 1) {
+      setWhatsIncluded(whatsIncluded.filter((_, i) => i !== index));
+    }
   };
 
   const togglePaymentMethod = (method: string) => {
-    setFormData(prev => ({
-      ...prev,
-      payment_methods: prev.payment_methods.includes(method)
-        ? prev.payment_methods.filter(m => m !== method)
-        : [...prev.payment_methods, method]
-    }));
+    setSelectedPaymentMethods(prev =>
+      prev.includes(method)
+        ? prev.filter(m => m !== method)
+        : [...prev, method]
+    );
   };
 
-  if (fetchingData) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Loading service data...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto py-8">
-      <Card className="max-w-4xl mx-auto">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <Card>
         <CardHeader>
-          <CardTitle>
-            {serviceId ? 'Edit Service' : 'Create New Service'}
-          </CardTitle>
+          <CardTitle>{serviceId ? 'Edit Service' : 'Create New Service'}</CardTitle>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="title">Service Title *</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="e.g., Professional Resume Writing"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="professional_title">Your Professional Title *</Label>
-                <Input
-                  id="professional_title"
-                  value={formData.professional_title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, professional_title: e.target.value }))}
-                  placeholder="e.g., Senior HR Consultant"
-                  required
-                />
-              </div>
+        <CardContent className="space-y-6">
+          {/* Basic Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Service Title *</Label>
+              <Input
+                id="title"
+                {...register('title', { required: 'Service title is required' })}
+                placeholder="e.g., Professional Resume Writing"
+              />
+              {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="years_experience">Years of Experience</Label>
-                <Select value={formData.years_experience} onValueChange={(value) => setFormData(prev => ({ ...prev, years_experience: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select experience" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1-2 years">1-2 years</SelectItem>
-                    <SelectItem value="3-5 years">3-5 years</SelectItem>
-                    <SelectItem value="6-10 years">6-10 years</SelectItem>
-                    <SelectItem value="10+ years">10+ years</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                  placeholder="e.g., Mumbai, India or Remote"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="professional_title">Your Professional Title</Label>
+              <Input
+                id="professional_title"
+                {...register('professional_title')}
+                placeholder="e.g., Senior HR Consultant"
+              />
             </div>
+          </div>
 
-            {/* Description */}
-            <div>
-              <Label htmlFor="description">Service Description *</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Describe your service in detail..."
-                rows={4}
-                required
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="years_experience">Years of Experience</Label>
+              <Input
+                id="years_experience"
+                {...register('years_experience')}
+                placeholder="e.g., 5+ years"
               />
             </div>
 
-            {/* What's Included */}
-            <div>
-              <Label>What's Included</Label>
-              <div className="flex gap-2 mb-2">
-                <Input
-                  value={newIncluded}
-                  onChange={(e) => setNewIncluded(e.target.value)}
-                  placeholder="Add what's included..."
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addIncluded())}
-                />
-                <Button type="button" onClick={addIncluded} size="sm">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {formData.whats_included.map((item, index) => (
-                  <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                    {item}
-                    <X
-                      className="h-3 w-3 cursor-pointer"
-                      onClick={() => removeIncluded(index)}
-                    />
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {/* Client Requirements */}
-            <div>
-              <Label htmlFor="client_requirements">Client Requirements</Label>
-              <Textarea
-                id="client_requirements"
-                value={formData.client_requirements}
-                onChange={(e) => setFormData(prev => ({ ...prev, client_requirements: e.target.value }))}
-                placeholder="What do you need from the client to get started?"
-                rows={3}
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                {...register('location')}
+                placeholder="e.g., New York, NY"
               />
             </div>
+          </div>
 
-            {/* Pricing and Delivery */}
+          <div className="space-y-2">
+            <Label htmlFor="description">Service Description *</Label>
+            <Textarea
+              id="description"
+              {...register('description', { required: 'Service description is required' })}
+              rows={4}
+              placeholder="Describe your service in detail..."
+            />
+            {errors.description && <p className="text-sm text-red-500">{errors.description.message}</p>}
+          </div>
+
+          {/* What's Included */}
+          <div className="space-y-2">
+            <Label>What's Included *</Label>
+            <div className="space-y-2">
+              {whatsIncluded.map((item, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={item}
+                    onChange={(e) => updateWhatsIncluded(index, e.target.value)}
+                    placeholder="e.g., Professional formatting"
+                  />
+                  {whatsIncluded.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeWhatsIncluded(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addWhatsIncluded}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Item
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="client_requirements">Client Requirements</Label>
+            <Textarea
+              id="client_requirements"
+              {...register('client_requirements')}
+              rows={3}
+              placeholder="What do you need from clients to get started?"
+            />
+          </div>
+
+          {/* Pricing */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price">Price *</Label>
+              <Input
+                id="price"
+                type="number"
+                step="0.01"
+                {...register('price', { required: 'Price is required', min: 0 })}
+                placeholder="0.00"
+              />
+              {errors.price && <p className="text-sm text-red-500">{errors.price.message}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="currency">Currency</Label>
+              <Select value={watch('currency')} onValueChange={(value) => setValue('currency', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  {currencies.map((currency) => (
+                    <SelectItem key={currency.value} value={currency.value}>
+                      {currency.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="delivery_time_days">Delivery Time (Days)</Label>
+              <Input
+                id="delivery_time_days"
+                type="number"
+                {...register('delivery_time_days', { required: 'Delivery time is required', min: 1 })}
+                placeholder="7"
+              />
+              {errors.delivery_time_days && <p className="text-sm text-red-500">{errors.delivery_time_days.message}</p>}
+            </div>
+          </div>
+
+          {/* Payment Methods */}
+          <div className="space-y-2">
+            <Label>Payment Methods</Label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {paymentMethods.map((method) => (
+                <div key={method} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={method}
+                    checked={selectedPaymentMethods.includes(method)}
+                    onCheckedChange={() => togglePaymentMethod(method)}
+                  />
+                  <Label htmlFor={method} className="text-sm">
+                    {method}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Contact Options */}
+          <div className="space-y-4">
+            <Label>Contact Preferences</Label>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="price">Price *</Label>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="contact_email"
+                  {...register('contact_email')}
+                />
+                <Label htmlFor="contact_email">Email Contact</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="contact_phone"
+                  {...register('contact_phone')}
+                />
+                <Label htmlFor="contact_phone">Phone Contact</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="contact_website"
+                  {...register('contact_website')}
+                />
+                <Label htmlFor="contact_website">Website Contact</Label>
+              </div>
+            </div>
+
+            {watch('contact_website') && (
+              <div className="space-y-2">
+                <Label htmlFor="website_url">Website URL</Label>
                 <Input
-                  id="price"
-                  type="number"
-                  value={formData.price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
-                  placeholder="0"
-                  required
+                  id="website_url"
+                  {...register('website_url')}
+                  placeholder="https://yourwebsite.com"
                 />
               </div>
-              <div>
-                <Label htmlFor="currency">Currency</Label>
-                <Select value={formData.currency} onValueChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="INR">INR (₹)</SelectItem>
-                    <SelectItem value="USD">USD ($)</SelectItem>
-                    <SelectItem value="EUR">EUR (€)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="delivery_time">Delivery Time (Days) *</Label>
+            )}
+
+            {watch('contact_phone') && (
+              <div className="space-y-2">
+                <Label htmlFor="phone_number">Phone Number</Label>
                 <Input
-                  id="delivery_time"
-                  type="number"
-                  value={formData.delivery_time_days}
-                  onChange={(e) => setFormData(prev => ({ ...prev, delivery_time_days: parseInt(e.target.value) || 1 }))}
-                  min="1"
-                  required
+                  id="phone_number"
+                  {...register('phone_number')}
+                  placeholder="+1 (555) 123-4567"
                 />
               </div>
-            </div>
+            )}
+          </div>
 
-            {/* Payment Methods */}
-            <div>
-              <Label>Accepted Payment Methods</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                {['UPI', 'Bank Transfer', 'Credit Card', 'PayPal'].map((method) => (
-                  <div key={method} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={method}
-                      checked={formData.payment_methods.includes(method)}
-                      onCheckedChange={() => togglePaymentMethod(method)}
-                    />
-                    <Label htmlFor={method} className="text-sm">{method}</Label>
-                  </div>
-                ))}
-              </div>
+          {/* Tags */}
+          <div className="space-y-2">
+            <Label>Tags</Label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                  {tag}
+                  <X
+                    className="h-3 w-3 cursor-pointer"
+                    onClick={() => removeTag(tag)}
+                  />
+                </Badge>
+              ))}
             </div>
-
-            {/* Contact Preferences */}
-            <div>
-              <Label>Contact Preferences</Label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="contact_email"
-                    checked={formData.contact_email}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, contact_email: !!checked }))}
-                  />
-                  <Label htmlFor="contact_email" className="text-sm">Email</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="contact_phone"
-                    checked={formData.contact_phone}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, contact_phone: !!checked }))}
-                  />
-                  <Label htmlFor="contact_phone" className="text-sm">Phone</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="contact_website"
-                    checked={formData.contact_website}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, contact_website: !!checked }))}
-                  />
-                  <Label htmlFor="contact_website" className="text-sm">Website</Label>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {formData.contact_phone && (
-                <div>
-                  <Label htmlFor="phone_number">Phone Number</Label>
-                  <Input
-                    id="phone_number"
-                    value={formData.phone_number}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone_number: e.target.value }))}
-                    placeholder="+91 9876543210"
-                  />
-                </div>
-              )}
-              {formData.contact_website && (
-                <div>
-                  <Label htmlFor="website_url">Website URL</Label>
-                  <Input
-                    id="website_url"
-                    value={formData.website_url}
-                    onChange={(e) => setFormData(prev => ({ ...prev, website_url: e.target.value }))}
-                    placeholder="https://your-website.com"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Tags */}
-            <div>
-              <Label>Tags</Label>
-              <div className="flex gap-2 mb-2">
-                <Input
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  placeholder="Add tags..."
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                />
-                <Button type="button" onClick={addTag} size="sm">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {formData.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                    {tag}
-                    <X
-                      className="h-3 w-3 cursor-pointer"
-                      onClick={() => removeTag(tag)}
-                    />
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-4 pt-6">
-              <Button type="submit" disabled={loading}>
-                {loading ? 'Saving...' : (serviceId ? 'Update Service' : 'Create Service')}
-              </Button>
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Cancel
+            <div className="flex gap-2">
+              <Input
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                placeholder="Add a tag"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addTag();
+                  }
+                }}
+              />
+              <Button type="button" variant="outline" onClick={addTag}>
+                Add
               </Button>
             </div>
-          </form>
+          </div>
+
+          {/* Form Actions */}
+          <div className="flex justify-end space-x-2">
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Saving...' : serviceId ? 'Update Service' : 'Create Service'}
+            </Button>
+          </div>
         </CardContent>
       </Card>
-    </div>
+    </form>
   );
 }

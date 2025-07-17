@@ -3,12 +3,12 @@ export interface Service {
   id: string;
   provider_id: string;
   title: string;
-  professional_title: string;
-  years_experience: string;
-  location: string;
+  professional_title?: string;
+  years_experience?: string;
+  location?: string;
   description: string;
   whats_included: string[];
-  client_requirements: string;
+  client_requirements?: string;
   delivery_time_days: number;
   price: number;
   currency: string;
@@ -28,7 +28,7 @@ export interface Service {
   created_at: string;
   updated_at: string;
   // Provider details from join
-  provider_name: string;
+  provider_name?: string;
   provider_avatar?: string;
   provider_location?: string;
   is_verified?: boolean;
@@ -60,7 +60,7 @@ export interface ServiceReview {
   service_id: string;
   reviewer_id: string;
   rating: number;
-  review_text: string;
+  review_text?: string;
   is_verified: boolean;
   created_at: string;
   updated_at: string;
