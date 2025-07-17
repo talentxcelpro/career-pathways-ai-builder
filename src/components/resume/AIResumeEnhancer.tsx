@@ -1,286 +1,91 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { Loader2, Sparkles, RefreshCw, Copy, Check, AlertCircle } from 'lucide-react';
+import { Sparkles, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface AIResumeEnhancerProps {
-  resumeData?: any;
-  onEnhancementApplied?: (enhancedData: any) => void;
+  resumeData: any;
+  onEnhancementApplied: (enhancedData: any) => void;
 }
 
 export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
   resumeData,
   onEnhancementApplied
 }) => {
-  const [enhancedContent, setEnhancedContent] = useState<string>('');
   const [isEnhancing, setIsEnhancing] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
-  const [lastError, setLastError] = useState<string>('');
 
-  const MAX_RETRIES = 3;
-  const RETRY_DELAY = 2000;
-
-  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-  const enhanceWithRetry = async (requestBody: any, attempt: number = 1): Promise<any> => {
-    console.log(`Enhancement attempt ${attempt}/${MAX_RETRIES}`);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('enhance-resume', {
-        body: requestBody
-      });
-
-      if (error) {
-        console.error(`Attempt ${attempt} failed:`, error);
-        
-        // Check if it's a network/connectivity error that might be retryable
-        if ((error.message?.includes('Failed to send a request') || 
-             error.message?.includes('Failed to fetch') ||
-             error.message?.includes('Network request failed')) && 
-            attempt < MAX_RETRIES) {
-          
-          console.log(`Retrying in ${RETRY_DELAY}ms...`);
-          await delay(RETRY_DELAY);
-          return enhanceWithRetry(requestBody, attempt + 1);
-        }
-        
-        throw error;
-      }
-
-      return data;
-    } catch (error: any) {
-      if (attempt < MAX_RETRIES && 
-          (error.message?.includes('Failed to send a request') || 
-           error.message?.includes('Failed to fetch') ||
-           error.message?.includes('Network request failed'))) {
-        
-        console.log(`Retrying in ${RETRY_DELAY}ms...`);
-        await delay(RETRY_DELAY);
-        return enhanceWithRetry(requestBody, attempt + 1);
-      }
-      
-      throw error;
-    }
-  };
-
-  const handleEnhance = async () => {
+  const handleEnhanceResume = async () => {
     if (!resumeData) {
-      toast.error('Please upload or create your resume first');
+      toast.error('No resume data to enhance');
       return;
     }
 
     setIsEnhancing(true);
-    setLastError('');
-    setRetryCount(0);
     
     try {
-      console.log('Starting enhancement with resume data:', resumeData);
+      console.log('Starting AI enhancement...');
       
-      // Convert resume data to text for enhancement
-      let resumeText = '';
+      const { data, error } = await supabase.functions.invoke('enhance-resume', {
+        body: {
+          resumeData: resumeData,
+          enhancementType: 'comprehensive'
+        }
+      });
+
+      if (error) {
+        console.error('Enhancement error:', error);
+        throw error;
+      }
+
+      if (!data || !data.success) {
+        throw new Error(data?.error || 'Enhancement failed');
+      }
+
+      console.log('Enhancement successful:', data);
       
-      if (typeof resumeData === 'string') {
-        resumeText = resumeData;
-      } else if (resumeData && typeof resumeData === 'object') {
-        // Convert structured resume data to text
-        resumeText = JSON.stringify(resumeData, null, 2);
-      } else {
-        throw new Error('Invalid resume data format - data is null or undefined');
-      }
-
-      console.log('Resume text length:', resumeText.length);
-
-      if (!resumeText || resumeText.trim() === '' || resumeText === 'null' || resumeText === '{}') {
-        throw new Error('Resume content is empty. Please add some content to your resume first.');
-      }
-
-      const requestBody = {
-        text: resumeText,
-        provider: 'openai'
-      };
-
-      console.log('Making request to enhance-resume function...');
-
-      // Try to enhance the resume with retry logic
-      const data = await enhanceWithRetry(requestBody);
-
-      console.log('Response received:', { data });
-
-      if (!data) {
-        throw new Error('No response from enhancement service');
-      }
-
-      if (!data.success) {
-        console.error('Enhancement failed with data:', data);
-        throw new Error(data.error || 'Enhancement failed');
-      }
-
-      if (!data.enhancedContent) {
-        throw new Error('No enhanced content returned from service');
-      }
-
-      console.log('Enhancement successful, content length:', data.enhancedContent.length);
-      setEnhancedContent(data.enhancedContent);
+      // Apply the enhanced data
+      onEnhancementApplied(data.enhancedResume);
+      
       toast.success('Resume enhanced successfully!');
       
-      // Apply enhancement if callback provided
-      if (onEnhancementApplied) {
-        onEnhancementApplied({
-          ...resumeData,
-          enhancedContent: data.enhancedContent
-        });
-      }
-
-    } catch (error: any) {
-      console.error('Enhancement failed with error:', error);
+    } catch (error) {
+      console.error('Error enhancing resume:', error);
       
-      let errorMessage = 'Enhancement failed. Please try again.';
-      
-      if (error.message) {
-        if (error.message.includes('Network request failed') || 
-            error.message.includes('Failed to fetch') ||
-            error.message.includes('Failed to send a request')) {
-          errorMessage = 'Network connection issue. Please check your internet connection and try again.';
-        } else if (error.message.includes('OpenAI API key')) {
-          errorMessage = 'AI service configuration issue. Please contact support.';
-        } else if (error.message.includes('empty')) {
-          errorMessage = 'Resume content is empty. Please add some content to your resume first.';
-        } else {
-          errorMessage = error.message;
-        }
+      let errorMessage = 'Failed to enhance resume. Please try again.';
+      if (error.message?.includes('network')) {
+        errorMessage = 'Network connection issue. Please check your internet connection and try again.';
+      } else if (error.message?.includes('timeout')) {
+        errorMessage = 'Request timed out. Please try again.';
+      } else if (error.message?.includes('API key')) {
+        errorMessage = 'AI service configuration error. Please contact support.';
       }
       
-      setLastError(errorMessage);
       toast.error(errorMessage);
-      setEnhancedContent(`Enhancement failed: ${errorMessage}`);
     } finally {
       setIsEnhancing(false);
     }
   };
 
-  const handleCopy = async () => {
-    if (enhancedContent) {
-      try {
-        await navigator.clipboard.writeText(enhancedContent);
-        setCopied(true);
-        toast.success('Enhanced content copied to clipboard!');
-        setTimeout(() => setCopied(false), 2000);
-      } catch (error) {
-        toast.error('Failed to copy to clipboard');
-      }
-    }
-  };
-
-  const handleApplyEnhancement = () => {
-    if (enhancedContent && onEnhancementApplied) {
-      onEnhancementApplied({
-        ...resumeData,
-        content: enhancedContent
-      });
-      toast.success('Enhancement applied to your resume!');
-    }
-  };
-
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-purple-500" />
-            AI Resume Enhancer
-          </CardTitle>
-          <Badge variant="secondary">
-            AI-Powered
-          </Badge>
-        </div>
-        {resumeData && (
-          <p className="text-sm text-muted-foreground">
-            Resume data detected: {typeof resumeData === 'object' ? Object.keys(resumeData).length + ' sections' : 'text content'}
-          </p>
-        )}
-        {lastError && (
-          <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md">
-            <AlertCircle className="h-4 w-4 text-red-500" />
-            <span className="text-sm text-red-700">{lastError}</span>
-          </div>
-        )}
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex gap-2">
-          <Button 
-            onClick={handleEnhance}
-            disabled={isEnhancing || !resumeData}
-            className="flex-1"
-          >
-            {isEnhancing ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Enhancing... {retryCount > 0 && `(Retry ${retryCount}/${MAX_RETRIES})`}
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4 mr-2" />
-                Enhance Resume
-              </>
-            )}
-          </Button>
-          
-          {enhancedContent && (
-            <Button 
-              variant="outline" 
-              onClick={handleCopy}
-              size="icon"
-            >
-              {copied ? (
-                <Check className="h-4 w-4 text-green-500" />
-              ) : (
-                <Copy className="h-4 w-4" />
-              )}
-            </Button>
-          )}
-        </div>
-
-        {enhancedContent && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                Enhanced Content
-              </h3>
-              {onEnhancementApplied && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleApplyEnhancement}
-                >
-                  <RefreshCw className="h-3 w-3 mr-1" />
-                  Apply Enhancement
-                </Button>
-              )}
-            </div>
-            
-            <Textarea
-              value={enhancedContent}
-              onChange={(e) => setEnhancedContent(e.target.value)}
-              className="min-h-[300px] resize-none"
-              placeholder="Enhanced resume content will appear here..."
-            />
-          </div>
-        )}
-
-        {!resumeData && (
-          <div className="text-center py-8 text-muted-foreground">
-            <Sparkles className="h-12 w-12 mx-auto mb-3 opacity-50" />
-            <p>Upload or create your resume to get AI-powered enhancements</p>
-            <p className="text-xs mt-2">The AI will help optimize your resume for ATS systems and improve professional presentation</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <Button
+      onClick={handleEnhanceResume}
+      disabled={isEnhancing || !resumeData}
+      size="sm"
+      variant="outline"
+    >
+      {isEnhancing ? (
+        <>
+          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          Enhancing...
+        </>
+      ) : (
+        <>
+          <Sparkles className="w-4 h-4 mr-2" />
+          Enhance with AI
+        </>
+      )}
+    </Button>
   );
 };
