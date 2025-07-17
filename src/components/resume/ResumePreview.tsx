@@ -123,15 +123,38 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
     let softSkills = [];
     
     if (Array.isArray(skills)) {
-      // Skills is an array of strings
-      technicalSkills = skills.filter(skill => typeof skill === 'string');
+      // Skills is an array - extract skill names properly
+      technicalSkills = skills.map(skill => {
+        if (typeof skill === 'string') {
+          return skill;
+        } else if (skill && typeof skill === 'object') {
+          // Handle objects with skill, name, or other property structures
+          return skill.skill || skill.name || skill.title || String(skill);
+        }
+        return String(skill);
+      }).filter(Boolean);
     } else if (skills.technical) {
       // Legacy object format
       technicalSkills = Array.isArray(skills.technical) 
-        ? skills.technical.map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || '').filter(Boolean)
+        ? skills.technical.map(skill => {
+            if (typeof skill === 'string') {
+              return skill;
+            } else if (skill && typeof skill === 'object') {
+              return skill.skill || skill.name || skill.title || String(skill);
+            }
+            return String(skill);
+          }).filter(Boolean)
         : [];
+      
       softSkills = Array.isArray(skills.soft) 
-        ? skills.soft.map(skill => typeof skill === 'string' ? skill : skill?.skill || skill?.name || '').filter(Boolean)
+        ? skills.soft.map(skill => {
+            if (typeof skill === 'string') {
+              return skill;
+            } else if (skill && typeof skill === 'object') {
+              return skill.skill || skill.name || skill.title || String(skill);
+            }
+            return String(skill);
+          }).filter(Boolean)
         : [];
     }
     
@@ -146,7 +169,7 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
           <div className="mb-3">
             <h3 className="font-medium mb-2">{softSkills.length > 0 ? 'Technical Skills' : 'Skills'}</h3>
             <div className="flex flex-wrap gap-2">
-              {technicalSkills.map((skill: string, index: number) => (
+              {technicalSkills.map((skillName: string, index: number) => (
                 <span 
                   key={index}
                   className="px-3 py-1 text-sm rounded-full"
@@ -156,7 +179,7 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
                     border: `1px solid ${primaryColor}30`
                   }}
                 >
-                  {skill}
+                  {skillName}
                 </span>
               ))}
             </div>
@@ -166,12 +189,12 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
           <div>
             <h3 className="font-medium mb-2">Soft Skills</h3>
             <div className="flex flex-wrap gap-2">
-              {softSkills.map((skill: string, index: number) => (
+              {softSkills.map((skillName: string, index: number) => (
                 <span 
                   key={index}
                   className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-700"
                 >
-                  {skill}
+                  {skillName}
                 </span>
               ))}
             </div>
