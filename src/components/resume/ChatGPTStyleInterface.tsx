@@ -65,6 +65,10 @@ export const ChatGPTStyleInterface = () => {
   const [servicesHealthy, setServicesHealthy] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
   
+  // Supabase API constants
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+  const SUPABASE_FUNCTION_URL = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-resume-enhancement';
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -158,67 +162,153 @@ export const ChatGPTStyleInterface = () => {
     setUserPrompt('');
     setIsGenerating(true);
 
+    // Comprehensive diagnostic and fallback system
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const startTime = Date.now();
+    let fallbackAttempted = false;
+    
     try {
       console.log('🚀 Starting AI resume enhancement...');
-      console.log('📊 Request payload:', {
+      console.log('📊 Request diagnostics:', {
+        requestId,
         extractedDataSize: JSON.stringify(extractedData).length,
         userPromptLength: userPrompt.length,
-        userId: user?.id
+        userId: user?.id,
+        timestamp: new Date().toISOString(),
+        retryAttempt: isRetry ? retryCount : 0
       });
 
-      // First, test basic connectivity with a GET request
-      console.log('🔍 Testing function connectivity...');
-      const testResponse = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-resume-enhancement`, {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-          'Content-Type': 'application/json',
+      // Phase 1: Health Check & Connectivity Test
+      console.log('🔍 Phase 1: Testing function connectivity...');
+      let healthCheckPassed = false;
+      
+      try {
+        const healthResponse = await fetch(SUPABASE_FUNCTION_URL, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'apikey': SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        console.log('✅ Health check result:', healthResponse.status, healthResponse.statusText);
+        if (healthResponse.ok) {
+          const healthData = await healthResponse.json();
+          console.log('💚 Health check data:', healthData);
+          healthCheckPassed = true;
         }
-      });
-      console.log('✅ Connectivity test result:', testResponse.status, testResponse.statusText);
+      } catch (healthError) {
+        console.warn('⚠️ Health check failed:', healthError);
+        // Continue with main request despite health check failure
+      }
 
-      // Prepare request with detailed logging
+      // Phase 2: Primary Request with Supabase Client
       const requestPayload = {
         extractedData,
         userPrompt,
         enhancementType: 'complete_rewrite',
         timestamp: new Date().toISOString(),
-        requestId: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        requestId
       };
 
-      console.log('📤 Sending enhancement request...');
+      console.log('📤 Phase 2: Sending enhancement request via Supabase client...');
       console.log('🔧 Request details:', {
         payloadSize: JSON.stringify(requestPayload).length,
-        requestId: requestPayload.requestId
+        requestId,
+        healthCheckPassed
       });
 
-      // Call AI enhancement function with comprehensive error handling
-      const { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
-        body: requestPayload,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Request-ID': requestPayload.requestId,
-          'X-User-ID': user?.id || 'anonymous'
+      let data: any, error: any;
+
+      // Attempt 1: Supabase Functions SDK
+      try {
+        const result: any = await Promise.race([
+          supabase.functions.invoke('ai-resume-enhancement', {
+            body: requestPayload,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Request-ID': requestId,
+              'X-User-ID': user?.id || 'anonymous'
+            }
+          }),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Request timeout after 30 seconds')), 30000)
+          )
+        ]);
+        
+        data = result.data;
+        error = result.error;
+        console.log('✅ Supabase client request completed');
+      } catch (clientError) {
+        console.warn('⚠️ Supabase client failed, attempting direct fetch fallback...', clientError);
+        fallbackAttempted = true;
+        
+        // Attempt 2: Direct Fetch Fallback
+        try {
+          const response = await fetch(SUPABASE_FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+              'apikey': SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json',
+              'X-Request-ID': requestId,
+              'X-User-ID': user?.id || 'anonymous'
+            },
+            body: JSON.stringify(requestPayload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const fallbackData = await response.json();
+          data = fallbackData;
+          error = null;
+          console.log('✅ Direct fetch fallback successful');
+        } catch (fetchError) {
+          console.error('❌ Both primary and fallback methods failed');
+          error = fetchError;
         }
-      });
+      }
 
+      // Phase 3: Response Analysis and Error Handling
+      const responseTime = Date.now() - startTime;
       console.log('📥 Function response received:', { 
         hasData: !!data, 
         hasError: !!error,
+        responseTime,
+        fallbackAttempted,
         errorDetails: error 
       });
 
       if (error) {
         console.error('❌ Enhancement function error:', error);
         
-        // Check for specific error types
-        if (error.message?.includes('Failed to send a request')) {
+        // Detailed error classification
+        const errorMessage = error.message || error.toString();
+        const isNetworkError = errorMessage.includes('Failed to send a request') || 
+                              errorMessage.includes('fetch') ||
+                              errorMessage.includes('timeout') ||
+                              errorMessage.includes('network') ||
+                              !navigator.onLine;
+        
+        const isConfigError = errorMessage.includes('API key') || 
+                             errorMessage.includes('401') ||
+                             errorMessage.includes('authentication');
+        
+        const isServiceError = errorMessage.includes('500') || 
+                              errorMessage.includes('503') ||
+                              errorMessage.includes('service unavailable');
+
+        if (isNetworkError) {
           throw new Error('Network connectivity issue - unable to reach AI service. Please check your connection and try again.');
-        } else if (error.message?.includes('API key')) {
+        } else if (isConfigError) {
           throw new Error('AI service configuration issue. Please contact support.');
+        } else if (isServiceError) {
+          throw new Error('AI service is temporarily unavailable. Please try again in a few minutes.');
         } else {
-          throw new Error(error.message || 'Failed to enhance resume');
+          throw new Error(errorMessage || 'Failed to enhance resume');
         }
       }
 
@@ -260,61 +350,100 @@ export const ChatGPTStyleInterface = () => {
     } catch (error) {
       console.error('❌ Enhancement failed with error:', error);
       
-      // Enhanced error categorization and handling
-      const isNetworkError = error.message?.includes('Failed to send a request') || 
-                            error.message?.includes('fetch') ||
-                            error.message?.includes('Network connectivity');
-      const isConfigError = error.message?.includes('API key') || 
-                           error.message?.includes('configuration');
-      const isTimeoutError = error.message?.includes('timeout');
+      // Phase 4: Comprehensive Error Analysis & Recovery
+      const totalTime = Date.now() - startTime;
+      const errorMessage = error.message || error.toString();
+      
+      // Advanced error categorization
+      const isNetworkError = errorMessage.includes('Failed to send a request') || 
+                            errorMessage.includes('fetch') ||
+                            errorMessage.includes('Network connectivity') ||
+                            errorMessage.includes('timeout') ||
+                            !navigator.onLine;
+                            
+      const isConfigError = errorMessage.includes('API key') || 
+                           errorMessage.includes('configuration') ||
+                           errorMessage.includes('401') ||
+                           errorMessage.includes('authentication');
+                           
+      const isServiceError = errorMessage.includes('500') || 
+                            errorMessage.includes('503') ||
+                            errorMessage.includes('service unavailable') ||
+                            errorMessage.includes('temporarily unavailable');
+                            
+      const isTimeoutError = errorMessage.includes('timeout') || totalTime > 25000;
       const isRetryable = !isConfigError;
       
-      // Log diagnostic information
-      console.log('🔍 Error diagnosis:', {
+      // Enhanced diagnostic logging
+      console.log('🔍 Comprehensive error diagnosis:', {
+        errorMessage,
         isNetworkError,
         isConfigError,
+        isServiceError,
         isTimeoutError,
         isRetryable,
-        retryCount
+        retryCount,
+        totalTime,
+        fallbackAttempted: fallbackAttempted,
+        onlineStatus: navigator.onLine,
+        userAgent: navigator.userAgent,
+        timestamp: new Date().toISOString()
       });
       
-      const retryButton = isRetryable ? '\n\n🔄 **You can try again** - this might be a temporary issue.' : '';
+      // Progressive error messaging based on retry count
+      let errorContent = `❌ **Enhancement Failed**\n\nI encountered an issue enhancing your resume.`;
       
-      let errorContent = `❌ **Enhancement Failed**\n\nI encountered an issue enhancing your resume.${retryButton}\n\n`;
+      if (isRetryable) {
+        errorContent += '\n\n🔄 **You can try again** - this might be a temporary issue.';
+      }
+      
+      errorContent += '\n\n';
       
       if (isConfigError) {
         errorContent += '**Issue:** AI service configuration problem\n**Solution:** The AI service is being configured. Please try again in a few minutes or contact support.';
+      } else if (isServiceError) {
+        errorContent += '**Issue:** AI service temporarily unavailable\n**Solution:** The service is restarting. Please wait a moment and try again.';
       } else if (isNetworkError) {
         errorContent += '**Issue:** Unable to connect to AI service\n**Solution:** Please check your internet connection. If the problem persists, the service may be restarting.';
       } else if (isTimeoutError) {
         errorContent += '**Issue:** Request took too long to process\n**Solution:** Try with a shorter, more specific prompt or try again later.';
       } else {
-        errorContent += `**Technical details:** ${error.message}`;
+        errorContent += `**Technical details:** ${errorMessage}`;
       }
       
-      // Add troubleshooting tips for persistent failures
+      // Progressive troubleshooting based on retry count
+      if (retryCount >= 1) {
+        errorContent += '\n\n**Test Supabase Connectivity**\nVerify Supabase isn\'t the culprit:\n\n```javascript\n// Run in browser console\nfetch("https://dthlgsnakhoftinssokm.supabase.co/rest/v1/", {\n  headers: { apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }\n}).then(res => console.log("Supabase status:", res.status))\n```\nIf this fails (non-200 status), check your Supabase project for outages.';
+      }
+      
       if (retryCount >= 2) {
-        errorContent += '\n\n**Persistent Issues?**\n• Refresh the page and try again\n• Try uploading a different resume\n• Check if other features work normally';
+        errorContent += '\n\n🔧 **Advanced Troubleshooting**\nIf the AI service is yours:\n\n**Check API Endpoints**\nEnsure your AI service URL is reachable:\n\n```bash\ncurl -I <YOUR_AI_SERVICE_URL>  # Should return HTTP 200/204\n```\n\n**Inspect Network Requests**\nOpen browser DevTools (F12 → Network tab). Look for:\n\n• Failed requests (red entries) to your AI endpoint\n• CORS errors (add Access-Control-Allow-Origin: * server-side)\n\nIf using a 3rd-party AI (e.g., OpenAI):\n• Check service status: OpenAI Status | Anthropic Status\n• Verify API keys are valid/correct in your Supabase secrets.';
       }
       
-      const errorMessage: ChatMessage = {
+      if (retryCount >= 3) {
+        errorContent += '\n\n🛠️ **If You Control the AI Service**\n**Restart the AI Service**\n\n```bash\n# Example with systemd:\nsudo systemctl restart your-ai-service\n```\n\n**Check Service Logs**\n\n```bash\njournalctl -u your-ai-service -n 100 --no-pager  # Linux systemd\ndocker logs your-ai-container  # If Dockerized\n```\n\n**Validate Environment Variables**\nEnsure keys/ports are correctly set in your .env or deployment config.\n\n⏱️ **When All Else Fails**\n**Fallback Strategy:** Implement a fail-safe in your code:\n\n```javascript\ntry {\n  const enhancedResume = await enhanceWithAI(resume);\n} catch (error) {\n  console.error("AI failed, using local fallback:", error);\n  // Show user unenhanced resume + "Try later" message\n}\n```\n\n**Monitor Outages:** Use tools like UptimeRobot for AI service monitoring.';
+      }
+      
+      const errorMsgObj: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
         content: errorContent,
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => [...prev, errorMsgObj]);
       
-      // Show different toast messages based on error type
+      // Contextual toast messages
       if (isNetworkError) {
         toast.error('Unable to connect to AI service. Please check your connection.');
       } else if (isConfigError) {
         toast.error('AI service is being configured. Please try again shortly.');
+      } else if (isServiceError) {
+        toast.error('AI service temporarily unavailable. Please wait and retry.');
       } else {
         toast.error('Enhancement failed. Check the chat for details.');
       }
       
-      // Track retry count for retryable errors
+      // Intelligent retry tracking
       if (isRetryable) {
         setRetryCount(prev => prev + 1);
       }
