@@ -4,6 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { OCRResumeProcessor } from "@/services/ocrResumeProcessor";
+import { ResumeTextExtractor } from "@/services/resumeTextExtractor";
+import { configurePDFWorker, getPDFWorkerStatus } from "@/utils/pdfWorkerConfig";
 import { toast } from "sonner";
 
 export const useEnhancedResumeUpload = () => {
@@ -86,28 +88,75 @@ export const useEnhancedResumeUpload = () => {
     setLivePreview(null);
     
     try {
-      // Step 1: Upload file
+      // Step 1: Configure PDF worker for PDF files
+      if (file.type === 'application/pdf') {
+        progressCallback(2, 'Configuring PDF processor...');
+        await configurePDFWorker();
+        console.log(`✅ PDF Worker Status: ${getPDFWorkerStatus()}`);
+      }
+
+      // Step 2: Upload file
       progressCallback(5, 'Uploading file to secure storage...');
       const fileUrl = await uploadFile(file, `resume-${Date.now()}.${file.name.split('.').pop()}`);
       console.log('File uploaded successfully:', fileUrl);
       
-      // Step 2: Determine processing method
+      // Step 3: Determine processing method
       const isImage = file.type.includes('image');
       const needsOCR = isImage || ocrMode || file.name.toLowerCase().includes('scan');
       
       progressCallback(10, needsOCR ? 'Preparing OCR processing...' : 'Preparing AI extraction...');
       
-      // Step 3: Process with appropriate method
-      const processor = new OCRResumeProcessor();
       let extractedContent;
       
       if (needsOCR) {
+        // Use OCR for images and scanned documents
         progressCallback(15, 'Starting enhanced OCR processing...');
+        const processor = new OCRResumeProcessor();
         extractedContent = await processor.processResumeWithOCR(file, progressCallback);
+        await processor.cleanup();
       } else {
-        progressCallback(15, 'Starting standard AI processing...');
-        extractedContent = await processor.processResume(file);
-        progressCallback(90, 'Finalizing extraction...');
+        // Use enhanced text extraction for PDFs and Word documents
+        progressCallback(15, 'Starting enhanced text extraction...');
+        const textExtractor = new ResumeTextExtractor();
+        
+        try {
+          // Extract raw text
+          progressCallback(30, 'Extracting text from document...');
+          const rawText = await textExtractor.extractText(file);
+          console.log(`✅ Text extracted: ${rawText.length} characters`);
+          
+          // Validate extraction quality
+          const quality = textExtractor.getExtractionQuality(rawText);
+          console.log(`📊 Extraction quality: ${quality.score}%, Issues: ${quality.issues.join(', ')}`);
+          
+          if (quality.score < 30) {
+            console.warn('⚠️ Low extraction quality, falling back to OCR...');
+            toast('Document extraction quality is low. Switching to OCR mode...', { 
+              description: 'Using OCR for better accuracy' 
+            });
+            
+            progressCallback(40, 'Switching to OCR processing...');
+            const processor = new OCRResumeProcessor();
+            extractedContent = await processor.processResumeWithOCR(file, progressCallback);
+            await processor.cleanup();
+          } else {
+            // Process with AI extraction
+            progressCallback(50, 'Processing with AI...');
+            const processor = new OCRResumeProcessor();
+            extractedContent = await processor.processResume(file);
+            progressCallback(90, 'Finalizing extraction...');
+          }
+        } catch (textError) {
+          console.warn('⚠️ Text extraction failed, falling back to OCR:', textError);
+          toast('Text extraction failed. Switching to OCR mode...', {
+            description: 'Trying alternative processing method'
+          });
+          
+          progressCallback(40, 'Switching to OCR processing...');
+          const processor = new OCRResumeProcessor();
+          extractedContent = await processor.processResumeWithOCR(file, progressCallback);
+          await processor.cleanup();
+        }
       }
       
       console.log('Content processed successfully:', extractedContent);
@@ -137,9 +186,6 @@ export const useEnhancedResumeUpload = () => {
       }
       
       console.log('Resume created in database:', data);
-      
-      // Cleanup OCR worker
-      await processor.cleanup();
       
       progressCallback(100, 'Processing complete!');
       setUploadSuccess(true);

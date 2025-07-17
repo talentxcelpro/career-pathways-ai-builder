@@ -33,7 +33,10 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 // Configure PDF worker
 import * as pdfjsLib from 'pdfjs-dist';
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+import { configurePDFWorker } from '@/utils/pdfWorkerConfig';
+
+// Initialize PDF worker
+configurePDFWorker().catch(console.error);
 
 interface ResumeData {
   personalInfo: {

@@ -5,9 +5,7 @@
 
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
-
-// Configure PDF worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+import { configurePDFWorker, isPDFWorkerReady, getPDFWorkerStatus } from '@/utils/pdfWorkerConfig';
 
 export class ResumeTextExtractor {
   /**
@@ -41,12 +39,21 @@ export class ResumeTextExtractor {
   private async extractFromPDF(file: File): Promise<string> {
     try {
       console.log('Starting enhanced PDF extraction with pdfjs-dist...');
+      console.log(`PDF Worker Status: ${getPDFWorkerStatus()}`);
+      
+      // Ensure PDF worker is ready
+      if (!isPDFWorkerReady()) {
+        console.log('PDF worker not ready, configuring...');
+        await configurePDFWorker();
+      }
+      
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ 
         data: arrayBuffer,
         useSystemFonts: true,
         disableFontFace: false,
-        standardFontDataUrl: '//unpkg.com/pdfjs-dist@3.11.174/standard_fonts/'
+        // Use CDN for standard fonts with fallback
+        standardFontDataUrl: `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/standard_fonts/`
       }).promise;
       
       let text = '';

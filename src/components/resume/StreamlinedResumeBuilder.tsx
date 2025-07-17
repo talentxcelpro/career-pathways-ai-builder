@@ -17,10 +17,11 @@ import { toast } from 'sonner';
 // Import file processing libraries
 import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
+import { configurePDFWorker } from '@/utils/pdfWorkerConfig';
 import { EnhancedResumeProcessor } from '@/services/enhancedResumeProcessor';
 
-// Configure PDF worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+// Initialize PDF worker
+configurePDFWorker().catch(console.error);
 
 interface SectionEnhancerProps {
   title: string;
