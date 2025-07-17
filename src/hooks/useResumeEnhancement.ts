@@ -16,7 +16,7 @@ export const useResumeEnhancement = () => {
   
   // API constants
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
-  const FUNCTION_URL = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-resume-enhancement';
+  const FUNCTION_URL = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/enhance-resume';
 
   const enhanceResumeText = async (
     text: string, 
@@ -54,7 +54,7 @@ export const useResumeEnhancement = () => {
       });
       
       // Enhanced request with fallback and proper function name
-      let { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
+      let { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: {
           ...cleanedSections,
           sectionType: options.sectionType === 'all' ? undefined : options.sectionType,
@@ -157,7 +157,7 @@ export const useResumeEnhancement = () => {
       const cleanedContent = parser.cleanSectionContent(sectionContent);
       
       // Enhanced request with fallback and proper function name
-      let { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
+      let { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: {
           [sectionType]: cleanedContent,
           sectionType,

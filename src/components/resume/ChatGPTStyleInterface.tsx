@@ -72,7 +72,7 @@ export const ChatGPTStyleInterface = () => {
   
   // Supabase API constants
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
-  const SUPABASE_FUNCTION_URL = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-resume-enhancement';
+  const SUPABASE_FUNCTION_URL = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/enhance-resume';
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -230,7 +230,7 @@ export const ChatGPTStyleInterface = () => {
       // Attempt 1: Supabase Functions SDK
       try {
         const result: any = await Promise.race([
-          supabase.functions.invoke('ai-resume-enhancement', {
+          supabase.functions.invoke('enhance-resume', {
             body: requestPayload,
             headers: {
               'Content-Type': 'application/json',

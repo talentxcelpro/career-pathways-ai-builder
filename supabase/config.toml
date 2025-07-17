@@ -12,8 +12,6 @@ verify_jwt = false
 [auth.email]
 enable_signup = true
 
-[functions.ai-resume-enhancement]
-verify_jwt = true
 
 [functions.ai-resume-extraction]
 verify_jwt = true
