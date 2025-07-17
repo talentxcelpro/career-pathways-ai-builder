@@ -1,10 +1,50 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Initialize Supabase client
+const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+// Utility function for retrying API calls
+async function retryApiCall<T>(
+  apiCall: () => Promise<T>,
+  maxRetries = 3,
+  delay = 1000
+): Promise<T> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await apiCall();
+    } catch (error) {
+      console.log(`API call attempt ${attempt} failed:`, error.message);
+      
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Exponential backoff
+      await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, attempt - 1)));
+    }
+  }
+  throw new Error('Max retries reached');
+}
+
+// Health check function
+async function healthCheck(): Promise<{ status: string; openaiConfigured: boolean; timestamp: string }> {
+  const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+  
+  return {
+    status: 'healthy',
+    openaiConfigured: !!openAIApiKey,
+    timestamp: new Date().toISOString()
+  };
+}
 
 // ChatGPT-style enhancement handler
 async function handleChatGPTStyleEnhancement(extractedData: any, userPrompt: string, enhancementType: string) {
@@ -221,8 +261,32 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Health check endpoint
+  if (req.method === 'GET') {
+    try {
+      const health = await healthCheck();
+      return new Response(JSON.stringify(health), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    } catch (error) {
+      return new Response(JSON.stringify({ 
+        status: 'unhealthy', 
+        error: error.message,
+        timestamp: new Date().toISOString()
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+  }
+
+  // Generate unique request ID for tracking
+  const requestId = crypto.randomUUID();
+  console.log(`🚀 [${requestId}] New enhancement request received`);
+
   try {
     const body = await req.json();
+    console.log(`📋 [${requestId}] Request body parsed successfully`);
     
     // Support both old and new API formats
     const { 
@@ -236,17 +300,22 @@ serve(async (req) => {
     
     // Check if this is the new ChatGPT-style interface
     if (extractedData && userPrompt) {
-      return await handleChatGPTStyleEnhancement(extractedData, userPrompt, enhancementType);
+      console.log(`🎯 [${requestId}] Using ChatGPT-style enhancement`);
+      return await retryApiCall(async () => 
+        await handleChatGPTStyleEnhancement(extractedData, userPrompt, enhancementType)
+      );
     }
     
     // Handle legacy enhancement format
+    console.log(`📝 [${requestId}] Using legacy enhancement format`);
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+      console.error(`❌ [${requestId}] OpenAI API key not configured`);
+      throw new Error('OpenAI API key not configured. Please contact support.');
     }
 
-    console.log('Processing resume enhancement:', category);
+    console.log(`🔄 [${requestId}] Processing resume enhancement:`, category);
 
     // Enhanced prompts based on category
     let systemPrompt = '';
@@ -335,50 +404,101 @@ Transform the entire resume into a compelling, professional document.`;
 
     legacyUserPrompt = `${prompt}\n\nResume Data:\n${resumeData}\n\nPlease enhance this resume data and return it in the exact same JSON structure. Maintain all existing sections and structure while improving the content quality.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: legacyUserPrompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 4000,
-      }),
+    console.log(`📤 [${requestId}] Sending request to OpenAI API...`);
+
+    const enhancementResult = await retryApiCall(async () => {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: legacyUserPrompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 4000,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error(`❌ [${requestId}] OpenAI API error:`, response.status, errorData);
+        throw new Error(`OpenAI API error: ${response.status} - ${errorData}`);
+      }
+
+      return await response.json();
     });
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`AI enhancement failed: ${response.status}`);
-    }
+    console.log(`✅ [${requestId}] OpenAI request completed successfully`);
+    const enhancement = enhancementResult.choices[0].message.content;
 
-    const data = await response.json();
-    const enhancement = data.choices[0].message.content;
+    // Log usage for monitoring
+    try {
+      await supabase.from('ai_usage_logs').insert({
+        user_id: req.headers.get('user-id') || 'anonymous',
+        feature_type: 'resume_enhancement',
+        request_type: 'legacy_enhancement',
+        success: true,
+        tokens_used: enhancementResult.usage?.total_tokens || 0,
+        tool_slug: 'ai-resume-enhancement',
+        request_data: { category, prompt: prompt?.substring(0, 100) },
+        response_data: { enhancement_length: enhancement?.length || 0 }
+      });
+    } catch (logError) {
+      console.warn(`⚠️ [${requestId}] Failed to log usage:`, logError.message);
+    }
 
     return new Response(
       JSON.stringify({ 
         enhancement,
         category,
-        success: true 
+        success: true,
+        requestId
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error in AI resume enhancement:', error);
+    console.error(`💥 [${requestId}] Error in AI resume enhancement:`, error);
+    
+    // Log error for monitoring
+    try {
+      await supabase.from('ai_usage_logs').insert({
+        user_id: req.headers.get('user-id') || 'anonymous',
+        feature_type: 'resume_enhancement',
+        request_type: 'error',
+        success: false,
+        error_message: error.message,
+        tool_slug: 'ai-resume-enhancement'
+      });
+    } catch (logError) {
+      console.warn(`⚠️ [${requestId}] Failed to log error:`, logError.message);
+    }
+
+    // Provide helpful error messages
+    let userFriendlyError = error.message;
+    if (error.message.includes('API key')) {
+      userFriendlyError = 'AI service configuration issue. Please contact support.';
+    } else if (error.message.includes('fetch')) {
+      userFriendlyError = 'Network connection issue. Please check your internet and try again.';
+    } else if (error.message.includes('timeout')) {
+      userFriendlyError = 'Request timed out. Please try again with a shorter prompt.';
+    }
+
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        success: false 
+        error: userFriendlyError,
+        technicalError: error.message,
+        success: false,
+        requestId,
+        retryable: !error.message.includes('API key')
       }),
       { 
-        status: 500,
+        status: error.message.includes('API key') ? 503 : 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );

@@ -16,11 +16,14 @@ import {
   CheckCircle,
   AlertCircle,
   Download,
-  Eye
+  Eye,
+  RefreshCw,
+  Wifi
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { EnhancedResumeProcessor } from "@/services/enhancedResumeProcessor";
+import { AIServiceStatus } from "@/components/ai/AIServiceStatus";
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -59,6 +62,8 @@ export const ChatGPTStyleInterface = () => {
   const [userPrompt, setUserPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedResumeId, setGeneratedResumeId] = useState<string | null>(null);
+  const [servicesHealthy, setServicesHealthy] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -139,8 +144,13 @@ export const ChatGPTStyleInterface = () => {
     }
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (isRetry = false) => {
     if (!userPrompt.trim() || !extractedData) return;
+    
+    if (!isRetry && !servicesHealthy) {
+      toast.error('AI services are currently unavailable. Please wait or try again later.');
+      return;
+    }
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -154,16 +164,33 @@ export const ChatGPTStyleInterface = () => {
     setIsGenerating(true);
 
     try {
-      // Call AI enhancement function
+      // Add user ID to headers for better logging
+      const headers: any = {};
+      if (user?.id) {
+        headers['user-id'] = user.id;
+      }
+
+      console.log('🚀 Calling AI resume enhancement...');
+      
+      // Call AI enhancement function with retry logic
       const { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
         body: {
           extractedData,
           userPrompt,
           enhancementType: 'complete_rewrite'
-        }
+        },
+        headers
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Enhancement function error:', error);
+        throw new Error(error.message || 'Failed to enhance resume');
+      }
+
+      if (!data || !data.success) {
+        console.error('❌ Enhancement failed:', data);
+        throw new Error(data?.error || 'Enhancement failed - no valid response');
+      }
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -195,13 +222,40 @@ export const ChatGPTStyleInterface = () => {
 
     } catch (error) {
       console.error('Enhancement failed:', error);
+      
+      // Check if it's a retryable error
+      const isRetryable = !error.message?.includes('API key') && 
+                         !error.message?.includes('configuration');
+      
+      const retryButton = isRetryable ? '\n\n🔄 **You can try again** - this might be a temporary network issue.' : '';
+      
+      let errorContent = `❌ **Enhancement Failed**\n\nI encountered an issue enhancing your resume.${retryButton}\n\n`;
+      
+      if (error.message?.includes('API key')) {
+        errorContent += '**Issue:** AI service configuration problem\n**Solution:** Please contact support for assistance.';
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        errorContent += '**Issue:** Network connection problem\n**Solution:** Check your internet connection and try again.';
+      } else if (error.message?.includes('timeout')) {
+        errorContent += '**Issue:** Request took too long\n**Solution:** Try with a shorter, more specific prompt.';
+      } else {
+        errorContent += `**Technical details:** ${error.message}`;
+      }
+      
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: `❌ I encountered an issue enhancing your resume. This might be because the AI service is still deploying. Please try again in a few minutes.\n\nError: ${error.message}`,
+        content: errorContent,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
+      
+      // Show toast for immediate feedback
+      toast.error('Enhancement failed. Check the chat for details.');
+      
+      // Track retry count
+      if (isRetryable) {
+        setRetryCount(prev => prev + 1);
+      }
     } finally {
       setIsGenerating(false);
     }
@@ -284,10 +338,16 @@ export const ChatGPTStyleInterface = () => {
                 <p className="text-sm text-gray-600">Analyzing: {uploadedFile?.name}</p>
               </div>
             </div>
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              <CheckCircle className="w-3 h-3 mr-1" />
-              Resume Loaded
-            </Badge>
+            <div className="flex items-center space-x-2">
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <CheckCircle className="w-3 h-3 mr-1" />
+                Resume Loaded
+              </Badge>
+              <AIServiceStatus 
+                services={['ai-resume-enhancement']}
+                onStatusChange={setServicesHealthy}
+              />
+            </div>
           </div>
         </div>
 
@@ -358,12 +418,25 @@ export const ChatGPTStyleInterface = () => {
                 disabled={isGenerating}
               />
               <Button
-                onClick={handleSendMessage}
+                onClick={() => handleSendMessage(false)}
                 disabled={!userPrompt.trim() || isGenerating}
                 className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
               >
                 <Send className="w-4 h-4" />
               </Button>
+              
+              {retryCount > 0 && (
+                <Button
+                  onClick={() => handleSendMessage(true)}
+                  disabled={isGenerating}
+                  variant="outline"
+                  size="sm"
+                  className="ml-2"
+                >
+                  <RefreshCw className="w-4 h-4 mr-1" />
+                  Retry ({retryCount})
+                </Button>
+              )}
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {[

@@ -15,6 +15,29 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+// Utility function for retrying API calls
+async function retryApiCall<T>(
+  apiCall: () => Promise<T>,
+  maxRetries = 3,
+  delay = 1000
+): Promise<T> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await apiCall();
+    } catch (error) {
+      console.log(`API call attempt ${attempt} failed:`, error.message);
+      
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Exponential backoff
+      await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, attempt - 1)));
+    }
+  }
+  throw new Error('Max retries reached');
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
