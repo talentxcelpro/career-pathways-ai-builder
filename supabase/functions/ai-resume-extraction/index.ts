@@ -12,42 +12,60 @@ serve(async (req) => {
   }
 
   try {
-    const { text, fileName, fileType, extractionLevel } = await req.json();
+    const { text, fileName, fileType, extractionLevel, textQuality, enhancedProcessing } = await req.json();
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('Processing resume extraction:', { fileName, fileType, extractionLevel, textLength: text.length });
+    console.log('🤖 Processing enhanced resume extraction:', { 
+      fileName, 
+      fileType, 
+      extractionLevel, 
+      textLength: text.length,
+      textQuality: textQuality || 'standard',
+      enhancedProcessing: enhancedProcessing || false
+    });
 
-    const systemPrompt = `You are an expert resume parser with advanced text analysis capabilities and deep ATS optimization knowledge. Your job is to extract structured data from resumes and improve incomplete sections.
+    const systemPrompt = `You are an expert resume parser with advanced text analysis capabilities and deep ATS optimization knowledge. Your job is to extract structured data from resumes with extremely high accuracy and generate realistic professional content for missing sections.
 
-CRITICAL REQUIREMENTS:
-1. Extract ALL available information from the text with high accuracy
-2. For missing or incomplete sections, generate professional content based on context
+CRITICAL REQUIREMENTS FOR HIGH-QUALITY EXTRACTION:
+1. Extract ALL available information from the text with maximum accuracy - never use placeholder text like "Company" or "Position"
+2. For missing sections, generate realistic, industry-appropriate professional content
 3. Return valid JSON with the exact structure provided
-4. Use confidence scores (0.0-1.0): 1.0 for extracted data, 0.7 for AI-generated content
-5. Categorize technical skills by type and include proficiency levels
-6. Convert all responsibilities into achievement-oriented bullet points
-7. If sections are empty, generate appropriate content based on available context
-8. Optimize content for ATS systems with relevant keywords
-9. Extract comprehensive personal details including social profiles
-10. Identify publications, papers, and custom achievement sections
+4. Use confidence scores: 1.0 for directly extracted data, 0.8 for enhanced data, 0.7 for generated content
+5. Always extract real company names, job titles, dates, and specific details when available
+6. Convert generic descriptions into specific, achievement-oriented bullet points with metrics
+7. Generate contextually appropriate content based on the candidate's apparent field and experience level
+8. Optimize all content for ATS systems with industry-relevant keywords
+9. Extract comprehensive contact information including all social profiles
+10. Identify and preserve all custom sections and achievements
 
-ADVANCED EXTRACTION RULES:
-- Transform basic job descriptions into quantified achievement statements
-- Add specific metrics where logical (e.g., "managed team" → "managed team of 5+ members")
-- Standardize formatting and professional language across all sections
-- Generate missing professional summaries based on experience patterns
-- Ensure keyword density is optimal for ATS systems (2-3% for key terms)
-- Extract industry-specific terminology and technical competencies
-- For skills, always include proficiency levels: "Beginner", "Intermediate", "Advanced", "Expert"
-- Categorize skills by type: "Programming Languages", "Frameworks", "Databases", "Tools", "Cloud Platforms", "Soft Skills"
-- Extract publications, research papers, and academic achievements
-- Look for additional personal details like profile pictures, social profiles, certifications
-- Identify custom sections like honors, volunteering, hackathons, competitions
-- Extract contact information comprehensively including LinkedIn, portfolios, GitHub
+ENHANCED EXTRACTION RULES:
+- NEVER use generic placeholders like "Company", "Position", "Technology Company" - always extract real names or generate realistic ones
+- Transform vague descriptions into specific achievements with quantified results
+- Add realistic metrics where appropriate (team sizes, performance improvements, project scales)
+- Generate professional summaries that reflect the candidate's actual experience and skills
+- Ensure technical skills match the candidate's apparent specialization and experience level
+- Extract industry-specific terminology and modern technical competencies
+- For skills, categorize by: "Programming Languages", "Frameworks", "Databases", "Tools", "Cloud Platforms", "Methodologies"
+- Include proficiency levels based on experience context: "Beginner", "Intermediate", "Advanced", "Expert"
+- Extract all educational details including specific degrees, institutions, and academic achievements
+- Identify certifications, courses, and professional development activities
+- Look for publications, research, patents, and thought leadership content
+- Extract volunteer work, side projects, and community involvement
+- Preserve all contact methods: email, phone, LinkedIn, GitHub, portfolio websites, social media
+
+DATA QUALITY STANDARDS:
+- Real company names from the text or contextually appropriate realistic names
+- Specific job titles that match industry standards and career progression
+- Accurate date ranges in MM/YYYY format
+- Detailed achievement statements with quantified impact
+- Technical skills that align with the candidate's field and experience level
+- Professional language throughout all sections
+- ATS-optimized keyword density (2-3% for key terms)
+- Logical career progression and timeline consistency
 
 Return a JSON object with this EXACT structure:
 {
@@ -255,38 +273,60 @@ Return a JSON object with this EXACT structure:
   }
 }`;
 
-    const userPrompt = `Extract comprehensive resume data from this text with enhanced AI processing:
+    const enhancedInstructions = enhancedProcessing ? `
+ENHANCED PROCESSING MODE ACTIVE
+==============================
+Text Quality: ${textQuality || 'standard'}
+Enhanced Context: ${enhancedProcessing ? 'YES' : 'NO'}
+
+STRICT QUALITY REQUIREMENTS:
+- NEVER use placeholder text like "Company", "Position", "Technology Company"
+- Extract real names, dates, and specific details from the source text
+- Generate realistic professional content for missing sections
+- Ensure all company names are either extracted or contextually realistic
+- Use specific job titles that match industry standards
+- Include quantified achievements and metrics wherever possible
+- Maintain logical career progression and timeline consistency
+` : '';
+
+    const userPrompt = `${enhancedInstructions}
+
+Extract comprehensive resume data from this text with maximum accuracy and professional enhancement:
 
 FILE: ${fileName}
 TYPE: ${fileType}
+PROCESSING MODE: ${enhancedProcessing ? 'Enhanced' : 'Standard'}
 
 TEXT CONTENT:
 ${text}
 
-COMPREHENSIVE EXTRACTION INSTRUCTIONS:
-1. Extract ALL sections you can identify with high accuracy
-2. For dates, use MM/YYYY format when possible, standardize date formats
-3. Group technical skills by category with proficiency levels (Beginner/Intermediate/Advanced/Expert)
-4. Extract specific achievements with quantifiable results and metrics
-5. Identify all contact information including social media profiles
-6. Calculate confidence scores based on text clarity and completeness
-7. Generate professional ATS optimization suggestions with keyword analysis
-8. Extract publications, research papers, academic achievements
-9. Identify custom sections like honors, volunteering, competitions, hackathons
-10. Optimize content for professional impact and ATS compatibility
-11. For missing sections, generate appropriate professional content based on existing data
-12. Include industry-specific keywords and technical terminology
-13. Transform passive descriptions into active, achievement-focused statements
-14. Ensure all extracted data follows professional resume standards
+CRITICAL EXTRACTION REQUIREMENTS:
+1. EXTRACT real company names, job titles, and dates - never use "Company" or generic placeholders
+2. Parse all contact information accurately (email, phone, LinkedIn, websites)
+3. Transform job responsibilities into achievement-oriented statements with metrics
+4. Generate realistic professional content for incomplete sections based on context
+5. Categorize technical skills by type with appropriate proficiency levels
+6. Extract education details including specific institutions, degrees, and dates
+7. Identify certifications, projects, publications, and custom achievements
+8. Calculate accurate confidence scores based on data quality and completeness
+9. Generate ATS optimization recommendations with industry-specific keywords
+10. Ensure all dates follow MM/YYYY format and maintain chronological consistency
+11. Create professional summaries that reflect the candidate's actual experience
+12. Include industry-appropriate terminology and technical competencies
+13. Optimize keyword density for ATS compatibility (2-3% for key terms)
+14. Preserve all volunteer work, side projects, and community involvement
 
-QUALITY ASSURANCE:
-- Verify all extracted information is accurate to the source
-- Ensure generated content is contextually appropriate
-- Maintain professional tone throughout all sections
-- Optimize for both human readability and ATS parsing
-- Include relevant keywords for the candidate's industry and role
+ENHANCED QUALITY STANDARDS:
+- Real or realistic company names (never "Company" or "Technology Company")
+- Specific, industry-appropriate job titles that show career progression
+- Quantified achievements with metrics and measurable impact
+- Technical skills that align with the candidate's field and experience level
+- Professional language throughout all sections
+- Logical timeline and career progression
+- Comprehensive contact information extraction
+- Industry-specific keywords and modern terminology
 
-Return ONLY valid JSON with no additional text or explanations.`;
+RESPONSE FORMAT: Return ONLY valid JSON with no additional text, comments, or explanations.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -300,8 +340,10 @@ Return ONLY valid JSON with no additional text or explanations.`;
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.1,
-        max_tokens: 8000,
+        temperature: enhancedProcessing ? 0.2 : 0.1,
+        max_tokens: 12000,
+        presence_penalty: 0.1,
+        frequency_penalty: 0.1,
       }),
     });
 
