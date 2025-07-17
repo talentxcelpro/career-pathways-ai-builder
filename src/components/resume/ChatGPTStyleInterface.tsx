@@ -1,25 +1,30 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  MessageCircle, 
-  Send, 
-  Sparkles, 
+  Wand2, 
+  FileText, 
+  Search, 
   Target, 
-  User, 
-  Bot, 
-  Upload, 
-  FileText,
-  CheckCircle,
-  AlertCircle,
+  Sparkles, 
+  Brain,
+  Upload,
+  Download,
+  Copy,
   RefreshCw,
   Wifi,
-  WifiOff
+  WifiOff,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Zap
 } from 'lucide-react';
+import { AIResumeEnhancer } from './AIResumeEnhancer';
 import { useAIResumeEnhancements } from '@/hooks/useAIResumeEnhancements';
 import { toast } from 'sonner';
 
@@ -28,352 +33,424 @@ interface ChatGPTStyleInterfaceProps {
   onEnhancementApplied: (enhancedData: any) => void;
 }
 
-interface Message {
-  id: string;
-  type: 'user' | 'ai';
-  content: string;
-  timestamp: Date;
-  status?: 'sending' | 'sent' | 'failed';
-  data?: any;
-}
-
 export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
   resumeData,
   onEnhancementApplied
 }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      type: 'ai',
-      content: "👋 Hi! I'm your AI Resume Assistant. I can help you create headlines and optimize keywords for your resume. What would you like to work on today?",
-      timestamp: new Date(),
-      status: 'sent'
-    }
-  ]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [lastActivity, setLastActivity] = useState<Date>(new Date());
+  const [activeTab, setActiveTab] = useState('enhance');
+  const [jobDescription, setJobDescription] = useState('');
+  const [targetRole, setTargetRole] = useState('');
+  const [industry, setIndustry] = useState('');
+  const [experience, setExperience] = useState('');
+  
+  const {
+    generateSmartTitles,
+    isGeneratingTitles,
+    adjustTone,
+    isAdjustingTone,
+    optimizeKeywords,
+    isOptimizingKeywords
+  } = useAIResumeEnhancements();
 
-  const { generateSmartTitles, optimizeKeywords, isGeneratingTitles, isOptimizingKeywords } = useAIResumeEnhancements();
+  const [titleSuggestions, setTitleSuggestions] = useState<any>(null);
+  const [keywordResults, setKeywordResults] = useState<any>(null);
+  const [toneResults, setToneResults] = useState<any>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
+  // Monitor network status
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    const handleOnline = () => {
+      setIsOnline(true);
+      setLastActivity(new Date());
+      toast.success('Connection restored!');
+    };
     
+    const handleOffline = () => {
+      setIsOnline(false);
+      toast.error('Connection lost. Please check your internet connection.');
+    };
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
 
-  const addMessage = (message: Omit<Message, 'id' | 'timestamp'>) => {
-    const newMessage: Message = {
-      ...message,
-      id: Date.now().toString(),
-      timestamp: new Date(),
-    };
-    setMessages(prev => [...prev, newMessage]);
-    return newMessage.id;
-  };
-
-  const updateMessage = (id: string, updates: Partial<Message>) => {
-    setMessages(prev => prev.map(msg => 
-      msg.id === id ? { ...msg, ...updates } : msg
-    ));
-  };
-
-  const handleQuickAction = async (action: string) => {
-    if (!isOnline) {
-      toast.error('You appear to be offline. Please check your internet connection.');
-      return;
-    }
-
-    const userMessageId = addMessage({
-      type: 'user',
-      content: action,
-      status: 'sent'
-    });
-
-    let aiMessageId = '';
+  // Update last activity on user interaction
+  useEffect(() => {
+    const updateActivity = () => setLastActivity(new Date());
+    window.addEventListener('click', updateActivity);
+    window.addEventListener('keypress', updateActivity);
     
-    if (action === 'create headline') {
-      aiMessageId = addMessage({
-        type: 'ai',
-        content: '✨ Generating smart resume titles for you...',
-        status: 'sending'
-      });
+    return () => {
+      window.removeEventListener('click', updateActivity);
+      window.removeEventListener('keypress', updateActivity);
+    };
+  }, []);
 
-      try {
-        const result = await generateSmartTitles(resumeData);
-        
-        if (result && result.titles && result.titles.length > 0) {
-          const titlesList = result.titles.map((title, index) => 
-            `${index + 1}. **${title.title}** (ATS Score: ${title.atsScore})\n   *${title.reasoning}*`
-          ).join('\n\n');
-
-          const content = `🎯 **Generated Resume Titles:**\n\n${titlesList}\n\n**💡 Recommendation:** ${result.recommendations.bestTitle}\n\n**📋 Tips:**\n${result.recommendations.tips.map(tip => `• ${tip}`).join('\n')}`;
-          
-          updateMessage(aiMessageId, {
-            content,
-            status: 'sent',
-            data: result
-          });
-        } else {
-          throw new Error('No titles generated');
-        }
-      } catch (error) {
-        console.error('Title generation error:', error);
-        updateMessage(aiMessageId, {
-          content: `❌ **Enhancement Failed**\n\nI encountered an issue generating headlines.\n\n🔄 **You can try again** - this might be a temporary issue.\n\n**Issue:** ${error instanceof Error ? error.message : 'Title generation failed'}\n**Solution:** ${!isOnline ? 'Please check your internet connection.' : 'Please try again. If the problem persists, the service may be restarting.'}`,
-          status: 'failed'
-        });
-      }
-    } else if (action === 'optimize keywords') {
-      aiMessageId = addMessage({
-        type: 'ai',
-        content: '📈 Optimizing keywords for ATS compatibility...',
-        status: 'sending'
-      });
-
-      try {
-        const result = await optimizeKeywords(resumeData);
-        
-        if (result) {
-          const content = `📊 **Keyword Optimization Complete**\n\n**ATS Score:** ${result.atsScore}/100\n\n**🎯 Key Recommendations:**\n${result.recommendations.slice(0, 3).map((rec, index) => `${index + 1}. Add **${rec.keyword}** to your ${rec.section} section\n   *${rec.suggestion}*`).join('\n\n')}\n\n**📈 Improvement Tips:**\n${result.improvementTips.slice(0, 3).map(tip => `• ${tip}`).join('\n')}`;
-          
-          updateMessage(aiMessageId, {
-            content,
-            status: 'sent',
-            data: result
-          });
-        } else {
-          throw new Error('Keyword optimization failed');
-        }
-      } catch (error) {
-        console.error('Keyword optimization error:', error);
-        updateMessage(aiMessageId, {
-          content: `❌ **Keyword Optimization Failed**\n\nI encountered an issue optimizing keywords.\n\n🔄 **You can try again** - this might be a temporary issue.\n\n**Issue:** ${error instanceof Error ? error.message : 'Unable to connect to AI service'}\n**Solution:** ${!isOnline ? 'Please check your internet connection.' : 'Please try again. If the problem persists, the service may be restarting.'}`,
-          status: 'failed'
-        });
-      }
-    }
-  };
-
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || !isOnline) {
-      if (!isOnline) {
-        toast.error('You appear to be offline. Please check your internet connection.');
-      }
+  const handleGenerateTitles = async () => {
+    if (!isOnline) {
+      toast.error('No internet connection. Please check your connection and try again.');
       return;
     }
 
-    const userMessageId = addMessage({
-      type: 'user',
-      content: inputMessage,
-      status: 'sent'
-    });
-
-    setInputMessage('');
-    setIsTyping(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      addMessage({
-        type: 'ai',
-        content: "I understand you'd like help with your resume. You can use the quick action buttons above to generate headlines or optimize keywords, or feel free to ask me any specific questions about your resume!",
-        status: 'sent'
-      });
-      setIsTyping(false);
-    }, 1000);
+    console.log('Generating titles with resume data:', resumeData);
+    const results = await generateSmartTitles(resumeData, targetRole, industry, experience);
+    if (results) {
+      setTitleSuggestions(results);
+      toast.success('Smart titles generated successfully!');
+    }
   };
 
-  const formatMessage = (content: string) => {
-    return content.split('\n').map((line, index) => (
-      <div key={index} className="mb-1">
-        {line.startsWith('**') && line.endsWith('**') ? (
-          <strong className="text-gray-900">{line.slice(2, -2)}</strong>
-        ) : line.startsWith('*') && line.endsWith('*') ? (
-          <em className="text-gray-600">{line.slice(1, -1)}</em>
+  const handleOptimizeKeywords = async () => {
+    if (!isOnline) {
+      toast.error('No internet connection. Please check your connection and try again.');
+      return;
+    }
+
+    console.log('Optimizing keywords with resume data:', resumeData);
+    const results = await optimizeKeywords(resumeData, jobDescription, targetRole, industry);
+    if (results) {
+      setKeywordResults(results);
+      toast.success('Keywords optimized successfully!');
+    }
+  };
+
+  const handleAdjustTone = async (content: string, tone: string) => {
+    if (!isOnline) {
+      toast.error('No internet connection. Please check your connection and try again.');
+      return;
+    }
+
+    const results = await adjustTone(content, tone, 'summary');
+    if (results) {
+      setToneResults(results);
+      toast.success('Tone adjusted successfully!');
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard!');
+  };
+
+  const NetworkStatus = () => (
+    <div className="flex items-center gap-2 text-sm">
+      {isOnline ? (
+        <>
+          <Wifi className="h-4 w-4 text-green-500" />
+          <span className="text-green-600">Online</span>
+        </>
+      ) : (
+        <>
+          <WifiOff className="h-4 w-4 text-red-500" />
+          <span className="text-red-600">Offline</span>
+        </>
+      )}
+      <span className="text-gray-500">
+        • Last activity: {lastActivity.toLocaleTimeString()}
+      </span>
+    </div>
+  );
+
+  const ResumeDataStatus = () => {
+    const hasData = resumeData && typeof resumeData === 'object' && Object.keys(resumeData).length > 0;
+    
+    return (
+      <div className="flex items-center gap-2 text-sm">
+        {hasData ? (
+          <>
+            <CheckCircle className="h-4 w-4 text-green-500" />
+            <span className="text-green-600">Resume data loaded</span>
+          </>
         ) : (
-          line
+          <>
+            <AlertCircle className="h-4 w-4 text-yellow-500" />
+            <span className="text-yellow-600">No resume data - using fallback mode</span>
+          </>
         )}
       </div>
-    ));
+    );
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <Bot className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold text-gray-900">AI Resume Assistant</h1>
-              <div className="flex items-center space-x-2">
-                {isOnline ? (
+    <div className="max-w-6xl mx-auto p-6 space-y-6">
+      {/* Header with Status */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">AI Resume Assistant</h1>
+          <p className="text-gray-600">Enhance your resume with AI-powered tools</p>
+        </div>
+        <div className="space-y-2">
+          <NetworkStatus />
+          <ResumeDataStatus />
+        </div>
+      </div>
+
+      {/* Main Interface */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="enhance" className="flex items-center gap-2">
+            <Wand2 className="h-4 w-4" />
+            Enhance
+          </TabsTrigger>
+          <TabsTrigger value="titles" className="flex items-center gap-2">
+            <Target className="h-4 w-4" />
+            Titles
+          </TabsTrigger>
+          <TabsTrigger value="keywords" className="flex items-center gap-2">
+            <Search className="h-4 w-4" />
+            Keywords
+          </TabsTrigger>
+          <TabsTrigger value="tone" className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Tone
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Enhanced Resume Tab */}
+        <TabsContent value="enhance" className="space-y-4">
+          <AIResumeEnhancer 
+            resumeData={resumeData} 
+            onEnhancementApplied={onEnhancementApplied}
+          />
+        </TabsContent>
+
+        {/* Smart Titles Tab */}
+        <TabsContent value="titles" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Smart Title Generator
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Target Role</label>
+                  <Input
+                    placeholder="e.g., Software Engineer"
+                    value={targetRole}
+                    onChange={(e) => setTargetRole(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Industry</label>
+                  <Input
+                    placeholder="e.g., Technology"
+                    value={industry}
+                    onChange={(e) => setIndustry(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Experience Level</label>
+                  <Input
+                    placeholder="e.g., 3-5 years"
+                    value={experience}
+                    onChange={(e) => setExperience(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleGenerateTitles} 
+                disabled={isGeneratingTitles || !isOnline}
+                className="w-full"
+              >
+                {isGeneratingTitles ? (
                   <>
-                    <Wifi className="h-4 w-4 text-green-500" />
-                    <span className="text-sm text-green-600">Connected to AI services</span>
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    Generating Titles...
                   </>
                 ) : (
                   <>
-                    <WifiOff className="h-4 w-4 text-red-500" />
-                    <span className="text-sm text-red-600">Offline - Check your connection</span>
+                    <Brain className="mr-2 h-4 w-4" />
+                    Generate Smart Titles
                   </>
                 )}
-              </div>
-            </div>
-          </div>
-          <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
-            Pro Features
-          </Badge>
-        </div>
-      </div>
+              </Button>
 
-      {/* Quick Actions */}
-      <div className="bg-white border-b border-gray-200 p-4">
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleQuickAction('create headline')}
-            disabled={isGeneratingTitles || !isOnline}
-            className="flex items-center space-x-2"
-          >
-            {isGeneratingTitles ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
-            ) : (
-              <Target className="h-4 w-4" />
-            )}
-            <span>create headline</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleQuickAction('optimize keywords')}
-            disabled={isOptimizingKeywords || !isOnline}
-            className="flex items-center space-x-2"
-          >
-            {isOptimizingKeywords ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
-            ) : (
-              <Sparkles className="h-4 w-4" />
-            )}
-            <span>optimize keywords</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
-            <Card className={`max-w-[80%] ${message.type === 'user' ? 'bg-blue-600 text-white' : 'bg-white'}`}>
-              <CardContent className="p-4">
-                <div className="flex items-start space-x-3">
-                  {message.type === 'ai' && (
-                    <div className="bg-blue-100 p-1 rounded-full flex-shrink-0">
-                      <Bot className="h-4 w-4 text-blue-600" />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <div className={`text-sm ${message.type === 'user' ? 'text-white' : 'text-gray-900'}`}>
-                      {formatMessage(message.content)}
-                    </div>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className={`text-xs ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
-                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      {message.status && (
-                        <div className="flex items-center space-x-1">
-                          {message.status === 'sending' && (
-                            <RefreshCw className="h-3 w-3 animate-spin" />
-                          )}
-                          {message.status === 'sent' && (
-                            <CheckCircle className="h-3 w-3 text-green-500" />
-                          )}
-                          {message.status === 'failed' && (
-                            <AlertCircle className="h-3 w-3 text-red-500" />
-                          )}
+              {titleSuggestions && (
+                <div className="space-y-3">
+                  <h3 className="font-medium">Generated Titles:</h3>
+                  {titleSuggestions.titles?.map((title: any, index: number) => (
+                    <div key={`title-${index}`} className="p-3 border rounded-lg">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-medium">{title.title}</h4>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyToClipboard(title.title)}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">{title.reasoning}</p>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">ATS Score: {title.atsScore}</Badge>
+                        <div className="flex gap-1">
+                          {title.keywords?.map((keyword: string, kidx: number) => (
+                            <Badge key={`keyword-${index}-${kidx}`} variant="secondary" className="text-xs">
+                              {keyword}
+                            </Badge>
+                          ))}
                         </div>
-                      )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Keywords Tab */}
+        <TabsContent value="keywords" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Search className="h-5 w-5" />
+                ATS Keyword Optimizer
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Job Description (Optional)</label>
+                <textarea
+                  className="w-full p-3 border rounded-lg resize-none"
+                  rows={4}
+                  placeholder="Paste job description here for better keyword matching..."
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                />
+              </div>
+
+              <Button 
+                onClick={handleOptimizeKeywords} 
+                disabled={isOptimizingKeywords || !isOnline}
+                className="w-full"
+              >
+                {isOptimizingKeywords ? (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    Optimizing Keywords...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="mr-2 h-4 w-4" />
+                    Optimize Keywords
+                  </>
+                )}
+              </Button>
+
+              {keywordResults && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium">ATS Compatibility Score</h3>
+                    <div className="flex items-center gap-2">
+                      <Progress value={keywordResults.atsScore} className="w-32" />
+                      <span className="font-medium">{keywordResults.atsScore}%</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-3 border rounded-lg">
+                      <h4 className="font-medium mb-2 text-green-600">Matched Keywords</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {keywordResults.keywordAnalysis?.matched?.map((keyword: string, index: number) => (
+                          <Badge key={`matched-${index}`} variant="default" className="text-xs">
+                            {keyword}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="p-3 border rounded-lg">
+                      <h4 className="font-medium mb-2 text-red-600">Missing Keywords</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {keywordResults.keywordAnalysis?.missing?.map((keyword: string, index: number) => (
+                          <Badge key={`missing-${index}`} variant="outline" className="text-xs">
+                            {keyword}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Improvement Tips</h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {keywordResults.improvementTips?.map((tip: string, index: number) => (
+                        <li key={`tip-${index}`} className="text-sm text-gray-600">{tip}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tone Tab */}
+        <TabsContent value="tone" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5" />
+                Tone Adjustment
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Content to Adjust</label>
+                <textarea
+                  className="w-full p-3 border rounded-lg resize-none"
+                  rows={4}
+                  placeholder="Paste content here to adjust tone..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {['Professional', 'Confident', 'Friendly', 'Authoritative'].map((tone) => (
+                  <Button
+                    key={tone}
+                    variant="outline"
+                    onClick={() => handleAdjustTone('sample content', tone.toLowerCase())}
+                    disabled={isAdjustingTone || !isOnline}
+                  >
+                    {tone}
+                  </Button>
+                ))}
+              </div>
+
+              {toneResults && (
+                <div className="space-y-3">
+                  <h3 className="font-medium">Adjusted Content:</h3>
+                  <div className="p-3 border rounded-lg bg-gray-50">
+                    <p className="text-sm">{toneResults.adjustedContent}</p>
+                    <div className="flex justify-between items-center mt-2">
+                      <Badge variant="outline">
+                        Impact Score: {toneResults.impactScore}
+                      </Badge>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyToClipboard(toneResults.adjustedContent)}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        ))}
-        
-        {isTyping && (
-          <div className="flex justify-start">
-            <Card className="bg-white">
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
-                  <div className="bg-blue-100 p-1 rounded-full">
-                    <Bot className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-        
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input */}
-      <div className="bg-white border-t border-gray-200 p-4">
-        <div className="flex items-center space-x-3">
-          <div className="flex-1">
-            <Input
-              placeholder={isOnline ? "Ask me anything about your resume..." : "You appear to be offline..."}
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              disabled={!isOnline}
-              className="border-gray-300 focus:border-blue-500"
-            />
-          </div>
-          <Button
-            onClick={handleSendMessage}
-            disabled={!inputMessage.trim() || !isOnline}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-        
-        {!isOnline && (
-          <div className="mt-2 text-sm text-red-600 flex items-center">
-            <WifiOff className="h-4 w-4 mr-1" />
-            Please check your internet connection to use AI features.
-          </div>
-        )}
-      </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
