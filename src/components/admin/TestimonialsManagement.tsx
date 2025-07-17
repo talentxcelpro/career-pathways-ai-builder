@@ -258,9 +258,16 @@ export const TestimonialsManagement: React.FC = () => {
           <CardContent className="p-8 text-center">
             <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No Testimonials Found</h3>
-            <p className="text-muted-foreground">
-              {searchTerm ? 'No testimonials match your search criteria.' : 'No testimonials available.'}
+            <p className="text-muted-foreground mb-4">
+              {searchTerm ? 'No testimonials match your search criteria.' : 'No testimonials have been submitted yet.'}
             </p>
+            {!searchTerm && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+                <p className="text-sm text-blue-700">
+                  Testimonials will appear here once users complete services and submit reviews.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
