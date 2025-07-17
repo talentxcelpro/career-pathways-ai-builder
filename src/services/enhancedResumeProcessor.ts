@@ -989,7 +989,7 @@ Please provide comprehensive extraction with contextual enhancements.
     const softMatches = text.match(softRegex) || [];
     
     // Process technical skills
-    techMatches.forEach(skill => {
+    techMatches.forEach((skill: string) => {
       if (!techSkills.find(s => s.skill.toLowerCase() === skill.toLowerCase())) {
         techSkills.push({
           skill,
@@ -1000,7 +1000,7 @@ Please provide comprehensive extraction with contextual enhancements.
     });
     
     // Process soft skills
-    softMatches.forEach(skill => {
+    softMatches.forEach((skill: string) => {
       if (!softSkills.find(s => s.skill.toLowerCase() === skill.toLowerCase())) {
         softSkills.push({
           skill,

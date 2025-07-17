@@ -42,7 +42,7 @@ export const HashtagAssistant: React.FC<HashtagAssistantProps> = ({
       
       const contentKeywords = content.toLowerCase().match(/\b\w{4,}\b/g) || [];
       const contentTags = contentKeywords
-        .filter(word => word.length > 4)
+        .filter((word: string) => word.length > 4)
         .slice(0, 3)
         .map(word => `#${word}`);
 
