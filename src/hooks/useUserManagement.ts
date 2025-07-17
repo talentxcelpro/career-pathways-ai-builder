@@ -14,18 +14,13 @@ export const useUserManagement = () => {
   const { data: users, isLoading, error } = useQuery({
     queryKey: ['admin-users', searchTerm, roleFilter, statusFilter],
     queryFn: async () => {
-      // Fetch profiles with user data from auth.users
       let query = supabase
         .from('profiles')
-        .select(`
-          *,
-          email:id(email),
-          last_sign_in_at:id(last_sign_in_at)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (searchTerm.trim()) {
-        query = query.or(`full_name.ilike.%${searchTerm}%`);
+        query = query.or(`full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
       }
 
       if (roleFilter !== 'all') {
@@ -44,24 +39,7 @@ export const useUserManagement = () => {
         throw profilesError;
       }
 
-      // Get auth users data
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
-      if (authError) {
-        console.error('Error fetching auth users:', authError);
-      }
-
-      // Merge profile and auth data
-      const usersWithAuthData = profilesData?.map(profile => {
-        const authUser = authUsers?.users?.find((u: any) => u.id === profile.id);
-        return {
-          ...profile,
-          email: authUser?.email || 'N/A',
-          last_login_at: authUser?.last_sign_in_at || null,
-          phone: authUser?.phone || profile.phone
-        };
-      }) || [];
-
-      return usersWithAuthData;
+      return profilesData || [];
     },
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -74,19 +52,21 @@ export const useUserManagement = () => {
         { count: totalUsers },
         { count: activeUsers },
         { count: employers },
+        { count: jobSeekers },
         { count: candidates }
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).gt('last_login_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('profile_completed', true),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'employer'),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'job_seeker')
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'job_seeker'),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'candidate')
       ]);
 
       return {
         totalUsers: totalUsers || 0,
         activeUsers: activeUsers || 0,
         employers: employers || 0,
-        candidates: candidates || 0
+        candidates: (jobSeekers || 0) + (candidates || 0)
       };
     }
   });
