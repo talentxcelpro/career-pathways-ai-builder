@@ -239,11 +239,11 @@ export const StreamlinedResumeBuilder = () => {
           return;
       }
 
-      const { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
+      const { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: {
-          prompt: promptText,
-          resumeData: sectionData,
-          category: enhanceType
+          [sectionType]: sectionData,
+          sectionType: sectionType,
+          provider: 'deepseek'
         }
       });
 
@@ -315,11 +315,10 @@ export const StreamlinedResumeBuilder = () => {
           break;
       }
 
-      const { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
+      const { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: {
-          prompt: promptText,
-          resumeData: JSON.stringify(resumeData),
-          category: type
+          text: JSON.stringify(resumeData),
+          provider: 'deepseek'
         }
       });
 

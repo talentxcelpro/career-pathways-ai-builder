@@ -123,11 +123,10 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
         ? `Job Description: ${jobDescription}\n\nResume to enhance: ${resumeText}`
         : `Resume to enhance: ${resumeText}`;
 
-      const { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
+      const { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: {
-          prompt: promptToUse,
-          resumeData: enhancementContext,
-          category: selectedCategory
+          text: enhancementContext,
+          provider: 'deepseek'
         }
       });
 

@@ -48,12 +48,15 @@ serve(async (req) => {
     const body = await req.json();
     console.log(`📥 [${requestId}] Request body received:`, { 
       hasText: !!body.text,
+      hasExtractedData: !!body.extractedData,
+      hasUserPrompt: !!body.userPrompt,
       hasSummary: !!body.summary,
       hasExperience: !!body.experience,
       hasSkills: !!body.skills,
       hasEducation: !!body.education,
       sectionType: body.sectionType,
-      provider: body.provider 
+      provider: body.provider || body.aiProvider,
+      enhancementType: body.enhancementType
     });
 
     // Extract content based on request format
@@ -61,9 +64,13 @@ serve(async (req) => {
     let enhancementType = 'general';
     
     if (body.text) {
-      // ChatGPT-style format
+      // ChatGPT-style format with direct text
       content = body.text;
       enhancementType = 'full_resume';
+    } else if (body.extractedData && body.userPrompt) {
+      // ChatGPT interface format with extracted data + user prompt
+      content = `${body.userPrompt}\n\nCurrent Resume Data:\n${JSON.stringify(body.extractedData, null, 2)}`;
+      enhancementType = body.enhancementType || 'complete_rewrite';
     } else if (body.sectionType) {
       // Section-specific format
       enhancementType = body.sectionType;
@@ -108,7 +115,7 @@ serve(async (req) => {
     }
 
     // Determine provider priority
-    const requestedProvider = body.provider;
+    const requestedProvider = body.provider || body.aiProvider;
     let primaryProvider = 'deepseek'; // Default to DeepSeek (cost-effective)
     let fallbackProvider = 'openai';
     
@@ -126,6 +133,9 @@ serve(async (req) => {
     if (enhancementType === 'full_resume') {
       systemMessage = 'You are a professional resume enhancement AI. Analyze and improve the entire resume text provided, making it more compelling, professional, and ATS-friendly while maintaining all original information.';
       prompt = `Please enhance this resume text to be more professional, compelling, and ATS-friendly:\n\n${content}`;
+    } else if (enhancementType === 'complete_rewrite') {
+      systemMessage = 'You are a professional resume enhancement AI. Based on the user prompt and resume data provided, create a complete, enhanced resume that is professional, compelling, and ATS-friendly.';
+      prompt = content; // Content already includes user prompt + resume data
     } else if (body.sectionType) {
       const sectionPrompts = {
         summary: `Enhance this professional summary to be more compelling and keyword-rich:\n\n${content}`,
@@ -164,6 +174,8 @@ serve(async (req) => {
     let response;
     if (enhancementType === 'full_resume') {
       response = { enhancedText: result };
+    } else if (enhancementType === 'complete_rewrite') {
+      response = { enhancedText: result, originalRequest: body.userPrompt };
     } else if (body.sectionType) {
       response = { [body.sectionType]: result };
     } else {

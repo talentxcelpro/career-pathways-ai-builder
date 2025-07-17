@@ -19,7 +19,7 @@ export const AIServiceStatus: React.FC<{
   showDetails?: boolean;
   onStatusChange?: (allHealthy: boolean) => void;
 }> = ({ 
-  services = ['ai-resume-enhancement', 'ai-agent'], 
+  services = ['enhance-resume', 'ai-agent'], 
   showDetails = false,
   onStatusChange 
 }) => {
