@@ -378,9 +378,15 @@ export const ChatGPTStyleInterface = () => {
       const isServiceError = errorMessage.includes('500') || 
                             errorMessage.includes('503') ||
                             errorMessage.includes('service unavailable') ||
-                            errorMessage.includes('temporarily unavailable');
+                            errorMessage.includes('AI service temporarily unavailable');
                             
-      const isTimeoutError = errorMessage.includes('timeout') || totalTime > 25000;
+      const isRateLimitError = errorMessage.includes('Rate limit') ||
+                              errorMessage.includes('429') ||
+                              errorMessage.includes('Too many requests');
+                              
+      const isTimeoutError = errorMessage.includes('timeout') ||
+                            errorMessage.includes('Request timeout') ||
+                            totalTime > 25000;
       const isRetryable = !isConfigError;
       
       // Enhanced diagnostic logging
@@ -408,7 +414,9 @@ export const ChatGPTStyleInterface = () => {
       
       errorContent += '\n\n';
       
-      if (isConfigError) {
+      if (isRateLimitError) {
+        errorContent += '**Issue:** Too many requests\n**Solution:** Please wait a moment before trying again. The service limits requests to prevent overload.';
+      } else if (isConfigError) {
         errorContent += '**Issue:** AI service configuration problem\n**Solution:** The AI service is being configured. Please try again in a few minutes or contact support.';
       } else if (isServiceError) {
         errorContent += '**Issue:** AI service temporarily unavailable\n**Solution:** The service is restarting. Please wait a moment and try again.';
@@ -442,7 +450,9 @@ export const ChatGPTStyleInterface = () => {
       setMessages(prev => [...prev, errorMsgObj]);
       
       // Contextual toast messages
-      if (isNetworkError) {
+      if (isRateLimitError) {
+        toast.error('Too many requests. Please wait a moment before trying again.');
+      } else if (isNetworkError) {
         toast.error('Unable to connect to AI service. Please check your connection.');
       } else if (isConfigError) {
         toast.error('AI service is being configured. Please try again shortly.');

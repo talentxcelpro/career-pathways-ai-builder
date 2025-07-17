@@ -9,11 +9,36 @@ const corsHeaders = {
 const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
 const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
 
+// Simple rate limiting for anonymous users
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW = 60000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 10; // 10 requests per minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const userLimit = rateLimitMap.get(ip);
+  
+  if (!userLimit || now > userLimit.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return true;
+  }
+  
+  if (userLimit.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return false;
+  }
+  
+  userLimit.count++;
+  return true;
+}
+
+console.log('🚀 Enhanced Resume Function Starting...');
+
 serve(async (req) => {
   const requestId = crypto.randomUUID().substring(0, 8);
   const startTime = Date.now();
+  const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
   
-  console.log(`📍 [${requestId}] Request received: ${req.method} ${req.url} at ${new Date().toISOString()}`);
+  console.log(`📍 [${requestId}] Request received: ${req.method} ${req.url} at ${new Date().toISOString()} from ${clientIP}`);
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -35,12 +60,27 @@ serve(async (req) => {
       timestamp: new Date().toISOString(),
       requestId,
       service: "enhance-resume",
-      version: "1.0.0"
+      version: "1.0.0",
+      rateLimitStatus: 'enabled',
+      authRequired: false
     };
     
     console.log(`✅ [${requestId}] Health check successful:`, healthStatus);
     return new Response(JSON.stringify(healthStatus), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Check rate limit for POST requests
+  if (req.method === 'POST' && !checkRateLimit(clientIP)) {
+    console.log(`⚠️ [${requestId}] Rate limit exceeded for IP: ${clientIP}`);
+    return new Response(JSON.stringify({
+      error: 'Rate limit exceeded',
+      message: 'Too many requests. Please wait a moment before trying again.',
+      retryAfter: 60
+    }), {
+      status: 429,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
@@ -197,16 +237,31 @@ serve(async (req) => {
     const processingTime = Date.now() - startTime;
     console.error(`❌ [${requestId}] Error in enhance-resume function after ${processingTime}ms:`, error);
     
-    return new Response(
-      JSON.stringify({ 
-        error: 'Failed to enhance resume content. Please try again.',
-        details: error.message 
-      }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    );
+    // Provide specific error messages based on error type
+    let errorMessage = 'Resume enhancement failed';
+    let statusCode = 500;
+    
+    if (error.message?.includes('fetch')) {
+      errorMessage = 'AI service temporarily unavailable';
+      statusCode = 503;
+    } else if (error.message?.includes('JSON')) {
+      errorMessage = 'Invalid request format';
+      statusCode = 400;
+    } else if (error.message?.includes('API key')) {
+      errorMessage = 'AI service configuration error';
+      statusCode = 502;
+    }
+    
+    return new Response(JSON.stringify({ 
+      error: errorMessage,
+      details: Deno.env.get('NODE_ENV') === 'development' ? error.message : undefined,
+      requestId,
+      timestamp: new Date().toISOString(),
+      processingTime
+    }), {
+      status: statusCode,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
 });
 
