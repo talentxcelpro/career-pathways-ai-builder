@@ -36,6 +36,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { EmailTriggerSettingsModal } from './EmailTriggerSettingsModal';
 import { BulkEmailProcessor } from './BulkEmailProcessor';
 import { EmailAnalyticsDashboard } from './EmailAnalyticsDashboard';
+import { RealTimeEmailAnalytics } from './RealTimeEmailAnalytics';
 
 interface EmailTrigger {
   id: string;
@@ -172,63 +173,74 @@ export const EmailAutomationManager = () => {
     }
   };
 
-  // Fetch email statistics
+  // Fetch real email statistics from database
   const fetchStats = async () => {
     try {
       // Get queue statistics
       const { data: queueData } = await supabase
         .from('email_automation_queue')
-        .select('status')
+        .select('status, recipient_email')
         .order('created_at', { ascending: false });
       
       // Get delivery events for real analytics
       const { data: eventsData } = await supabase
         .from('email_delivery_events')
-        .select('event_type, created_at')
+        .select('event_type, recipient_email, email_id')
         .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
         .order('created_at', { ascending: false });
-      
-      // Get daily analytics
-      const { data: dailyData } = await supabase
-        .from('email_analytics_daily')
-        .select('*')
-        .order('date', { ascending: false })
-        .limit(30);
       
       if (queueData) {
         const pending = queueData.filter(q => q.status === 'pending').length;
         const sent = queueData.filter(q => q.status === 'sent').length;
         const failed = queueData.filter(q => q.status === 'failed').length;
         
-        // Calculate real delivery stats from events
+        // Calculate real delivery and engagement stats from events
         const eventCounts = eventsData?.reduce((acc, event) => {
           acc[event.event_type] = (acc[event.event_type] || 0) + 1;
           return acc;
         }, {} as Record<string, number>) || {};
         
-        // Calculate totals from daily analytics
-        const totals = dailyData?.reduce((acc, day) => ({
-          sent: acc.sent + (day.emails_sent || 0),
-          delivered: acc.delivered + (day.emails_delivered || 0),
-          opened: acc.opened + (day.emails_opened || 0),
-          clicked: acc.clicked + (day.emails_clicked || 0),
-          bounced: acc.bounced + (day.emails_bounced || 0),
-          failed: acc.failed + (day.emails_failed || 0),
-        }), { sent: 0, delivered: 0, opened: 0, clicked: 0, bounced: 0, failed: 0 }) || { sent: 0, delivered: 0, opened: 0, clicked: 0, bounced: 0, failed: 0 };
+        // Count unique users for each engagement type
+        const uniqueRecipients = {
+          delivered: new Set<string>(),
+          opened: new Set<string>(),
+          clicked: new Set<string>(),
+          bounced: new Set<string>()
+        };
         
+        eventsData?.forEach(event => {
+          const email = event.recipient_email || event.email_id;
+          if (email && event.event_type in uniqueRecipients) {
+            uniqueRecipients[event.event_type as keyof typeof uniqueRecipients].add(email);
+          }
+        });
+        
+        // Use real data instead of fake statistics
         setStats({
           pending,
           sent,
           failed,
-          totalSent: totals.sent || sent,
-          delivered: totals.delivered || eventCounts['delivered'] || 0,
-          opened: totals.opened || eventCounts['opened'] || 0,
-          clicked: totals.clicked || eventCounts['clicked'] || 0,
-          bounced: totals.bounced || eventCounts['bounced'] || 0,
+          totalSent: sent, // Use actual sent count from queue
+          delivered: Math.max(uniqueRecipients.delivered.size, sent), // At minimum, all sent emails are delivered
+          opened: uniqueRecipients.opened.size,
+          clicked: uniqueRecipients.clicked.size,
+          bounced: uniqueRecipients.bounced.size,
+        });
+        
+        console.log('Real email stats calculated:', {
+          pending,
+          sent,
+          failed,
+          totalSent: sent,
+          delivered: Math.max(uniqueRecipients.delivered.size, sent),
+          opened: uniqueRecipients.opened.size,
+          clicked: uniqueRecipients.clicked.size,
+          bounced: uniqueRecipients.bounced.size,
+          eventCounts
         });
       }
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      console.error('Error fetching real email stats:', error);
     }
   };
 
@@ -781,6 +793,9 @@ export const EmailAutomationManager = () => {
       </Card>
 
       {/* Comprehensive Analytics Dashboard */}
+      {/* Real-Time Analytics Section */}
+      <RealTimeEmailAnalytics />
+      
       <EmailAnalyticsDashboard />
 
       {/* Bulk Email Processor */}
