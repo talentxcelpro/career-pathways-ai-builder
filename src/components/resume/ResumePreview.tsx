@@ -1,4 +1,5 @@
 
+
 import { Card, CardContent } from "@/components/ui/card";
 
 interface ResumePreviewProps {
@@ -124,8 +125,14 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
       if (typeof skill === 'string') {
         return skill;
       } else if (skill && typeof skill === 'object') {
-        // Handle different object structures
-        return skill.skill || skill.name || skill.title || String(skill);
+        // Handle different object structures - check for all possible property names
+        const skillName = skill.skill || skill.name || skill.title || skill.skillName;
+        if (skillName && typeof skillName === 'string') {
+          return skillName;
+        }
+        // If no valid string property found, return empty string to filter out
+        console.warn('Invalid skill object structure:', skill);
+        return '';
       }
       return String(skill);
     };
@@ -136,16 +143,35 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
     
     if (Array.isArray(skills)) {
       // Skills is an array - extract skill names properly
-      technicalSkills = skills.map(extractSkillName).filter(Boolean);
-    } else if (skills.technical) {
-      // Legacy object format
-      technicalSkills = Array.isArray(skills.technical) 
-        ? skills.technical.map(extractSkillName).filter(Boolean)
-        : [];
+      technicalSkills = skills
+        .map(extractSkillName)
+        .filter(skillName => skillName && skillName.trim() !== '');
+    } else if (skills && typeof skills === 'object') {
+      // Legacy object format or enhanced skills object
+      if (skills.technical) {
+        technicalSkills = Array.isArray(skills.technical) 
+          ? skills.technical
+              .map(extractSkillName)
+              .filter(skillName => skillName && skillName.trim() !== '')
+          : [];
+      }
       
-      softSkills = Array.isArray(skills.soft) 
-        ? skills.soft.map(extractSkillName).filter(Boolean)
-        : [];
+      if (skills.soft) {
+        softSkills = Array.isArray(skills.soft) 
+          ? skills.soft
+              .map(extractSkillName)
+              .filter(skillName => skillName && skillName.trim() !== '')
+          : [];
+      }
+      
+      // Handle case where skills object contains direct skill arrays
+      if (!skills.technical && !skills.soft && Object.keys(skills).length > 0) {
+        // Treat all values as technical skills
+        technicalSkills = Object.values(skills)
+          .flat()
+          .map(extractSkillName)
+          .filter(skillName => skillName && skillName.trim() !== '');
+      }
     }
     
     if (!technicalSkills.length && !softSkills.length) return null;
@@ -256,3 +282,4 @@ export const ResumePreview = ({ content, template, fullPage = false }: ResumePre
     </div>
   );
 };
+
