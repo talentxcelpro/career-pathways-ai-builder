@@ -11629,6 +11629,7 @@ export type Database = {
           client_requirements: string | null
           contact_email: boolean | null
           contact_phone: boolean | null
+          contact_preferences: string[] | null
           contact_website: boolean | null
           created_at: string | null
           currency: string
@@ -11641,9 +11642,14 @@ export type Database = {
           payment_methods: string[] | null
           phone_number: string | null
           portfolio_files: string[] | null
+          portfolio_items: Json | null
           price: number
           professional_title: string | null
+          profile_link: string | null
+          profile_picture_url: string | null
           provider_id: string
+          reviews_count: number | null
+          status: string | null
           tags: string[] | null
           title: string
           total_orders: number | null
@@ -11658,6 +11664,7 @@ export type Database = {
           client_requirements?: string | null
           contact_email?: boolean | null
           contact_phone?: boolean | null
+          contact_preferences?: string[] | null
           contact_website?: boolean | null
           created_at?: string | null
           currency?: string
@@ -11670,9 +11677,14 @@ export type Database = {
           payment_methods?: string[] | null
           phone_number?: string | null
           portfolio_files?: string[] | null
+          portfolio_items?: Json | null
           price: number
           professional_title?: string | null
+          profile_link?: string | null
+          profile_picture_url?: string | null
           provider_id: string
+          reviews_count?: number | null
+          status?: string | null
           tags?: string[] | null
           title: string
           total_orders?: number | null
@@ -11687,6 +11699,7 @@ export type Database = {
           client_requirements?: string | null
           contact_email?: boolean | null
           contact_phone?: boolean | null
+          contact_preferences?: string[] | null
           contact_website?: boolean | null
           created_at?: string | null
           currency?: string
@@ -11699,9 +11712,14 @@ export type Database = {
           payment_methods?: string[] | null
           phone_number?: string | null
           portfolio_files?: string[] | null
+          portfolio_items?: Json | null
           price?: number
           professional_title?: string | null
+          profile_link?: string | null
+          profile_picture_url?: string | null
           provider_id?: string
+          reviews_count?: number | null
+          status?: string | null
           tags?: string[] | null
           title?: string
           total_orders?: number | null
