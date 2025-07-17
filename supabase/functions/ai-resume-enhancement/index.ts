@@ -250,7 +250,7 @@ serve(async (req) => {
 
     // Enhanced prompts based on category
     let systemPrompt = '';
-    let userPrompt = '';
+    let legacyUserPrompt = '';
 
     switch (category) {
       case 'ats':
@@ -333,7 +333,7 @@ Transform the entire resume into a compelling, professional document.`;
         systemPrompt = `You are a comprehensive resume enhancement expert. Analyze the provided content and improve it for maximum impact, ATS compatibility, and professional presentation. Focus on quantified achievements, professional language, and keyword optimization.`;
     }
 
-    userPrompt = `${prompt}\n\nResume Data:\n${resumeData}\n\nPlease enhance this resume data and return it in the exact same JSON structure. Maintain all existing sections and structure while improving the content quality.`;
+    legacyUserPrompt = `${prompt}\n\nResume Data:\n${resumeData}\n\nPlease enhance this resume data and return it in the exact same JSON structure. Maintain all existing sections and structure while improving the content quality.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -345,7 +345,7 @@ Transform the entire resume into a compelling, professional document.`;
         model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: legacyUserPrompt }
         ],
         temperature: 0.7,
         max_tokens: 4000,
