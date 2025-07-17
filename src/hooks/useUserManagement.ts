@@ -14,13 +14,18 @@ export const useUserManagement = () => {
   const { data: users, isLoading, error } = useQuery({
     queryKey: ['admin-users', searchTerm, roleFilter, statusFilter],
     queryFn: async () => {
+      // Fetch profiles with user data from auth.users
       let query = supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          email:id(email),
+          last_sign_in_at:id(last_sign_in_at)
+        `)
         .order('created_at', { ascending: false });
 
       if (searchTerm.trim()) {
-        query = query.or(`full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
+        query = query.or(`full_name.ilike.%${searchTerm}%`);
       }
 
       if (roleFilter !== 'all') {
@@ -33,12 +38,30 @@ export const useUserManagement = () => {
         query = query.eq('profile_completed', false);
       }
 
-      const { data, error } = await query.limit(50);
-      if (error) {
-        console.error('Error fetching users:', error);
-        throw error;
+      const { data: profilesData, error: profilesError } = await query.limit(50);
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        throw profilesError;
       }
-      return data || [];
+
+      // Get auth users data
+      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      if (authError) {
+        console.error('Error fetching auth users:', authError);
+      }
+
+      // Merge profile and auth data
+      const usersWithAuthData = profilesData?.map(profile => {
+        const authUser = authUsers?.users?.find((u: any) => u.id === profile.id);
+        return {
+          ...profile,
+          email: authUser?.email || 'N/A',
+          last_login_at: authUser?.last_sign_in_at || null,
+          phone: authUser?.phone || profile.phone
+        };
+      }) || [];
+
+      return usersWithAuthData;
     },
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes

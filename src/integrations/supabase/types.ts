@@ -9397,10 +9397,13 @@ export type Database = {
           resume_url: string | null
           skills: string[] | null
           social_links: Json | null
+          testimonials_count: number | null
           title: string | null
           updated_at: string | null
           user_role: Database["public"]["Enums"]["user_role"] | null
           vanity_url: string | null
+          verification_badges: Json | null
+          verification_status: string | null
           video_bio_url: string | null
           video_resume_url: string | null
           website: string | null
@@ -9459,10 +9462,13 @@ export type Database = {
           resume_url?: string | null
           skills?: string[] | null
           social_links?: Json | null
+          testimonials_count?: number | null
           title?: string | null
           updated_at?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
           vanity_url?: string | null
+          verification_badges?: Json | null
+          verification_status?: string | null
           video_bio_url?: string | null
           video_resume_url?: string | null
           website?: string | null
@@ -9521,10 +9527,13 @@ export type Database = {
           resume_url?: string | null
           skills?: string[] | null
           social_links?: Json | null
+          testimonials_count?: number | null
           title?: string | null
           updated_at?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
           vanity_url?: string | null
+          verification_badges?: Json | null
+          verification_status?: string | null
           video_bio_url?: string | null
           video_resume_url?: string | null
           website?: string | null
@@ -11524,6 +11533,59 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_testimonials: {
+        Row: {
+          created_at: string
+          id: string
+          is_featured: boolean | null
+          is_verified: boolean | null
+          rating: number
+          service_experience: string | null
+          service_id: string
+          service_order_id: string | null
+          testimonial_text: string
+          updated_at: string
+          user_id: string
+          would_recommend: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          rating: number
+          service_experience?: string | null
+          service_id: string
+          service_order_id?: string | null
+          testimonial_text: string
+          updated_at?: string
+          user_id: string
+          would_recommend?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          rating?: number
+          service_experience?: string | null
+          service_id?: string
+          service_order_id?: string | null
+          testimonial_text?: string
+          updated_at?: string
+          user_id?: string
+          would_recommend?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_service_testimonials_service_order_id"
+            columns: ["service_order_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
             referencedColumns: ["id"]
           },
         ]
@@ -13680,6 +13742,54 @@ export type Database = {
           preferences?: Json
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_verification_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          submitted_at: string
+          submitted_documents: Json | null
+          updated_at: string
+          user_id: string
+          verification_status: string
+          verification_type: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          submitted_at?: string
+          submitted_documents?: Json | null
+          updated_at?: string
+          user_id: string
+          verification_status?: string
+          verification_type: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          submitted_at?: string
+          submitted_documents?: Json | null
+          updated_at?: string
+          user_id?: string
+          verification_status?: string
+          verification_type?: string
         }
         Relationships: []
       }

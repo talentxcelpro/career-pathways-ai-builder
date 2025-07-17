@@ -52,6 +52,24 @@ export const adminRoutes = [
     description: "Manage Pro subscriptions & Elite users"
   },
   {
+    title: "Testimonials",
+    to: "/admin/testimonials",
+    icon: <MessageSquare className="h-4 w-4" />,
+    page: <TestimonialsManagement />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Manage user testimonials"
+  },
+  {
+    title: "Verification",
+    to: "/admin/verification",
+    icon: <Shield className="h-4 w-4" />,
+    page: <VerificationManagement />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Manage user verification requests"
+  },
+  {
     title: "Employer Requests",
     to: "/admin/employer-requests",
     icon: <Building2 className="h-4 w-4" />,

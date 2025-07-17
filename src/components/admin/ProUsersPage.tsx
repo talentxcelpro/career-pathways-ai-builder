@@ -135,12 +135,15 @@ export const ProUsersPage: React.FC = () => {
           <h1 className="text-3xl font-bold">Pro Users Management</h1>
           <p className="text-muted-foreground">Manage Pro subscriptions and Elite users</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Crown className="h-6 w-6 text-yellow-500" />
-          <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-            Elite Pro
-          </Badge>
-        </div>
+      <div className="flex items-center gap-2">
+        <Crown className="h-6 w-6 text-yellow-500" />
+        <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+          Elite Pro
+        </Badge>
+        <Button variant="outline" size="sm">
+          Verification Requests
+        </Button>
+      </div>
       </div>
 
       {/* Stats Cards */}
