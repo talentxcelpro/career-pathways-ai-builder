@@ -1,285 +1,176 @@
+
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Wand2, Download, Copy } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Loader2, Sparkles, RefreshCw, Copy, Check } from 'lucide-react';
 
 interface AIResumeEnhancerProps {
-  resumeData: any;
-  onEnhancementApplied: (enhancedData: any) => void;
+  resumeData?: any;
+  onEnhancementApplied?: (enhancedData: any) => void;
 }
-
-const ENHANCEMENT_PROMPTS = {
-  general: {
-    title: "🔧 General Enhancement",
-    prompts: [
-      "Enhance my resume to sound more professional and impactful.",
-      "Rewrite this resume to better highlight achievements and results.",
-      "Improve this resume for clarity, conciseness, and formatting.",
-      "Make my resume sound confident, modern, and action-driven.",
-      "Improve the grammar, vocabulary, and flow of my resume."
-    ]
-  },
-  jobSpecific: {
-    title: "🎯 Job-Specific Tailoring",
-    prompts: [
-      "Tailor my resume for a [Job Title] role at [Company Name].",
-      "Match my resume to this job description for better alignment.",
-      "Optimize this resume for a [Remote/Hybrid/Onsite] [Job Title] role.",
-      "Highlight relevant experience for this job posting.",
-      "Customize key sections for maximum job relevance."
-    ]
-  },
-  ats: {
-    title: "📈 ATS Optimization",
-    prompts: [
-      "Rewrite my resume to be ATS-friendly and keyword optimized.",
-      "Add relevant industry keywords for better ATS scoring.",
-      "Identify and fix potential ATS compatibility issues.",
-      "Score this resume for ATS compatibility and suggest fixes.",
-      "Optimize formatting and keywords for applicant tracking systems."
-    ]
-  },
-  achievements: {
-    title: "🚀 Achievement & Impact Focus",
-    prompts: [
-      "Convert responsibilities into achievement-focused bullet points.",
-      "Add quantifiable metrics to strengthen impact statements.",
-      "Rewrite experience to emphasize outcomes, not just duties.",
-      "Use the STAR method to enhance work experience descriptions.",
-      "Transform job duties into compelling accomplishment stories."
-    ]
-  },
-  fresher: {
-    title: "🎓 Fresher & Student",
-    prompts: [
-      "Help me write a compelling resume with limited work experience.",
-      "Enhance academic projects and internships for a fresher resume.",
-      "Create a strong resume summary for a recent graduate.",
-      "Suggest skills and sections to stand out as a new graduate.",
-      "Optimize resume for entry-level positions in my field."
-    ]
-  },
-  skills: {
-    title: "🧠 Skills & Strengths",
-    prompts: [
-      "Strengthen the soft skills presentation throughout this resume.",
-      "Better integrate leadership, communication, and teamwork skills.",
-      "Enhance technical skills section with proper categorization.",
-      "Improve presentation of problem-solving and analytical abilities.",
-      "Balance technical and soft skills for maximum impact."
-    ]
-  },
-  design: {
-    title: "✨ Design & Structure",
-    prompts: [
-      "Suggest better structure for a modern, professional resume.",
-      "Provide layout recommendations for optimal readability.",
-      "Optimize section ordering and content hierarchy.",
-      "Create clean, impactful one-page resume suggestions.",
-      "Improve visual flow and professional formatting."
-    ]
-  },
-  review: {
-    title: "🔍 Review & Feedback",
-    prompts: [
-      "Review this resume and provide detailed improvement suggestions.",
-      "Score this resume for tone, formatting, and clarity (0-10 scale).",
-      "Act as a recruiter and give honest feedback on this resume.",
-      "Identify weak points and suggest specific improvements.",
-      "Provide comprehensive resume critique with actionable advice."
-    ]
-  }
-};
 
 export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
   resumeData,
   onEnhancementApplied
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedPrompt, setSelectedPrompt] = useState<string>('');
-  const [customPrompt, setCustomPrompt] = useState<string>('');
-  const [jobDescription, setJobDescription] = useState<string>('');
+  const [enhancedContent, setEnhancedContent] = useState<string>('');
   const [isEnhancing, setIsEnhancing] = useState(false);
-  const [enhancedResult, setEnhancedResult] = useState<string>('');
+  const [copied, setCopied] = useState(false);
 
   const handleEnhance = async () => {
-    if (!selectedPrompt && !customPrompt) {
-      toast.error('Please select a prompt or write a custom one');
+    if (!resumeData) {
+      toast.error('Please upload or create your resume first');
       return;
     }
 
     setIsEnhancing(true);
-    
     try {
-      const promptToUse = customPrompt || selectedPrompt;
-      const resumeText = JSON.stringify(resumeData, null, 2);
+      console.log('Starting enhancement with resume data:', resumeData);
       
-      const enhancementContext = jobDescription 
-        ? `Job Description: ${jobDescription}\n\nResume to enhance: ${resumeText}`
-        : `Resume to enhance: ${resumeText}`;
+      // Convert resume data to text for enhancement
+      const resumeText = typeof resumeData === 'string' 
+        ? resumeData 
+        : JSON.stringify(resumeData);
 
       const { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: {
-          text: enhancementContext,
-          provider: 'deepseek'
+          text: resumeText,
+          provider: 'openai'
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Enhancement error:', error);
+        throw error;
+      }
 
-      setEnhancedResult(data.enhancement);
+      if (!data.success) {
+        throw new Error(data.error || 'Enhancement failed');
+      }
+
+      setEnhancedContent(data.enhancedContent);
       toast.success('Resume enhanced successfully!');
       
+      // Apply enhancement if callback provided
+      if (onEnhancementApplied) {
+        onEnhancementApplied({
+          ...resumeData,
+          enhancedContent: data.enhancedContent
+        });
+      }
+
     } catch (error) {
-      console.error('Enhancement error:', error);
-      toast.error('Failed to enhance resume. Please try again.');
+      console.error('Enhancement failed:', error);
+      toast.error(`Enhancement failed: ${error.message}`);
+      setEnhancedContent('Failed to enhance resume. Please try again.');
     } finally {
       setIsEnhancing(false);
     }
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(enhancedResult);
-    toast.success('Enhancement copied to clipboard!');
+  const handleCopy = async () => {
+    if (enhancedContent) {
+      await navigator.clipboard.writeText(enhancedContent);
+      setCopied(true);
+      toast.success('Enhanced content copied to clipboard!');
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
-  const applyEnhancement = () => {
-    try {
-      // Try to parse if it's JSON, otherwise treat as text feedback
-      let parsedEnhancement;
-      try {
-        parsedEnhancement = JSON.parse(enhancedResult);
-        onEnhancementApplied(parsedEnhancement);
-        toast.success('Enhancement applied to resume!');
-      } catch {
-        // If not JSON, show as feedback
-        toast.success('Enhancement feedback received. Please apply changes manually.');
-      }
-    } catch (error) {
-      toast.error('Failed to apply enhancement');
+  const handleApplyEnhancement = () => {
+    if (enhancedContent && onEnhancementApplied) {
+      onEnhancementApplied({
+        ...resumeData,
+        content: enhancedContent
+      });
+      toast.success('Enhancement applied to your resume!');
     }
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
+    <Card className="w-full">
+      <CardHeader>
+        <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Wand2 className="h-5 w-5" />
-            AI Resume Enhancement
+            <Sparkles className="h-5 w-5 text-purple-500" />
+            AI Resume Enhancer
           </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Category Selection */}
-          <div>
-            <label className="text-sm font-medium mb-2 block">Enhancement Category</label>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose enhancement type" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(ENHANCEMENT_PROMPTS).map(([key, category]) => (
-                  <SelectItem key={key} value={key}>
-                    {category.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Prompt Selection */}
-          {selectedCategory && (
-            <div>
-              <label className="text-sm font-medium mb-2 block">Select Enhancement Prompt</label>
-              <div className="grid gap-2">
-                {ENHANCEMENT_PROMPTS[selectedCategory as keyof typeof ENHANCEMENT_PROMPTS].prompts.map((prompt, index) => (
-                  <Badge
-                    key={index}
-                    variant={selectedPrompt === prompt ? "default" : "outline"}
-                    className="cursor-pointer p-2 text-sm justify-start h-auto"
-                    onClick={() => setSelectedPrompt(prompt)}
-                  >
-                    {prompt}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Job Description for Job-Specific Prompts */}
-          {selectedCategory === 'jobSpecific' && (
-            <div>
-              <label className="text-sm font-medium mb-2 block">Job Description (Optional)</label>
-              <Textarea
-                placeholder="Paste the job description here for better tailoring..."
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                rows={4}
-              />
-            </div>
-          )}
-
-          {/* Custom Prompt */}
-          <div>
-            <label className="text-sm font-medium mb-2 block">Custom Enhancement Prompt</label>
-            <Textarea
-              placeholder="Or write your own enhancement request..."
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-              rows={3}
-            />
-          </div>
-
-          <Button
+          <Badge variant="secondary">
+            AI-Powered
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex gap-2">
+          <Button 
             onClick={handleEnhance}
-            disabled={isEnhancing || (!selectedPrompt && !customPrompt)}
-            className="w-full"
+            disabled={isEnhancing || !resumeData}
+            className="flex-1"
           >
             {isEnhancing ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Enhancing Resume...
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Enhancing...
               </>
             ) : (
               <>
-                <Wand2 className="mr-2 h-4 w-4" />
+                <Sparkles className="h-4 w-4 mr-2" />
                 Enhance Resume
               </>
             )}
           </Button>
-        </CardContent>
-      </Card>
+          
+          {enhancedContent && (
+            <Button 
+              variant="outline" 
+              onClick={handleCopy}
+              size="icon"
+            >
+              {copied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+          )}
+        </div>
 
-      {/* Enhancement Result */}
-      {enhancedResult && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              Enhanced Resume
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={copyToClipboard}>
-                  <Copy className="h-4 w-4 mr-1" />
-                  Copy
-                </Button>
-                <Button size="sm" onClick={applyEnhancement}>
-                  <Download className="h-4 w-4 mr-1" />
-                  Apply
-                </Button>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
-              <pre className="whitespace-pre-wrap text-sm">{enhancedResult}</pre>
+        {enhancedContent && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Enhanced Content
+              </h3>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleApplyEnhancement}
+              >
+                <RefreshCw className="h-3 w-3 mr-1" />
+                Apply Enhancement
+              </Button>
             </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+            
+            <Textarea
+              value={enhancedContent}
+              onChange={(e) => setEnhancedContent(e.target.value)}
+              className="min-h-[300px] resize-none"
+              placeholder="Enhanced resume content will appear here..."
+            />
+          </div>
+        )}
+
+        {!resumeData && (
+          <div className="text-center py-8 text-muted-foreground">
+            <Sparkles className="h-12 w-12 mx-auto mb-3 opacity-50" />
+            <p>Upload or create your resume to get AI-powered enhancements</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
