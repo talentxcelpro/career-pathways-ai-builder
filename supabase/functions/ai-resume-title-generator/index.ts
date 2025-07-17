@@ -23,7 +23,22 @@ serve(async (req) => {
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       console.error('OpenAI API key not configured');
-      throw new Error('OpenAI API key not configured');
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'OpenAI API key not configured. Please contact support.',
+          titles: [],
+          recommendations: {
+            bestTitle: "Professional Resume Title",
+            alternatives: ["Configure OpenAI API key to get AI-generated titles"],
+            tips: ["Please contact support to configure the OpenAI API key"]
+          }
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     // Handle null or undefined resume data
@@ -145,7 +160,24 @@ Focus on creating titles that showcase value proposition and key strengths.`;
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenAI API error:', errorData);
-      throw new Error(`AI title generation failed: ${response.status} - ${errorData}`);
+      
+      // Return a helpful error response instead of throwing
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: `OpenAI API Error: ${response.status}`,
+          titles: [],
+          recommendations: {
+            bestTitle: "Unable to generate titles",
+            alternatives: ["Please try again later", "Check your OpenAI API configuration"],
+            tips: ["This appears to be a temporary service issue"]
+          }
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     const data = await response.json();
@@ -159,7 +191,24 @@ Focus on creating titles that showcase value proposition and key strengths.`;
     } catch (parseError) {
       console.error('Failed to parse AI response as JSON:', parseError);
       console.log('Raw AI response:', titleData);
-      throw new Error('AI returned invalid JSON format');
+      
+      // Return a fallback response instead of throwing
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Failed to parse AI response',
+          titles: [],
+          recommendations: {
+            bestTitle: "Unable to generate titles",
+            alternatives: ["Please try again", "The AI response format was invalid"],
+            tips: ["This appears to be a temporary AI service issue"]
+          }
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     console.log('Title generation completed successfully');
@@ -176,8 +225,14 @@ Focus on creating titles that showcase value proposition and key strengths.`;
     console.error('Error in AI title generation:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        success: false 
+        success: false,
+        error: 'Service temporarily unavailable',
+        titles: [],
+        recommendations: {
+          bestTitle: "Service Error",
+          alternatives: ["Please try again in a few moments"],
+          tips: ["This appears to be a temporary service issue"]
+        }
       }),
       { 
         status: 500,

@@ -23,7 +23,45 @@ serve(async (req) => {
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       console.error('OpenAI API key not configured');
-      throw new Error('OpenAI API key not configured');
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'OpenAI API key not configured. Please contact support.',
+          atsScore: 0,
+          keywordAnalysis: {
+            matched: [],
+            missing: [],
+            density: 0,
+            distribution: "api_key_missing"
+          },
+          recommendations: [{
+            keyword: "API Configuration Required",
+            priority: "high",
+            suggestion: "Please contact support to configure OpenAI API key",
+            naturalIntegration: "API key configuration needed for keyword optimization",
+            section: "system"
+          }],
+          optimizedSections: {
+            summary: "OpenAI API key required for optimization",
+            skills: "API key configuration needed",
+            experience: "Please contact support for API setup"
+          },
+          industryKeywords: {
+            technical: [],
+            soft: [],
+            industry: []
+          },
+          improvementTips: [
+            "Please contact support to configure the OpenAI API key",
+            "This service requires proper API configuration",
+            "Once configured, you'll get detailed keyword optimization"
+          ]
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     // Handle null or undefined resume content
@@ -162,7 +200,46 @@ Focus on helping the candidate match job requirements while maintaining authenti
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenAI API error:', errorData);
-      throw new Error(`AI keyword optimization failed: ${response.status} - ${errorData}`);
+      
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: `OpenAI API Error: ${response.status}`,
+          atsScore: 0,
+          keywordAnalysis: {
+            matched: [],
+            missing: [],
+            density: 0,
+            distribution: "api_error"
+          },
+          recommendations: [{
+            keyword: "Service Error",
+            priority: "high",
+            suggestion: "Please try again later",
+            naturalIntegration: "OpenAI API service is temporarily unavailable",
+            section: "system"
+          }],
+          optimizedSections: {
+            summary: "Service temporarily unavailable",
+            skills: "Please try again",
+            experience: "OpenAI API error occurred"
+          },
+          industryKeywords: {
+            technical: [],
+            soft: [],
+            industry: []
+          },
+          improvementTips: [
+            "Please try again in a few moments",
+            "This appears to be a temporary service issue",
+            "Check your internet connection"
+          ]
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     const data = await response.json();
@@ -176,7 +253,46 @@ Focus on helping the candidate match job requirements while maintaining authenti
     } catch (parseError) {
       console.error('Failed to parse AI response as JSON:', parseError);
       console.log('Raw AI response:', optimizationData);
-      throw new Error('AI returned invalid JSON format');
+      
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Failed to parse AI response',
+          atsScore: 0,
+          keywordAnalysis: {
+            matched: [],
+            missing: [],
+            density: 0,
+            distribution: "parse_error"
+          },
+          recommendations: [{
+            keyword: "Parse Error",
+            priority: "high",
+            suggestion: "Please try again",
+            naturalIntegration: "AI response format was invalid",
+            section: "system"
+          }],
+          optimizedSections: {
+            summary: "Unable to parse AI response",
+            skills: "Please try again",
+            experience: "AI response format error"
+          },
+          industryKeywords: {
+            technical: [],
+            soft: [],
+            industry: []
+          },
+          improvementTips: [
+            "Please try again",
+            "This appears to be a temporary AI service issue",
+            "The AI response format was invalid"
+          ]
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     console.log('Keyword optimization completed successfully');
@@ -193,8 +309,37 @@ Focus on helping the candidate match job requirements while maintaining authenti
     console.error('Error in AI keyword optimization:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        success: false 
+        success: false,
+        error: 'Service temporarily unavailable',
+        atsScore: 0,
+        keywordAnalysis: {
+          matched: [],
+          missing: [],
+          density: 0,
+          distribution: "service_error"
+        },
+        recommendations: [{
+          keyword: "Service Error",
+          priority: "high",
+          suggestion: "Please try again in a few moments",
+          naturalIntegration: "Service is temporarily unavailable",
+          section: "system"
+        }],
+        optimizedSections: {
+          summary: "Service temporarily unavailable",
+          skills: "Please try again later",
+          experience: "Service error occurred"
+        },
+        industryKeywords: {
+          technical: [],
+          soft: [],
+          industry: []
+        },
+        improvementTips: [
+          "Please try again in a few moments",
+          "This appears to be a temporary service issue",
+          "Check your internet connection and try again"
+        ]
       }),
       { 
         status: 500,

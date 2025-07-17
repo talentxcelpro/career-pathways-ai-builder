@@ -1,10 +1,25 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Bot, User, Wand2, Target, RefreshCw, Wifi, WifiOff, AlertCircle } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { 
+  MessageCircle, 
+  Send, 
+  Sparkles, 
+  Target, 
+  User, 
+  Bot, 
+  Upload, 
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  RefreshCw,
+  Wifi,
+  WifiOff
+} from 'lucide-react';
 import { useAIResumeEnhancements } from '@/hooks/useAIResumeEnhancements';
 import { toast } from 'sonner';
 
@@ -15,61 +30,53 @@ interface ChatGPTStyleInterfaceProps {
 
 interface Message {
   id: string;
-  type: 'user' | 'assistant';
+  type: 'user' | 'ai';
   content: string;
   timestamp: Date;
-  status?: 'sending' | 'success' | 'error';
-  action?: string;
+  status?: 'sending' | 'sent' | 'failed';
+  data?: any;
 }
-
-const QUICK_ACTIONS = [
-  { id: 'create-headline', label: 'create headline', icon: Target },
-  { id: 'optimize-keywords', label: 'optimize keywords', icon: Wand2 },
-];
 
 export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
   resumeData,
   onEnhancementApplied
 }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isConnected, setIsConnected] = useState(navigator.onLine);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      type: 'ai',
+      content: "👋 Hi! I'm your AI Resume Assistant. I can help you create headlines and optimize keywords for your resume. What would you like to work on today?",
+      timestamp: new Date(),
+      status: 'sent'
+    }
+  ]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  const {
-    generateSmartTitles,
-    isGeneratingTitles,
-    optimizeKeywords,
-    isOptimizingKeywords,
-  } = useAIResumeEnhancements();
 
-  // Monitor network connectivity
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsConnected(true);
-      toast.success('Connection restored!');
-    };
-    
-    const handleOffline = () => {
-      setIsConnected(false);
-      toast.error('Connection lost. Please check your internet connection.');
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
+  const { generateSmartTitles, optimizeKeywords, isGeneratingTitles, isOptimizingKeywords } = useAIResumeEnhancements();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const addMessage = (message: Omit<Message, 'id' | 'timestamp'>) => {
     const newMessage: Message = {
@@ -82,269 +89,290 @@ export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
   };
 
   const updateMessage = (id: string, updates: Partial<Message>) => {
-    setMessages(prev => 
-      prev.map(msg => msg.id === id ? { ...msg, ...updates } : msg)
-    );
+    setMessages(prev => prev.map(msg => 
+      msg.id === id ? { ...msg, ...updates } : msg
+    ));
   };
 
-  const handleQuickAction = async (actionId: string) => {
-    if (!isConnected) {
-      toast.error('No internet connection. Please check your connection and try again.');
+  const handleQuickAction = async (action: string) => {
+    if (!isOnline) {
+      toast.error('You appear to be offline. Please check your internet connection.');
       return;
     }
 
     const userMessageId = addMessage({
       type: 'user',
-      content: QUICK_ACTIONS.find(a => a.id === actionId)?.label || actionId,
-      action: actionId
+      content: action,
+      status: 'sent'
     });
 
-    let assistantMessageId: string;
+    let aiMessageId = '';
+    
+    if (action === 'create headline') {
+      aiMessageId = addMessage({
+        type: 'ai',
+        content: '✨ Generating smart resume titles for you...',
+        status: 'sending'
+      });
 
-    try {
-      if (actionId === 'create-headline') {
-        assistantMessageId = addMessage({
-          type: 'assistant',
-          content: '🎯 Generating smart resume headlines...',
-          status: 'sending'
-        });
-
+      try {
         const result = await generateSmartTitles(resumeData);
         
-        if (result && result.titles) {
-          const titles = result.titles.slice(0, 3);
-          const content = `✨ **Generated Resume Headlines**
+        if (result && result.titles && result.titles.length > 0) {
+          const titlesList = result.titles.map((title, index) => 
+            `${index + 1}. **${title.title}** (ATS Score: ${title.atsScore})\n   *${title.reasoning}*`
+          ).join('\n\n');
 
-${titles.map((title, index) => `**${index + 1}. ${title.title}**
-*ATS Score: ${title.atsScore}% | Keywords: ${title.keywords.join(', ')}*
-${title.reasoning}
-`).join('\n')}
-
-💡 **Recommendation:** ${result.recommendations.bestTitle}
-
-${result.recommendations.tips.map(tip => `• ${tip}`).join('\n')}`;
-
-          updateMessage(assistantMessageId, { 
-            content, 
-            status: 'success' 
+          const content = `🎯 **Generated Resume Titles:**\n\n${titlesList}\n\n**💡 Recommendation:** ${result.recommendations.bestTitle}\n\n**📋 Tips:**\n${result.recommendations.tips.map(tip => `• ${tip}`).join('\n')}`;
+          
+          updateMessage(aiMessageId, {
+            content,
+            status: 'sent',
+            data: result
           });
         } else {
           throw new Error('No titles generated');
         }
-        
-      } else if (actionId === 'optimize-keywords') {
-        assistantMessageId = addMessage({
-          type: 'assistant',
-          content: '📈 Optimizing keywords for ATS compatibility...',
-          status: 'sending'
+      } catch (error) {
+        console.error('Title generation error:', error);
+        updateMessage(aiMessageId, {
+          content: `❌ **Enhancement Failed**\n\nI encountered an issue generating headlines.\n\n🔄 **You can try again** - this might be a temporary issue.\n\n**Issue:** ${error instanceof Error ? error.message : 'Title generation failed'}\n**Solution:** ${!isOnline ? 'Please check your internet connection.' : 'Please try again. If the problem persists, the service may be restarting.'}`,
+          status: 'failed'
         });
+      }
+    } else if (action === 'optimize keywords') {
+      aiMessageId = addMessage({
+        type: 'ai',
+        content: '📈 Optimizing keywords for ATS compatibility...',
+        status: 'sending'
+      });
 
+      try {
         const result = await optimizeKeywords(resumeData);
         
         if (result) {
-          const content = `📊 **ATS Keyword Analysis**
-
-**Overall ATS Score: ${result.atsScore}%**
-
-**Matched Keywords:** ${result.keywordAnalysis.matched.length > 0 ? result.keywordAnalysis.matched.join(', ') : 'Upload resume for analysis'}
-
-**Missing Keywords:** ${result.keywordAnalysis.missing.length > 0 ? result.keywordAnalysis.missing.slice(0, 5).join(', ') : 'Add resume content for recommendations'}
-
-**Top Recommendations:**
-${result.recommendations.slice(0, 3).map((rec, index) => `${index + 1}. **${rec.keyword}** (${rec.priority} priority)
-   ${rec.suggestion}`).join('\n')}
-
-**Improvement Tips:**
-${result.improvementTips.slice(0, 3).map(tip => `• ${tip}`).join('\n')}`;
-
-          updateMessage(assistantMessageId, { 
-            content, 
-            status: 'success' 
+          const content = `📊 **Keyword Optimization Complete**\n\n**ATS Score:** ${result.atsScore}/100\n\n**🎯 Key Recommendations:**\n${result.recommendations.slice(0, 3).map((rec, index) => `${index + 1}. Add **${rec.keyword}** to your ${rec.section} section\n   *${rec.suggestion}*`).join('\n\n')}\n\n**📈 Improvement Tips:**\n${result.improvementTips.slice(0, 3).map(tip => `• ${tip}`).join('\n')}`;
+          
+          updateMessage(aiMessageId, {
+            content,
+            status: 'sent',
+            data: result
           });
         } else {
-          throw new Error('Failed to optimize keywords');
+          throw new Error('Keyword optimization failed');
         }
-      }
-    } catch (error) {
-      console.error('Action failed:', error);
-      
-      let errorMessage = '❌ **Enhancement Failed**\n\nI encountered an issue ';
-      let solution = '';
-      
-      if (!isConnected) {
-        errorMessage += 'due to connection issues.';
-        solution = 'Please check your internet connection and try again.';
-      } else if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
-        errorMessage += 'connecting to AI services.';
-        solution = 'Please check your internet connection. If the problem persists, the service may be restarting.';
-      } else if (error.message.includes('API key')) {
-        errorMessage += 'with AI service configuration.';
-        solution = 'The AI service needs to be configured. Please contact support.';
-      } else {
-        errorMessage += `processing your request.`;
-        solution = 'Please try again. If the problem continues, this might be a temporary service issue.';
-      }
-
-      const fullErrorMessage = `${errorMessage}
-
-🔄 **You can try again** - this might be a temporary issue.
-
-**Issue:** ${error.message.includes('Unable to connect') ? 'Unable to connect to AI service' : error.message}
-**Solution:** ${solution}`;
-
-      if (assistantMessageId!) {
-        updateMessage(assistantMessageId, { 
-          content: fullErrorMessage, 
-          status: 'error' 
-        });
-      } else {
-        addMessage({
-          type: 'assistant',
-          content: fullErrorMessage,
-          status: 'error'
+      } catch (error) {
+        console.error('Keyword optimization error:', error);
+        updateMessage(aiMessageId, {
+          content: `❌ **Keyword Optimization Failed**\n\nI encountered an issue optimizing keywords.\n\n🔄 **You can try again** - this might be a temporary issue.\n\n**Issue:** ${error instanceof Error ? error.message : 'Unable to connect to AI service'}\n**Solution:** ${!isOnline ? 'Please check your internet connection.' : 'Please try again. If the problem persists, the service may be restarting.'}`,
+          status: 'failed'
         });
       }
     }
   };
 
-  const ConnectionStatus = () => (
-    <div className="flex items-center gap-2 text-sm">
-      {isConnected ? (
-        <>
-          <Wifi className="h-4 w-4 text-green-500" />
-          <span className="text-green-600">Connected to AI services</span>
-        </>
-      ) : (
-        <>
-          <WifiOff className="h-4 w-4 text-red-500" />
-          <span className="text-red-600">No internet connection</span>
-        </>
-      )}
-    </div>
-  );
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim() || !isOnline) {
+      if (!isOnline) {
+        toast.error('You appear to be offline. Please check your internet connection.');
+      }
+      return;
+    }
 
-  const MessageComponent = ({ message }: { message: Message }) => (
-    <div className={`flex gap-3 p-4 ${message.type === 'user' ? 'bg-blue-50' : 'bg-white'}`}>
-      <div className="flex-shrink-0">
-        {message.type === 'user' ? (
-          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-            <User className="h-4 w-4 text-white" />
-          </div>
+    const userMessageId = addMessage({
+      type: 'user',
+      content: inputMessage,
+      status: 'sent'
+    });
+
+    setInputMessage('');
+    setIsTyping(true);
+
+    // Simulate AI response
+    setTimeout(() => {
+      addMessage({
+        type: 'ai',
+        content: "I understand you'd like help with your resume. You can use the quick action buttons above to generate headlines or optimize keywords, or feel free to ask me any specific questions about your resume!",
+        status: 'sent'
+      });
+      setIsTyping(false);
+    }, 1000);
+  };
+
+  const formatMessage = (content: string) => {
+    return content.split('\n').map((line, index) => (
+      <div key={index} className="mb-1">
+        {line.startsWith('**') && line.endsWith('**') ? (
+          <strong className="text-gray-900">{line.slice(2, -2)}</strong>
+        ) : line.startsWith('*') && line.endsWith('*') ? (
+          <em className="text-gray-600">{line.slice(1, -1)}</em>
         ) : (
-          <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-            <Bot className="h-4 w-4 text-white" />
-          </div>
+          line
         )}
       </div>
-      
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="font-medium text-sm">
-            {message.type === 'user' ? 'You' : 'AI Resume Assistant'}
-          </span>
-          <span className="text-xs text-gray-500">
-            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </span>
-          {message.status === 'sending' && (
-            <RefreshCw className="h-3 w-3 animate-spin text-blue-500" />
-          )}
-          {message.status === 'error' && (
-            <AlertCircle className="h-3 w-3 text-red-500" />
-          )}
-        </div>
-        
-        <div className="prose prose-sm max-w-none">
-          {message.content.split('\n').map((line, index) => {
-            if (line.startsWith('**') && line.endsWith('**')) {
-              return <div key={index} className="font-semibold mt-2 mb-1">{line.slice(2, -2)}</div>;
-            }
-            if (line.startsWith('*') && line.endsWith('*')) {
-              return <div key={index} className="text-sm text-gray-600 italic">{line.slice(1, -1)}</div>;
-            }
-            if (line.startsWith('•')) {
-              return <div key={index} className="text-sm ml-4">{line}</div>;
-            }
-            return line ? <div key={index} className="text-sm">{line}</div> : <br key={index} />;
-          })}
-        </div>
-      </div>
-    </div>
-  );
+    ));
+  };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col h-screen bg-gray-50">
       {/* Header */}
-      <div className="p-4 border-b bg-white">
+      <div className="bg-white border-b border-gray-200 p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-              <Bot className="h-5 w-5 text-white" />
+          <div className="flex items-center space-x-3">
+            <div className="bg-blue-100 p-2 rounded-lg">
+              <Bot className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h2 className="font-semibold">AI Resume Assistant</h2>
-              <ConnectionStatus />
+              <h1 className="text-lg font-semibold text-gray-900">AI Resume Assistant</h1>
+              <div className="flex items-center space-x-2">
+                {isOnline ? (
+                  <>
+                    <Wifi className="h-4 w-4 text-green-500" />
+                    <span className="text-sm text-green-600">Connected to AI services</span>
+                  </>
+                ) : (
+                  <>
+                    <WifiOff className="h-4 w-4 text-red-500" />
+                    <span className="text-sm text-red-600">Offline - Check your connection</span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
+          <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+            Pro Features
+          </Badge>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="p-4 bg-gray-50 border-b">
-        <div className="flex gap-2 flex-wrap">
-          {QUICK_ACTIONS.map((action) => {
-            const Icon = action.icon;
-            const isLoading = (action.id === 'create-headline' && isGeneratingTitles) || 
-                             (action.id === 'optimize-keywords' && isOptimizingKeywords);
-            
-            return (
-              <Button
-                key={action.id}
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickAction(action.id)}
-                disabled={isLoading || !isConnected}
-                className="flex items-center gap-2"
-              >
-                {isLoading ? (
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Icon className="h-4 w-4" />
-                )}
-                {action.label}
-              </Button>
-            );
-          })}
+      <div className="bg-white border-b border-gray-200 p-4">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleQuickAction('create headline')}
+            disabled={isGeneratingTitles || !isOnline}
+            className="flex items-center space-x-2"
+          >
+            {isGeneratingTitles ? (
+              <RefreshCw className="h-4 w-4 animate-spin" />
+            ) : (
+              <Target className="h-4 w-4" />
+            )}
+            <span>create headline</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleQuickAction('optimize keywords')}
+            disabled={isOptimizingKeywords || !isOnline}
+            className="flex items-center space-x-2"
+          >
+            {isOptimizingKeywords ? (
+              <RefreshCw className="h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="h-4 w-4" />
+            )}
+            <span>optimize keywords</span>
+          </Button>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto">
-        {messages.length === 0 ? (
-          <div className="h-full flex items-center justify-center p-8">
-            <div className="text-center max-w-md">
-              <Bot className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Welcome to AI Resume Assistant</h3>
-              <p className="text-gray-600 mb-4">
-                I can help you create compelling headlines and optimize your resume for ATS systems. 
-                Choose a quick action above to get started!
-              </p>
-              {!resumeData && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                  <p className="text-sm text-yellow-800">
-                    💡 Upload your resume for personalized AI recommendations
-                  </p>
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <Card className={`max-w-[80%] ${message.type === 'user' ? 'bg-blue-600 text-white' : 'bg-white'}`}>
+              <CardContent className="p-4">
+                <div className="flex items-start space-x-3">
+                  {message.type === 'ai' && (
+                    <div className="bg-blue-100 p-1 rounded-full flex-shrink-0">
+                      <Bot className="h-4 w-4 text-blue-600" />
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <div className={`text-sm ${message.type === 'user' ? 'text-white' : 'text-gray-900'}`}>
+                      {formatMessage(message.content)}
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className={`text-xs ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
+                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                      {message.status && (
+                        <div className="flex items-center space-x-1">
+                          {message.status === 'sending' && (
+                            <RefreshCw className="h-3 w-3 animate-spin" />
+                          )}
+                          {message.status === 'sent' && (
+                            <CheckCircle className="h-3 w-3 text-green-500" />
+                          )}
+                          {message.status === 'failed' && (
+                            <AlertCircle className="h-3 w-3 text-red-500" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
+              </CardContent>
+            </Card>
           </div>
-        ) : (
-          <div className="divide-y">
-            {messages.map((message) => (
-              <MessageComponent key={message.id} message={message} />
-            ))}
+        ))}
+        
+        {isTyping && (
+          <div className="flex justify-start">
+            <Card className="bg-white">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-blue-100 p-1 rounded-full">
+                    <Bot className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
+        
         <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input */}
+      <div className="bg-white border-t border-gray-200 p-4">
+        <div className="flex items-center space-x-3">
+          <div className="flex-1">
+            <Input
+              placeholder={isOnline ? "Ask me anything about your resume..." : "You appear to be offline..."}
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              disabled={!isOnline}
+              className="border-gray-300 focus:border-blue-500"
+            />
+          </div>
+          <Button
+            onClick={handleSendMessage}
+            disabled={!inputMessage.trim() || !isOnline}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        {!isOnline && (
+          <div className="mt-2 text-sm text-red-600 flex items-center">
+            <WifiOff className="h-4 w-4 mr-1" />
+            Please check your internet connection to use AI features.
+          </div>
+        )}
       </div>
     </div>
   );
