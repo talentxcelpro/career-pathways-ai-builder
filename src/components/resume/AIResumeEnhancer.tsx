@@ -30,6 +30,8 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
     setIsEnhancing(true);
     try {
       console.log('Starting enhancement with resume data:', resumeData);
+      console.log('Resume data type:', typeof resumeData);
+      console.log('Resume data keys:', resumeData ? Object.keys(resumeData) : 'null');
       
       // Convert resume data to text for enhancement
       let resumeText = '';
@@ -38,12 +40,19 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
         resumeText = resumeData;
       } else if (resumeData && typeof resumeData === 'object') {
         // Convert structured resume data to text
-        resumeText = JSON.stringify(resumeData);
+        resumeText = JSON.stringify(resumeData, null, 2);
       } else {
-        throw new Error('Invalid resume data format');
+        throw new Error('Invalid resume data format - data is null or undefined');
       }
 
-      console.log('Sending resume text for enhancement, length:', resumeText.length);
+      console.log('Converted resume text preview:', resumeText.substring(0, 200) + '...');
+      console.log('Resume text length:', resumeText.length);
+
+      if (!resumeText || resumeText.trim() === '' || resumeText === 'null' || resumeText === '{}') {
+        throw new Error('Resume content is empty. Please add some content to your resume first.');
+      }
+
+      console.log('Calling enhance-resume function...');
 
       const { data, error } = await supabase.functions.invoke('enhance-resume', {
         body: {
@@ -55,7 +64,7 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
       console.log('Enhancement response:', { data, error });
 
       if (error) {
-        console.error('Enhancement error:', error);
+        console.error('Enhancement error details:', error);
         throw new Error(error.message || 'Enhancement request failed');
       }
 
@@ -64,13 +73,15 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
       }
 
       if (!data.success) {
+        console.error('Enhancement failed with data:', data);
         throw new Error(data.error || 'Enhancement failed');
       }
 
       if (!data.enhancedContent) {
-        throw new Error('No enhanced content returned');
+        throw new Error('No enhanced content returned from service');
       }
 
+      console.log('Enhancement successful, content length:', data.enhancedContent.length);
       setEnhancedContent(data.enhancedContent);
       toast.success('Resume enhanced successfully!');
       
@@ -83,10 +94,19 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
       }
 
     } catch (error: any) {
-      console.error('Enhancement failed:', error);
-      const errorMessage = error.message || 'Unknown error occurred';
+      console.error('Enhancement failed with error:', error);
+      console.error('Error stack:', error.stack);
+      
+      let errorMessage = 'Unknown error occurred';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
       toast.error(`Enhancement failed: ${errorMessage}`);
-      setEnhancedContent(`Enhancement failed: ${errorMessage}. Please try again.`);
+      setEnhancedContent(`Enhancement failed: ${errorMessage}. Please try again or check your resume content.`);
     } finally {
       setIsEnhancing(false);
     }
@@ -127,6 +147,11 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
             AI-Powered
           </Badge>
         </div>
+        {resumeData && (
+          <p className="text-sm text-muted-foreground">
+            Resume data detected: {typeof resumeData === 'object' ? Object.keys(resumeData).length + ' sections' : 'text content'}
+          </p>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-2">
@@ -194,6 +219,7 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
           <div className="text-center py-8 text-muted-foreground">
             <Sparkles className="h-12 w-12 mx-auto mb-3 opacity-50" />
             <p>Upload or create your resume to get AI-powered enhancements</p>
+            <p className="text-xs mt-2">The AI will help optimize your resume for ATS systems and improve professional presentation</p>
           </div>
         )}
       </CardContent>
