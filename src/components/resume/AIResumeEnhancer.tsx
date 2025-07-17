@@ -21,6 +21,10 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Constants for direct fetch fallback
+  const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+
   const handleEnhance = async () => {
     if (!resumeData) {
       toast.error('Please upload or create your resume first');
@@ -30,8 +34,6 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
     setIsEnhancing(true);
     try {
       console.log('Starting enhancement with resume data:', resumeData);
-      console.log('Resume data type:', typeof resumeData);
-      console.log('Resume data keys:', resumeData ? Object.keys(resumeData) : 'null');
       
       // Convert resume data to text for enhancement
       let resumeText = '';
@@ -45,27 +47,55 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
         throw new Error('Invalid resume data format - data is null or undefined');
       }
 
-      console.log('Converted resume text preview:', resumeText.substring(0, 200) + '...');
       console.log('Resume text length:', resumeText.length);
 
       if (!resumeText || resumeText.trim() === '' || resumeText === 'null' || resumeText === '{}') {
         throw new Error('Resume content is empty. Please add some content to your resume first.');
       }
 
-      console.log('Calling enhance-resume function...');
+      const requestBody = {
+        text: resumeText,
+        provider: 'openai'
+      };
 
-      const { data, error } = await supabase.functions.invoke('enhance-resume', {
-        body: {
-          text: resumeText,
-          provider: 'openai'
-        }
+      console.log('Attempting enhancement with Supabase client...');
+
+      // First try with Supabase client
+      let { data, error } = await supabase.functions.invoke('enhance-resume', {
+        body: requestBody
       });
 
-      console.log('Enhancement response:', { data, error });
+      // If Supabase client fails, try direct fetch
+      if (error && error.message?.includes('Failed to send a request')) {
+        console.log('Supabase client failed, trying direct fetch...');
+        
+        try {
+          const response = await fetch(`${SUPABASE_URL}/functions/v1/enhance-resume`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+              'apikey': SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          data = await response.json();
+          error = null;
+          console.log('Direct fetch successful');
+        } catch (fetchError) {
+          console.error('Direct fetch also failed:', fetchError);
+          throw new Error(`Network request failed: ${fetchError.message}`);
+        }
+      }
 
       if (error) {
-        console.error('Enhancement error details:', error);
-        throw new Error(error.message || 'Enhancement request failed');
+        console.error('Enhancement error:', error);
+        throw new Error(`Enhancement failed: ${error.message || 'Unknown error'}`);
       }
 
       if (!data) {
@@ -95,7 +125,6 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
 
     } catch (error: any) {
       console.error('Enhancement failed with error:', error);
-      console.error('Error stack:', error.stack);
       
       let errorMessage = 'Unknown error occurred';
       
@@ -106,7 +135,7 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
       }
       
       toast.error(`Enhancement failed: ${errorMessage}`);
-      setEnhancedContent(`Enhancement failed: ${errorMessage}. Please try again or check your resume content.`);
+      setEnhancedContent(`Enhancement failed: ${errorMessage}. Please try again or check your internet connection.`);
     } finally {
       setIsEnhancing(false);
     }
