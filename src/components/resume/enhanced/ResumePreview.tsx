@@ -4,18 +4,28 @@ import { Card } from "@/components/ui/card";
 import { ResumePreview as BaseResumePreview } from "@/components/resume/ResumePreview";
 
 interface ResumePreviewProps {
-  data: any;
+  data?: any;
+  content?: any;
   template?: any;
+  fullPage?: boolean;
 }
 
-export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template }) => {
+export const ResumePreview: React.FC<ResumePreviewProps> = ({ 
+  data, 
+  content, 
+  template, 
+  fullPage 
+}) => {
+  // Use either data or content as the resume data
+  const resumeData = data || content;
+  
   return (
     <Card className="h-fit">
       <div className="p-6">
         <h3 className="text-lg font-semibold mb-4">Preview</h3>
         <div className="border rounded-lg overflow-hidden">
           <BaseResumePreview 
-            data={data}
+            data={resumeData}
           />
         </div>
       </div>
