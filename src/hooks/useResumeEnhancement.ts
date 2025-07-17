@@ -13,6 +13,10 @@ export const useResumeEnhancement = () => {
   const [enhancementProgress, setEnhancementProgress] = useState(0);
   
   const parser = new ResumeSectionParser();
+  
+  // API constants
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+  const FUNCTION_URL = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-resume-enhancement';
 
   const enhanceResumeText = async (
     text: string, 
@@ -41,7 +45,7 @@ export const useResumeEnhancement = () => {
       // Step 3: Enhance via AI
       setEnhancementProgress(60);
       
-      console.log('Calling enhance-resume function with data:', {
+      console.log('Calling ai-resume-enhancement function with data:', {
         summary: cleanedSections.summary ? cleanedSections.summary.substring(0, 100) + '...' : 'empty',
         experience: cleanedSections.experience ? cleanedSections.experience.substring(0, 100) + '...' : 'empty',
         skills: cleanedSections.skills ? cleanedSections.skills.substring(0, 100) + '...' : 'empty',
@@ -49,12 +53,44 @@ export const useResumeEnhancement = () => {
         sectionType: options.sectionType === 'all' ? undefined : options.sectionType
       });
       
-      const { data, error } = await supabase.functions.invoke('enhance-resume', {
+      // Enhanced request with fallback and proper function name
+      let { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
         body: {
           ...cleanedSections,
-          sectionType: options.sectionType === 'all' ? undefined : options.sectionType
+          sectionType: options.sectionType === 'all' ? undefined : options.sectionType,
+          enhancementType: options.enhancementType || 'general'
         }
       });
+
+      // Direct fetch fallback if Supabase client fails
+      if (error && error.message?.includes('Failed to send a request')) {
+        console.warn('Supabase client failed, attempting direct fetch...');
+        try {
+          const response = await fetch(FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+              'apikey': SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              ...cleanedSections,
+              sectionType: options.sectionType === 'all' ? undefined : options.sectionType,
+              enhancementType: options.enhancementType || 'general'
+            })
+          });
+
+          if (response.ok) {
+            data = await response.json();
+            error = null;
+            console.log('✅ Direct fetch fallback successful');
+          } else {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+        } catch (fetchError) {
+          console.error('❌ Both Supabase client and direct fetch failed:', fetchError);
+        }
+      }
 
       if (error) {
         console.error('Enhancement error:', error);
@@ -120,12 +156,44 @@ export const useResumeEnhancement = () => {
       
       const cleanedContent = parser.cleanSectionContent(sectionContent);
       
-      const { data, error } = await supabase.functions.invoke('enhance-resume', {
+      // Enhanced request with fallback and proper function name
+      let { data, error } = await supabase.functions.invoke('ai-resume-enhancement', {
         body: {
           [sectionType]: cleanedContent,
-          sectionType
+          sectionType,
+          enhancementType: 'section_specific'
         }
       });
+
+      // Direct fetch fallback if Supabase client fails
+      if (error && error.message?.includes('Failed to send a request')) {
+        console.warn('Supabase client failed, attempting direct fetch...');
+        try {
+          const response = await fetch(FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+              'apikey': SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              [sectionType]: cleanedContent,
+              sectionType,
+              enhancementType: 'section_specific'
+            })
+          });
+
+          if (response.ok) {
+            data = await response.json();
+            error = null;
+            console.log('✅ Direct fetch fallback successful for section');
+          } else {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+        } catch (fetchError) {
+          console.error('❌ Both Supabase client and direct fetch failed for section:', fetchError);
+        }
+      }
 
       if (error) {
         console.error('Section enhancement error:', error);
