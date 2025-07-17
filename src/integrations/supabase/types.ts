@@ -11527,9 +11527,42 @@ export type Database = {
           total_amount?: number
           updated_at?: string
         }
+        Relationships: []
+      }
+      service_reviews: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_verified: boolean | null
+          rating: number
+          review_text: string | null
+          reviewer_id: string
+          service_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_verified?: boolean | null
+          rating: number
+          review_text?: string | null
+          reviewer_id: string
+          service_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_verified?: boolean | null
+          rating?: number
+          review_text?: string | null
+          reviewer_id?: string
+          service_id?: string
+          updated_at?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "service_orders_service_id_fkey"
+            foreignKeyName: "service_reviews_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
@@ -11592,79 +11625,91 @@ export type Database = {
       }
       services: {
         Row: {
-          base_price: number
-          category: string
-          created_at: string
+          average_rating: number | null
+          client_requirements: string | null
+          contact_email: boolean | null
+          contact_phone: boolean | null
+          contact_website: boolean | null
+          created_at: string | null
           currency: string
           delivery_time_days: number
           description: string
           id: string
           is_active: boolean | null
           is_featured: boolean | null
-          orders_completed: number | null
-          portfolio_items: Json | null
-          price_type: string
+          location: string | null
+          payment_methods: string[] | null
+          phone_number: string | null
+          portfolio_files: string[] | null
+          price: number
+          professional_title: string | null
           provider_id: string
-          rating: number | null
-          requirements: string | null
-          reviews_count: number | null
-          service_type: string
-          skills_offered: string[]
-          subcategory: string | null
           tags: string[] | null
           title: string
-          updated_at: string
-          what_included: string[] | null
+          total_orders: number | null
+          total_reviews: number | null
+          updated_at: string | null
+          website_url: string | null
+          whats_included: string[] | null
+          years_experience: string | null
         }
         Insert: {
-          base_price: number
-          category: string
-          created_at?: string
+          average_rating?: number | null
+          client_requirements?: string | null
+          contact_email?: boolean | null
+          contact_phone?: boolean | null
+          contact_website?: boolean | null
+          created_at?: string | null
           currency?: string
           delivery_time_days?: number
           description: string
           id?: string
           is_active?: boolean | null
           is_featured?: boolean | null
-          orders_completed?: number | null
-          portfolio_items?: Json | null
-          price_type: string
+          location?: string | null
+          payment_methods?: string[] | null
+          phone_number?: string | null
+          portfolio_files?: string[] | null
+          price: number
+          professional_title?: string | null
           provider_id: string
-          rating?: number | null
-          requirements?: string | null
-          reviews_count?: number | null
-          service_type: string
-          skills_offered?: string[]
-          subcategory?: string | null
           tags?: string[] | null
           title: string
-          updated_at?: string
-          what_included?: string[] | null
+          total_orders?: number | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          website_url?: string | null
+          whats_included?: string[] | null
+          years_experience?: string | null
         }
         Update: {
-          base_price?: number
-          category?: string
-          created_at?: string
+          average_rating?: number | null
+          client_requirements?: string | null
+          contact_email?: boolean | null
+          contact_phone?: boolean | null
+          contact_website?: boolean | null
+          created_at?: string | null
           currency?: string
           delivery_time_days?: number
           description?: string
           id?: string
           is_active?: boolean | null
           is_featured?: boolean | null
-          orders_completed?: number | null
-          portfolio_items?: Json | null
-          price_type?: string
+          location?: string | null
+          payment_methods?: string[] | null
+          phone_number?: string | null
+          portfolio_files?: string[] | null
+          price?: number
+          professional_title?: string | null
           provider_id?: string
-          rating?: number | null
-          requirements?: string | null
-          reviews_count?: number | null
-          service_type?: string
-          skills_offered?: string[]
-          subcategory?: string | null
           tags?: string[] | null
           title?: string
-          updated_at?: string
-          what_included?: string[] | null
+          total_orders?: number | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          website_url?: string | null
+          whats_included?: string[] | null
+          years_experience?: string | null
         }
         Relationships: []
       }

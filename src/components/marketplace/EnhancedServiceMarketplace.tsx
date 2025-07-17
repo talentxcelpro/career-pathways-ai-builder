@@ -38,39 +38,42 @@ export default function EnhancedServiceMarketplace() {
 
       if (error) throw error;
 
-      const transformedServices = data?.map(service => ({
-        id: service.id,
-        provider_id: service.provider_id,
-        title: service.title,
-        professional_title: service.professional_title || '',
-        years_experience: service.years_experience || '',
-        location: service.location || '',
-        description: service.description,
-        whats_included: service.whats_included || [],
-        client_requirements: service.client_requirements || '',
-        delivery_time_days: service.delivery_time_days,
-        price: service.price,
-        currency: service.currency,
-        payment_methods: service.payment_methods || [],
-        contact_email: service.contact_email,
-        contact_phone: service.contact_phone,
-        contact_website: service.contact_website,
-        website_url: service.website_url || '',
-        phone_number: service.phone_number || '',
-        tags: service.tags || [],
-        portfolio_files: service.portfolio_files || [],
-        is_active: service.is_active,
-        is_featured: service.is_featured,
-        average_rating: service.average_rating,
-        total_reviews: service.total_reviews,
-        total_orders: service.total_orders,
-        created_at: service.created_at,
-        updated_at: service.updated_at,
-        provider_name: service.profiles?.full_name || 'Unknown Provider',
-        provider_avatar: service.profiles?.avatar_url,
-        provider_location: service.location || service.profiles?.location,
-        is_verified: false
-      })) || [];
+      const transformedServices = data?.map(service => {
+        const serviceAny = service as any;
+        return {
+          id: serviceAny.id,
+          provider_id: serviceAny.provider_id,
+          title: serviceAny.title,
+          professional_title: serviceAny.professional_title || '',
+          years_experience: serviceAny.years_experience || '',
+          location: serviceAny.location || '',
+          description: serviceAny.description,
+          whats_included: serviceAny.whats_included || [],
+          client_requirements: serviceAny.client_requirements || '',
+          delivery_time_days: serviceAny.delivery_time_days,
+          price: serviceAny.price || 0,
+          currency: serviceAny.currency,
+          payment_methods: serviceAny.payment_methods || [],
+          contact_email: serviceAny.contact_email || true,
+          contact_phone: serviceAny.contact_phone || false,
+          contact_website: serviceAny.contact_website || false,
+          website_url: serviceAny.website_url || '',
+          phone_number: serviceAny.phone_number || '',
+          tags: serviceAny.tags || [],
+          portfolio_files: serviceAny.portfolio_files || [],
+          is_active: serviceAny.is_active,
+          is_featured: serviceAny.is_featured,
+          average_rating: serviceAny.average_rating || 0,
+          total_reviews: serviceAny.total_reviews || 0,
+          total_orders: serviceAny.total_orders || 0,
+          created_at: serviceAny.created_at,
+          updated_at: serviceAny.updated_at,
+          provider_name: serviceAny.profiles?.full_name || 'Unknown Provider',
+          provider_avatar: serviceAny.profiles?.avatar_url,
+          provider_location: serviceAny.location || serviceAny.profiles?.location,
+          is_verified: false
+        };
+      }) || [];
 
       setServices(transformedServices);
     } catch (error) {

@@ -39,8 +39,8 @@ export default function ServiceReviews({ serviceId }: ServiceReviewsProps) {
 
   const fetchReviews = async () => {
     try {
-      // Since service_reviews table doesn't exist in types yet, we'll use a direct query
-      const { data, error } = await supabase
+      // Using any type to handle the table that doesn't exist in types yet
+      const { data, error } = await (supabase as any)
         .from('service_reviews')
         .select(`
           *,
@@ -54,7 +54,7 @@ export default function ServiceReviews({ serviceId }: ServiceReviewsProps) {
 
       if (error) throw error;
 
-      const transformedReviews = data?.map(review => ({
+      const transformedReviews = data?.map((review: any) => ({
         id: review.id,
         service_id: review.service_id,
         reviewer_id: review.reviewer_id,
