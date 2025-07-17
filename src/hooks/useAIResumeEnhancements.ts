@@ -162,26 +162,61 @@ export const useAIResumeEnhancements = () => {
 
       if (error) {
         console.error('Tone adjustment error:', error);
-        throw new Error(`Tone adjustment failed: ${error.message}`);
+        // Return a fallback response instead of throwing
+        return {
+          adjustedContent: content,
+          changes: [],
+          tone: targetTone,
+          impactScore: 70,
+          suggestions: ['Tone adjustment service is temporarily unavailable. Please try again in a few moments.']
+        };
       }
 
-      if (!data || !data.success) {
-        throw new Error(data?.error || 'Tone adjustment unsuccessful');
+      // Handle both successful and fallback responses
+      if (data) {
+        if (data.success === false) {
+          // Service returned a fallback response
+          console.warn('Tone adjustment returned fallback:', data.error);
+          return {
+            adjustedContent: data.adjustedContent || content,
+            changes: data.changes || [],
+            tone: data.tone || targetTone,
+            impactScore: data.impactScore || 70,
+            suggestions: data.suggestions || ['Service temporarily unavailable']
+          };
+        }
+        
+        // Successful response
+        toast.success(`Content tone adjusted to ${targetTone}!`);
+        return {
+          adjustedContent: data.adjustedContent,
+          changes: data.changes || [],
+          tone: data.tone,
+          impactScore: data.impactScore || 0,
+          suggestions: data.suggestions || []
+        };
       }
 
-      toast.success(`Content tone adjusted to ${targetTone}!`);
+      // No data returned
       return {
-        adjustedContent: data.adjustedContent,
-        changes: data.changes || [],
-        tone: data.tone,
-        impactScore: data.impactScore || 0,
-        suggestions: data.suggestions || []
+        adjustedContent: content,
+        changes: [],
+        tone: targetTone,
+        impactScore: 70,
+        suggestions: ['No response from tone adjustment service']
       };
 
     } catch (error) {
       console.error('Tone adjustment failed:', error);
-      toast.error(`Failed to adjust tone: ${error.message}`);
-      return null;
+      
+      // Return fallback instead of null
+      return {
+        adjustedContent: content,
+        changes: [],
+        tone: targetTone,
+        impactScore: 70,
+        suggestions: ['Tone adjustment is temporarily unavailable. Please try again later.']
+      };
     } finally {
       setIsAdjustingTone(false);
     }

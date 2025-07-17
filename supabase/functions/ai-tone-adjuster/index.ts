@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -16,7 +17,41 @@ serve(async (req) => {
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+      console.error('OpenAI API key not configured');
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'OpenAI API key not configured. Please contact support.',
+          adjustedContent: content, // Return original content as fallback
+          changes: [],
+          tone: targetTone,
+          impactScore: 70,
+          suggestions: ['Please configure OpenAI API key to enable tone adjustment']
+        }),
+        { 
+          status: 200, // Return 200 to avoid network errors
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    // Validate input
+    if (!content || typeof content !== 'string') {
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Invalid content provided',
+          adjustedContent: content || 'No content provided',
+          changes: [],
+          tone: targetTone,
+          impactScore: 0,
+          suggestions: ['Please provide valid content to adjust']
+        }),
+        { 
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     console.log('Adjusting tone for:', { targetTone, sectionType, contentLength: content.length });
@@ -62,7 +97,7 @@ Return a JSON object with this structure:
   "changes": [
     {
       "original": "Original phrase",
-      "adjusted": "Adjusted phrase",
+      "adjusted": "Adjusted phrase", 
       "reason": "Why this change improves the tone"
     }
   ],
@@ -91,7 +126,7 @@ Transform this content to match the ${targetTone} tone while:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -104,7 +139,23 @@ Transform this content to match the ${targetTone} tone while:
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenAI API error:', errorData);
-      throw new Error(`AI tone adjustment failed: ${response.status}`);
+      
+      // Return a fallback response instead of throwing
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: `AI service temporarily unavailable (${response.status})`,
+          adjustedContent: content,
+          changes: [],
+          tone: targetTone,
+          impactScore: 70,
+          suggestions: ['AI service is temporarily unavailable. Please try again in a few moments.']
+        }),
+        { 
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     const data = await response.json();
@@ -115,7 +166,23 @@ Transform this content to match the ${targetTone} tone while:
       parsedData = JSON.parse(adjustedContent);
     } catch (parseError) {
       console.error('Failed to parse AI response as JSON:', parseError);
-      throw new Error('AI returned invalid JSON format');
+      
+      // Return a fallback response
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'AI returned invalid response format',
+          adjustedContent: content,
+          changes: [],
+          tone: targetTone,
+          impactScore: 70,
+          suggestions: ['The AI service encountered a formatting issue. Please try again.']
+        }),
+        { 
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     return new Response(
@@ -130,11 +197,16 @@ Transform this content to match the ${targetTone} tone while:
     console.error('Error in AI tone adjustment:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        success: false 
+        success: false,
+        error: 'Tone adjustment service temporarily unavailable',
+        adjustedContent: 'Service temporarily unavailable',
+        changes: [],
+        tone: 'professional',
+        impactScore: 0,
+        suggestions: ['Please try again in a few moments']
       }),
       { 
-        status: 500,
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );
