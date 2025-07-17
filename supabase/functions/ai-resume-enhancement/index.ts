@@ -27,13 +27,19 @@ serve(async (req) => {
     console.log(`💚 [${requestId}] Health check requested`);
     try {
       const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+      const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
       const health = {
         status: 'healthy',
         openaiConfigured: !!openAIApiKey,
+        deepseekConfigured: !!deepseekApiKey,
+        providersAvailable: [
+          ...(openAIApiKey ? ['openai'] : []),
+          ...(deepseekApiKey ? ['deepseek'] : [])
+        ],
         timestamp,
         requestId,
         service: 'ai-resume-enhancement',
-        version: '2.0.0'
+        version: '3.0.0'
       };
       console.log(`✅ [${requestId}] Health check successful:`, health);
       return new Response(JSON.stringify(health), {
@@ -69,13 +75,19 @@ serve(async (req) => {
   try {
     console.log(`📝 [${requestId}] Processing resume enhancement request...`);
     
-    // Get OpenAI API key
+    // Get API keys for both providers
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      console.error(`❌ [${requestId}] OpenAI API key not found`);
-      throw new Error('OpenAI API key not configured');
+    const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
+    
+    console.log(`🔑 [${requestId}] API keys status:`, {
+      openai: !!openAIApiKey,
+      deepseek: !!deepseekApiKey
+    });
+    
+    if (!openAIApiKey && !deepseekApiKey) {
+      console.error(`❌ [${requestId}] No AI API keys found`);
+      throw new Error('No AI API keys configured. Please add OPENAI_API_KEY or DEEPSEEK_API_KEY');
     }
-    console.log(`🔑 [${requestId}] OpenAI API key found`);
     
     // Parse request body with detailed logging
     let body;
@@ -102,7 +114,8 @@ serve(async (req) => {
       category,
       extractedData, 
       userPrompt, 
-      enhancementType = 'complete_rewrite' 
+      enhancementType = 'complete_rewrite',
+      aiProvider = 'auto' // 'openai', 'deepseek', or 'auto'
     } = body;
 
     // Handle ChatGPT-style enhancement
@@ -172,16 +185,45 @@ ${userPrompt}
 
 Please enhance this resume according to the user's request. Create a complete, professional, and ATS-optimized resume.`;
 
-      console.log(`📤 [${requestId}] Sending request to OpenAI...`);
+      // Determine which AI provider to use
+      let selectedProvider = aiProvider;
+      let apiKey = '';
+      let apiUrl = '';
+      let model = '';
+      
+      if (selectedProvider === 'auto') {
+        // Priority: DeepSeek (cheaper) -> OpenAI (fallback)
+        if (deepseekApiKey) {
+          selectedProvider = 'deepseek';
+        } else if (openAIApiKey) {
+          selectedProvider = 'openai';
+        } else {
+          throw new Error('No AI providers available');
+        }
+      }
+      
+      if (selectedProvider === 'deepseek' && deepseekApiKey) {
+        apiKey = deepseekApiKey;
+        apiUrl = 'https://api.deepseek.com/chat/completions';
+        model = 'deepseek-chat';
+      } else if (selectedProvider === 'openai' && openAIApiKey) {
+        apiKey = openAIApiKey;
+        apiUrl = 'https://api.openai.com/v1/chat/completions';
+        model = 'gpt-4o-mini';
+      } else {
+        throw new Error(`${selectedProvider} API key not configured`);
+      }
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      console.log(`📤 [${requestId}] Sending request to ${selectedProvider.toUpperCase()} (${model})...`);
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model,
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userMessage }
@@ -193,12 +235,70 @@ Please enhance this resume according to the user's request. Create a complete, p
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`❌ [${requestId}] OpenAI API error:`, response.status, errorText);
-        throw new Error(`OpenAI API error: ${response.status}`);
+        console.error(`❌ [${requestId}] ${selectedProvider.toUpperCase()} API error:`, response.status, errorText);
+        
+        // Try fallback provider if auto mode and primary failed
+        if (aiProvider === 'auto' && selectedProvider === 'deepseek' && openAIApiKey) {
+          console.log(`🔄 [${requestId}] Falling back to OpenAI...`);
+          
+          const fallbackResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${openAIApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'gpt-4o-mini',
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userMessage }
+              ],
+              temperature: 0.7,
+              max_tokens: 3000,
+            }),
+          });
+          
+          if (!fallbackResponse.ok) {
+            throw new Error(`Both providers failed. Last error: ${response.status}`);
+          }
+          
+          const aiResponse = await fallbackResponse.json();
+          console.log(`📥 [${requestId}] Fallback OpenAI response received`);
+          const enhancedContent = aiResponse.choices[0].message.content;
+          
+          // Parse and return fallback response
+          let parsedResponse;
+          try {
+            const jsonMatch = enhancedContent.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              parsedResponse = JSON.parse(jsonMatch[0]);
+            } else {
+              throw new Error('No JSON found in fallback response');
+            }
+          } catch (parseError) {
+            console.error(`❌ [${requestId}] Failed to parse fallback AI response:`, parseError);
+            throw new Error('Failed to parse fallback AI response');
+          }
+
+          if (!parsedResponse.success || !parsedResponse.enhancedResume) {
+            throw new Error('Invalid fallback response structure from AI');
+          }
+
+          // Add provider info to response
+          parsedResponse.provider = 'openai';
+          parsedResponse.fallbackUsed = true;
+
+          console.log(`✅ [${requestId}] Fallback enhancement completed successfully`);
+          return new Response(JSON.stringify(parsedResponse), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        
+        throw new Error(`${selectedProvider.toUpperCase()} API error: ${response.status}`);
       }
 
       const aiResponse = await response.json();
-      console.log(`📥 [${requestId}] OpenAI response received`);
+      console.log(`📥 [${requestId}] ${selectedProvider.toUpperCase()} response received`);
 
       const enhancedContent = aiResponse.choices[0].message.content;
       
@@ -220,7 +320,11 @@ Please enhance this resume according to the user's request. Create a complete, p
         throw new Error('Invalid response structure from AI');
       }
 
-      console.log(`✅ [${requestId}] Enhancement completed successfully`);
+      // Add provider info to response
+      parsedResponse.provider = selectedProvider;
+      parsedResponse.fallbackUsed = false;
+
+      console.log(`✅ [${requestId}] Enhancement completed successfully with ${selectedProvider.toUpperCase()}`);
       return new Response(JSON.stringify(parsedResponse), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -239,16 +343,40 @@ Please enhance this resume according to the user's request. Create a complete, p
       systemPrompt = 'You are a professional writing expert. Elevate the language to executive level and improve overall professionalism.';
     }
 
+    // Determine provider for legacy format
+    let legacyProvider = aiProvider;
+    let legacyApiKey = '';
+    let legacyApiUrl = '';
+    let legacyModel = '';
+    
+    if (legacyProvider === 'auto') {
+      if (deepseekApiKey) {
+        legacyProvider = 'deepseek';
+      } else if (openAIApiKey) {
+        legacyProvider = 'openai';
+      }
+    }
+    
+    if (legacyProvider === 'deepseek' && deepseekApiKey) {
+      legacyApiKey = deepseekApiKey;
+      legacyApiUrl = 'https://api.deepseek.com/chat/completions';
+      legacyModel = 'deepseek-chat';
+    } else {
+      legacyApiKey = openAIApiKey;
+      legacyApiUrl = 'https://api.openai.com/v1/chat/completions';
+      legacyModel = 'gpt-4o-mini';
+    }
+
     const legacyPrompt = `${prompt}\n\nResume Data:\n${resumeData}\n\nPlease enhance this resume data and return it in the exact same JSON structure while improving content quality.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(legacyApiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${legacyApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: legacyModel,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: legacyPrompt }
@@ -260,20 +388,21 @@ Please enhance this resume according to the user's request. Create a complete, p
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error(`❌ [${requestId}] OpenAI API error:`, errorData);
+      console.error(`❌ [${requestId}] ${legacyProvider.toUpperCase()} API error:`, errorData);
       throw new Error(`AI enhancement failed: ${response.status}`);
     }
 
     const data = await response.json();
     const enhancement = data.choices[0].message.content;
 
-    console.log(`✅ [${requestId}] Legacy enhancement completed`);
+    console.log(`✅ [${requestId}] Legacy enhancement completed with ${legacyProvider.toUpperCase()}`);
     return new Response(
       JSON.stringify({ 
         enhancement,
         category,
         success: true,
-        requestId
+        requestId,
+        provider: legacyProvider
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

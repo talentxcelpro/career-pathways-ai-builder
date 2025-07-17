@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Upload, 
   FileText, 
@@ -18,7 +19,10 @@ import {
   Download,
   Eye,
   RefreshCw,
-  Wifi
+  Wifi,
+  Settings,
+  Brain,
+  Zap
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,6 +68,7 @@ export const ChatGPTStyleInterface = () => {
   const [generatedResumeId, setGeneratedResumeId] = useState<string | null>(null);
   const [servicesHealthy, setServicesHealthy] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
+  const [selectedProvider, setSelectedProvider] = useState<'auto' | 'openai' | 'deepseek'>('auto');
   
   // Supabase API constants
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -208,6 +213,7 @@ export const ChatGPTStyleInterface = () => {
         extractedData,
         userPrompt,
         enhancementType: 'complete_rewrite',
+        aiProvider: selectedProvider,
         timestamp: new Date().toISOString(),
         requestId
       };
@@ -319,10 +325,13 @@ export const ChatGPTStyleInterface = () => {
 
       console.log('✅ Enhancement successful!');
 
+      const providerUsed = data.provider || 'unknown';
+      const fallbackInfo = data.fallbackUsed ? ' (with fallback)' : '';
+      
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: `🎯 **Enhanced Resume Generated!**\n\nI've created a complete, professional, and ATS-optimized resume based on your requirements. Here's what I've improved:\n\n✅ Professional summary tailored to your goals\n✅ Enhanced experience descriptions with metrics\n✅ Optimized skills section\n✅ Improved formatting for ATS compatibility\n✅ Industry-specific keywords\n\n**Ready to review your enhanced resume?**`,
+        content: `🎯 **Enhanced Resume Generated!**\n\nI've created a complete, professional, and ATS-optimized resume using **${providerUsed.toUpperCase()}**${fallbackInfo}. Here's what I've improved:\n\n✅ Professional summary tailored to your goals\n✅ Enhanced experience descriptions with metrics\n✅ Optimized skills section\n✅ Improved formatting for ATS compatibility\n✅ Industry-specific keywords\n\n**Ready to review your enhanced resume?**`,
         timestamp: new Date(),
         data: data.enhancedResume
       };
@@ -529,16 +538,45 @@ export const ChatGPTStyleInterface = () => {
                 <p className="text-sm text-gray-600">Analyzing: {uploadedFile?.name}</p>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <Badge variant="secondary" className="bg-green-100 text-green-800">
                 <CheckCircle className="w-3 h-3 mr-1" />
                 Resume Loaded
               </Badge>
-              {/* Temporarily disabled status check while function redeploys */}
               <Badge variant="outline" className="text-blue-600">
                 <Wifi className="w-3 h-3 mr-1" />
                 AI Ready
               </Badge>
+              
+              {/* AI Provider Selection */}
+              <div className="flex items-center space-x-2">
+                <Settings className="w-4 h-4 text-gray-500" />
+                <Select value={selectedProvider} onValueChange={(value: 'auto' | 'openai' | 'deepseek') => setSelectedProvider(value)}>
+                  <SelectTrigger className="w-32 h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="auto">
+                      <div className="flex items-center space-x-2">
+                        <Brain className="w-3 h-3" />
+                        <span>Auto</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="openai">
+                      <div className="flex items-center space-x-2">
+                        <Sparkles className="w-3 h-3" />
+                        <span>OpenAI</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="deepseek">
+                      <div className="flex items-center space-x-2">
+                        <Zap className="w-3 h-3" />
+                        <span>DeepSeek</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
