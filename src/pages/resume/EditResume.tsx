@@ -1,66 +1,62 @@
-import React, { useState, useEffect } from 'react';
+
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Download, Sparkles, FileText, Plus, Trash2, Edit2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { PersonalInfoSection } from '@/components/resume/enhanced/sections/PersonalInfoSection';
+import { ProfessionalSummarySection } from '@/components/resume/enhanced/sections/ProfessionalSummarySection';
+import { SkillsSection } from '@/components/resume/enhanced/sections/SkillsSection';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Briefcase, GraduationCap, Award, Languages, Sparkles, ArrowLeft } from 'lucide-react';
 
 interface Resume {
   id: string;
   title: string;
-  ats_score: number;
+  content: any;
+  user_id: string;
   created_at: string;
   updated_at: string;
 }
 
 interface ResumeSection {
   id: string;
+  resume_id: string;
   section_type: string;
   content: any;
   display_order: number;
 }
 
-const EditResume = () => {
-  const { id } = useParams<{ id: string }>();
+export default function EditResume() {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  
   const [resume, setResume] = useState<Resume | null>(null);
   const [sections, setSections] = useState<ResumeSection[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [enhancing, setEnhancing] = useState(false);
-  const [activeTab, setActiveTab] = useState('editor');
+  const [enhancing, setEnhancing] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
-      fetchResumeData();
+      fetchResume(id);
     }
   }, [id]);
 
-  const fetchResumeData = async () => {
+  const fetchResume = async (resumeId: string) => {
     try {
-      // Get resume data
+      setLoading(true);
+      
       const { data: resumeData, error: resumeError } = await supabase
-        .from('resumes')
+        .from('ai_resumes')
         .select('*')
-        .eq('id', id)
+        .eq('id', resumeId)
         .single();
 
       if (resumeError) throw resumeError;
 
-      // Get resume sections
       const { data: sectionsData, error: sectionsError } = await supabase
         .from('resume_sections')
         .select('*')
-        .eq('resume_id', id)
+        .eq('resume_id', resumeId)
         .order('display_order');
 
       if (sectionsError) throw sectionsError;
@@ -71,552 +67,397 @@ const EditResume = () => {
       if (sectionsData && sectionsData.length > 0) {
         setSections(sectionsData);
       } else if (resumeData.content && typeof resumeData.content === 'object') {
-        // If no sections but content exists, create sections from content
-        const contentData = resumeData.content as any;
-        const sectionsToCreate = [];
-        
         // Create sections from extracted content
-        if (contentData.personalInfo) {
-          sectionsToCreate.push({
-            id: 'personal-info',
-            resume_id: id,
-            section_type: 'personal_info',
-            content: {
-              name: contentData.personalInfo.fullName || '',
-              email: contentData.personalInfo.email || '',
-              phone: contentData.personalInfo.phone || '',
-              location: contentData.personalInfo.location || '',
-              linkedin: contentData.personalInfo.linkedin || ''
-            },
-            display_order: 1
-          });
-        }
-        
-        if (contentData.professionalSummary) {
-          sectionsToCreate.push({
-            id: 'summary',
-            resume_id: id,
-            section_type: 'summary',
-            content: contentData.professionalSummary.content || '',
-            display_order: 2
-          });
-        }
-        
-        if (contentData.experience && Array.isArray(contentData.experience)) {
-          sectionsToCreate.push({
-            id: 'experience',
-            resume_id: id,
-            section_type: 'experience',
-            content: contentData.experience,
-            display_order: 3
-          });
-        }
-        
-        if (contentData.education && Array.isArray(contentData.education)) {
-          sectionsToCreate.push({
-            id: 'education',
-            resume_id: id,
-            section_type: 'education',
-            content: contentData.education,
-            display_order: 4
-          });
-        }
-        
-        if (contentData.skills) {
-          // Convert skills to simple array format
-          let skillsArray = [];
-          if (contentData.skills.technical) {
-            skillsArray = contentData.skills.technical.map((skill: any) => skill.skill || skill);
-          } else if (Array.isArray(contentData.skills)) {
-            skillsArray = contentData.skills;
-          }
-          
-          sectionsToCreate.push({
-            id: 'skills',
-            resume_id: id,
-            section_type: 'skills',
-            content: skillsArray,
-            display_order: 5
-          });
-        }
-        
-        if (contentData.certifications && Array.isArray(contentData.certifications)) {
-          sectionsToCreate.push({
-            id: 'certifications',
-            resume_id: id,
-            section_type: 'certifications',
-            content: contentData.certifications,
-            display_order: 6
-          });
-        }
-        
-        if (contentData.languages && Array.isArray(contentData.languages)) {
-          sectionsToCreate.push({
-            id: 'languages',
-            resume_id: id,
-            section_type: 'languages',
-            content: contentData.languages,
-            display_order: 7
-          });
-        }
-        
-        // Save sections to database and update state
-        if (sectionsToCreate.length > 0) {
-          const { error: sectionsInsertError } = await supabase
-            .from('resume_sections')
-            .insert(sectionsToCreate);
-          
-          if (!sectionsInsertError) {
-            setSections(sectionsToCreate);
-          } else {
-            console.error('Error saving sections:', sectionsInsertError);
-            setSections(sectionsToCreate); // Still show them in UI even if saving failed
-          }
-        }
+        await createSectionsFromContent(resumeData, resumeId);
       }
     } catch (error) {
       console.error('Error fetching resume:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load resume. Please try again.',
-        variant: 'destructive',
-      });
-      navigate('/resume-builder');
+      toast.error('Error loading resume');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSave = async () => {
-    if (!resume) return;
-
-    setSaving(true);
-    try {
-      // Save resume title
-      const { error: resumeError } = await supabase
-        .from('resumes')
-        .update({ title: resume.title })
-        .eq('id', id);
-
-      if (resumeError) throw resumeError;
-
-      // Save sections
-      for (const section of sections) {
-        const { error: sectionError } = await supabase
-          .from('resume_sections')
-          .upsert({
-            id: section.id,
-            resume_id: id,
-            section_type: section.section_type,
-            content: section.content,
-            display_order: section.display_order
-          });
-
-        if (sectionError) throw sectionError;
+  const createSectionsFromContent = async (resumeData: Resume, resumeId: string) => {
+    const contentData = resumeData.content as any;
+    const sectionsToCreate = [];
+    
+    // Create sections from extracted content with improved mapping
+    if (contentData.extracted?.personalInfo || contentData.personalInfo) {
+      const personalInfo = contentData.extracted?.personalInfo || contentData.personalInfo;
+      sectionsToCreate.push({
+        id: crypto.randomUUID(),
+        resume_id: resumeId,
+        section_type: 'personal_info',
+        content: {
+          name: personalInfo.fullName || personalInfo.name || '',
+          email: personalInfo.email || '',
+          phone: personalInfo.phone || '',
+          location: personalInfo.location || '',
+          linkedin: personalInfo.linkedin || '',
+          website: personalInfo.website || ''
+        },
+        display_order: 1
+      });
+    }
+    
+    if (contentData.extracted?.professionalSummary?.content || contentData.professionalSummary?.content) {
+      const summary = contentData.extracted?.professionalSummary || contentData.professionalSummary;
+      sectionsToCreate.push({
+        id: crypto.randomUUID(),
+        resume_id: resumeId,
+        section_type: 'summary',
+        content: summary.content || '',
+        display_order: 2
+      });
+    }
+    
+    if (contentData.extracted?.experience || contentData.experience) {
+      const experience = contentData.extracted?.experience || contentData.experience;
+      if (Array.isArray(experience) && experience.length > 0) {
+        sectionsToCreate.push({
+          id: crypto.randomUUID(),
+          resume_id: resumeId,
+          section_type: 'experience',
+          content: experience.map(exp => ({
+            jobTitle: exp.jobTitle || exp.title || '',
+            companyName: exp.companyName || exp.company || '',
+            location: exp.location || '',
+            startDate: exp.startDate || '',
+            endDate: exp.endDate || '',
+            description: exp.description || '',
+            achievements: exp.achievements || [],
+            responsibilities: exp.responsibilities || []
+          })),
+          display_order: 3
+        });
       }
-
-      toast({
-        title: 'Success',
-        description: 'Resume saved successfully!',
-      });
-    } catch (error) {
-      console.error('Error saving resume:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to save resume. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setSaving(false);
+    }
+    
+    if (contentData.extracted?.education || contentData.education) {
+      const education = contentData.extracted?.education || contentData.education;
+      if (Array.isArray(education) && education.length > 0) {
+        sectionsToCreate.push({
+          id: crypto.randomUUID(),
+          resume_id: resumeId,
+          section_type: 'education',
+          content: education.map(edu => ({
+            degree: edu.degree || '',
+            institutionName: edu.institutionName || edu.school || edu.institution || '',
+            location: edu.location || '',
+            startDate: edu.startDate || '',
+            endDate: edu.endDate || '',
+            grade: edu.grade || edu.gpa || '',
+            honors: edu.honors || ''
+          })),
+          display_order: 4
+        });
+      }
+    }
+    
+    if (contentData.extracted?.skills || contentData.skills) {
+      const skills = contentData.extracted?.skills || contentData.skills;
+      let skillsArray = [];
+      
+      // Handle different skill formats
+      if (skills.technical && Array.isArray(skills.technical)) {
+        skillsArray = skills.technical.map((skill: any) => ({
+          id: crypto.randomUUID(),
+          name: skill.skill || skill.name || skill,
+          level: skill.proficiency || 'intermediate',
+          category: 'Technical',
+          years: 0
+        }));
+      } else if (Array.isArray(skills)) {
+        skillsArray = skills.map((skill: any) => ({
+          id: crypto.randomUUID(),
+          name: typeof skill === 'string' ? skill : skill.name || skill.skill || '',
+          level: 'intermediate',
+          category: 'Technical',
+          years: 0
+        }));
+      }
+      
+      if (skillsArray.length > 0) {
+        sectionsToCreate.push({
+          id: crypto.randomUUID(),
+          resume_id: resumeId,
+          section_type: 'skills',
+          content: skillsArray,
+          display_order: 5
+        });
+      }
+    }
+    
+    // Save sections to database and update state
+    if (sectionsToCreate.length > 0) {
+      const { error: sectionsInsertError } = await supabase
+        .from('resume_sections')
+        .insert(sectionsToCreate);
+      
+      if (!sectionsInsertError) {
+        setSections(sectionsToCreate);
+      } else {
+        console.error('Error saving sections:', sectionsInsertError);
+        setSections(sectionsToCreate); // Still show them in UI
+      }
     }
   };
 
-  const handleEnhanceSection = async (sectionType: string) => {
+  const enhanceSection = async (sectionType: string) => {
     if (!resume) return;
-
-    setEnhancing(true);
+    
+    setEnhancing(sectionType);
+    
     try {
-      const sectionData = sections.find(s => s.section_type === sectionType)?.content || {};
-      
-      const { data: enhancedData, error } = await supabase.functions
-        .invoke('enhance-resume', {
-          body: {
-            resumeData: { [sectionType]: sectionData },
-            section: sectionType,
-            userId: (await supabase.auth.getUser()).data.user?.id
-          }
-        });
+      const section = sections.find(s => s.section_type === sectionType);
+      if (!section) {
+        toast.error('Section not found');
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('enhance-resume', {
+        body: {
+          resumeData: { [sectionType]: section.content },
+          section: sectionType,
+          userId: resume.user_id
+        }
+      });
 
       if (error) throw error;
 
-      if (enhancedData.success) {
-        // Update the section with enhanced data
-        const updatedSections = sections.map(section => {
-          if (section.section_type === sectionType) {
-            return {
-              ...section,
-              content: enhancedData.enhanced
-            };
-          }
-          return section;
-        });
-
+      if (data.success) {
+        // Update the section with enhanced content
+        const updatedSections = sections.map(s => 
+          s.section_type === sectionType 
+            ? { ...s, content: data.enhanced }
+            : s
+        );
+        
         setSections(updatedSections);
-        toast({
-          title: 'Success',
-          description: `${sectionType} section enhanced successfully!`,
-        });
+        
+        // Save to database
+        await supabase
+          .from('resume_sections')
+          .update({ content: data.enhanced })
+          .eq('id', section.id);
+        
+        toast.success(`${sectionType} section enhanced successfully!`);
       }
     } catch (error) {
       console.error('Error enhancing section:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to enhance section. Please try again.',
-        variant: 'destructive',
-      });
+      toast.error('Failed to enhance section');
     } finally {
-      setEnhancing(false);
+      setEnhancing(null);
     }
   };
 
-  const addSection = (sectionType: string) => {
-    const newSection: ResumeSection = {
-      id: `temp-${Date.now()}`,
-      section_type: sectionType,
-      content: getDefaultSectionData(sectionType),
-      display_order: sections.length + 1
-    };
+  const updateSection = async (sectionType: string, newContent: any) => {
+    const section = sections.find(s => s.section_type === sectionType);
+    if (!section) return;
 
-    setSections([...sections, newSection]);
-  };
-
-  const getDefaultSectionData = (sectionType: string) => {
-    switch (sectionType) {
-      case 'personal_info':
-        return { name: '', email: '', phone: '', location: '', linkedin: '' };
-      case 'summary':
-        return '';
-      case 'experience':
-        return [{ title: '', company: '', location: '', startDate: '', endDate: '', achievements: [] }];
-      case 'education':
-        return [{ degree: '', institution: '', location: '', startDate: '', endDate: '', grade: '' }];
-      case 'skills':
-        return [];
-      case 'projects':
-        return [{ name: '', description: '', technologies: [] }];
-      case 'certifications':
-        return [{ name: '', issuer: '', date: '' }];
-      case 'languages':
-        return [{ language: '', proficiency: '' }];
-      case 'awards':
-        return [{ name: '', issuer: '', date: '' }];
-      case 'hobbies':
-        return [];
-      default:
-        return {};
+    try {
+      const updatedSections = sections.map(s => 
+        s.section_type === sectionType 
+          ? { ...s, content: newContent }
+          : s
+      );
+      
+      setSections(updatedSections);
+      
+      // Save to database
+      await supabase
+        .from('resume_sections')
+        .update({ content: newContent })
+        .eq('id', section.id);
+      
+    } catch (error) {
+      console.error('Error updating section:', error);
+      toast.error('Failed to update section');
     }
-  };
-
-  const updateSectionData = (sectionId: string, newData: any) => {
-    setSections(sections.map(section => 
-      section.id === sectionId 
-        ? { ...section, content: newData }
-        : section
-    ));
-  };
-
-  const removeSection = (sectionId: string) => {
-    setSections(sections.filter(section => section.id !== sectionId));
   };
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="flex items-center justify-center h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">Loading resume...</div>
       </div>
     );
   }
 
   if (!resume) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Resume Not Found</h1>
-          <Button onClick={() => navigate('/resume-builder')}>
-            Back to Resume Builder
-          </Button>
-        </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">Resume not found</div>
       </div>
     );
   }
 
+  const personalInfoSection = sections.find(s => s.section_type === 'personal_info');
+  const summarySection = sections.find(s => s.section_type === 'summary');
+  const skillsSection = sections.find(s => s.section_type === 'skills');
+  const experienceSection = sections.find(s => s.section_type === 'experience');
+  const educationSection = sections.find(s => s.section_type === 'education');
+
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/resume-builder')}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">{resume.title}</h1>
-            <p className="text-muted-foreground">
-              Last updated {format(new Date(resume.updated_at), 'PPP')}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary">ATS Score: {resume.ats_score}%</Badge>
-          <Button onClick={handleSave} disabled={saving}>
-            <Save className="w-4 h-4 mr-2" />
-            {saving ? 'Saving...' : 'Save'}
-          </Button>
-          <Button variant="outline" onClick={() => navigate(`/resume-builder/export/${id}`)}>
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
-        </div>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="flex items-center gap-4 mb-6">
+        <Button
+          variant="outline"
+          onClick={() => navigate('/resume-builder')}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Resumes
+        </Button>
+        <h1 className="text-2xl font-bold">{resume.title}</h1>
       </div>
 
-      {/* Main Content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="editor">Editor</TabsTrigger>
-          <TabsTrigger value="preview">Preview</TabsTrigger>
-          <TabsTrigger value="enhance">AI Enhance</TabsTrigger>
-        </TabsList>
+      <div className="space-y-6">
+        {/* Personal Information */}
+        {personalInfoSection && (
+          <div className="relative">
+            <PersonalInfoSection
+              data={personalInfoSection.content}
+              onChange={(newData) => updateSection('personal_info', newData)}
+            />
+            <Button
+              onClick={() => enhanceSection('personal_info')}
+              disabled={enhancing === 'personal_info'}
+              className="absolute top-4 right-4"
+              size="sm"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              {enhancing === 'personal_info' ? 'Enhancing...' : 'Enhance'}
+            </Button>
+          </div>
+        )}
 
-        <TabsContent value="editor" className="space-y-6">
-          {/* Resume Title */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Resume Title</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Input
-                value={resume.title}
-                onChange={(e) => setResume({ ...resume, title: e.target.value })}
-                placeholder="Enter resume title"
-              />
-            </CardContent>
-          </Card>
+        {/* Professional Summary */}
+        {summarySection && (
+          <div className="relative">
+            <ProfessionalSummarySection
+              data={{ 
+                content: summarySection.content,
+                keyHighlights: []
+              }}
+              onChange={(newData) => updateSection('summary', newData.content)}
+            />
+            <Button
+              onClick={() => enhanceSection('summary')}
+              disabled={enhancing === 'summary'}
+              className="absolute top-4 right-4"
+              size="sm"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              {enhancing === 'summary' ? 'Enhancing...' : 'Enhance'}
+            </Button>
+          </div>
+        )}
 
-          {/* Sections */}
-          {sections.map((section) => (
-            <Card key={section.id}>
+        {/* Experience */}
+        {experienceSection && (
+          <div className="relative">
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="capitalize">{section.section_type.replace('_', ' ')}</CardTitle>
-                  <CardDescription>
-                    Edit your {section.section_type.replace('_', ' ')} information
-                  </CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEnhanceSection(section.section_type)}
-                    disabled={enhancing}
-                  >
-                    <Sparkles className="w-4 h-4 mr-1" />
-                    {enhancing ? 'Enhancing...' : 'Enhance'}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeSection(section.id)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
+                <CardTitle className="flex items-center gap-2">
+                  <Briefcase className="h-5 w-5" />
+                  Work Experience
+                </CardTitle>
+                <Button
+                  onClick={() => enhanceSection('experience')}
+                  disabled={enhancing === 'experience'}
+                  size="sm"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  {enhancing === 'experience' ? 'Enhancing...' : 'Enhance'}
+                </Button>
               </CardHeader>
               <CardContent>
-                {section.section_type === 'personal_info' && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Name</Label>
-                      <Input
-                        value={section.content.name || ''}
-                        onChange={(e) => updateSectionData(section.id, { ...section.content, name: e.target.value })}
-                        placeholder="Your full name"
-                      />
-                    </div>
-                    <div>
-                      <Label>Email</Label>
-                      <Input
-                        value={section.content.email || ''}
-                        onChange={(e) => updateSectionData(section.id, { ...section.content, email: e.target.value })}
-                        placeholder="your.email@example.com"
-                      />
-                    </div>
-                    <div>
-                      <Label>Phone</Label>
-                      <Input
-                        value={section.content.phone || ''}
-                        onChange={(e) => updateSectionData(section.id, { ...section.content, phone: e.target.value })}
-                        placeholder="+1 (555) 123-4567"
-                      />
-                    </div>
-                    <div>
-                      <Label>Location</Label>
-                      <Input
-                        value={section.content.location || ''}
-                        onChange={(e) => updateSectionData(section.id, { ...section.content, location: e.target.value })}
-                        placeholder="City, State"
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <Label>LinkedIn</Label>
-                      <Input
-                        value={section.content.linkedin || ''}
-                        onChange={(e) => updateSectionData(section.id, { ...section.content, linkedin: e.target.value })}
-                        placeholder="https://linkedin.com/in/yourprofile"
-                      />
-                    </div>
+                {Array.isArray(experienceSection.content) && experienceSection.content.length > 0 ? (
+                  <div className="space-y-4">
+                    {experienceSection.content.map((exp: any, index: number) => (
+                      <div key={index} className="border-l-2 border-gray-200 pl-4">
+                        <h4 className="font-semibold">{exp.jobTitle}</h4>
+                        <p className="text-sm font-medium text-gray-600">{exp.companyName}</p>
+                        <p className="text-sm text-gray-500">{exp.startDate} - {exp.endDate}</p>
+                        {exp.description && <p className="text-sm mt-2">{exp.description}</p>}
+                        {exp.achievements && exp.achievements.length > 0 && (
+                          <ul className="list-disc list-inside text-sm mt-2">
+                            {exp.achievements.map((achievement: string, i: number) => (
+                              <li key={i}>{achievement}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
                   </div>
+                ) : (
+                  <p className="text-gray-500">No work experience added yet.</p>
                 )}
-                {section.section_type === 'summary' && (
-                  <Textarea
-                    value={section.content || ''}
-                    onChange={(e) => updateSectionData(section.id, e.target.value)}
-                    placeholder="Write a compelling professional summary..."
-                    rows={4}
-                  />
-                )}
-                {section.section_type === 'skills' && (
-                  <Textarea
-                    value={Array.isArray(section.content) ? section.content.join(', ') : ''}
-                    onChange={(e) => updateSectionData(section.id, e.target.value.split(', '))}
-                    placeholder="JavaScript, React, Node.js, Python..."
-                    rows={3}
-                  />
-                )}
-                {/* Add more section types as needed */}
               </CardContent>
             </Card>
-          ))}
+          </div>
+        )}
 
-          {/* Add Section Button */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex flex-wrap gap-2">
-                {[
-                  'personal_info',
-                  'summary',
-                  'experience',
-                  'education',
-                  'skills',
-                  'projects',
-                  'certifications',
-                  'languages',
-                  'awards',
-                  'hobbies'
-                ].map(sectionType => (
-                  <Button
-                    key={sectionType}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => addSection(sectionType)}
-                    disabled={sections.some(s => s.section_type === sectionType)}
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    {sectionType.replace('_', ' ')}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="preview">
-          <Card>
-            <CardHeader>
-              <CardTitle>Resume Preview</CardTitle>
-              <CardDescription>
-                Preview how your resume will look when exported
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-white border rounded-lg p-8 shadow-sm">
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold">
-                    {sections.find(s => s.section_type === 'personal_info')?.content?.name || 'Your Name'}
-                  </h2>
-                  <p className="text-muted-foreground">
-                    {sections.find(s => s.section_type === 'personal_info')?.content?.email || 'your.email@example.com'} • 
-                    {sections.find(s => s.section_type === 'personal_info')?.content?.phone || '(555) 123-4567'}
-                  </p>
-                </div>
-                
-                {sections.find(s => s.section_type === 'summary') && (
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-2">Professional Summary</h3>
-                    <p className="text-sm leading-relaxed">
-                      {sections.find(s => s.section_type === 'summary')?.content || 'Your professional summary will appear here...'}
-                    </p>
-                  </div>
-                )}
-                
-                {sections.find(s => s.section_type === 'skills') && (
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-2">Skills</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {(sections.find(s => s.section_type === 'skills')?.content || []).map((skill: string, index: number) => (
-                        <Badge key={index} variant="secondary">{skill}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="enhance">
-          <Card>
-            <CardHeader>
-              <CardTitle>AI Enhancement</CardTitle>
-              <CardDescription>
-                Use AI to improve your resume sections with professional suggestions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {sections.map((section) => (
-                  <Card key={section.id} className="border-dashed">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-semibold capitalize">
-                          {section.section_type.replace('_', ' ')}
-                        </h4>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEnhanceSection(section.section_type)}
-                          disabled={enhancing}
-                        >
-                          <Sparkles className="w-4 h-4 mr-1" />
-                          Enhance
-                        </Button>
+        {/* Education */}
+        {educationSection && (
+          <div className="relative">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <GraduationCap className="h-5 w-5" />
+                  Education
+                </CardTitle>
+                <Button
+                  onClick={() => enhanceSection('education')}
+                  disabled={enhancing === 'education'}
+                  size="sm"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  {enhancing === 'education' ? 'Enhancing...' : 'Enhance'}
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {Array.isArray(educationSection.content) && educationSection.content.length > 0 ? (
+                  <div className="space-y-4">
+                    {educationSection.content.map((edu: any, index: number) => (
+                      <div key={index} className="space-y-1">
+                        <h4 className="font-semibold">{edu.degree}</h4>
+                        <p className="text-sm font-medium text-gray-600">{edu.institutionName}</p>
+                        <p className="text-sm text-gray-500">{edu.startDate} - {edu.endDate}</p>
+                        {edu.grade && <p className="text-sm">Grade: {edu.grade}</p>}
+                        {edu.honors && <p className="text-sm">Honors: {edu.honors}</p>}
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No education added yet.</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Skills */}
+        {skillsSection && (
+          <div className="relative">
+            <SkillsSection
+              data={skillsSection.content || []}
+              onChange={(newData) => updateSection('skills', newData)}
+            />
+            <Button
+              onClick={() => enhanceSection('skills')}
+              disabled={enhancing === 'skills'}
+              className="absolute top-4 right-4"
+              size="sm"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              {enhancing === 'skills' ? 'Enhancing...' : 'Enhance'}
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-export default EditResume;
+}
