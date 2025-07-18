@@ -66,7 +66,114 @@ const EditResume = () => {
       if (sectionsError) throw sectionsError;
 
       setResume(resumeData);
-      setSections(sectionsData || []);
+      
+      // If sections exist, use them
+      if (sectionsData && sectionsData.length > 0) {
+        setSections(sectionsData);
+      } else if (resumeData.content && typeof resumeData.content === 'object') {
+        // If no sections but content exists, create sections from content
+        const contentData = resumeData.content as any;
+        const sectionsToCreate = [];
+        
+        // Create sections from extracted content
+        if (contentData.personalInfo) {
+          sectionsToCreate.push({
+            id: 'personal-info',
+            resume_id: id,
+            section_type: 'personal_info',
+            content: {
+              name: contentData.personalInfo.fullName || '',
+              email: contentData.personalInfo.email || '',
+              phone: contentData.personalInfo.phone || '',
+              location: contentData.personalInfo.location || '',
+              linkedin: contentData.personalInfo.linkedin || ''
+            },
+            display_order: 1
+          });
+        }
+        
+        if (contentData.professionalSummary) {
+          sectionsToCreate.push({
+            id: 'summary',
+            resume_id: id,
+            section_type: 'summary',
+            content: contentData.professionalSummary.content || '',
+            display_order: 2
+          });
+        }
+        
+        if (contentData.experience && Array.isArray(contentData.experience)) {
+          sectionsToCreate.push({
+            id: 'experience',
+            resume_id: id,
+            section_type: 'experience',
+            content: contentData.experience,
+            display_order: 3
+          });
+        }
+        
+        if (contentData.education && Array.isArray(contentData.education)) {
+          sectionsToCreate.push({
+            id: 'education',
+            resume_id: id,
+            section_type: 'education',
+            content: contentData.education,
+            display_order: 4
+          });
+        }
+        
+        if (contentData.skills) {
+          // Convert skills to simple array format
+          let skillsArray = [];
+          if (contentData.skills.technical) {
+            skillsArray = contentData.skills.technical.map((skill: any) => skill.skill || skill);
+          } else if (Array.isArray(contentData.skills)) {
+            skillsArray = contentData.skills;
+          }
+          
+          sectionsToCreate.push({
+            id: 'skills',
+            resume_id: id,
+            section_type: 'skills',
+            content: skillsArray,
+            display_order: 5
+          });
+        }
+        
+        if (contentData.certifications && Array.isArray(contentData.certifications)) {
+          sectionsToCreate.push({
+            id: 'certifications',
+            resume_id: id,
+            section_type: 'certifications',
+            content: contentData.certifications,
+            display_order: 6
+          });
+        }
+        
+        if (contentData.languages && Array.isArray(contentData.languages)) {
+          sectionsToCreate.push({
+            id: 'languages',
+            resume_id: id,
+            section_type: 'languages',
+            content: contentData.languages,
+            display_order: 7
+          });
+        }
+        
+        // Save sections to database and update state
+        if (sectionsToCreate.length > 0) {
+          const { error: sectionsInsertError } = await supabase
+            .from('resume_sections')
+            .insert(sectionsToCreate);
+          
+          if (!sectionsInsertError) {
+            setSections(sectionsToCreate);
+          } else {
+            console.error('Error saving sections:', sectionsInsertError);
+            setSections(sectionsToCreate); // Still show them in UI even if saving failed
+          }
+        }
+      }
     } catch (error) {
       console.error('Error fetching resume:', error);
       toast({
