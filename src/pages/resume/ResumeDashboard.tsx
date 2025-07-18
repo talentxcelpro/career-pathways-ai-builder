@@ -77,10 +77,9 @@ const ResumeDashboard = () => {
                 AI-Powered Resume Builder
               </Badge>
               <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
-                Enhancv's 
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Resume Builder</span>
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">talenXcel</span>
                 <br />
-                helps you get hired at top companies
+                make a resume that shines
               </h1>
               <p className="text-xl text-slate-600 mb-8 leading-relaxed">
                 Create a professional resume that gets you hired. Our AI-powered tools and beautiful templates make it easy to build your dream resume in minutes.
