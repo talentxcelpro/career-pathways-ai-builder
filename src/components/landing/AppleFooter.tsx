@@ -69,6 +69,11 @@ export const AppleFooter = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/marketplace/post-service" className="hover:text-primary transition-colors font-medium">
+                  Become a Provider
+                </Link>
+              </li>
+              <li>
                 <Link to="/careers" className="hover:text-slate-900 transition-colors font-light">
                   Careers
                 </Link>
