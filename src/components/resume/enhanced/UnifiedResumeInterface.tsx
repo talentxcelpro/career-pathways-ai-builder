@@ -3,18 +3,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ResumeHeader } from './ResumeHeader';
 import { DraggableSection } from '../DraggableSection';
-import { PersonalInfoForm } from './forms/PersonalInfoForm';
-import { ExperienceForm } from './forms/ExperienceForm';
-import { EducationForm } from './forms/EducationForm';
-import { SkillsForm } from './forms/SkillsForm';
-import { SummaryForm } from './forms/SummaryForm';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -186,10 +184,49 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ 
             title="Personal Information"
             description="Your contact details and basic information"
           >
-            <PersonalInfoForm
-              data={resumeData.personalInfo}
-              onChange={(data) => updateResumeData('personalInfo', data)}
-            />
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    value={(resumeData.personalInfo as any)?.fullName || ''}
+                    onChange={(e) => updateResumeData('personalInfo', { ...resumeData.personalInfo, fullName: e.target.value })}
+                    placeholder="Enter your full name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={(resumeData.personalInfo as any)?.email || ''}
+                    onChange={(e) => updateResumeData('personalInfo', { ...resumeData.personalInfo, email: e.target.value })}
+                    placeholder="Enter your email"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input
+                    id="phone"
+                    value={(resumeData.personalInfo as any)?.phone || ''}
+                    onChange={(e) => updateResumeData('personalInfo', { ...resumeData.personalInfo, phone: e.target.value })}
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    value={(resumeData.personalInfo as any)?.location || ''}
+                    onChange={(e) => updateResumeData('personalInfo', { ...resumeData.personalInfo, location: e.target.value })}
+                    placeholder="Enter your location"
+                  />
+                </div>
+              </div>
+            </div>
           </DraggableSection>
         );
       
@@ -200,10 +237,18 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ 
             title="Professional Summary"
             description="A brief overview of your career and achievements"
           >
-            <SummaryForm
-              data={resumeData.summary}
-              onChange={(data) => updateResumeData('summary', data)}
-            />
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="summary">Professional Summary</Label>
+                <Textarea
+                  id="summary"
+                  value={resumeData.summary}
+                  onChange={(e) => updateResumeData('summary', e.target.value)}
+                  placeholder="Write a brief summary of your professional background and key achievements..."
+                  className="min-h-[100px]"
+                />
+              </div>
+            </div>
           </DraggableSection>
         );
       
@@ -214,10 +259,17 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ 
             title="Work Experience"
             description="Your professional work history"
           >
-            <ExperienceForm
-              data={resumeData.experience}
-              onChange={(data) => updateResumeData('experience', data)}
-            />
+            <div className="space-y-4">
+              <div>
+                <Label>Work Experience</Label>
+                <Textarea
+                  value={Array.isArray(resumeData.experience) ? resumeData.experience.join('\n') : ''}
+                  onChange={(e) => updateResumeData('experience', e.target.value.split('\n').filter(Boolean))}
+                  placeholder="Add your work experience (one per line)..."
+                  className="min-h-[100px]"
+                />
+              </div>
+            </div>
           </DraggableSection>
         );
       
@@ -228,10 +280,17 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ 
             title="Education"
             description="Your educational background"
           >
-            <EducationForm
-              data={resumeData.education}
-              onChange={(data) => updateResumeData('education', data)}
-            />
+            <div className="space-y-4">
+              <div>
+                <Label>Education</Label>
+                <Textarea
+                  value={Array.isArray(resumeData.education) ? resumeData.education.join('\n') : ''}
+                  onChange={(e) => updateResumeData('education', e.target.value.split('\n').filter(Boolean))}
+                  placeholder="Add your education (one per line)..."
+                  className="min-h-[100px]"
+                />
+              </div>
+            </div>
           </DraggableSection>
         );
       
@@ -242,10 +301,17 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ 
             title="Skills"
             description="Your technical and soft skills"
           >
-            <SkillsForm
-              data={resumeData.skills}
-              onChange={(data) => updateResumeData('skills', data)}
-            />
+            <div className="space-y-4">
+              <div>
+                <Label>Skills</Label>
+                <Textarea
+                  value={Array.isArray(resumeData.skills) ? resumeData.skills.join('\n') : ''}
+                  onChange={(e) => updateResumeData('skills', e.target.value.split('\n').filter(Boolean))}
+                  placeholder="Add your skills (one per line)..."
+                  className="min-h-[100px]"
+                />
+              </div>
+            </div>
           </DraggableSection>
         );
       
@@ -291,7 +357,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ 
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
-              modifiers={[restrictToVerticalAxis]}
+              
             >
               <SortableContext items={resumeData.sectionOrder} strategy={verticalListSortingStrategy}>
                 <div className="space-y-6">
