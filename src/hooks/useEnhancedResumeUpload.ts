@@ -132,38 +132,35 @@ export const useEnhancedResumeUpload = () => {
 
       console.log('✅ Resume entry created:', resumeEntry.id);
 
-      // Step 5: Comprehensive AI extraction
+      // Step 5: Comprehensive AI extraction for exact details
       progressCallback(50, 'Processing with comprehensive AI extraction...');
       
-      const { data: extractionResult, error: extractionError } = await supabase.functions.invoke('comprehensive-resume-extractor', {
+      const { data: extractionResult, error: extractionError } = await supabase.functions.invoke('ai-resume-parser', {
         body: {
           text: extractedText,
           fileName: file.name,
           fileType: file.type,
-          userId: user.id,
-          resumeId: resumeEntry.id,
-          industryType: 'general', // Can be enhanced with industry detection
-          extractionLevel: 'comprehensive'
+          userId: user.id
         }
       });
 
       if (extractionError) {
-        console.error('❌ Comprehensive extraction error:', extractionError);
-        throw new Error(`Comprehensive extraction failed: ${extractionError.message}`);
+        console.error('❌ AI extraction error:', extractionError);
+        throw new Error(`AI extraction failed: ${extractionError.message}`);
       }
 
       if (!extractionResult.success) {
-        console.error('❌ Comprehensive extraction failed:', extractionResult.error);
-        throw new Error(`Comprehensive extraction failed: ${extractionResult.error}`);
+        console.error('❌ AI extraction failed:', extractionResult.error);
+        throw new Error(`AI extraction failed: ${extractionResult.error}`);
       }
 
       const extractedContent = extractionResult.data;
-      console.log('✅ Comprehensive extraction completed:', {
+      console.log('✅ Enhanced AI extraction completed:', {
         personalInfo: !!extractedContent.personalInfo?.fullName,
         experienceCount: extractedContent.experience?.length || 0,
         educationCount: extractedContent.education?.length || 0,
-        skillsCount: extractedContent.technicalSkills?.programmingLanguages?.length || 0,
-        overallConfidence: extractedContent.qualityAssessment?.overallQuality || 0.88
+        skillsCount: extractedContent.skills?.technical?.length || 0,
+        overallConfidence: extractedContent.confidenceMetrics?.overall || 0.88
       });
 
       setExtractedData(extractedContent);
@@ -238,12 +235,12 @@ export const useEnhancedResumeUpload = () => {
   const generateEnhancedPreview = (data: any) => {
     if (!data) return null;
     
-    console.log('🎯 Generating enhanced preview from comprehensive data:', {
+    console.log('🎯 Generating enhanced preview from extracted data:', {
       hasPersonalInfo: !!data.personalInfo,
       experienceCount: data.experience?.length || 0,
       educationCount: data.education?.length || 0,
-      technicalSkillsCount: data.technicalSkills?.programmingLanguages?.length || 0,
-      overallConfidence: data.qualityAssessment?.overallQuality || 0.88
+      skillsCount: data.skills?.technical?.length || 0,
+      overallConfidence: data.confidenceMetrics?.overall || 0.88
     });
     
     // Return enhanced preview data for rendering
@@ -259,7 +256,7 @@ export const useEnhancedResumeUpload = () => {
         github: data.personalInfo?.github || ''
       },
       experience: data.experience?.slice(0, 3).map((exp: any) => ({
-        title: exp.jobTitle || '',
+        title: exp.title || '',
         company: exp.company || '',
         startDate: exp.startDate || '',
         endDate: exp.endDate || 'Present',
@@ -268,16 +265,14 @@ export const useEnhancedResumeUpload = () => {
         technologies: exp.technologies?.slice(0, 5) || []
       })) || [],
       skills: {
-        technical: [
-          ...(data.technicalSkills?.programmingLanguages?.slice(0, 5).map((s: any) => s.skill) || []),
-          ...(data.technicalSkills?.frameworks?.slice(0, 3).map((s: any) => s.skill) || []),
-          ...(data.technicalSkills?.tools?.slice(0, 3).map((s: any) => s.skill) || [])
-        ],
-        soft: data.softSkills?.slice(0, 5).map((s: any) => s.skill) || []
+        technical: data.skills?.technical?.slice(0, 10).map((skill: any) => 
+          typeof skill === 'string' ? skill : skill.skill
+        ) || [],
+        soft: data.skills?.soft || []
       },
       education: data.education?.slice(0, 2).map((edu: any) => ({
         degree: edu.degree || '',
-        school: edu.institution || '',
+        school: edu.school || '',
         endDate: edu.endDate || '',
         gpa: edu.gpa || '',
         honors: edu.honors || ''
@@ -290,21 +285,21 @@ export const useEnhancedResumeUpload = () => {
       certifications: data.certifications?.slice(0, 3).map((cert: any) => ({
         name: cert.name || '',
         issuer: cert.issuer || '',
-        date: cert.issueDate || ''
+        date: cert.date || ''
       })) || [],
-      metadata: data.extractionMetadata,
-      qualityAssessment: data.qualityAssessment,
-      atsScore: data.qualityAssessment?.atsCompatibility * 100 || 85,
+      metadata: data.metadata,
+      qualityAssessment: data.atsOptimization,
+      atsScore: data.atsOptimization?.score || 85,
       totalExperience: data.experience?.length || 0,
       totalEducation: data.education?.length || 0,
       totalProjects: data.projects?.length || 0,
       totalCertifications: data.certifications?.length || 0,
-      extractionConfidence: data.qualityAssessment?.overallQuality || 0.88
+      extractionConfidence: data.confidenceMetrics?.overall || 0.88
     };
   };
 
   const mapToResumeBuilderFormat = (data: any) => {
-    // Convert comprehensive extraction data to resume builder format
+    // Convert ai-resume-parser data to resume builder format
     return {
       personalInfo: {
         fullName: data.personalInfo?.fullName || '',
@@ -317,21 +312,21 @@ export const useEnhancedResumeUpload = () => {
         website: data.personalInfo?.website || ''
       },
       experience: data.experience?.map((exp: any) => ({
-        id: crypto.randomUUID(),
-        title: exp.jobTitle || '',
+        id: exp.id || crypto.randomUUID(),
+        title: exp.title || '',
         company: exp.company || '',
         location: exp.location || '',
         startDate: exp.startDate || '',
         endDate: exp.endDate || '',
-        current: exp.endDate === 'Present' || exp.endDate === '',
+        current: exp.current || false,
         description: exp.description || '',
         achievements: exp.achievements || [],
         technologies: exp.technologies || []
       })) || [],
       education: data.education?.map((edu: any) => ({
-        id: crypto.randomUUID(),
+        id: edu.id || crypto.randomUUID(),
         degree: edu.degree || '',
-        school: edu.institution || '',
+        school: edu.school || '',
         location: edu.location || '',
         startDate: edu.startDate || '',
         endDate: edu.endDate || '',
@@ -339,22 +334,16 @@ export const useEnhancedResumeUpload = () => {
         honors: edu.honors || ''
       })) || [],
       skills: {
-        technical: [
-          ...(data.technicalSkills?.programmingLanguages || []),
-          ...(data.technicalSkills?.frameworks || []),
-          ...(data.technicalSkills?.databases || []),
-          ...(data.technicalSkills?.tools || []),
-          ...(data.technicalSkills?.cloudPlatforms || [])
-        ].map((skill: any) => ({
+        technical: data.skills?.technical?.map((skill: any) => ({
           skill: skill.skill || skill,
           proficiency: skill.proficiency || 'intermediate',
           category: skill.category || 'general'
-        })),
-        soft: data.softSkills?.map((s: any) => s.skill || s) || [],
-        languages: data.languages || []
+        })) || [],
+        soft: data.skills?.soft || [],
+        languages: data.skills?.languages || []
       },
       projects: data.projects?.map((proj: any) => ({
-        id: crypto.randomUUID(),
+        id: proj.id || crypto.randomUUID(),
         title: proj.title || '',
         description: proj.description || '',
         technologies: proj.technologies || [],
@@ -363,22 +352,16 @@ export const useEnhancedResumeUpload = () => {
         github: proj.github || ''
       })) || [],
       certifications: data.certifications?.map((cert: any) => ({
-        id: crypto.randomUUID(),
+        id: cert.id || crypto.randomUUID(),
         name: cert.name || '',
         issuer: cert.issuer || '',
-        date: cert.issueDate || '',
-        url: cert.verificationUrl || ''
+        date: cert.date || '',
+        url: cert.url || ''
       })) || [],
-      awards: data.awards?.map((award: any) => ({
-        id: crypto.randomUUID(),
-        name: award.name || '',
-        issuer: award.issuer || '',
-        date: award.date || '',
-        description: award.description || ''
-      })) || [],
-      extractionMetadata: data.extractionMetadata,
-      qualityAssessment: data.qualityAssessment,
-      enhancementSuggestions: data.enhancementSuggestions || []
+      awards: data.awards || [],
+      extractionMetadata: data.metadata,
+      qualityAssessment: data.atsOptimization,
+      enhancementSuggestions: data.suggestions || []
     };
   };
 
@@ -404,7 +387,7 @@ export const useEnhancedResumeUpload = () => {
       contentBlocks.push({
         resume_id: resumeId,
         section_type: 'experience',
-        title: exp.jobTitle,
+        title: exp.title,
         company: exp.company,
         description: exp.description,
         raw_content: JSON.stringify(exp),
@@ -412,7 +395,7 @@ export const useEnhancedResumeUpload = () => {
         keywords: exp.keywords || [],
         achievements_data: { achievements: exp.achievements },
         technical_skills: { technologies: exp.technologies },
-        extraction_confidence: exp.extractionConfidence || 0.90,
+        extraction_confidence: exp.confidence || 0.90,
         order_index: index
       });
     });
@@ -423,25 +406,25 @@ export const useEnhancedResumeUpload = () => {
         resume_id: resumeId,
         section_type: 'education',
         title: edu.degree,
-        company: edu.institution,
-        description: `${edu.fieldOfStudy || ''} ${edu.gpa ? `(GPA: ${edu.gpa})` : ''}`.trim(),
+        company: edu.school,
+        description: `${edu.gpa ? `GPA: ${edu.gpa}` : ''}`.trim(),
         raw_content: JSON.stringify(edu),
-        enhanced_content: edu.description || edu.fieldOfStudy,
-        extraction_confidence: edu.extractionConfidence || 0.85,
+        enhanced_content: edu.description || edu.degree,
+        extraction_confidence: edu.confidence || 0.85,
         order_index: index
       });
     });
 
     // Skills block
-    if (data.technicalSkills) {
+    if (data.skills) {
       contentBlocks.push({
         resume_id: resumeId,
         section_type: 'skills',
         title: 'Technical Skills',
         description: 'Technical skills and competencies',
-        raw_content: JSON.stringify(data.technicalSkills),
-        technical_skills: data.technicalSkills,
-        extraction_confidence: data.technicalSkills.extractionConfidence || 0.88,
+        raw_content: JSON.stringify(data.skills),
+        technical_skills: data.skills,
+        extraction_confidence: 0.88,
         order_index: 0
       });
     }

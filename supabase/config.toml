@@ -12,7 +12,6 @@ verify_jwt = false
 [auth.email]
 enable_signup = true
 
-
 [functions.ai-resume-extraction]
 verify_jwt = true
 
@@ -26,6 +25,9 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.ai-resume-parser]
+verify_jwt = true
+
+[functions.comprehensive-resume-extractor]
 verify_jwt = true
 
 [functions.ai-job-generator]
