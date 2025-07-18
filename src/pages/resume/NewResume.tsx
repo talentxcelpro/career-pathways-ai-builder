@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useResumeUpload } from '@/hooks/useResumeUpload';
 
 const NewResume = () => {
   const [title, setTitle] = useState('');
@@ -14,6 +15,14 @@ const NewResume = () => {
   const [file, setFile] = useState<File | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { 
+    isProcessing, 
+    uploadSuccess, 
+    processingStep, 
+    processingSteps, 
+    processResume, 
+    resetUpload 
+  } = useResumeUpload();
 
   const handleCreateFromScratch = async () => {
     if (!title.trim()) {
@@ -29,7 +38,7 @@ const NewResume = () => {
     try {
       const { data: resume, error } = await supabase
         .from('resumes')
-        .insert([{ title: title.trim(), content: {} }])
+        .insert({ title: title.trim(), content: {} })
         .select()
         .single();
 
@@ -63,91 +72,11 @@ const NewResume = () => {
       return;
     }
 
-    setLoading(true);
-    try {
-      // Create the resume first
-      const { data: resume, error: resumeError } = await supabase
-        .from('resumes')
-        .insert([{ title: title.trim(), content: {} }])
-        .select()
-        .single();
-
-      if (resumeError) throw resumeError;
-
-      // Extract text from file
-      const fileText = await extractTextFromFile(file);
-      
-      // Call extract-resume function
-      const { data: extractedData, error: extractError } = await supabase.functions
-        .invoke('extract-resume', {
-          body: {
-            resumeText: fileText,
-            userId: (await supabase.auth.getUser()).data.user?.id
-          }
-        });
-
-      if (extractError) throw extractError;
-
-      if (extractedData.success) {
-        // Save the extracted data to resume sections
-        const sectionsToInsert = Object.entries(extractedData.data).map(([sectionType, data]) => ({
-          resume_id: resume.id,
-          section_type: sectionType,
-          content: data as any,
-          display_order: getSectionOrder(sectionType)
-        }));
-
-        await supabase
-          .from('resume_sections')
-          .insert(sectionsToInsert);
-
-        toast({
-          title: 'Success',
-          description: 'Resume uploaded and processed successfully!',
-        });
-
-        navigate(`/resume-builder/edit/${resume.id}`);
-      } else {
-        throw new Error('Failed to extract resume data');
-      }
-    } catch (error) {
-      console.error('Error uploading resume:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to upload resume. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
+    // Get the file input element to access its files
+    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+    await processResume(fileInput.files);
   };
 
-  const extractTextFromFile = async (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        resolve(event.target?.result as string);
-      };
-      reader.onerror = reject;
-      reader.readAsText(file);
-    });
-  };
-
-  const getSectionOrder = (section: string): number => {
-    const order = {
-      personal_info: 1,
-      summary: 2,
-      experience: 3,
-      education: 4,
-      skills: 5,
-      certifications: 6,
-      projects: 7,
-      languages: 8,
-      awards: 9,
-      hobbies: 10
-    };
-    return order[section as keyof typeof order] || 99;
-  };
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
@@ -236,11 +165,18 @@ const NewResume = () => {
             </div>
             <Button
               onClick={handleFileUpload}
-              disabled={loading || !file}
+              disabled={isProcessing || !file}
               className="w-full"
             >
-              {loading ? 'Processing...' : 'Upload & Process'}
+              {isProcessing ? `${processingSteps[processingStep]}...` : 'Upload & Process'}
             </Button>
+            {isProcessing && (
+              <div className="mt-4 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Step {processingStep + 1} of {processingSteps.length}: {processingSteps[processingStep]}
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
