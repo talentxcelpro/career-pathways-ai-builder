@@ -43,7 +43,7 @@ import {
   Target,
   TrendingUp,
   Lightbulb,
-  ChevronRight
+  ArrowRight
 } from "lucide-react";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { useAuth } from "@/contexts/AuthContext";
@@ -1134,7 +1134,7 @@ export default function EnhancedServiceForm({ serviceId, onCancel, onSaved }: En
                 ) : (
                   <>
                     Next
-                    <ChevronRight className="h-4 w-4 ml-2" />
+                    <ArrowRight className="h-4 w-4 ml-2" />
                   </>
                 )}
               </Button>
