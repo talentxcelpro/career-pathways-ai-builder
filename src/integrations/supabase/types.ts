@@ -5979,6 +5979,39 @@ export type Database = {
         }
         Relationships: []
       }
+      industry_skills_library: {
+        Row: {
+          created_at: string | null
+          id: string
+          industry: string
+          is_active: boolean | null
+          priority_level: number | null
+          skill_category: string
+          skill_keywords: string[] | null
+          skill_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          industry: string
+          is_active?: boolean | null
+          priority_level?: number | null
+          skill_category: string
+          skill_keywords?: string[] | null
+          skill_name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          industry?: string
+          is_active?: boolean | null
+          priority_level?: number | null
+          skill_category?: string
+          skill_keywords?: string[] | null
+          skill_name?: string
+        }
+        Relationships: []
+      }
       interests: {
         Row: {
           created_at: string | null
@@ -10075,62 +10108,83 @@ export type Database = {
       }
       resume_content_blocks: {
         Row: {
+          achievements_data: Json | null
           ai_generated: boolean | null
           ai_prompt: string | null
           block_type: string
+          certifications_data: Json | null
           company: string | null
           created_at: string | null
           description: string | null
           end_date: string | null
+          enhanced_content: string | null
+          extraction_confidence: number | null
           id: string
           is_current: boolean | null
+          keywords: string[] | null
           location: string | null
           metadata: Json | null
           position: number
+          raw_content: string | null
           resume_id: string
           section_type: string
           start_date: string | null
           subtitle: string | null
+          technical_skills: Json | null
           title: string | null
           updated_at: string | null
         }
         Insert: {
+          achievements_data?: Json | null
           ai_generated?: boolean | null
           ai_prompt?: string | null
           block_type: string
+          certifications_data?: Json | null
           company?: string | null
           created_at?: string | null
           description?: string | null
           end_date?: string | null
+          enhanced_content?: string | null
+          extraction_confidence?: number | null
           id?: string
           is_current?: boolean | null
+          keywords?: string[] | null
           location?: string | null
           metadata?: Json | null
           position?: number
+          raw_content?: string | null
           resume_id: string
           section_type: string
           start_date?: string | null
           subtitle?: string | null
+          technical_skills?: Json | null
           title?: string | null
           updated_at?: string | null
         }
         Update: {
+          achievements_data?: Json | null
           ai_generated?: boolean | null
           ai_prompt?: string | null
           block_type?: string
+          certifications_data?: Json | null
           company?: string | null
           created_at?: string | null
           description?: string | null
           end_date?: string | null
+          enhanced_content?: string | null
+          extraction_confidence?: number | null
           id?: string
           is_current?: boolean | null
+          keywords?: string[] | null
           location?: string | null
           metadata?: Json | null
           position?: number
+          raw_content?: string | null
           resume_id?: string
           section_type?: string
           start_date?: string | null
           subtitle?: string | null
+          technical_skills?: Json | null
           title?: string | null
           updated_at?: string | null
         }
@@ -10280,6 +10334,65 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "resume_exports_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resume_extraction_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          error_details: string | null
+          extracted_data: Json | null
+          extraction_status: string | null
+          id: string
+          processing_step: string | null
+          processing_time_ms: number | null
+          progress_percentage: number | null
+          raw_text: string | null
+          resume_id: string | null
+          updated_at: string | null
+          user_id: string
+          validation_results: Json | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_details?: string | null
+          extracted_data?: Json | null
+          extraction_status?: string | null
+          id?: string
+          processing_step?: string | null
+          processing_time_ms?: number | null
+          progress_percentage?: number | null
+          raw_text?: string | null
+          resume_id?: string | null
+          updated_at?: string | null
+          user_id: string
+          validation_results?: Json | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_details?: string | null
+          extracted_data?: Json | null
+          extraction_status?: string | null
+          id?: string
+          processing_step?: string | null
+          processing_time_ms?: number | null
+          progress_percentage?: number | null
+          raw_text?: string | null
+          resume_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+          validation_results?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_extraction_jobs_resume_id_fkey"
             columns: ["resume_id"]
             isOneToOne: false
             referencedRelation: "resumes"
@@ -10779,19 +10892,25 @@ export type Database = {
       resumes: {
         Row: {
           ats_score: number | null
+          completeness_score: number | null
           completion_percentage: number | null
           content: Json
           created_at: string | null
+          extraction_confidence: number | null
+          extraction_version: string | null
           file_size: number | null
           file_url: string | null
           id: string
+          industry_type: string | null
           is_active: boolean | null
           is_primary: boolean | null
           is_public: boolean | null
           language: string | null
           metadata: Json | null
           mime_type: string | null
+          processing_metadata: Json | null
           public_url_slug: string | null
+          raw_extracted_data: Json | null
           template_id: string | null
           title: string
           updated_at: string | null
@@ -10799,19 +10918,25 @@ export type Database = {
         }
         Insert: {
           ats_score?: number | null
+          completeness_score?: number | null
           completion_percentage?: number | null
           content: Json
           created_at?: string | null
+          extraction_confidence?: number | null
+          extraction_version?: string | null
           file_size?: number | null
           file_url?: string | null
           id?: string
+          industry_type?: string | null
           is_active?: boolean | null
           is_primary?: boolean | null
           is_public?: boolean | null
           language?: string | null
           metadata?: Json | null
           mime_type?: string | null
+          processing_metadata?: Json | null
           public_url_slug?: string | null
+          raw_extracted_data?: Json | null
           template_id?: string | null
           title: string
           updated_at?: string | null
@@ -10819,19 +10944,25 @@ export type Database = {
         }
         Update: {
           ats_score?: number | null
+          completeness_score?: number | null
           completion_percentage?: number | null
           content?: Json
           created_at?: string | null
+          extraction_confidence?: number | null
+          extraction_version?: string | null
           file_size?: number | null
           file_url?: string | null
           id?: string
+          industry_type?: string | null
           is_active?: boolean | null
           is_primary?: boolean | null
           is_public?: boolean | null
           language?: string | null
           metadata?: Json | null
           mime_type?: string | null
+          processing_metadata?: Json | null
           public_url_slug?: string | null
+          raw_extracted_data?: Json | null
           template_id?: string | null
           title?: string
           updated_at?: string | null
