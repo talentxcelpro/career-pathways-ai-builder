@@ -1,6 +1,6 @@
 
 import React from 'react';
-import ServiceSetupForm from '@/components/marketplace/ServiceSetupForm';
+import EnhancedServiceForm from '@/components/marketplace/EnhancedServiceForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useFeatureGating } from '@/hooks/useFeatureGating';
@@ -71,7 +71,10 @@ export default function PostService() {
           )}
         </div>
         
-        <ServiceSetupForm />
+        <EnhancedServiceForm 
+          onCancel={() => window.history.back()}
+          onSaved={() => window.location.href = '/pro/services'}
+        />
       </div>
     </div>
   );
