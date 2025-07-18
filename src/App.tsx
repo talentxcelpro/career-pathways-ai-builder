@@ -2,7 +2,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -30,6 +30,8 @@ function App() {
               <Route path="/resume-builder/upload" element={<UploadResume />} />
               <Route path="/resume-builder/visual" element={<VisualResumeBuilderPage />} />
               <Route path="/resume-builder/visual/:id" element={<VisualResumeBuilderPage />} />
+              {/* Catch-all route - redirect unknown paths to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </TooltipProvider>
         </AuthProvider>
