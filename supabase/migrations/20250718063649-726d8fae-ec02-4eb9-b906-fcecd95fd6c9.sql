@@ -1,0 +1,2 @@
+-- Check if OPENAI_API_KEY is configured
+-- This is just to trigger the response about setting up the key
