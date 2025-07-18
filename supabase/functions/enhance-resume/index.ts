@@ -57,7 +57,8 @@ serve(async (req) => {
       JSON.stringify({ 
         status: 'healthy', 
         timestamp: new Date().toISOString(),
-        service: 'enhance-resume'
+        service: 'enhance-resume',
+        hasOpenAI: !!Deno.env.get('OPENAI_API_KEY')
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -85,21 +86,24 @@ serve(async (req) => {
   try {
     console.log('📝 Processing resume enhancement request...');
     
-    // Parse request body with timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-    
+    // Parse request body with proper error handling
     let requestBody;
     try {
-      requestBody = await req.json();
-      clearTimeout(timeoutId);
+      const bodyText = await req.text();
+      console.log('📄 Raw request body length:', bodyText.length);
+      
+      if (!bodyText) {
+        throw new Error('Empty request body');
+      }
+      
+      requestBody = JSON.parse(bodyText);
+      console.log('✅ Request body parsed successfully');
     } catch (parseError) {
-      clearTimeout(timeoutId);
       console.error('❌ Failed to parse request body:', parseError);
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Invalid JSON in request body',
+          error: 'Invalid JSON in request body: ' + parseError.message,
           enhancedResume: null
         }),
         { 
@@ -196,7 +200,7 @@ Ensure the enhanced version is ready for export to a Word or PDF resume format.
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'gpt-4.1-2025-04-14',
           messages: [
             { role: 'system', content: 'You are a professional resume writer. Return only valid JSON.' },
             { role: 'user', content: prompt },

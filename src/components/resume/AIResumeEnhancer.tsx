@@ -18,20 +18,19 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
 
   const testConnection = async (): Promise<boolean> => {
     try {
-      // Use direct fetch for health check since supabase.functions.invoke only makes POST requests
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/enhance-resume', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token || ''}`,
-        },
+      console.log('Testing connection to enhance-resume function...');
+      
+      // Test with supabase.functions.invoke for better reliability
+      const { data, error } = await supabase.functions.invoke('enhance-resume', {
+        method: 'GET'
       });
       
-      if (response.ok) {
-        const data = await response.json();
-        return data.status === 'healthy';
+      if (!error && data && data.status === 'healthy') {
+        console.log('Connection test successful:', data);
+        return true;
       }
       
+      console.warn('Connection test failed:', error || 'Invalid response');
       return false;
     } catch (error) {
       console.error('Connection test failed:', error);
@@ -148,11 +147,18 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
         } catch (fetchError: any) {
           console.error(`Enhancement attempt ${retryCount + 1} failed:`, fetchError);
           lastError = fetchError;
+          
+          // Check for specific network errors
+          if (fetchError.message?.includes('Failed to fetch') || fetchError.name === 'FunctionsFetchError') {
+            toast.error('Unable to connect to AI service. Using offline enhancement.', { id: 'enhance-retry' });
+            break; // Skip retries for network issues and go straight to fallback
+          }
+          
           retryCount++;
           
           if (retryCount < maxRetries) {
             const waitTime = Math.min(1000 * Math.pow(2, retryCount), 5000);
-            toast.loading(`Network error, retrying... (${retryCount}/${maxRetries})`, { id: 'enhance-retry' });
+            toast.loading(`Retrying enhancement... (${retryCount}/${maxRetries})`, { id: 'enhance-retry' });
             await new Promise(resolve => setTimeout(resolve, waitTime));
           }
         }
