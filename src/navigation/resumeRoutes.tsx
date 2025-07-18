@@ -1,9 +1,8 @@
 
 import { FileText, Upload, Edit, Download, Mail, Settings } from "lucide-react";
-import ResumeDashboard from "../pages/resume/ResumeDashboard";
-import CreateResume from "../pages/resume/CreateResume";
-import UploadResume from "../pages/resume/UploadResume";
-import { StreamlinedResumeBuilder } from "../components/resume/StreamlinedResumeBuilder";
+import ResumeBuilder from "../pages/resume/ResumeBuilder";
+import NewResume from "../pages/resume/NewResume";
+import EditResume from "../pages/resume/EditResume";
 import ExportResume from "../pages/resume/ExportResume";
 import CoverLetterGenerator from "../pages/resume/CoverLetterGenerator";
 import EditCoverLetter from "../pages/resume/EditCoverLetter";
@@ -14,31 +13,19 @@ export const resumeRoutes = [
     title: "Resume Builder Dashboard",
     to: "/resume-builder",
     icon: <FileText className="h-4 w-4" />,
-    page: <ResumeDashboard />,
+    page: <ResumeBuilder />,
   },
   {
     title: "Create New Resume",
     to: "/resume-builder/new",
     icon: <Edit className="h-4 w-4" />,
-    page: <CreateResume />,
-  },
-  {
-    title: "Upload Resume",
-    to: "/resume-builder/upload",
-    icon: <Upload className="h-4 w-4" />,
-    page: <UploadResume />,
+    page: <NewResume />,
   },
   {
     title: "Edit Resume",
     to: "/resume-builder/edit/:id",
     icon: <Edit className="h-4 w-4" />,
-    page: <StreamlinedResumeBuilder />,
-  },
-  {
-    title: "Edit Resume (Alternative Path)",
-    to: "/resume/edit/:id",
-    icon: <Edit className="h-4 w-4" />,
-    page: <StreamlinedResumeBuilder />,
+    page: <EditResume />,
   },
   {
     title: "Export Resume",

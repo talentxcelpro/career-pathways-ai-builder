@@ -11,7 +11,6 @@ import { format } from 'date-fns';
 interface Resume {
   id: string;
   title: string;
-  status: 'draft' | 'published' | 'archived';
   ats_score: number;
   created_at: string;
   updated_at: string;
@@ -101,12 +100,10 @@ const ResumeBuilder = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'published':
+      case 'active':
         return 'bg-green-100 text-green-800';
       case 'draft':
         return 'bg-yellow-100 text-yellow-800';
-      case 'archived':
-        return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -181,8 +178,8 @@ const ResumeBuilder = () => {
                       Last updated {format(new Date(resume.updated_at), 'MMM d, yyyy')}
                     </CardDescription>
                   </div>
-                  <Badge className={getStatusColor(resume.status)}>
-                    {resume.status}
+                  <Badge className={getStatusColor('draft')}>
+                    Draft
                   </Badge>
                 </div>
               </CardHeader>

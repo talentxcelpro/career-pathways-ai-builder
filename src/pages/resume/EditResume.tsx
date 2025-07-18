@@ -15,7 +15,6 @@ import { format } from 'date-fns';
 interface Resume {
   id: string;
   title: string;
-  status: 'draft' | 'published' | 'archived';
   ats_score: number;
   created_at: string;
   updated_at: string;
@@ -23,8 +22,8 @@ interface Resume {
 
 interface ResumeSection {
   id: string;
-  section: string;
-  data: any;
+  section_type: string;
+  content: any;
   display_order: number;
 }
 
@@ -101,8 +100,8 @@ const EditResume = () => {
           .upsert({
             id: section.id,
             resume_id: id,
-            section: section.section,
-            data: section.data,
+            section_type: section.section_type,
+            content: section.content,
             display_order: section.display_order
           });
 
@@ -130,7 +129,7 @@ const EditResume = () => {
 
     setEnhancing(true);
     try {
-      const sectionData = sections.find(s => s.section === sectionType)?.data || {};
+      const sectionData = sections.find(s => s.section_type === sectionType)?.content || {};
       
       const { data: enhancedData, error } = await supabase.functions
         .invoke('enhance-resume', {
@@ -146,10 +145,10 @@ const EditResume = () => {
       if (enhancedData.success) {
         // Update the section with enhanced data
         const updatedSections = sections.map(section => {
-          if (section.section === sectionType) {
+          if (section.section_type === sectionType) {
             return {
               ...section,
-              data: enhancedData.enhanced
+              content: enhancedData.enhanced
             };
           }
           return section;
@@ -176,8 +175,8 @@ const EditResume = () => {
   const addSection = (sectionType: string) => {
     const newSection: ResumeSection = {
       id: `temp-${Date.now()}`,
-      section: sectionType,
-      data: getDefaultSectionData(sectionType),
+      section_type: sectionType,
+      content: getDefaultSectionData(sectionType),
       display_order: sections.length + 1
     };
 
@@ -214,7 +213,7 @@ const EditResume = () => {
   const updateSectionData = (sectionId: string, newData: any) => {
     setSections(sections.map(section => 
       section.id === sectionId 
-        ? { ...section, data: newData }
+        ? { ...section, content: newData }
         : section
     ));
   };
@@ -307,16 +306,16 @@ const EditResume = () => {
             <Card key={section.id}>
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="capitalize">{section.section.replace('_', ' ')}</CardTitle>
+                  <CardTitle className="capitalize">{section.section_type.replace('_', ' ')}</CardTitle>
                   <CardDescription>
-                    Edit your {section.section.replace('_', ' ')} information
+                    Edit your {section.section_type.replace('_', ' ')} information
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleEnhanceSection(section.section)}
+                    onClick={() => handleEnhanceSection(section.section_type)}
                     disabled={enhancing}
                   >
                     <Sparkles className="w-4 h-4 mr-1" />
@@ -333,61 +332,61 @@ const EditResume = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                {section.section === 'personal_info' && (
+                {section.section_type === 'personal_info' && (
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>Name</Label>
                       <Input
-                        value={section.data.name || ''}
-                        onChange={(e) => updateSectionData(section.id, { ...section.data, name: e.target.value })}
+                        value={section.content.name || ''}
+                        onChange={(e) => updateSectionData(section.id, { ...section.content, name: e.target.value })}
                         placeholder="Your full name"
                       />
                     </div>
                     <div>
                       <Label>Email</Label>
                       <Input
-                        value={section.data.email || ''}
-                        onChange={(e) => updateSectionData(section.id, { ...section.data, email: e.target.value })}
+                        value={section.content.email || ''}
+                        onChange={(e) => updateSectionData(section.id, { ...section.content, email: e.target.value })}
                         placeholder="your.email@example.com"
                       />
                     </div>
                     <div>
                       <Label>Phone</Label>
                       <Input
-                        value={section.data.phone || ''}
-                        onChange={(e) => updateSectionData(section.id, { ...section.data, phone: e.target.value })}
+                        value={section.content.phone || ''}
+                        onChange={(e) => updateSectionData(section.id, { ...section.content, phone: e.target.value })}
                         placeholder="+1 (555) 123-4567"
                       />
                     </div>
                     <div>
                       <Label>Location</Label>
                       <Input
-                        value={section.data.location || ''}
-                        onChange={(e) => updateSectionData(section.id, { ...section.data, location: e.target.value })}
+                        value={section.content.location || ''}
+                        onChange={(e) => updateSectionData(section.id, { ...section.content, location: e.target.value })}
                         placeholder="City, State"
                       />
                     </div>
                     <div className="col-span-2">
                       <Label>LinkedIn</Label>
                       <Input
-                        value={section.data.linkedin || ''}
-                        onChange={(e) => updateSectionData(section.id, { ...section.data, linkedin: e.target.value })}
+                        value={section.content.linkedin || ''}
+                        onChange={(e) => updateSectionData(section.id, { ...section.content, linkedin: e.target.value })}
                         placeholder="https://linkedin.com/in/yourprofile"
                       />
                     </div>
                   </div>
                 )}
-                {section.section === 'summary' && (
+                {section.section_type === 'summary' && (
                   <Textarea
-                    value={section.data || ''}
+                    value={section.content || ''}
                     onChange={(e) => updateSectionData(section.id, e.target.value)}
                     placeholder="Write a compelling professional summary..."
                     rows={4}
                   />
                 )}
-                {section.section === 'skills' && (
+                {section.section_type === 'skills' && (
                   <Textarea
-                    value={Array.isArray(section.data) ? section.data.join(', ') : ''}
+                    value={Array.isArray(section.content) ? section.content.join(', ') : ''}
                     onChange={(e) => updateSectionData(section.id, e.target.value.split(', '))}
                     placeholder="JavaScript, React, Node.js, Python..."
                     rows={3}
@@ -419,7 +418,7 @@ const EditResume = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => addSection(sectionType)}
-                    disabled={sections.some(s => s.section === sectionType)}
+                    disabled={sections.some(s => s.section_type === sectionType)}
                   >
                     <Plus className="w-4 h-4 mr-1" />
                     {sectionType.replace('_', ' ')}
@@ -442,28 +441,28 @@ const EditResume = () => {
               <div className="bg-white border rounded-lg p-8 shadow-sm">
                 <div className="text-center mb-6">
                   <h2 className="text-2xl font-bold">
-                    {sections.find(s => s.section === 'personal_info')?.data?.name || 'Your Name'}
+                    {sections.find(s => s.section_type === 'personal_info')?.content?.name || 'Your Name'}
                   </h2>
                   <p className="text-muted-foreground">
-                    {sections.find(s => s.section === 'personal_info')?.data?.email || 'your.email@example.com'} • 
-                    {sections.find(s => s.section === 'personal_info')?.data?.phone || '(555) 123-4567'}
+                    {sections.find(s => s.section_type === 'personal_info')?.content?.email || 'your.email@example.com'} • 
+                    {sections.find(s => s.section_type === 'personal_info')?.content?.phone || '(555) 123-4567'}
                   </p>
                 </div>
                 
-                {sections.find(s => s.section === 'summary') && (
+                {sections.find(s => s.section_type === 'summary') && (
                   <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Professional Summary</h3>
                     <p className="text-sm leading-relaxed">
-                      {sections.find(s => s.section === 'summary')?.data || 'Your professional summary will appear here...'}
+                      {sections.find(s => s.section_type === 'summary')?.content || 'Your professional summary will appear here...'}
                     </p>
                   </div>
                 )}
                 
-                {sections.find(s => s.section === 'skills') && (
+                {sections.find(s => s.section_type === 'skills') && (
                   <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">Skills</h3>
                     <div className="flex flex-wrap gap-2">
-                      {(sections.find(s => s.section === 'skills')?.data || []).map((skill: string, index: number) => (
+                      {(sections.find(s => s.section_type === 'skills')?.content || []).map((skill: string, index: number) => (
                         <Badge key={index} variant="secondary">{skill}</Badge>
                       ))}
                     </div>
@@ -489,12 +488,12 @@ const EditResume = () => {
                     <CardContent className="pt-6">
                       <div className="flex items-center justify-between">
                         <h4 className="font-semibold capitalize">
-                          {section.section.replace('_', ' ')}
+                          {section.section_type.replace('_', ' ')}
                         </h4>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleEnhanceSection(section.section)}
+                          onClick={() => handleEnhanceSection(section.section_type)}
                           disabled={enhancing}
                         >
                           <Sparkles className="w-4 h-4 mr-1" />

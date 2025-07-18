@@ -29,7 +29,7 @@ const NewResume = () => {
     try {
       const { data: resume, error } = await supabase
         .from('resumes')
-        .insert([{ title: title.trim() }])
+        .insert([{ title: title.trim(), content: {} }])
         .select()
         .single();
 
@@ -68,7 +68,7 @@ const NewResume = () => {
       // Create the resume first
       const { data: resume, error: resumeError } = await supabase
         .from('resumes')
-        .insert([{ title: title.trim() }])
+        .insert([{ title: title.trim(), content: {} }])
         .select()
         .single();
 
@@ -90,11 +90,11 @@ const NewResume = () => {
 
       if (extractedData.success) {
         // Save the extracted data to resume sections
-        const sectionsToInsert = Object.entries(extractedData.data).map(([section, data]) => ({
+        const sectionsToInsert = Object.entries(extractedData.data).map(([sectionType, data]) => ({
           resume_id: resume.id,
-          section,
-          data: data as any,
-          display_order: getSectionOrder(section)
+          section_type: sectionType,
+          content: data as any,
+          display_order: getSectionOrder(sectionType)
         }));
 
         await supabase
