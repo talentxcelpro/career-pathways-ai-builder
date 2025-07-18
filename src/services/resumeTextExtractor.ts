@@ -5,6 +5,7 @@
 
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
+import Tesseract from 'tesseract.js';
 import { configurePDFWorker, isPDFWorkerReady, getPDFWorkerStatus } from '@/utils/pdfWorkerConfig';
 
 export class ResumeTextExtractor {
@@ -12,23 +13,40 @@ export class ResumeTextExtractor {
    * Extract text from various file formats
    */
   async extractText(file: File): Promise<string> {
-    console.log(`Extracting text from ${file.type}: ${file.name}`);
+    console.log(`🔍 Starting complete text extraction from ${file.type}: ${file.name}`);
     
     try {
+      let extractedText = '';
+      
       switch (file.type) {
         case 'application/pdf':
-          return await this.extractFromPDF(file);
+          extractedText = await this.extractFromPDF(file);
+          break;
         case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
         case 'application/msword':
-          return await this.extractFromDOCX(file);
+          extractedText = await this.extractFromDOCX(file);
+          break;
         case 'text/plain':
-          return await this.extractFromTXT(file);
+          extractedText = await this.extractFromTXT(file);
+          break;
+        case 'image/jpeg':
+        case 'image/jpg':
+        case 'image/png':
+          extractedText = await this.extractFromImage(file);
+          break;
         default:
           throw new Error(`Unsupported file type: ${file.type}`);
       }
+
+      // Enhanced post-processing for complete text extraction
+      const completeText = this.ensureCompleteExtraction(extractedText, file);
+      
+      console.log(`✅ Complete text extraction finished: ${completeText.length} characters`);
+      return completeText;
+      
     } catch (error) {
-      console.error('Text extraction failed:', error);
-      throw new Error(`Failed to extract text: ${error.message}`);
+      console.error('❌ Complete text extraction failed:', error);
+      throw new Error(`Failed to extract complete text: ${error.message}`);
     }
   }
 
@@ -190,6 +208,133 @@ export class ResumeTextExtractor {
       console.error('TXT extraction failed:', error);
       throw new Error(`Failed to extract text from TXT: ${error.message}`);
     }
+  }
+
+  /**
+   * Extract text from images using OCR (Tesseract.js)
+   */
+  private async extractFromImage(file: File): Promise<string> {
+    try {
+      console.log('🔍 Starting OCR extraction from image...');
+      
+      const { data: { text } } = await Tesseract.recognize(file, 'eng', {
+        logger: (m) => {
+          if (m.status === 'recognizing text') {
+            console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+          }
+        }
+      });
+      
+      console.log(`OCR extraction complete. Extracted ${text.length} characters`);
+      
+      if (text.length < 50) {
+        console.warn('OCR extraction yielded minimal text');
+        return `[OCR parsing incomplete] File: ${file.name} (${(file.size / 1024).toFixed(1)}KB). Image may be low quality or contain minimal text.`;
+      }
+      
+      return this.cleanText(text);
+      
+    } catch (error) {
+      console.error('OCR extraction failed:', error);
+      return `[OCR extraction error] File: ${file.name}, Size: ${(file.size / 1024).toFixed(1)}KB, Error: ${error.message}. Please try a different format.`;
+    }
+  }
+
+  /**
+   * Enhanced PDF extraction with OCR fallback for scanned documents
+   */
+  private async extractFromPDFWithOCR(file: File): Promise<string> {
+    try {
+      console.log('🔍 Starting PDF OCR extraction for scanned document...');
+      
+      // First try regular PDF text extraction
+      const regularText = await this.extractFromPDF(file);
+      
+      // If regular extraction yielded good results, return it
+      if (regularText.length > 200 && !regularText.includes('[PDF parsing incomplete]')) {
+        return regularText;
+      }
+      
+      console.log('Regular PDF extraction insufficient, trying OCR...');
+      
+      // Convert PDF to images and OCR each page
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      
+      let combinedText = '';
+      
+      for (let i = 1; i <= Math.min(pdf.numPages, 5); i++) { // Limit to 5 pages for performance
+        try {
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 2.0 });
+          
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          
+          await page.render({ canvasContext: context, viewport }).promise;
+          
+          // Convert canvas to blob for OCR
+          const blob = await new Promise<Blob>((resolve) => {
+            canvas.toBlob((blob) => resolve(blob!), 'image/png');
+          });
+          
+          const { data: { text } } = await Tesseract.recognize(blob, 'eng');
+          
+          if (text.trim()) {
+            combinedText += text + '\n\n';
+          }
+          
+          console.log(`OCR Page ${i}: extracted ${text.length} characters`);
+        } catch (pageError) {
+          console.warn(`OCR failed for page ${i}:`, pageError.message);
+          continue;
+        }
+      }
+      
+      return combinedText.trim() || regularText;
+      
+    } catch (error) {
+      console.error('PDF OCR extraction failed:', error);
+      return `[PDF OCR extraction error] File: ${file.name}, Error: ${error.message}. Please try a different format.`;
+    }
+  }
+
+  /**
+   * Ensure complete text extraction with fallback mechanisms
+   */
+  private ensureCompleteExtraction(extractedText: string, file: File): string {
+    console.log('🔍 Ensuring complete text extraction...');
+    
+    // Calculate extraction quality
+    const quality = this.getExtractionQuality(extractedText);
+    console.log(`Extraction quality score: ${quality.score}%`);
+    
+    if (quality.issues.length > 0) {
+      console.log('Quality issues found:', quality.issues);
+    }
+    
+    // If extraction quality is poor, suggest alternatives
+    if (quality.score < 60) {
+      console.warn('Low extraction quality detected');
+      
+      // Add extraction metadata for debugging
+      const metadata = {
+        originalFileName: file.name,
+        fileSize: `${(file.size / 1024).toFixed(1)}KB`,
+        fileType: file.type,
+        extractionQuality: quality.score,
+        extractionIssues: quality.issues,
+        extractionTimestamp: new Date().toISOString()
+      };
+      
+      const enhancedText = `${extractedText}\n\n[EXTRACTION METADATA]\n${JSON.stringify(metadata, null, 2)}`;
+      return this.preprocessForAI(enhancedText);
+    }
+    
+    // Return preprocessed text for AI parsing
+    return this.preprocessForAI(extractedText);
   }
 
   /**

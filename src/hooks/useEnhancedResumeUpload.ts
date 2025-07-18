@@ -22,7 +22,7 @@ export const useEnhancedResumeUpload = () => {
 
   const { uploadFile } = useFileUpload({
     bucket: 'resumes',
-    maxSize: 10 * 1024 * 1024,
+    maxSize: 15 * 1024 * 1024, // Increased to 15MB for images
     allowedTypes: [
       'application/pdf', 
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
@@ -35,14 +35,15 @@ export const useEnhancedResumeUpload = () => {
   });
 
   const processingSteps = [
-    'Initializing upload...',
+    'Initializing complete extraction...',
     'Uploading file to secure storage...',
-    'Extracting text content...',
-    'Enhanced AI parsing...',
-    'Mapping data structures...',
-    'Optimizing for ATS systems...',
-    'Generating enhancement suggestions...',
-    'Finalizing enhanced resume...'
+    'Extracting ALL text content (including OCR)...',
+    'Comprehensive AI parsing and structuring...',
+    'Mapping complete data structures...',
+    'ATS optimization and scoring...',
+    'Generating intelligent enhancement suggestions...',
+    'Creating content blocks and templates...',
+    'Finalizing complete resume extraction...'
   ];
 
   const progressCallback = useCallback((progress: number, status: string) => {
@@ -75,9 +76,9 @@ export const useEnhancedResumeUpload = () => {
       return;
     }
     
-    // Validate file size (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error('File size must be less than 10MB');
+    // Validate file size (15MB)
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error('File size must be less than 15MB');
       return;
     }
     
