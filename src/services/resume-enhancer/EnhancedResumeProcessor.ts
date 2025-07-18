@@ -392,4 +392,21 @@ export class EnhancedResumeProcessor {
       improvements
     };
   }
+
+  async processBasicExtraction(file: File): Promise<EnhancedProcessingResult> {
+    console.log('Starting basic extraction for:', file.name);
+    
+    try {
+      // Use basic extraction with minimal enhancements
+      const result = await this.processResume(file, {
+        enhancementLevel: 'basic'
+      });
+      
+      console.log('Basic extraction completed successfully');
+      return result;
+    } catch (error) {
+      console.error('Basic extraction failed:', error);
+      throw new Error(`Basic extraction failed: ${error.message}`);
+    }
+  }
 }

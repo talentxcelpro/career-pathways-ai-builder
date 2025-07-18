@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFileUpload } from "@/hooks/useFileUpload";
-import { EnhancedResumeProcessor } from "@/services/enhancedResumeProcessor";
+import { EnhancedResumeProcessor } from "@/services/resume-enhancer/EnhancedResumeProcessor";
 import { toast } from "sonner";
 
 export const useResumeUpload = () => {
@@ -69,11 +69,11 @@ export const useResumeUpload = () => {
       
       // Step 4: ATS Optimization (built into processor) 
       setProcessingStep(4);
-      console.log('ATS optimization complete - Score:', extractedContent.atsOptimization.score);
+      console.log('ATS optimization complete - Score:', extractedContent.enhancementScore?.atsCompatibility || 0);
       
       // Step 5: Generate enhancement suggestions (built into processor)
       setProcessingStep(5);
-      console.log('Enhancement suggestions generated:', extractedContent.suggestions.length);
+      console.log('Enhancement suggestions generated:', extractedContent.recommendations?.length || 0);
       
       // Step 6: Create enhanced resume entry in database
       setProcessingStep(6);
@@ -82,8 +82,8 @@ export const useResumeUpload = () => {
         .insert({
           user_id: user.id,
           title: `Enhanced Resume from ${file.name}`,
-          content: extractedContent as any, // Convert to Json type
-          ats_score: extractedContent.atsOptimization?.score || 75,
+          content: extractedContent.enhancedContent as any, // Convert to Json type
+          ats_score: extractedContent.enhancementScore?.atsCompatibility || 75,
           template_id: null // Use null instead of string to avoid UUID errors
         })
         .select()

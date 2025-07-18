@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFileUpload } from "@/hooks/useFileUpload";
-import { OCRResumeProcessor } from "@/services/ocrResumeProcessor";
+import { EnhancedResumeProcessor } from "@/services/resume-enhancer/EnhancedResumeProcessor";
 import { ResumeTextExtractor } from "@/services/resumeTextExtractor";
 import { configurePDFWorker, getPDFWorkerStatus } from "@/utils/pdfWorkerConfig";
 import { toast } from "sonner";
@@ -108,54 +108,29 @@ export const useEnhancedResumeUpload = () => {
       
       let extractedContent;
       
-      if (needsOCR) {
-        // Use OCR for images and scanned documents
-        progressCallback(15, 'Starting enhanced OCR processing...');
-        const processor = new OCRResumeProcessor();
-        extractedContent = await processor.processResumeWithOCR(file, progressCallback);
-        await processor.cleanup();
-      } else {
-        // Use enhanced text extraction for PDFs and Word documents
-        progressCallback(15, 'Starting enhanced text extraction...');
-        const textExtractor = new ResumeTextExtractor();
+      // Use enhanced processor for all file types
+      progressCallback(15, 'Starting comprehensive resume processing...');
+      const processor = new EnhancedResumeProcessor();
+      
+      try {
+        // Process with enhanced extraction and offline enhancement
+        progressCallback(30, 'Extracting content with enhanced AI...');
+        extractedContent = await processor.processResume(file);
+        progressCallback(90, 'Finalizing extraction...');
         
+        console.log('✅ Enhanced processing completed successfully');
+      } catch (processingError) {
+        console.warn('⚠️ Enhanced processing failed:', processingError);
+        
+        // Try basic processing as fallback
+        progressCallback(60, 'Attempting basic processing...');
         try {
-          // Extract raw text
-          progressCallback(30, 'Extracting text from document...');
-          const rawText = await textExtractor.extractText(file);
-          console.log(`✅ Text extracted: ${rawText.length} characters`);
-          
-          // Validate extraction quality
-          const quality = textExtractor.getExtractionQuality(rawText);
-          console.log(`📊 Extraction quality: ${quality.score}%, Issues: ${quality.issues.join(', ')}`);
-          
-          if (quality.score < 30) {
-            console.warn('⚠️ Low extraction quality, falling back to OCR...');
-            toast('Document extraction quality is low. Switching to OCR mode...', { 
-              description: 'Using OCR for better accuracy' 
-            });
-            
-            progressCallback(40, 'Switching to OCR processing...');
-            const processor = new OCRResumeProcessor();
-            extractedContent = await processor.processResumeWithOCR(file, progressCallback);
-            await processor.cleanup();
-          } else {
-            // Process with AI extraction
-            progressCallback(50, 'Processing with AI...');
-            const processor = new OCRResumeProcessor();
-            extractedContent = await processor.processResume(file);
-            progressCallback(90, 'Finalizing extraction...');
-          }
-        } catch (textError) {
-          console.warn('⚠️ Text extraction failed, falling back to OCR:', textError);
-          toast('Text extraction failed. Switching to OCR mode...', {
-            description: 'Trying alternative processing method'
-          });
-          
-          progressCallback(40, 'Switching to OCR processing...');
-          const processor = new OCRResumeProcessor();
-          extractedContent = await processor.processResumeWithOCR(file, progressCallback);
-          await processor.cleanup();
+          const basicResult = await processor.processBasicExtraction(file);
+          extractedContent = basicResult;
+          console.log('✅ Basic processing fallback successful');
+        } catch (fallbackError) {
+          console.error('❌ All processing methods failed:', fallbackError);
+          throw new Error('Unable to process resume. Please try a different file format.');
         }
       }
       
@@ -173,8 +148,8 @@ export const useEnhancedResumeUpload = () => {
         .insert({
           user_id: user.id,
           title: `Enhanced Resume from ${file.name}`,
-          content: extractedContent as any,
-          ats_score: extractedContent.atsOptimization?.score || 75,
+          content: extractedContent.enhancedContent as any,
+          ats_score: extractedContent.enhancementScore?.atsCompatibility || 75,
           template_id: null // Use null instead of string template ID
         })
         .select()
