@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -12,15 +13,15 @@ const ResumeBuilder = () => {
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
 
   const templates = [
-    { id: 'modern', name: 'Modern Professional', description: 'Clean and contemporary design', popular: true, color: 'from-blue-500 to-purple-500' },
-    { id: 'creative', name: 'Creative Designer', description: 'Eye-catching layout for creatives', popular: false, color: 'from-pink-500 to-orange-500' },
-    { id: 'executive', name: 'Executive', description: 'Sophisticated for leadership roles', popular: false, color: 'from-gray-700 to-gray-900' },
-    { id: 'minimalist', name: 'Minimalist', description: 'Simple and elegant design', popular: true, color: 'from-green-500 to-teal-500' }
+    { id: 'modern', name: 'TalentXcel Modern', description: 'Clean and contemporary design', popular: true, color: 'from-blue-500 to-purple-500' },
+    { id: 'creative', name: 'TalentXcel Creative', description: 'Eye-catching layout for creatives', popular: false, color: 'from-pink-500 to-orange-500' },
+    { id: 'executive', name: 'TalentXcel Executive', description: 'Sophisticated for leadership roles', popular: false, color: 'from-gray-700 to-gray-900' },
+    { id: 'minimalist', name: 'TalentXcel Minimalist', description: 'Simple and elegant design', popular: true, color: 'from-green-500 to-teal-500' }
   ];
 
   const features = [
     { icon: <PenTool className="w-6 h-6" />, title: "Drag & Drop Editor", description: "Rearrange sections with intuitive drag and drop" },
-    { icon: <Sparkles className="w-6 h-6" />, title: "AI-Powered Enhancement", description: "Get intelligent suggestions to improve content" },
+    { icon: <Sparkles className="w-6 h-6" />, title: "TalentXcel AI Enhancement", description: "Get intelligent suggestions to improve content" },
     { icon: <Upload className="w-6 h-6" />, title: "Import Existing Resume", description: "Upload your current resume for enhancement" },
     { icon: <Download className="w-6 h-6" />, title: "Multiple Export Formats", description: "Download as PDF, Word, or share online" }
   ];
@@ -42,7 +43,7 @@ const ResumeBuilder = () => {
             </Button>
             <Badge variant="secondary" className="bg-blue-100 text-blue-700">
               <Sparkles className="w-3 h-3 mr-1" />
-              AI-Powered
+              TalentXcel AI-Powered
             </Badge>
           </div>
         </div>
@@ -53,11 +54,11 @@ const ResumeBuilder = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
-              Build Your Dream Resume in
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Minutes</span>
+              Build Your Dream Resume with
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> TalentXcel</span>
             </h1>
             <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
-              Create a professional resume with our AI-powered tools and beautiful templates.
+              Create a professional resume with our AI-powered tools and beautiful TalentXcel templates.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -67,10 +68,12 @@ const ResumeBuilder = () => {
                   Upload Existing Resume
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="px-8 py-4 text-lg font-semibold rounded-xl" onClick={() => document.getElementById('templates')?.scrollIntoView({ behavior: 'smooth' })}>
-                <FileText className="w-5 h-5 mr-2" />
-                Start from Scratch
-              </Button>
+              <Link to="/resume-builder/checker">
+                <Button size="lg" variant="outline" className="px-8 py-4 text-lg font-semibold rounded-xl border-2">
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Get Free Resume Score
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -81,7 +84,7 @@ const ResumeBuilder = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-slate-900 mb-4">Everything You Need to Stand Out</h2>
-            <p className="text-xl text-slate-600">Professional tools designed to help you create the perfect resume</p>
+            <p className="text-xl text-slate-600">Professional TalentXcel tools designed to help you create the perfect resume</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -106,8 +109,8 @@ const ResumeBuilder = () => {
       <div id="templates" className="py-16 bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Choose Your Perfect Template</h2>
-            <p className="text-xl text-slate-600">Professional designs crafted by experts</p>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Choose Your Perfect TalentXcel Template</h2>
+            <p className="text-xl text-slate-600">Professional designs crafted by TalentXcel experts</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -144,7 +147,7 @@ const ResumeBuilder = () => {
 
           <div className="text-center">
             <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-4 text-lg font-semibold rounded-xl" onClick={createNewResume}>
-              Start Building Your Resume
+              Start Building with TalentXcel
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>

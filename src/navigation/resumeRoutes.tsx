@@ -12,7 +12,7 @@ import ResumeChecker from "../pages/tools/ResumeChecker";
 
 export const resumeRoutes = [
   {
-    title: "Resume Builder Dashboard",
+    title: "TalentXcel Resume Dashboard",
     to: "/resume-builder",
     icon: <FileText className="h-4 w-4" />,
     page: <ResumeDashboard />,
@@ -30,7 +30,7 @@ export const resumeRoutes = [
     page: <UploadResume />,
   },
   {
-    title: "Resume Checker",
+    title: "TalentXcel Resume Checker",
     to: "/resume-builder/checker",
     icon: <CheckCircle className="h-4 w-4" />,
     page: <ResumeChecker />,

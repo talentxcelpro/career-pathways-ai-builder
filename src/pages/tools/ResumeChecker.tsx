@@ -1,32 +1,19 @@
 
-import React, { useState, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { 
-  Upload, 
-  FileCheck, 
-  Sparkles, 
-  CheckCircle, 
-  AlertCircle, 
-  XCircle,
-  Eye,
-  TrendingUp,
-  FileText,
-  Loader2,
-  ArrowRight
-} from 'lucide-react';
+import { useAuth } from "@/contexts/AuthContext";
+import { useResumeUpload } from "@/hooks/useResumeUpload";
+import { ProcessingSteps } from '@/components/resume/checker/ProcessingSteps';
 import { ResumeScoreCard } from '@/components/resume/checker/ResumeScoreCard';
 import { ScoreBreakdown } from '@/components/resume/checker/ScoreBreakdown';
 import { JobTailoringSection } from '@/components/resume/checker/JobTailoringSection';
 import { ResumePreview } from '@/components/resume/checker/ResumePreview';
-import { ProcessingSteps } from '@/components/resume/checker/ProcessingSteps';
+import { toast } from 'sonner';
+import { Upload, FileCheck, ArrowLeft, Sparkles } from 'lucide-react';
 
-interface ResumeAnalysis {
+interface ResumeAnalysisResult {
   overallScore: number;
   atsScore: number;
   contentScore: number;
@@ -39,83 +26,70 @@ interface ResumeAnalysis {
     fileFormat: boolean;
     design: boolean;
   };
-  strengths: string[];
-  improvements: string[];
-  extractedData: any;
-  jobTailoring?: {
-    matchScore: number;
-    keywords: string[];
-    suggestions: string[];
-  };
+  resumeData: any;
+}
+
+interface JobTailoringData {
+  matchScore: number;
+  keywords: string[];
+  suggestions: string[];
 }
 
 const ResumeChecker = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processingStep, setProcessingStep] = useState(0);
-  const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isProcessing, processingStep, processingSteps, processResume } = useResumeUpload();
+  
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<ResumeAnalysisResult | null>(null);
   const [jobDescription, setJobDescription] = useState('');
   const [isAnalyzingJob, setIsAnalyzingJob] = useState(false);
+  const [tailoringData, setTailoringData] = useState<JobTailoringData | undefined>();
 
-  const processingSteps = [
-    'Uploading your resume...',
-    'Parsing resume content...',
-    'Analyzing experience and skills...',
-    'Checking ATS compatibility...',
-    'Calculating scores...',
-    'Generating recommendations...'
-  ];
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      handleFileUpload(files);
+    }
+  };
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const uploadedFile = acceptedFiles[0];
-    
-    if (!uploadedFile) return;
+  const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    if (files && files.length > 0) {
+      handleFileUpload(files);
+    }
+  };
+
+  const handleFileUpload = async (files: FileList) => {
+    const file = files[0];
     
     // Validate file type
-    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    if (!allowedTypes.includes(uploadedFile.type)) {
-      toast.error('Please upload a PDF or DOCX file only');
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload a PDF or Word document');
       return;
     }
     
     // Validate file size (2MB)
-    if (uploadedFile.size > 2 * 1024 * 1024) {
+    if (file.size > 2 * 1024 * 1024) {
       toast.error('File size must be less than 2MB');
       return;
     }
-    
-    setFile(uploadedFile);
-    processResume(uploadedFile);
-  }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'application/pdf': ['.pdf'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
-    },
-    maxFiles: 1,
-    maxSize: 2 * 1024 * 1024
-  });
-
-  const processResume = async (file: File) => {
-    setIsProcessing(true);
-    setProcessingStep(0);
+    setSelectedFile(file);
     
-    try {
-      // Simulate processing steps
-      for (let i = 0; i < processingSteps.length; i++) {
-        setProcessingStep(i);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-      
-      // Mock analysis results - in real implementation, this would call your AI service
-      const mockAnalysis: ResumeAnalysis = {
-        overallScore: 73,
-        atsScore: 100,
-        contentScore: 65,
-        sectionsScore: 85,
-        designScore: 45,
+    // Simulate processing and analysis
+    await processResume(files);
+    
+    // Mock analysis result - in real implementation, this would come from AI processing
+    setTimeout(() => {
+      const mockResult: ResumeAnalysisResult = {
+        overallScore: 75,
+        atsScore: 85,
+        contentScore: 70,
+        sectionsScore: 90,
+        designScore: 65,
         issues: {
           quantifyImpact: 2,
           repetition: 0,
@@ -123,248 +97,255 @@ const ResumeChecker = () => {
           fileFormat: file.type !== 'application/pdf',
           design: true
         },
-        strengths: [
-          'ATS parsing successful at 100%',
-          'All essential sections present',
-          'Professional contact information',
-          'No spelling or grammar errors'
-        ],
-        improvements: [
-          'Add quantifiable achievements to experience bullets',
-          'Use PDF format for better ATS compatibility',
-          'Consider a more modern resume design',
-          'Include more specific technical skills'
-        ],
-        extractedData: {
-          name: 'Sample User',
-          email: 'user@example.com',
-          phone: '+1-234-567-8900',
+        resumeData: {
+          name: 'Your Name',
+          email: 'email@example.com',
+          phone: 'Phone Number',
           experience: [
             {
               title: 'Software Engineer',
-              company: 'Tech Corp',
+              company: 'Tech Company',
               duration: '2020-2023',
-              description: 'Developed web applications and collaborated with team members'
+              description: 'Developed and maintained web applications'
             }
           ]
         }
       };
-      
-      setAnalysis(mockAnalysis);
-      toast.success('Resume analysis completed!');
-    } catch (error) {
-      console.error('Resume processing error:', error);
-      toast.error('Failed to process resume. Please try again.');
-    } finally {
-      setIsProcessing(false);
-    }
+      setAnalysisResult(mockResult);
+    }, 3000);
   };
 
-  const analyzeJobTailoring = async () => {
-    if (!jobDescription.trim() || !analysis) return;
+  const handleJobAnalysis = async () => {
+    if (!jobDescription.trim()) {
+      toast.error('Please enter a job description');
+      return;
+    }
     
     setIsAnalyzingJob(true);
-    try {
-      // Mock job tailoring analysis
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const jobTailoring = {
+    
+    // Mock job analysis - in real implementation, this would use AI
+    setTimeout(() => {
+      const mockTailoringData: JobTailoringData = {
         matchScore: 78,
         keywords: ['React', 'JavaScript', 'Node.js', 'AWS', 'Agile'],
         suggestions: [
-          'Add "React" to your skills section',
-          'Mention "Agile methodology" in your experience',
-          'Include specific AWS services you\'ve used',
-          'Quantify your JavaScript development experience'
+          'Add more specific examples of React projects',
+          'Include cloud experience with AWS',
+          'Mention Agile/Scrum methodologies',
+          'Quantify your impact with metrics'
         ]
       };
-      
-      setAnalysis(prev => prev ? { ...prev, jobTailoring } : null);
-      toast.success('Job tailoring analysis completed!');
-    } catch (error) {
-      toast.error('Failed to analyze job description');
-    } finally {
+      setTailoringData(mockTailoringData);
       setIsAnalyzingJob(false);
-    }
+      toast.success('Job analysis completed!');
+    }, 2000);
   };
 
-  const useSampleJobPost = () => {
-    const sampleJob = `Software Engineer - Frontend
+  const handleUseSample = () => {
+    const sampleJob = `We are looking for a Senior Software Engineer to join our team. 
+
+Requirements:
+- 5+ years of experience in web development
+- Strong knowledge of React, JavaScript, and Node.js
+- Experience with cloud platforms (AWS preferred)
+- Familiarity with Agile development methodologies
+- Strong problem-solving skills and attention to detail
+
+Responsibilities:
+- Develop and maintain web applications
+- Collaborate with cross-functional teams
+- Write clean, maintainable code
+- Participate in code reviews and technical discussions`;
     
-We are looking for a skilled Frontend Developer to join our team. The ideal candidate will have:
-
-• 3+ years of experience with React and JavaScript
-• Experience with modern frontend frameworks and libraries
-• Knowledge of responsive design and CSS preprocessors
-• Familiarity with version control systems (Git)
-• Experience with Agile development methodologies
-• Understanding of web performance optimization
-• Bachelor's degree in Computer Science or related field
-
-Nice to have:
-• Experience with TypeScript
-• Knowledge of Node.js and backend technologies
-• AWS cloud platform experience
-• Experience with testing frameworks (Jest, Cypress)`;
-
     setJobDescription(sampleJob);
   };
 
-  if (isProcessing) {
+  const handleBuildResume = () => {
+    if (analysisResult) {
+      navigate('/resume-builder/new');
+    } else {
+      navigate('/resume-builder');
+    }
+  };
+
+  // Processing view
+  if (isProcessing && selectedFile) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <ProcessingSteps 
-          steps={processingSteps} 
+          steps={processingSteps}
           currentStep={processingStep}
-          fileName={file?.name || ''}
+          fileName={selectedFile.name}
         />
       </div>
     );
   }
 
-  if (!file || !analysis) {
+  // Results view
+  if (analysisResult) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Resume Checker
-          </h1>
-          <p className="text-xl text-gray-600 mb-2">
-            Is your resume good enough?
-          </p>
-          <p className="text-gray-600">
-            A free and fast AI resume checker doing 16 crucial checks to ensure your resume is ready to perform and get you interview callbacks.
-          </p>
-        </div>
-
-        <Card className="max-w-2xl mx-auto">
-          <CardContent className="p-8">
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors cursor-pointer ${
-                isDragActive 
-                  ? 'border-blue-500 bg-blue-50' 
-                  : 'border-gray-300 hover:border-gray-400'
-              }`}
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate('/resume-builder')}
+              className="mb-4"
             >
-              <input {...getInputProps()} />
-              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Drop your resume here or choose a file
-              </h3>
-              <p className="text-gray-600 mb-4">
-                PDF & DOCX only. Max 2MB file size.
-              </p>
-              <Button size="lg" className="mb-4">
-                Upload Your Resume
-              </Button>
-              <p className="text-sm text-gray-500">
-                Privacy guaranteed
-              </p>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Resume Builder
+            </Button>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Your Resume Analysis
+            </h1>
+            <p className="text-gray-600">
+              Complete analysis powered by TalentXcel AI
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Scores and Analysis */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Overall Score */}
+              <ResumeScoreCard score={analysisResult.overallScore} />
+              
+              {/* Score Breakdown */}
+              <ScoreBreakdown 
+                atsScore={analysisResult.atsScore}
+                contentScore={analysisResult.contentScore}
+                sectionsScore={analysisResult.sectionsScore}
+                designScore={analysisResult.designScore}
+                issues={analysisResult.issues}
+              />
+              
+              {/* Job Tailoring */}
+              <JobTailoringSection
+                jobDescription={jobDescription}
+                setJobDescription={setJobDescription}
+                onAnalyze={handleJobAnalysis}
+                isAnalyzing={isAnalyzingJob}
+                onUseSample={handleUseSample}
+                tailoringData={tailoringData}
+              />
+              
+              {/* Action Buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Button onClick={handleBuildResume} className="w-full">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Build with TalentXcel
+                </Button>
+                <Button variant="outline" onClick={() => window.location.reload()} className="w-full">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Check Another Resume
+                </Button>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Right Column - Resume Preview */}
+            <div className="lg:col-span-1">
+              <ResumePreview data={analysisResult.resumeData} />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
+  // Upload view
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Resume Analysis Report
-        </h1>
-        <p className="text-gray-600">
-          {file.name} • {(file.size / 1024 / 1024).toFixed(2)} MB
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Analysis */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Overall Score */}
-          <ResumeScoreCard score={analysis.overallScore} />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/resume-builder')}
+            className="mb-6"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Resume Builder
+          </Button>
           
-          {/* Score Breakdown */}
-          <ScoreBreakdown 
-            atsScore={analysis.atsScore}
-            contentScore={analysis.contentScore}
-            sectionsScore={analysis.sectionsScore}
-            designScore={analysis.designScore}
-            issues={analysis.issues}
-          />
-          
-          {/* Job Tailoring */}
-          <JobTailoringSection
-            jobDescription={jobDescription}
-            setJobDescription={setJobDescription}
-            onAnalyze={analyzeJobTailoring}
-            isAnalyzing={isAnalyzingJob}
-            onUseSample={useSampleJobPost}
-            tailoringData={analysis.jobTailoring}
-          />
-          
-          {/* Detailed Issues */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-orange-500" />
-                Issues Found
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {analysis.improvements.map((improvement, index) => (
-                <div key={index} className="flex items-start gap-3 p-4 bg-orange-50 rounded-lg">
-                  <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-gray-900">{improvement}</p>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-          
-          {/* Strengths */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-600">
-                <CheckCircle className="h-5 w-5" />
-                Strengths
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {analysis.strengths.map((strength, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-700">{strength}</span>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <FileCheck className="h-12 w-12 text-blue-600" />
+            <h1 className="text-4xl font-bold text-gray-900">
+              TalentXcel Resume Checker
+            </h1>
+          </div>
+          <p className="text-xl text-gray-600 mb-4">
+            Get your free AI-powered resume analysis in seconds
+          </p>
+          <p className="text-gray-500">
+            Upload your resume and get detailed feedback on ATS compatibility, content quality, and more
+          </p>
         </div>
 
-        {/* Right Column - Preview */}
-        <div className="space-y-6">
-          <ResumePreview data={analysis.extractedData} />
-          
-          {/* Actions */}
-          <Card>
-            <CardContent className="p-6 space-y-4">
-              <Button className="w-full" size="lg">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Build an ATS-friendly Resume
+        {/* Upload Card */}
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Upload Your Resume</CardTitle>
+            <CardDescription>
+              PDF & DOCX only. Max 2MB file size.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div 
+              className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors cursor-pointer"
+              onDrop={handleFileDrop}
+              onDragOver={(e) => e.preventDefault()}
+              onClick={() => document.getElementById('file-input')?.click()}
+            >
+              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Drop your resume here or choose a file
+              </h3>
+              <p className="text-gray-500 mb-4">
+                PDF & DOCX formats supported
+              </p>
+              <Button>
+                Choose File
               </Button>
-              <Button variant="outline" className="w-full">
-                <FileText className="h-4 w-4 mr-2" />
-                Download Improved Resume
-              </Button>
-              <Button variant="outline" className="w-full">
-                <Eye className="h-4 w-4 mr-2" />
-                View Full Report
-              </Button>
-            </CardContent>
-          </Card>
+              <input
+                id="file-input"
+                type="file"
+                accept=".pdf,.doc,.docx"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+            </div>
+            
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-500">
+                🔒 Privacy guaranteed - Your resume is analyzed securely and never stored
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Features */}
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="text-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <FileCheck className="h-6 w-6 text-blue-600" />
+            </div>
+            <h3 className="font-semibold mb-2">ATS Compatibility</h3>
+            <p className="text-gray-600 text-sm">Check if your resume passes applicant tracking systems</p>
+          </div>
+          <div className="text-center">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <Sparkles className="h-6 w-6 text-green-600" />
+            </div>
+            <h3 className="font-semibold mb-2">AI-Powered Analysis</h3>
+            <p className="text-gray-600 text-sm">Get intelligent suggestions to improve your resume</p>
+          </div>
+          <div className="text-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <Upload className="h-6 w-6 text-purple-600" />
+            </div>
+            <h3 className="font-semibold mb-2">Instant Results</h3>
+            <p className="text-gray-600 text-sm">Get your detailed report in under 30 seconds</p>
+          </div>
         </div>
       </div>
     </div>
