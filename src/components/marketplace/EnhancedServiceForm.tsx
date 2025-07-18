@@ -42,7 +42,8 @@ import {
   Award,
   Target,
   TrendingUp,
-  Lightbulb
+  Lightbulb,
+  ChevronRight
 } from "lucide-react";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { useAuth } from "@/contexts/AuthContext";

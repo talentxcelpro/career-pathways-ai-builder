@@ -11475,6 +11475,106 @@ export type Database = {
         }
         Relationships: []
       }
+      service_analytics: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          service_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          service_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          service_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_analytics_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_bookings: {
+        Row: {
+          booking_date: string | null
+          booking_status: string | null
+          client_id: string | null
+          client_requirements: string | null
+          created_at: string | null
+          currency: string
+          id: string
+          payment_method: string | null
+          payment_reference: string | null
+          payment_status: string | null
+          provider_id: string
+          selected_addons: Json | null
+          service_id: string | null
+          special_instructions: string | null
+          total_amount: number
+          updated_at: string | null
+        }
+        Insert: {
+          booking_date?: string | null
+          booking_status?: string | null
+          client_id?: string | null
+          client_requirements?: string | null
+          created_at?: string | null
+          currency: string
+          id?: string
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          provider_id: string
+          selected_addons?: Json | null
+          service_id?: string | null
+          special_instructions?: string | null
+          total_amount: number
+          updated_at?: string | null
+        }
+        Update: {
+          booking_date?: string | null
+          booking_status?: string | null
+          client_id?: string | null
+          client_requirements?: string | null
+          created_at?: string | null
+          currency?: string
+          id?: string
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          provider_id?: string
+          selected_addons?: Json | null
+          service_id?: string | null
+          special_instructions?: string | null
+          total_amount?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_bookings_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_categories: {
         Row: {
           color_theme: string | null
@@ -11579,6 +11679,83 @@ export type Database = {
         }
         Relationships: []
       }
+      service_promotion_credits: {
+        Row: {
+          created_at: string | null
+          credit_type: string
+          credits_available: number | null
+          credits_used: number | null
+          expires_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          credit_type: string
+          credits_available?: number | null
+          credits_used?: number | null
+          expires_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          credit_type?: string
+          credits_available?: number | null
+          credits_used?: number | null
+          expires_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      service_promotion_transactions: {
+        Row: {
+          created_at: string | null
+          credits_used: number
+          id: string
+          is_active: boolean | null
+          promotion_end: string | null
+          promotion_start: string | null
+          promotion_type: string
+          service_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          credits_used: number
+          id?: string
+          is_active?: boolean | null
+          promotion_end?: string | null
+          promotion_start?: string | null
+          promotion_type: string
+          service_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          credits_used?: number
+          id?: string
+          is_active?: boolean | null
+          promotion_end?: string | null
+          promotion_start?: string | null
+          promotion_type?: string
+          service_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_promotion_transactions_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_reviews: {
         Row: {
           created_at: string | null
@@ -11675,7 +11852,12 @@ export type Database = {
       }
       services: {
         Row: {
+          add_ons: Json | null
+          auto_accept_bookings: boolean | null
+          available_slots: number | null
           average_rating: number | null
+          booking_buffer: string | null
+          booking_count: number | null
           category_id: string | null
           client_requirements: string | null
           contact_email: boolean | null
@@ -11686,10 +11868,14 @@ export type Database = {
           currency: string
           delivery_time_days: number
           description: string
+          focus_keywords: string | null
           id: string
           is_active: boolean | null
           is_featured: boolean | null
+          is_promoted: boolean | null
+          last_updated: string | null
           location: string | null
+          meta_description: string | null
           payment_methods: string[] | null
           phone_number: string | null
           portfolio_files: string[] | null
@@ -11698,8 +11884,12 @@ export type Database = {
           professional_title: string | null
           profile_link: string | null
           profile_picture_url: string | null
+          promotion_expires_at: string | null
           provider_id: string
           reviews_count: number | null
+          seo_title: string | null
+          service_rating: number | null
+          service_slug: string | null
           status: string | null
           subcategory_id: string | null
           tags: string[] | null
@@ -11707,12 +11897,19 @@ export type Database = {
           total_orders: number | null
           total_reviews: number | null
           updated_at: string | null
+          view_count: number | null
           website_url: string | null
           whats_included: string[] | null
+          working_days: string[] | null
           years_experience: string | null
         }
         Insert: {
+          add_ons?: Json | null
+          auto_accept_bookings?: boolean | null
+          available_slots?: number | null
           average_rating?: number | null
+          booking_buffer?: string | null
+          booking_count?: number | null
           category_id?: string | null
           client_requirements?: string | null
           contact_email?: boolean | null
@@ -11723,10 +11920,14 @@ export type Database = {
           currency?: string
           delivery_time_days?: number
           description: string
+          focus_keywords?: string | null
           id?: string
           is_active?: boolean | null
           is_featured?: boolean | null
+          is_promoted?: boolean | null
+          last_updated?: string | null
           location?: string | null
+          meta_description?: string | null
           payment_methods?: string[] | null
           phone_number?: string | null
           portfolio_files?: string[] | null
@@ -11735,8 +11936,12 @@ export type Database = {
           professional_title?: string | null
           profile_link?: string | null
           profile_picture_url?: string | null
+          promotion_expires_at?: string | null
           provider_id: string
           reviews_count?: number | null
+          seo_title?: string | null
+          service_rating?: number | null
+          service_slug?: string | null
           status?: string | null
           subcategory_id?: string | null
           tags?: string[] | null
@@ -11744,12 +11949,19 @@ export type Database = {
           total_orders?: number | null
           total_reviews?: number | null
           updated_at?: string | null
+          view_count?: number | null
           website_url?: string | null
           whats_included?: string[] | null
+          working_days?: string[] | null
           years_experience?: string | null
         }
         Update: {
+          add_ons?: Json | null
+          auto_accept_bookings?: boolean | null
+          available_slots?: number | null
           average_rating?: number | null
+          booking_buffer?: string | null
+          booking_count?: number | null
           category_id?: string | null
           client_requirements?: string | null
           contact_email?: boolean | null
@@ -11760,10 +11972,14 @@ export type Database = {
           currency?: string
           delivery_time_days?: number
           description?: string
+          focus_keywords?: string | null
           id?: string
           is_active?: boolean | null
           is_featured?: boolean | null
+          is_promoted?: boolean | null
+          last_updated?: string | null
           location?: string | null
+          meta_description?: string | null
           payment_methods?: string[] | null
           phone_number?: string | null
           portfolio_files?: string[] | null
@@ -11772,8 +11988,12 @@ export type Database = {
           professional_title?: string | null
           profile_link?: string | null
           profile_picture_url?: string | null
+          promotion_expires_at?: string | null
           provider_id?: string
           reviews_count?: number | null
+          seo_title?: string | null
+          service_rating?: number | null
+          service_slug?: string | null
           status?: string | null
           subcategory_id?: string | null
           tags?: string[] | null
@@ -11781,8 +12001,10 @@ export type Database = {
           total_orders?: number | null
           total_reviews?: number | null
           updated_at?: string | null
+          view_count?: number | null
           website_url?: string | null
           whats_included?: string[] | null
+          working_days?: string[] | null
           years_experience?: string | null
         }
         Relationships: [
@@ -14195,6 +14417,10 @@ export type Database = {
       }
       generate_resume_slug_enhanced: {
         Args: { resume_title: string; user_uuid: string }
+        Returns: string
+      }
+      generate_service_slug: {
+        Args: { service_title: string; provider_id: string }
         Returns: string
       }
       generate_vanity_url_suggestions: {
