@@ -1,5 +1,5 @@
 
-import { FileText, Upload, Edit, Download, Mail, Settings } from "lucide-react";
+import { FileText, Upload, Edit, Download, Mail, Settings, CheckCircle } from "lucide-react";
 import ResumeDashboard from "../pages/resume/ResumeDashboard";
 import CreateResume from "../pages/resume/CreateResume";
 import UploadResume from "../pages/resume/UploadResume";
@@ -8,6 +8,7 @@ import ExportResume from "../pages/resume/ExportResume";
 import CoverLetterGenerator from "../pages/resume/CoverLetterGenerator";
 import EditCoverLetter from "../pages/resume/EditCoverLetter";
 import ResumeSettings from "../pages/resume/ResumeSettings";
+import ResumeChecker from "../pages/tools/ResumeChecker";
 
 export const resumeRoutes = [
   {
@@ -27,6 +28,12 @@ export const resumeRoutes = [
     to: "/resume-builder/upload",
     icon: <Upload className="h-4 w-4" />,
     page: <UploadResume />,
+  },
+  {
+    title: "Resume Checker",
+    to: "/resume-builder/checker",
+    icon: <CheckCircle className="h-4 w-4" />,
+    page: <ResumeChecker />,
   },
   {
     title: "Edit Resume",
