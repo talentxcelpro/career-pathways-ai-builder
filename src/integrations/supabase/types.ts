@@ -11475,6 +11475,56 @@ export type Database = {
         }
         Relationships: []
       }
+      service_categories: {
+        Row: {
+          color_theme: string | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          icon_emoji: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          parent_id: string | null
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          color_theme?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon_emoji?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          parent_id?: string | null
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          color_theme?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon_emoji?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          parent_id?: string | null
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_orders: {
         Row: {
           client_feedback: string | null
@@ -11626,6 +11676,7 @@ export type Database = {
       services: {
         Row: {
           average_rating: number | null
+          category_id: string | null
           client_requirements: string | null
           contact_email: boolean | null
           contact_phone: boolean | null
@@ -11650,6 +11701,7 @@ export type Database = {
           provider_id: string
           reviews_count: number | null
           status: string | null
+          subcategory_id: string | null
           tags: string[] | null
           title: string
           total_orders: number | null
@@ -11661,6 +11713,7 @@ export type Database = {
         }
         Insert: {
           average_rating?: number | null
+          category_id?: string | null
           client_requirements?: string | null
           contact_email?: boolean | null
           contact_phone?: boolean | null
@@ -11685,6 +11738,7 @@ export type Database = {
           provider_id: string
           reviews_count?: number | null
           status?: string | null
+          subcategory_id?: string | null
           tags?: string[] | null
           title: string
           total_orders?: number | null
@@ -11696,6 +11750,7 @@ export type Database = {
         }
         Update: {
           average_rating?: number | null
+          category_id?: string | null
           client_requirements?: string | null
           contact_email?: boolean | null
           contact_phone?: boolean | null
@@ -11720,6 +11775,7 @@ export type Database = {
           provider_id?: string
           reviews_count?: number | null
           status?: string | null
+          subcategory_id?: string | null
           tags?: string[] | null
           title?: string
           total_orders?: number | null
@@ -11729,7 +11785,22 @@ export type Database = {
           whats_included?: string[] | null
           years_experience?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_subcategory_id_fkey"
+            columns: ["subcategory_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       session_participants: {
         Row: {

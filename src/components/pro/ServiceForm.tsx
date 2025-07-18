@@ -12,7 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { X, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { ServiceFormData } from "@/types/service";
+import { ServiceFormData, ServiceCategory } from "@/types/service";
+import { CategorySelector } from "@/components/marketplace/CategorySelector";
+import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 interface ServiceFormProps {
   serviceId?: string | null;
@@ -45,7 +48,10 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
   const [whatsIncluded, setWhatsIncluded] = useState<string[]>(['']);
   const [portfolioFiles, setPortfolioFiles] = useState<string[]>([]);
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<ServiceCategory | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<ServiceCategory | null>(null);
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ServiceFormData>({
     defaultValues: {
@@ -66,7 +72,12 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
       website_url: '',
       phone_number: '',
       tags: [],
-      portfolio_files: []
+      portfolio_files: [],
+      category_id: '',
+      subcategory_id: '',
+      profile_picture_url: '',
+      profile_link: '',
+      status: 'active'
     }
   });
 
@@ -117,6 +128,15 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
   const onSubmit = async (data: ServiceFormData) => {
     if (!user) return;
 
+    if (!selectedCategory) {
+      toast({
+        title: "Category Required",
+        description: "Please select a service category",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const serviceData = {
@@ -139,6 +159,11 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
         phone_number: data.phone_number,
         tags: tags,
         portfolio_files: portfolioFiles,
+        category_id: selectedCategory.id,
+        subcategory_id: selectedSubcategory?.id || null,
+        profile_picture_url: data.profile_picture_url,
+        profile_link: data.profile_link,
+        status: data.status || 'active',
         updated_at: new Date().toISOString()
       };
 
@@ -149,17 +174,32 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
           .eq('id', serviceId);
 
         if (error) throw error;
+        
+        toast({
+          title: "Service Updated",
+          description: "Your service has been updated successfully",
+        });
       } else {
         const { error } = await supabase
           .from('services')
           .insert([serviceData]);
 
         if (error) throw error;
+        
+        toast({
+          title: "Service Created",
+          description: "Your service has been created successfully",
+        });
       }
 
       onSaved();
     } catch (error) {
       console.error('Error saving service:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save service. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -201,14 +241,38 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{serviceId ? 'Edit Service' : 'Create New Service'}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Basic Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-4xl mx-auto"
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <Card className="bg-card/50 backdrop-blur-sm border-primary/10">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              {serviceId ? 'Edit Service' : 'Create New Service'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            {/* Category Selection */}
+            <CategorySelector
+              selectedCategoryId={selectedCategory?.id}
+              selectedSubcategoryId={selectedSubcategory?.id}
+              onCategoryChange={(categoryId, category) => {
+                setSelectedCategory(category);
+                setSelectedSubcategory(null);
+                setValue("category_id", categoryId);
+                setValue("subcategory_id", undefined);
+              }}
+              onSubcategoryChange={(subcategoryId, subcategory) => {
+                setSelectedSubcategory(subcategory);
+                setValue("subcategory_id", subcategoryId);
+              }}
+            />
+
+            {/* Basic Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="title">Service Title *</Label>
               <Input
@@ -457,8 +521,9 @@ export default function ServiceForm({ serviceId, onCancel, onSaved }: ServiceFor
               {loading ? 'Saving...' : serviceId ? 'Update Service' : 'Create Service'}
             </Button>
           </div>
-        </CardContent>
-      </Card>
-    </form>
+          </CardContent>
+        </Card>
+      </form>
+    </motion.div>
   );
 }
