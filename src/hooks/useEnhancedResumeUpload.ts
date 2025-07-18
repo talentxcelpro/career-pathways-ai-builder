@@ -103,17 +103,7 @@ export const useEnhancedResumeUpload = () => {
       // Step 3: Extract text content
       progressCallback(20, 'Extracting text content...');
       const extractor = new ResumeTextExtractor();
-      let extractedText = '';
-      
-      if (file.type === 'application/pdf') {
-        extractedText = await extractor.extractFromPDF(file);
-      } else if (file.type.includes('word')) {
-        extractedText = await extractor.extractFromWord(file);
-      } else if (file.type === 'text/plain') {
-        extractedText = await extractor.extractFromText(file);
-      } else if (file.type.includes('image')) {
-        extractedText = await extractor.extractFromImage(file);
-      }
+      const extractedText = await extractor.extractText(file);
 
       console.log('✅ Text extracted:', { textLength: extractedText.length });
       
