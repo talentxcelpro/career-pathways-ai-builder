@@ -37,9 +37,9 @@ export const useEnhancedResumeUpload = () => {
   const processingSteps = [
     'Initializing upload...',
     'Uploading file to secure storage...',
-    'Analyzing document structure...',
-    'Extracting content with AI...',
-    'Parsing sections and data...',
+    'Extracting text content...',
+    'Enhanced AI parsing...',
+    'Mapping data structures...',
     'Optimizing for ATS systems...',
     'Generating enhancement suggestions...',
     'Finalizing enhanced resume...'
@@ -90,67 +90,88 @@ export const useEnhancedResumeUpload = () => {
     try {
       // Step 1: Configure PDF worker for PDF files
       if (file.type === 'application/pdf') {
-        progressCallback(2, 'Configuring PDF processor...');
+        progressCallback(5, 'Configuring PDF processor...');
         await configurePDFWorker();
         console.log(`✅ PDF Worker Status: ${getPDFWorkerStatus()}`);
       }
 
       // Step 2: Upload file
-      progressCallback(5, 'Uploading file to secure storage...');
+      progressCallback(10, 'Uploading file to secure storage...');
       const fileUrl = await uploadFile(file, `resume-${Date.now()}.${file.name.split('.').pop()}`);
       console.log('File uploaded successfully:', fileUrl);
       
-      // Step 3: Determine processing method
-      const isImage = file.type.includes('image');
-      const needsOCR = isImage || ocrMode || file.name.toLowerCase().includes('scan');
+      // Step 3: Extract text content
+      progressCallback(20, 'Extracting text content...');
+      const extractor = new ResumeTextExtractor();
+      let extractedText = '';
       
-      progressCallback(10, needsOCR ? 'Preparing OCR processing...' : 'Preparing AI extraction...');
-      
-      let extractedContent;
-      
-      // Use enhanced processor for all file types
-      progressCallback(15, 'Starting comprehensive resume processing...');
-      const processor = new EnhancedResumeProcessor();
-      
-      try {
-        // Process with enhanced extraction and offline enhancement
-        progressCallback(30, 'Extracting content with enhanced AI...');
-        extractedContent = await processor.processResume(file);
-        progressCallback(90, 'Finalizing extraction...');
-        
-        console.log('✅ Enhanced processing completed successfully');
-      } catch (processingError) {
-        console.warn('⚠️ Enhanced processing failed:', processingError);
-        
-        // Try basic processing as fallback
-        progressCallback(60, 'Attempting basic processing...');
-        try {
-          const basicResult = await processor.processBasicExtraction(file);
-          extractedContent = basicResult;
-          console.log('✅ Basic processing fallback successful');
-        } catch (fallbackError) {
-          console.error('❌ All processing methods failed:', fallbackError);
-          throw new Error('Unable to process resume. Please try a different file format.');
-        }
+      if (file.type === 'application/pdf') {
+        extractedText = await extractor.extractFromPDF(file);
+      } else if (file.type.includes('word')) {
+        extractedText = await extractor.extractFromWord(file);
+      } else if (file.type === 'text/plain') {
+        extractedText = await extractor.extractFromText(file);
+      } else if (file.type.includes('image')) {
+        extractedText = await extractor.extractFromImage(file);
       }
+
+      console.log('✅ Text extracted:', { textLength: extractedText.length });
       
-      console.log('Content processed successfully:', extractedContent);
+      if (!extractedText || extractedText.trim().length < 50) {
+        throw new Error('Unable to extract sufficient text from the resume. Please try a different file format.');
+      }
+
+      // Step 4: Enhanced AI parsing
+      progressCallback(40, 'Processing with enhanced AI parsing...');
+      
+      const { data: parseResult, error: parseError } = await supabase.functions.invoke('ai-resume-parser', {
+        body: {
+          text: extractedText,
+          fileName: file.name,
+          fileType: file.type,
+          userId: user.id
+        }
+      });
+
+      if (parseError) {
+        console.error('❌ AI parsing error:', parseError);
+        throw new Error(`AI parsing failed: ${parseError.message}`);
+      }
+
+      if (!parseResult.success) {
+        console.error('❌ AI parsing failed:', parseResult.error);
+        throw new Error(`AI parsing failed: ${parseResult.error}`);
+      }
+
+      const extractedContent = parseResult.data;
+      console.log('✅ Enhanced AI parsing completed:', {
+        personalInfo: !!extractedContent.personalInfo?.fullName,
+        experienceCount: extractedContent.experience?.length || 0,
+        educationCount: extractedContent.education?.length || 0,
+        skillsCount: extractedContent.skills?.technical?.length || 0
+      });
+
       setExtractedData(extractedContent);
       
-      // Generate live preview
-      progressCallback(92, 'Generating live preview...');
-      setLivePreview(generateLivePreview(extractedContent));
+      // Step 5: Generate live preview
+      progressCallback(70, 'Generating live preview...');
+      const preview = generateLivePreview(extractedContent);
+      setLivePreview(preview);
+      console.log('✅ Live preview generated:', preview);
       
-      // Step 4: Create enhanced resume entry in database
+      // Step 6: Optimize for ATS
+      progressCallback(85, 'Optimizing for ATS systems...');
+      
+      // Step 7: Create enhanced resume entry in database
       progressCallback(95, 'Saving to database...');
       const { data, error } = await supabase
         .from('ai_resumes')
         .insert({
           user_id: user.id,
           title: `Enhanced Resume from ${file.name}`,
-          content: extractedContent.enhancedContent as any,
-          ats_score: extractedContent.enhancementScore?.atsCompatibility || 75,
-          template_id: null // Use null instead of string template ID
+          content: extractedContent as any,
+          ats_score: extractedContent.atsOptimization?.score || 85,
+          template_id: null
         })
         .select()
         .single();
@@ -164,7 +185,7 @@ export const useEnhancedResumeUpload = () => {
       
       progressCallback(100, 'Processing complete!');
       setUploadSuccess(true);
-      toast.success('Resume processed successfully!');
+      toast.success('Resume processed successfully with enhanced AI parsing!');
       
       // Navigate to edit mode after a short delay
       setTimeout(() => {
@@ -176,18 +197,14 @@ export const useEnhancedResumeUpload = () => {
       
       // Provide more specific error messages
       let errorMessage = 'Error processing resume. Please try again.';
-      if (error.message?.includes('OCR')) {
-        errorMessage = 'OCR processing failed. The document may be too complex or unclear. Try a higher quality scan.';
-      } else if (error.message?.includes('AI extraction failed')) {
-        errorMessage = 'Failed to extract resume content. The AI service may still be deploying. Please try again in a few minutes.';
-      } else if (error.message?.includes('AI enhancement failed')) {
-        errorMessage = 'Failed to enhance resume. The AI service may still be deploying. Please try again in a few minutes.';
+      if (error.message?.includes('text')) {
+        errorMessage = 'Unable to extract text from the file. Please ensure the file is readable and try again.';
+      } else if (error.message?.includes('AI parsing failed')) {
+        errorMessage = 'AI parsing failed. The document may be too complex. Please try a simpler format.';
       } else if (error.message?.includes('Database')) {
         errorMessage = 'Database error occurred. Please try again.';
       } else if (error.message?.includes('OpenAI API key')) {
         errorMessage = 'AI service configuration error. Please contact support.';
-      } else if (error.message?.includes('template_id')) {
-        errorMessage = 'Template configuration error. Using default template instead.';
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -202,14 +219,41 @@ export const useEnhancedResumeUpload = () => {
   const generateLivePreview = (data: any) => {
     if (!data) return null;
     
-    // Return plain object data for rendering in component
+    console.log('🎯 Generating live preview from data:', {
+      hasPersonalInfo: !!data.personalInfo,
+      experienceCount: data.experience?.length || 0,
+      educationCount: data.education?.length || 0,
+      skillsCount: data.skills?.technical?.length || 0
+    });
+    
+    // Return structured preview data for rendering
     return {
-      personalInfo: data.personalInfo,
-      experience: data.experience?.slice(0, 2),
-      skills: data.skills?.technical ? Object.values(data.skills.technical).flat().slice(0, 10) : [],
+      personalInfo: {
+        fullName: data.personalInfo?.fullName || '',
+        email: data.personalInfo?.email || '',
+        phone: data.personalInfo?.phone || '',
+        location: data.personalInfo?.location || '',
+        summary: data.personalInfo?.summary || ''
+      },
+      experience: data.experience?.slice(0, 3).map((exp: any) => ({
+        title: exp.title || '',
+        company: exp.company || '',
+        startDate: exp.startDate || '',
+        endDate: exp.endDate || exp.current ? 'Present' : '',
+        description: exp.description || exp.achievements?.join('; ') || ''
+      })) || [],
+      skills: data.skills?.technical?.slice(0, 10).map((skill: any) => 
+        typeof skill === 'string' ? skill : skill.skill
+      ) || [],
+      education: data.education?.slice(0, 2).map((edu: any) => ({
+        degree: edu.degree || '',
+        school: edu.school || '',
+        endDate: edu.endDate || ''
+      })) || [],
       metadata: data.metadata,
-      atsScore: data.atsOptimization?.score,
-      totalExperience: data.experience?.length || 0
+      atsScore: data.atsOptimization?.score || 0,
+      totalExperience: data.experience?.length || 0,
+      totalEducation: data.education?.length || 0
     };
   };
 

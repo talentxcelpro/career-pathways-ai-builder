@@ -1,4 +1,8 @@
+
 import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { User, Briefcase, GraduationCap, Award, Mail, Phone, MapPin } from 'lucide-react';
 
 interface LivePreviewRendererProps {
   previewData: any;
@@ -7,62 +11,150 @@ interface LivePreviewRendererProps {
 export const LivePreviewRenderer: React.FC<LivePreviewRendererProps> = ({ previewData }) => {
   if (!previewData) return null;
 
+  console.log('🎨 Rendering live preview:', previewData);
+
   return (
-    <div className="space-y-4 text-sm">
-      {/* Personal Info Preview */}
+    <div className="space-y-4">
+      {/* Personal Info Section */}
       {previewData.personalInfo?.fullName && (
-        <div className="border-b pb-3">
-          <h4 className="font-medium text-lg text-gray-900">{previewData.personalInfo.fullName}</h4>
-          <div className="text-gray-600 space-x-2">
-            {previewData.personalInfo.email && <span>{previewData.personalInfo.email}</span>}
-            {previewData.personalInfo.phone && <span>• {previewData.personalInfo.phone}</span>}
-            {previewData.personalInfo.location && <span>• {previewData.personalInfo.location}</span>}
-          </div>
-          {previewData.personalInfo.summary && (
-            <p className="text-gray-700 mt-2 text-sm line-clamp-3">{previewData.personalInfo.summary}</p>
-          )}
-        </div>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <User className="h-5 w-5 text-primary" />
+              Personal Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                {previewData.personalInfo.fullName}
+              </h3>
+              <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                {previewData.personalInfo.email && (
+                  <div className="flex items-center gap-1">
+                    <Mail className="h-4 w-4" />
+                    <span>{previewData.personalInfo.email}</span>
+                  </div>
+                )}
+                {previewData.personalInfo.phone && (
+                  <div className="flex items-center gap-1">
+                    <Phone className="h-4 w-4" />
+                    <span>{previewData.personalInfo.phone}</span>
+                  </div>
+                )}
+                {previewData.personalInfo.location && (
+                  <div className="flex items-center gap-1">
+                    <MapPin className="h-4 w-4" />
+                    <span>{previewData.personalInfo.location}</span>
+                  </div>
+                )}
+              </div>
+              {previewData.personalInfo.summary && (
+                <p className="text-sm text-gray-700 mt-3 leading-relaxed">
+                  {previewData.personalInfo.summary}
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       )}
       
-      {/* Experience Preview */}
+      {/* Experience Section */}
       {previewData.experience?.length > 0 && (
-        <div className="border-b pb-3">
-          <h5 className="font-medium text-gray-900 mb-2">Experience</h5>
-          <div className="space-y-2">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Briefcase className="h-5 w-5 text-primary" />
+              Work Experience ({previewData.totalExperience || previewData.experience.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             {previewData.experience.map((exp: any, index: number) => (
-              <div key={index} className="text-sm">
-                <div className="font-medium text-gray-800">{exp.title}</div>
-                <div className="text-gray-600">{exp.company} • {exp.startDate} - {exp.endDate}</div>
+              <div key={index} className="border-l-2 border-gray-200 pl-4">
+                <div className="flex justify-between items-start mb-1">
+                  <h4 className="font-semibold text-gray-900">{exp.title}</h4>
+                  <span className="text-sm text-gray-500">
+                    {exp.startDate} - {exp.endDate || 'Present'}
+                  </span>
+                </div>
+                <p className="text-sm font-medium text-gray-700 mb-1">{exp.company}</p>
+                {exp.description && (
+                  <p className="text-sm text-gray-600 line-clamp-2">{exp.description}</p>
+                )}
               </div>
             ))}
-            {previewData.totalExperience > 2 && (
-              <div className="text-xs text-gray-500 italic">+{previewData.totalExperience - 2} more positions</div>
+            {previewData.totalExperience > 3 && (
+              <div className="text-xs text-gray-500 italic text-center pt-2 border-t">
+                +{previewData.totalExperience - 3} more positions detected
+              </div>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
       
-      {/* Skills Preview */}
-      {previewData.skills?.length > 0 && (
-        <div>
-          <h5 className="font-medium text-gray-900 mb-2">Skills</h5>
-          <div className="flex flex-wrap gap-1">
-            {previewData.skills.map((skill: any, index: number) => (
-              <span key={index} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
-                {skill}
-              </span>
+      {/* Education Section */}
+      {previewData.education?.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <GraduationCap className="h-5 w-5 text-primary" />
+              Education ({previewData.totalEducation || previewData.education.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {previewData.education.map((edu: any, index: number) => (
+              <div key={index} className="space-y-1">
+                <div className="flex justify-between items-start">
+                  <h4 className="font-semibold text-gray-900">{edu.degree}</h4>
+                  <span className="text-sm text-gray-500">{edu.endDate}</span>
+                </div>
+                <p className="text-sm text-gray-700">{edu.school}</p>
+              </div>
             ))}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Skills Section */}
+      {previewData.skills?.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Award className="h-5 w-5 text-primary" />
+              Skills & Technologies
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {previewData.skills.map((skill: any, index: number) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {skill}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
       
       {/* Processing Info */}
-      <div className="border-t pt-3 text-xs text-gray-500">
-        <div>Extraction Method: {previewData.metadata?.extractionMethod || 'Standard AI'}</div>
-        {previewData.atsScore && (
-          <div>ATS Score: {previewData.atsScore}%</div>
-        )}
-      </div>
+      <Card className="bg-gray-50">
+        <CardContent className="pt-4">
+          <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
+            <div>
+              <span className="font-medium">Extraction Method:</span>
+              <br />
+              {previewData.metadata?.extractionMethod || 'Enhanced AI Parsing'}
+            </div>
+            {previewData.atsScore && (
+              <div>
+                <span className="font-medium">ATS Score:</span>
+                <br />
+                <span className="text-lg font-bold text-green-600">{previewData.atsScore}%</span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
