@@ -1,212 +1,371 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ResumeHeader } from './ResumeHeader';
+import { DraggableSection } from '../DraggableSection';
+import { PersonalInfoForm } from './forms/PersonalInfoForm';
+import { ExperienceForm } from './forms/ExperienceForm';
+import { EducationForm } from './forms/EducationForm';
+import { SkillsForm } from './forms/SkillsForm';
+import { SummaryForm } from './forms/SummaryForm';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useResumeDataProcessor } from "./ResumeDataProcessor";
-import { ResumeEditor } from "./ResumeEditor";
-import { ResumePreview } from "./ResumePreview";
-import { ResumeHeader } from "./ResumeHeader";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
-import { Card } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
+import { Save, Download, Eye, EyeOff, Plus } from "lucide-react";
 
 interface UnifiedResumeInterfaceProps {
   mode: 'edit' | 'create';
-  initialData?: any;
 }
 
-export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ 
-  mode, 
-  initialData 
-}) => {
+export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ mode }) => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { user } = useAuth();
-  const { processRawResumeData, getEmptyResumeData } = useResumeDataProcessor();
+  const navigate = useNavigate();
   
-  const [resumeData, setResumeData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [resumeData, setResumeData] = useState({
+    personalInfo: {},
+    summary: '',
+    experience: [],
+    education: [],
+    skills: [],
+    sectionOrder: ['personalInfo', 'summary', 'experience', 'education', 'skills']
+  });
+  
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
-  // Load resume data
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   useEffect(() => {
-    const loadResumeData = async () => {
-      if (!user) {
-        navigate('/auth');
-        return;
-      }
+    if (mode === 'edit' && id && id.startsWith('new-')) {
+      // Initialize new resume
+      setResumeData({
+        personalInfo: {},
+        summary: '',
+        experience: [],
+        education: [],
+        skills: [],
+        sectionOrder: ['personalInfo', 'summary', 'experience', 'education', 'skills']
+      });
+    } else if (mode === 'edit' && id) {
+      loadResume();
+    }
+  }, [id, mode]);
 
-      try {
-        if (mode === 'edit' && id) {
-          console.log('Loading resume with ID:', id);
-          const { data, error } = await supabase
-            .from('ai_resumes')
-            .select('*')
-            .eq('id', id)
-            .eq('user_id', user.id)
-            .single();
-
-          if (error) {
-            console.error('Error loading resume:', error);
-            setError('Failed to load resume');
-            return;
-          }
-
-          if (data) {
-            console.log('Resume loaded successfully:', data);
-            const processedData = processRawResumeData(data.content);
-            setResumeData(processedData);
-          }
-        } else if (mode === 'create') {
-          if (initialData) {
-            const processedData = processRawResumeData(initialData);
-            setResumeData(processedData);
-          } else {
-            setResumeData(getEmptyResumeData());
-          }
-        }
-      } catch (error) {
-        console.error('Error in loadResumeData:', error);
-        setError('Failed to load resume data');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadResumeData();
-  }, [id, mode, user, navigate, initialData, processRawResumeData, getEmptyResumeData]);
-
-  // Auto-save functionality
-  useEffect(() => {
-    if (!hasChanges || !resumeData || mode !== 'edit') return;
-
-    const saveTimer = setTimeout(() => {
-      handleSave();
-    }, 3000); // Auto-save after 3 seconds of no changes
-
-    return () => clearTimeout(saveTimer);
-  }, [resumeData, hasChanges, mode]);
-
-  const handleSave = async () => {
-    if (!user || !resumeData || mode !== 'edit') return;
-    
-    setIsSaving(true);
+  const loadResume = async () => {
+    if (!id || !user) return;
     
     try {
-      const updateData = {
-        content: resumeData,
-        template_id: null, // Always set to null to avoid UUID validation errors
-        updated_at: new Date().toISOString()
-      };
-
-      console.log('Saving resume with data:', updateData);
-
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('ai_resumes')
-        .update(updateData)
+        .select('*')
         .eq('id', id)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Save error:', error);
-        toast.error('Failed to save resume');
-        return;
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error) throw error;
+      
+      if (data?.content) {
+        setResumeData(data.content as any);
+        setLastSaved(new Date(data.updated_at));
       }
+    } catch (error) {
+      console.error('Error loading resume:', error);
+      toast.error('Failed to load resume');
+    }
+  };
 
+  const saveResume = useCallback(async () => {
+    if (!user) return;
+    
+    setIsSaving(true);
+    try {
+      const resumeId = id?.startsWith('new-') ? undefined : id;
+      
+      if (resumeId) {
+        // Update existing resume
+        const { error } = await supabase
+          .from('ai_resumes')
+          .update({
+            content: resumeData as any,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', resumeId)
+          .eq('user_id', user.id);
+        
+        if (error) throw error;
+      } else {
+        // Create new resume
+        const { data, error } = await supabase
+          .from('ai_resumes')
+          .insert({
+            user_id: user.id,
+            title: 'New Resume',
+            content: resumeData as any,
+            ats_score: 75
+          })
+          .select()
+          .single();
+        
+        if (error) throw error;
+        
+        // Update URL to use the new ID
+        navigate(`/resume-builder/edit/${data.id}`, { replace: true });
+      }
+      
       setLastSaved(new Date());
       setHasChanges(false);
-      console.log('Resume saved successfully');
-      
+      toast.success('Resume saved successfully');
     } catch (error) {
       console.error('Error saving resume:', error);
       toast.error('Failed to save resume');
     } finally {
       setIsSaving(false);
     }
+  }, [resumeData, user, id, navigate]);
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    
+    if (active.id !== over.id) {
+      setResumeData(prev => {
+        const oldIndex = prev.sectionOrder.indexOf(active.id);
+        const newIndex = prev.sectionOrder.indexOf(over.id);
+        
+        return {
+          ...prev,
+          sectionOrder: arrayMove(prev.sectionOrder, oldIndex, newIndex)
+        };
+      });
+      setHasChanges(true);
+    }
   };
 
-  const handleResumeDataChange = (newData: any) => {
-    console.log('Resume data changed:', newData);
-    setResumeData(newData);
+  const updateResumeData = (section: string, data: any) => {
+    setResumeData(prev => ({
+      ...prev,
+      [section]: data
+    }));
     setHasChanges(true);
   };
 
   const handleEnhancementApplied = (enhancedData: any) => {
-    console.log('Enhancement applied:', enhancedData);
     setResumeData(enhancedData);
     setHasChanges(true);
-    toast.success('AI enhancement applied successfully!');
+    toast.success('AI enhancements applied successfully!');
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
+  const addSection = (sectionType: string) => {
+    setResumeData(prev => ({
+      ...prev,
+      sectionOrder: [...prev.sectionOrder, sectionType]
+    }));
+    setHasChanges(true);
+  };
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="p-6 max-w-md">
-          <div className="flex items-center gap-2 text-destructive">
-            <AlertCircle className="w-5 h-5" />
-            <span className="font-medium">Error</span>
-          </div>
-          <p className="mt-2 text-sm text-muted-foreground">{error}</p>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!resumeData) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="p-6 max-w-md">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <AlertCircle className="w-5 h-5" />
-            <span className="font-medium">No Data</span>
-          </div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            No resume data available
-          </p>
-        </Card>
-      </div>
-    );
-  }
+  const renderSection = (sectionId: string) => {
+    switch (sectionId) {
+      case 'personalInfo':
+        return (
+          <DraggableSection
+            id="personalInfo"
+            title="Personal Information"
+            description="Your contact details and basic information"
+          >
+            <PersonalInfoForm
+              data={resumeData.personalInfo}
+              onChange={(data) => updateResumeData('personalInfo', data)}
+            />
+          </DraggableSection>
+        );
+      
+      case 'summary':
+        return (
+          <DraggableSection
+            id="summary"
+            title="Professional Summary"
+            description="A brief overview of your career and achievements"
+          >
+            <SummaryForm
+              data={resumeData.summary}
+              onChange={(data) => updateResumeData('summary', data)}
+            />
+          </DraggableSection>
+        );
+      
+      case 'experience':
+        return (
+          <DraggableSection
+            id="experience"
+            title="Work Experience"
+            description="Your professional work history"
+          >
+            <ExperienceForm
+              data={resumeData.experience}
+              onChange={(data) => updateResumeData('experience', data)}
+            />
+          </DraggableSection>
+        );
+      
+      case 'education':
+        return (
+          <DraggableSection
+            id="education"
+            title="Education"
+            description="Your educational background"
+          >
+            <EducationForm
+              data={resumeData.education}
+              onChange={(data) => updateResumeData('education', data)}
+            />
+          </DraggableSection>
+        );
+      
+      case 'skills':
+        return (
+          <DraggableSection
+            id="skills"
+            title="Skills"
+            description="Your technical and soft skills"
+          >
+            <SkillsForm
+              data={resumeData.skills}
+              onChange={(data) => updateResumeData('skills', data)}
+            />
+          </DraggableSection>
+        );
+      
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <ResumeHeader 
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <ResumeHeader
         mode={mode}
         isSaving={isSaving}
         lastSaved={lastSaved}
         hasChanges={hasChanges}
-        onSave={handleSave}
+        onSave={saveResume}
         resumeData={resumeData}
         onEnhancementApplied={handleEnhancementApplied}
       />
-      
+
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <ResumeEditor 
-              data={resumeData}
-              onChange={handleResumeDataChange}
-            />
+        <div className="flex gap-6">
+          {/* Editor Panel */}
+          <div className={`${showPreview ? 'w-1/2' : 'w-full'} transition-all duration-300`}>
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900">Resume Builder</h2>
+                <p className="text-slate-600">Drag and drop sections to reorder them</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowPreview(!showPreview)}
+                >
+                  {showPreview ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+                  {showPreview ? 'Hide Preview' : 'Show Preview'}
+                </Button>
+              </div>
+            </div>
+
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+              modifiers={[restrictToVerticalAxis]}
+            >
+              <SortableContext items={resumeData.sectionOrder} strategy={verticalListSortingStrategy}>
+                <div className="space-y-6">
+                  {resumeData.sectionOrder.map((sectionId) => (
+                    <div key={sectionId}>
+                      {renderSection(sectionId)}
+                    </div>
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+
+            <Card className="mt-6 border-dashed border-2 border-slate-300 hover:border-blue-400 transition-colors">
+              <CardContent className="p-6 text-center">
+                <Plus className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                <p className="text-slate-600 mb-4">Add more sections to your resume</p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <Button variant="outline" size="sm" onClick={() => addSection('projects')}>
+                    Projects
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => addSection('certifications')}>
+                    Certifications
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => addSection('languages')}>
+                    Languages
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-          
-          <div className="space-y-6">
-            <ResumePreview 
-              data={resumeData}
-            />
-          </div>
+
+          {/* Preview Panel */}
+          {showPreview && (
+            <div className="w-1/2">
+              <div className="sticky top-24">
+                <Card className="bg-white shadow-lg">
+                  <CardContent className="p-8">
+                    <div className="text-center mb-6">
+                      <Badge variant="outline" className="mb-2">Live Preview</Badge>
+                      <p className="text-sm text-slate-600">This is how your resume will look</p>
+                    </div>
+                    <Separator className="mb-6" />
+                    
+                    {/* Resume Preview Content */}
+                    <div className="space-y-6 text-sm">
+                      {resumeData.sectionOrder.map((sectionId) => (
+                        <div key={sectionId} className="preview-section">
+                          {sectionId === 'personalInfo' && resumeData.personalInfo && (
+                            <div className="text-center mb-6">
+                              <h1 className="text-xl font-bold text-slate-900">
+                                {(resumeData.personalInfo as any)?.fullName || 'Your Name'}
+                              </h1>
+                              <p className="text-slate-600">
+                                {(resumeData.personalInfo as any)?.email || 'your.email@example.com'}
+                              </p>
+                            </div>
+                          )}
+                          
+                          {sectionId === 'summary' && resumeData.summary && (
+                            <div className="mb-4">
+                              <h3 className="font-semibold text-slate-900 mb-2">Professional Summary</h3>
+                              <p className="text-slate-700">{resumeData.summary}</p>
+                            </div>
+                          )}
+                          
+                          {/* Add other section previews as needed */}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
