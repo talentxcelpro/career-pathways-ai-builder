@@ -1,396 +1,300 @@
-
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Upload, FileText, Download, Edit, Star, Share2, Copy, Trash2, RefreshCw } from "lucide-react";
-import { toast } from "sonner";
-import { useNavigate } from 'react-router-dom';
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { FileText, Sparkles, Upload, PenTool, Download, CheckCircle, ArrowRight, ArrowLeft, Star, Users, Award } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const ResumeDashboard = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const [selectedTemplate, setSelectedTemplate] = useState('modern');
 
-  const { data: resumes, isLoading } = useQuery({
-    queryKey: ['user-resumes'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ai_resumes')
-        .select('*, resume_templates(name)')
-        .order('updated_at', { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    }
-  });
+  const templates = [
+    { id: 'modern', name: 'Modern Professional', description: 'Clean and contemporary design perfect for tech roles', popular: true, color: 'from-blue-500 to-purple-500' },
+    { id: 'creative', name: 'Creative Designer', description: 'Eye-catching layout ideal for creative professionals', popular: false, color: 'from-pink-500 to-orange-500' },
+    { id: 'executive', name: 'Executive', description: 'Sophisticated template for senior leadership positions', popular: false, color: 'from-gray-700 to-gray-900' },
+    { id: 'minimalist', name: 'Minimalist', description: 'Simple and elegant design that lets your content shine', popular: true, color: 'from-green-500 to-teal-500' }
+  ];
 
+  const features = [
+    { icon: <PenTool className="w-6 h-6" />, title: "Drag & Drop Editor", description: "Rearrange sections with intuitive drag and drop interface" },
+    { icon: <Sparkles className="w-6 h-6" />, title: "AI-Powered Enhancement", description: "Get intelligent suggestions to improve your content" },
+    { icon: <Upload className="w-6 h-6" />, title: "Import Existing Resume", description: "Upload your current resume for instant enhancement" },
+    { icon: <Download className="w-6 h-6" />, title: "Multiple Export Formats", description: "Download as PDF, Word, or share with a professional link" }
+  ];
 
-  const handleDeleteResume = async (resumeId: string) => {
-    const { error } = await supabase
-      .from('ai_resumes')
-      .delete()
-      .eq('id', resumeId);
-    
-    if (!error) {
-      // Refetch resumes after deletion
-      window.location.reload();
-    }
-  };
+  const stats = [
+    { number: "2M+", label: "Resumes Created", icon: <FileText className="w-5 h-5" /> },
+    { number: "85%", label: "Interview Success Rate", icon: <Users className="w-5 h-5" /> },
+    { number: "4.8/5", label: "User Rating", icon: <Star className="w-5 h-5" /> },
+    { number: "50K+", label: "Success Stories", icon: <Award className="w-5 h-5" /> }
+  ];
 
-  const handleReprocessResume = async (resumeId: string) => {
-    try {
-      toast.loading('Generating better resume data...', { id: 'reprocess' });
-      
-      const resume = resumes?.find(r => r.id === resumeId);
-      if (!resume) {
-        throw new Error('Resume not found');
-      }
-
-      // Extract name from filename
-      const fileName = resume.title.replace('Enhanced Resume from ', '');
-      const extractedName = fileName.replace(/\.(docx?|pdf|txt)$/i, '').trim();
-      
-      // Generate better resume content
-      const improvedContent = {
-        personalInfo: {
-          fullName: extractedName,
-          email: `${extractedName.toLowerCase().replace(/\s+/g, '.')}@email.com`,
-          phone: '+1 (555) 123-4567',
-          location: 'Professional Location',
-          summary: `Experienced professional with expertise in modern technologies and methodologies. ${extractedName} brings a proven track record of delivering results and contributing to team success.`,
-          linkedin: '',
-          website: ''
-        },
-        experience: [
-          {
-            title: 'Software Developer',
-            company: 'Tech Company',
-            location: 'City, State',
-            startDate: '01/2022',
-            endDate: 'Present',
-            description: 'Developing and maintaining software applications using modern technologies.',
-            achievements: ['Improved system performance by 30%', 'Led team of 3 developers'],
-            technologies: ['JavaScript', 'React', 'Node.js']
-          }
-        ],
-        education: [
-          {
-            degree: 'Bachelor of Computer Science',
-            school: 'University',
-            location: 'City, State',
-            startDate: '2018',
-            endDate: '2022',
-            gpa: '',
-            honors: '',
-            relevantCoursework: []
-          }
-        ],
-        skills: {
-          technical: ['JavaScript', 'React', 'Node.js', 'Python', 'SQL'],
-          soft: ['Leadership', 'Communication', 'Problem Solving', 'Team Collaboration'],
-          languages: ['English'],
-          tools: ['VS Code', 'Git', 'GitHub', 'Jira']
-        },
-        projects: [],
-        certifications: [],
-        awards: [],
-        volunteer: []
-      };
-
-      // Calculate ATS score
-      let atsScore = 0;
-      if (improvedContent.personalInfo?.fullName) atsScore += 8;
-      if (improvedContent.personalInfo?.email) atsScore += 6;
-      if (improvedContent.personalInfo?.phone) atsScore += 6;
-      if (improvedContent.personalInfo?.location) atsScore += 3;
-      if (improvedContent.personalInfo?.summary && improvedContent.personalInfo.summary.length > 50) atsScore += 2;
-      if (improvedContent.experience?.length > 0) atsScore += 25;
-      if (improvedContent.education?.length > 0) atsScore += 15;
-      if (improvedContent.skills?.technical?.length > 0) atsScore += 12;
-      if (improvedContent.skills?.soft?.length > 0) atsScore += 4;
-      if (improvedContent.skills?.tools?.length > 0) atsScore += 4;
-      atsScore = Math.min(atsScore, 100);
-
-      // Update the resume in the database
-      const { error } = await supabase
-        .from('ai_resumes')
-        .update({
-          content: improvedContent,
-          ats_score: atsScore,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', resumeId);
-
-      if (error) {
-        throw new Error(`Failed to update resume: ${error.message}`);
-      }
-
-      toast.success('Resume data improved successfully!', { id: 'reprocess' });
-      // Refresh the page to show updated data
-      window.location.reload();
-    } catch (error) {
-      console.error('Error improving resume:', error);
-      toast.error('Failed to improve resume data', { id: 'reprocess' });
-    }
-  };
-
-  const handleDuplicateResume = async (resumeId: string) => {
-    const resume = resumes?.find(r => r.id === resumeId);
-    if (resume) {
-      const { error } = await supabase
-        .from('ai_resumes')
-        .insert({
-          user_id: resume.user_id,
-          title: `${resume.title} (Copy)`,
-          template_id: resume.template_id,
-          content: resume.content,
-          ats_score: resume.ats_score
-        });
-      
-      if (!error) {
-        window.location.reload();
-      }
-    }
+  const createNewResume = () => {
+    const newResumeId = `new-${Date.now()}`;
+    navigate(`/resume-builder/edit/${newResumeId}`);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Navigation */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-8">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-xl font-bold text-slate-900">ResumeBuilder</span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200">
+                <Sparkles className="w-3 h-3 mr-1" />
+                AI-Powered
+              </Badge>
+              {user && (
+                <span className="text-sm text-slate-600">
+                  Welcome back!
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
-      
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-12 animate-slideInUp">
-          <div className="space-y-3">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
-              Resume Builder
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl">
-              Create, manage, and optimize your professional resumes with AI-powered intelligence
+
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-20">
+            <div>
+              <Badge variant="secondary" className="mb-6 bg-blue-100 text-blue-700 border-blue-200">
+                <Sparkles className="w-3 h-3 mr-1" />
+                AI-Powered Resume Builder
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+                Enhancv's 
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Resume Builder</span>
+                <br />
+                helps you get hired at top companies
+              </h1>
+              <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+                Create a professional resume that gets you hired. Our AI-powered tools and beautiful templates make it easy to build your dream resume in minutes.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg"
+                  onClick={createNewResume}
+                >
+                  Build Your Resume
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-2 border-slate-300 text-slate-700 hover:bg-slate-50 px-8 py-4 text-lg font-semibold rounded-xl"
+                  onClick={() => navigate('/resume-builder/upload')}
+                >
+                  Get Your Resume Score
+                </Button>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="flex items-center gap-4 mb-8">
+                <div className="flex items-center">
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                    ))}
+                  </div>
+                  <span className="ml-2 text-sm font-medium text-slate-900">Excellent</span>
+                </div>
+                <div className="text-sm text-slate-600">
+                  <span className="font-semibold">4,662 Reviews</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Resume Preview */}
+            <div className="relative">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 border border-slate-200">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                      <div className="h-3 bg-slate-300 rounded w-32"></div>
+                      <div className="h-2 bg-slate-200 rounded w-24"></div>
+                    </div>
+                    <div className="w-16 h-16 bg-blue-100 rounded-full"></div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="h-2 bg-slate-300 rounded w-full"></div>
+                    <div className="h-2 bg-slate-200 rounded w-5/6"></div>
+                    <div className="h-2 bg-slate-200 rounded w-4/6"></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <div className="h-2 bg-blue-300 rounded w-full"></div>
+                      <div className="h-2 bg-blue-200 rounded w-3/4"></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-2 bg-purple-300 rounded w-full"></div>
+                      <div className="h-2 bg-purple-200 rounded w-2/3"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Section */}
+      <div className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
+              Pick a resume template and build your resume in minutes!
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl mb-4">
+                  <div className="text-blue-600">{stat.icon}</div>
+                </div>
+                <div className="text-3xl font-bold text-slate-900 mb-1">{stat.number}</div>
+                <div className="text-sm text-slate-600">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <div className="py-16 bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">
+              Everything You Need to Stand Out
+            </h2>
+            <p className="text-xl text-slate-600">
+              Professional tools designed to help you create the perfect resume
             </p>
           </div>
-          <div className="flex space-x-4">
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <Card key={index} className="border-slate-200 hover:shadow-lg transition-all duration-200 bg-white">
+                <CardHeader className="text-center pb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <div className="text-blue-600">{feature.icon}</div>
+                  </div>
+                  <CardTitle className="text-lg text-slate-900">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center pt-0">
+                  <p className="text-slate-600 text-sm leading-relaxed">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Templates Section */}
+      <div className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">
+              Choose Your Perfect Template
+            </h2>
+            <p className="text-xl text-slate-600">
+              Professional designs crafted by experts, loved by recruiters
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            {templates.map((template) => (
+              <Card 
+                key={template.id} 
+                className={`cursor-pointer transition-all duration-200 hover:shadow-xl ${
+                  selectedTemplate === template.id ? 'ring-2 ring-blue-500 shadow-lg' : ''
+                }`}
+                onClick={() => setSelectedTemplate(template.id)}
+              >
+                <CardHeader className="p-0">
+                  <div className="relative">
+                    <div className={`w-full h-64 bg-gradient-to-br ${template.color} rounded-t-lg flex items-center justify-center relative overflow-hidden`}>
+                      <div className="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
+                      <div className="relative z-10 text-white">
+                        <FileText className="w-16 h-16 opacity-80" />
+                      </div>
+                    </div>
+                    {template.popular && (
+                      <Badge className="absolute top-3 right-3 bg-gradient-to-r from-yellow-400 to-orange-400 text-white border-0">
+                        <Star className="w-3 h-3 mr-1" />
+                        Popular
+                      </Badge>
+                    )}
+                    {selectedTemplate === template.id && (
+                      <div className="absolute inset-0 bg-blue-500/20 rounded-t-lg flex items-center justify-center">
+                        <CheckCircle className="w-12 h-12 text-blue-600" />
+                      </div>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <h3 className="font-semibold text-slate-900 mb-2">{template.name}</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">{template.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center">
             <Button 
-              onClick={() => navigate('/resume-builder/upload')}
-              variant="outline"
-              size="lg"
-              className="bg-white/80 backdrop-blur-sm border-gray-200 hover:bg-white hover:shadow-lg transition-all duration-300 px-6 py-3 rounded-xl"
+              size="lg" 
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+              onClick={createNewResume}
             >
-              <Upload className="h-5 w-5 mr-2" />
+              Start Building Your Resume
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="py-16 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Ready to Land Your Dream Job?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8">
+            Join thousands of professionals who've upgraded their careers with our resume builder
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
+              variant="secondary" 
+              className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg font-semibold rounded-xl"
+              onClick={() => navigate('/resume-builder/upload')}
+            >
               Upload Resume
             </Button>
             <Button 
-              onClick={() => navigate('/resume-builder/new')}
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/25 transition-all duration-300 hover:scale-105"
+              size="lg" 
+              variant="outline" 
+              className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-xl"
+              onClick={createNewResume}
             >
-              <Plus className="h-5 w-5 mr-2" />
-              Create New Resume
+              Start from Template
             </Button>
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12 animate-fadeInScale">
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-                  <FileText className="h-6 w-6 text-white" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Resumes</p>
-                  <p className="text-3xl font-bold text-gray-900">{resumes?.length || 0}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl shadow-lg">
-                  <Star className="h-6 w-6 text-white" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Avg ATS Score</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {resumes?.length ? Math.round(resumes.reduce((acc, r) => acc + (r.ats_score || 0), 0) / resumes.length) : 0}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg">
-                  <Download className="h-6 w-6 text-white" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Downloads</p>
-                  <p className="text-3xl font-bold text-gray-900">0</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl shadow-lg">
-                  <Share2 className="h-6 w-6 text-white" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Shared</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {resumes?.filter(r => r.is_public).length || 0}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* My Resumes */}
-          <div className="lg:col-span-2">
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
-              <CardHeader className="pb-6">
-                <CardTitle className="text-2xl font-bold text-gray-900">My Resumes</CardTitle>
-                <CardDescription className="text-gray-600">Manage your professional resumes and track their performance</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="space-y-4">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="animate-pulse">
-                        <div className="h-20 bg-gray-200 rounded-lg"></div>
-                      </div>
-                    ))}
-                  </div>
-                ) : resumes?.length === 0 ? (
-                  <div className="text-center py-12">
-                    <FileText className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No resumes yet</h3>
-                    <p className="text-gray-600 mb-4">Create your first AI-powered resume to get started</p>
-                    <Button onClick={() => navigate('/resume-builder/new')}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Create Resume
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {resumes?.map((resume, index) => (
-                      <div 
-                        key={resume.id} 
-                        className="bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl p-6 hover:shadow-lg hover:bg-white/80 transition-all duration-300 hover:scale-102 animate-slideInUp"
-                        style={{ animationDelay: `${index * 0.1}s` }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3">
-                              <h3 className="font-semibold text-gray-900">{resume.title}</h3>
-                              {resume.is_primary && <Badge className="bg-green-100 text-green-800">Primary</Badge>}
-                              {resume.is_public && <Badge variant="outline">Public</Badge>}
-                            </div>
-                            <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
-                              <span>Template: {resume.resume_templates?.name || 'Custom'}</span>
-                              <span>ATS Score: {resume.ats_score}/100</span>
-                              <span>Updated: {new Date(resume.updated_at).toLocaleDateString()}</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            {/* Show reprocess button for problematic resumes */}
-                            {(resume.ats_score < 50 || 
-                              !(resume.content as any)?.personalInfo?.fullName || 
-                              (resume.content as any)?.personalInfo?.summary?.includes('RESUME FILE ANALYSIS')) && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleReprocessResume(resume.id)}
-                                className="text-blue-600 hover:text-blue-700"
-                                title="Reprocess with AI"
-                              >
-                                <RefreshCw className="h-4 w-4" />
-                              </Button>
-                            )}
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => navigate(`/resume-builder/edit/${resume.id}`)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => navigate(`/resume-builder/export/${resume.id}`)}
-                            >
-                              <Download className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDuplicateResume(resume.id)}
-                            >
-                              <Copy className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteResume(resume.id)}
-                              className="text-red-600 hover:text-red-700"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Quick Actions & Templates */}
-          <div className="space-y-6">
-            {/* Quick Actions */}
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-xl font-bold text-gray-900">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button 
-                  onClick={() => navigate('/resume-builder/new')} 
-                  className="w-full justify-start bg-white/80 backdrop-blur-sm border border-gray-200 hover:bg-white hover:shadow-md transition-all duration-300 text-gray-700 py-3 rounded-xl"
-                  variant="outline"
-                >
-                  <Plus className="h-4 w-4 mr-3" />
-                  Start from Scratch
-                </Button>
-                <Button 
-                  onClick={() => navigate('/resume-builder/upload')} 
-                  className="w-full justify-start bg-white/80 backdrop-blur-sm border border-gray-200 hover:bg-white hover:shadow-md transition-all duration-300 text-gray-700 py-3 rounded-xl"
-                  variant="outline"
-                >
-                  <Upload className="h-4 w-4 mr-3" />
-                  Upload Existing Resume
-                </Button>
-                <Button 
-                  onClick={() => navigate('/resume-builder/cover-letter')} 
-                  className="w-full justify-start bg-white/80 backdrop-blur-sm border border-gray-200 hover:bg-white hover:shadow-md transition-all duration-300 text-gray-700 py-3 rounded-xl"
-                  variant="outline"
-                >
-                  <FileText className="h-4 w-4 mr-3" />
-                  Generate Cover Letter
-                </Button>
-              </CardContent>
-            </Card>
-
           </div>
         </div>
       </div>
