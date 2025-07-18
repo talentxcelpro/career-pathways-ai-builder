@@ -21,11 +21,11 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <BrowserRouter>
-          <Routes>
+      <TooltipProvider>
+        <Toaster />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
             {/* Resume Builder Routes */}
             <Route path="/resume-builder" element={<ResumeDashboard />} />
             <Route path="/resume-builder/new" element={<CreateResume />} />
@@ -45,10 +45,10 @@ const App = () => {
             {navItems.map(({ to, page }) => (
               <Route key={to} path={to} element={page} />
             ))}
-          </Routes>
+            </Routes>
+          </AuthProvider>
         </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 };
