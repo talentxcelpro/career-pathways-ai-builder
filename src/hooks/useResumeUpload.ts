@@ -77,51 +77,30 @@ export const useResumeUpload = () => {
       
       // Step 6: Create enhanced resume entry in database
       setProcessingStep(6);
-      const { data: resume, error: resumeError } = await supabase
-        .from('resumes')
+      const { data, error } = await supabase
+        .from('ai_resumes')
         .insert({
           user_id: user.id,
           title: `Enhanced Resume from ${file.name}`,
-          content: extractedContent.enhancedContent || {},
-          ats_score: extractedContent.enhancementScore?.atsCompatibility || 75
+          content: extractedContent.enhancedContent as any, // Convert to Json type
+          ats_score: extractedContent.enhancementScore?.atsCompatibility || 75,
+          template_id: null // Use null instead of string to avoid UUID errors
         })
         .select()
         .single();
       
-      if (resumeError) {
-        console.error('Database insert error:', resumeError);
-        throw resumeError;
+      if (error) {
+        console.error('Database insert error:', error);
+        throw error;
       }
       
-      // Insert resume sections if available
-      if (extractedContent.enhancedContent) {
-        const sectionsToInsert = Object.entries(extractedContent.enhancedContent as Record<string, any>).map(([section, data], index) => ({
-          resume_id: resume.id,
-          section_type: section,
-          content: data,
-          display_order: index + 1
-        }));
-        
-        if (sectionsToInsert.length > 0) {
-          const { error: sectionsError } = await supabase
-            .from('resume_sections')
-            .insert(sectionsToInsert);
-          
-          if (sectionsError) {
-            console.error('Sections insert error:', sectionsError);
-            // Don't throw here, the main resume is already created
-            console.warn('Failed to insert resume sections, but main resume was created successfully');
-          }
-        }
-      }
-      
-      console.log('Resume created in database:', resume);
+      console.log('Resume created in database:', data);
       setUploadSuccess(true);
       toast.success('Resume processed successfully!');
       
       // Navigate to edit mode after a short delay
       setTimeout(() => {
-        navigate(`/resume-builder/edit/${resume.id}`);
+        navigate(`/resume-builder/edit/${data.id}`);
       }, 2000);
     } catch (error) {
       console.error('Error processing resume:', error);

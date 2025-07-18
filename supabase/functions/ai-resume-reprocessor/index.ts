@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -30,93 +29,96 @@ serve(async (req) => {
     let userPrompt = '';
 
     if (operation === 'extract_and_enhance') {
-      systemPrompt = `You are an expert resume processor. Your task is to extract ALL information from the resume text with maximum accuracy and provide structured data that can be easily used in a resume builder application.
+      systemPrompt = `You are an expert resume processor with dual capabilities:
+1. Advanced resume extraction and parsing 
+2. ATS optimization and enhancement
+
+You will analyze the resume text and provide both extraction AND enhancement in a single response.`;
+
+      userPrompt = `COMPREHENSIVE RESUME PROCESSING
+
+PHASE 1: EXTRACTION
+Extract ALL information from this resume with maximum accuracy:
 
 CRITICAL EXTRACTION RULES:
-1. IGNORE any system metadata like "Resume File:", "File Type:", etc.
-2. Extract the ACTUAL person's name from the resume content, NOT from filenames
-3. Be very careful to distinguish between section headers and actual content
-4. Extract ALL work experience entries completely
-5. Extract ALL education entries completely
-6. Preserve exact dates, company names, job titles, and descriptions
-7. Extract skills comprehensively from any mention in the resume
-8. Look for contact information carefully (email, phone, location, LinkedIn, etc.)`;
+- IGNORE system metadata like "Resume File:", "File Type:", etc.
+- Focus ONLY on actual professional information
+- Extract real person's name from content (NOT filename)
+- Preserve exact wording and terminology
+- For PhD/engineering backgrounds, capture ALL technical details
+- Extract research experience, publications, specialized skills
+- Calculate experience durations accurately
 
-      userPrompt = `Extract ALL information from this resume and return it in this EXACT JSON structure:
+PHASE 2: ATS ENHANCEMENT
+For each extracted section, provide an ATS-optimized enhanced version:
+- Add relevant keywords for the field
+- Improve action verbs and quantifiable achievements
+- Optimize for applicant tracking systems
+- Maintain professional tone and accuracy
+- Suggest additional skills and certifications
+- Improve formatting and structure recommendations
 
+RETURN COMPREHENSIVE JSON:
 {
   "extracted": {
     "personalInfo": {
-      "fullName": "ACTUAL person's name from resume content",
-      "email": "email address if found",
-      "phone": "phone number if found", 
-      "location": "city, state/country if found",
-      "linkedin": "LinkedIn URL if found",
-      "website": "personal website if found"
-    },
-    "professionalSummary": {
-      "content": "complete professional summary/objective section"
+      "fullName": "actual name from resume content",
+      "email": "exact email",
+      "phone": "standardized phone",
+      "location": "full location",
+      "summary": "complete summary word-for-word",
+      "linkedin": "linkedin URL if present",
+      "website": "website if present"
     },
     "experience": [
       {
-        "jobTitle": "exact job title",
-        "companyName": "exact company name",
-        "location": "job location if mentioned",
-        "startDate": "start date in MM/YYYY format",
-        "endDate": "end date in MM/YYYY format or 'Present'",
-        "description": "complete job description",
-        "achievements": ["list of specific achievements"],
-        "responsibilities": ["list of key responsibilities"]
+        "title": "exact job title",
+        "company": "exact company name",
+        "location": "job location",
+        "startDate": "MM/YYYY format",
+        "endDate": "MM/YYYY or Present",
+        "duration": "calculated duration",
+        "description": "complete description",
+        "achievements": ["quantified achievements"],
+        "technologies": ["technologies mentioned"],
+        "keywords": ["relevant keywords"]
       }
     ],
     "education": [
       {
         "degree": "exact degree name",
-        "institutionName": "exact school/university name",
-        "location": "school location if mentioned",
-        "startDate": "start date in MM/YYYY format",
-        "endDate": "graduation date in MM/YYYY format",
-        "grade": "GPA or grade if mentioned",
-        "honors": "honors or distinctions if mentioned"
+        "school": "exact institution",
+        "location": "school location",
+        "startDate": "start date",
+        "endDate": "graduation date",
+        "gpa": "GPA if mentioned",
+        "honors": "honors if mentioned",
+        "relevantCoursework": ["courses listed"]
       }
     ],
     "skills": {
-      "technical": [
-        {
-          "skill": "skill name",
-          "proficiency": "beginner/intermediate/advanced/expert"
-        }
-      ],
-      "soft": [
-        {
-          "skill": "soft skill name", 
-          "proficiency": "beginner/intermediate/advanced/expert"
-        }
-      ],
-      "languages": [
-        {
-          "language": "language name",
-          "proficiency": "basic/conversational/fluent/native"
-        }
-      ]
+      "technical": ["exact technical skills"],
+      "soft": ["soft skills mentioned"],
+      "languages": ["languages spoken"],
+      "certifications": ["certifications listed"]
     },
-    "certifications": [
-      {
-        "name": "certification name",
-        "issuingOrganization": "issuing organization",
-        "issueDate": "date obtained",
-        "expiryDate": "expiry date if mentioned",
-        "credentialUrl": "URL if provided"
-      }
-    ],
     "projects": [
       {
         "title": "project name",
         "description": "project description",
-        "technologies": ["technologies used"],
-        "startDate": "start date if mentioned",
-        "endDate": "end date if mentioned",
-        "url": "project URL if provided"
+        "technologies": ["tech used"],
+        "startDate": "start if mentioned",
+        "endDate": "end if mentioned",
+        "url": "URL if provided",
+        "achievements": ["project outcomes"]
+      }
+    ],
+    "certifications": [
+      {
+        "name": "certification name",
+        "issuer": "issuing org",
+        "date": "date obtained",
+        "url": "verification URL if provided"
       }
     ],
     "awards": [
@@ -126,49 +128,43 @@ CRITICAL EXTRACTION RULES:
         "date": "date received",
         "description": "award details"
       }
-    ],
-    "languages": [
-      {
-        "language": "language name",
-        "proficiency": "basic/conversational/fluent/native"
-      }
     ]
   },
   "enhanced": {
     "personalInfo": {
-      "summary": "ATS-optimized professional summary with relevant keywords",
-      "improvements": ["specific suggestions for improving personal info section"]
+      "summary": "ATS-optimized professional summary with keywords",
+      "improvements": ["specific enhancement suggestions"]
     },
     "experience": [
       {
-        "title": "enhanced job title with relevant keywords",
-        "description": "ATS-optimized description with strong action verbs",
-        "achievements": ["quantified achievements with specific metrics"],
-        "suggestedKeywords": ["relevant industry keywords to add"],
-        "improvements": ["specific enhancement suggestions"]
+        "title": "enhanced job title with keywords",
+        "description": "ATS-optimized description with action verbs",
+        "achievements": ["quantified achievements with metrics"],
+        "suggestedKeywords": ["additional relevant keywords"],
+        "improvements": ["specific suggestions"]
       }
     ],
     "skills": {
-      "recommended": ["additional skills to consider adding"],
-      "keywords": ["industry-specific keywords to include"],
-      "certifications": ["suggested certifications for career growth"]
+      "recommended": ["additional skills to add"],
+      "keywords": ["industry-specific keywords"],
+      "certifications": ["suggested certifications"]
     },
     "atsOptimization": {
       "score": 85,
       "keywordDensity": 75,
       "suggestions": [
         {
-          "section": "section name",
-          "issue": "specific issue identified",
-          "suggestion": "specific improvement recommendation",
-          "priority": "high/medium/low"
+          "section": "experience",
+          "issue": "needs more action verbs",
+          "suggestion": "replace passive phrases with active ones",
+          "priority": "high"
         }
       ]
     }
   },
   "metadata": {
     "processingVersion": "3.0",
-    "extractionConfidence": 0.95,
+    "extractionConfidence": 0.92,
     "enhancementLevel": "comprehensive"
   }
 }
@@ -176,12 +172,7 @@ CRITICAL EXTRACTION RULES:
 RESUME TEXT TO PROCESS:
 ${resumeText}
 
-IMPORTANT: 
-- Look carefully for the person's actual name, usually at the top of the resume
-- Do not confuse section headers like "PROFESSIONAL SUMMARY" with the person's name
-- Extract ALL work experience and education entries, not just the most recent ones
-- Be thorough in extracting skills from throughout the resume
-- Provide complete and accurate information for each section`;
+Provide complete extraction AND enhancement in a single comprehensive response.`;
     } else {
       throw new Error('Invalid operation type');
     }
@@ -218,15 +209,13 @@ IMPORTANT:
       console.error('Failed to parse AI response:', parseError);
       result = {
         extracted: {
-          personalInfo: { fullName: '', email: '', phone: '', location: '' },
-          professionalSummary: { content: '' },
+          personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
           experience: [],
           education: [],
-          skills: { technical: [], soft: [], languages: [] },
+          skills: { technical: [], soft: [], languages: [], certifications: [] },
           projects: [],
           certifications: [],
-          awards: [],
-          languages: []
+          awards: []
         },
         enhanced: {
           personalInfo: { summary: 'Unable to process - please try again', improvements: [] },
