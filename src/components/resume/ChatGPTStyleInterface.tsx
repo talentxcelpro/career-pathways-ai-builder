@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { useAIResumeEnhancements } from "@/hooks/useAIResumeEnhancements";
 import { useResumeUpload } from "@/hooks/useResumeUpload";
 import { FileUploadZone } from "@/components/resume/upload/FileUploadZone";
+import { EnhancedResumeProcessor } from "@/services/resume-enhancer/EnhancedResumeProcessor";
 import { toast } from "sonner";
 import {
   Send,
@@ -62,6 +63,8 @@ export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
   const [dragActive, setDragActive] = useState(false);
   const [showUploadSection, setShowUploadSection] = useState(!resumeData);
   const [copiedId, setCopiedId] = useState<string>('');
+  const [enhancedProcessor] = useState(() => new EnhancedResumeProcessor());
+  const [processingLog, setProcessingLog] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -223,11 +226,39 @@ export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
     resetUpload();
   };
 
-  const handleProcessResume = () => {
+  const handleProcessResume = async () => {
     if (uploadedFile) {
-      const files = new DataTransfer();
-      files.items.add(uploadedFile);
-      processResume(files.files);
+      const messageId = addMessage('user', `Processing resume: ${uploadedFile.name}`);
+      const aiMessageId = addMessage('ai', 'Starting enhanced resume processing...', null);
+      updateMessage(aiMessageId, { isLoading: true });
+
+      try {
+        const result = await enhancedProcessor.processResume(uploadedFile, {
+          targetRole: 'software_engineer',
+          enhancementLevel: 'comprehensive'
+        });
+
+        setProcessingLog(result.processingLog);
+        
+        updateMessage(aiMessageId, {
+          content: `✅ **Resume Processing Complete!**\n\n**Overall Score:** ${result.enhancementScore.overall}%\n**ATS Score:** ${result.enhancementScore.atsCompatibility}%\n\n**Sections Processed:**\n${Object.entries(result.enhancementScore.sections).map(([section, score]) => `• ${section}: ${score}%`).join('\n')}\n\n**Top Recommendations:**\n${result.recommendations.slice(0, 3).map(r => `• ${r.suggestion}`).join('\n')}\n\n**Processing Log:**\n${result.processingLog.slice(-3).join('\n')}`,
+          data: result,
+          isLoading: false
+        });
+
+        if (onEnhancementApplied) {
+          onEnhancementApplied(result.enhancedContent);
+        }
+
+        toast.success('Resume processed with enhanced AI features!');
+      } catch (error) {
+        updateMessage(aiMessageId, {
+          content: `❌ **Processing Failed**\n\nError: ${error.message}\n\nPlease try again or contact support if the issue persists.`,
+          isLoading: false,
+          error: error.message
+        });
+        toast.error('Failed to process resume');
+      }
     }
   };
 
@@ -394,6 +425,27 @@ export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
               <Zap className="h-3 w-3" />
             )}
             Optimize Keywords
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              if (resumeData) {
+                const preview = await enhancedProcessor.getEnhancementPreview(resumeData);
+                const messageId = addMessage('ai', 
+                  `🎯 **Enhancement Preview**\n\n**Current ATS Score:** ${preview.currentScore}%\n**Projected Score:** ${preview.projectedScore}%\n\n**Potential Improvements:**\n${preview.improvements.map(i => `• ${i}`).join('\n')}\n\nUpload a resume to see full enhancement capabilities!`,
+                  preview
+                );
+              } else {
+                toast.info('Upload a resume to see enhancement preview');
+              }
+            }}
+            disabled={isAnyLoading}
+            className="flex items-center gap-2"
+          >
+            <Sparkles className="h-3 w-3" />
+            Enhanced Analysis
           </Button>
         </div>
 
