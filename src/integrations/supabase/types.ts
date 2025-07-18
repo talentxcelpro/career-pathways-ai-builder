@@ -10700,16 +10700,23 @@ export type Database = {
           created_at: string | null
           css_config: Json | null
           description: string | null
+          design_tokens: Json
+          experience_level: string | null
+          features: Json
           id: string
+          industry: string[] | null
           is_active: boolean | null
           is_premium: boolean | null
           layout_config: Json | null
           name: string
           preview_url: string | null
+          rating: number | null
           status: boolean | null
           tags: string[] | null
+          template_config: Json
           thumbnail_url: string | null
           updated_at: string | null
+          usage_count: number | null
         }
         Insert: {
           ats_score?: number | null
@@ -10718,16 +10725,23 @@ export type Database = {
           created_at?: string | null
           css_config?: Json | null
           description?: string | null
+          design_tokens?: Json
+          experience_level?: string | null
+          features?: Json
           id?: string
+          industry?: string[] | null
           is_active?: boolean | null
           is_premium?: boolean | null
           layout_config?: Json | null
           name: string
           preview_url?: string | null
+          rating?: number | null
           status?: boolean | null
           tags?: string[] | null
+          template_config?: Json
           thumbnail_url?: string | null
           updated_at?: string | null
+          usage_count?: number | null
         }
         Update: {
           ats_score?: number | null
@@ -10736,16 +10750,23 @@ export type Database = {
           created_at?: string | null
           css_config?: Json | null
           description?: string | null
+          design_tokens?: Json
+          experience_level?: string | null
+          features?: Json
           id?: string
+          industry?: string[] | null
           is_active?: boolean | null
           is_premium?: boolean | null
           layout_config?: Json | null
           name?: string
           preview_url?: string | null
+          rating?: number | null
           status?: boolean | null
           tags?: string[] | null
+          template_config?: Json
           thumbnail_url?: string | null
           updated_at?: string | null
+          usage_count?: number | null
         }
         Relationships: []
       }
@@ -13060,6 +13081,73 @@ export type Database = {
           },
         ]
       }
+      template_customizations: {
+        Row: {
+          applied_at: string | null
+          customization_data: Json
+          id: string
+          template_id: string | null
+          user_id: string
+        }
+        Insert: {
+          applied_at?: string | null
+          customization_data?: Json
+          id?: string
+          template_id?: string | null
+          user_id: string
+        }
+        Update: {
+          applied_at?: string | null
+          customization_data?: Json
+          id?: string
+          template_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_customizations_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "resume_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      template_usage_analytics: {
+        Row: {
+          action_type: string
+          id: string
+          metadata: Json | null
+          template_id: string | null
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          id?: string
+          metadata?: Json | null
+          template_id?: string | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          id?: string
+          metadata?: Json | null
+          template_id?: string | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_usage_analytics_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "resume_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tool_feedback: {
         Row: {
           comments: string | null
@@ -14696,6 +14784,15 @@ export type Database = {
           processed_count: number
           simulated_events: number
         }[]
+      }
+      track_template_usage: {
+        Args: {
+          template_uuid: string
+          user_uuid: string
+          action_type: string
+          metadata?: Json
+        }
+        Returns: undefined
       }
       update_ai_feature_status: {
         Args: {
