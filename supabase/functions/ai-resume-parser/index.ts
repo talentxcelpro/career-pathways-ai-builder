@@ -1,280 +1,343 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+interface ResumeParseRequest {
+  text: string;
+  fileName?: string;
+  fileType?: string;
+  userId?: string;
+}
+
+interface ParsedResumeData {
+  name: string;
+  email: string;
+  phone: string;
+  location: string;
+  linkedin: string;
+  summary: string;
+  experience: Array<{
+    title: string;
+    company: string;
+    location: string;
+    startDate: string;
+    endDate: string;
+    description: string[];
+  }>;
+  education: Array<{
+    degree: string;
+    institution: string;
+    location: string;
+    startDate: string;
+    endDate: string;
+    grade: string;
+  }>;
+  skills: string[];
+  certifications: string[];
+  projects: Array<{
+    title: string;
+    description: string;
+    technologies: string[];
+  }>;
+  languages: string[];
+  hobbies: string[];
+}
+
 serve(async (req) => {
+  console.log('🚀 AI Resume Parser Function Starting...');
+  
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('✅ CORS preflight request handled');
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log('📋 Request details:', {
+    method: req.method,
+    url: req.url,
+    headers: Object.fromEntries(req.headers.entries())
+  });
+
   try {
-    const { text, fileName, fullExtraction } = await req.json();
-
-    if (!text) {
-      throw new Error('No resume text provided');
-    }
-
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    if (!OPENAI_API_KEY) {
+      console.error('❌ OpenAI API key not found');
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('Parsing resume with AI:', fileName, 'Full extraction:', fullExtraction);
+    const { text, fileName, fileType, userId }: ResumeParseRequest = await req.json();
+    
+    console.log('📄 Processing resume parsing request:', {
+      textLength: text?.length || 0,
+      fileName,
+      fileType,
+      userId
+    });
 
-    const prompt = fullExtraction ? 
-      `You are an expert resume parser. Extract ALL information from this resume text with maximum accuracy. 
+    if (!text || text.trim().length === 0) {
+      throw new Error('No resume text provided');
+    }
 
-      CRITICAL INSTRUCTIONS:
-      - Extract EVERY piece of information exactly as written
-      - Do NOT summarize, paraphrase, or modify any content
-      - IGNORE system metadata like "Resume File:", "File Type:", etc.
-      - Focus ONLY on actual resume content
-      - If the person has a PhD, engineering background, or specialized skills, capture ALL details
-      - Extract complete job descriptions, not just titles
-      - Capture ALL skills, technologies, and achievements mentioned
-      - Preserve technical terminology and specific domain knowledge
+    // Create the structured prompt
+    const prompt = `You are an expert resume parser.
 
-      SPECIAL ATTENTION TO:
-      - Technical/Engineering backgrounds with specific domains (like microbial fuel cells, battery materials, etc.)
-      - Research experience, publications, projects
-      - Specialized skills and methodologies
-      - Academic qualifications and certifications
-      - Detailed work experience with specific technologies and achievements
+Extract structured resume data from the text below and return it as a clean JSON object.
 
-      Structure:
-      {
-        "personalInfo": {
-          "fullName": "exact name from resume (NOT filename)",
-          "email": "exact email",
-          "phone": "exact phone", 
-          "location": "exact location/address",
-          "summary": "complete professional summary word-for-word",
-          "linkedin": "linkedin profile if mentioned",
-          "website": "personal website if mentioned"
-        },
-        "experience": [
-          {
-            "title": "exact job title",
-            "company": "exact company name",
-            "location": "job location if mentioned",
-            "startDate": "start date in MM/YYYY or YYYY format",
-            "endDate": "end date or 'Present'",
-            "description": "complete job description word-for-word",
-            "achievements": ["list of bullet points exactly as written"],
-            "technologies": ["technologies mentioned for this role"]
-          }
-        ],
-        "education": [
-          {
-            "degree": "exact degree name",
-            "school": "exact institution name",
-            "location": "school location if mentioned",
-            "startDate": "start date",
-            "endDate": "graduation date",
-            "gpa": "GPA if mentioned",
-            "honors": "honors/distinctions if mentioned",
-            "relevantCoursework": ["courses if listed"]
-          }
-        ],
-        "skills": {
-          "technical": ["exact technical skills listed"],
-          "soft": ["soft skills mentioned"],
-          "languages": ["languages spoken"],
-          "tools": ["tools and software mentioned"]
-        },
-        "projects": [
-          {
-            "title": "exact project name",
-            "description": "complete project description",
-            "technologies": ["technologies used"],
-            "startDate": "start date if mentioned",
-            "endDate": "end date if mentioned",
-            "url": "project URL if provided",
-            "github": "GitHub link if provided"
-          }
-        ],
-        "certifications": [
-          {
-            "name": "exact certification name",
-            "issuer": "issuing organization",
-            "date": "date obtained",
-            "expiryDate": "expiry date if mentioned",
-            "credentialId": "credential ID if provided",
-            "url": "verification URL if provided"
-          }
-        ],
-        "awards": [
-          {
-            "name": "exact award name",
-            "issuer": "awarding organization",
-            "date": "date received",
-            "description": "award description if provided"
-          }
-        ],
-        "volunteer": [
-          {
-            "organization": "organization name",
-            "role": "volunteer role",
-            "startDate": "start date",
-            "endDate": "end date",
-            "description": "description of volunteer work"
-          }
-        ]
-      }
+### Instructions:
+- Extract key fields accurately.
+- Dates should be in "MMM YYYY" format (e.g., Jan 2020).
+- Use arrays for lists like work experience, education, skills, etc.
+- If data is missing, leave the field as null or empty.
+- Don't guess or hallucinate values.
+- For experience descriptions, split into meaningful bullet points.
+- Extract ALL skills mentioned, including technical and soft skills.
+- Parse education information completely including grades if available.
+- Identify certifications and professional credentials.
+- Extract project information with technologies used.
+- Identify languages spoken and proficiency levels if mentioned.
+- Extract hobbies and interests if mentioned.
 
-      Extract EXACTLY what is written. Do not invent or assume information.
-      For missing information, use empty strings or arrays.
-      Preserve original wording and phrasing.
-      IGNORE file metadata lines that start with "Resume File:", "File Type:", "File Size:" etc.
+### Expected JSON keys:
+{
+  "name": "",
+  "email": "",
+  "phone": "",
+  "location": "",
+  "linkedin": "",
+  "summary": "",
+  "experience": [
+    {
+      "title": "",
+      "company": "",
+      "location": "",
+      "startDate": "",
+      "endDate": "",
+      "description": []
+    }
+  ],
+  "education": [
+    {
+      "degree": "",
+      "institution": "",
+      "location": "",
+      "startDate": "",
+      "endDate": "",
+      "grade": ""
+    }
+  ],
+  "skills": [],
+  "certifications": [],
+  "projects": [
+    {
+      "title": "",
+      "description": "",
+      "technologies": []
+    }
+  ],
+  "languages": [],
+  "hobbies": []
+}
 
-      Resume text:
-      ${text}
+### Resume Text:
+"""
+${text}
+"""
 
-      Return only valid JSON, no additional text.`
-      :
-      `Extract structured information from this resume text and return it as JSON. Include:
+Return ONLY the JSON object, no additional text or formatting.`;
 
-      1. personalInfo: {fullName, email, phone, location, summary, linkedin, website}
-      2. experience: [{title, company, location, startDate, endDate, description, achievements[], technologies[]}]
-      3. education: [{degree, school, location, startDate, endDate, gpa, honors, relevantCoursework[]}]
-      4. skills: {technical[], soft[], languages[], tools[]}
-      5. projects: [{title, description, technologies[], startDate, endDate, url, github}]
-      6. certifications: [{name, issuer, date, expiryDate, credentialId, url}]
-      7. awards: [{name, issuer, date, description}]
-      8. volunteer: [{organization, role, startDate, endDate, description}]
-
-      Extract real data from the resume text. If information is missing, use empty strings or arrays.
-      For dates, extract in YYYY or MM/YYYY format when possible.
-      For skills, categorize appropriately into technical, soft skills, languages, and tools.
-
-      Resume text:
-      ${text}
-
-      Return only valid JSON, no additional text or formatting.`;
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    console.log('🤖 Calling OpenAI API for resume parsing...');
+    
+    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: 'gpt-4o',
         messages: [
-          { 
-            role: 'system', 
-            content: 'You are an expert resume parser. Extract information accurately and return valid JSON only.' 
+          {
+            role: 'system',
+            content: 'You are an expert resume parser. Always return valid JSON that matches the exact schema provided. Be accurate and thorough in your extraction.'
           },
-          { role: 'user', content: prompt }
+          {
+            role: 'user',
+            content: prompt
+          }
         ],
         temperature: 0.1,
-        max_tokens: 4000,
+        max_tokens: 3000,
+        response_format: { type: "json_object" }
       }),
     });
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${response.status}`);
+    if (!openaiResponse.ok) {
+      const error = await openaiResponse.text();
+      console.error('❌ OpenAI API error:', error);
+      throw new Error(`OpenAI API error: ${openaiResponse.status} ${error}`);
     }
 
-    const data = await response.json();
-    const extractedContent = data.choices[0].message.content;
+    const openaiData = await openaiResponse.json();
+    console.log('✅ OpenAI API response received');
 
-    console.log('AI extracted content:', extractedContent);
+    if (!openaiData.choices?.[0]?.message?.content) {
+      throw new Error('No content in OpenAI response');
+    }
 
-    // Parse the JSON response
-    let parsedData;
+    let parsedData: ParsedResumeData;
     try {
-      parsedData = JSON.parse(extractedContent);
+      parsedData = JSON.parse(openaiData.choices[0].message.content);
+      console.log('✅ Successfully parsed resume data');
     } catch (parseError) {
-      console.error('Failed to parse AI response as JSON:', parseError);
-      // Return default structure if parsing fails
-      parsedData = {
-        personalInfo: {
-          fullName: '',
-          email: '',
-          phone: '',
-          location: '',
-          summary: 'Professional with experience in various technologies and methodologies.',
-          linkedin: '',
-          website: ''
-        },
-        experience: [],
-        education: [],
-        skills: {
-          technical: [],
-          soft: [],
-          languages: [],
-          tools: []
-        },
-        projects: [],
-        certifications: [],
-        awards: [],
-        volunteer: []
-      };
+      console.error('❌ Failed to parse OpenAI JSON response:', parseError);
+      throw new Error('Failed to parse AI response as JSON');
     }
 
-    // Calculate ATS score based on completeness
-    const atsScore = calculateATSScore(parsedData);
+    // Validate and enhance the parsed data
+    const enhancedData = {
+      personalInfo: {
+        fullName: parsedData.name || '',
+        email: parsedData.email || '',
+        phone: parsedData.phone || '',
+        location: parsedData.location || '',
+        linkedin: parsedData.linkedin || '',
+        summary: parsedData.summary || '',
+        confidence: 0.9
+      },
+      experience: parsedData.experience?.map(exp => ({
+        title: exp.title || '',
+        company: exp.company || '',
+        location: exp.location || '',
+        startDate: exp.startDate || '',
+        endDate: exp.endDate || '',
+        responsibilities: exp.description || [],
+        achievements: [],
+        technologies: [],
+        confidence: 0.8
+      })) || [],
+      education: parsedData.education?.map(edu => ({
+        degree: edu.degree || '',
+        school: edu.institution || '',
+        location: edu.location || '',
+        startDate: edu.startDate || '',
+        endDate: edu.endDate || '',
+        gpa: edu.grade || '',
+        confidence: 0.8
+      })) || [],
+      skills: {
+        technical: parsedData.skills?.map(skill => ({
+          skill,
+          proficiency: 'intermediate',
+          category: 'general'
+        })) || [],
+        soft: [],
+        languages: parsedData.languages?.map(lang => ({
+          language: lang,
+          proficiency: 'intermediate'
+        })) || [],
+        certifications: parsedData.certifications || []
+      },
+      projects: parsedData.projects?.map(proj => ({
+        title: proj.title || '',
+        description: proj.description || '',
+        technologies: proj.technologies || [],
+        achievements: [],
+        confidence: 0.7
+      })) || [],
+      certifications: parsedData.certifications?.map(cert => ({
+        name: cert,
+        issuer: '',
+        date: '',
+        confidence: 0.7
+      })) || [],
+      awards: [],
+      publications: [],
+      customSections: [],
+      volunteer: [],
+      sectionStructure: {
+        detectedSections: ['personal_info', 'experience', 'education', 'skills'],
+        sectionBoundaries: {},
+        formatMetadata: {
+          hasBulletPoints: true,
+          indentationLevel: 0,
+          fontHints: [],
+          layoutType: 'standard'
+        }
+      },
+      atsOptimization: {
+        score: 75,
+        keywordDensity: 0.05,
+        sectionCompleteness: 0.8,
+        readabilityScore: 0.85,
+        suggestions: []
+      },
+      confidenceMetrics: {
+        overall: 0.85,
+        personalInfo: 0.9,
+        experience: 0.8,
+        education: 0.8,
+        skills: 0.75,
+        sections: {
+          personal_info: 0.9,
+          experience: 0.8,
+          education: 0.8,
+          skills: 0.75
+        }
+      },
+      suggestions: [
+        {
+          category: 'formatting',
+          priority: 'medium',
+          issue: 'Consider adding more quantifiable achievements',
+          suggestion: 'Add specific numbers, percentages, or metrics to your experience descriptions',
+          impact: 10
+        }
+      ],
+      metadata: {
+        fileName: fileName || 'resume.txt',
+        extractionTimestamp: new Date().toISOString(),
+        extractionMethod: 'AI Parsing - GPT-4o',
+        processingVersion: 'v2.0'
+      }
+    };
 
-    return new Response(
-      JSON.stringify({ 
-        ...parsedData, 
-        atsScore,
-        success: true 
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    console.log('📊 Enhanced resume data prepared:', {
+      personalInfoComplete: !!enhancedData.personalInfo.fullName,
+      experienceCount: enhancedData.experience.length,
+      educationCount: enhancedData.education.length,
+      skillsCount: enhancedData.skills.technical.length,
+      projectsCount: enhancedData.projects.length
+    });
+
+    return new Response(JSON.stringify({
+      success: true,
+      data: enhancedData,
+      rawParsedData: parsedData,
+      metadata: {
+        processingTime: Date.now(),
+        model: 'gpt-4o',
+        confidence: enhancedData.confidenceMetrics.overall
+      }
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
+    });
 
   } catch (error) {
-    console.error('Error in AI resume parser:', error);
-    return new Response(
-      JSON.stringify({ 
-        error: error.message,
-        success: false 
-      }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    );
+    console.error('❌ Resume parsing error:', error);
+    
+    return new Response(JSON.stringify({
+      success: false,
+      error: error.message || 'Resume parsing failed',
+      details: error.stack
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500,
+    });
   }
 });
-
-function calculateATSScore(data: any): number {
-  let score = 0;
-  
-  // Personal info completeness (20 points)
-  if (data.personalInfo?.fullName) score += 5;
-  if (data.personalInfo?.email) score += 5;
-  if (data.personalInfo?.phone) score += 5;
-  if (data.personalInfo?.summary) score += 5;
-  
-  // Experience (30 points)
-  if (data.experience?.length > 0) {
-    score += 15;
-    if (data.experience.some((exp: any) => exp.achievements?.length > 0)) score += 8;
-    if (data.experience.some((exp: any) => exp.technologies?.length > 0)) score += 7;
-  }
-  
-  // Skills (20 points)
-  if (data.skills?.technical?.length > 0) score += 10;
-  if (data.skills?.soft?.length > 0) score += 5;
-  if (data.skills?.tools?.length > 0) score += 5;
-  
-  // Education (15 points)
-  if (data.education?.length > 0) score += 15;
-  
-  // Additional sections (15 points)
-  if (data.projects?.length > 0) score += 5;
-  if (data.certifications?.length > 0) score += 5;
-  if (data.awards?.length > 0) score += 3;
-  if (data.volunteer?.length > 0) score += 2;
-  
-  return Math.min(score, 100);
-}

@@ -1,4 +1,5 @@
 import { EnhancedExtractedContent } from '../interfaces/EnhancedExtractedContent';
+import { supabase } from "@/integrations/supabase/client";
 import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
 import Tesseract from 'tesseract.js';
@@ -48,15 +49,154 @@ export class EnhancedResumeExtractor {
 
       console.log('📝 Extracted text length:', text.length);
       
-      // Parse the extracted text into structured content
-      const extractedContent = this.parseResumeText(text, extractionMethod);
-      
-      console.log('✅ Successfully extracted resume content');
-      return extractedContent;
+      // Use the new AI resume parser for better extraction
+      if (text.length > 50) {
+        console.log('🤖 Using AI resume parser for structured extraction...');
+        try {
+          const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
+            body: { 
+              text,
+              fileName: file.name,
+              fileType: file.type,
+              userId: null
+            }
+          });
+
+          if (error) {
+            console.error('❌ AI parser error:', error);
+            throw error;
+          }
+
+          if (data?.success && data?.data) {
+            console.log('✅ AI parsing successful');
+            return this.convertToEnhancedFormat(data.data);
+          } else {
+            console.warn('⚠️ AI parser returned no data, falling back to basic parsing');
+            throw new Error('AI parser returned no data');
+          }
+        } catch (aiError) {
+          console.warn('⚠️ AI parsing failed, falling back to basic parsing:', aiError);
+          // Fall back to basic parsing if AI parsing fails
+          const extractedContent = this.parseResumeText(text, extractionMethod);
+          return extractedContent;
+        }
+      } else {
+        // For very short text, use basic parsing
+        const extractedContent = this.parseResumeText(text, extractionMethod);
+        return extractedContent;
+      }
     } catch (error) {
       console.error('❌ Extraction failed:', error);
       return this.getDefaultContent();
     }
+  }
+
+  private convertToEnhancedFormat(aiData: any): EnhancedExtractedContent {
+    return {
+      personalInfo: {
+        fullName: aiData.personalInfo?.fullName || '',
+        email: aiData.personalInfo?.email || '',
+        phone: aiData.personalInfo?.phone || '',
+        location: aiData.personalInfo?.location || '',
+        linkedin: aiData.personalInfo?.linkedin || '',
+        website: aiData.personalInfo?.website || ''
+      },
+      professionalSummary: {
+        content: aiData.personalInfo?.summary || '',
+        careerBackground: '',
+        keySkills: [],
+        targetRoles: [],
+        goals: ''
+      },
+      experience: aiData.experience?.map((exp: any, index: number) => ({
+        id: `exp-${index}`,
+        jobTitle: exp.title || '',
+        companyName: exp.company || '',
+        location: exp.location || '',
+        startDate: exp.startDate || '',
+        endDate: exp.endDate || '',
+        responsibilities: exp.responsibilities || exp.description || [],
+        achievements: exp.achievements || [],
+        skillsUsed: exp.technologies || [],
+        tools: []
+      })) || [],
+      education: aiData.education?.map((edu: any, index: number) => ({
+        id: `edu-${index}`,
+        degree: edu.degree || '',
+        institutionName: edu.school || edu.institution || '',
+        location: edu.location || '',
+        startDate: edu.startDate || '',
+        endDate: edu.endDate || '',
+        grade: edu.gpa || edu.grade || '',
+        percentage: '',
+        cgpa: edu.gpa || '',
+        honors: edu.honors || '',
+        coursework: edu.coursework || []
+      })) || [],
+      skills: {
+        technical: aiData.skills?.technical?.map((skill: any) => ({
+          skill: typeof skill === 'string' ? skill : skill.skill || '',
+          proficiency: skill.proficiency || 'intermediate' as const,
+          category: skill.category || 'general'
+        })) || [],
+        soft: aiData.skills?.soft?.map((skill: any) => ({
+          skill: typeof skill === 'string' ? skill : skill.skill || '',
+          proficiency: skill.proficiency || 'intermediate' as const
+        })) || [],
+        languages: aiData.skills?.languages?.map((lang: any) => ({
+          language: typeof lang === 'string' ? lang : lang.language || '',
+          proficiency: lang.proficiency || 'conversational' as const
+        })) || []
+      },
+      certifications: aiData.certifications?.map((cert: any, index: number) => ({
+        id: `cert-${index}`,
+        name: typeof cert === 'string' ? cert : cert.name || '',
+        issuingOrganization: cert.issuer || '',
+        issueDate: cert.date || '',
+        expiryDate: cert.expiryDate || '',
+        credentialId: cert.credentialId || '',
+        credentialUrl: cert.url || ''
+      })) || [],
+      projects: aiData.projects?.map((proj: any, index: number) => ({
+        id: `proj-${index}`,
+        title: proj.title || '',
+        description: proj.description || '',
+        technologies: proj.technologies || [],
+        startDate: proj.startDate || '',
+        endDate: proj.endDate || '',
+        githubUrl: proj.github || proj.githubUrl || '',
+        liveUrl: proj.url || proj.liveUrl || '',
+        role: proj.role || '',
+        achievements: proj.achievements || []
+      })) || [],
+      languages: aiData.languages?.map((lang: any) => ({
+        language: typeof lang === 'string' ? lang : lang.language || '',
+        proficiency: lang.proficiency || 'conversational' as const,
+        certifications: lang.certifications || []
+      })) || [],
+      awards: aiData.awards?.map((award: any, index: number) => ({
+        id: `award-${index}`,
+        name: typeof award === 'string' ? award : award.name || '',
+        issuer: award.issuer || '',
+        date: award.date || '',
+        description: award.description || '',
+        context: award.context || ''
+      })) || [],
+      hobbies: aiData.hobbies?.map((hobby: any) => ({
+        category: typeof hobby === 'string' ? 'Interests' : hobby.category || 'Interests',
+        items: typeof hobby === 'string' ? [hobby] : hobby.items || []
+      })) || [],
+      additional: {
+        declaration: aiData.additional?.declaration || '',
+        references: aiData.additional?.references || [],
+        availableUponRequest: aiData.additional?.availableUponRequest || false
+      },
+      metadata: {
+        extractionMethod: 'ai-parser',
+        processingDate: new Date().toISOString(),
+        completionPercentage: aiData.metadata?.completionPercentage || 0
+      }
+    };
   }
 
   private async extractFromPDF(file: File): Promise<string> {

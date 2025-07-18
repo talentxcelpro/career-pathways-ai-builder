@@ -131,7 +131,7 @@ export interface EnhancedExtractedContent {
 
   // Metadata for processing
   metadata: {
-    extractionMethod: 'pdf' | 'docx' | 'ocr' | 'manual';
+    extractionMethod: 'pdf' | 'docx' | 'ocr' | 'manual' | 'ai-parser';
     processingDate: string;
     atsScore?: number;
     completionPercentage?: number;
