@@ -49,7 +49,7 @@ export default function EditResume() {
         .from('ai_resumes')
         .select('*')
         .eq('id', resumeId)
-        .single();
+        .maybeSingle();
 
       if (resumeError) throw resumeError;
 
