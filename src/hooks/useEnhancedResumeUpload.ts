@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFileUpload } from "@/hooks/useFileUpload";
-import { EnhancedResumeProcessor } from "@/services/resume-enhancer/EnhancedResumeProcessor";
 import { OCRResumeProcessor } from "@/services/ocrResumeProcessor";
+import { ResumeTextExtractor } from "@/services/resumeTextExtractor";
 import { configurePDFWorker, getPDFWorkerStatus } from "@/utils/pdfWorkerConfig";
 import { toast } from "sonner";
 
@@ -100,44 +100,71 @@ export const useEnhancedResumeUpload = () => {
       const fileUrl = await uploadFile(file, `resume-${Date.now()}.${file.name.split('.').pop()}`);
       console.log('File uploaded successfully:', fileUrl);
       
-      // Step 3: Enhanced processing with comprehensive enhancement
+      // Step 3: Determine processing method
       const isImage = file.type.includes('image');
       const needsOCR = isImage || ocrMode || file.name.toLowerCase().includes('scan');
       
-      progressCallback(10, 'Preparing enhanced AI processing...');
+      progressCallback(10, needsOCR ? 'Preparing OCR processing...' : 'Preparing AI extraction...');
       
-      let result;
+      let extractedContent;
       
       if (needsOCR) {
         // Use OCR for images and scanned documents
         progressCallback(15, 'Starting enhanced OCR processing...');
         const processor = new OCRResumeProcessor();
-        const ocrContent = await processor.processResumeWithOCR(file, progressCallback);
+        extractedContent = await processor.processResumeWithOCR(file, progressCallback);
         await processor.cleanup();
-        
-        // Then enhance with new processor
-        progressCallback(70, 'Enhancing OCR results...');
-        const enhancedProcessor = new EnhancedResumeProcessor();
-        result = await enhancedProcessor.processResume(file, {
-          targetRole: 'software_engineer',
-          enhancementLevel: 'comprehensive'
-        });
       } else {
-        // Use enhanced processor directly
-        progressCallback(15, 'Starting comprehensive enhancement...');
-        const processor = new EnhancedResumeProcessor();
-        result = await processor.processResume(file, {
-          targetRole: 'software_engineer',
-          enhancementLevel: 'comprehensive'
-        });
+        // Use enhanced text extraction for PDFs and Word documents
+        progressCallback(15, 'Starting enhanced text extraction...');
+        const textExtractor = new ResumeTextExtractor();
+        
+        try {
+          // Extract raw text
+          progressCallback(30, 'Extracting text from document...');
+          const rawText = await textExtractor.extractText(file);
+          console.log(`✅ Text extracted: ${rawText.length} characters`);
+          
+          // Validate extraction quality
+          const quality = textExtractor.getExtractionQuality(rawText);
+          console.log(`📊 Extraction quality: ${quality.score}%, Issues: ${quality.issues.join(', ')}`);
+          
+          if (quality.score < 30) {
+            console.warn('⚠️ Low extraction quality, falling back to OCR...');
+            toast('Document extraction quality is low. Switching to OCR mode...', { 
+              description: 'Using OCR for better accuracy' 
+            });
+            
+            progressCallback(40, 'Switching to OCR processing...');
+            const processor = new OCRResumeProcessor();
+            extractedContent = await processor.processResumeWithOCR(file, progressCallback);
+            await processor.cleanup();
+          } else {
+            // Process with AI extraction
+            progressCallback(50, 'Processing with AI...');
+            const processor = new OCRResumeProcessor();
+            extractedContent = await processor.processResume(file);
+            progressCallback(90, 'Finalizing extraction...');
+          }
+        } catch (textError) {
+          console.warn('⚠️ Text extraction failed, falling back to OCR:', textError);
+          toast('Text extraction failed. Switching to OCR mode...', {
+            description: 'Trying alternative processing method'
+          });
+          
+          progressCallback(40, 'Switching to OCR processing...');
+          const processor = new OCRResumeProcessor();
+          extractedContent = await processor.processResumeWithOCR(file, progressCallback);
+          await processor.cleanup();
+        }
       }
       
-      console.log('Content processed successfully:', result);
-      setExtractedData(result.enhancedContent);
+      console.log('Content processed successfully:', extractedContent);
+      setExtractedData(extractedContent);
       
       // Generate live preview
       progressCallback(92, 'Generating live preview...');
-      setLivePreview(generateLivePreview(result.enhancedContent));
+      setLivePreview(generateLivePreview(extractedContent));
       
       // Step 4: Create enhanced resume entry in database
       progressCallback(95, 'Saving to database...');
@@ -146,8 +173,8 @@ export const useEnhancedResumeUpload = () => {
         .insert({
           user_id: user.id,
           title: `Enhanced Resume from ${file.name}`,
-          content: result.enhancedContent as any,
-          ats_score: result.enhancementScore.atsCompatibility || 75,
+          content: extractedContent as any,
+          ats_score: extractedContent.atsOptimization?.score || 75,
           template_id: null // Use null instead of string template ID
         })
         .select()
@@ -204,9 +231,9 @@ export const useEnhancedResumeUpload = () => {
     return {
       personalInfo: data.personalInfo,
       experience: data.experience?.slice(0, 2),
-      skills: data.skills?.technical ? data.skills.technical.slice(0, 10).map(s => s.skill) : [],
+      skills: data.skills?.technical ? Object.values(data.skills.technical).flat().slice(0, 10) : [],
       metadata: data.metadata,
-      atsScore: data.metadata?.atsScore,
+      atsScore: data.atsOptimization?.score,
       totalExperience: data.experience?.length || 0
     };
   };
