@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { navItems } from "./nav-items";
 import ResumeChecker from "./pages/tools/ResumeChecker";
 import ResumeCheck from "./pages/tools/ResumeCheck";
@@ -20,9 +21,10 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <BrowserRouter>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <BrowserRouter>
           <Routes>
             {/* Resume Builder Routes */}
             <Route path="/resume-builder" element={<ResumeDashboard />} />
@@ -45,7 +47,8 @@ const App = () => {
             ))}
           </Routes>
         </BrowserRouter>
-      </TooltipProvider>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };
