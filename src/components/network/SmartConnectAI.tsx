@@ -19,6 +19,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { CareerIntentBadge } from '@/components/posts/CareerIntentTags';
 import { toast } from 'sonner';
+import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 
 interface SmartMatch {
   id: string;
@@ -35,6 +36,7 @@ interface SmartMatch {
 export const SmartConnectAI: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'mentors' | 'peers' | 'mentees'>('all');
   const [sendingConnection, setSendingConnection] = useState<string | null>(null);
+  const { triggerConnectionEmail } = useEmailAutomation();
 
   const { data: currentUser } = useQuery({
     queryKey: ['current-user-smart-connect'],
@@ -164,6 +166,30 @@ export const SmartConnectAI: React.FC = () => {
 
       if (error) throw error;
       toast.success('Connection request sent!');
+      
+      // Trigger connection request email
+      try {
+        const recipientProfile = smartMatches?.find(match => match.id === userId);
+        if (recipientProfile) {
+          // Get recipient's email from profiles table
+          const { data: recipient } = await supabase
+            .from('profiles')
+            .select('email')
+            .eq('id', userId)
+            .single();
+          
+          if (recipient?.email) {
+            await triggerConnectionEmail(
+              recipient.email,
+              recipientProfile.full_name,
+              currentUser.profile?.full_name || currentUser.email?.split('@')[0] || 'Someone'
+            );
+          }
+        }
+      } catch (emailError) {
+        console.error('Failed to send connection request email:', emailError);
+        // Don't show error to user as connection request was successful
+      }
     } catch (error) {
       toast.error('Failed to send connection request');
     } finally {

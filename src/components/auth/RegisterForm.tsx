@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
+import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 
 export const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ export const RegisterForm = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { triggerWelcomeEmail } = useEmailAutomation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -64,6 +66,15 @@ export const RegisterForm = () => {
 
       if (data.user) {
         toast.success('Account created successfully! Please check your email to verify your account.');
+        
+        // Trigger welcome email
+        try {
+          await triggerWelcomeEmail(formData.email, formData.fullName);
+        } catch (emailError) {
+          console.error('Failed to send welcome email:', emailError);
+          // Don't show error to user as registration was successful
+        }
+        
         navigate('/auth/login');
       }
     } catch (error: any) {

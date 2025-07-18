@@ -10,6 +10,7 @@ import PersonalDetailsStep from './application-form/PersonalDetailsStep';
 import DeclarationStep from './application-form/DeclarationStep';
 import { FormData, JobInfo, Resume } from './application-form/types';
 import { validateStep, validateFileUpload } from './application-form/validation';
+import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 
 interface ComprehensiveJobApplicationFormProps {
   open: boolean;
@@ -22,6 +23,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
+  const { triggerApplicationConfirmationEmail } = useEmailAutomation();
   const [formData, setFormData] = useState<FormData>({
     resumeSource: 'existing',
     selectedResumeId: '',
@@ -272,6 +274,20 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       }
 
       toast.success('Application submitted successfully!');
+      
+      // Trigger application confirmation email
+      try {
+        await triggerApplicationConfirmationEmail(
+          formData.email,
+          formData.fullName,
+          job.title,
+          job.companies?.name || 'the company'
+        );
+      } catch (emailError) {
+        console.error('Failed to send application confirmation email:', emailError);
+        // Don't show error to user as application was successful
+      }
+      
       onOpenChange(false);
       setCurrentStep(1);
       

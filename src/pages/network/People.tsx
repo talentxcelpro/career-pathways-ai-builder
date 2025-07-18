@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
 import ProBadge from "@/components/network/ProBadge";
+import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 
 const People = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,6 +22,7 @@ const People = () => {
   const [industryFilter, setIndustryFilter] = useState('all');
   const navigate = useNavigate();
   const { findOrCreateConversation } = useConversations();
+  const { triggerConnectionEmail } = useEmailAutomation();
 
   const handleUniversalSearch = (query: string, aiFilters?: SearchFilters) => {
     setSearchTerm(query);
@@ -137,6 +139,21 @@ const People = () => {
 
       if (error) throw error;
       toast.success('Connection request sent!');
+      
+      // Trigger connection request email
+      try {
+        const recipientProfile = profiles?.find(profile => profile.id === profileId);
+        if (recipientProfile) {
+          await triggerConnectionEmail(
+            recipientProfile.email,
+            recipientProfile.full_name || recipientProfile.email?.split('@')[0] || 'Professional',
+            currentUser.email?.split('@')[0] || 'Someone'
+          );
+        }
+      } catch (emailError) {
+        console.error('Failed to send connection request email:', emailError);
+        // Don't show error to user as connection request was successful
+      }
       
       // Refresh pending requests
       await supabase.from('connections').select('*');
