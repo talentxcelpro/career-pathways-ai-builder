@@ -1,12 +1,11 @@
 
-// TalentXcel Color Customizer Component
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Palette, Type, Layout, MoreHorizontal } from "lucide-react";
+import { Palette, Type, Layout, Spacing } from "lucide-react";
 
 interface Customization {
   colorScheme: string;
@@ -174,7 +173,7 @@ export const ColorCustomizer: React.FC<ColorCustomizerProps> = ({
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <MoreHorizontal className="w-4 h-4" />
+            <Spacing className="w-4 h-4" />
             Spacing
           </CardTitle>
         </CardHeader>

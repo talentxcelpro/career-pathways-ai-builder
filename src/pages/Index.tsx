@@ -29,9 +29,9 @@ const Index = () => {
     return <div>Loading...</div>;
   }
 
-  // Redirect logged-in users to dashboard
+  // Redirect logged-in users to network page
   if (isLoggedIn) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/network" replace />;
   }
 
   return <LandingPage />;
