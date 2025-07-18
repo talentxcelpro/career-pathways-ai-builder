@@ -1,48 +1,21 @@
-
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import "https://deno.land/x/xhr@0.1.0/mod.ts"
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
-}
+};
 
-interface ResumeData {
-  personalInfo?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    location?: string;
-    summary?: string;
-  };
-  experience?: Array<{
-    company?: string;
-    position?: string;
-    duration?: string;
-    description?: string;
-  }>;
-  education?: Array<{
-    institution?: string;
-    degree?: string;
-    year?: string;
-    description?: string;
-  }>;
-  skills?: string[];
-  projects?: Array<{
-    name?: string;
-    description?: string;
-    technologies?: string[];
-  }>;
+interface EnhanceResumeRequest {
+  resumeText: string;
+  targetRole?: string;
+  jobDescription?: string;
+  userId?: string;
+  fileName?: string;
 }
 
 serve(async (req) => {
   console.log('🚀 Enhanced Resume Function Starting...');
-  console.log('📋 Request details:', {
-    method: req.method,
-    url: req.url,
-    headers: Object.fromEntries(req.headers.entries())
-  });
   
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -50,360 +23,359 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Health check endpoint
-  if (req.method === 'GET') {
-    console.log('🏥 Health check requested');
-    return new Response(
-      JSON.stringify({ 
-        status: 'healthy', 
-        timestamp: new Date().toISOString(),
-        service: 'enhance-resume',
-        hasOpenAI: !!Deno.env.get('OPENAI_API_KEY')
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
-      }
-    );
-  }
-
-  // Only allow POST requests for enhancement
-  if (req.method !== 'POST') {
-    console.log('❌ Invalid method:', req.method);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: 'Method not allowed. Use POST for enhancement or GET for health check.',
-        enhancedResume: null
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 405 
-      }
-    );
-  }
+  console.log('📋 Request details:', {
+    method: req.method,
+    url: req.url,
+    headers: Object.fromEntries(req.headers.entries())
+  });
 
   try {
-    console.log('📝 Processing resume enhancement request...');
-    
-    // Parse request body with proper error handling
-    let requestBody;
-    try {
-      const bodyText = await req.text();
-      console.log('📄 Raw request body length:', bodyText.length);
-      
-      if (!bodyText) {
-        throw new Error('Empty request body');
-      }
-      
-      requestBody = JSON.parse(bodyText);
-      console.log('✅ Request body parsed successfully');
-    } catch (parseError) {
-      console.error('❌ Failed to parse request body:', parseError);
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: 'Invalid JSON in request body: ' + parseError.message,
-          enhancedResume: null
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400 
-        }
-      );
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    if (!OPENAI_API_KEY) {
+      console.error('❌ OpenAI API key not found');
+      throw new Error('OpenAI API key not configured');
     }
+
+    const { resumeText, targetRole, jobDescription, userId, fileName }: EnhanceResumeRequest = await req.json();
     
-    const { resumeData, enhancementType = 'comprehensive' } = requestBody;
-    console.log('📊 Input data received:', { 
-      resumeData: !!resumeData, 
-      enhancementType,
-      dataKeys: resumeData ? Object.keys(resumeData) : []
+    console.log('📄 Processing resume enhancement request:', {
+      textLength: resumeText?.length || 0,
+      targetRole,
+      hasJobDescription: !!jobDescription,
+      userId,
+      fileName
     });
 
-    if (!resumeData) {
-      console.log('❌ No resume data provided');
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: 'No resume data provided',
-          enhancedResume: null
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400 
-        }
-      );
+    if (!resumeText || resumeText.trim().length === 0) {
+      throw new Error('No resume text provided');
     }
 
-    // Validate resume data structure
-    if (typeof resumeData !== 'object') {
-      console.log('❌ Invalid resume data structure');
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: 'Resume data must be an object',
-          enhancedResume: null
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400 
-        }
-      );
-    }
+    // Create the comprehensive system prompt
+    const systemPrompt = `You are a world-class Resume Intelligence Engine used by a global career platform.
 
-    console.log('🔧 Starting AI enhancement processing...');
+Your role is to accurately extract structured data from resumes and enhance them with professional, achievement-oriented content. You are used by recruiters, professionals, and ATS-integrated systems to auto-generate top-tier resumes that are keyword-rich and results-driven.
+
+Always think like:
+- A professional resume writer
+- An ATS optimization expert
+- A career coach
+
+Do not hallucinate or fabricate content. If information is missing, mark fields as null or empty.
+Always return valid JSON that can be parsed directly.`;
+
+    // Create the main user prompt with dynamic content
+    const userPrompt = `Below is a raw resume input, either pasted from a PDF/DOCX or extracted text.
+
+${targetRole ? `TARGET ROLE: ${targetRole}` : ''}
+${jobDescription ? `JOB DESCRIPTION CONTEXT: ${jobDescription}` : ''}
+
+Perform the following steps:
+
+### 1. Parse & Extract Resume Data
+Convert the resume text into structured JSON using the format below.
+
+Return fields:
+- name
+- email
+- phone
+- location
+- linkedin
+- portfolio (if available)
+- summary
+- experience[]:
+  - title
+  - company
+  - location
+  - startDate (MMM YYYY format)
+  - endDate (MMM YYYY format)
+  - achievements[] (bullet points)
+- education[]
+  - degree
+  - institution
+  - location
+  - startDate (MMM YYYY format)
+  - endDate (MMM YYYY format)
+  - grade
+- skills[] (separate hard skills & soft skills if possible)
+- certifications[]
+- projects[]
+  - title
+  - description
+  - technologies
+- languages[]
+- hobbies[]
+- awards[]
+
+### 2. Enhance Resume Sections (return as separate object)
+- Rewrite the summary to be more impactful and keyword-optimized.
+- Rewrite each experience with strong action verbs, metrics (if missing), and ATS-friendly keywords.
+- Expand skills with industry-specific synonyms or role-based enhancements.
+- Rewrite project descriptions to sound outcome-focused.
+- Suggest 3–5 bullet points that can improve the resume further.
+
+### 3. Return Result in the Following JSON Format:
+{
+  "parsed_resume": {
+    "name": "",
+    "email": "",
+    "phone": "",
+    "location": "",
+    "linkedin": "",
+    "portfolio": "",
+    "summary": "",
+    "experience": [
+      {
+        "title": "",
+        "company": "",
+        "location": "",
+        "startDate": "",
+        "endDate": "",
+        "achievements": []
+      }
+    ],
+    "education": [
+      {
+        "degree": "",
+        "institution": "",
+        "location": "",
+        "startDate": "",
+        "endDate": "",
+        "grade": ""
+      }
+    ],
+    "skills": [],
+    "certifications": [],
+    "projects": [
+      {
+        "title": "",
+        "description": "",
+        "technologies": []
+      }
+    ],
+    "languages": [],
+    "hobbies": [],
+    "awards": []
+  },
+  "enhanced_resume": {
+    "summary": "",
+    "experience": [
+      {
+        "title": "",
+        "company": "",
+        "location": "",
+        "startDate": "",
+        "endDate": "",
+        "enhanced_achievements": []
+      }
+    ],
+    "skills": {
+      "original": [],
+      "enhanced": []
+    },
+    "project_suggestions": [],
+    "resume_improvement_suggestions": []
+  },
+  "ats_analysis": {
+    "score": 0,
+    "keyword_density": 0,
+    "missing_keywords": [],
+    "suggestions": []
+  }
+}
+
+### Resume Text:
+"""
+${resumeText}
+"""
+
+Return ONLY the JSON object, no additional text or formatting.`;
+
+    console.log('🤖 Calling OpenAI API for comprehensive resume enhancement...');
     
-    // Get OpenAI API key
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      console.log('⚠️ OpenAI API key not found, falling back to rule-based enhancement');
-      return await fallbackEnhancement(resumeData, enhancementType);
+    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt
+          },
+          {
+            role: 'user',
+            content: userPrompt
+          }
+        ],
+        temperature: 0.1,
+        max_tokens: 4000,
+        response_format: { type: "json_object" }
+      }),
+    });
+
+    if (!openaiResponse.ok) {
+      const error = await openaiResponse.text();
+      console.error('❌ OpenAI API error:', error);
+      throw new Error(`OpenAI API error: ${openaiResponse.status} ${error}`);
     }
 
-    // Convert resume data to string for OpenAI
-    const resumeString = JSON.stringify(resumeData, null, 2);
-    console.log('📝 Sending to OpenAI for enhancement...');
+    const openaiData = await openaiResponse.json();
+    console.log('✅ OpenAI API response received');
 
-    const prompt = `
-You are a professional resume writer and career expert.
+    if (!openaiData.choices?.[0]?.message?.content) {
+      throw new Error('No content in OpenAI response');
+    }
 
-Enhance the following resume content to:
-- Use a professional, achievement-focused tone
-- Improve clarity and impact of each section
-- Highlight measurable accomplishments, leadership, and technical skills
-- Ensure ATS optimization with strong action verbs and keywords
-- Correct grammar, structure, and flow
-
-Input Resume:
----
-${resumeString}
----
-
-Output:
-Return ONLY a valid JSON object with the improved resume data, maintaining the same structure as the input. Do not include any markdown formatting or additional text.
-
-The JSON should have these sections:
-- personalInfo (with name, email, phone, location, summary)
-- experience (array with company, position, duration, description)
-- education (array with institution, degree, year, description)
-- skills (array of strings)
-- projects (array with name, description, technologies)
-
-Ensure the enhanced version is ready for export to a Word or PDF resume format.
-`;
-
+    let enhancedData;
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4.1-2025-04-14',
-          messages: [
-            { role: 'system', content: 'You are a professional resume writer. Return only valid JSON.' },
-            { role: 'user', content: prompt },
-          ],
-          temperature: 0.7,
-          max_tokens: 2000,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const enhancedContent = data.choices[0]?.message?.content;
-      
-      if (!enhancedContent) {
-        throw new Error('No content received from OpenAI');
-      }
-
-      // Parse the enhanced resume
-      let enhancedResume: ResumeData;
-      try {
-        enhancedResume = JSON.parse(enhancedContent);
-      } catch (parseError) {
-        console.error('❌ Failed to parse OpenAI response:', parseError);
-        throw new Error('Invalid JSON response from OpenAI');
-      }
-
-      console.log('✅ AI enhancement completed successfully');
-      console.log('📊 Enhanced data structure:', {
-        hasPersonalInfo: !!enhancedResume.personalInfo,
-        experienceCount: enhancedResume.experience?.length || 0,
-        educationCount: enhancedResume.education?.length || 0,
-        skillsCount: enhancedResume.skills?.length || 0,
-        projectsCount: enhancedResume.projects?.length || 0
-      });
-      
-      const responseData = {
-        success: true,
-        enhancedResume,
-        enhancements: {
-          summary: 'AI-enhanced for professional impact and ATS compatibility',
-          experience: 'Optimized with strong action verbs and quantifiable achievements',
-          skills: 'Prioritized and organized for industry relevance',
-          overall: 'Enhanced readability, grammar, and professional presentation'
-        },
-        metadata: {
-          processedAt: new Date().toISOString(),
-          enhancementType,
-          version: '2.0.0',
-          aiEnhanced: true
-        }
-      };
-
-      return new Response(
-        JSON.stringify(responseData),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200
-        }
-      );
-
-    } catch (aiError) {
-      console.error('❌ AI enhancement failed:', aiError);
-      console.log('🔄 Falling back to rule-based enhancement...');
-      return await fallbackEnhancement(resumeData, enhancementType);
+      enhancedData = JSON.parse(openaiData.choices[0].message.content);
+      console.log('✅ Successfully parsed enhanced resume data');
+    } catch (parseError) {
+      console.error('❌ Failed to parse OpenAI JSON response:', parseError);
+      throw new Error('Failed to parse AI response as JSON');
     }
+
+    // Convert to the format expected by the existing system
+    const convertedData = {
+      personalInfo: {
+        fullName: enhancedData.parsed_resume?.name || '',
+        email: enhancedData.parsed_resume?.email || '',
+        phone: enhancedData.parsed_resume?.phone || '',
+        location: enhancedData.parsed_resume?.location || '',
+        linkedin: enhancedData.parsed_resume?.linkedin || '',
+        portfolio: enhancedData.parsed_resume?.portfolio || '',
+        summary: enhancedData.enhanced_resume?.summary || enhancedData.parsed_resume?.summary || '',
+        confidence: 0.95
+      },
+      experience: enhancedData.enhanced_resume?.experience?.map((exp: any, index: number) => ({
+        title: exp.title || '',
+        company: exp.company || '',
+        location: exp.location || '',
+        startDate: exp.startDate || '',
+        endDate: exp.endDate || '',
+        responsibilities: exp.enhanced_achievements || exp.achievements || [],
+        achievements: exp.enhanced_achievements || [],
+        technologies: [],
+        confidence: 0.9
+      })) || enhancedData.parsed_resume?.experience?.map((exp: any, index: number) => ({
+        title: exp.title || '',
+        company: exp.company || '',
+        location: exp.location || '',
+        startDate: exp.startDate || '',
+        endDate: exp.endDate || '',
+        responsibilities: exp.achievements || [],
+        achievements: exp.achievements || [],
+        technologies: [],
+        confidence: 0.8
+      })) || [],
+      education: enhancedData.parsed_resume?.education?.map((edu: any, index: number) => ({
+        degree: edu.degree || '',
+        school: edu.institution || '',
+        location: edu.location || '',
+        startDate: edu.startDate || '',
+        endDate: edu.endDate || '',
+        gpa: edu.grade || '',
+        confidence: 0.9
+      })) || [],
+      skills: {
+        technical: enhancedData.enhanced_resume?.skills?.enhanced?.map((skill: any) => ({
+          skill: typeof skill === 'string' ? skill : skill.skill || '',
+          proficiency: 'intermediate',
+          category: 'technical'
+        })) || enhancedData.parsed_resume?.skills?.map((skill: any) => ({
+          skill: typeof skill === 'string' ? skill : skill.skill || '',
+          proficiency: 'intermediate',
+          category: 'technical'
+        })) || [],
+        soft: [],
+        languages: enhancedData.parsed_resume?.languages?.map((lang: any) => ({
+          language: typeof lang === 'string' ? lang : lang.language || '',
+          proficiency: 'intermediate'
+        })) || [],
+        certifications: enhancedData.parsed_resume?.certifications || []
+      },
+      projects: enhancedData.parsed_resume?.projects?.map((proj: any, index: number) => ({
+        title: proj.title || '',
+        description: proj.description || '',
+        technologies: proj.technologies || [],
+        achievements: [],
+        confidence: 0.8
+      })) || [],
+      certifications: enhancedData.parsed_resume?.certifications?.map((cert: any, index: number) => ({
+        name: typeof cert === 'string' ? cert : cert.name || '',
+        issuer: cert.issuer || '',
+        date: cert.date || '',
+        confidence: 0.8
+      })) || [],
+      awards: enhancedData.parsed_resume?.awards?.map((award: any, index: number) => ({
+        name: typeof award === 'string' ? award : award.name || '',
+        issuer: award.issuer || '',
+        date: award.date || '',
+        description: award.description || '',
+        confidence: 0.8
+      })) || [],
+      atsOptimization: {
+        score: enhancedData.ats_analysis?.score || 85,
+        keywordDensity: enhancedData.ats_analysis?.keyword_density || 0.08,
+        sectionCompleteness: 0.9,
+        readabilityScore: 0.88,
+        suggestions: enhancedData.ats_analysis?.suggestions || []
+      },
+      suggestions: enhancedData.enhanced_resume?.resume_improvement_suggestions?.map((suggestion: any) => ({
+        category: 'enhancement',
+        priority: 'high',
+        issue: 'Content improvement',
+        suggestion: typeof suggestion === 'string' ? suggestion : suggestion.suggestion || '',
+        impact: 15
+      })) || [],
+      metadata: {
+        fileName: fileName || 'enhanced-resume.txt',
+        extractionTimestamp: new Date().toISOString(),
+        extractionMethod: 'AI Enhancement - GPT-4o',
+        processingVersion: 'v3.0-enhanced',
+        targetRole: targetRole || null,
+        hasJobDescription: !!jobDescription
+      }
+    };
+
+    console.log('📊 Enhanced resume data prepared:', {
+      personalInfoComplete: !!convertedData.personalInfo.fullName,
+      experienceCount: convertedData.experience.length,
+      educationCount: convertedData.education.length,
+      skillsCount: convertedData.skills.technical.length,
+      projectsCount: convertedData.projects.length,
+      atsScore: convertedData.atsOptimization.score,
+      suggestionsCount: convertedData.suggestions.length
+    });
+
+    return new Response(JSON.stringify({
+      success: true,
+      data: convertedData,
+      rawEnhancedData: enhancedData,
+      metadata: {
+        processingTime: Date.now(),
+        model: 'gpt-4o',
+        enhancementLevel: 'comprehensive',
+        confidence: 0.95
+      }
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
+    });
 
   } catch (error) {
-    console.error('❌ Enhancement error:', error);
-    console.error('❌ Error stack:', error.stack);
+    console.error('❌ Resume enhancement error:', error);
     
-    // Create a fallback response even on error
-    const fallbackResponse = {
+    return new Response(JSON.stringify({
       success: false,
-      error: 'Enhancement processing failed',
-      details: error.message,
-      enhancedResume: null,
-      fallback: true,
-      timestamp: new Date().toISOString()
-    };
-    
-    return new Response(
-      JSON.stringify(fallbackResponse),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500
-      }
-    );
+      error: error.message || 'Resume enhancement failed',
+      details: error.stack
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500,
+    });
   }
 });
-
-async function fallbackEnhancement(resumeData: ResumeData, enhancementType: string): Promise<Response> {
-  console.log('🔄 Using fallback rule-based enhancement...');
-  
-  // Enhanced resume processing with professional improvements
-  const enhancedResume: ResumeData = {
-    personalInfo: {
-      ...resumeData.personalInfo,
-      summary: enhancePersonalSummary(resumeData.personalInfo?.summary || '')
-    },
-    experience: enhanceExperience(resumeData.experience || []),
-    education: enhanceEducation(resumeData.education || []),
-    skills: enhanceSkills(resumeData.skills || []),
-    projects: enhanceProjects(resumeData.projects || [])
-  };
-
-  console.log('✅ Fallback enhancement completed successfully');
-  
-  const response = {
-    success: true,
-    enhancedResume,
-    enhancements: {
-      summary: 'Enhanced with professional language and ATS optimization',
-      experience: 'Improved with action verbs and professional formatting',
-      skills: 'Organized and prioritized for industry relevance',
-      overall: 'Optimized readability and professional presentation'
-    },
-    metadata: {
-      processedAt: new Date().toISOString(),
-      enhancementType,
-      version: '1.0.0',
-      aiEnhanced: false,
-      fallbackUsed: true
-    }
-  };
-  
-  return new Response(
-    JSON.stringify(response),
-    {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200
-    }
-  );
-}
-
-function enhancePersonalSummary(summary: string): string {
-  if (!summary || summary.trim().length === 0) {
-    return 'Results-driven professional with proven expertise in delivering high-quality solutions and driving organizational success through innovative approaches and collaborative leadership.';
-  }
-  
-  // Add professional enhancement while preserving original content
-  const enhanced = summary.includes('professional') ? summary : 
-    `${summary} Committed professional focused on excellence and continuous improvement.`;
-  
-  return enhanced;
-}
-
-function enhanceExperience(experience: any[]): any[] {
-  return experience.map(exp => ({
-    ...exp,
-    description: enhanceJobDescription(exp.description || ''),
-    position: exp.position || 'Professional',
-    company: exp.company || 'Organization'
-  }));
-}
-
-function enhanceJobDescription(description: string): string {
-  if (!description || description.trim().length === 0) {
-    return 'Contributed to organizational objectives through dedicated performance, collaborative teamwork, and commitment to quality deliverables.';
-  }
-  
-  // Enhance with action verbs and professional language
-  const actionVerbs = ['Developed', 'Implemented', 'Managed', 'Led', 'Optimized', 'Collaborated'];
-  const hasActionVerb = actionVerbs.some(verb => description.includes(verb));
-  
-  if (!hasActionVerb) {
-    return `Developed and ${description.toLowerCase()}`;
-  }
-  
-  return description;
-}
-
-function enhanceEducation(education: any[]): any[] {
-  return education.map(edu => ({
-    ...edu,
-    description: edu.description || 'Completed comprehensive academic program with focus on practical application and professional development.'
-  }));
-}
-
-function enhanceSkills(skills: string[]): string[] {
-  if (!skills || skills.length === 0) {
-    return ['Professional Communication', 'Problem Solving', 'Team Collaboration', 'Project Management'];
-  }
-  
-  // Ensure core professional skills are included
-  const coreSkills = ['Communication', 'Leadership', 'Problem Solving'];
-  const enhancedSkills = [...skills];
-  
-  coreSkills.forEach(skill => {
-    if (!enhancedSkills.some(s => s.toLowerCase().includes(skill.toLowerCase()))) {
-      enhancedSkills.push(skill);
-    }
-  });
-  
-  return enhancedSkills;
-}
-
-function enhanceProjects(projects: any[]): any[] {
-  return projects.map(project => ({
-    ...project,
-    description: project.description || 'Successfully completed project demonstrating technical expertise and problem-solving capabilities.',
-    technologies: project.technologies || ['Professional Tools', 'Industry Standards']
-  }));
-}

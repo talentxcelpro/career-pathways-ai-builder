@@ -49,34 +49,35 @@ export class EnhancedResumeExtractor {
 
       console.log('📝 Extracted text length:', text.length);
       
-      // Use the new AI resume parser for better extraction
+      // Use the new comprehensive resume enhancement system
       if (text.length > 50) {
-        console.log('🤖 Using AI resume parser for structured extraction...');
+        console.log('🤖 Using comprehensive AI resume enhancement system...');
         try {
-          const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
+          const { data, error } = await supabase.functions.invoke('enhance-resume', {
             body: { 
-              text,
+              resumeText: text,
               fileName: file.name,
-              fileType: file.type,
+              targetRole: undefined, // Can be passed from UI later
+              jobDescription: undefined, // Can be passed from UI later
               userId: null
             }
           });
 
           if (error) {
-            console.error('❌ AI parser error:', error);
+            console.error('❌ Enhancement AI error:', error);
             throw error;
           }
 
           if (data?.success && data?.data) {
-            console.log('✅ AI parsing successful');
+            console.log('✅ AI enhancement successful with score:', data.data.atsOptimization?.score);
             return this.convertToEnhancedFormat(data.data);
           } else {
-            console.warn('⚠️ AI parser returned no data, falling back to basic parsing');
-            throw new Error('AI parser returned no data');
+            console.warn('⚠️ AI enhancement returned no data, falling back to basic parsing');
+            throw new Error('AI enhancement returned no data');
           }
         } catch (aiError) {
-          console.warn('⚠️ AI parsing failed, falling back to basic parsing:', aiError);
-          // Fall back to basic parsing if AI parsing fails
+          console.warn('⚠️ AI enhancement failed, falling back to basic parsing:', aiError);
+          // Fall back to basic parsing if AI enhancement fails
           const extractedContent = this.parseResumeText(text, extractionMethod);
           return extractedContent;
         }
