@@ -102,12 +102,66 @@ Deno.serve(async (req) => {
               </div>
             `;
             break;
+          case 'application_confirmation':
+            subject = `Application confirmed: ${templateData.job_title || 'Position'} at ${templateData.company_name || 'Company'}`;
+            htmlContent = `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
+                <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                  <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: #2563eb; margin: 0; font-size: 28px;">TalentXcel</h1>
+                    <p style="color: #64748b; margin: 5px 0 0 0;">Powering Global Career Growth</p>
+                  </div>
+                  
+                  <div style="background: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 20px; margin-bottom: 25px; text-align: center;">
+                    <h2 style="color: #059669; margin: 0; font-size: 20px;">Application Submitted Successfully! ✅</h2>
+                  </div>
+                  
+                  <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">Hi ${templateData.name || templateData.recipient_name || email.recipient_name || 'there'},</p>
+                  
+                  <p style="color: #374151; margin-bottom: 25px;">Your application for <strong>${templateData.job_title || 'the position'}</strong> at <strong>${templateData.company_name || 'the company'}</strong> has been successfully submitted!</p>
+                  
+                  <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                    <h3 style="color: #2563eb; margin: 0 0 15px 0; font-size: 18px;">Application Details</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                      <tr><td style="padding: 8px 0; color: #64748b; width: 120px;"><strong>Position:</strong></td><td style="padding: 8px 0; color: #374151;">${templateData.job_title || 'Position'}</td></tr>
+                      <tr><td style="padding: 8px 0; color: #64748b;"><strong>Company:</strong></td><td style="padding: 8px 0; color: #374151;">${templateData.company_name || 'Company'}</td></tr>
+                      <tr><td style="padding: 8px 0; color: #64748b;"><strong>Applied on:</strong></td><td style="padding: 8px 0; color: #374151;">${new Date().toLocaleDateString('en-GB')}</td></tr>
+                      <tr><td style="padding: 8px 0; color: #64748b;"><strong>Application ID:</strong></td><td style="padding: 8px 0; color: #374151;">${templateData.application_id || 'APP-' + Math.random().toString(36).substr(2, 9).toUpperCase()}</td></tr>
+                    </table>
+                  </div>
+                  
+                  <div style="background: #fef3f2; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                    <h3 style="color: #dc2626; margin: 0 0 15px 0; font-size: 18px;">What's Next?</h3>
+                    <ul style="color: #374151; padding-left: 20px; margin: 0;">
+                      <li style="margin-bottom: 8px;">The hiring team will review your application</li>
+                      <li style="margin-bottom: 8px;">You'll receive updates on your application status</li>
+                      <li>If shortlisted, you'll be contacted for next steps</li>
+                    </ul>
+                  </div>
+                  
+                  <div style="text-align: center; margin-bottom: 30px;">
+                    <a href="#" style="background: #2563eb; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 500;">Track Application</a>
+                  </div>
+                  
+                  <p style="text-align: center; color: #374151; margin-bottom: 30px;">Good luck! We're rooting for you. 🚀</p>
+                  
+                  <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center;">
+                    <p style="color: #64748b; font-size: 14px; margin: 0;">© 2025 TalentXcel. All rights reserved.</p>
+                    <p style="color: #64748b; font-size: 14px; margin: 5px 0 0 0;">
+                      <a href="#" style="color: #2563eb; text-decoration: none;">Unsubscribe</a> | 
+                      <a href="#" style="color: #2563eb; text-decoration: none;">Privacy Policy</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            `;
+            break;
           default:
             subject = 'TalentXcel Notification';
             htmlContent = `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h1 style="color: #2563eb;">TalentXcel Notification</h1>
-                <p>Hi ${templateData.name || email.recipient_name},</p>
+                <p>Hi ${templateData.name || templateData.recipient_name || email.recipient_name || 'there'},</p>
                 <p>You have a new notification from TalentXcel.</p>
                 <p>Best regards,<br>The TalentXcel Team</p>
               </div>
