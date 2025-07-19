@@ -69,7 +69,8 @@ export const useAIService = () => {
       });
 
       if (error) {
-        throw new Error(`AI service error: ${error.message}`);
+        console.error('AI service invocation error:', error);
+        throw new Error(`Failed to send a request to the Edge Function: ${error.message}`);
       }
 
       if (!data.success) {

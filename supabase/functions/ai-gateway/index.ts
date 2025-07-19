@@ -1,10 +1,15 @@
 
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders } from '../_shared/cors.ts'
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
+console.log('🚀 AI Gateway function initializing...')
+console.log('OpenAI API Key configured:', !!openAIApiKey)
+console.log('Supabase URL configured:', !!supabaseUrl)
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
