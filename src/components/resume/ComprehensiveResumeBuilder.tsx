@@ -550,8 +550,36 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
                 <div className="flex-1 overflow-auto p-4">
                   <TabsContent value="content" className="mt-0">
                     <ResumeEditor
-                      content={resumeData}
-                      onChange={setResumeData}
+                      resume={{
+                        id: resumeData?.id,
+                        personalInfo: resumeData?.personalInfo || {
+                          fullName: '',
+                          email: '',
+                          phone: '',
+                          location: '',
+                          website: '',
+                          linkedin: ''
+                        },
+                        summary: resumeData?.professionalSummary?.content || '',
+                        experience: resumeData?.experience || [],
+                        education: resumeData?.education || [],
+                        skills: resumeData?.skills || [],
+                        selectedTemplate: resumeData?.selectedTemplate || 'modern'
+                      }}
+                      onChange={(resume) => {
+                        setResumeData({
+                          ...resumeData,
+                          personalInfo: resume.personalInfo,
+                          professionalSummary: {
+                            ...resumeData?.professionalSummary,
+                            content: resume.summary
+                          },
+                          experience: resume.experience,
+                          education: resume.education,
+                          skills: resume.skills,
+                          selectedTemplate: resume.selectedTemplate
+                        });
+                      }}
                     />
                   </TabsContent>
 

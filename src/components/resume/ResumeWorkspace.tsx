@@ -309,8 +309,35 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
                   </CardHeader>
                   <CardContent className="h-[calc(100%-100px)] overflow-auto">
                     <ResumeEditor 
-                      content={resume?.content || {}}
-                      onChange={handleContentChange}
+                      resume={{
+                        id: resume?.id,
+                        personalInfo: (resume?.content as any)?.personalInfo || {
+                          fullName: '',
+                          email: '',
+                          phone: '',
+                          location: '',
+                          website: '',
+                          linkedin: ''
+                        },
+                        summary: (resume?.content as any)?.professionalSummary?.content || '',
+                        experience: (resume?.content as any)?.experience || [],
+                        education: (resume?.content as any)?.education || [],
+                        skills: (resume?.content as any)?.skills || [],
+                        selectedTemplate: resume?.template_id || 'modern'
+                      }}
+                      onChange={(updatedResume) => {
+                        handleContentChange({
+                          ...(resume?.content as any),
+                          personalInfo: updatedResume.personalInfo,
+                          professionalSummary: {
+                            ...(resume?.content as any)?.professionalSummary,
+                            content: updatedResume.summary
+                          },
+                          experience: updatedResume.experience,
+                          education: updatedResume.education,
+                          skills: updatedResume.skills
+                        });
+                      }}
                     />
                   </CardContent>
                 </Card>
@@ -349,8 +376,15 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
 
           <TabsContent value="templates">
             <TemplateSelector 
-              templates={templates || []}
-              currentTemplateId={resume?.template_id}
+              templates={(templates || []).map(t => ({
+                id: t.id,
+                name: t.name,
+                description: t.description || '',
+                preview: '/placeholder.svg',
+                category: 'modern' as const,
+                atsOptimized: (t.ats_score || 0) > 80
+              }))}
+              selectedTemplate={resume?.template_id}
               onTemplateSelect={(templateId) => {
                 if (resumeId) {
                   // Handle template_id as string for frontend templates

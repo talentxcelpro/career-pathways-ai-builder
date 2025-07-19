@@ -108,6 +108,32 @@ export const useResumeData = () => {
             ...(data.content && typeof data.content === 'object' ? data.content : {}),
           };
 
+          // Transform nested content structure to match Resume interface
+          if (data.content && typeof data.content === 'object') {
+            const content = data.content as any;
+            
+            // Map the nested structure to the expected Resume format
+            processedData = {
+              id: data.id,
+              personalInfo: content.personalInfo || {
+                fullName: content.personalInfo?.fullName || '',
+                email: content.personalInfo?.email || '',
+                phone: content.personalInfo?.phone || '',
+                location: content.personalInfo?.location || '',
+                website: content.personalInfo?.website || '',
+                linkedin: content.personalInfo?.linkedin || ''
+              },
+              summary: content.professionalSummary?.content || content.summary || '',
+              experience: content.experience || [],
+              education: content.education || [],
+              skills: content.skills || [],
+              selectedTemplate: data.template_id || 'modern',
+              atsScore: data.ats_score || content.metadata?.atsScore,
+              createdAt: data.created_at,
+              updatedAt: data.updated_at
+            };
+          }
+
           // Handle different skills structures - normalize for ResumeEditor compatibility
           if (processedData.skills) {
             // If skills is an array of skill objects (EnhancedResumeData format), convert to editor format

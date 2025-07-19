@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { EnhancedResumeData } from '@/types/enhanced-resume';
 import { useResumeBuilder } from '@/hooks/useResumeBuilder';
 import { ResumeHeader } from './ResumeHeader';
-import { ResumeEditor } from '../ResumeEditor';
+import { ResumeEditor } from './ResumeEditor';
 import { ResumePreview } from '../ResumePreview';
 import { ATSScoreChecker } from '../ATSScoreChecker';
 import { DataExtractionVerifier } from './DataExtractionVerifier';
@@ -110,7 +110,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
               </div>
               <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
                 <ResumeEditor
-                  content={resumeData}
+                  data={resumeData}
                   onChange={updateResumeData}
                 />
               </div>
