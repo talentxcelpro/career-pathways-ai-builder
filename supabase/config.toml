@@ -9,6 +9,9 @@ verify_jwt = true
 [functions.test-function]
 verify_jwt = false
 
+[functions.test-sendgrid]
+verify_jwt = false
+
 [auth.email]
 enable_signup = true
 
