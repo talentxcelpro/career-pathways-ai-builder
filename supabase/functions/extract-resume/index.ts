@@ -12,6 +12,59 @@ const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+// Simple PDF text extraction helper
+function extractPdfText(uint8Array: Uint8Array): string {
+  try {
+    const decoder = new TextDecoder();
+    const pdfString = decoder.decode(uint8Array);
+    
+    // Look for text objects in PDF
+    const textMatches = pdfString.match(/\(([^)]+)\)/g);
+    if (textMatches) {
+      const extractedText = textMatches
+        .map(match => match.slice(1, -1))
+        .filter(text => text.length > 2 && /[a-zA-Z]/.test(text))
+        .join(' ');
+      
+      if (extractedText.length > 50) {
+        return extractedText;
+      }
+    }
+    
+    // Fallback: look for readable text patterns
+    const readableText = pdfString.match(/[A-Za-z][A-Za-z\s.,;:!?-]{10,}/g);
+    if (readableText && readableText.length > 0) {
+      return readableText.join(' ').substring(0, 2000);
+    }
+    
+    return '';
+  } catch (error) {
+    console.log('PDF text extraction failed:', error);
+    return '';
+  }
+}
+
+// DOC/DOCX text extraction helper
+function extractDocText(uint8Array: Uint8Array): string {
+  try {
+    const decoder = new TextDecoder();
+    const docString = decoder.decode(uint8Array);
+    
+    // For .doc files, try to extract readable text
+    const textPattern = /[A-Za-z][A-Za-z\s.,;:!?-]{20,}/g;
+    const matches = docString.match(textPattern);
+    
+    if (matches && matches.length > 0) {
+      return matches.join(' ').substring(0, 3000);
+    }
+    
+    return '';
+  } catch (error) {
+    console.log('DOC text extraction failed:', error);
+    return '';
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -38,27 +91,45 @@ serve(async (req) => {
       throw new Error(`Failed to download file: ${downloadError.message}`);
     }
 
-    // Convert file to base64 for processing
+    // Convert file to array buffer for processing
     const arrayBuffer = await fileData.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
-    const base64 = btoa(String.fromCharCode.apply(null, Array.from(uint8Array)));
 
-    console.log('File downloaded and converted to base64');
+    console.log('File downloaded, attempting text extraction...');
 
     // Extract text content from file based on file type
     let textContent = '';
+    let extractionMethod = '';
     
     if (fileType === 'application/pdf') {
-      // For now, we'll create a simple text representation
-      // In a real implementation, you'd use a PDF parsing library
-      textContent = `Resume file: ${fileName}\nThis is a PDF resume that needs to be processed.`;
+      textContent = extractPdfText(uint8Array);
+      extractionMethod = 'PDF parsing';
+    } else if (fileType === 'application/msword' || 
+               fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      textContent = extractDocText(uint8Array);
+      extractionMethod = 'DOC parsing';
     } else {
-      // For DOC/DOCX files, convert to text
+      // Try as plain text
       const decoder = new TextDecoder();
       textContent = decoder.decode(uint8Array);
+      extractionMethod = 'Plain text';
     }
 
-    console.log('File content extracted');
+    console.log(`Text extraction completed using ${extractionMethod}. Length: ${textContent.length}`);
+
+    // If no meaningful text was extracted, return an error
+    if (!textContent || textContent.length < 50) {
+      return new Response(JSON.stringify({
+        success: false,
+        confidence: 0,
+        errors: [`Could not extract readable text from ${fileType} file. The file may be corrupted, password-protected, or in an unsupported format. Please try uploading a different file or create your resume manually.`],
+        resume: null,
+        extractionMethod
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Use OpenAI to extract resume content
     const extractionPrompt = `You are a professional resume parser. Extract ALL information from the provided resume text and return it as a structured JSON object.
@@ -140,7 +211,7 @@ Parse this resume thoroughly and extract all information.`;
           },
           {
             role: 'user',
-            content: `Please extract all information from this resume. File name: ${fileName}\n\nResume content:\n${textContent}`
+            content: `Please extract all information from this resume. File name: ${fileName}\n\nResume content:\n${textContent.substring(0, 8000)}`
           }
         ],
         max_tokens: 4000,
@@ -151,7 +222,7 @@ Parse this resume thoroughly and extract all information.`;
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${response.status}`);
+      throw new Error(`OpenAI API error: ${response.status} - ${errorData}`);
     }
 
     const aiResponse = await response.json();
@@ -172,7 +243,18 @@ Parse this resume thoroughly and extract all information.`;
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
       console.error('Raw AI response:', extractedContent);
-      throw new Error('Failed to parse extraction results');
+      
+      return new Response(JSON.stringify({
+        success: false,
+        confidence: 0,
+        errors: ['Failed to parse the extracted resume data. The file content may be too complex or corrupted. Please try uploading a cleaner version or create your resume manually.'],
+        resume: null,
+        extractionMethod,
+        rawResponse: extractedContent.substring(0, 500)
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Add IDs to items that don't have them
@@ -204,7 +286,8 @@ Parse this resume thoroughly and extract all information.`;
       success: true,
       resume: parsedResume,
       confidence: parsedResume.confidence?.overall || 0.9,
-      extractionNotes: parsedResume.extractionNotes || []
+      extractionNotes: parsedResume.extractionNotes || [],
+      extractionMethod
     };
 
     console.log('Resume extraction successful');
@@ -216,11 +299,24 @@ Parse this resume thoroughly and extract all information.`;
   } catch (error) {
     console.error('Error in extract-resume function:', error);
     
+    const errorMessage = error.message || 'Unknown error occurred';
+    let userFriendlyMessage = errorMessage;
+    
+    // Provide more helpful error messages
+    if (errorMessage.includes('OpenAI API')) {
+      userFriendlyMessage = 'AI service temporarily unavailable. Please try again in a moment.';
+    } else if (errorMessage.includes('Failed to download')) {
+      userFriendlyMessage = 'Could not access the uploaded file. Please try uploading again.';
+    } else if (errorMessage.includes('API key')) {
+      userFriendlyMessage = 'Resume extraction service is not configured. Please contact support.';
+    }
+    
     return new Response(JSON.stringify({
       success: false,
       confidence: 0,
-      errors: [error.message || 'Unknown error occurred'],
-      resume: null
+      errors: [userFriendlyMessage],
+      resume: null,
+      originalError: errorMessage
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
