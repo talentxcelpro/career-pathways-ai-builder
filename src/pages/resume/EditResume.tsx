@@ -1,18 +1,7 @@
-
-import { EnhancedResumeEditor } from "@/components/resume/enhanced/EnhancedResumeEditor";
-import { useParams, useLocation } from "react-router-dom";
+import { UnifiedResumeInterface } from "@/components/resume/enhanced/UnifiedResumeInterface";
 
 const EditResume = () => {
-  const { id } = useParams();
-  const location = useLocation();
-  const initialData = location.state?.resumeData;
-
-  return (
-    <EnhancedResumeEditor 
-      resumeId={id} 
-      initialData={initialData}
-    />
-  );
+  return <UnifiedResumeInterface mode="edit" />;
 };
 
 export default EditResume;
