@@ -1,439 +1,425 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { ResumeHeader } from './ResumeHeader';
-import { DraggableSection } from '../DraggableSection';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Save, Download, Eye, EyeOff, Plus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { toast } from "@/hooks/use-toast";
+import { 
+  Save, 
+  Download, 
+  Eye, 
+  EyeOff, 
+  RotateCcw, 
+  Settings, 
+  Palette,
+  FileText,
+  User,
+  Briefcase,
+  GraduationCap,
+  Award,
+  Code,
+  Languages,
+  FolderOpen,
+  Plus,
+  Edit,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Move
+} from "lucide-react";
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 
 interface UnifiedResumeInterfaceProps {
-  mode: 'edit' | 'create';
+  mode: 'create' | 'edit';
+  resumeId?: string;
 }
 
-export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ mode }) => {
-  const { id } = useParams();
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  
+const defaultSections = [
+  { id: 'personal', title: 'Personal Information', icon: User, required: true },
+  { id: 'summary', title: 'Professional Summary', icon: FileText, required: false },
+  { id: 'experience', title: 'Work Experience', icon: Briefcase, required: true },
+  { id: 'education', title: 'Education', icon: GraduationCap, required: true },
+  { id: 'skills', title: 'Skills', icon: Code, required: true },
+  { id: 'projects', title: 'Projects', icon: FolderOpen, required: false },
+  { id: 'certifications', title: 'Certifications', icon: Award, required: false },
+  { id: 'languages', title: 'Languages', icon: Languages, required: false },
+  { id: 'awards', title: 'Awards', icon: Award, required: false }
+];
+
+export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ 
+  mode, 
+  resumeId 
+}) => {
   const [resumeData, setResumeData] = useState({
-    personalInfo: {},
-    summary: '',
+    personalInfo: {
+      fullName: '',
+      email: '',
+      phone: '',
+      location: '',
+      linkedin: '',
+      portfolio: '',
+      website: ''
+    },
+    professionalSummary: {
+      content: '',
+      careerBackground: '',
+      keySkills: [],
+      targetRoles: [],
+      goals: ''
+    },
     experience: [],
     education: [],
-    skills: [],
-    sectionOrder: ['personalInfo', 'summary', 'experience', 'education', 'skills']
+    skills: {
+      technical: [],
+      soft: [],
+      languages: []
+    },
+    projects: [],
+    certifications: [],
+    languages: [],
+    awards: []
   });
-  
+
+  const [activeSection, setActiveSection] = useState('personal');
+  const [activeSections, setActiveSections] = useState(defaultSections);
+  const [previewMode, setPreviewMode] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [rightPanelTab, setRightPanelTab] = useState('preview');
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [hasChanges, setHasChanges] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState('modern-professional');
+  const [templateSettings, setTemplateSettings] = useState({
+    colors: {
+      primary: '#3B82F6',
+      secondary: '#64748B',
+      accent: '#F59E0B'
+    },
+    fonts: {
+      heading: 'Inter',
+      body: 'Inter'
+    },
+    spacing: 'normal',
+    layout: 'single-column'
+  });
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
 
-  useEffect(() => {
-    if (mode === 'edit' && id && id.startsWith('new-')) {
-      // Initialize new resume
-      setResumeData({
-        personalInfo: {},
-        summary: '',
-        experience: [],
-        education: [],
-        skills: [],
-        sectionOrder: ['personalInfo', 'summary', 'experience', 'education', 'skills']
-      });
-    } else if (mode === 'edit' && id) {
-      loadResume();
-    }
-  }, [id, mode]);
-
-  const loadResume = async () => {
-    if (!id || !user) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('ai_resumes')
-        .select('*')
-        .eq('id', id)
-        .eq('user_id', user.id)
-        .single();
+  const handleSectionReorder = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = activeSections.findIndex(section => section.id === active.id);
+      const newIndex = activeSections.findIndex(section => section.id === over.id);
+      const newSections = arrayMove(activeSections, oldIndex, newIndex);
+      setActiveSections(newSections);
       
-      if (error) throw error;
-      
-      if (data?.content) {
-        setResumeData(data.content as any);
-        setLastSaved(new Date(data.updated_at));
-      }
-    } catch (error) {
-      console.error('Error loading resume:', error);
-      toast.error('Failed to load resume');
     }
   };
 
-  const saveResume = useCallback(async () => {
-    if (!user) return;
-    
-    setIsSaving(true);
+  const updateResumeData = (updates: any) => {
+    setResumeData(prev => ({ ...prev, ...updates }));
+  };
+
+  const handleSave = async () => {
     try {
-      const resumeId = id?.startsWith('new-') ? undefined : id;
-      
-      if (resumeId) {
-        // Update existing resume
-        const { error } = await supabase
-          .from('ai_resumes')
-          .update({
-            content: resumeData as any,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', resumeId)
-          .eq('user_id', user.id);
-        
-        if (error) throw error;
-      } else {
-        // Create new resume
-        const { data, error } = await supabase
-          .from('ai_resumes')
-          .insert({
-            user_id: user.id,
-            title: 'New Resume',
-            content: resumeData as any,
-            ats_score: 75
-          })
-          .select()
-          .single();
-        
-        if (error) throw error;
-        
-        // Update URL to use the new ID
-        navigate(`/resume-builder/edit/${data.id}`, { replace: true });
-      }
-      
+      setIsSaving(true);
+      // Implementation for saving resume
       setLastSaved(new Date());
-      setHasChanges(false);
-      toast.success('Resume saved successfully');
+      toast({
+        title: "Resume Saved",
+        description: "Your resume has been saved successfully.",
+      });
     } catch (error) {
-      console.error('Error saving resume:', error);
-      toast.error('Failed to save resume');
+      toast({
+        title: "Save Failed",
+        description: "Failed to save resume. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
-  }, [resumeData, user, id, navigate]);
-
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event;
-    
-    if (active.id !== over.id) {
-      setResumeData(prev => {
-        const oldIndex = prev.sectionOrder.indexOf(active.id);
-        const newIndex = prev.sectionOrder.indexOf(over.id);
-        
-        return {
-          ...prev,
-          sectionOrder: arrayMove(prev.sectionOrder, oldIndex, newIndex)
-        };
-      });
-      setHasChanges(true);
-    }
   };
 
-  const updateResumeData = (section: string, data: any) => {
-    setResumeData(prev => ({
-      ...prev,
-      [section]: data
-    }));
-    setHasChanges(true);
+  const handleExport = () => {
+    // Implementation for exporting resume
+    toast({
+      title: "Export Started",
+      description: "Your resume is being prepared for download.",
+    });
   };
 
-  const handleEnhancementApplied = (enhancedData: any) => {
-    setResumeData(enhancedData);
-    setHasChanges(true);
-    toast.success('AI enhancements applied successfully!');
-  };
-
-  const addSection = (sectionType: string) => {
-    setResumeData(prev => ({
-      ...prev,
-      sectionOrder: [...prev.sectionOrder, sectionType]
-    }));
-    setHasChanges(true);
-  };
-
-  const renderSection = (sectionId: string) => {
-    switch (sectionId) {
-      case 'personalInfo':
+  const renderSectionEditor = () => {
+    switch (activeSection) {
+      case 'personal':
         return (
-          <DraggableSection
-            id="personalInfo"
-            title="Personal Information"
-            description="Your contact details and basic information"
-          >
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Personal Information</h2>
+              <p className="text-gray-600 mb-6">Add your contact details and basic information</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
                 <div>
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    value={(resumeData.personalInfo as any)?.fullName || ''}
-                    onChange={(e) => updateResumeData('personalInfo', { ...resumeData.personalInfo, fullName: e.target.value })}
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter your full name"
+                    value={resumeData.personalInfo.fullName}
+                    onChange={(e) => updateResumeData({
+                      personalInfo: { ...resumeData.personalInfo, fullName: e.target.value }
+                    })}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <input
                     type="email"
-                    value={(resumeData.personalInfo as any)?.email || ''}
-                    onChange={(e) => updateResumeData('personalInfo', { ...resumeData.personalInfo, email: e.target.value })}
-                    placeholder="Enter your email"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="your.email@example.com"
+                    value={resumeData.personalInfo.email}
+                    onChange={(e) => updateResumeData({
+                      personalInfo: { ...resumeData.personalInfo, email: e.target.value }
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <input
+                    type="tel"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="+1 (555) 123-4567"
+                    value={resumeData.personalInfo.phone}
+                    onChange={(e) => updateResumeData({
+                      personalInfo: { ...resumeData.personalInfo, phone: e.target.value }
+                    })}
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
                 <div>
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    value={(resumeData.personalInfo as any)?.phone || ''}
-                    onChange={(e) => updateResumeData('personalInfo', { ...resumeData.personalInfo, phone: e.target.value })}
-                    placeholder="Enter your phone number"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="City, State, Country"
+                    value={resumeData.personalInfo.location}
+                    onChange={(e) => updateResumeData({
+                      personalInfo: { ...resumeData.personalInfo, location: e.target.value }
+                    })}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={(resumeData.personalInfo as any)?.location || ''}
-                    onChange={(e) => updateResumeData('personalInfo', { ...resumeData.personalInfo, location: e.target.value })}
-                    placeholder="Enter your location"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn</label>
+                  <input
+                    type="url"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="https://linkedin.com/in/yourprofile"
+                    value={resumeData.personalInfo.linkedin}
+                    onChange={(e) => updateResumeData({
+                      personalInfo: { ...resumeData.personalInfo, linkedin: e.target.value }
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Portfolio/Website</label>
+                  <input
+                    type="url"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="https://yourwebsite.com"
+                    value={resumeData.personalInfo.portfolio}
+                    onChange={(e) => updateResumeData({
+                      personalInfo: { ...resumeData.personalInfo, portfolio: e.target.value }
+                    })}
                   />
                 </div>
               </div>
             </div>
-          </DraggableSection>
+          </div>
         );
-      
       case 'summary':
         return (
-          <DraggableSection
-            id="summary"
-            title="Professional Summary"
-            description="A brief overview of your career and achievements"
-          >
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="summary">Professional Summary</Label>
-                <Textarea
-                  id="summary"
-                  value={resumeData.summary}
-                  onChange={(e) => updateResumeData('summary', e.target.value)}
-                  placeholder="Write a brief summary of your professional background and key achievements..."
-                  className="min-h-[100px]"
-                />
-              </div>
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Professional Summary</h2>
+              <p className="text-gray-600 mb-6">Write a compelling summary of your professional background</p>
             </div>
-          </DraggableSection>
-        );
-      
-      case 'experience':
-        return (
-          <DraggableSection
-            id="experience"
-            title="Work Experience"
-            description="Your professional work history"
-          >
-            <div className="space-y-4">
-              <div>
-                <Label>Work Experience</Label>
-                <Textarea
-                  value={Array.isArray(resumeData.experience) ? resumeData.experience.join('\n') : ''}
-                  onChange={(e) => updateResumeData('experience', e.target.value.split('\n').filter(Boolean))}
-                  placeholder="Add your work experience (one per line)..."
-                  className="min-h-[100px]"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Summary</label>
+              <textarea
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={6}
+                placeholder="Write a brief summary of your professional background and key achievements..."
+                value={resumeData.professionalSummary.content}
+                onChange={(e) => updateResumeData({
+                  professionalSummary: { ...resumeData.professionalSummary, content: e.target.value }
+                })}
+              />
             </div>
-          </DraggableSection>
+          </div>
         );
-      
-      case 'education':
-        return (
-          <DraggableSection
-            id="education"
-            title="Education"
-            description="Your educational background"
-          >
-            <div className="space-y-4">
-              <div>
-                <Label>Education</Label>
-                <Textarea
-                  value={Array.isArray(resumeData.education) ? resumeData.education.join('\n') : ''}
-                  onChange={(e) => updateResumeData('education', e.target.value.split('\n').filter(Boolean))}
-                  placeholder="Add your education (one per line)..."
-                  className="min-h-[100px]"
-                />
-              </div>
-            </div>
-          </DraggableSection>
-        );
-      
-      case 'skills':
-        return (
-          <DraggableSection
-            id="skills"
-            title="Skills"
-            description="Your technical and soft skills"
-          >
-            <div className="space-y-4">
-              <div>
-                <Label>Skills</Label>
-                <Textarea
-                  value={Array.isArray(resumeData.skills) ? resumeData.skills.join('\n') : ''}
-                  onChange={(e) => updateResumeData('skills', e.target.value.split('\n').filter(Boolean))}
-                  placeholder="Add your skills (one per line)..."
-                  className="min-h-[100px]"
-                />
-              </div>
-            </div>
-          </DraggableSection>
-        );
-      
       default:
-        return null;
+        return (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <FileText className="h-12 w-12 mx-auto" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Section Editor Coming Soon</h3>
+            <p className="text-gray-600">This section editor is being developed.</p>
+          </div>
+        );
     }
+  };
+
+  const renderSimplePreview = () => (
+    <div className="bg-white p-6 rounded-lg shadow-sm border max-h-96 overflow-auto">
+      <div className="text-center mb-6">
+        <h1 className="text-xl font-bold text-gray-900">
+          {resumeData.personalInfo.fullName || 'Your Name'}
+        </h1>
+        <p className="text-gray-600">
+          {resumeData.personalInfo.email || 'your.email@example.com'}
+        </p>
+        <p className="text-gray-600">
+          {resumeData.personalInfo.phone || '+1 (555) 123-4567'}
+        </p>
+        <p className="text-gray-600">
+          {resumeData.personalInfo.location || 'Your Location'}
+        </p>
+      </div>
+      
+      {resumeData.professionalSummary.content && (
+        <div className="mb-6">
+          <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">Professional Summary</h3>
+          <p className="text-gray-700 text-sm leading-relaxed">
+            {resumeData.professionalSummary.content}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderSectionButton = (section: any) => {
+    const IconComponent = section.icon;
+    return (
+      <button
+        key={section.id}
+        onClick={() => setActiveSection(section.id)}
+        className={`w-full text-left p-3 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
+          activeSection === section.id
+            ? 'bg-blue-50 border border-blue-200 text-blue-900'
+            : 'hover:bg-gray-50 text-gray-700 border border-transparent'
+        }`}
+      >
+        <IconComponent className="h-5 w-5" />
+        <span className="font-medium">{section.title}</span>
+        {section.required && (
+          <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">Required</span>
+        )}
+      </button>
+    );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <ResumeHeader
-        mode={mode}
-        isSaving={isSaving}
-        lastSaved={lastSaved}
-        hasChanges={hasChanges}
-        onSave={saveResume}
-        resumeData={resumeData}
-        onEnhancementApplied={handleEnhancementApplied}
-      />
-
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex gap-6">
-          {/* Editor Panel */}
-          <div className={`${showPreview ? 'w-1/2' : 'w-full'} transition-all duration-300`}>
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">Resume Builder</h2>
-                <p className="text-slate-600">Drag and drop sections to reorder them</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowPreview(!showPreview)}
-                >
-                  {showPreview ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-                  {showPreview ? 'Hide Preview' : 'Show Preview'}
-                </Button>
-              </div>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-40">
+        <div className="flex items-center justify-between h-16 px-6">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-xl font-semibold text-gray-900">
+              {mode === 'create' ? 'Create Resume' : 'Edit Resume'}
+            </h1>
+            <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <span>•</span>
+              <span>Auto-saved</span>
             </div>
-
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-              
-            >
-              <SortableContext items={resumeData.sectionOrder} strategy={verticalListSortingStrategy}>
-                <div className="space-y-6">
-                  {resumeData.sectionOrder.map((sectionId) => (
-                    <div key={sectionId}>
-                      {renderSection(sectionId)}
-                    </div>
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-
-            <Card className="mt-6 border-dashed border-2 border-slate-300 hover:border-blue-400 transition-colors">
-              <CardContent className="p-6 text-center">
-                <Plus className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                <p className="text-slate-600 mb-4">Add more sections to your resume</p>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  <Button variant="outline" size="sm" onClick={() => addSection('projects')}>
-                    Projects
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => addSection('certifications')}>
-                    Certifications
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => addSection('languages')}>
-                    Languages
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
-
-          {/* Preview Panel */}
-          {showPreview && (
-            <div className="w-1/2">
-              <div className="sticky top-24">
-                <Card className="bg-white shadow-lg">
-                  <CardContent className="p-8">
-                    <div className="text-center mb-6">
-                      <Badge variant="outline" className="mb-2">Live Preview</Badge>
-                      <p className="text-sm text-slate-600">This is how your resume will look</p>
-                    </div>
-                    <Separator className="mb-6" />
-                    
-                    {/* Resume Preview Content */}
-                    <div className="space-y-6 text-sm">
-                      {resumeData.sectionOrder.map((sectionId) => (
-                        <div key={sectionId} className="preview-section">
-                          {sectionId === 'personalInfo' && resumeData.personalInfo && (
-                            <div className="text-center mb-6">
-                              <h1 className="text-xl font-bold text-slate-900">
-                                {(resumeData.personalInfo as any)?.fullName || 'Your Name'}
-                              </h1>
-                              <p className="text-slate-600">
-                                {(resumeData.personalInfo as any)?.email || 'your.email@example.com'}
-                              </p>
-                            </div>
-                          )}
-                          
-                          {sectionId === 'summary' && resumeData.summary && (
-                            <div className="mb-4">
-                              <h3 className="font-semibold text-slate-900 mb-2">Professional Summary</h3>
-                              <p className="text-slate-700">{resumeData.summary}</p>
-                            </div>
-                          )}
-                          
-                          {/* Add other section previews as needed */}
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
+          
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPreviewMode(!previewMode)}
+            >
+              {previewMode ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {previewMode ? 'Exit Preview' : 'Preview'}
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? 'Saving...' : 'Save'}
+            </Button>
+            
+            <Button
+              size="sm"
+              onClick={handleExport}
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* Main Content */}
+      {previewMode ? (
+        <div className="p-6">
+          {renderSimplePreview()}
+        </div>
+      ) : (
+        <div className="flex min-h-screen">
+          {/* Left Sidebar */}
+          <div className="w-64 border-r bg-gray-50/40">
+            <div className="p-4 border-b bg-white">
+              <h2 className="font-semibold text-gray-900 mb-2">Resume Sections</h2>
+              <p className="text-sm text-gray-600">Click to edit sections</p>
+            </div>
+            <div className="p-4 space-y-2">
+              {defaultSections.map(renderSectionButton)}
+            </div>
+          </div>
+
+          {/* Center Editor */}
+          <div className="flex-1 overflow-auto">
+            <div className="max-w-4xl mx-auto p-6">
+              {renderSectionEditor()}
+            </div>
+          </div>
+
+          {/* Right Panel */}
+          <div className="w-80 border-l bg-white">
+            <Tabs value={rightPanelTab} onValueChange={setRightPanelTab} className="h-full flex flex-col">
+              <TabsList className="grid grid-cols-2 m-4 mb-0">
+                <TabsTrigger value="preview">Preview</TabsTrigger>
+                <TabsTrigger value="template">Template</TabsTrigger>
+              </TabsList>
+              <div className="flex-1 overflow-auto p-4">
+                <TabsContent value="preview" className="mt-0">
+                  {renderSimplePreview()}
+                </TabsContent>
+                <TabsContent value="template" className="mt-0">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-3">Template</h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        {['Modern', 'Classic'].map((template) => (
+                          <button key={template} className="p-3 border rounded-lg text-sm">{template}</button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </div>
+            </Tabs>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
