@@ -235,7 +235,18 @@ const ResumeCheck = () => {
               </Card>
 
               {/* Resume Preview */}
-              <EnhancedResumePreview />
+              <EnhancedResumePreview 
+                originalData={{
+                  name: resumeText.split('\n').find(line => line.trim() && !line.includes('@'))?.trim() || 'Your Name',
+                  email: resumeText.match(/[\w.-]+@[\w.-]+\.\w+/)?.[0] || 'email@example.com',
+                  phone: resumeText.match(/[\d\s\-\(\)]{10,}/)?.[0]?.trim() || 'Phone Number',
+                  title: 'Professional Title',
+                  summary: resumeText.substring(0, 300) + '...',
+                  experience: [],
+                  education: [],
+                  skills: []
+                }}
+              />
 
               {/* Upgrade Prompt */}
               <Card className="bg-gradient-to-r from-blue-50 to-indigo-100 border-blue-200">
