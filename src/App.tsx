@@ -33,6 +33,7 @@ import ResumeDashboard from './pages/resume/ResumeDashboard';
 import ResumeChecker from './pages/tools/ResumeChecker';
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import EditResume from './pages/resume/EditResume';
+import Network from './pages/Network';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
@@ -46,10 +47,11 @@ function App() {
           <Routes>
             {/* Core Routes */}
             <Route path="/" element={<Dashboard />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/network" element={<Network />} />
+            <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/register" element={<Register />} />
+            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+            <Route path="/auth/reset-password" element={<ResetPassword />} />
             {/* TODO: Re-enable when pages are created
             <Route path="/profile" element={<Profile />} />
             <Route path="/edit-profile" element={<EditProfile />} />
