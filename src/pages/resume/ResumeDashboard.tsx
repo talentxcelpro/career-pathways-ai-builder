@@ -259,8 +259,8 @@ const ResumeDashboard = () => {
 
             {/* AI-Powered Features */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <SmartProfileOptimizer />
-              <SmartJobMatcher />
+              <SmartProfileOptimizer userProfile={{}} />
+              <SmartJobMatcher userProfile={{}} />
             </div>
           </TabsContent>
 

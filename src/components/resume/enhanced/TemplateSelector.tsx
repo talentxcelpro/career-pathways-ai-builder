@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Palette, Layout, Type, Spacing, Star, Crown, Zap } from 'lucide-react';
+import { Palette, Layout, Type, Star, Crown, Zap } from 'lucide-react';
 
 interface TemplateCategory {
   id: string;
@@ -342,7 +342,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Spacing className="w-4 h-4" />
+                <Layout className="w-4 h-4" />
                 Layout
               </CardTitle>
             </CardHeader>

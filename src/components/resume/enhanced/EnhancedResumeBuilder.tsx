@@ -193,7 +193,6 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     <PersonalInfoSection
                       data={resumeData.personalInfo}
                       onChange={(data) => updateResumeData({ personalInfo: data })}
-                      suggestions={contentSuggestions.personalInfo || []}
                     />
                   </DraggableSection>
 
@@ -205,8 +204,6 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     <ExperienceSection
                       data={resumeData.experience}
                       onChange={(data) => updateResumeData({ experience: data })}
-                      suggestions={contentSuggestions.experience || []}
-                      industryKeywords={industryKeywords}
                     />
                   </DraggableSection>
 
@@ -218,7 +215,6 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     <EducationSection
                       data={resumeData.education}
                       onChange={(data) => updateResumeData({ education: data })}
-                      suggestions={contentSuggestions.education || []}
                     />
                   </DraggableSection>
 
@@ -230,8 +226,6 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     <SkillsSection
                       data={resumeData.skills}
                       onChange={(data) => updateResumeData({ skills: data })}
-                      suggestions={contentSuggestions.skills || []}
-                      industryKeywords={industryKeywords}
                     />
                   </DraggableSection>
 
@@ -243,7 +237,6 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                     <ProjectsSection
                       data={resumeData.projects}
                       onChange={(data) => updateResumeData({ projects: data })}
-                      suggestions={contentSuggestions.projects || []}
                     />
                   </DraggableSection>
                 </div>

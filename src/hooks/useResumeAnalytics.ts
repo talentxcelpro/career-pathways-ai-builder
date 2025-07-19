@@ -14,15 +14,46 @@ interface ResumeAnalytics {
   }>;
 }
 
-export const useResumeAnalytics = (resumeData: EnhancedResumeData | null) => {
+interface ResumeMetrics {
+  totalViews: number;
+  totalDownloads: number;
+  totalShares: number;
+  applicationRate: number;
+  interviewRate: number;
+  weeklyTrend: Array<{ date: string; views: number; downloads: number }>;
+  topSources: Array<{ source: string; count: number }>;
+}
+
+interface ResumeEvent {
+  event_type: string;
+  source?: string;
+  created_at: string;
+}
+
+export const useResumeAnalytics = (resumeData: EnhancedResumeData | null | string) => {
   const [analytics, setAnalytics] = useState<ResumeAnalytics>({
     overallScore: 0,
     atsScore: 0,
     suggestions: []
   });
 
+  const [metrics, setMetrics] = useState<ResumeMetrics>({
+    totalViews: 0,
+    totalDownloads: 0,
+    totalShares: 0,
+    applicationRate: 0,
+    interviewRate: 0,
+    weeklyTrend: [],
+    topSources: []
+  });
+
+  const [events, setEvents] = useState<ResumeEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const refreshAnalysis = useCallback(async () => {
-    if (!resumeData) return;
+    if (!resumeData || typeof resumeData === 'string') return;
+    
+    setIsLoading(true);
 
     // Simulate analysis - in real implementation, this would call AI service
     let overallScore = 0;
@@ -75,15 +106,48 @@ export const useResumeAnalytics = (resumeData: EnhancedResumeData | null) => {
       });
     }
 
+    // Mock metrics data
+    const mockMetrics: ResumeMetrics = {
+      totalViews: Math.floor(Math.random() * 500) + 100,
+      totalDownloads: Math.floor(Math.random() * 100) + 20,
+      totalShares: Math.floor(Math.random() * 50) + 5,
+      applicationRate: Math.random() * 10 + 2,
+      interviewRate: Math.random() * 20 + 5,
+      weeklyTrend: Array.from({ length: 7 }, (_, i) => ({
+        date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        views: Math.floor(Math.random() * 50) + 10,
+        downloads: Math.floor(Math.random() * 20) + 2
+      })),
+      topSources: [
+        { source: 'LinkedIn', count: 45 },
+        { source: 'Indeed', count: 32 },
+        { source: 'Direct', count: 28 },
+        { source: 'Glassdoor', count: 15 }
+      ]
+    };
+
+    const mockEvents: ResumeEvent[] = [
+      { event_type: 'viewed', source: 'LinkedIn', created_at: new Date().toISOString() },
+      { event_type: 'downloaded', source: 'Indeed', created_at: new Date(Date.now() - 86400000).toISOString() },
+      { event_type: 'shared', created_at: new Date(Date.now() - 172800000).toISOString() }
+    ];
+
     setAnalytics({
       overallScore: Math.min(overallScore, 100),
       atsScore: Math.min(atsScore, 100),
       suggestions
     });
+
+    setMetrics(mockMetrics);
+    setEvents(mockEvents);
+    setIsLoading(false);
   }, [resumeData]);
 
   return {
     ...analytics,
+    metrics,
+    events,
+    isLoading,
     refreshAnalysis
   };
 };
