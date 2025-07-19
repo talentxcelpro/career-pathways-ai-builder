@@ -1,58 +1,58 @@
 
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
-import type { Resume, ResumePersonalInfo, ResumeExperience, ResumeEducation, ResumeSkill } from '@/types/resume';
+import type { Resume, ResumePersonalInfo, ResumeExperience, ResumeEducation, ResumeSkill, ExtractionResult } from '@/types/resume';
 
-// Set up PDF.js worker
+// Set the worker source for PDF.js
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
-export interface ExtractionResult {
-  success: boolean;
-  resume?: Resume;
-  confidence: number;
-  errors?: string[];
-  rawText?: string;
-}
-
 export class ResumeExtractor {
+  private text: string = '';
+  private lines: string[] = [];
+  private cleanLines: string[] = [];
+
   async extractFromFile(file: File): Promise<ExtractionResult> {
-    console.log('Starting extraction for file:', file.name, file.type);
-    
     try {
-      let text = '';
+      console.log('Starting extraction for file:', file.name);
       
+      // Extract text based on file type
       if (file.type === 'application/pdf') {
-        text = await this.extractTextFromPDF(file);
-      } else if (file.type.includes('wordprocessingml.document') || file.type.includes('msword')) {
-        text = await this.extractTextFromDOCX(file);
-      } else if (file.type.startsWith('image/')) {
-        throw new Error('Image extraction not implemented in this version');
+        this.text = await this.extractTextFromPDF(file);
+      } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
+                 file.name.endsWith('.docx')) {
+        this.text = await this.extractTextFromDOCX(file);
       } else {
-        throw new Error(`Unsupported file type: ${file.type}`);
+        throw new Error('Unsupported file type. Please upload a PDF or DOCX file.');
       }
 
-      console.log('Extracted text length:', text.length);
+      console.log('Extracted text length:', this.text.length);
+      console.log('First 500 chars:', this.text.substring(0, 500));
+
+      // Preprocess text
+      this.preprocessText();
       
-      if (!text || text.length < 50) {
-        throw new Error('Insufficient content extracted from file');
-      }
-
-      const resume = this.parseTextToResume(text);
-      const confidence = this.calculateConfidence(resume, text);
+      // Extract structured data
+      const resume = this.parseResumeData();
+      
+      // Calculate confidence score
+      const confidence = this.calculateConfidence(resume);
+      
+      console.log('Extraction completed with confidence:', confidence);
+      console.log('Extracted resume:', resume);
 
       return {
         success: true,
         resume,
         confidence,
-        rawText: text
+        suggestions: this.generateSuggestions(resume, confidence)
       };
+
     } catch (error) {
       console.error('Extraction failed:', error);
       return {
         success: false,
         confidence: 0,
-        errors: [error.message || 'Unknown extraction error'],
-        rawText: ''
+        errors: [error instanceof Error ? error.message : 'Unknown error occurred']
       };
     }
   }
@@ -61,16 +61,17 @@ export class ResumeExtractor {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     let fullText = '';
-    
+
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
       const pageText = textContent.items
-        .map((item: any) => item.str)
+        .filter((item): item is { str: string } => 'str' in item)
+        .map(item => item.str)
         .join(' ');
       fullText += pageText + '\n';
     }
-    
+
     return fullText;
   }
 
@@ -80,261 +81,469 @@ export class ResumeExtractor {
     return result.value;
   }
 
-  private parseTextToResume(text: string): Resume {
-    const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
-    
+  private preprocessText(): void {
+    // Clean emojis and special characters
+    this.text = this.text
+      .replace(/[📍📞✉️🔗]/g, '') // Remove common resume emojis
+      .replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // Split into lines and clean
+    this.lines = this.text.split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0);
+    this.cleanLines = this.lines.map(line => 
+      line.replace(/\s+/g, ' ').trim()
+    ).filter(line => line.length > 0);
+
+    console.log('Preprocessed lines:', this.cleanLines.slice(0, 10));
+  }
+
+  private parseResumeData(): Resume {
+    const personalInfo = this.extractPersonalInfo();
+    const summary = this.extractSummary();
+    const experience = this.extractExperience();
+    const education = this.extractEducation();
+    const skills = this.extractSkills();
+
     return {
-      personalInfo: this.extractPersonalInfo(text, lines),
-      summary: this.extractSummary(text, lines),
-      experience: this.extractExperience(text, lines),
-      education: this.extractEducation(text, lines),
-      skills: this.extractSkills(text, lines),
-      selectedTemplate: 'modern-professional'
+      personalInfo,
+      summary,
+      experience,
+      education,
+      skills,
+      selectedTemplate: 'modern-professional',
+      atsScore: 85
     };
   }
 
-  private extractPersonalInfo(text: string, lines: string[]): ResumePersonalInfo {
-    const name = this.extractName(lines);
-    const email = this.extractEmail(text);
-    const phone = this.extractPhone(text);
-    const location = this.extractLocation(text);
+  private extractPersonalInfo(): ResumePersonalInfo {
+    console.log('Extracting personal info...');
     
-    return {
+    // Enhanced name extraction
+    const name = this.extractName();
+    const email = this.extractEmail();
+    const phone = this.extractPhone();
+    const location = this.extractLocation();
+    const linkedin = this.extractLinkedIn();
+    const website = this.extractWebsite();
+
+    const personalInfo = {
       fullName: name,
-      email: email || '',
-      phone: phone || '',
-      location: location || '',
-      website: this.extractWebsite(text),
-      linkedin: this.extractLinkedIn(text)
+      email: email,
+      phone: phone,
+      location: location,
+      linkedin: linkedin || undefined,
+      website: website || undefined
     };
+
+    console.log('Extracted personal info:', personalInfo);
+    return personalInfo;
   }
 
-  private extractName(lines: string[]): string {
-    // Look for name in first few lines
-    for (let i = 0; i < Math.min(5, lines.length); i++) {
-      const line = lines[i];
-      if (line.length > 5 && line.length < 50 && 
-          /^[A-Za-z\s.'-]+$/.test(line) && 
-          !line.toLowerCase().includes('resume') &&
-          !line.toLowerCase().includes('cv') &&
-          !this.isContactInfo(line)) {
-        return line;
+  private extractName(): string {
+    // Look for name patterns in first few lines
+    for (let i = 0; i < Math.min(5, this.cleanLines.length); i++) {
+      const line = this.cleanLines[i];
+      
+      // Skip lines with contact info
+      if (line.includes('@') || line.includes('+') || line.includes('www') || 
+          line.toLowerCase().includes('linkedin') || line.toLowerCase().includes('phone')) {
+        continue;
+      }
+
+      // Look for capitalized names (2-4 words, each starting with capital)
+      const nameMatch = line.match(/^([A-Z][a-z]+ [A-Z][a-z]+(?:\s[A-Z][a-z]+)?(?:\s[A-Z][a-z]+)?)(?:\s|$)/);
+      if (nameMatch) {
+        const potentialName = nameMatch[1].trim();
+        // Verify it's not a section header
+        if (!this.isSectionHeader(potentialName) && potentialName.split(' ').length >= 2) {
+          return potentialName;
+        }
+      }
+
+      // Try extracting from mixed content lines
+      const words = line.split(' ').filter(word => word.length > 1);
+      if (words.length >= 2) {
+        const firstTwoWords = words.slice(0, 2).join(' ');
+        if (firstTwoWords.match(/^[A-Z][a-z]+ [A-Z][a-z]+$/) && 
+            !this.isSectionHeader(firstTwoWords)) {
+          return firstTwoWords;
+        }
+      }
+    }
+
+    return '';
+  }
+
+  private extractEmail(): string {
+    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+    const matches = this.text.match(emailRegex);
+    return matches ? matches[0] : '';
+  }
+
+  private extractPhone(): string {
+    // Enhanced phone regex for international numbers
+    const phoneRegex = /(?:\+\d{1,3}\s?)?\(?\d{1,4}\)?\s?[\d\s-]{7,15}/g;
+    const matches = this.text.match(phoneRegex);
+    if (matches) {
+      // Filter out likely false positives (years, etc.)
+      for (const match of matches) {
+        const cleaned = match.replace(/\D/g, '');
+        if (cleaned.length >= 7 && cleaned.length <= 15) {
+          return match.trim();
+        }
       }
     }
     return '';
   }
 
-  private extractEmail(text: string): string | undefined {
-    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
-    const matches = text.match(emailRegex);
-    return matches?.[0];
-  }
-
-  private extractPhone(text: string): string | undefined {
-    const phoneRegex = /(\+?1?[-.\s]?)?(\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4})/g;
-    const matches = text.match(phoneRegex);
-    return matches?.[0];
-  }
-
-  private extractLocation(text: string): string | undefined {
+  private extractLocation(): string {
+    // Look for location patterns
     const locationPatterns = [
-      /([A-Za-z\s]+,\s*[A-Z]{2}(?:\s+\d{5})?)/g,
-      /([A-Za-z\s]+,\s*[A-Za-z\s]+)/g
+      /([A-Z][a-z]+,?\s+[A-Z][a-z]+)/g, // City, State/Country
+      /([A-Z][a-z]+\s+[A-Z][a-z]+)/g,   // City State
     ];
-    
+
     for (const pattern of locationPatterns) {
-      const matches = text.match(pattern);
+      const matches = this.text.match(pattern);
       if (matches) {
-        return matches[0];
-      }
-    }
-    return undefined;
-  }
-
-  private extractWebsite(text: string): string | undefined {
-    const websiteRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
-    const matches = text.match(websiteRegex);
-    return matches?.find(url => !url.includes('linkedin.com'));
-  }
-
-  private extractLinkedIn(text: string): string | undefined {
-    const linkedinRegex = /(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+/gi;
-    const matches = text.match(linkedinRegex);
-    return matches?.[0];
-  }
-
-  private extractSummary(text: string, lines: string[]): string {
-    const summaryKeywords = ['summary', 'profile', 'objective', 'about', 'overview'];
-    const lowerText = text.toLowerCase();
-    
-    for (const keyword of summaryKeywords) {
-      const keywordIndex = lowerText.indexOf(keyword);
-      if (keywordIndex !== -1) {
-        const afterKeyword = text.slice(keywordIndex + keyword.length);
-        const sentences = afterKeyword.split(/[.!?]/).slice(0, 3);
-        const summary = sentences.join('.').trim();
-        if (summary.length > 20) {
-          return summary + '.';
+        for (const match of matches) {
+          // Skip common false positives
+          if (!match.includes('University') && !match.includes('Company') && 
+              !match.includes('School') && match.length < 50) {
+            return match.trim();
+          }
         }
       }
     }
-    
-    return 'Experienced professional with a strong background in technology and innovation.';
+
+    return '';
   }
 
-  private extractExperience(text: string, lines: string[]): ResumeExperience[] {
-    const experience: ResumeExperience[] = [];
+  private extractLinkedIn(): string {
+    const linkedinRegex = /(?:linkedin\.com\/in\/|LinkedIn:\s*)([a-zA-Z0-9-_]+)/i;
+    const match = this.text.match(linkedinRegex);
+    return match ? `linkedin.com/in/${match[1]}` : '';
+  }
+
+  private extractWebsite(): string {
+    const websiteRegex = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?)/g;
+    const matches = this.text.match(websiteRegex);
+    if (matches) {
+      // Filter out email domains and linkedin
+      for (const match of matches) {
+        if (!match.includes('linkedin') && !match.includes('@')) {
+          return match.startsWith('http') ? match : `https://${match}`;
+        }
+      }
+    }
+    return '';
+  }
+
+  private extractSummary(): string {
+    const summaryKeywords = ['summary', 'profile', 'objective', 'about'];
+    
+    for (let i = 0; i < this.cleanLines.length; i++) {
+      const line = this.cleanLines[i].toLowerCase();
+      
+      if (summaryKeywords.some(keyword => line.includes(keyword))) {
+        // Look for content in next few lines
+        let summary = '';
+        for (let j = i + 1; j < Math.min(i + 10, this.cleanLines.length); j++) {
+          const nextLine = this.cleanLines[j];
+          
+          // Stop if we hit another section
+          if (this.isSectionHeader(nextLine)) {
+            break;
+          }
+          
+          summary += nextLine + ' ';
+          
+          // Stop if we have enough content
+          if (summary.length > 200) {
+            break;
+          }
+        }
+        
+        if (summary.trim().length > 50) {
+          return summary.trim();
+        }
+      }
+    }
+
+    // If no explicit summary section, try to find descriptive paragraphs
+    for (const line of this.cleanLines) {
+      if (line.length > 100 && line.length < 500 && 
+          !line.includes('@') && !this.isSectionHeader(line)) {
+        return line;
+      }
+    }
+
+    return '';
+  }
+
+  private extractExperience(): ResumeExperience[] {
+    const experiences: ResumeExperience[] = [];
     const experienceKeywords = ['experience', 'employment', 'work history', 'professional experience'];
     
-    // Find experience section
-    const experienceStart = this.findSectionStart(text, experienceKeywords);
-    if (experienceStart === -1) return [];
+    let inExperienceSection = false;
+    let currentExperience: Partial<ResumeExperience> = {};
     
-    const experienceText = text.slice(experienceStart);
-    const jobEntries = this.parseJobEntries(experienceText);
-    
-    return jobEntries.map((entry, index) => ({
-      id: `exp-${index}`,
-      title: entry.title || 'Software Engineer',
-      company: entry.company || 'Technology Company',
-      location: entry.location || 'Remote',
-      startDate: entry.startDate || '2022',
-      endDate: entry.endDate || 'Present',
-      current: entry.endDate === 'Present' || entry.endDate === 'Current',
-      description: entry.description || 'Responsible for developing and maintaining software applications.',
-      achievements: entry.achievements || []
-    }));
-  }
-
-  private extractEducation(text: string, lines: string[]): ResumeEducation[] {
-    const education: ResumeEducation[] = [];
-    const educationKeywords = ['education', 'academic', 'university', 'college', 'school'];
-    
-    const educationStart = this.findSectionStart(text, educationKeywords);
-    if (educationStart === -1) return [];
-    
-    const educationText = text.slice(educationStart);
-    const degreePatterns = [
-      /([Bb]achelor|[Mm]aster|[Dd]octor|PhD|B\.?S\.?|M\.?S\.?|B\.?A\.?|M\.?A\.?)[\s\w]*([Ii]n\s+)?([A-Za-z\s]+)/g,
-      /([A-Za-z\s]+)\s+(University|College|Institute)/gi
-    ];
-    
-    for (const pattern of degreePatterns) {
-      const matches = Array.from(educationText.matchAll(pattern));
-      matches.forEach((match, index) => {
-        if (match[0] && education.length < 3) { // Limit to 3 entries
-          education.push({
-            id: `edu-${index}`,
-            degree: match[0].trim(),
-            school: match[4] || 'University',
-            location: '',
-            startDate: '2018',
-            endDate: '2022'
-          });
+    for (let i = 0; i < this.cleanLines.length; i++) {
+      const line = this.cleanLines[i];
+      const lowerLine = line.toLowerCase();
+      
+      // Check if we're entering experience section
+      if (experienceKeywords.some(keyword => lowerLine.includes(keyword))) {
+        inExperienceSection = true;
+        continue;
+      }
+      
+      // Check if we're leaving experience section
+      if (inExperienceSection && this.isNewSection(line)) {
+        if (currentExperience.title && currentExperience.company) {
+          experiences.push(this.completeExperience(currentExperience));
         }
-      });
+        break;
+      }
+      
+      if (inExperienceSection) {
+        // Try to identify job title
+        if (this.looksLikeJobTitle(line) && !currentExperience.title) {
+          currentExperience.title = line;
+        }
+        // Try to identify company
+        else if (this.looksLikeCompany(line) && !currentExperience.company) {
+          currentExperience.company = line;
+        }
+        // Try to identify dates
+        else if (this.containsDateRange(line)) {
+          const dates = this.extractDateRange(line);
+          currentExperience.startDate = dates.start;
+          currentExperience.endDate = dates.end;
+          currentExperience.current = dates.current;
+        }
+        // Try to identify description
+        else if (line.length > 50 && !this.looksLikeJobTitle(line) && !this.looksLikeCompany(line)) {
+          if (!currentExperience.description) {
+            currentExperience.description = line;
+          } else {
+            currentExperience.description += ' ' + line;
+          }
+        }
+        
+        // If we have enough info for this experience, save it and start new one
+        if (currentExperience.title && currentExperience.company && 
+            Object.keys(currentExperience).length >= 4) {
+          experiences.push(this.completeExperience(currentExperience));
+          currentExperience = {};
+        }
+      }
     }
     
+    // Add final experience if exists
+    if (currentExperience.title && currentExperience.company) {
+      experiences.push(this.completeExperience(currentExperience));
+    }
+    
+    console.log('Extracted experiences:', experiences);
+    return experiences;
+  }
+
+  private extractEducation(): ResumeEducation[] {
+    const education: ResumeEducation[] = [];
+    const educationKeywords = ['education', 'academic', 'qualifications', 'degree'];
+    
+    let inEducationSection = false;
+    let currentEducation: Partial<ResumeEducation> = {};
+    
+    for (let i = 0; i < this.cleanLines.length; i++) {
+      const line = this.cleanLines[i];
+      const lowerLine = line.toLowerCase();
+      
+      // Check if we're entering education section
+      if (educationKeywords.some(keyword => lowerLine.includes(keyword))) {
+        inEducationSection = true;
+        continue;
+      }
+      
+      // Check if we're leaving education section
+      if (inEducationSection && this.isNewSection(line)) {
+        if (currentEducation.degree && currentEducation.school) {
+          education.push(this.completeEducation(currentEducation));
+        }
+        break;
+      }
+      
+      if (inEducationSection) {
+        // Try to identify degree
+        if (this.looksLikeDegree(line)) {
+          currentEducation.degree = line;
+        }
+        // Try to identify school
+        else if (this.looksLikeSchool(line)) {
+          currentEducation.school = line;
+        }
+        // Try to identify dates
+        else if (this.containsDateRange(line)) {
+          const dates = this.extractDateRange(line);
+          currentEducation.startDate = dates.start;
+          currentEducation.endDate = dates.end;
+        }
+        
+        // If we have enough info, save it
+        if (currentEducation.degree && currentEducation.school) {
+          education.push(this.completeEducation(currentEducation));
+          currentEducation = {};
+        }
+      }
+    }
+    
+    // Add final education if exists
+    if (currentEducation.degree && currentEducation.school) {
+      education.push(this.completeEducation(currentEducation));
+    }
+    
+    console.log('Extracted education:', education);
     return education;
   }
 
-  private extractSkills(text: string, lines: string[]): ResumeSkill[] {
-    const commonSkills = [
-      // Technical skills
-      'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'C#', 'Go', 'Rust', 'Swift', 'Kotlin',
-      'React', 'Angular', 'Vue', 'Node.js', 'Express', 'Django', 'Flask', 'Spring', 'Laravel',
-      'HTML', 'CSS', 'SCSS', 'Tailwind', 'Bootstrap', 'SQL', 'MongoDB', 'PostgreSQL', 'MySQL',
-      'AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'Git', 'Jenkins', 'Linux', 'Agile', 'Scrum'
+  private extractSkills(): ResumeSkill[] {
+    const skills: ResumeSkill[] = [];
+    const skillsKeywords = ['skills', 'technologies', 'expertise', 'competencies'];
+    
+    // Technical skills dictionary
+    const technicalSkills = [
+      'AutoCAD', 'Navisworks', 'Excel', 'Word', 'Outlook', 'JavaScript', 'Python', 'Java',
+      'React', 'Angular', 'Vue', 'Node.js', 'SQL', 'Git', 'Docker', 'AWS', 'Azure'
     ];
     
-    const foundSkills: ResumeSkill[] = [];
-    const lowerText = text.toLowerCase();
+    let inSkillsSection = false;
     
-    commonSkills.forEach((skill, index) => {
-      if (lowerText.includes(skill.toLowerCase())) {
-        foundSkills.push({
-          id: `skill-${index}`,
+    for (let i = 0; i < this.cleanLines.length; i++) {
+      const line = this.cleanLines[i];
+      const lowerLine = line.toLowerCase();
+      
+      // Check if we're entering skills section
+      if (skillsKeywords.some(keyword => lowerLine.includes(keyword))) {
+        inSkillsSection = true;
+        continue;
+      }
+      
+      // Check if we're leaving skills section
+      if (inSkillsSection && this.isNewSection(line)) {
+        break;
+      }
+      
+      if (inSkillsSection) {
+        // Extract skills from the line
+        const extractedSkills = this.parseSkillsFromLine(line);
+        skills.push(...extractedSkills);
+      }
+    }
+    
+    // Also search for technical skills throughout the document
+    for (const skill of technicalSkills) {
+      if (this.text.toLowerCase().includes(skill.toLowerCase()) && 
+          !skills.some(s => s.name.toLowerCase() === skill.toLowerCase())) {
+        skills.push({
+          id: `skill-${skills.length}`,
           name: skill,
-          category: this.categorizeSkill(skill),
-          level: 'intermediate'
+          category: 'technical'
         });
       }
-    });
+    }
     
-    return foundSkills.length > 0 ? foundSkills : this.getDefaultSkills();
+    console.log('Extracted skills:', skills);
+    return skills;
+  }
+
+  private parseSkillsFromLine(line: string): ResumeSkill[] {
+    const skills: ResumeSkill[] = [];
+    
+    // Split by common delimiters
+    const skillItems = line.split(/[,;|•·]/);
+    
+    for (let item of skillItems) {
+      item = item.trim();
+      
+      // Handle parenthetical descriptions like "MS Office (Excel, Word, Outlook)"
+      if (item.includes('(') && item.includes(')')) {
+        const mainSkill = item.split('(')[0].trim();
+        const subSkills = item.match(/\(([^)]+)\)/)?.[1]?.split(',') || [];
+        
+        if (mainSkill.length > 1) {
+          skills.push({
+            id: `skill-${Date.now()}-${Math.random()}`,
+            name: mainSkill,
+            category: 'technical'
+          });
+        }
+        
+        for (const subSkill of subSkills) {
+          const cleanSubSkill = subSkill.trim();
+          if (cleanSubSkill.length > 1) {
+            skills.push({
+              id: `skill-${Date.now()}-${Math.random()}`,
+              name: cleanSubSkill,
+              category: 'technical'
+            });
+          }
+        }
+      } else if (item.length > 1 && item.length < 50) {
+        // Determine skill category
+        const category = this.categorizeSkill(item);
+        skills.push({
+          id: `skill-${Date.now()}-${Math.random()}`,
+          name: item,
+          category
+        });
+      }
+    }
+    
+    return skills;
   }
 
   private categorizeSkill(skill: string): 'technical' | 'soft' | 'language' {
-    const technicalSkills = ['JavaScript', 'Python', 'React', 'Node.js', 'SQL', 'AWS', 'Docker'];
-    const softSkills = ['Leadership', 'Communication', 'Problem Solving', 'Teamwork'];
+    const lowerSkill = skill.toLowerCase();
     
-    if (technicalSkills.some(tech => skill.toLowerCase().includes(tech.toLowerCase()))) {
-      return 'technical';
+    // Language skills
+    if (['english', 'spanish', 'french', 'german', 'turkish', 'arabic', 'chinese'].some(lang => 
+        lowerSkill.includes(lang))) {
+      return 'language';
     }
-    if (softSkills.some(soft => skill.toLowerCase().includes(soft.toLowerCase()))) {
+    
+    // Soft skills
+    if (['leadership', 'communication', 'teamwork', 'problem solving', 'management'].some(soft => 
+        lowerSkill.includes(soft))) {
       return 'soft';
     }
-    return 'technical'; // Default to technical
+    
+    // Default to technical
+    return 'technical';
   }
 
-  private getDefaultSkills(): ResumeSkill[] {
-    return [
-      { id: 'skill-1', name: 'JavaScript', category: 'technical', level: 'intermediate' },
-      { id: 'skill-2', name: 'React', category: 'technical', level: 'intermediate' },
-      { id: 'skill-3', name: 'Node.js', category: 'technical', level: 'intermediate' },
-      { id: 'skill-4', name: 'Python', category: 'technical', level: 'intermediate' }
+  // Helper methods
+  private isSectionHeader(line: string): boolean {
+    const headers = [
+      'experience', 'education', 'skills', 'summary', 'profile', 'objective',
+      'certifications', 'awards', 'projects', 'references', 'languages'
     ];
+    const lowerLine = line.toLowerCase();
+    return headers.some(header => lowerLine.includes(header) && line.length < 50);
   }
 
-  private findSectionStart(text: string, keywords: string[]): number {
-    const lowerText = text.toLowerCase();
-    let earliestIndex = -1;
-    
-    for (const keyword of keywords) {
-      const index = lowerText.indexOf(keyword.toLowerCase());
-      if (index !== -1 && (earliestIndex === -1 || index < earliestIndex)) {
-        earliestIndex = index;
-      }
-    }
-    
-    return earliestIndex;
-  }
-
-  private parseJobEntries(text: string): any[] {
-    // Simple job parsing - in reality this would be more sophisticated
-    const entries = [];
-    const lines = text.split('\n').filter(line => line.trim().length > 0);
-    
-    let currentEntry: any = {};
-    
-    for (const line of lines.slice(0, 10)) { // Limit parsing
-      if (this.looksLikeJobTitle(line)) {
-        if (currentEntry.title) {
-          entries.push(currentEntry);
-          currentEntry = {};
-        }
-        currentEntry.title = line.trim();
-      } else if (this.looksLikeCompany(line)) {
-        currentEntry.company = line.trim();
-      } else if (this.looksLikeDate(line)) {
-        const dates = this.parseDate(line);
-        currentEntry.startDate = dates.start;
-        currentEntry.endDate = dates.end;
-      }
-    }
-    
-    if (currentEntry.title) {
-      entries.push(currentEntry);
-    }
-    
-    return entries.length > 0 ? entries : [{}]; // Return at least one entry
+  private isNewSection(line: string): boolean {
+    return this.isSectionHeader(line) || 
+           (line.length < 50 && line.match(/^[A-Z\s]+$/) !== null);
   }
 
   private looksLikeJobTitle(line: string): boolean {
-    const jobTitleKeywords = ['engineer', 'developer', 'manager', 'analyst', 'specialist', 'coordinator'];
-    return jobTitleKeywords.some(keyword => 
-      line.toLowerCase().includes(keyword)
-    );
+    const titleWords = ['engineer', 'manager', 'developer', 'analyst', 'specialist', 'director', 
+                       'coordinator', 'supervisor', 'consultant', 'architect'];
+    const lowerLine = line.toLowerCase();
+    return titleWords.some(word => lowerLine.includes(word)) && 
+           line.length > 5 && line.length < 100;
   }
 
   private looksLikeCompany(line: string): boolean {
@@ -343,40 +552,123 @@ export class ResumeExtractor {
            !line.includes('@');
   }
 
-  private looksLikeDate(line: string): boolean {
-    return /\b(19|20)\d{2}\b|present|current/i.test(line);
+  private looksLikeDegree(line: string): boolean {
+    const degreeWords = ['bachelor', 'master', 'phd', 'degree', 'diploma', 'certificate'];
+    const lowerLine = line.toLowerCase();
+    return degreeWords.some(word => lowerLine.includes(word));
   }
 
-  private parseDate(line: string): { start: string; end: string } {
-    const currentMatch = /present|current/i.test(line);
-    const yearMatches = line.match(/\b(19|20)\d{2}\b/g);
-    
-    if (yearMatches && yearMatches.length >= 2) {
-      return { start: yearMatches[0], end: yearMatches[1] };
-    } else if (yearMatches && yearMatches.length === 1) {
-      return { start: yearMatches[0], end: currentMatch ? 'Present' : yearMatches[0] };
+  private looksLikeSchool(line: string): boolean {
+    const schoolWords = ['university', 'college', 'institute', 'school', 'academy'];
+    const lowerLine = line.toLowerCase();
+    return schoolWords.some(word => lowerLine.includes(word));
+  }
+
+  private containsDateRange(line: string): boolean {
+    return this.looksLikeDate(line) || 
+           line.match(/\d{4}\s*[-–—]\s*\d{4}/) !== null ||
+           line.match(/\d{4}\s*[-–—]\s*present/i) !== null;
+  }
+
+  private looksLikeDate(line: string): boolean {
+    return /\b(19|20)\d{2}\b/.test(line) || 
+           /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i.test(line);
+  }
+
+  private extractDateRange(line: string): { start: string; end: string; current: boolean } {
+    // Enhanced date extraction
+    const yearRangeMatch = line.match(/(\d{4})\s*[-–—]\s*(\d{4}|present)/i);
+    if (yearRangeMatch) {
+      return {
+        start: yearRangeMatch[1],
+        end: yearRangeMatch[2].toLowerCase() === 'present' ? '' : yearRangeMatch[2],
+        current: yearRangeMatch[2].toLowerCase() === 'present'
+      };
     }
     
-    return { start: '2022', end: 'Present' };
+    const singleYearMatch = line.match(/(\d{4})/);
+    if (singleYearMatch) {
+      return {
+        start: singleYearMatch[1],
+        end: '',
+        current: false
+      };
+    }
+    
+    return { start: '', end: '', current: false };
   }
 
-  private isContactInfo(line: string): boolean {
-    return /[@.]/.test(line) || /\d{3}/.test(line);
+  private completeExperience(exp: Partial<ResumeExperience>): ResumeExperience {
+    return {
+      id: `exp-${Date.now()}-${Math.random()}`,
+      title: exp.title || 'Unknown Position',
+      company: exp.company || 'Unknown Company',
+      location: exp.location || '',
+      startDate: exp.startDate || '',
+      endDate: exp.endDate || '',
+      current: exp.current || false,
+      description: exp.description || '',
+      achievements: []
+    };
   }
 
-  private calculateConfidence(resume: Resume, text: string): number {
+  private completeEducation(edu: Partial<ResumeEducation>): ResumeEducation {
+    return {
+      id: `edu-${Date.now()}-${Math.random()}`,
+      degree: edu.degree || 'Unknown Degree',
+      school: edu.school || 'Unknown School',
+      location: edu.location || '',
+      startDate: edu.startDate || '',
+      endDate: edu.endDate || ''
+    };
+  }
+
+  private calculateConfidence(resume: Resume): number {
     let score = 0;
+    const maxScore = 100;
     
-    // Personal info scoring
-    if (resume.personalInfo.fullName) score += 20;
-    if (resume.personalInfo.email) score += 15;
-    if (resume.personalInfo.phone) score += 10;
+    // Personal info scoring (30 points)
+    if (resume.personalInfo.fullName) score += 10;
+    if (resume.personalInfo.email) score += 10;
+    if (resume.personalInfo.phone) score += 5;
+    if (resume.personalInfo.location) score += 5;
     
-    // Content scoring
-    if (resume.experience.length > 0) score += 25;
-    if (resume.education.length > 0) score += 15;
-    if (resume.skills.length > 0) score += 15;
+    // Experience scoring (30 points)
+    if (resume.experience.length > 0) score += 15;
+    if (resume.experience.some(exp => exp.description.length > 50)) score += 15;
     
-    return Math.min(score, 100);
+    // Education scoring (20 points)
+    if (resume.education.length > 0) score += 20;
+    
+    // Skills scoring (20 points)
+    if (resume.skills.length > 0) score += 10;
+    if (resume.skills.length >= 5) score += 10;
+    
+    return Math.min(score, maxScore);
+  }
+
+  private generateSuggestions(resume: Resume, confidence: number): string[] {
+    const suggestions: string[] = [];
+    
+    if (confidence < 70) {
+      suggestions.push('Consider uploading a higher quality PDF or DOCX file for better extraction accuracy.');
+    }
+    
+    if (!resume.personalInfo.phone) {
+      suggestions.push('Add your phone number for better contact information.');
+    }
+    
+    if (resume.experience.length === 0) {
+      suggestions.push('No work experience was detected. Please review and add your professional experience.');
+    }
+    
+    if (resume.skills.length < 5) {
+      suggestions.push('Add more skills to improve your resume\'s visibility to employers.');
+    }
+    
+    return suggestions;
   }
 }
+
+// Export singleton instance
+export const resumeExtractor = new ResumeExtractor();
