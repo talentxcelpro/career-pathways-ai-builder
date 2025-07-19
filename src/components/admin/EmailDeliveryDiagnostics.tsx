@@ -277,6 +277,31 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
             <Send className="h-4 w-4 mr-2" />
             SIMPLE TEST
           </Button>
+          
+          <Button
+            onClick={() => {
+              toast.info('Processing email queue...');
+              fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/working-email-processor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  toast.success(`Queue processed! ${data.processed} emails sent, ${data.errors} errors`);
+                } else {
+                  toast.error(`Queue processing failed: ${data.error}`);
+                }
+              })
+              .catch(error => {
+                toast.error(`Error: ${error.message}`);
+              });
+            }}
+            variant="outline"
+          >
+            <Clock className="h-4 w-4 mr-2" />
+            Process Queue
+          </Button>
         </div>
 
         {diagnostics.length > 0 && (
