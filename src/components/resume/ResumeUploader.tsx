@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Upload, FileText, AlertCircle, CheckCircle, RefreshCw } from 'lucide-react';
+import { Upload, FileText, AlertCircle, CheckCircle, RefreshCw, Activity } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,6 +21,31 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
   const [status, setStatus] = useState<string>('');
   const [lastFile, setLastFile] = useState<File | null>(null);
   const [extractionError, setExtractionError] = useState<string | null>(null);
+  const [isTestingConnection, setIsTestingConnection] = useState(false);
+
+  const testConnection = async () => {
+    setIsTestingConnection(true);
+    try {
+      console.log('Testing Edge Function connection...');
+      
+      const { data, error } = await supabase.functions.invoke('extract-resume', {
+        method: 'GET'
+      });
+
+      if (error) {
+        console.error('Health check failed:', error);
+        toast.error('Connection test failed: ' + error.message);
+      } else {
+        console.log('Health check passed:', data);
+        toast.success('Connection test successful!');
+      }
+    } catch (error: any) {
+      console.error('Health check error:', error);
+      toast.error('Connection test failed: ' + error.message);
+    } finally {
+      setIsTestingConnection(false);
+    }
+  };
 
   const processFile = async (file: File) => {
     setIsExtracting(true);
@@ -30,6 +55,8 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
     setLastFile(file);
 
     try {
+      console.log('🚀 Starting file processing for:', file.name);
+      
       // Upload file to storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
@@ -38,12 +65,17 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
         .from('resumes')
         .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
 
+      console.log('✅ File uploaded successfully:', uploadData.path);
       setProgress(25);
       setStatus('Extracting content with AI...');
 
-      // Call our extraction edge function
+      // Call our extraction edge function with detailed logging
+      console.log('📞 Calling extract-resume function...');
       const { data: extractionData, error: extractionError } = await supabase.functions
         .invoke('extract-resume', {
           body: { 
@@ -53,34 +85,45 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
           }
         });
 
-      if (extractionError) throw extractionError;
+      console.log('📥 Function response received:', { extractionData, extractionError });
+
+      if (extractionError) {
+        console.error('❌ Function invocation error:', extractionError);
+        throw new Error(`Function call failed: ${extractionError.message}`);
+      }
 
       setProgress(75);
       setStatus('Optimizing and finalizing...');
 
       // Clean up temporary file
-      await supabase.storage
-        .from('resumes')
-        .remove([uploadData.path]);
+      try {
+        await supabase.storage
+          .from('resumes')
+          .remove([uploadData.path]);
+        console.log('🗑️ Temporary file cleaned up');
+      } catch (cleanupError) {
+        console.warn('⚠️ Failed to cleanup temporary file:', cleanupError);
+      }
 
       setProgress(100);
       setStatus('Complete!');
 
-      if (extractionData.success) {
+      if (extractionData?.success) {
+        console.log('✅ Extraction successful:', extractionData);
         toast.success('Resume extracted successfully!');
         onExtractionComplete(extractionData);
       } else {
-        // Handle extraction failure with user-friendly message
-        const errorMessage = extractionData.errors?.[0] || 'Failed to extract resume content';
+        console.error('❌ Extraction failed:', extractionData);
+        const errorMessage = extractionData?.error || 'Failed to extract resume content';
         setExtractionError(errorMessage);
-        toast.error('Extraction failed. Please try again or create manually.');
+        toast.error('Extraction failed: ' + errorMessage);
       }
 
-    } catch (error) {
-      console.error('Extraction failed:', error);
+    } catch (error: any) {
+      console.error('💥 Processing failed:', error);
       const errorMessage = error.message || 'Unknown error occurred';
       setExtractionError(errorMessage);
-      toast.error('Failed to process resume. Please try again.');
+      toast.error('Failed to process resume: ' + errorMessage);
     } finally {
       setIsExtracting(false);
     }
@@ -127,7 +170,8 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
     accept: {
       'application/pdf': ['.pdf'],
       'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'text/plain': ['.txt']
     },
     maxFiles: 1,
     maxSize: 10 * 1024 * 1024, // 10MB
@@ -160,6 +204,11 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
           <p className="text-muted-foreground mb-6">{extractionError}</p>
           
           <div className="space-y-3">
+            <Button onClick={testConnection} variant="outline" className="w-full" disabled={isTestingConnection}>
+              <Activity className="h-4 w-4 mr-2" />
+              {isTestingConnection ? 'Testing...' : 'Test Connection'}
+            </Button>
+            
             {lastFile && (
               <Button onClick={handleRetry} className="w-full">
                 <RefreshCw className="h-4 w-4 mr-2" />
@@ -178,11 +227,11 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
           </div>
           
           <div className="mt-6 p-4 bg-muted rounded-lg">
-            <h4 className="font-medium mb-2">Tips for better extraction:</h4>
+            <h4 className="font-medium mb-2">Troubleshooting tips:</h4>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Use a clear, well-formatted resume</li>
+              <li>• Check that the file is a valid PDF, DOC, or DOCX</li>
               <li>• Ensure the file isn't password-protected</li>
-              <li>• Try converting to PDF if using DOC format</li>
+              <li>• Try the connection test button above</li>
               <li>• Make sure text is selectable (not just images)</li>
             </ul>
           </div>
@@ -214,7 +263,7 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
             Choose File
           </Button>
           <div className="mt-4 text-sm text-muted-foreground">
-            <p>Supports PDF, DOC, and DOCX files</p>
+            <p>Supports PDF, DOC, DOCX, and TXT files</p>
             <p>Maximum file size: 10MB</p>
           </div>
         </div>
@@ -237,9 +286,14 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
           </div>
         </div>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center space-y-2">
           <Button variant="ghost" onClick={handleStartFromScratch}>
             Or start from scratch without uploading
+          </Button>
+          
+          <Button variant="ghost" size="sm" onClick={testConnection} disabled={isTestingConnection}>
+            <Activity className="h-4 w-4 mr-2" />
+            {isTestingConnection ? 'Testing...' : 'Test Connection'}
           </Button>
         </div>
       </CardContent>
