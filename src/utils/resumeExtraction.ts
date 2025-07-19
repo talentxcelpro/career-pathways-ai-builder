@@ -338,7 +338,7 @@ export class ResumeExtractor {
   }
 
   private looksLikeCompany(line: string): boolean {
-    return line.length > 3 && line.Length < 50 && 
+    return line.length > 3 && line.length < 50 && 
            !this.looksLikeDate(line) && 
            !line.includes('@');
   }
