@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Layout, Palette, Type, Spacing, Monitor } from 'lucide-react';
+import { Eye, Layout, Palette, Type, AlignJustify, Monitor } from 'lucide-react';
 
 interface VisualAnalysis {
   overallScore: number;
@@ -68,7 +68,7 @@ export const VisualAnalysisCard: React.FC<VisualAnalysisCardProps> = ({ analysis
           
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Spacing className="h-4 w-4 text-purple-500" />
+              <AlignJustify className="h-4 w-4 text-purple-500" />
               <span className="text-sm font-medium">Spacing</span>
             </div>
             <Progress value={analysis.spaceUtilization} className="h-2" />
