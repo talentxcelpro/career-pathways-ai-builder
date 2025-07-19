@@ -23,33 +23,28 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
 
     const results: DiagnosticResult[] = [];
 
-    // Test 1: Check SendGrid configuration using our test function
+    // Test 1: Check SendGrid configuration using our working test
     try {
       console.log('Testing SendGrid configuration...');
-      const { data, error } = await supabase.functions.invoke('test-sendgrid', {});
+      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/simple-email-test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
       
-      console.log('SendGrid test response:', { data, error });
+      console.log('SendGrid test response:', { data });
 
-      if (error) {
-        console.error('SendGrid test error:', error);
-        results.push({
-          test: 'SendGrid Configuration',
-          status: 'fail',
-          message: `SendGrid test failed: ${error.message || 'Unknown error'}`
-        });
-      } else if (data && data.sendgrid_configured) {
+      if (data.success) {
         results.push({
           test: 'SendGrid Configuration',
           status: 'pass',
-          message: `SendGrid API key is properly configured (${data.api_key_length} characters)`
+          message: 'SendGrid API key is properly configured and working'
         });
       } else {
         results.push({
           test: 'SendGrid Configuration',
           status: 'fail',
-          message: data?.status === 'missing' ? 
-            'SendGrid API key is not accessible to edge functions' :
-            `SendGrid API key configuration test failed: ${JSON.stringify(data)}`
+          message: `SendGrid test failed: ${data.error}`
         });
       }
     } catch (error) {

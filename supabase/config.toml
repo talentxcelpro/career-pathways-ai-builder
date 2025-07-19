@@ -86,3 +86,6 @@ verify_jwt = false
 
 [functions.simple-email-test]
 verify_jwt = false
+
+[functions.working-email-processor]
+verify_jwt = false
