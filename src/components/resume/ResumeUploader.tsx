@@ -59,39 +59,71 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
       setProgress(25);
       setStatus('Reading file content...');
 
-      // Read file directly without edge function for now
-      const fileText = await file.text();
-      console.log('✅ File content read successfully');
+      let fileText = '';
+      
+      // Handle different file types properly
+      if (file.type === 'application/pdf') {
+        // For PDF files, create a basic extraction result since we can't parse PDFs client-side easily
+        fileText = `Resume content from ${file.name}. Please manually enter your information below.`;
+      } else if (file.type.includes('word') || file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
+        // For Word documents, create a basic extraction result
+        fileText = `Resume content from ${file.name}. Please manually enter your information below.`;
+      } else if (file.type.includes('text') || file.name.endsWith('.txt')) {
+        // Only try to read as text for actual text files
+        fileText = await file.text();
+      } else {
+        // Fallback for unknown types
+        fileText = `Resume uploaded: ${file.name}. Please manually enter your information below.`;
+      }
+
+      console.log('✅ File content processed successfully');
       
       setProgress(50);
-      setStatus('Analyzing resume structure...');
+      setStatus('Creating resume structure...');
       
-      // Create a basic extraction result from file content
+      // Create a clean extraction result with proper defaults
       const basicExtraction = {
         success: true,
         resume: {
           personalInfo: {
-            fullName: extractName(fileText) || 'Your Name',
-            email: extractEmail(fileText) || '',
-            phone: extractPhone(fileText) || '',
-            location: extractLocation(fileText) || ''
+            fullName: '',
+            email: '',
+            phone: '',
+            location: ''
           },
-          summary: extractSummary(fileText) || 'Professional summary will be extracted here...',
-          experience: extractExperience(fileText) || [],
-          education: extractEducation(fileText) || [],
-          skills: extractSkills(fileText).map((skill, index) => ({ 
-            id: `skill-${index}`, 
-            name: skill, 
+          summary: '',
+          experience: [{
+            id: 'exp-1',
+            title: '',
+            company: '',
+            location: '',
+            startDate: '',
+            endDate: '',
+            current: false,
+            description: '',
+            achievements: []
+          }],
+          education: [{
+            id: 'edu-1',
+            degree: '',
+            school: '',
+            location: '',
+            startDate: '',
+            endDate: ''
+          }],
+          skills: [{
+            id: 'skill-1',
+            name: '',
             level: 'intermediate' as const,
             category: 'technical' as const
-          })),
+          }],
           selectedTemplate: 'modern-professional'
         },
-        confidence: 0.8,
+        confidence: 0.5,
         suggestions: [
-          'Resume content has been extracted',
-          'Please review and edit the extracted information',
-          'AI extraction will be restored once connection issues are resolved'
+          'Resume uploaded successfully',
+          'Please fill in your information manually',
+          'AI extraction will be restored once the edge function is fixed'
         ]
       };
 
