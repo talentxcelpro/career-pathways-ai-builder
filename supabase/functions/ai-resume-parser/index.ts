@@ -14,14 +14,24 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Resume parser function called');
+    
     const { resumeText, userId } = await req.json();
 
+    console.log('Request data received:', { 
+      resumeTextLength: resumeText?.length,
+      userId,
+      timestamp: new Date().toISOString()
+    });
+
     if (!resumeText) {
+      console.error('No resume text provided');
       throw new Error('Resume text is required');
     }
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
+      console.error('OpenAI API key not configured');
       throw new Error('OpenAI API key not configured');
     }
 
@@ -136,21 +146,31 @@ RETURN FORMAT:
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${response.status}`);
+      console.error('OpenAI API error:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorData,
+        timestamp: new Date().toISOString()
+      });
+      throw new Error(`OpenAI API error: ${response.status} - ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log('OpenAI response received successfully');
+    
     let parsedResume;
 
     try {
       parsedResume = JSON.parse(data.choices[0].message.content);
+      console.log('Resume parsing completed successfully');
     } catch (parseError) {
-      console.error('Failed to parse AI response:', parseError);
-      throw new Error('Failed to parse resume analysis');
+      console.error('Failed to parse AI response:', {
+        error: parseError.message,
+        content: data.choices[0]?.message?.content?.substring(0, 500) + '...',
+        timestamp: new Date().toISOString()
+      });
+      throw new Error('Failed to parse resume analysis - invalid JSON response');
     }
-
-    console.log('Resume parsing completed successfully');
 
     return new Response(
       JSON.stringify({ 
@@ -162,11 +182,17 @@ RETURN FORMAT:
     );
 
   } catch (error) {
-    console.error('Error in resume parser:', error);
+    console.error('Error in resume parser:', {
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
+    
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        success: false 
+        error: error.message || 'Unknown error occurred',
+        success: false,
+        timestamp: new Date().toISOString()
       }),
       { 
         status: 500,

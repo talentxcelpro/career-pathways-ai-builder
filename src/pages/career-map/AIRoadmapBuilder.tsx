@@ -8,6 +8,7 @@ import { SkillsGapAnalyzer } from '@/components/career-map/SkillsGapAnalyzer';
 import { CareerInputModal } from '@/components/career-map/CareerInputModal';
 import { RoadmapDisplay } from '@/components/career-map/RoadmapDisplay';
 import { DataIntegrationDashboard } from '@/components/career-map/DataIntegrationDashboard';
+import { EdgeFunctionHealthCheck } from '@/components/career-map/EdgeFunctionHealthCheck';
 import { useAICareerMapping } from '@/hooks/useAICareerMapping';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -99,13 +100,20 @@ const AIRoadmapBuilder = () => {
 
           {/* Resume Upload Tab */}
           <TabsContent value="upload" className="mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <AIResumeUploader 
-                onResumeProcessed={handleResumeProcessed}
-                userId={user?.id}
-              />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <AIResumeUploader 
+                  onResumeProcessed={handleResumeProcessed}
+                  userId={user?.id}
+                />
+              </div>
+              <div>
+                <EdgeFunctionHealthCheck />
+              </div>
+            </div>
               
-              {parsedResume && (
+            {parsedResume && (
+              <div className="mt-6">
                 <Card>
                   <CardHeader>
                     <CardTitle>Parsed Resume Data</CardTitle>
@@ -153,8 +161,8 @@ const AIRoadmapBuilder = () => {
                     )}
                   </CardContent>
                 </Card>
-              )}
-            </div>
+              </div>
+            )}
           </TabsContent>
 
           {/* Skills Analysis Tab */}
