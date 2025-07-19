@@ -105,7 +105,7 @@ export const useResumeData = () => {
           // Process the content from database
           const processedData = {
             ...createEmptyResumeData(),
-            ...data.content,
+            ...(data.content && typeof data.content === 'object' ? data.content : {}),
           };
           
           setResumeData(processedData);
@@ -130,10 +130,10 @@ export const useResumeData = () => {
 
   const refreshData = () => {
     if (id && id !== 'new' && isValidUUID(id)) {
+      // Re-trigger the effect by forcing a re-render
       setIsLoading(true);
       setError(null);
-      // Re-trigger the effect
-      loadResumeData();
+      setResumeData(null);
     }
   };
 
