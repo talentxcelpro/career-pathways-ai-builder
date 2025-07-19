@@ -4,13 +4,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Sparkles, Upload, PenTool, Download, CheckCircle, ArrowRight, ArrowLeft, Star } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FileText, Sparkles, Upload, PenTool, Download, CheckCircle, ArrowRight, ArrowLeft, Star, MessageCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { ChatGPTStyleInterface } from "@/components/resume/ChatGPTStyleInterface";
 
 const ResumeBuilder = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [resumeData, setResumeData] = useState<any>(null);
 
   const templates = [
     { id: 'modern', name: 'TalentXcel Modern', description: 'Clean and contemporary design', popular: true, color: 'from-blue-500 to-purple-500' },
@@ -29,6 +33,11 @@ const ResumeBuilder = () => {
   const createNewResume = () => {
     const newResumeId = `new-${Date.now()}`;
     navigate(`/resume-builder/edit/${newResumeId}`);
+  };
+
+  const handleEnhancementApplied = (enhancedData: any) => {
+    setResumeData(enhancedData);
+    console.log('Enhancement applied:', enhancedData);
   };
 
   return (
@@ -153,6 +162,29 @@ const ResumeBuilder = () => {
           </div>
         </div>
       </div>
+
+      {/* Floating AI Assistant Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button
+          onClick={() => setShowAIAssistant(true)}
+          className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 animate-pulse"
+        >
+          <MessageCircle className="h-6 w-6" />
+        </Button>
+      </div>
+
+      {/* AI Assistant Dialog */}
+      <Dialog open={showAIAssistant} onOpenChange={setShowAIAssistant}>
+        <DialogContent className="max-w-4xl h-[80vh] p-0">
+          <DialogHeader className="sr-only">
+            <DialogTitle>AI Resume Assistant</DialogTitle>
+          </DialogHeader>
+          <ChatGPTStyleInterface 
+            resumeData={resumeData}
+            onEnhancementApplied={handleEnhancementApplied}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
