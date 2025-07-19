@@ -34,8 +34,8 @@ const AppleResumeChecker = () => {
     }
   };
 
-  const handleJobDescriptionSubmit = (data: { description: string; jobTitle: string; company: string; industry: string }) => {
-    setJobDescription(data.description);
+  const handleJobDescriptionSubmit = (jobDescription: string, jobTitle: string, industry: string, company: string) => {
+    setJobDescription(jobDescription);
     setCurrentStep(2);
     startAnalysis();
   };
@@ -59,9 +59,11 @@ const AppleResumeChecker = () => {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 
+      // Read file content
+      const fileContent = await uploadedFile.text();
+      
       // Perform actual analysis
-      const analysisService = new ResumeAnalysisService();
-      const results = await analysisService.analyzeResume(uploadedFile, jobDescription);
+      const results = await ResumeAnalysisService.analyzeResume(fileContent, jobDescription);
       
       setAnalysisResults(results);
       setCurrentStep(3);
@@ -191,9 +193,8 @@ const AppleResumeChecker = () => {
         {currentStep === 1 && (
           <div className="max-w-2xl mx-auto">
             <JobDescriptionInput
-              onSubmit={handleJobDescriptionSubmit}
-              onSkip={skipJobDescription}
-              uploadedFileName={uploadedFile?.name}
+              onAnalyze={handleJobDescriptionSubmit}
+              isAnalyzing={isAnalyzing}
             />
           </div>
         )}
@@ -232,7 +233,7 @@ const AppleResumeChecker = () => {
 
         {currentStep === 3 && analysisResults && (
           <div className="space-y-8">
-            <AnalysisResults results={analysisResults} />
+            <AnalysisResults analysis={analysisResults} onReanalyze={() => setCurrentStep(0)} />
             
             {/* Action Buttons */}
             <div className="bg-white rounded-xl shadow-lg p-6">
