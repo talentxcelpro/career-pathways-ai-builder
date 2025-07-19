@@ -9,6 +9,7 @@ import EditCoverLetter from "../pages/resume/EditCoverLetter";
 import ResumeSettings from "../pages/resume/ResumeSettings";
 import ResumeChecker from "../pages/tools/ResumeChecker";
 import { EnhancedResumeBuilder } from "../components/resume/enhanced/EnhancedResumeBuilder";
+import { NewResumeBuilder } from "../pages/resume/NewResumeBuilder";
 
 export const resumeRoutes = [
   {
@@ -16,6 +17,12 @@ export const resumeRoutes = [
     to: "/resume-builder",
     icon: <FileText className="h-4 w-4" />,
     page: <ResumeDashboard />,
+  },
+  {
+    title: "New Resume Builder",
+    to: "/resume/new",
+    icon: <Edit className="h-4 w-4" />,
+    page: <NewResumeBuilder />,
   },
   {
     title: "Create New Resume",
