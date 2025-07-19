@@ -20,7 +20,7 @@ const ResumeUpload = () => {
   } = useResumeUpload();
 
   const handleFileSelect = (files: FileList) => {
-    processResume(files);
+    processResume(files[0]);
   };
 
   const handleReset = () => {
@@ -74,7 +74,7 @@ const ResumeUpload = () => {
         <EnhancedFileUpload
           onFileSelect={handleFileSelect}
           isProcessing={isProcessing}
-          processingProgress={(processingStep / processingSteps.length) * 100}
+          processingProgress={progress.percentage || 0}
           processingStatus={processingSteps[processingStep] || 'Processing...'}
           className="max-w-2xl mx-auto"
         />
@@ -90,7 +90,7 @@ const ResumeUpload = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <Progress value={(processingStep / processingSteps.length) * 100} />
+                  <Progress value={progress.percentage || 0} />
                   <div className="text-sm text-gray-600">
                     Step {processingStep + 1} of {processingSteps.length}: {processingSteps[processingStep]}
                   </div>

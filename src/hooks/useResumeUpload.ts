@@ -183,6 +183,12 @@ export const useResumeUpload = () => {
     checkUploadStatus,
     resetProgress,
     isUploading,
+    isProcessing: isUploading,
+    uploadSuccess: progress.status === 'completed',
+    processingStep: progress.step,
+    processingSteps: ['Upload', 'Parse', 'Analyze', 'Complete'],
+    processResume: uploadResume,
+    resetUpload: resetProgress,
     progress
   };
 };

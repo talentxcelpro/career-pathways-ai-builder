@@ -227,7 +227,7 @@ export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
     if (uploadedFile) {
       const files = new DataTransfer();
       files.items.add(uploadedFile);
-      processResume(files.files);
+      processResume(uploadedFile);
     }
   };
 
@@ -307,8 +307,8 @@ export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
             onDragLeave={handleDragEvents}
             onDragOver={handleDragEvents}
             onDrop={handleDrop}
-            processingProgress={processingStep ? (processingStep / processingSteps.length) * 100 : 0}
-            processingStatus={processingSteps[processingStep - 1]}
+            processingProgress={progress.percentage || 0}
+            processingStatus={progress.step || 'Processing'}
           />
           
           {uploadSuccess && (
