@@ -13,8 +13,8 @@ import { Save, Download, Eye, Sparkles, RotateCcw, CheckCircle } from "lucide-re
 import { toast } from "sonner";
 import { SectionManager } from './SectionManager';
 import { ResumePreview } from './ResumePreview';
-import { EnhancementPanel } from './EnhancementPanel';
-import { ATSScoreCard } from './ATSScoreCard';
+import { AIEnhancementPanel } from './AIEnhancementPanel';
+import { ATSScoreCard } from '../ATSScoreCard';
 import { 
   EnhancedResumeData, 
   DEFAULT_SECTION_CONFIG, 
@@ -417,10 +417,10 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
           </TabsContent>
 
           <TabsContent value="enhance">
-            <EnhancementPanel
-              data={resumeData}
-              onEnhance={handleEnhanceSection}
-              isEnhancing={isEnhancing}
+            <AIEnhancementPanel
+              resumeData={resumeData}
+              onDataUpdate={setResumeData}
+              atsScore={atsScore}
             />
           </TabsContent>
 
