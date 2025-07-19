@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AuthProvider } from './contexts/AuthContext';
+import { AppLayout } from './components/layout/AppLayout';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -43,8 +44,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <Toaster />
-          <Routes>
+          <AppLayout>
+            <Toaster />
+            <Routes>
             {/* Core Routes */}
             <Route path="/" element={<Dashboard />} />
             <Route path="/network" element={<Network />} />
@@ -88,7 +90,8 @@ function App() {
             <Route path="/resume-builder/enhanced/edit/:id" element={<EditResume />} />
             
             {/* Add more routes as needed */}
-          </Routes>
+            </Routes>
+          </AppLayout>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
