@@ -105,7 +105,10 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
       `;
 
       // Enhance with AI
-      const enhancedSections = await enhanceResumeText(resumeText);
+      const enhancedSections = await enhanceResumeText(resumeText, { 
+        sectionType: 'all',
+        enhancementType: enhancementType as any
+      });
 
       if (enhancedSections) {
         // Merge enhanced content back
@@ -113,7 +116,7 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
           ...content,
           personalInfo: {
             ...content.personalInfo,
-            summary: enhancedSections?.enhancedContent?.summary || content.personalInfo?.summary
+            summary: enhancedSections.summary || content.personalInfo?.summary
           },
           experience: content.experience, // Keep original structure for now
           skills: content.skills,

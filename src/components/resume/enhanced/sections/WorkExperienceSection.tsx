@@ -24,11 +24,9 @@ export const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
       location: "",
       startDate: "",
       endDate: "",
-      isCurrentRole: false,
       current: false,
       description: "",
       achievements: [],
-      skills: [],
       technologies: [],
     };
     onChange([...data, newExperience]);

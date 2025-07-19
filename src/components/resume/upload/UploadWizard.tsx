@@ -29,6 +29,7 @@ export const UploadWizard: React.FC<UploadWizardProps> = ({ onComplete }) => {
   ];
 
   const progress = ((currentStep + 1) / steps.length) * 100;
+  const CurrentStepComponent = steps[currentStep].component;
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -43,28 +44,22 @@ export const UploadWizard: React.FC<UploadWizardProps> = ({ onComplete }) => {
   };
 
   const handleFileUpload = (file: File) => {
-    console.log('UploadWizard: File uploaded:', file.name);
     setUploadedFile(file);
     handleNext();
   };
 
   const handleTemplateSelect = (templateId: string) => {
-    console.log('UploadWizard: Template selected:', templateId);
     setSelectedTemplate(templateId);
     handleNext();
   };
 
   const handleProcessingComplete = (data: any) => {
-    console.log('UploadWizard: Processing complete:', data);
     setResumeData(data);
     handleNext();
   };
 
   const handleComplete = () => {
-    console.log('UploadWizard: Complete, calling onComplete with:', resumeData);
-    if (onComplete) {
-      onComplete(resumeData);
-    }
+    onComplete?.(resumeData);
   };
 
   return (

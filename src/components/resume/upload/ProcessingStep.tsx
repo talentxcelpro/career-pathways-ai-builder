@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, Loader2, FileText, Brain, Zap, Target, Sparkles, Wand2 } from "lucide-react";
-import { useResumeUpload } from "@/hooks/useResumeUpload";
 
 interface ProcessingStepProps {
   onProcessingComplete: (data: any) => void;
@@ -12,12 +11,12 @@ interface ProcessingStepProps {
 }
 
 const processingSteps = [
-  { id: 'upload', label: 'Analyzing uploaded file...', icon: FileText },
-  { id: 'extraction', label: 'AI-powered content extraction...', icon: Brain },
-  { id: 'parsing', label: 'Advanced text parsing with NLP...', icon: Zap },
-  { id: 'optimization', label: 'ATS optimization & scoring...', icon: Target },
-  { id: 'enhancement', label: 'Generating AI enhancements...', icon: Sparkles },
-  { id: 'finalize', label: 'Finalizing your enhanced resume...', icon: Wand2 }
+  { id: 'upload', label: 'Analyzing uploaded file...', icon: FileText, duration: 2000 },
+  { id: 'extraction', label: 'AI-powered content extraction...', icon: Brain, duration: 3000 },
+  { id: 'parsing', label: 'Advanced text parsing with NLP...', icon: Zap, duration: 2500 },
+  { id: 'optimization', label: 'ATS optimization & scoring...', icon: Target, duration: 3000 },
+  { id: 'enhancement', label: 'Generating AI enhancements...', icon: Sparkles, duration: 2000 },
+  { id: 'finalize', label: 'Finalizing your enhanced resume...', icon: Wand2, duration: 1500 }
 ];
 
 export const ProcessingStep: React.FC<ProcessingStepProps> = ({
@@ -25,51 +24,53 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
   uploadedFile,
   selectedTemplate
 }) => {
-  const { uploadResume, progress, isUploading } = useResumeUpload();
-  const [hasStarted, setHasStarted] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (uploadedFile && !hasStarted) {
-      setHasStarted(true);
-      handleUpload();
-    }
-  }, [uploadedFile, hasStarted]);
+    if (currentStep < processingSteps.length) {
+      const timer = setTimeout(() => {
+        setCompletedSteps(prev => [...prev, currentStep]);
+        setCurrentStep(prev => prev + 1);
+        setProgress(((currentStep + 1) / processingSteps.length) * 100);
+      }, processingSteps[currentStep].duration);
 
-  const handleUpload = async () => {
-    if (!uploadedFile) return;
-
-    console.log('ProcessingStep: Starting upload process...');
-    
-    try {
-      const result = await uploadResume(uploadedFile);
-      
-      if (result.success) {
-        console.log('ProcessingStep: Upload successful, calling onProcessingComplete');
-        onProcessingComplete({
-          ...result.parsedData,
-          atsScore: result.atsScore,
-          template: selectedTemplate,
-          resumeId: result.resumeId
-        });
-      } else {
-        console.error('ProcessingStep: Upload failed:', result.error);
-        onProcessingComplete({
-          error: result.error || 'Upload failed',
+      return () => clearTimeout(timer);
+    } else {
+      // Processing complete
+      setTimeout(() => {
+        const mockResumeData = {
+          personalInfo: {
+            name: 'John Doe',
+            email: 'john.doe@email.com',
+            phone: '+1 (555) 123-4567',
+            title: 'Software Engineer'
+          },
+          summary: 'Experienced software engineer with expertise in full-stack development...',
+          experience: [
+            {
+              title: 'Senior Software Engineer',
+              company: 'Tech Corp',
+              duration: '2020 - Present',
+              description: 'Led development of scalable web applications...'
+            }
+          ],
+          education: [
+            {
+              degree: 'Bachelor of Computer Science',
+              school: 'University of Technology',
+              year: '2018'
+            }
+          ],
+          skills: ['JavaScript', 'React', 'Node.js', 'Python'],
+          atsScore: 87,
           template: selectedTemplate
-        });
-      }
-    } catch (error) {
-      console.error('ProcessingStep: Error during upload:', error);
-      onProcessingComplete({
-        error: error instanceof Error ? error.message : 'Processing failed',
-        template: selectedTemplate
-      });
+        };
+        onProcessingComplete(mockResumeData);
+      }, 1000);
     }
-  };
-
-  // Calculate current step based on progress
-  const currentStepIndex = Math.floor((progress.percentage / 100) * processingSteps.length);
-  const completedSteps = Array.from({ length: currentStepIndex }, (_, i) => i);
+  }, [currentStep, onProcessingComplete, selectedTemplate]);
 
   return (
     <div className="space-y-8">
@@ -105,11 +106,11 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
       <div className="space-y-4">
         <div className="flex justify-between text-sm text-gray-600">
           <span>Overall Progress</span>
-          <span>{Math.round(progress.percentage)}%</span>
+          <span>{Math.round(progress)}%</span>
         </div>
-        <Progress value={progress.percentage} className="h-3" />
+        <Progress value={progress} className="h-3" />
         <p className="text-center text-sm text-gray-500">
-          {progress.step}
+          Estimated time remaining: {Math.max(0, (processingSteps.length - currentStep) * 2)} seconds
         </p>
       </div>
 
@@ -117,8 +118,8 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
       <div className="space-y-4">
         {processingSteps.map((step, index) => {
           const isCompleted = completedSteps.includes(index);
-          const isActive = index === currentStepIndex && isUploading;
-          const isUpcoming = index > currentStepIndex;
+          const isActive = index === currentStep;
+          const isUpcoming = index > currentStep;
           const IconComponent = step.icon;
 
           return (

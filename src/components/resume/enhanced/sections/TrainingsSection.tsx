@@ -20,10 +20,8 @@ export const TrainingsSection: React.FC<TrainingsSectionProps> = ({
   const addTraining = () => {
     const newTraining: Training = {
       id: crypto.randomUUID(),
-      name: '',
       title: '',
       provider: '',
-      date: '',
       completionDate: '',
       duration: '',
       type: 'online',

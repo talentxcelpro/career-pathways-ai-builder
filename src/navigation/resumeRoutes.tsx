@@ -1,40 +1,74 @@
 
-import { NavItem } from '@/types/nav-item';
-import ResumeDashboard from '@/pages/resume/ResumeDashboard';
-import AppleResumeChecker from '@/pages/resume/AppleResumeChecker';
-import EditResume from '@/pages/resume/EditResume';
-import ResumeUpload from '@/pages/resume/ResumeUpload';
-import NewResume from '@/pages/resume/NewResume';
+import { FileText, Upload, Edit, Download, Mail, Settings, CheckCircle } from "lucide-react";
+import ResumeDashboard from "../pages/resume/ResumeDashboard";
+import CreateResume from "../pages/resume/CreateResume";
+import UploadResume from "../pages/resume/UploadResume";
+import { StreamlinedResumeBuilder } from "../components/resume/StreamlinedResumeBuilder";
+import ExportResume from "../pages/resume/ExportResume";
+import CoverLetterGenerator from "../pages/resume/CoverLetterGenerator";
+import EditCoverLetter from "../pages/resume/EditCoverLetter";
+import ResumeSettings from "../pages/resume/ResumeSettings";
+import ResumeChecker from "../pages/tools/ResumeChecker";
 
-export const resumeRoutes: NavItem[] = [
+export const resumeRoutes = [
   {
-    title: 'Resume Dashboard',
-    to: '/resume-builder',
+    title: "TalentXcel Resume Dashboard",
+    to: "/resume-builder",
+    icon: <FileText className="h-4 w-4" />,
     page: <ResumeDashboard />,
-    requiresAuth: true,
   },
   {
-    title: 'Resume Checker',
-    to: '/resume-builder/checker',
-    page: <AppleResumeChecker />,
-    requiresAuth: false, // Allow free access to checker
+    title: "Create New Resume",
+    to: "/resume-builder/new",
+    icon: <Edit className="h-4 w-4" />,
+    page: <CreateResume />,
   },
   {
-    title: 'Edit Resume',
-    to: '/resume-builder/edit/:id',
-    page: <EditResume />,
-    requiresAuth: true,
+    title: "Upload Resume",
+    to: "/resume-builder/upload",
+    icon: <Upload className="h-4 w-4" />,
+    page: <UploadResume />,
   },
   {
-    title: 'Upload Resume',
-    to: '/resume-builder/upload',
-    page: <ResumeUpload />,
-    requiresAuth: false, // Allow free access to upload
+    title: "TalentXcel Resume Checker",
+    to: "/resume-builder/checker",
+    icon: <CheckCircle className="h-4 w-4" />,
+    page: <ResumeChecker />,
   },
   {
-    title: 'New Resume',
-    to: '/resume-builder/new',
-    page: <NewResume />,
-    requiresAuth: true,
+    title: "Edit Resume",
+    to: "/resume-builder/edit/:id",
+    icon: <Edit className="h-4 w-4" />,
+    page: <StreamlinedResumeBuilder />,
+  },
+  {
+    title: "Edit Resume (Alternative Path)",
+    to: "/resume/edit/:id",
+    icon: <Edit className="h-4 w-4" />,
+    page: <StreamlinedResumeBuilder />,
+  },
+  {
+    title: "Export Resume",
+    to: "/resume-builder/export/:id",
+    icon: <Download className="h-4 w-4" />,
+    page: <ExportResume />,
+  },
+  {
+    title: "Cover Letter Generator",
+    to: "/resume-builder/cover-letter",
+    icon: <Mail className="h-4 w-4" />,
+    page: <CoverLetterGenerator />,
+  },
+  {
+    title: "Edit Cover Letter",
+    to: "/resume-builder/cover-letter/edit/:id",
+    icon: <Edit className="h-4 w-4" />,
+    page: <EditCoverLetter />,
+  },
+  {
+    title: "Resume Builder Settings",
+    to: "/resume-builder/settings",
+    icon: <Settings className="h-4 w-4" />,
+    page: <ResumeSettings />,
   },
 ];

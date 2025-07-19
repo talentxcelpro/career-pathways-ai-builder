@@ -80,7 +80,7 @@ const ResumeChecker = () => {
     setSelectedFile(file);
     
     // Simulate processing and analysis
-    await processResume(files[0]);
+    await processResume(files);
     
     // Mock analysis result - in real implementation, this would come from AI processing
     setTimeout(() => {
@@ -174,7 +174,7 @@ Responsibilities:
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <ProcessingSteps 
           steps={processingSteps}
-          currentStep={0}
+          currentStep={processingStep}
           fileName={selectedFile.name}
         />
       </div>
