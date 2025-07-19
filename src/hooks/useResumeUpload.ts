@@ -1,139 +1,188 @@
-
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { useFileUpload } from "@/hooks/useFileUpload";
-import { EnhancedResumeProcessor } from "@/services/resume-enhancer/EnhancedResumeProcessor";
-import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+export interface UploadProgress {
+  percentage: number;
+  step: string;
+  status: 'uploading' | 'processing' | 'completed' | 'failed';
+}
+
+export interface ParsedResumeData {
+  personalInfo?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    location?: string;
+    linkedin?: string;
+  };
+  summary?: string;
+  workExperience?: Array<{
+    title: string;
+    company: string;
+    location?: string;
+    startDate?: string;
+    endDate?: string;
+    bullets: string[];
+  }>;
+  education?: Array<{
+    degree: string;
+    school: string;
+    location?: string;
+    startDate?: string;
+    endDate?: string;
+    gpa?: string;
+  }>;
+  skills?: string[];
+  projects?: Array<{
+    name: string;
+    description: string;
+    technologies: string[];
+    url?: string;
+  }>;
+  certifications?: Array<{
+    name: string;
+    issuer: string;
+    date?: string;
+    url?: string;
+  }>;
+}
+
+export interface UploadResult {
+  success: boolean;
+  resumeId?: string;
+  atsScore?: number;
+  parsedData?: ParsedResumeData;
+  error?: string;
+}
 
 export const useResumeUpload = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [processingStep, setProcessingStep] = useState(0);
-
-  const { uploadFile } = useFileUpload({
-    bucket: 'resumes',
-    maxSize: 10 * 1024 * 1024,
-    allowedTypes: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']
+  const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState<UploadProgress>({
+    percentage: 0,
+    step: 'preparing',
+    status: 'uploading'
   });
+  const { toast } = useToast();
 
-  const processingSteps = [
-    'Uploading file...',
-    'Advanced text extraction...',
-    'AI-powered parsing with NLP...',
-    'Structure analysis & validation...',
-    'ATS optimization & scoring...',
-    'Generating enhancement suggestions...',
-    'Finalizing enhanced resume...'
-  ];
+  const uploadResume = async (file: File): Promise<UploadResult> => {
+    setIsUploading(true);
+    setProgress({ percentage: 0, step: 'Preparing upload...', status: 'uploading' });
 
-  const processResume = async (files: FileList | null) => {
-    if (!files || files.length === 0 || !user) return;
-    
-    const file = files[0];
-    
-    // Validate file type
-    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
-    if (!allowedTypes.includes(file.type)) {
-      toast.error('Please upload a PDF or Word document');
-      return;
-    }
-    
-    // Validate file size (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error('File size must be less than 10MB');
-      return;
-    }
-    
-    setIsProcessing(true);
-    setProcessingStep(0);
-    
     try {
-      // Step 1: Upload file
-      setProcessingStep(1);
-      const fileUrl = await uploadFile(file, `resume-${Date.now()}.${file.name.split('.').pop()}`);
-      console.log('File uploaded successfully:', fileUrl);
-      
-      // Step 2: Enhanced AI Processing
-      setProcessingStep(2);
-      const processor = new EnhancedResumeProcessor();
-      const extractedContent = await processor.processResume(file);
-      console.log('Enhanced content processed:', extractedContent);
-      
-      // Step 3: Advanced structure analysis (built into processor)
-      setProcessingStep(3);
-      console.log('Structure analysis complete');
-      
-      // Step 4: ATS Optimization (built into processor) 
-      setProcessingStep(4);
-      console.log('ATS optimization complete - Score:', extractedContent.enhancementScore?.atsCompatibility || 0);
-      
-      // Step 5: Generate enhancement suggestions (built into processor)
-      setProcessingStep(5);
-      console.log('Enhancement suggestions generated:', extractedContent.recommendations?.length || 0);
-      
-      // Step 6: Create enhanced resume entry in database
-      setProcessingStep(6);
-      const { data, error } = await supabase
-        .from('ai_resumes')
-        .insert({
-          user_id: user.id,
-          title: `Enhanced Resume from ${file.name}`,
-          content: extractedContent.enhancedContent as any, // Convert to Json type
-          ats_score: extractedContent.enhancementScore?.atsCompatibility || 75,
-          template_id: null // Use null instead of string to avoid UUID errors
-        })
-        .select()
-        .single();
-      
-      if (error) {
-        console.error('Database insert error:', error);
-        throw error;
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        throw new Error('Please log in to upload a resume');
       }
-      
-      console.log('Resume created in database:', data);
-      setUploadSuccess(true);
-      toast.success('Resume processed successfully!');
-      
-      // Navigate to edit mode after a short delay
-      setTimeout(() => {
-        navigate(`/resume-builder/edit/${data.id}`);
-      }, 2000);
+
+      // Validate file
+      if (!file) {
+        throw new Error('Please select a file to upload');
+      }
+
+      const allowedTypes = [
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/msword'
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error('Please upload a PDF or Word document');
+      }
+
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        throw new Error('File size must be less than 5MB');
+      }
+
+      setProgress({ percentage: 10, step: 'Uploading file...', status: 'uploading' });
+
+      // Create FormData
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('userId', user.id);
+
+      // Call upload-resume edge function
+      const response = await fetch('/api/upload-resume', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        setProgress({ percentage: 100, step: 'Upload completed!', status: 'completed' });
+        toast({
+          title: "Resume uploaded successfully!",
+          description: `ATS Score: ${result.atsScore}/100`,
+        });
+        
+        return {
+          success: true,
+          resumeId: result.resumeId,
+          atsScore: result.atsScore,
+          parsedData: result.parsedData
+        };
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
+
     } catch (error) {
-      console.error('Error processing resume:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+      setProgress({ percentage: 0, step: errorMessage, status: 'failed' });
+      toast({
+        title: "Upload failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
       
-      // Provide more specific error messages
-      let errorMessage = 'Error processing resume. Please try again.';
-      if (error.message?.includes('AI extraction failed')) {
-        errorMessage = 'Failed to extract resume content. The AI service may still be deploying. Please try again in a few minutes.';
-      } else if (error.message?.includes('AI enhancement failed')) {
-        errorMessage = 'Failed to enhance resume. The AI service may still be deploying. Please try again in a few minutes.';
-      } else if (error.message?.includes('Database')) {
-        errorMessage = 'Database error occurred. Please try again.';
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      toast.error(errorMessage);
-      setIsProcessing(false);
+      return {
+        success: false,
+        error: errorMessage
+      };
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  const resetUpload = () => {
-    setIsProcessing(false);
-    setUploadSuccess(false);
-    setProcessingStep(0);
+  const checkUploadStatus = async (statusId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('resume_upload_status')
+        .select('*')
+        .eq('id', statusId)
+        .single();
+
+      if (error) throw error;
+
+      setProgress({
+        percentage: data.progress_percentage || 0,
+        step: data.current_step || 'Processing...',
+        status: data.upload_status as 'uploading' | 'processing' | 'completed' | 'failed'
+      });
+
+      return data;
+    } catch (error) {
+      console.error('Error checking upload status:', error);
+      return null;
+    }
+  };
+
+  const resetProgress = () => {
+    setProgress({ percentage: 0, step: 'preparing', status: 'uploading' });
+    setIsUploading(false);
   };
 
   return {
-    isProcessing,
-    uploadSuccess,
-    processingStep,
-    processingSteps,
-    processResume,
-    resetUpload
+    uploadResume,
+    checkUploadStatus,
+    resetProgress,
+    isUploading,
+    progress
   };
 };
