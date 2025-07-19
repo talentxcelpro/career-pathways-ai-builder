@@ -1,7 +1,11 @@
+
 project_id = "dthlgsnakhoftinssokm"
 
 [auth]
 enabled = true
+
+[functions.ai-gateway]
+verify_jwt = true
 
 [functions.ai-agent]
 verify_jwt = true
