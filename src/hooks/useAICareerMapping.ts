@@ -78,6 +78,35 @@ interface CoachingRequest {
   coachingType?: 'weekly_checkin' | 'monthly_review' | 'milestone_celebration';
 }
 
+interface JobBoardRequest {
+  jobRole: string;
+  location?: string;
+  experience: string;
+  skills?: string[];
+  limit?: number;
+}
+
+interface LearningPlatformRequest {
+  skills: string[];
+  targetRole: string;
+  learningLevel?: string;
+  preferredFormat?: string;
+}
+
+interface SalaryDataRequest {
+  role: string;
+  location?: string;
+  experienceLevel?: string;
+  industry?: string;
+  companySize?: string;
+}
+
+interface SkillsFrameworkRequest {
+  targetRole: string;
+  industry?: string;
+  action?: string;
+}
+
 export const useAICareerMapping = () => {
   const parseResume = useMutation({
     mutationFn: async (request: ResumeParseRequest) => {
@@ -223,6 +252,78 @@ export const useAICareerMapping = () => {
     }
   });
 
+  const searchJobs = useMutation({
+    mutationFn: async (request: JobBoardRequest) => {
+      const { data, error } = await supabase.functions.invoke('job-board-integration', {
+        body: request
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Job search completed!');
+    },
+    onError: (error: any) => {
+      console.error('Job search error:', error);
+      toast.error(error.message || 'Failed to search jobs');
+    }
+  });
+
+  const syncLearningPlatforms = useMutation({
+    mutationFn: async (request: LearningPlatformRequest) => {
+      const { data, error } = await supabase.functions.invoke('learning-platform-sync', {
+        body: request
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Learning courses synced!');
+    },
+    onError: (error: any) => {
+      console.error('Learning platform sync error:', error);
+      toast.error(error.message || 'Failed to sync learning platforms');
+    }
+  });
+
+  const getSalaryData = useMutation({
+    mutationFn: async (request: SalaryDataRequest) => {
+      const { data, error } = await supabase.functions.invoke('industry-salary-data', {
+        body: request
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Salary data retrieved!');
+    },
+    onError: (error: any) => {
+      console.error('Salary data error:', error);
+      toast.error(error.message || 'Failed to get salary data');
+    }
+  });
+
+  const getSkillsFramework = useMutation({
+    mutationFn: async (request: SkillsFrameworkRequest) => {
+      const { data, error } = await supabase.functions.invoke('skills-database-sync', {
+        body: request
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Skills framework loaded!');
+    },
+    onError: (error: any) => {
+      console.error('Skills framework error:', error);
+      toast.error(error.message || 'Failed to load skills framework');
+    }
+  });
+
   return {
     parseResume,
     generateRoadmap,
@@ -232,6 +333,10 @@ export const useAICareerMapping = () => {
     getAIRecommendations,
     trackProgress,
     getCoaching,
+    searchJobs,
+    syncLearningPlatforms,
+    getSalaryData,
+    getSkillsFramework,
     isParsingResume: parseResume.isPending,
     isGeneratingRoadmap: generateRoadmap.isPending,
     isAnalyzingSkillsGap: analyzeSkillsGap.isPending,
@@ -239,6 +344,10 @@ export const useAICareerMapping = () => {
     isFetchingMarketData: fetchMarketData.isPending,
     isGettingRecommendations: getAIRecommendations.isPending,
     isTrackingProgress: trackProgress.isPending,
-    isGettingCoaching: getCoaching.isPending
+    isGettingCoaching: getCoaching.isPending,
+    isSearchingJobs: searchJobs.isPending,
+    isSyncingLearning: syncLearningPlatforms.isPending,
+    isGettingSalaryData: getSalaryData.isPending,
+    isGettingSkillsFramework: getSkillsFramework.isPending
   };
 };

@@ -7,6 +7,7 @@ import { AIResumeUploader } from '@/components/career-map/AIResumeUploader';
 import { SkillsGapAnalyzer } from '@/components/career-map/SkillsGapAnalyzer';
 import { CareerInputModal } from '@/components/career-map/CareerInputModal';
 import { RoadmapDisplay } from '@/components/career-map/RoadmapDisplay';
+import { DataIntegrationDashboard } from '@/components/career-map/DataIntegrationDashboard';
 import { useAICareerMapping } from '@/hooks/useAICareerMapping';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -219,10 +220,22 @@ const AIRoadmapBuilder = () => {
           {/* Results Tab */}
           <TabsContent value="results" className="mt-6">
             {generatedRoadmap && (
-              <RoadmapDisplay 
-                roadmap={generatedRoadmap}
-                showActions={true}
-              />
+              <div className="space-y-6">
+                <RoadmapDisplay 
+                  roadmap={generatedRoadmap}
+                  showActions={true}
+                />
+                
+                {/* Add Data Integration Dashboard */}
+                <div className="mt-8">
+                  <DataIntegrationDashboard
+                    targetRole={parsedResume?.currentRole?.title || 'Software Engineer'}
+                    currentSkills={parsedResume?.skills?.technical?.map((s: any) => s.name) || []}
+                    location="United States"
+                    experienceLevel={parsedResume?.currentRole?.experienceLevel || 'Mid-level'}
+                  />
+                </div>
+              </div>
             )}
           </TabsContent>
         </Tabs>
