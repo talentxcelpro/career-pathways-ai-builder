@@ -40,9 +40,9 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Toaster />
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
+          <Toaster />
           <Routes>
             {/* Core Routes */}
             <Route path="/" element={<Dashboard />} />
@@ -87,8 +87,8 @@ function App() {
             
             {/* Add more routes as needed */}
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }
