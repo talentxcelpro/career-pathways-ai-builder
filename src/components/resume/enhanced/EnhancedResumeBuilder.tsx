@@ -60,6 +60,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
       email: '',
       phone: '',
       location: '',
+      summary: '',
       linkedin: '',
       website: '',
       github: ''
@@ -68,6 +69,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
       content: '',
       keyHighlights: []
     },
+    experience: [],
     workExperience: [],
     skills: [],
     education: [],
@@ -77,16 +79,18 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     volunteerWork: [],
     awards: [],
     trainings: [],
-    tools: { development: [], design: [], analytics: [], productivity: [], other: [] },
+    tools: [],
     publications: [],
-    patents: [],
-    openSource: [],
-    academicProjects: [],
-    researchInterests: { areas: [] },
-    speakingEngagements: [],
-    portfolioLinks: [],
     references: [],
-    sectionConfig: DEFAULT_SECTION_CONFIG
+    sectionOrder: ['personalInfo', 'professionalSummary', 'workExperience', 'education', 'skills'],
+    selectedTemplate: 'modern',
+    sectionConfig: DEFAULT_SECTION_CONFIG,
+    customization: {
+      colorScheme: 'blue',
+      fontFamily: 'Inter',
+      fontSize: 14,
+      spacing: 'normal'
+    }
   });
 
   const [isSaving, setIsSaving] = useState(false);
@@ -200,7 +204,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
           if (resumeData.professionalSummary.content.length > 50) completedSections++;
           break;
         case 'workExperience':
-          if (resumeData.workExperience.length > 0) completedSections++;
+          if (resumeData.experience.length > 0) completedSections++;
           break;
         case 'skills':
           if (resumeData.skills?.length > 0) completedSections++;
@@ -319,8 +323,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       return (
                         <WorkExperienceSection
                           key={section.id}
-                          data={resumeData.workExperience}
-                          onChange={(data) => updateResumeData({ workExperience: data })}
+                          data={resumeData.experience}
+                          onChange={(data) => updateResumeData({ experience: data })}
                         />
                       );
                     
@@ -420,7 +424,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
                       <div className="text-xs text-muted-foreground">Sections</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-semibold">{resumeData.workExperience.length}</div>
+                      <div className="text-lg font-semibold">{resumeData.experience.length}</div>
                       <div className="text-xs text-muted-foreground">Experience</div>
                     </div>
                   </div>

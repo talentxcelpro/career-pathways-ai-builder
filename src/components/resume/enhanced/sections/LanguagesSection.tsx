@@ -21,6 +21,7 @@ export const LanguagesSection: React.FC<LanguagesSectionProps> = ({
     const newLanguage: Language = {
       id: crypto.randomUUID(),
       name: '',
+      level: 'intermediate',
       proficiency: 'conversational',
       certifications: []
     };

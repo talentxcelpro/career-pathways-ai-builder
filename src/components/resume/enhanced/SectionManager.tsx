@@ -37,8 +37,8 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
   onSectionsUpdate,
   className = ""
 }) => {
-  const [expandedGroups, setExpandedGroups] = useState<Set<SectionGroup>>(
-    new Set(['basicInfo', 'professional'])
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
+    new Set(['core', 'skills'])
   );
 
   const sensors = useSensors(
@@ -50,16 +50,17 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
 
   // Group sections by their group
   const groupedSections = sections.reduce((acc, section) => {
-    if (!acc[section.group]) {
-      acc[section.group] = [];
+    const group = section.group || 'other';
+    if (!acc[group]) {
+      acc[group] = [];
     }
-    acc[section.group].push(section);
+    acc[group].push(section);
     return acc;
-  }, {} as Record<SectionGroup, ResumeSection[]>);
+  }, {} as Record<string, ResumeSection[]>);
 
   // Sort sections within each group by order
   Object.keys(groupedSections).forEach(group => {
-    groupedSections[group as SectionGroup].sort((a, b) => a.order - b.order);
+    groupedSections[group].sort((a, b) => a.order - b.order);
   });
 
   const handleDragEnd = (event: any) => {
@@ -90,40 +91,40 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
     onSectionsUpdate(updatedSections);
   };
 
-  const toggleGroup = (group: SectionGroup) => {
+  const toggleGroup = (groupId: string) => {
     const newExpanded = new Set(expandedGroups);
-    if (newExpanded.has(group)) {
-      newExpanded.delete(group);
+    if (newExpanded.has(groupId)) {
+      newExpanded.delete(groupId);
     } else {
-      newExpanded.add(group);
+      newExpanded.add(groupId);
     }
     setExpandedGroups(newExpanded);
   };
 
-  const enableAllInGroup = (group: SectionGroup) => {
+  const enableAllInGroup = (groupId: string) => {
     const updatedSections = sections.map(section =>
-      section.group === group
+      section.group === groupId
         ? { ...section, enabled: true }
         : section
     );
     onSectionsUpdate(updatedSections);
   };
 
-  const disableAllInGroup = (group: SectionGroup) => {
+  const disableAllInGroup = (groupId: string) => {
     const updatedSections = sections.map(section =>
-      section.group === group && !SECTION_METADATA[section.type].required
+      section.group === groupId && !section.required
         ? { ...section, enabled: false }
         : section
     );
     onSectionsUpdate(updatedSections);
   };
 
-  const getEnabledCount = (group: SectionGroup) => {
-    return groupedSections[group]?.filter(section => section.enabled).length || 0;
+  const getEnabledCount = (groupId: string) => {
+    return groupedSections[groupId]?.filter(section => section.enabled).length || 0;
   };
 
-  const getTotalCount = (group: SectionGroup) => {
-    return groupedSections[group]?.length || 0;
+  const getTotalCount = (groupId: string) => {
+    return groupedSections[groupId]?.length || 0;
   };
 
   return (
@@ -149,18 +150,17 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
         onDragEnd={handleDragEnd}
       >
         <div className="space-y-6">
-          {Object.entries(SECTION_GROUPS).map(([groupKey, groupInfo]) => {
-            const group = groupKey as SectionGroup;
-            const groupSections = groupedSections[group] || [];
-            const isExpanded = expandedGroups.has(group);
-            const enabledCount = getEnabledCount(group);
-            const totalCount = getTotalCount(group);
+          {SECTION_GROUPS.map((groupInfo) => {
+            const groupSections = groupedSections[groupInfo.id] || [];
+            const isExpanded = expandedGroups.has(groupInfo.id);
+            const enabledCount = getEnabledCount(groupInfo.id);
+            const totalCount = getTotalCount(groupInfo.id);
 
             return (
-              <Card key={group} className={`border-2 ${groupInfo.color}`}>
+              <Card key={groupInfo.id} className={`border-2 border-${groupInfo.color}-200`}>
                 <Collapsible
                   open={isExpanded}
-                  onOpenChange={() => toggleGroup(group)}
+                  onOpenChange={() => toggleGroup(groupInfo.id)}
                 >
                   <CollapsibleTrigger asChild>
                     <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
@@ -190,7 +190,7 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
                                     size="sm"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      enableAllInGroup(group);
+                                      enableAllInGroup(groupInfo.id);
                                     }}
                                   >
                                     <Eye className="h-4 w-4" />
@@ -209,7 +209,7 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
                                     size="sm"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      disableAllInGroup(group);
+                                      disableAllInGroup(groupInfo.id);
                                     }}
                                   >
                                     <EyeOff className="h-4 w-4" />
@@ -234,7 +234,7 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
                       >
                         <div className="space-y-2">
                           {groupSections.map((section) => {
-                            const metadata = SECTION_METADATA[section.type];
+                            const metadata = SECTION_METADATA[section.id];
                             return (
                               <DraggableSection
                                 key={section.id}
@@ -243,11 +243,11 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
                                 description={metadata.description}
                                 actions={
                                   <div className="flex items-center gap-2">
-                                    {metadata.required && (
-                                      <Badge variant="destructive" className="text-xs">
-                                        Required
-                                      </Badge>
-                                    )}
+                                     {section.required && (
+                                       <Badge variant="destructive" className="text-xs">
+                                         Required
+                                       </Badge>
+                                     )}
                                     <TooltipProvider>
                                       <Tooltip>
                                         <TooltipTrigger asChild>
@@ -259,16 +259,6 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
                                           <div className="space-y-2">
                                             <p className="font-medium">{metadata.title}</p>
                                             <p className="text-xs">{metadata.description}</p>
-                                            <div>
-                                              <p className="text-xs font-medium">Recommended for:</p>
-                                              <div className="flex flex-wrap gap-1 mt-1">
-                                                {metadata.recommendedFor.map(role => (
-                                                  <Badge key={role} variant="outline" className="text-xs">
-                                                    {role}
-                                                  </Badge>
-                                                ))}
-                                              </div>
-                                            </div>
                                           </div>
                                         </TooltipContent>
                                       </Tooltip>
@@ -276,7 +266,7 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
                                     <Switch
                                       checked={section.enabled}
                                       onCheckedChange={() => toggleSection(section.id)}
-                                      disabled={metadata.required}
+                                      disabled={section.required}
                                     />
                                   </div>
                                 }
