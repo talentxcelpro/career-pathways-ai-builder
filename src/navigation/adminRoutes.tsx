@@ -23,6 +23,7 @@ import EmailAutomationPage from "../pages/admin/EmailAutomation";
 import AIMLTrainingCenter from "../pages/admin/AIMLTrainingCenter";
 import AIManagement from "../pages/admin/AIManagement";
 import CollegesManagement from "../pages/admin/CollegesManagement";
+import AISystemTesterPage from "../pages/admin/AISystemTester";
 import { ProUsersPage } from "../components/admin/ProUsersPage";
 
 export const adminRoutes = [
@@ -241,5 +242,14 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessDashboard" as const,
     description: "Create new subscription plans"
+  },
+  {
+    title: "AI System Tester",
+    to: "/admin/ai-tester",
+    icon: <Brain className="h-4 w-4" />,
+    page: <AISystemTesterPage />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Test and debug AI tools and features"
   },
 ];
