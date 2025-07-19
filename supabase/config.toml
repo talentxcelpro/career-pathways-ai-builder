@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.smart-email-processor]
 verify_jwt = false
+
+[functions.upload-resume]
+verify_jwt = true
