@@ -27,39 +27,35 @@ export const useAIService = () => {
     setCurrentOperation(options.toolSlug);
 
     try {
-      console.log(`Invoking AI tool: ${options.toolSlug}`, options);
+      console.log(`🚀 Invoking AI tool: ${options.toolSlug}`, options);
 
-      // Get the AI tool configuration and admin inputs
-      const { data: toolConfig, error: configError } = await supabase
-        .from('ai_tools_config')
-        .select('*')
-        .eq('tool_slug', options.toolSlug)
-        .eq('is_enabled', true)
-        .single();
-
-      if (configError || !toolConfig) {
-        throw new Error(`AI tool ${options.toolSlug} not found or disabled`);
+      // First test if the function is accessible with a health check
+      console.log('🏥 Testing AI Gateway health...');
+      
+      try {
+        const healthResponse = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-gateway`, {
+          method: 'GET',
+          headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+          }
+        });
+        
+        if (healthResponse.ok) {
+          const healthData = await healthResponse.json();
+          console.log('✅ AI Gateway health check passed:', healthData);
+        } else {
+          console.warn('⚠️ Health check failed:', healthResponse.status);
+        }
+      } catch (healthError) {
+        console.warn('⚠️ Health check error:', healthError);
       }
 
-      // Get admin inputs for this tool
-      const { data: adminInputs, error: inputsError } = await supabase
-        .from('ai_admin_inputs')
-        .select('*')
-        .eq('tool_slug', options.toolSlug)
-        .eq('is_active', true)
-        .order('priority', { ascending: false });
-
-      if (inputsError) {
-        console.warn('Failed to fetch admin inputs:', inputsError);
-      }
-
-      // Invoke the unified AI gateway
+      // Invoke the unified AI gateway directly
+      console.log('📨 Calling AI Gateway function...');
       const { data, error } = await supabase.functions.invoke('ai-gateway', {
         body: {
           toolSlug: options.toolSlug,
           inputData: options.inputData,
-          toolConfig,
-          adminInputs: adminInputs || [],
           requestMetadata: {
             category: options.category,
             priority: options.priority || 0,
@@ -69,8 +65,14 @@ export const useAIService = () => {
       });
 
       if (error) {
-        console.error('AI service invocation error:', error);
-        throw new Error(`Failed to send a request to the Edge Function: ${error.message}`);
+        console.error('❌ AI service invocation error:', error);
+        throw new Error(`Edge Function Error: ${error.message || 'Unknown error occurred'}`);
+      }
+
+      console.log('📦 AI Gateway response:', data);
+
+      if (!data) {
+        throw new Error('No data received from AI Gateway');
       }
 
       if (!data.success) {
@@ -78,18 +80,23 @@ export const useAIService = () => {
       }
 
       // Log successful usage
-      await supabase.from('ai_usage_logs').insert({
-        user_id: (await supabase.auth.getUser()).data.user?.id,
-        tool_slug: options.toolSlug,
-        feature_type: options.category || 'general',
-        request_type: 'ai_tool_invocation',
-        request_data: options.inputData,
-        response_data: data.data,
-        success: true,
-        tokens_used: data.tokensUsed || 0,
-        cost_estimate: data.cost || 0,
-        response_time: data.responseTime || 0
-      });
+      try {
+        const user = await supabase.auth.getUser();
+        await supabase.from('ai_usage_logs').insert({
+          user_id: user.data.user?.id,
+          tool_slug: options.toolSlug,
+          feature_type: options.category || 'general',
+          request_type: 'ai_tool_invocation',
+          request_data: options.inputData,
+          response_data: data.data,
+          success: true,
+          tokens_used: data.tokensUsed || 0,
+          cost_estimate: data.cost || 0,
+          response_time: data.responseTime || 0
+        });
+      } catch (logError) {
+        console.warn('⚠️ Failed to log AI usage:', logError);
+      }
 
       return {
         success: true,
@@ -100,12 +107,13 @@ export const useAIService = () => {
       };
 
     } catch (error: any) {
-      console.error(`AI tool ${options.toolSlug} failed:`, error);
+      console.error(`❌ AI tool ${options.toolSlug} failed:`, error);
       
       // Log failed usage
       try {
+        const user = await supabase.auth.getUser();
         await supabase.from('ai_usage_logs').insert({
-          user_id: (await supabase.auth.getUser()).data.user?.id,
+          user_id: user.data.user?.id,
           tool_slug: options.toolSlug,
           feature_type: options.category || 'general',
           request_type: 'ai_tool_invocation',
@@ -114,7 +122,7 @@ export const useAIService = () => {
           error_message: error.message
         });
       } catch (logError) {
-        console.warn('Failed to log AI usage:', logError);
+        console.warn('⚠️ Failed to log AI usage:', logError);
       }
 
       return {

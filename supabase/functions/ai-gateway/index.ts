@@ -10,14 +10,32 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 console.log('🚀 AI Gateway function initializing...')
 console.log('OpenAI API Key configured:', !!openAIApiKey)
 console.log('Supabase URL configured:', !!supabaseUrl)
+console.log('Service Key configured:', !!supabaseServiceKey)
 
 Deno.serve(async (req) => {
+  console.log(`📨 Incoming ${req.method} request to AI Gateway`)
+  
   if (req.method === 'OPTIONS') {
+    console.log('✅ Handling CORS preflight request')
     return new Response(null, { headers: corsHeaders })
   }
 
+  // Health check endpoint
+  if (req.method === 'GET') {
+    console.log('🏥 Health check requested')
+    return new Response(
+      JSON.stringify({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        openAI: !!openAIApiKey,
+        supabase: !!supabaseUrl
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+
   try {
-    console.log('🚀 AI Gateway request received')
+    console.log('🚀 Processing AI Gateway request')
     
     if (!openAIApiKey) {
       console.error('❌ OpenAI API key not configured')
@@ -27,12 +45,25 @@ Deno.serve(async (req) => {
       )
     }
 
-    const { toolSlug, inputData, requestMetadata } = await req.json()
+    let requestBody;
+    try {
+      requestBody = await req.json()
+      console.log('📋 Request body parsed:', { toolSlug: requestBody.toolSlug })
+    } catch (error) {
+      console.error('❌ Failed to parse request body:', error)
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid JSON in request body' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      )
+    }
+
+    const { toolSlug, inputData, requestMetadata } = requestBody
     console.log(`🔧 Processing tool: ${toolSlug}`)
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     // Get tool configuration
+    console.log('🔍 Fetching tool configuration...')
     const { data: toolConfig, error: configError } = await supabase
       .from('ai_tools_config')
       .select('*')

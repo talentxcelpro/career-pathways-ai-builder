@@ -5,7 +5,7 @@ project_id = "dthlgsnakhoftinssokm"
 enabled = true
 
 [functions.ai-gateway]
-verify_jwt = true
+verify_jwt = false
 
 [functions.ai-agent]
 verify_jwt = true
