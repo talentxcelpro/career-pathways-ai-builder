@@ -33,10 +33,40 @@ import {
 import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { EmailTriggerSettingsModal } from './EmailTriggerSettingsModal';
-import { BulkEmailProcessor } from './BulkEmailProcessor';
-import { EmailAnalyticsDashboard } from './EmailAnalyticsDashboard';
-import { RealTimeEmailAnalytics } from './RealTimeEmailAnalytics';
+
+// Import components with error handling
+let EmailTriggerSettingsModal: React.ComponentType<any> | null = null;
+let BulkEmailProcessor: React.ComponentType<any> | null = null;
+let EmailAnalyticsDashboard: React.ComponentType<any> | null = null;
+let RealTimeEmailAnalytics: React.ComponentType<any> | null = null;
+
+try {
+  const EmailTriggerSettingsModalModule = require('./EmailTriggerSettingsModal');
+  EmailTriggerSettingsModal = EmailTriggerSettingsModalModule.EmailTriggerSettingsModal;
+} catch (e) {
+  console.error('Failed to load EmailTriggerSettingsModal:', e);
+}
+
+try {
+  const BulkEmailProcessorModule = require('./BulkEmailProcessor');
+  BulkEmailProcessor = BulkEmailProcessorModule.BulkEmailProcessor;
+} catch (e) {
+  console.error('Failed to load BulkEmailProcessor:', e);
+}
+
+try {
+  const EmailAnalyticsDashboardModule = require('./EmailAnalyticsDashboard');
+  EmailAnalyticsDashboard = EmailAnalyticsDashboardModule.EmailAnalyticsDashboard;
+} catch (e) {
+  console.error('Failed to load EmailAnalyticsDashboard:', e);
+}
+
+try {
+  const RealTimeEmailAnalyticsModule = require('./RealTimeEmailAnalytics');
+  RealTimeEmailAnalytics = RealTimeEmailAnalyticsModule.RealTimeEmailAnalytics;
+} catch (e) {
+  console.error('Failed to load RealTimeEmailAnalytics:', e);
+}
 
 interface EmailTrigger {
   id: string;
@@ -499,227 +529,169 @@ export const EmailAutomationManager = () => {
             >
               Get SendGrid API Key <ExternalLink className="h-3 w-3" />
             </a>
-            <a 
-              href={`https://supabase.com/dashboard/project/dthlgsnakhoftinssokm/settings/functions`}
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-blue-600 hover:underline"
-            >
-              Configure in Supabase <ExternalLink className="h-3 w-3" />
-            </a>
           </div>
         </AlertDescription>
       </Alert>
 
-      {/* Email Statistics Dashboard */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      {/* Email Statistics Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-3xl font-bold text-yellow-600">{stats.pending}</p>
+          <CardContent className="pt-6">
+            <div className="flex items-center">
+              <Clock className="h-4 w-4 text-yellow-500" />
+              <div className="ml-2">
+                <p className="text-sm font-medium text-gray-600">Pending</p>
+                <p className="text-2xl font-bold">{stats.pending}</p>
               </div>
-              <Clock className="h-8 w-8 text-yellow-600" />
             </div>
           </CardContent>
         </Card>
-
+        
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Sent</p>
-                <p className="text-3xl font-bold text-green-600">{stats.totalSent}</p>
+          <CardContent className="pt-6">
+            <div className="flex items-center">
+              <Send className="h-4 w-4 text-green-500" />
+              <div className="ml-2">
+                <p className="text-sm font-medium text-gray-600">Sent</p>
+                <p className="text-2xl font-bold">{stats.sent}</p>
               </div>
-              <Send className="h-8 w-8 text-green-600" />
             </div>
           </CardContent>
         </Card>
-
+        
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Failed</p>
-                <p className="text-3xl font-bold text-red-600">{stats.failed}</p>
+          <CardContent className="pt-6">
+            <div className="flex items-center">
+              <Eye className="h-4 w-4 text-blue-500" />
+              <div className="ml-2">
+                <p className="text-sm font-medium text-gray-600">Opened</p>
+                <p className="text-2xl font-bold">{stats.opened}</p>
               </div>
-              <AlertCircle className="h-8 w-8 text-red-600" />
             </div>
           </CardContent>
         </Card>
-
+        
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Delivery Rate</p>
-                <p className="text-3xl font-bold text-blue-600">
-                  {stats.totalSent > 0 ? Math.round((stats.delivered / stats.totalSent) * 100) : 0}%
-                </p>
+          <CardContent className="pt-6">
+            <div className="flex items-center">
+              <AlertTriangle className="h-4 w-4 text-red-500" />
+              <div className="ml-2">
+                <p className="text-sm font-medium text-gray-600">Failed</p>
+                <p className="text-2xl font-bold">{stats.failed}</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-blue-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Detailed Analytics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <Mail className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">Delivered</p>
-              <p className="text-2xl font-bold">{stats.delivered}</p>
-              <p className="text-xs text-muted-foreground">
-                {stats.totalSent > 0 ? Math.round((stats.delivered / stats.totalSent) * 100) : 0}% delivery rate
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <Eye className="h-8 w-8 text-green-500 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">Opened</p>
-              <p className="text-2xl font-bold">{stats.opened}</p>
-              <p className="text-xs text-muted-foreground">
-                {stats.delivered > 0 ? Math.round((stats.opened / stats.delivered) * 100) : 0}% open rate
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <MousePointer className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">Clicked</p>
-              <p className="text-2xl font-bold">{stats.clicked}</p>
-              <p className="text-xs text-muted-foreground">
-                {stats.opened > 0 ? Math.round((stats.clicked / stats.opened) * 100) : 0}% click rate
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            Email Automation Settings
-          </CardTitle>
-          <CardDescription>
-            Configure automated emails for various user actions and events
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-lg">
-              <TestTube className="h-5 w-5 text-blue-600" />
-              <div className="flex-1">
-                <Label htmlFor="testEmail">Test Email Address</Label>
-                <Input
-                  id="testEmail"
-                  type="email"
-                  placeholder="Enter email to test templates"
-                  value={testEmail}
-                  onChange={(e) => setTestEmail(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
+      {/* Email Triggers Configuration */}
       <Card>
         <CardHeader>
           <CardTitle>Email Triggers</CardTitle>
           <CardDescription>
-            Enable or disable automated email triggers for different events
+            Configure automated email templates and their triggers
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            {loading ? (
-              <div className="col-span-2 text-center py-8">Loading email triggers...</div>
-            ) : (
-              triggers.map((trigger) => (
-                <div key={trigger.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <trigger.icon className={`h-5 w-5 ${trigger.color}`} />
+          {loading ? (
+            <div className="flex items-center justify-center p-8">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {triggers.map((trigger) => {
+                const IconComponent = trigger.icon;
+                return (
+                  <div key={trigger.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <IconComponent className={`h-6 w-6 ${trigger.color}`} />
                       <div>
-                        <h3 className="font-semibold">{trigger.name}</h3>
+                        <h3 className="font-medium">{trigger.name}</h3>
                         <p className="text-sm text-gray-600">{trigger.description}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center space-x-4">
                       <Badge variant={trigger.is_enabled ? "default" : "secondary"}>
-                        {trigger.is_enabled ? "Enabled" : "Disabled"}
+                        {trigger.is_enabled ? 'Enabled' : 'Disabled'}
                       </Badge>
-                      <Switch
-                        checked={trigger.is_enabled}
-                        onCheckedChange={() => toggleTrigger(trigger.id, trigger.is_enabled)}
-                      />
+                      <div className="flex items-center space-x-2">
+                        <Label htmlFor={`trigger-${trigger.id}`} className="text-sm">
+                          Active
+                        </Label>
+                        <Switch
+                          id={`trigger-${trigger.id}`}
+                          checked={trigger.is_enabled}
+                          onCheckedChange={() => toggleTrigger(trigger.id, trigger.is_enabled)}
+                        />
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSettingsClick(trigger)}
+                      >
+                        <Settings className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => testEmailTemplate(trigger.trigger_type)}
+                      >
+                        <TestTube className="w-4 h-4" />
+                        Test
+                      </Button>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => testEmailTemplate(trigger.trigger_type)}
-                      disabled={isProcessing || !testEmail}
-                      className="flex-1"
-                    >
-                      <TestTube className="h-4 w-4 mr-2" />
-                      Test Template
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="ghost"
-                      onClick={() => handleSettingsClick(trigger)}
-                    >
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))
-            )}
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Test Email Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Test Email Templates</CardTitle>
+          <CardDescription>
+            Send test emails to verify your email templates
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-4">
+            <Input
+              placeholder="Enter test email address..."
+              value={testEmail}
+              onChange={(e) => setTestEmail(e.target.value)}
+              className="flex-1"
+            />
+            <Button onClick={() => toast.success('Use the Test button next to each trigger above!')}>
+              <Mail className="w-4 h-4 mr-2" />
+              Instructions
+            </Button>
           </div>
         </CardContent>
       </Card>
 
+      {/* Email Queue Section */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="h-5 w-5" />
-                Email Queue
-              </CardTitle>
+              <CardTitle>Email Queue</CardTitle>
               <CardDescription>
-                Automatic processing runs every 2 minutes. View pending and processed emails.
+                Monitor and manage the email queue
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
-                <div className="w-2 h-2 bg-green-600 rounded-full mr-2 animate-pulse"></div>
-                Auto Processing Active
-              </Badge>
-              <Button
+            <div className="flex gap-2">
+              <Button 
                 onClick={() => {
                   setShowQueue(!showQueue);
                   if (!showQueue) fetchEmailQueue();
                 }}
                 variant="outline"
+                size="sm"
               >
-                {showQueue ? 'Hide Queue' : 'View Queue'}
+                {showQueue ? 'Hide Queue' : 'Show Queue'}
               </Button>
             </div>
           </div>
@@ -727,90 +699,56 @@ export const EmailAutomationManager = () => {
         {showQueue && (
           <CardContent>
             {queueLoading ? (
-              <div className="text-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
-                Loading email queue...
-              </div>
-            ) : emailQueue.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                No emails in queue
+              <div className="flex items-center justify-center p-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
               </div>
             ) : (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">
-                    Showing {emailQueue.length} recent emails
-                  </span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={fetchEmailQueue}
-                    disabled={queueLoading}
-                  >
-                    Refresh
-                  </Button>
-                </div>
-                <div className="border rounded-lg overflow-hidden">
-                  <div className="max-h-96 overflow-y-auto">
-                    {emailQueue.map((email) => (
-                      <div key={email.id} className="border-b last:border-b-0 p-4 hover:bg-gray-50">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium text-sm">
-                                {email.trigger_type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
-                              </span>
-                              {getStatusBadge(email.status)}
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              To: {email.recipient_email}
-                              {email.recipient_name && ` (${email.recipient_name})`}
-                            </div>
-                          </div>
-                          <div className="text-xs text-gray-500 text-right">
-                            <div>Created: {new Date(email.created_at).toLocaleString()}</div>
-                            {email.sent_at && (
-                              <div>Sent: {new Date(email.sent_at).toLocaleString()}</div>
-                            )}
-                            {email.scheduled_at && email.scheduled_at !== email.created_at && (
-                              <div>Scheduled: {new Date(email.scheduled_at).toLocaleString()}</div>
-                            )}
-                          </div>
-                        </div>
-                        {email.error_message && (
-                          <div className="text-sm text-red-600 bg-red-50 p-2 rounded mt-2">
-                            Error: {email.error_message}
-                          </div>
-                        )}
+              <div className="space-y-2">
+                {emailQueue.length === 0 ? (
+                  <p className="text-center text-gray-500 py-8">No emails in queue</p>
+                ) : (
+                  emailQueue.slice(0, 10).map((email) => (
+                    <div key={email.id} className="flex items-center justify-between p-3 border rounded">
+                      <div>
+                        <p className="font-medium">{email.recipient_email}</p>
+                        <p className="text-sm text-gray-600">{email.trigger_type}</p>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                      <div className="flex items-center gap-2">
+                        {getStatusBadge(email.status)}
+                        <span className="text-xs text-gray-500">
+                          {new Date(email.created_at).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             )}
           </CardContent>
         )}
       </Card>
 
-      {/* Comprehensive Analytics Dashboard */}
       {/* Real-Time Analytics Section */}
-      <RealTimeEmailAnalytics />
+      {RealTimeEmailAnalytics && <RealTimeEmailAnalytics />}
       
-      <EmailAnalyticsDashboard />
+      {/* Analytics Dashboard */}
+      {EmailAnalyticsDashboard && <EmailAnalyticsDashboard />}
 
       {/* Bulk Email Processor */}
-      <BulkEmailProcessor onStatsUpdate={fetchStats} />
+      {BulkEmailProcessor && <BulkEmailProcessor onStatsUpdate={fetchStats} />}
 
       {/* Settings Modal */}
-      <EmailTriggerSettingsModal
-        trigger={selectedTrigger}
-        isOpen={isSettingsModalOpen}
-        onClose={() => {
-          setIsSettingsModalOpen(false);
-          setSelectedTrigger(null);
-        }}
-        onSave={handleSettingsSave}
-      />
+      {EmailTriggerSettingsModal && (
+        <EmailTriggerSettingsModal
+          trigger={selectedTrigger}
+          isOpen={isSettingsModalOpen}
+          onClose={() => {
+            setIsSettingsModalOpen(false);
+            setSelectedTrigger(null);
+          }}
+          onSave={handleSettingsSave}
+        />
+      )}
     </div>
   );
 };
