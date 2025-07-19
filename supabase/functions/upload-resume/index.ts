@@ -1,3 +1,4 @@
+
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
@@ -6,8 +7,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+interface UploadRequest {
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  fileData: string; // base64 encoded file
+  userId: string;
+}
+
 Deno.serve(async (req) => {
-  console.log('Upload resume function called with method:', req.method);
+  console.log('📥 Upload resume function called with method:', req.method);
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -19,11 +28,11 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing environment variables');
+      console.error('❌ Missing environment variables');
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Missing environment configuration' 
+          error: 'Server configuration error' 
         }),
         { 
           status: 500, 
@@ -37,8 +46,9 @@ Deno.serve(async (req) => {
     // Get the authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('❌ No authorization header');
       return new Response(
-        JSON.stringify({ success: false, error: 'No authorization header' }),
+        JSON.stringify({ success: false, error: 'Authentication required' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -49,37 +59,49 @@ Deno.serve(async (req) => {
     );
 
     if (userError || !user) {
-      console.error('User verification failed:', userError);
+      console.error('❌ User verification failed:', userError);
       return new Response(
-        JSON.stringify({ success: false, error: 'Unauthorized' }),
+        JSON.stringify({ success: false, error: 'Invalid authentication' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('User verified:', user.id);
+    console.log('✅ User verified:', user.id);
 
-    // Parse form data
-    const formData = await req.formData();
-    const file = formData.get('file') as File;
-    const userId = formData.get('userId') as string;
+    // Parse JSON request body
+    const requestData: UploadRequest = await req.json();
+    console.log('📋 Request data received:', {
+      fileName: requestData.fileName,
+      fileType: requestData.fileType,
+      fileSize: requestData.fileSize,
+      userId: requestData.userId,
+      hasFileData: !!requestData.fileData
+    });
 
-    if (!file) {
+    // Validate request data
+    if (!requestData.fileName || !requestData.fileType || !requestData.fileData) {
       return new Response(
-        JSON.stringify({ success: false, error: 'No file provided' }),
+        JSON.stringify({ success: false, error: 'Missing required file data' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    if (userId !== user.id) {
+    if (requestData.userId !== user.id) {
       return new Response(
         JSON.stringify({ success: false, error: 'User ID mismatch' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Processing file:', file.name, 'for user:', userId);
+    console.log('🔄 Processing file:', requestData.fileName, 'for user:', requestData.userId);
 
     // For now, create a mock resume entry with parsed data
+    // In a real implementation, you would:
+    // 1. Decode the base64 file data
+    // 2. Use AI/OCR to extract text content
+    // 3. Parse the content into structured data
+    // 4. Calculate ATS score based on content analysis
+    
     const mockParsedData = {
       personalInfo: {
         name: "John Doe",
@@ -114,15 +136,22 @@ Deno.serve(async (req) => {
       skills: ["JavaScript", "React", "Node.js", "Python", "SQL"]
     };
 
-    // Calculate a mock ATS score
-    const atsScore = Math.floor(Math.random() * 30) + 70; // Random score between 70-100
+    // Calculate a mock ATS score based on file type and size
+    let atsScore = Math.floor(Math.random() * 30) + 70; // Random score between 70-100
+    
+    // Bonus points for PDF (better ATS compatibility)
+    if (requestData.fileType === 'application/pdf') {
+      atsScore = Math.min(atsScore + 5, 100);
+    }
+
+    console.log('📊 Generated ATS score:', atsScore);
 
     // Insert into ai_resumes table
     const { data: resumeData, error: insertError } = await supabase
       .from('ai_resumes')
       .insert({
-        user_id: userId,
-        title: `Resume - ${file.name}`,
+        user_id: requestData.userId,
+        title: `Resume - ${requestData.fileName}`,
         content: mockParsedData,
         ats_score: atsScore,
         is_primary: false,
@@ -132,17 +161,17 @@ Deno.serve(async (req) => {
       .single();
 
     if (insertError) {
-      console.error('Error inserting resume:', insertError);
+      console.error('❌ Error inserting resume:', insertError);
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Failed to save resume: ' + insertError.message 
+          error: 'Failed to save resume data' 
         }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Resume saved successfully:', resumeData.id);
+    console.log('✅ Resume saved successfully with ID:', resumeData.id);
 
     return new Response(
       JSON.stringify({
@@ -158,11 +187,11 @@ Deno.serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Upload function error:', error);
+    console.error('💥 Upload function error:', error);
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: 'Internal server error: ' + error.message 
+        error: 'Internal server error' 
       }),
       { 
         status: 500, 

@@ -57,6 +57,21 @@ export interface UploadResult {
   error?: string;
 }
 
+// Convert file to base64
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Remove the data:type/subtype;base64, prefix
+      const base64 = result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = error => reject(error);
+  });
+};
+
 export const useResumeUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState<UploadProgress>({
@@ -67,7 +82,12 @@ export const useResumeUpload = () => {
   const { toast } = useToast();
 
   const uploadResume = async (file: File): Promise<UploadResult> => {
-    console.log('Starting resume upload...', file.name);
+    console.log('🚀 Starting resume upload process...', {
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type
+    });
+    
     setIsUploading(true);
     setProgress({ percentage: 10, step: 'Preparing upload...', status: 'uploading' });
 
@@ -75,14 +95,15 @@ export const useResumeUpload = () => {
       // Check authentication first
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) {
-        console.error('Authentication error:', userError);
+        console.error('❌ Authentication error:', userError);
         throw new Error('Authentication failed. Please log in and try again.');
       }
       
       if (!user) {
         throw new Error('Please log in to upload a resume');
       }
-      console.log('User authenticated:', user.id);
+      
+      console.log('✅ User authenticated:', user.id);
 
       // Validate file
       if (!file) {
@@ -103,29 +124,60 @@ export const useResumeUpload = () => {
         throw new Error('File size must be less than 5MB');
       }
 
-      setProgress({ percentage: 20, step: 'Uploading file...', status: 'uploading' });
+      setProgress({ percentage: 25, step: 'Converting file...', status: 'uploading' });
 
-      // Create FormData properly
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('userId', user.id);
+      // Convert file to base64
+      console.log('🔄 Converting file to base64...');
+      const fileBase64 = await fileToBase64(file);
+      
+      setProgress({ percentage: 50, step: 'Uploading to server...', status: 'processing' });
 
-      console.log('FormData created, calling edge function...');
+      // Prepare JSON payload
+      const payload = {
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        fileData: fileBase64,
+        userId: user.id
+      };
 
-      // Call upload-resume edge function
-      const { data, error } = await supabase.functions.invoke('upload-resume', {
-        body: formData,
+      console.log('📤 Calling upload-resume edge function...', {
+        fileName: payload.fileName,
+        fileType: payload.fileType,
+        fileSize: payload.fileSize,
+        userId: payload.userId
       });
 
-      console.log('Edge function response:', { data, error });
+      // Call upload-resume edge function with timeout
+      const uploadPromise = supabase.functions.invoke('upload-resume', {
+        body: payload
+      });
+
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Upload timeout - please try again')), 30000);
+      });
+
+      const { data, error } = await Promise.race([uploadPromise, timeoutPromise]) as any;
+
+      console.log('📨 Edge function response:', { data, error });
 
       if (error) {
-        console.error('Upload error:', error);
-        throw new Error(error.message || 'Upload failed');
+        console.error('❌ Upload error from edge function:', error);
+        throw new Error(error.message || 'Upload failed - please try again');
       }
 
-      if (data && data.success) {
+      if (!data) {
+        throw new Error('No response from server - please try again');
+      }
+
+      if (data.success) {
         setProgress({ percentage: 100, step: 'Upload completed!', status: 'completed' });
+        
+        console.log('✅ Upload successful:', {
+          resumeId: data.resumeId,
+          atsScore: data.atsScore
+        });
+        
         toast({
           title: "Resume uploaded successfully!",
           description: `ATS Score: ${data.atsScore}/100`,
@@ -138,13 +190,19 @@ export const useResumeUpload = () => {
           parsedData: data.parsedData
         };
       } else {
-        throw new Error(data?.error || 'Upload failed');
+        throw new Error(data.error || 'Upload failed - server error');
       }
 
     } catch (error) {
-      console.error('Upload failed:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+      console.error('💥 Upload failed with error:', error);
+      
+      let errorMessage = 'Upload failed - please try again';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       setProgress({ percentage: 0, step: errorMessage, status: 'failed' });
+      
       toast({
         title: "Upload failed",
         description: errorMessage,
@@ -172,7 +230,7 @@ export const useResumeUpload = () => {
     isProcessing: isUploading,
     uploadSuccess: progress.status === 'completed',
     processingStep: progress.step,
-    processingSteps: ['Preparing', 'Uploading', 'Extracting', 'Analyzing', 'Optimizing', 'Complete'],
+    processingSteps: ['Preparing', 'Converting', 'Uploading', 'Processing', 'Analyzing', 'Complete'],
     processResume: uploadResume,
     resetUpload: resetProgress,
     progress
