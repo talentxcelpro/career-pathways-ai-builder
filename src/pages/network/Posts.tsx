@@ -494,8 +494,15 @@ const Posts = () => {
                     Notifications
                   </Button>
                 </Link>
-                {hasEmployerAccess && (
+                {hasEmployerAccess ? (
                   <Link to="/pro/services" className="block">
+                    <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                      <Settings className="h-3.5 w-3.5 mr-3" />
+                      Set Up Services
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to="/pro/subscription" className="block">
                     <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
                       <Settings className="h-3.5 w-3.5 mr-3" />
                       Set Up Services

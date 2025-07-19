@@ -261,9 +261,16 @@ export const Navbar = () => {
                         </Link>
                       </DropdownMenuItem>
                      )}
-                     {hasEmployerAccess && (
+                     {hasEmployerAccess ? (
                        <DropdownMenuItem asChild>
                          <Link to="/pro/services" className="flex items-center">
+                           <Settings className="mr-2 h-4 w-4" />
+                           <span>Set Up Services</span>
+                         </Link>
+                       </DropdownMenuItem>
+                     ) : (
+                       <DropdownMenuItem asChild>
+                         <Link to="/pro/subscription" className="flex items-center">
                            <Settings className="mr-2 h-4 w-4" />
                            <span>Set Up Services</span>
                          </Link>
