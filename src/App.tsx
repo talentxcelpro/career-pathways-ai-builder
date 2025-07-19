@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +17,7 @@ import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
+import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 
 // Create query client with better default configurations
 const queryClient = new QueryClient({
@@ -99,6 +99,7 @@ const App = () => {
                           />
                         );
                       })}
+                      <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
                     </Routes>
                   </main>
                   <Footer />

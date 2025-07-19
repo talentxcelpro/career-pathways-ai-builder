@@ -1,10 +1,10 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UploadWizard } from "@/components/resume/upload/UploadWizard";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-const UploadResume = () => {
+const EnhancedUploadResume = () => {
   const navigate = useNavigate();
 
   const handleUploadComplete = (resumeData: any) => {
@@ -22,4 +22,4 @@ const UploadResume = () => {
   );
 };
 
-export default UploadResume;
+export default EnhancedUploadResume;
