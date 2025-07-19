@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, CheckCircle, XCircle, Mail, Send, Clock } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { AlertTriangle, CheckCircle, XCircle, Mail, Send, Clock, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -16,6 +17,8 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
   const [diagnostics, setDiagnostics] = useState<DiagnosticResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [testEmailSent, setTestEmailSent] = useState(false);
+  const [testEmail, setTestEmail] = useState('');
+  const [testName, setTestName] = useState('');
 
   const runDiagnostics = async () => {
     setIsRunning(true);
@@ -333,6 +336,109 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
             </p>
           </div>
         )}
+
+        {/* Custom Email Testing Section */}
+        <div className="mt-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+          <h4 className="font-semibold text-purple-900 mb-3 flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Test with Any Email Address
+          </h4>
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Input
+                type="email"
+                placeholder="test@example.com"
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                className="border-purple-200"
+              />
+              <Input
+                type="text"
+                placeholder="Test User Name"
+                value={testName}
+                onChange={(e) => setTestName(e.target.value)}
+                className="border-purple-200"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={async () => {
+                  if (!testEmail) {
+                    toast.error('Please enter an email address');
+                    return;
+                  }
+                  
+                  toast.info(`Sending test email to ${testEmail}...`);
+                  
+                  try {
+                    // Insert directly into queue
+                    const { error } = await supabase
+                      .from('email_automation_queue')
+                      .insert({
+                        trigger_type: 'test_email',
+                        recipient_email: testEmail,
+                        recipient_name: testName || 'User',
+                        template_data: { name: testName || 'User', custom_test: true },
+                        status: 'pending',
+                        scheduled_at: new Date().toISOString()
+                      });
+                      
+                    if (error) {
+                      toast.error(`Database error: ${error.message}`);
+                    } else {
+                      toast.success(`Test email queued for ${testEmail}! Click "Process Queue" to send.`);
+                    }
+                  } catch (error: any) {
+                    toast.error(`Failed to queue email: ${error.message}`);
+                  }
+                }}
+                variant="outline"
+                className="border-purple-300 text-purple-700 hover:bg-purple-100"
+              >
+                <Send className="h-4 w-4 mr-2" />
+                Queue Test Email
+              </Button>
+              
+              <Button
+                onClick={async () => {
+                  const emails = [
+                    'test1@gmail.com',
+                    'test2@yahoo.com', 
+                    'test3@outlook.com',
+                    'test4@hotmail.com'
+                  ];
+                  
+                  toast.info('Adding batch test emails to queue...');
+                  
+                  try {
+                    for (let i = 0; i < emails.length; i++) {
+                      const email = emails[i];
+                      await supabase
+                        .from('email_automation_queue')
+                        .insert({
+                          trigger_type: 'test_email',
+                          recipient_email: email,
+                          recipient_name: `Test User ${i + 1}`,
+                          template_data: { name: `Test User ${i + 1}`, batch_test: true },
+                          status: 'pending',
+                          scheduled_at: new Date().toISOString()
+                        });
+                    }
+                    
+                    toast.success('Batch test emails queued! Click "Process Queue" to send to multiple providers.');
+                  } catch (error: any) {
+                    toast.error(`Failed to queue batch emails: ${error.message}`);
+                  }
+                }}
+                variant="outline"
+                className="border-purple-300 text-purple-700 hover:bg-purple-100"
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Test Multiple Providers
+              </Button>
+            </div>
+          </div>
+        </div>
 
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h4 className="font-semibold text-blue-900 mb-2">Quick Fix Guide:</h4>
