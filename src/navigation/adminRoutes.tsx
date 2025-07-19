@@ -21,9 +21,8 @@ import CreateCourse from "../pages/admin/learning/CreateCourse";
 import CreatePlan from "../pages/admin/pricing/CreatePlan";
 import EmailAutomationPage from "../pages/admin/EmailAutomation";
 import AIMLTrainingCenter from "../pages/admin/AIMLTrainingCenter";
-import AIManagement from "../pages/admin/AIManagement";
+import AdminAIManagement from "../pages/AdminAIManagement";
 import CollegesManagement from "../pages/admin/CollegesManagement";
-import AISystemTesterPage from "../pages/admin/AISystemTester";
 import { ProUsersPage } from "../components/admin/ProUsersPage";
 
 export const adminRoutes = [
@@ -211,7 +210,7 @@ export const adminRoutes = [
     title: "AI Management",
     to: "/admin/ai-management",
     icon: <Brain className="h-4 w-4" />,
-    page: <AIManagement />,
+    page: <AdminAIManagement />,
     requiresAuth: true,
     permission: "canAccessReports" as const,
     description: "Monitor and manage AI features across the platform"
@@ -242,14 +241,5 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessDashboard" as const,
     description: "Create new subscription plans"
-  },
-  {
-    title: "AI System Tester",
-    to: "/admin/ai-tester",
-    icon: <Brain className="h-4 w-4" />,
-    page: <AISystemTesterPage />,
-    requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Test and debug AI tools and features"
-  },
+  }
 ];
