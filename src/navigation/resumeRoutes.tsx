@@ -42,6 +42,12 @@ export const resumeRoutes = [
     page: <EnhancedResumeBuilder />,
   },
   {
+    title: "Resume Builder - New",
+    to: "/resume-builder/edit",
+    icon: <Edit className="h-4 w-4" />,
+    page: <EnhancedResumeBuilder mode="create" />,
+  },
+  {
     title: "Streamlined Resume Builder (Legacy)",
     to: "/resume/edit/:id",
     icon: <Edit className="h-4 w-4" />,
