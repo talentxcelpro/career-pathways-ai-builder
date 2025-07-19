@@ -1,102 +1,131 @@
 
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Upload, PlusCircle, CheckCircle, Download, Edit, Sparkles, TrendingUp, Award } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Plus, FileText, Edit, Download, Share, BarChart3, 
+  Zap, Target, Crown, TrendingUp, Eye, Users,
+  Calendar, Award, Sparkles
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { SmartProfileOptimizer } from "@/components/ai/SmartProfileOptimizer";
+import { SmartJobMatcher } from "@/components/ai/SmartJobMatcher";
+
+interface Resume {
+  id: string;
+  title: string;
+  ats_score: number;
+  created_at: string;
+  updated_at: string;
+  is_primary: boolean;
+  content: any;
+}
+
+interface DashboardStats {
+  totalResumes: number;
+  averageAtsScore: number;
+  totalViews: number;
+  totalDownloads: number;
+}
 
 const ResumeDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [resumes, setResumes] = useState<Resume[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalResumes: 0,
+    averageAtsScore: 0,
+    totalViews: 0,
+    totalDownloads: 0
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
 
-  const quickActions = [
-    {
-      title: "Create New Resume",
-      description: "Start fresh with TalentXcel templates",
-      icon: <PlusCircle className="h-6 w-6" />,
-      path: "/resume-builder/new",
-      color: "bg-blue-50 hover:bg-blue-100 border-blue-200",
-      iconColor: "text-blue-600"
-    },
-    {
-      title: "Upload Resume",
-      description: "Import and enhance existing resume",
-      icon: <Upload className="h-6 w-6" />,
-      path: "/resume-builder/upload",
-      color: "bg-green-50 hover:bg-green-100 border-green-200",
-      iconColor: "text-green-600"
-    },
-    {
-      title: "Get Resume Score",
-      description: "Free AI analysis and feedback",
-      icon: <CheckCircle className="h-6 w-6" />,
-      path: "/resume-builder/checker",
-      color: "bg-purple-50 hover:bg-purple-100 border-purple-200",
-      iconColor: "text-purple-600",
-      badge: "Popular"
-    },
-    {
-      title: "Browse Templates",
-      description: "Professional TalentXcel designs",
-      icon: <FileText className="h-6 w-6" />,
-      path: "/resume-builder/templates",
-      color: "bg-orange-50 hover:bg-orange-100 border-orange-200",
-      iconColor: "text-orange-600"
+  useEffect(() => {
+    if (user) {
+      fetchResumes();
+      fetchStats();
     }
-  ];
+  }, [user]);
 
-  const features = [
-    {
-      icon: <Sparkles className="h-5 w-5" />,
-      title: "AI-Powered Enhancement",
-      description: "Intelligent suggestions to improve your resume content and structure"
-    },
-    {
-      icon: <TrendingUp className="h-5 w-5" />,
-      title: "ATS Optimization",
-      description: "Ensure your resume passes applicant tracking systems"
-    },
-    {
-      icon: <Award className="h-5 w-5" />,
-      title: "Professional Templates",
-      description: "Choose from dozens of professionally designed templates"
+  const fetchResumes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('ai_resumes')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+      setResumes(data || []);
+    } catch (error) {
+      console.error('Error fetching resumes:', error);
     }
-  ];
+  };
+
+  const fetchStats = async () => {
+    try {
+      // In a real implementation, these would be separate analytics queries
+      const totalResumes = resumes.length;
+      const averageAtsScore = resumes.length > 0 
+        ? resumes.reduce((sum, resume) => sum + (resume.ats_score || 0), 0) / resumes.length 
+        : 0;
+      
+      setStats({
+        totalResumes,
+        averageAtsScore: Math.round(averageAtsScore),
+        totalViews: Math.floor(Math.random() * 1000) + 100, // Mock data
+        totalDownloads: Math.floor(Math.random() * 100) + 10 // Mock data
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 85) return 'text-green-600 bg-green-100';
+    if (score >= 70) return 'text-yellow-600 bg-yellow-100';
+    return 'text-red-600 bg-red-100';
+  };
+
+  const createNewResume = () => {
+    navigate('/resume-builder/edit/new');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="absolute inset-0 bg-black opacity-10"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <FileText className="h-12 w-12" />
-              <h1 className="text-4xl md:text-5xl font-bold">
-                TalentXcel Resume Builder
-              </h1>
+      {/* Header */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900">Resume Dashboard</h1>
+              <p className="text-slate-600 mt-1">Manage and optimize your professional resumes</p>
             </div>
-            <p className="text-xl mb-8 max-w-3xl mx-auto opacity-90">
-              Create professional resumes with AI-powered tools and land your dream job
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                className="bg-white text-blue-600 hover:bg-gray-50 px-8 py-4 text-lg font-semibold"
-                onClick={() => navigate('/resume-builder/checker')}
-              >
-                <CheckCircle className="h-5 w-5 mr-2" />
-                Get Free Resume Score
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold"
-                onClick={() => navigate('/resume-builder/new')}
-              >
-                <PlusCircle className="h-5 w-5 mr-2" />
+            <div className="flex gap-3">
+              <Link to="/resume-builder/upload">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Import Resume
+                </Button>
+              </Link>
+              <Button onClick={createNewResume} className="flex items-center gap-2">
+                <Plus className="w-4 h-4" />
                 Create New Resume
               </Button>
             </div>
@@ -104,90 +133,279 @@ const ResumeDashboard = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            What would you like to do?
-          </h2>
-          <p className="text-xl text-gray-600">
-            Choose your starting point to build the perfect resume
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {quickActions.map((action, index) => (
-            <Card 
-              key={index} 
-              className={`relative cursor-pointer transition-all duration-200 hover:shadow-lg ${action.color} border-2`}
-              onClick={() => navigate(action.path)}
-            >
-              {action.badge && (
-                <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-white border-0">
-                  {action.badge}
-                </Badge>
-              )}
-              <CardHeader className="text-center pb-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 ${action.iconColor} bg-white`}>
-                  {action.icon}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Resumes</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.totalResumes}</p>
                 </div>
-                <CardTitle className="text-lg text-gray-900">{action.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center pt-0">
-                <p className="text-gray-600 text-sm leading-relaxed">{action.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Features Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-16">
-          <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
-            Why Choose TalentXcel?
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <div className="text-blue-600">{feature.icon}</div>
-                </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h4>
-                <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                <FileText className="w-8 h-8 text-blue-600" />
               </div>
-            ))}
-          </div>
-        </div>
+            </CardContent>
+          </Card>
 
-        {/* Recent Resumes Section */}
-        <div>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-gray-900">Recent Resumes</h3>
-            <Button variant="outline" onClick={() => navigate('/resume-builder/new')}>
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Create New
-            </Button>
-          </div>
-          
-          <Card className="text-center py-12">
-            <CardContent>
-              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h4 className="text-lg font-medium text-gray-900 mb-2">No resumes yet</h4>
-              <p className="text-gray-600 mb-6">
-                Start building your professional resume with TalentXcel
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button onClick={() => navigate('/resume-builder/new')}>
-                  <PlusCircle className="h-4 w-4 mr-2" />
-                  Create Resume
-                </Button>
-                <Button variant="outline" onClick={() => navigate('/resume-builder/upload')}>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Existing
-                </Button>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Avg ATS Score</p>
+                  <p className={`text-2xl font-bold ${getScoreColor(stats.averageAtsScore).split(' ')[0]}`}>
+                    {stats.averageAtsScore}%
+                  </p>
+                </div>
+                <Target className="w-8 h-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Profile Views</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.totalViews}</p>
+                </div>
+                <Eye className="w-8 h-8 text-purple-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Downloads</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.totalDownloads}</p>
+                </div>
+                <Download className="w-8 h-8 text-orange-600" />
               </div>
             </CardContent>
           </Card>
         </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid grid-cols-4 w-full max-w-md">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="resumes">Resumes</TabsTrigger>
+            <TabsTrigger value="optimization">AI Tools</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Quick Actions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="w-5 h-5" />
+                    Quick Actions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button onClick={createNewResume} className="w-full justify-start">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create New Resume
+                  </Button>
+                  <Link to="/resume-builder/upload" className="block">
+                    <Button variant="outline" className="w-full justify-start">
+                      <FileText className="w-4 h-4 mr-2" />
+                      Import Existing Resume
+                    </Button>
+                  </Link>
+                  <Link to="/resume-builder/checker" className="block">
+                    <Button variant="outline" className="w-full justify-start">
+                      <BarChart3 className="w-4 h-4 mr-2" />
+                      Check Resume Score
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              {/* Recent Activity */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5" />
+                    Recent Activity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {resumes.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No recent activity</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {resumes.slice(0, 3).map((resume) => (
+                        <div key={resume.id} className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">{resume.title}</p>
+                            <p className="text-sm text-gray-500">
+                              Updated {new Date(resume.updated_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <Badge className={getScoreColor(resume.ats_score || 0)}>
+                            {resume.ats_score || 0}%
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* AI-Powered Features */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <SmartProfileOptimizer />
+              <SmartJobMatcher />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="resumes" className="space-y-6">
+            {resumes.length === 0 ? (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-semibold mb-2">No resumes yet</h3>
+                  <p className="text-gray-600 mb-4">Create your first professional resume with our AI-powered builder</p>
+                  <Button onClick={createNewResume}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Your First Resume
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {resumes.map((resume) => (
+                  <Card key={resume.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-lg">{resume.title}</CardTitle>
+                          <p className="text-sm text-gray-500">
+                            Updated {new Date(resume.updated_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        {resume.is_primary && (
+                          <Badge variant="secondary">
+                            <Crown className="w-3 h-3 mr-1" />
+                            Primary
+                          </Badge>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium">ATS Score</span>
+                            <Badge className={getScoreColor(resume.ats_score || 0)}>
+                              {resume.ats_score || 0}%
+                            </Badge>
+                          </div>
+                          <Progress value={resume.ats_score || 0} className="w-full" />
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            className="flex-1"
+                            onClick={() => navigate(`/resume-builder/edit/${resume.id}`)}
+                          >
+                            <Edit className="w-3 h-3 mr-1" />
+                            Edit
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Download className="w-3 h-3" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Share className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="optimization" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" />
+                    AI Resume Enhancer
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Improve your resume content with AI-powered suggestions
+                  </p>
+                  <Button className="w-full">
+                    Enhance Resume
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="w-5 h-5" />
+                    ATS Optimizer
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Optimize your resume for Applicant Tracking Systems
+                  </p>
+                  <Button className="w-full" variant="outline">
+                    Optimize for ATS
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="w-5 h-5" />
+                    Skills Analyzer
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Analyze and improve your skills section
+                  </p>
+                  <Button className="w-full" variant="outline">
+                    Analyze Skills
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  Performance Analytics
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8 text-gray-500">
+                  <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-semibold mb-2">Analytics Coming Soon</h3>
+                  <p>Detailed analytics and insights about your resume performance</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

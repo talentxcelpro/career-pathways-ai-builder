@@ -1,4 +1,3 @@
-
 import { FileText, Upload, Edit, Download, Mail, Settings, CheckCircle } from "lucide-react";
 import ResumeDashboard from "../pages/resume/ResumeDashboard";
 import CreateResume from "../pages/resume/CreateResume";
@@ -9,6 +8,7 @@ import CoverLetterGenerator from "../pages/resume/CoverLetterGenerator";
 import EditCoverLetter from "../pages/resume/EditCoverLetter";
 import ResumeSettings from "../pages/resume/ResumeSettings";
 import ResumeChecker from "../pages/tools/ResumeChecker";
+import { EnhancedResumeBuilder } from "../components/resume/enhanced/EnhancedResumeBuilder";
 
 export const resumeRoutes = [
   {
@@ -36,13 +36,13 @@ export const resumeRoutes = [
     page: <ResumeChecker />,
   },
   {
-    title: "Edit Resume",
+    title: "Enhanced Resume Builder",
     to: "/resume-builder/edit/:id",
     icon: <Edit className="h-4 w-4" />,
-    page: <StreamlinedResumeBuilder />,
+    page: <EnhancedResumeBuilder />,
   },
   {
-    title: "Edit Resume (Alternative Path)",
+    title: "Streamlined Resume Builder (Legacy)",
     to: "/resume/edit/:id",
     icon: <Edit className="h-4 w-4" />,
     page: <StreamlinedResumeBuilder />,

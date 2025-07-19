@@ -1,433 +1,327 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Save, Download, Eye, Sparkles, RotateCcw, CheckCircle } from "lucide-react";
-import { toast } from "sonner";
-import { SectionManager } from './SectionManager';
-import { ResumePreview } from './ResumePreview';
-import { AIEnhancementPanel } from './AIEnhancementPanel';
-import { ATSScoreCard } from '../ATSScoreCard';
-import { 
-  EnhancedResumeData, 
-  DEFAULT_SECTION_CONFIG, 
-  ResumeSection, 
-  SECTION_METADATA 
-} from "@/types/enhanced-resume";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Save, Download, Share, Eye, Sparkles, Target, BarChart3, Palette } from 'lucide-react';
+import { EnhancedResumeData } from '@/types/enhanced-resume';
+import { ResumeHeader } from './ResumeHeader';
+import { DraggableSection } from '../DraggableSection';
+import { PersonalInfoSection } from './sections/PersonalInfoSection';
+import { ExperienceSection } from './sections/ExperienceSection';
+import { EducationSection } from './sections/EducationSection';
+import { SkillsSection } from './sections/SkillsSection';
+import { ProjectsSection } from './sections/ProjectsSection';
+import { IntelligentResumePreview } from './IntelligentResumePreview';
+import { ContentIntelligencePanel } from './ContentIntelligencePanel';
+import { TemplateSelector } from './TemplateSelector';
+import { ATSOptimizer } from './ATSOptimizer';
+import { ResumeAnalytics } from './ResumeAnalytics';
+import { ExportOptions } from './ExportOptions';
+import { useResumeBuilder } from '@/hooks/useResumeBuilder';
+import { useResumeAnalytics } from '@/hooks/useResumeAnalytics';
+import { useContentIntelligence } from '@/hooks/useContentIntelligence';
 
 interface EnhancedResumeBuilderProps {
-  initialData?: Partial<EnhancedResumeData>;
-  onSave?: (data: EnhancedResumeData) => void;
-  onExport?: (data: EnhancedResumeData) => void;
+  initialData?: EnhancedResumeData;
+  onSave?: (data: EnhancedResumeData) => Promise<void>;
+  onExport?: (data: EnhancedResumeData) => Promise<void>;
+  mode?: 'create' | 'edit';
 }
 
 export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   initialData,
   onSave,
-  onExport
+  onExport,
+  mode = 'create'
 }) => {
-  const [resumeData, setResumeData] = useState<EnhancedResumeData>(() => {
-    const defaultData: EnhancedResumeData = {
-      personalInfo: {
-        fullName: '',
-        email: '',
-        phone: '',
-        location: '',
-        summary: '',
-        linkedin: '',
-        website: '',
-        github: ''
-      },
-      professionalSummary: {
-        content: '',
-        keyHighlights: []
-      },
-      experience: [],
-      education: [],
-      skills: [],
-      projects: [],
-      certifications: [],
-      awards: [],
-      languages: [],
-      publications: [],
-      references: [],
-      volunteerWork: [],
-      trainings: [],
-      tools: {
-        development: [],
-        design: [],
-        analytics: [],
-        productivity: [],
-        other: []
-      },
-      careerObjectives: {
-        statement: '',
-        goals: []
-      },
-      sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
-      sectionConfig: DEFAULT_SECTION_CONFIG,
-      selectedTemplate: 'modern',
-      customization: {
-        colorScheme: 'blue',
-        fontFamily: 'Inter',
-        fontSize: 12,
-        spacing: 'normal'
-      }
-    };
+  const [activeTab, setActiveTab] = useState('content');
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-    if (initialData) {
-      return {
-        ...defaultData,
-        ...initialData,
-        personalInfo: {
-          ...defaultData.personalInfo,
-          ...initialData.personalInfo
-        },
-        professionalSummary: {
-          ...defaultData.professionalSummary,
-          ...initialData.professionalSummary
-        },
-        customization: {
-          ...defaultData.customization,
-          ...initialData.customization
-        }
-      };
-    }
+  const {
+    resumeData,
+    updateResumeData,
+    isSaving,
+    hasChanges,
+    saveResume,
+    exportResume
+  } = useResumeBuilder(initialData);
 
-    return defaultData;
-  });
+  const {
+    overallScore,
+    atsScore,
+    suggestions,
+    refreshAnalysis
+  } = useResumeAnalytics(resumeData);
 
-  const [activeTab, setActiveTab] = useState('build');
-  const [isEnhancing, setIsEnhancing] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
-  const [atsScore, setAtsScore] = useState(75);
+  const {
+    grammarIssues,
+    contentSuggestions,
+    industryKeywords,
+    runContentAnalysis
+  } = useContentIntelligence(resumeData);
 
-  // Auto-save functionality
   useEffect(() => {
-    const autoSave = setTimeout(() => {
-      handleSave();
-    }, 30000); // Auto-save every 30 seconds
-
-    return () => clearTimeout(autoSave);
+    if (resumeData) {
+      refreshAnalysis();
+      runContentAnalysis();
+    }
   }, [resumeData]);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     try {
-      setSaveStatus('saving');
-      await onSave?.(resumeData);
-      setSaveStatus('saved');
-      toast.success('Resume saved successfully');
-      
-      setTimeout(() => setSaveStatus('idle'), 2000);
-    } catch (error) {
-      setSaveStatus('error');
-      toast.error('Failed to save resume');
-      console.error('Save error:', error);
-    }
-  };
-
-  const handleExport = async () => {
-    try {
-      await onExport?.(resumeData);
-      toast.success('Resume exported successfully');
-    } catch (error) {
-      toast.error('Failed to export resume');
-      console.error('Export error:', error);
-    }
-  };
-
-  const handleDataChange = (section: keyof EnhancedResumeData, data: any) => {
-    setResumeData(prev => ({
-      ...prev,
-      [section]: data
-    }));
-  };
-
-  const handleSectionOrderChange = (newOrder: string[]) => {
-    setResumeData(prev => ({
-      ...prev,
-      sectionOrder: newOrder
-    }));
-  };
-
-  const handleSectionConfigChange = (newConfig: ResumeSection[]) => {
-    setResumeData(prev => ({
-      ...prev,
-      sectionConfig: newConfig
-    }));
-  };
-
-  const handleEnhanceSection = async (sectionType: string, content: any) => {
-    setIsEnhancing(true);
-    try {
-      // Simulate AI enhancement
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock enhanced content
-      const enhancedContent = {
-        ...content,
-        enhanced: true,
-        improvements: ['Added action verbs', 'Quantified achievements', 'Improved formatting']
-      };
-      
-      handleDataChange(sectionType as keyof EnhancedResumeData, enhancedContent);
-      toast.success(`${sectionType} enhanced successfully`);
-    } catch (error) {
-      toast.error('Enhancement failed');
-      console.error('Enhancement error:', error);
-    } finally {
-      setIsEnhancing(false);
-    }
-  };
-
-  const calculateProgress = () => {
-    const requiredSections = ['personalInfo', 'experience'];
-    const completedSections = requiredSections.filter(section => {
-      const data = resumeData[section as keyof EnhancedResumeData];
-      if (Array.isArray(data)) {
-        return data.length > 0;
+      await saveResume();
+      if (onSave) {
+        await onSave(resumeData);
       }
-      if (typeof data === 'object' && data !== null) {
-        return Object.values(data).some(value => 
-          value !== '' && value !== null && value !== undefined
-        );
-      }
-      return false;
-    });
-    
-    return (completedSections.length / requiredSections.length) * 100;
-  };
-
-  const renderSectionContent = (sectionType: string) => {
-    const metadata = SECTION_METADATA[sectionType as keyof typeof SECTION_METADATA];
-    
-    if (!metadata) return null;
-
-    switch (sectionType) {
-      case 'personalInfo':
-        return (
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="fullName">Full Name *</Label>
-                <Input
-                  id="fullName"
-                  value={resumeData.personalInfo.fullName}
-                  onChange={(e) => handleDataChange('personalInfo', {
-                    ...resumeData.personalInfo,
-                    fullName: e.target.value
-                  })}
-                  placeholder="John Doe"
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={resumeData.personalInfo.email}
-                  onChange={(e) => handleDataChange('personalInfo', {
-                    ...resumeData.personalInfo,
-                    email: e.target.value
-                  })}
-                  placeholder="john@example.com"
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  value={resumeData.personalInfo.phone}
-                  onChange={(e) => handleDataChange('personalInfo', {
-                    ...resumeData.personalInfo,
-                    phone: e.target.value
-                  })}
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
-              <div>
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  value={resumeData.personalInfo.location}
-                  onChange={(e) => handleDataChange('personalInfo', {
-                    ...resumeData.personalInfo,
-                    location: e.target.value
-                  })}
-                  placeholder="New York, NY"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="summary">Professional Summary</Label>
-              <Textarea
-                id="summary"
-                value={resumeData.personalInfo.summary}
-                onChange={(e) => handleDataChange('personalInfo', {
-                  ...resumeData.personalInfo,
-                  summary: e.target.value
-                })}
-                placeholder="Brief professional summary..."
-                rows={3}
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="linkedin">LinkedIn</Label>
-                <Input
-                  id="linkedin"
-                  value={resumeData.personalInfo.linkedin || ''}
-                  onChange={(e) => handleDataChange('personalInfo', {
-                    ...resumeData.personalInfo,
-                    linkedin: e.target.value
-                  })}
-                  placeholder="linkedin.com/in/johndoe"
-                />
-              </div>
-              <div>
-                <Label htmlFor="website">Website</Label>
-                <Input
-                  id="website"
-                  value={resumeData.personalInfo.website || ''}
-                  onChange={(e) => handleDataChange('personalInfo', {
-                    ...resumeData.personalInfo,
-                    website: e.target.value
-                  })}
-                  placeholder="www.johndoe.com"
-                />
-              </div>
-              <div>
-                <Label htmlFor="github">GitHub</Label>
-                <Input
-                  id="github"
-                  value={resumeData.personalInfo.github || ''}
-                  onChange={(e) => handleDataChange('personalInfo', {
-                    ...resumeData.personalInfo,
-                    github: e.target.value
-                  })}
-                  placeholder="github.com/johndoe"
-                />
-              </div>
-            </div>
-          </div>
-        );
-      default:
-        return (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>Section editor for {metadata.title} will be implemented here</p>
-          </div>
-        );
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error('Failed to save resume:', error);
     }
+  }, [saveResume, onSave, resumeData]);
+
+  const handleExport = useCallback(async (format: string) => {
+    try {
+      await exportResume(format);
+      if (onExport) {
+        await onExport(resumeData);
+      }
+    } catch (error) {
+      console.error('Failed to export resume:', error);
+    }
+  }, [exportResume, onExport, resumeData]);
+
+  const getScoreColor = (score: number) => {
+    if (score >= 85) return 'text-green-600';
+    if (score >= 70) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
-  const enabledSections = resumeData.sectionConfig?.filter(section => section.enabled) || [];
-  const progress = calculateProgress();
+  if (!resumeData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Resume Builder</h1>
-              <p className="text-gray-600">Create and customize your professional resume</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Progress value={progress} className="w-32" />
-                <span className="text-sm text-gray-600">{Math.round(progress)}% complete</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+      <ResumeHeader
+        mode={mode}
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+        hasChanges={hasChanges}
+        onSave={handleSave}
+        resumeData={resumeData}
+        onEnhancementApplied={updateResumeData}
+      />
+
+      <div className="container mx-auto px-4 py-6">
+        {/* Quick Stats Bar */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className={`text-2xl font-bold ${getScoreColor(overallScore)}`}>
+                {overallScore}%
               </div>
-              <Button
-                onClick={handleSave}
-                disabled={saveStatus === 'saving'}
-                className="flex items-center gap-2"
-              >
-                {saveStatus === 'saving' ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                    Saving...
-                  </>
-                ) : saveStatus === 'saved' ? (
-                  <>
-                    <CheckCircle className="h-4 w-4" />
-                    Saved
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    Save
-                  </>
-                )}
-              </Button>
-              <Button onClick={handleExport} variant="outline">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-            </div>
-          </div>
+              <div className="text-sm text-gray-600">Overall Score</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className={`text-2xl font-bold ${getScoreColor(atsScore)}`}>
+                {atsScore}%
+              </div>
+              <div className="text-sm text-gray-600">ATS Compatible</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-blue-600">
+                {suggestions.length}
+              </div>
+              <div className="text-sm text-gray-600">Improvements</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-purple-600">
+                {grammarIssues.length}
+              </div>
+              <div className="text-sm text-gray-600">Grammar Issues</div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Main Content */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="build">Build</TabsTrigger>
-            <TabsTrigger value="sections">Sections</TabsTrigger>
-            <TabsTrigger value="enhance">Enhance</TabsTrigger>
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-          </TabsList>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content Area */}
+          <div className="lg:col-span-2">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid grid-cols-5 w-full mb-6">
+                <TabsTrigger value="content" className="flex items-center gap-2">
+                  <span>Content</span>
+                </TabsTrigger>
+                <TabsTrigger value="design" className="flex items-center gap-2">
+                  <Palette className="w-4 h-4" />
+                  <span>Design</span>
+                </TabsTrigger>
+                <TabsTrigger value="optimize" className="flex items-center gap-2">
+                  <Target className="w-4 h-4" />
+                  <span>Optimize</span>
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4" />
+                  <span>Analytics</span>
+                </TabsTrigger>
+                <TabsTrigger value="export" className="flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  <span>Export</span>
+                </TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="build" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-6">
-                {enabledSections.map((section) => (
-                  <Card key={section.id}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        {SECTION_METADATA[section.id]?.title || section.title}
-                        {section.required && <Badge variant="destructive">Required</Badge>}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {renderSectionContent(section.id)}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <div className="space-y-6">
-                <ATSScoreCard score={atsScore} />
-                <ResumePreview data={resumeData} />
-              </div>
-            </div>
-          </TabsContent>
+              <TabsContent value="content" className="space-y-6">
+                <div className="space-y-6">
+                  <DraggableSection
+                    id="personalInfo"
+                    title="Personal Information"
+                    description="Your contact details and professional summary"
+                  >
+                    <PersonalInfoSection
+                      data={resumeData.personalInfo}
+                      onChange={(data) => updateResumeData({ personalInfo: data })}
+                      suggestions={contentSuggestions.personalInfo || []}
+                    />
+                  </DraggableSection>
 
-          <TabsContent value="sections">
-            <SectionManager
-              sections={resumeData.sectionConfig || DEFAULT_SECTION_CONFIG}
-              onSectionOrderChange={handleSectionOrderChange}
-              onSectionConfigChange={handleSectionConfigChange}
+                  <DraggableSection
+                    id="experience"
+                    title="Work Experience"
+                    description="Your professional work history and achievements"
+                  >
+                    <ExperienceSection
+                      data={resumeData.experience}
+                      onChange={(data) => updateResumeData({ experience: data })}
+                      suggestions={contentSuggestions.experience || []}
+                      industryKeywords={industryKeywords}
+                    />
+                  </DraggableSection>
+
+                  <DraggableSection
+                    id="education"
+                    title="Education"
+                    description="Your educational background and qualifications"
+                  >
+                    <EducationSection
+                      data={resumeData.education}
+                      onChange={(data) => updateResumeData({ education: data })}
+                      suggestions={contentSuggestions.education || []}
+                    />
+                  </DraggableSection>
+
+                  <DraggableSection
+                    id="skills"
+                    title="Skills"
+                    description="Your technical and soft skills"
+                  >
+                    <SkillsSection
+                      data={resumeData.skills}
+                      onChange={(data) => updateResumeData({ skills: data })}
+                      suggestions={contentSuggestions.skills || []}
+                      industryKeywords={industryKeywords}
+                    />
+                  </DraggableSection>
+
+                  <DraggableSection
+                    id="projects"
+                    title="Projects"
+                    description="Notable projects and achievements"
+                  >
+                    <ProjectsSection
+                      data={resumeData.projects}
+                      onChange={(data) => updateResumeData({ projects: data })}
+                      suggestions={contentSuggestions.projects || []}
+                    />
+                  </DraggableSection>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="design">
+                <TemplateSelector
+                  selectedTemplate={resumeData.selectedTemplate}
+                  customization={resumeData.customization}
+                  onTemplateChange={(template) => updateResumeData({ selectedTemplate: template })}
+                  onCustomizationChange={(customization) => updateResumeData({ customization })}
+                />
+              </TabsContent>
+
+              <TabsContent value="optimize">
+                <ATSOptimizer
+                  resumeData={resumeData}
+                  onOptimize={updateResumeData}
+                  atsScore={atsScore}
+                  suggestions={suggestions}
+                />
+              </TabsContent>
+
+              <TabsContent value="analytics">
+                <ResumeAnalytics
+                  resumeData={resumeData}
+                  overallScore={overallScore}
+                  atsScore={atsScore}
+                  suggestions={suggestions}
+                />
+              </TabsContent>
+
+              <TabsContent value="export">
+                <ExportOptions
+                  resumeData={resumeData}
+                  onExport={handleExport}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="w-5 h-5" />
+                  Live Preview
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  variant={isPreviewMode ? "default" : "outline"}
+                  onClick={() => setIsPreviewMode(!isPreviewMode)}
+                  className="w-full mb-4"
+                >
+                  {isPreviewMode ? "Exit Preview" : "Preview Resume"}
+                </Button>
+                <IntelligentResumePreview
+                  data={resumeData}
+                  template={resumeData.selectedTemplate}
+                  customization={resumeData.customization}
+                  compact={!isPreviewMode}
+                />
+              </CardContent>
+            </Card>
+
+            <ContentIntelligencePanel
+              grammarIssues={grammarIssues}
+              suggestions={contentSuggestions}
+              industryKeywords={industryKeywords}
+              onApplySuggestion={(suggestion) => {
+                // Apply suggestion logic here
+                console.log('Applying suggestion:', suggestion);
+              }}
             />
-          </TabsContent>
-
-          <TabsContent value="enhance">
-            <AIEnhancementPanel
-              resumeData={resumeData}
-              onDataUpdate={setResumeData}
-              atsScore={atsScore}
-            />
-          </TabsContent>
-
-          <TabsContent value="preview">
-            <ResumePreview data={resumeData} fullPage />
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
       </div>
     </div>
   );
