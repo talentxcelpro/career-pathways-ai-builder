@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { EnhancedResumeData } from '@/types/enhanced-resume';
 import { useResumeBuilder } from '@/hooks/useResumeBuilder';
 import { ResumeHeader } from './ResumeHeader';
+import { ResumeEditor } from '../ResumeEditor';
+import { ResumePreview } from '../ResumePreview';
 
 interface UnifiedResumeInterfaceProps {
   mode: 'edit' | 'create';
@@ -70,35 +72,33 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Editor Panel */}
           <div className="space-y-6">
-            <div className="bg-card rounded-lg border p-6">
-              <h2 className="text-lg font-semibold mb-4">Resume Editor</h2>
-              <p className="text-muted-foreground">
-                Resume editor interface will be implemented here.
-              </p>
-              
-              {/* Debug info in development */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="mt-4 p-4 bg-muted rounded-lg">
-                  <h3 className="font-medium mb-2">Debug Info:</h3>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>Mode: {mode}</li>
-                    <li>Has Changes: {hasChanges ? 'Yes' : 'No'}</li>
-                    <li>Is Saving: {isSaving ? 'Yes' : 'No'}</li>
-                    <li>Name: {resumeData.personalInfo.fullName || 'Empty'}</li>
-                    <li>Sections: {resumeData.sectionOrder.length}</li>
-                  </ul>
-                </div>
-              )}
+            <div className="bg-card rounded-lg border">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold">Resume Editor</h2>
+                <p className="text-sm text-muted-foreground">Edit your resume content below</p>
+              </div>
+              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <ResumeEditor
+                  content={resumeData}
+                  onChange={updateResumeData}
+                />
+              </div>
             </div>
           </div>
 
           {/* Preview Panel */}
           <div className="space-y-6">
-            <div className="bg-card rounded-lg border p-6">
-              <h2 className="text-lg font-semibold mb-4">Live Preview</h2>
-              <p className="text-muted-foreground">
-                Resume preview will be shown here.
-              </p>
+            <div className="bg-card rounded-lg border">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold">Live Preview</h2>
+                <p className="text-sm text-muted-foreground">See how your resume looks</p>
+              </div>
+              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <ResumePreview
+                  content={resumeData}
+                  fullPage={false}
+                />
+              </div>
             </div>
           </div>
         </div>
