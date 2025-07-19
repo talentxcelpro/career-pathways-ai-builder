@@ -1,35 +1,39 @@
 
 import { FileText, Upload, Edit, Download, Mail, Settings, CheckCircle, Palette } from "lucide-react";
-import ResumeDashboard from "../pages/resume/ResumeDashboard";
-import CreateResume from "../pages/resume/CreateResume";
+import AppleResumeDashboard from "../pages/resume/AppleResumeDashboard";
+import AppleTemplateSelection from "../pages/resume/AppleTemplateSelection";
+import AppleResumeEditor from "../pages/resume/AppleResumeEditor";
+import AppleResumeChecker from "../pages/resume/AppleResumeChecker";
 import UploadResume from "../pages/resume/UploadResume";
-import { StreamlinedResumeBuilder } from "../components/resume/StreamlinedResumeBuilder";
 import ExportResume from "../pages/resume/ExportResume";
 import CoverLetterGenerator from "../pages/resume/CoverLetterGenerator";
 import EditCoverLetter from "../pages/resume/EditCoverLetter";
 import ResumeSettings from "../pages/resume/ResumeSettings";
-import ResumeChecker from "../pages/tools/ResumeChecker";
-import { UnifiedResumeInterface } from "../components/resume/enhanced/UnifiedResumeInterface";
-import TemplateSelectionPage from "../pages/resume/TemplateSelectionPage";
 
 export const resumeRoutes = [
   {
     title: "TalentXcel Resume Dashboard",
     to: "/resume-builder",
     icon: <FileText className="h-4 w-4" />,
-    page: <ResumeDashboard />,
+    page: <AppleResumeDashboard />,
   },
   {
     title: "Template Selection",
     to: "/resume-builder/templates",
     icon: <Palette className="h-4 w-4" />,
-    page: <TemplateSelectionPage />,
+    page: <AppleTemplateSelection />,
   },
   {
     title: "Create New Resume",
     to: "/resume-builder/new",
     icon: <Edit className="h-4 w-4" />,
-    page: <CreateResume />,
+    page: <AppleResumeEditor />,
+  },
+  {
+    title: "Edit Resume",
+    to: "/resume-builder/edit/:id",
+    icon: <Edit className="h-4 w-4" />,
+    page: <AppleResumeEditor />,
   },
   {
     title: "Upload Resume",
@@ -41,25 +45,7 @@ export const resumeRoutes = [
     title: "TalentXcel Resume Checker",
     to: "/resume-builder/checker",
     icon: <CheckCircle className="h-4 w-4" />,
-    page: <ResumeChecker />,
-  },
-  {
-    title: "Edit Resume - New",
-    to: "/resume-builder/edit/new",
-    icon: <Edit className="h-4 w-4" />,
-    page: <UnifiedResumeInterface mode="create" />,
-  },
-  {
-    title: "Edit Resume",
-    to: "/resume-builder/edit/:id",
-    icon: <Edit className="h-4 w-4" />,
-    page: <UnifiedResumeInterface mode="edit" />,
-  },
-  {
-    title: "Edit Resume (Alternative Path)",
-    to: "/resume/edit/:id",
-    icon: <Edit className="h-4 w-4" />,
-    page: <StreamlinedResumeBuilder />,
+    page: <AppleResumeChecker />,
   },
   {
     title: "Export Resume",
