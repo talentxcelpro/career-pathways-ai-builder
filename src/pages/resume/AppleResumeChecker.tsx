@@ -1,418 +1,272 @@
 
-import React, { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useDropzone } from 'react-dropzone';
-import { AppleCard, AppleCardContent, AppleCardHeader, AppleCardTitle } from '@/components/ui/apple-card';
-import { AppleButton } from '@/components/ui/apple-button';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { 
-  Upload, 
-  FileText, 
-  CheckCircle, 
-  AlertTriangle,
-  Sparkles,
-  Brain,
-  Target,
-  TrendingUp,
-  Eye,
-  Award,
-  Download,
-  RefreshCw
-} from 'lucide-react';
-import { ResumeAnalysisService, ComprehensiveResumeAnalysis } from '@/services/resumeAnalysisService';
-import { AnalysisResults } from '@/components/resume/AnalysisResults';
-import { JobDescriptionInput } from '@/components/resume/JobDescriptionInput';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Upload, FileText, CheckCircle, AlertTriangle, Sparkles, Download, Eye, Share } from "lucide-react";
+import { EnhancedFileUpload } from "@/components/resume/EnhancedFileUpload";
+import { AnalysisResults } from "@/components/resume/AnalysisResults";
+import { JobDescriptionInput } from "@/components/resume/JobDescriptionInput";
+import { ResumeAnalysisService } from "@/services/resumeAnalysisService";
 
-interface UploadedFile {
-  file: File;
-  content?: string;
-  processing: boolean;
-}
-
-export default function AppleResumeChecker() {
-  const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
-  const [analysis, setAnalysis] = useState<ComprehensiveResumeAnalysis | null>(null);
+const AppleResumeChecker = () => {
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [jobDescription, setJobDescription] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisProgress, setAnalysisProgress] = useState(0);
-  const { toast } = useToast();
+  const [analysisResults, setAnalysisResults] = useState<any>(null);
+  const [progress, setProgress] = useState(0);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
+  const steps = [
+    { title: 'Upload Resume', description: 'Upload your resume for analysis' },
+    { title: 'Job Details', description: 'Add target job information (optional)' },
+    { title: 'Analysis', description: 'AI-powered resume analysis' },
+    { title: 'Results', description: 'View detailed feedback and suggestions' }
+  ];
 
-    if (file.size > 10 * 1024 * 1024) { // 10MB limit
-      toast({
-        title: "File too large",
-        description: "Please upload a file smaller than 10MB",
-        variant: "destructive"
-      });
-      return;
+  const handleFileUpload = (files: FileList) => {
+    if (files.length > 0) {
+      setUploadedFile(files[0]);
+      setCurrentStep(1);
     }
-
-    setUploadedFile({ file, processing: true });
-    
-    try {
-      // Extract text content from file
-      const text = await extractTextFromFile(file);
-      setUploadedFile({ file, content: text, processing: false });
-      
-      toast({
-        title: "File uploaded successfully",
-        description: `${file.name} is ready for analysis`,
-      });
-    } catch (error) {
-      console.error('File processing error:', error);
-      toast({
-        title: "Upload failed",
-        description: "Could not process the file. Please try again.",
-        variant: "destructive"
-      });
-      setUploadedFile(null);
-    }
-  }, [toast]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'application/pdf': ['.pdf'],
-      'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-      'text/plain': ['.txt']
-    },
-    multiple: false
-  });
-
-  const extractTextFromFile = async (file: File): Promise<string> => {
-    // Simulate text extraction - in real implementation, use PDF.js, mammoth.js, etc.
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        // Mock extraction - replace with actual extraction logic
-        const mockContent = `
-        John Doe
-        Senior Software Engineer
-        john.doe@email.com | (555) 123-4567 | San Francisco, CA
-        
-        PROFESSIONAL SUMMARY
-        Experienced software engineer with 8+ years developing scalable web applications. 
-        Led teams of 5+ engineers and increased system performance by 40%.
-        
-        EXPERIENCE
-        Senior Software Engineer | TechCorp | 2020-Present
-        • Led development of microservices architecture serving 1M+ users
-        • Implemented CI/CD pipeline reducing deployment time by 60%
-        • Mentored 3 junior developers and improved team productivity by 25%
-        
-        Software Engineer | StartupXYZ | 2018-2020
-        • Developed React-based dashboard increasing user engagement by 35%
-        • Optimized database queries improving response time by 50%
-        
-        EDUCATION
-        Bachelor of Science in Computer Science | University of Technology | 2018
-        
-        SKILLS
-        JavaScript, React, Node.js, Python, AWS, Docker, MongoDB, PostgreSQL
-        `;
-        resolve(mockContent);
-      };
-      reader.readAsText(file);
-    });
   };
 
-  const handleAnalysis = async (jobDescription?: string, jobTitle?: string, industry?: string, company?: string) => {
-    if (!uploadedFile?.content) {
-      toast({
-        title: "No resume uploaded",
-        description: "Please upload a resume first",
-        variant: "destructive"
-      });
-      return;
-    }
+  const handleJobDescriptionSubmit = (data: { description: string; jobTitle: string; company: string; industry: string }) => {
+    setJobDescription(data.description);
+    setCurrentStep(2);
+    startAnalysis();
+  };
+
+  const skipJobDescription = () => {
+    setCurrentStep(2);
+    startAnalysis();
+  };
+
+  const startAnalysis = async () => {
+    if (!uploadedFile) return;
 
     setIsAnalyzing(true);
-    setAnalysisProgress(0);
-
-    // Simulate progress updates
-    const progressInterval = setInterval(() => {
-      setAnalysisProgress(prev => {
-        if (prev >= 90) {
-          clearInterval(progressInterval);
-          return 90;
-        }
-        return prev + Math.random() * 15;
-      });
-    }, 500);
+    setProgress(0);
 
     try {
-      const result = await ResumeAnalysisService.analyzeResume(
-        uploadedFile.content,
-        jobDescription,
-        industry
-      );
+      // Simulate progress updates
+      const progressSteps = [10, 25, 40, 60, 80, 95, 100];
+      for (const step of progressSteps) {
+        setProgress(step);
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      // Perform actual analysis
+      const analysisService = new ResumeAnalysisService();
+      const results = await analysisService.analyzeResume(uploadedFile, jobDescription);
       
-      setAnalysis(result);
-      setAnalysisProgress(100);
-      
-      toast({
-        title: "Analysis completed!",
-        description: `Your resume scored ${result.overallScore}/100`,
-      });
+      setAnalysisResults(results);
+      setCurrentStep(3);
     } catch (error) {
-      console.error('Analysis error:', error);
-      toast({
-        title: "Analysis failed",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive"
-      });
+      console.error('Analysis failed:', error);
     } finally {
-      clearInterval(progressInterval);
       setIsAnalyzing(false);
     }
   };
 
-  const handleReanalyze = () => {
-    setAnalysis(null);
-    setAnalysisProgress(0);
-  };
-
-  const downloadReport = () => {
-    if (!analysis) return;
-    
-    // Create downloadable report
-    const report = `
-Resume Analysis Report
-======================
-
-Overall Score: ${analysis.overallScore}/100
-Grade: ${analysis.grade}
-
-Sub-Scores:
-- ATS Compatibility: ${analysis.subScores.ats}/100
-- Keywords: ${analysis.subScores.keywords}/100
-- Content Quality: ${analysis.subScores.content}/100
-- Format: ${analysis.subScores.format}/100
-- Achievements: ${analysis.subScores.achievements}/100
-
-Industry Benchmark: ${analysis.industryBenchmark.percentile}th percentile
-
-Key Insights:
-${analysis.actionableInsights.map(insight => 
-  `- ${insight.category}: ${insight.issue}\n  Solution: ${insight.solution}\n  Impact: ${insight.impact}`
-).join('\n\n')}
-`;
-
-    const blob = new Blob([report], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'resume-analysis-report.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const resetChecker = () => {
+    setCurrentStep(0);
+    setUploadedFile(null);
+    setJobDescription('');
+    setAnalysisResults(null);
+    setProgress(0);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Hero Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-4"
-        >
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="relative">
-              <Brain className="w-8 h-8 text-blue-600" />
-              <Sparkles className="w-4 h-4 text-yellow-500 absolute -top-1 -right-1" />
-            </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              AI Resume Checker
-            </h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Header */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <Button variant="ghost" onClick={() => navigate('/resume-builder')} className="flex items-center text-slate-600 hover:text-slate-900">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+            <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+              <Sparkles className="w-3 h-3 mr-1" />
+              AI-Powered Resume Checker
+            </Badge>
           </div>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Get comprehensive ATS analysis, keyword optimization, and actionable insights to make your resume stand out
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Free AI Resume Checker
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Get instant feedback on your resume with our AI-powered analysis. 
+            Check ATS compatibility, optimize keywords, and improve your content.
           </p>
-          
-          {/* Feature Highlights */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 max-w-4xl mx-auto">
-            {[
-              { icon: Target, title: 'ATS Optimization', desc: 'Beat applicant tracking systems' },
-              { icon: Award, title: 'Keyword Analysis', desc: 'Match job requirements' },
-              { icon: TrendingUp, title: 'Content Quality', desc: 'Improve impact & clarity' },
-              { icon: Eye, title: 'Visual Insights', desc: 'Recruiter attention heatmap' }
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                className="text-center p-4 rounded-xl bg-white/50 border border-gray-200"
-              >
-                <feature.icon className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-                <div className="font-medium text-sm">{feature.title}</div>
-                <div className="text-xs text-gray-600">{feature.desc}</div>
-              </motion.div>
+        </div>
+
+        {/* Progress Indicator */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center mb-6">
+            {steps.map((step, index) => (
+              <div key={index} className="flex items-center">
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
+                    index < currentStep
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : index === currentStep
+                        ? 'bg-blue-500 border-blue-500 text-white'
+                        : 'bg-white border-gray-300 text-gray-400'
+                  }`}
+                >
+                  {index < currentStep ? (
+                    <CheckCircle className="h-5 w-5" />
+                  ) : (
+                    <span className="text-sm font-medium">{index + 1}</span>
+                  )}
+                </div>
+                {index < steps.length - 1 && (
+                  <div
+                    className={`w-16 h-0.5 mx-2 ${
+                      index < currentStep ? 'bg-green-500' : 'bg-gray-300'
+                    }`}
+                  />
+                )}
+              </div>
             ))}
           </div>
-        </motion.div>
+          
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              {steps[currentStep]?.title}
+            </h2>
+            <p className="text-gray-600">{steps[currentStep]?.description}</p>
+          </div>
+        </div>
 
-        <AnimatePresence mode="wait">
-          {!uploadedFile && (
-            <motion.div
-              key="upload"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="max-w-2xl mx-auto"
-            >
-              {/* Upload Section */}
-              <AppleCard className="overflow-hidden">
-                <AppleCardHeader className="text-center">
-                  <AppleCardTitle className="text-2xl">Upload Your Resume</AppleCardTitle>
-                  <p className="text-gray-600">Support for PDF, DOC, DOCX, and TXT files</p>
-                </AppleCardHeader>
-                <AppleCardContent>
-                  <div
-                    {...getRootProps()}
-                    className={`
-                      relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer
-                      transition-all duration-300 hover:border-blue-400 hover:bg-blue-50/50
-                      ${isDragActive ? 'border-blue-500 bg-blue-50 scale-105' : 'border-gray-300'}
-                    `}
-                  >
-                    <input {...getInputProps()} />
-                    <motion.div
-                      animate={isDragActive ? { scale: 1.1 } : { scale: 1 }}
-                      className="space-y-4"
-                    >
-                      <Upload className="w-16 h-16 text-gray-400 mx-auto" />
-                      <div>
-                        <p className="text-lg font-medium text-gray-700">
-                          {isDragActive ? 'Drop your resume here' : 'Drag & drop your resume'}
-                        </p>
-                        <p className="text-gray-500 mt-2">
-                          or <span className="text-blue-600 font-medium">browse files</span>
-                        </p>
-                      </div>
-                      <div className="flex justify-center gap-2">
-                        {['PDF', 'DOC', 'DOCX', 'TXT'].map(format => (
-                          <Badge key={format} variant="secondary" className="text-xs">
-                            {format}
-                          </Badge>
-                        ))}
-                      </div>
-                    </motion.div>
-                  </div>
-                </AppleCardContent>
-              </AppleCard>
-            </motion.div>
-          )}
+        {/* Step Content */}
+        {currentStep === 0 && (
+          <div className="max-w-4xl mx-auto">
+            <EnhancedFileUpload
+              onFileSelect={handleFileUpload}
+              isProcessing={false}
+              processingProgress={0}
+              processingStatus=""
+            />
+            
+            {/* Features */}
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="text-center">
+                <CardContent className="p-6">
+                  <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                  <h3 className="font-semibold mb-2">ATS Compatibility</h3>
+                  <p className="text-sm text-gray-600">Ensure your resume passes applicant tracking systems</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="text-center">
+                <CardContent className="p-6">
+                  <Sparkles className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+                  <h3 className="font-semibold mb-2">AI Enhancement</h3>
+                  <p className="text-sm text-gray-600">Get intelligent suggestions to improve your content</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="text-center">
+                <CardContent className="p-6">
+                  <AlertTriangle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
+                  <h3 className="font-semibold mb-2">Keyword Optimization</h3>
+                  <p className="text-sm text-gray-600">Match your resume to job requirements</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
 
-          {uploadedFile && !analysis && (
-            <motion.div
-              key="analyze"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
-            >
-              {/* File Info */}
-              <AppleCard className="max-w-2xl mx-auto">
-                <AppleCardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-blue-100 rounded-xl">
-                      <FileText className="w-6 h-6 text-blue-600" />
+        {currentStep === 1 && (
+          <div className="max-w-2xl mx-auto">
+            <JobDescriptionInput
+              onSubmit={handleJobDescriptionSubmit}
+              onSkip={skipJobDescription}
+              uploadedFileName={uploadedFile?.name}
+            />
+          </div>
+        )}
+
+        {currentStep === 2 && (
+          <div className="max-w-2xl mx-auto">
+            <Card>
+              <CardContent className="p-8 text-center">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="relative">
+                    <Sparkles className="h-16 w-16 text-blue-500 animate-pulse" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="h-8 w-8 bg-blue-500 rounded-full animate-ping opacity-75"></div>
                     </div>
-                    <div className="flex-1">
-                      <div className="font-medium">{uploadedFile.file.name}</div>
-                      <div className="text-sm text-gray-500">
-                        {(uploadedFile.file.size / 1024).toFixed(1)} KB • Ready for analysis
-                      </div>
-                    </div>
-                    {uploadedFile.processing ? (
-                      <div className="animate-spin">
-                        <RefreshCw className="w-5 h-5 text-blue-600" />
-                      </div>
-                    ) : (
-                      <CheckCircle className="w-5 h-5 text-green-500" />
-                    )}
                   </div>
-                </AppleCardContent>
-              </AppleCard>
-
-              {/* Job Description Input */}
-              <JobDescriptionInput 
-                onAnalyze={handleAnalysis}
-                isAnalyzing={isAnalyzing}
-              />
-
-              {/* Analysis Progress */}
-              {isAnalyzing && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="max-w-2xl mx-auto"
-                >
-                  <AppleCard>
-                    <AppleCardContent className="p-6">
-                      <div className="text-center space-y-4">
-                        <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center">
-                          <Brain className="w-8 h-8 text-blue-600 animate-pulse" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-lg">Analyzing Your Resume</div>
-                          <div className="text-gray-600">AI is examining content, format, and optimization opportunities</div>
-                        </div>
-                        <div className="space-y-2">
-                          <Progress value={analysisProgress} className="h-3" />
-                          <div className="text-sm text-gray-500">{Math.round(analysisProgress)}% Complete</div>
-                        </div>
-                      </div>
-                    </AppleCardContent>
-                  </AppleCard>
-                </motion.div>
-              )}
-            </motion.div>
-          )}
-
-          {analysis && (
-            <motion.div
-              key="results"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
-            >
-              {/* Action Bar */}
-              <div className="flex justify-between items-center max-w-6xl mx-auto">
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    Analysis Complete
-                  </Badge>
-                  <span className="text-sm text-gray-600">
-                    {uploadedFile?.file.name}
-                  </span>
                 </div>
-                <div className="flex gap-2">
-                  <AppleButton variant="outline" onClick={downloadReport} size="sm">
-                    <Download className="w-4 h-4 mr-1" />
-                    Download Report
-                  </AppleButton>
-                  <AppleButton variant="outline" onClick={() => setUploadedFile(null)} size="sm">
-                    New Resume
-                  </AppleButton>
+                
+                <h3 className="text-2xl font-bold mb-4">Analyzing Your Resume</h3>
+                <p className="text-gray-600 mb-6">
+                  Our AI is performing a comprehensive analysis of your resume
+                </p>
+                
+                <div className="space-y-4">
+                  <Progress value={progress} className="w-full" />
+                  <div className="text-sm text-gray-500">
+                    {progress < 30 && "Extracting content from your resume..."}
+                    {progress >= 30 && progress < 60 && "Analyzing ATS compatibility..."}
+                    {progress >= 60 && progress < 90 && "Checking keyword optimization..."}
+                    {progress >= 90 && "Generating enhancement suggestions..."}
+                  </div>
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
-              {/* Analysis Results */}
-              <div className="max-w-6xl mx-auto">
-                <AnalysisResults analysis={analysis} onReanalyze={handleReanalyze} />
+        {currentStep === 3 && analysisResults && (
+          <div className="space-y-8">
+            <AnalysisResults results={analysisResults} />
+            
+            {/* Action Buttons */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="text-xl font-bold mb-4">What's Next?</h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Button className="flex items-center justify-center gap-2 h-12">
+                  <FileText className="h-4 w-4" />
+                  Edit & Customize
+                </Button>
+                <Button variant="outline" className="flex items-center justify-center gap-2 h-12">
+                  <Download className="h-4 w-4" />
+                  Download PDF
+                </Button>
+                <Button variant="outline" className="flex items-center justify-center gap-2 h-12">
+                  <Share className="h-4 w-4" />
+                  Share Online
+                </Button>
+                <Button variant="outline" className="flex items-center justify-center gap-2 h-12">
+                  <Eye className="h-4 w-4" />
+                  View Analytics
+                </Button>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              
+              <div className="mt-4 pt-4 border-t">
+                <Button variant="ghost" onClick={resetChecker} className="w-full">
+                  Check Another Resume
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default AppleResumeChecker;

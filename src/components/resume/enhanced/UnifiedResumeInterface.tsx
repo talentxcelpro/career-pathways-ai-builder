@@ -1,460 +1,406 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useToast } from '@/hooks/use-toast';
-
-// Section Components
-import { PersonalInfoSection } from './sections/PersonalInfoSection';
-import { ProfessionalSummarySection } from './sections/ProfessionalSummarySection';
-import { WorkExperienceSection } from './sections/WorkExperienceSection';
-import { EducationSection } from './sections/EducationSection';
-import { SkillsSection } from './sections/SkillsSection';
-import { ProjectsSection } from './sections/ProjectsSection';
-import { CertificationsSection } from './sections/CertificationsSection';
-import { AwardsSection } from './sections/AwardsSection';
-import { LanguagesSection } from './sections/LanguagesSection';
-import { CareerObjectivesSection } from './sections/CareerObjectivesSection';
-import { PublicationsSection } from './sections/PublicationsSection';
-import { ReferencesSection } from './sections/ReferencesSection';
-import { TrainingsSection } from './sections/TrainingsSection';
-import { VolunteerWorkSection } from './sections/VolunteerWorkSection';
-import { ToolsSection } from './sections/ToolsSection';
-
-// Enhanced Components
-import { EnhancedSidebar } from './EnhancedSidebar';
-import { EnhancedPreview } from './EnhancedPreview';
-import { SectionRearrangeModal } from './SectionRearrangeModal';
-import { DraggableSection } from '../DraggableSection';
-
-// Import types
-import { EnhancedResumeData, PersonalInfo, ProfessionalSummary, DEFAULT_SECTION_CONFIG } from "@/types/enhanced-resume";
-import { useResumeDataProcessor } from './ResumeDataProcessor';
-import { exportToPDF, exportToDOCX } from '@/utils/exportResume';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { ResumeHeader } from './ResumeHeader';
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Save, Plus, Trash2, User, Briefcase, GraduationCap, Zap, FolderOpen, Award, ArrowLeft } from "lucide-react";
 
 interface UnifiedResumeInterfaceProps {
-  mode?: 'create' | 'edit';
-  initialData?: any;
-  onSave?: (data: EnhancedResumeData) => void;
+  mode: 'edit' | 'create';
 }
 
-export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
-  mode = 'create',
-  initialData,
-  onSave
-}) => {
-  const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const { toast } = useToast();
-  const { processRawResumeData, getEmptyResumeData } = useResumeDataProcessor();
+export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ mode }) => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   
-  // Get template from URL params
-  const templateFromUrl = searchParams.get('template') || 'modern';
-  
-  // Helper function to convert processed data to EnhancedResumeData
-  const convertToEnhancedData = useCallback((data: any): EnhancedResumeData => {
-    return {
-      personalInfo: data.personalInfo || {
-        fullName: '',
-        email: '',
-        phone: '',
-        location: '',
-        summary: '',
-        linkedin: '',
-        website: '',
-        github: ''
-      },
-      professionalSummary: {
-        content: data.summary || '',
-        keyHighlights: []
-      },
-      experience: data.experience || [],
-      education: data.education || [],
-      skills: data.skills || [],
-      projects: data.projects || [],
-      certifications: data.certifications || [],
-      awards: data.awards || [],
-      languages: [],
-      careerObjectives: undefined,
-      publications: [],
-      references: [],
-      trainings: [],
-      volunteerWork: [],
-      tools: [],
-      sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
-      selectedTemplate: templateFromUrl,
-      sectionConfig: DEFAULT_SECTION_CONFIG,
-      customization: {
-        colorScheme: 'blue',
-        fontFamily: 'Inter',
-        fontSize: 14,
-        spacing: 'normal'
-      }
-    };
-  }, [templateFromUrl]);
-
-  // Initialize resume data
-  const [resumeData, setResumeData] = useState<EnhancedResumeData>(() => {
-    if (initialData) {
-      const processedData = processRawResumeData(initialData);
-      return convertToEnhancedData(processedData);
-    }
-    return {
-      personalInfo: {
-        fullName: '',
-        email: '',
-        phone: '',
-        location: '',
-        summary: '',
-        linkedin: '',
-        website: '',
-        github: ''
-      },
-      professionalSummary: {
-        content: '',
-        keyHighlights: []
-      },
-      experience: [],
-      education: [],
-      skills: [],
-      projects: [],
-      certifications: [],
-      awards: [],
-      languages: [],
-      careerObjectives: undefined,
-      publications: [],
-      references: [],
-      trainings: [],
-      volunteerWork: [],
-      tools: [],
-      sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
-      selectedTemplate: templateFromUrl,
-      sectionConfig: DEFAULT_SECTION_CONFIG,
-      customization: {
-        colorScheme: 'blue',
-        fontFamily: 'Inter',
-        fontSize: 14,
-        spacing: 'normal'
-      }
-    };
+  const [resumeData, setResumeData] = useState<any>({
+    personalInfo: {
+      fullName: '',
+      email: '',
+      phone: '',
+      location: '',
+      summary: ''
+    },
+    experience: [],
+    education: [],
+    skills: [],
+    projects: [],
+    certifications: [],
+    awards: []
   });
-
-  // UI State
-  const [activeSection, setActiveSection] = useState('personalInfo');
-  const [showRearrangeModal, setShowRearrangeModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [atsScore, setAtsScore] = useState(85);
+  
+  const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isLoading, setIsLoading] = useState(mode === 'edit');
 
-  // Auto-save functionality
   useEffect(() => {
-    const autoSave = () => {
-      if (onSave) {
-        onSave(resumeData);
-        setLastSaved(new Date());
+    if (mode === 'edit' && id) {
+      loadResume();
+    }
+  }, [mode, id]);
+
+  const loadResume = async () => {
+    if (!id || !user) return;
+    
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('ai_resumes')
+        .select('*')
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setResumeData(data.content || resumeData);
       }
-    };
-
-    const timeoutId = setTimeout(autoSave, 2000); // Auto-save after 2 seconds of inactivity
-    return () => clearTimeout(timeoutId);
-  }, [resumeData, onSave]);
-
-  // Section handlers
-  const handleAddSection = useCallback((sectionType: string) => {
-    setResumeData(prev => ({
-      ...prev,
-      sectionOrder: [...prev.sectionOrder, sectionType]
-    }));
-    setActiveSection(sectionType);
-    toast({
-      title: "Section Added",
-      description: `${sectionType} section has been added to your resume.`,
-    });
-  }, [toast]);
-
-  const handleRearrangeSections = useCallback(() => {
-    setShowRearrangeModal(true);
-  }, []);
-
-  const handleTemplateChange = useCallback((templateId: string) => {
-    setResumeData(prev => ({
-      ...prev,
-      selectedTemplate: templateId
-    }));
-    toast({
-      title: "Template Changed",
-      description: `Your resume template has been updated.`,
-    });
-  }, [toast]);
-
-  const handleDesignChange = useCallback((designOption: string) => {
-    // Handle design changes (colors, fonts, spacing)
-    console.log('Design change:', designOption);
-    toast({
-      title: "Design Updated",
-      description: `Your resume design has been customized.`,
-    });
-  }, [toast]);
-
-  const handleAIImprovement = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      // AI improvement logic would go here
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
-      toast({
-        title: "AI Improvement Complete",
-        description: "Your resume content has been enhanced with AI suggestions.",
-      });
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to improve resume with AI. Please try again.",
-        variant: "destructive",
-      });
+      console.error('Error loading resume:', error);
+      toast.error('Failed to load resume');
     } finally {
       setIsLoading(false);
-    }
-  }, [toast]);
-
-  const handleATSCheck = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      // ATS checking logic would go here
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-      const newScore = Math.floor(Math.random() * 20) + 80; // Random score 80-100
-      setAtsScore(newScore);
-      toast({
-        title: "ATS Check Complete",
-        description: `Your resume ATS score is ${newScore}%.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to check ATS compatibility. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [toast]);
-
-  const handleExport = useCallback(async () => {
-    try {
-      await exportToPDF('resume-preview', `resume-${resumeData.personalInfo.fullName || 'download'}.pdf`);
-      toast({
-        title: "Export Successful",
-        description: "Your resume has been downloaded as PDF.",
-      });
-    } catch (error) {
-      toast({
-        title: "Export Failed",
-        description: "Failed to export resume. Please try again.",
-        variant: "destructive",
-      });
-    }
-  }, [resumeData, toast]);
-
-  const handleShare = useCallback(() => {
-    // Share functionality
-    toast({
-      title: "Share Link Generated",
-      description: "Your resume share link has been copied to clipboard.",
-    });
-  }, [toast]);
-
-  // Update handlers for each section
-  const updatePersonalInfo = useCallback((personalInfo: PersonalInfo) => {
-    setResumeData(prev => ({ ...prev, personalInfo }));
-  }, []);
-
-  const updateProfessionalSummary = useCallback((professionalSummary: ProfessionalSummary) => {
-    setResumeData(prev => ({ ...prev, professionalSummary }));
-  }, []);
-
-  // Render section content
-  const renderSectionContent = () => {
-    switch (activeSection) {
-      case 'personalInfo':
-        return (
-          <PersonalInfoSection
-            data={resumeData.personalInfo}
-            onChange={updatePersonalInfo}
-          />
-        );
-      case 'professionalSummary':
-        return (
-          <ProfessionalSummarySection
-            data={resumeData.professionalSummary}
-            onChange={updateProfessionalSummary}
-          />
-        );
-      case 'experience':
-        return (
-          <WorkExperienceSection
-            data={resumeData.experience}
-            onChange={(experience) => setResumeData(prev => ({ ...prev, experience }))}
-          />
-        );
-      case 'education':
-        return (
-          <EducationSection
-            data={resumeData.education}
-            onChange={(education) => setResumeData(prev => ({ ...prev, education }))}
-          />
-        );
-      case 'skills':
-        return (
-          <SkillsSection
-            data={resumeData.skills}
-            onChange={(skills) => setResumeData(prev => ({ ...prev, skills }))}
-          />
-        );
-      case 'projects':
-        return (
-          <ProjectsSection
-            data={resumeData.projects}
-            onChange={(projects) => setResumeData(prev => ({ ...prev, projects }))}
-          />
-        );
-      case 'certifications':
-        return (
-          <CertificationsSection
-            data={resumeData.certifications}
-            onChange={(certifications) => setResumeData(prev => ({ ...prev, certifications }))}
-          />
-        );
-      case 'awards':
-        return (
-          <AwardsSection
-            data={resumeData.awards}
-            onChange={(awards) => setResumeData(prev => ({ ...prev, awards }))}
-          />
-        );
-      case 'languages':
-        return (
-          <LanguagesSection
-            data={resumeData.languages}
-            onChange={(languages) => setResumeData(prev => ({ ...prev, languages }))}
-          />
-        );
-      case 'volunteer':
-        return (
-          <VolunteerWorkSection
-            data={resumeData.volunteerWork}
-            onChange={(volunteerWork) => setResumeData(prev => ({ ...prev, volunteerWork }))}
-          />
-        );
-      case 'tools':
-        return (
-          <ToolsSection
-            data={resumeData.tools?.[0] || { id: '', category: '', tools: [] }}
-            onChange={(tools) => setResumeData(prev => ({ ...prev, tools: [tools] }))}
-          />
-        );
-      default:
-        return <div>Section not found</div>;
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Enhanced Sidebar */}
-      <EnhancedSidebar
-        onAddSection={handleAddSection}
-        onRearrangeSections={handleRearrangeSections}
-        onTemplateChange={handleTemplateChange}
-        onDesignChange={handleDesignChange}
-        onAIImprovement={handleAIImprovement}
-        onATSCheck={handleATSCheck}
-        onExport={handleExport}
-        onShare={handleShare}
-        selectedTemplate={resumeData.selectedTemplate}
-        atsScore={atsScore}
-        isLoading={isLoading}
-      />
+  const handleSave = async () => {
+    if (!user || !id) return;
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex">
-        {/* Center Editing Panel */}
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-4xl mx-auto">
-            {/* Header */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    {mode === 'create' ? 'Create Your Resume' : 'Edit Resume'}
-                  </h1>
-                  <p className="text-gray-600">
-                    {resumeData.personalInfo.fullName || 'Build your professional resume'}
-                  </p>
-                </div>
-                <div className="flex items-center gap-4">
-                  {lastSaved && (
-                    <span className="text-sm text-gray-500">
-                      Last saved {lastSaved.toLocaleTimeString()}
-                    </span>
-                  )}
-                  <Badge variant="secondary" className={`${atsScore >= 90 ? 'bg-green-100 text-green-700' : atsScore >= 75 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
-                    ATS Score: {atsScore}%
-                  </Badge>
-                </div>
-              </div>
-              
-              {/* Section Navigation */}
-              <Tabs value={activeSection} onValueChange={setActiveSection}>
-                <TabsList className="grid w-full grid-cols-5">
-                  <TabsTrigger value="personalInfo">Personal</TabsTrigger>
-                  <TabsTrigger value="professionalSummary">Summary</TabsTrigger>
-                  <TabsTrigger value="experience">Experience</TabsTrigger>
-                  <TabsTrigger value="education">Education</TabsTrigger>
-                  <TabsTrigger value="skills">Skills</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('ai_resumes')
+        .update({
+          content: resumeData
+        })
+        .eq('id', id)
+        .eq('user_id', user.id);
 
-            {/* Section Content */}
-            <Card>
-              <CardContent className="p-6">
-                {renderSectionContent()}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+      if (error) throw error;
 
-        {/* Right Preview Panel */}
-        <div className="w-96 bg-white border-l border-gray-200 p-6 overflow-y-auto">
-          <EnhancedPreview 
-            resumeData={resumeData}
-            selectedTemplate={resumeData.selectedTemplate}
-          />
+      setLastSaved(new Date());
+      setHasChanges(false);
+      toast.success('Resume saved successfully');
+    } catch (error) {
+      console.error('Error saving resume:', error);
+      toast.error('Failed to save resume');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const updateResumeData = (section: string, data: any) => {
+    setResumeData(prev => ({
+      ...prev,
+      [section]: data
+    }));
+    setHasChanges(true);
+  };
+
+  const handleEnhancementApplied = (enhancedData: any) => {
+    setResumeData(enhancedData);
+    setHasChanges(true);
+    toast.success('AI enhancement applied');
+  };
+
+  const addExperience = () => {
+    const newExperience = {
+      id: Date.now().toString(),
+      title: '',
+      company: '',
+      location: '',
+      startDate: '',
+      endDate: '',
+      isCurrentRole: false,
+      description: '',
+      achievements: []
+    };
+    updateResumeData('experience', [...resumeData.experience, newExperience]);
+  };
+
+  const removeExperience = (index: number) => {
+    const updated = resumeData.experience.filter((_, i) => i !== index);
+    updateResumeData('experience', updated);
+  };
+
+  const updateExperience = (index: number, field: string, value: any) => {
+    const updated = resumeData.experience.map((exp, i) => 
+      i === index ? { ...exp, [field]: value } : exp
+    );
+    updateResumeData('experience', updated);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading resume...</p>
         </div>
       </div>
+    );
+  }
 
-      {/* Section Rearrange Modal */}
-      <Dialog open={showRearrangeModal} onOpenChange={setShowRearrangeModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Rearrange Sections</DialogTitle>
-          </DialogHeader>
-          <SectionRearrangeModal
-            sections={resumeData.sectionOrder}
-            onSave={(newOrder) => {
-              setResumeData(prev => ({ ...prev, sectionOrder: newOrder }));
-              setShowRearrangeModal(false);
-              toast({
-                title: "Sections Rearranged",
-                description: "Your resume section order has been updated.",
-              });
-            }}
-            onCancel={() => setShowRearrangeModal(false)}
-          />
-        </DialogContent>
-      </Dialog>
+  return (
+    <div className="min-h-screen bg-background">
+      <ResumeHeader
+        mode={mode}
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+        hasChanges={hasChanges}
+        onSave={handleSave}
+        resumeData={resumeData}
+        onEnhancementApplied={handleEnhancementApplied}
+      />
+
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="ghost" onClick={() => navigate('/resume-builder')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
+
+        <Tabs defaultValue="personal" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="personal" className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              Personal
+            </TabsTrigger>
+            <TabsTrigger value="experience" className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4" />
+              Experience
+            </TabsTrigger>
+            <TabsTrigger value="education" className="flex items-center gap-2">
+              <GraduationCap className="h-4 w-4" />
+              Education
+            </TabsTrigger>
+            <TabsTrigger value="skills" className="flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              Skills
+            </TabsTrigger>
+            <TabsTrigger value="projects" className="flex items-center gap-2">
+              <FolderOpen className="h-4 w-4" />
+              Projects
+            </TabsTrigger>
+            <TabsTrigger value="awards" className="flex items-center gap-2">
+              <Award className="h-4 w-4" />
+              Awards
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="personal">
+            <Card>
+              <CardHeader>
+                <CardTitle>Personal Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input
+                      id="fullName"
+                      value={resumeData.personalInfo.fullName}
+                      onChange={(e) => updateResumeData('personalInfo', {
+                        ...resumeData.personalInfo,
+                        fullName: e.target.value
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={resumeData.personalInfo.email}
+                      onChange={(e) => updateResumeData('personalInfo', {
+                        ...resumeData.personalInfo,
+                        email: e.target.value
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input
+                      id="phone"
+                      value={resumeData.personalInfo.phone}
+                      onChange={(e) => updateResumeData('personalInfo', {
+                        ...resumeData.personalInfo,
+                        phone: e.target.value
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      id="location"
+                      value={resumeData.personalInfo.location}
+                      onChange={(e) => updateResumeData('personalInfo', {
+                        ...resumeData.personalInfo,
+                        location: e.target.value
+                      })}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="summary">Professional Summary</Label>
+                  <Textarea
+                    id="summary"
+                    rows={4}
+                    value={resumeData.personalInfo.summary}
+                    onChange={(e) => updateResumeData('personalInfo', {
+                      ...resumeData.personalInfo,
+                      summary: e.target.value
+                    })}
+                    placeholder="Write a compelling professional summary..."
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="experience">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold">Work Experience</h2>
+                <Button onClick={addExperience}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Experience
+                </Button>
+              </div>
+              
+              {resumeData.experience.map((exp, index) => (
+                <Card key={exp.id || index}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">Experience #{index + 1}</CardTitle>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => removeExperience(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label>Job Title</Label>
+                        <Input
+                          value={exp.title}
+                          onChange={(e) => updateExperience(index, 'title', e.target.value)}
+                          placeholder="e.g., Software Engineer"
+                        />
+                      </div>
+                      <div>
+                        <Label>Company</Label>
+                        <Input
+                          value={exp.company}
+                          onChange={(e) => updateExperience(index, 'company', e.target.value)}
+                          placeholder="e.g., Google"
+                        />
+                      </div>
+                      <div>
+                        <Label>Start Date</Label>
+                        <Input
+                          type="month"
+                          value={exp.startDate}
+                          onChange={(e) => updateExperience(index, 'startDate', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label>End Date</Label>
+                        <Input
+                          type="month"
+                          value={exp.endDate}
+                          onChange={(e) => updateExperience(index, 'endDate', e.target.value)}
+                          disabled={exp.isCurrentRole}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Description</Label>
+                      <Textarea
+                        rows={3}
+                        value={exp.description}
+                        onChange={(e) => updateExperience(index, 'description', e.target.value)}
+                        placeholder="Describe your responsibilities and achievements..."
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {resumeData.experience.length === 0 && (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No work experience added</h3>
+                    <p className="text-gray-600 mb-4">Add your professional experience to get started</p>
+                    <Button onClick={addExperience}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Your First Experience
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="education">
+            <Card>
+              <CardContent className="p-8 text-center">
+                <GraduationCap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">Education section coming soon</h3>
+                <p className="text-gray-600">Add your educational background</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="skills">
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Zap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">Skills section coming soon</h3>
+                <p className="text-gray-600">Showcase your technical and soft skills</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="projects">
+            <Card>
+              <CardContent className="p-8 text-center">
+                <FolderOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">Projects section coming soon</h3>
+                <p className="text-gray-600">Highlight your key projects and achievements</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="awards">
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Award className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">Awards section coming soon</h3>
+                <p className="text-gray-600">Add your certifications and awards</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };

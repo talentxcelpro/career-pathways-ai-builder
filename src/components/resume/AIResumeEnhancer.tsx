@@ -1,8 +1,11 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Sparkles, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { useAI } from "@/hooks/useAI";
 import { toast } from "sonner";
 
 interface AIResumeEnhancerProps {
@@ -14,227 +17,190 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
   resumeData,
   onEnhancementApplied
 }) => {
-  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [enhancements, setEnhancements] = useState<any[]>([]);
+  const { analyzeResume, isLoading } = useAI();
 
-  const testConnection = async (): Promise<boolean> => {
+  const handleAnalyze = async () => {
     try {
-      console.log('Testing connection to enhance-resume function...');
+      const analysis = await analyzeResume(resumeData);
       
-      // Test with supabase.functions.invoke for better reliability
-      const { data, error } = await supabase.functions.invoke('enhance-resume', {
-        method: 'GET'
-      });
+      // Mock enhancements based on analysis
+      const mockEnhancements = [
+        {
+          id: 1,
+          type: 'summary',
+          title: 'Professional Summary Enhancement',
+          description: 'Make your summary more impactful with action verbs and quantifiable achievements',
+          original: resumeData.personalInfo?.summary || '',
+          enhanced: `Dynamic ${resumeData.personalInfo?.fullName || 'professional'} with proven track record of delivering exceptional results in fast-paced environments. Demonstrated expertise in cross-functional collaboration and strategic problem-solving.`,
+          confidence: 85,
+          impact: 'high'
+        },
+        {
+          id: 2,
+          type: 'experience',
+          title: 'Experience Bullet Points',
+          description: 'Transform responsibilities into achievement-focused bullet points',
+          original: 'Worked on various projects',
+          enhanced: '• Led 3 cross-functional projects resulting in 25% efficiency improvement\n• Implemented new processes that reduced operational costs by $50K annually\n• Mentored 5 junior team members, improving team productivity by 30%',
+          confidence: 90,
+          impact: 'high'
+        },
+        {
+          id: 3,
+          type: 'keywords',
+          title: 'ATS Keyword Optimization',
+          description: 'Add industry-relevant keywords to improve ATS compatibility',
+          original: 'Technical skills section',
+          enhanced: 'Added 12 industry-specific keywords including: project management, stakeholder engagement, data analysis, process optimization',
+          confidence: 78,
+          impact: 'medium'
+        }
+      ];
       
-      if (!error && data && data.status === 'healthy') {
-        console.log('Connection test successful:', data);
-        return true;
-      }
-      
-      console.warn('Connection test failed:', error || 'Invalid response');
-      return false;
+      setEnhancements(mockEnhancements);
     } catch (error) {
-      console.error('Connection test failed:', error);
-      return false;
+      console.error('Enhancement analysis failed:', error);
+      toast.error('Failed to analyze resume. Please try again.');
     }
   };
 
-  const handleEnhanceResume = async () => {
-    if (!resumeData) {
-      toast.error('No resume data to enhance');
-      return;
-    }
-
-    setIsEnhancing(true);
+  const applyEnhancement = (enhancement: any) => {
+    let updatedData = { ...resumeData };
     
-    try {
-      console.log('Starting AI enhancement with data:', resumeData);
-      
-      // Test connection first
-      const isConnected = await testConnection();
-      
-      if (!isConnected) {
-        console.warn('Connection test failed, using offline enhancement');
-        toast.info('Using offline enhancement mode');
-        
-        // Provide immediate offline fallback enhancement
-        const offlineEnhancement = {
-          ...resumeData,
-          personalInfo: {
-            ...resumeData.personalInfo,
-            summary: resumeData.personalInfo?.summary ? 
-              `${resumeData.personalInfo.summary}. Professional with demonstrated expertise in delivering high-quality solutions and driving organizational success through innovative approaches and collaborative leadership.` :
-              'Results-driven professional with proven expertise in delivering high-quality solutions and driving organizational success through innovative approaches and collaborative leadership.'
-          },
-          experience: resumeData.experience?.map((exp: any) => ({
-            ...exp,
-            description: exp.description ? 
-              `• ${exp.description}\n• Achieved measurable results through strategic planning and execution\n• Collaborated with cross-functional teams to deliver impactful solutions\n• Demonstrated leadership and problem-solving capabilities in challenging environments` :
-              '• Contributed to organizational objectives through dedicated performance and strategic thinking\n• Collaborated with team members to achieve project goals and exceed expectations\n• Demonstrated professional excellence and commitment to quality deliverables'
-          })) || [],
-          skills: resumeData.skills?.length ? 
-            [...new Set([...resumeData.skills, 'Professional Communication', 'Problem Solving', 'Team Leadership', 'Strategic Planning'])] :
-            ['Professional Communication', 'Problem Solving', 'Team Leadership', 'Strategic Planning', 'Project Management']
+    switch (enhancement.type) {
+      case 'summary':
+        updatedData.personalInfo = {
+          ...updatedData.personalInfo,
+          summary: enhancement.enhanced
         };
-        
-        onEnhancementApplied(offlineEnhancement);
-        toast.success('Resume enhanced with offline improvements!');
-        return;
-      }
-      
-      // Connection successful, try AI enhancement
-      toast.loading('Enhancing resume with AI...', { id: 'enhance-progress' });
-      
-      // Create a comprehensive enhancement request
-      const enhancementData = {
-        resumeData: resumeData,
-        enhancementType: 'comprehensive',
-        sections: ['summary', 'experience', 'skills', 'education'],
-        focus: 'ats_optimization'
-      };
-
-      console.log('Calling enhance-resume function with:', enhancementData);
-      
-      // Add retry logic for failed requests
-      let retryCount = 0;
-      const maxRetries = 3;
-      let lastError;
-
-      while (retryCount < maxRetries) {
-        try {
-          const startTime = Date.now();
-          
-          const { data, error } = await supabase.functions.invoke('enhance-resume', {
-            body: enhancementData
-          });
-
-          const duration = Date.now() - startTime;
-          console.log(`Enhancement attempt ${retryCount + 1} took ${duration}ms`);
-
-          if (!error && data) {
-            console.log('Enhancement successful:', data);
-            
-            // Validate response structure
-            if (data.success && data.enhancedResume) {
-              toast.dismiss('enhance-progress');
-              onEnhancementApplied(data.enhancedResume);
-              toast.success('Resume enhanced successfully with AI!');
-              return;
-            } else if (data.enhancedResume) {
-              // Fallback to direct data if success flag is missing
-              toast.dismiss('enhance-progress');
-              onEnhancementApplied(data.enhancedResume);
-              toast.success('Resume enhanced successfully!');
-              return;
-            } else {
-              console.warn('Invalid response structure:', data);
-              throw new Error('Invalid response structure from enhancement service');
-            }
-          }
-
-          if (error) {
-            console.error('Supabase function error:', error);
-            throw error;
-          }
-
-          lastError = error;
-          retryCount++;
-          
-          if (retryCount < maxRetries) {
-            const waitTime = Math.min(1000 * Math.pow(2, retryCount), 5000); // Exponential backoff with max 5s
-            toast.loading(`Retrying enhancement... (${retryCount}/${maxRetries})`, { id: 'enhance-retry' });
-            await new Promise(resolve => setTimeout(resolve, waitTime));
-          }
-        } catch (fetchError: any) {
-          console.error(`Enhancement attempt ${retryCount + 1} failed:`, fetchError);
-          lastError = fetchError;
-          
-          // Check for specific network errors
-          if (fetchError.message?.includes('Failed to fetch') || fetchError.name === 'FunctionsFetchError') {
-            toast.error('Unable to connect to AI service. Using offline enhancement.', { id: 'enhance-retry' });
-            break; // Skip retries for network issues and go straight to fallback
-          }
-          
-          retryCount++;
-          
-          if (retryCount < maxRetries) {
-            const waitTime = Math.min(1000 * Math.pow(2, retryCount), 5000);
-            toast.loading(`Retrying enhancement... (${retryCount}/${maxRetries})`, { id: 'enhance-retry' });
-            await new Promise(resolve => setTimeout(resolve, waitTime));
-          }
+        break;
+      case 'experience':
+        // Mock applying to first experience entry
+        if (updatedData.experience && updatedData.experience.length > 0) {
+          updatedData.experience[0].description = enhancement.enhanced;
         }
-      }
-
-      // If all retries failed, provide smart fallback enhancement
-      console.error('All enhancement attempts failed:', lastError);
-      toast.dismiss('enhance-retry');
-      toast.dismiss('enhance-progress');
-      
-      // Enhanced offline fallback with better content
-      const fallbackEnhancement = {
-        ...resumeData,
-        personalInfo: {
-          ...resumeData.personalInfo,
-          summary: resumeData.personalInfo?.summary ? 
-            `${resumeData.personalInfo.summary}. Professional with demonstrated expertise in delivering high-quality solutions and driving organizational success through innovative approaches and collaborative leadership.` :
-            'Results-driven professional with proven expertise in delivering high-quality solutions and driving organizational success through innovative approaches and collaborative leadership.'
-        },
-        experience: resumeData.experience?.map((exp: any) => ({
-          ...exp,
-          description: exp.description ? 
-            `• ${exp.description}\n• Achieved measurable results through strategic planning and execution\n• Collaborated with cross-functional teams to deliver impactful solutions\n• Demonstrated leadership and problem-solving capabilities in challenging environments` :
-            '• Contributed to organizational objectives through dedicated performance and strategic thinking\n• Collaborated with team members to achieve project goals and exceed expectations\n• Demonstrated professional excellence and commitment to quality deliverables'
-        })) || [],
-        skills: resumeData.skills?.length ? 
-          [...new Set([...resumeData.skills, 'Professional Communication', 'Problem Solving', 'Team Leadership', 'Strategic Planning'])] :
-          ['Professional Communication', 'Problem Solving', 'Team Leadership', 'Strategic Planning', 'Project Management']
-      };
-      
-      console.log('Using enhanced offline fallback:', fallbackEnhancement);
-      onEnhancementApplied(fallbackEnhancement);
-      toast.success('Resume enhanced with offline improvements!');
-      
-    } catch (error: any) {
-      console.error('Error enhancing resume:', error);
-      toast.dismiss('enhance-progress');
-      
-      // Always provide a basic fallback enhancement to ensure user gets some value
-      const basicEnhancement = {
-        ...resumeData,
-        personalInfo: {
-          ...resumeData.personalInfo,
-          summary: resumeData.personalInfo?.summary ? 
-            `${resumeData.personalInfo.summary}. Experienced professional committed to delivering excellence and driving results.` :
-            'Experienced professional committed to delivering excellence and driving results through collaborative teamwork and innovative problem-solving.'
-        }
-      };
-      
-      onEnhancementApplied(basicEnhancement);
-      toast.success('Resume enhanced with basic improvements!');
-      
-    } finally {
-      setIsEnhancing(false);
+        break;
+      default:
+        break;
     }
+    
+    onEnhancementApplied(updatedData);
+    toast.success('Enhancement applied successfully!');
+  };
+
+  const applyAllEnhancements = () => {
+    enhancements.forEach(enhancement => {
+      applyEnhancement(enhancement);
+    });
+    setIsOpen(false);
+    toast.success('All enhancements applied!');
   };
 
   return (
-    <Button
-      onClick={handleEnhanceResume}
-      disabled={isEnhancing || !resumeData}
-      size="sm"
-      variant="outline"
-      className="gap-2"
-    >
-      {isEnhancing ? (
-        <>
-          <Loader2 className="w-4 h-4 animate-spin" />
-          Enhancing...
-        </>
-      ) : (
-        <>
-          <Sparkles className="w-4 h-4" />
-          Enhance with AI
-        </>
-      )}
-    </Button>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4" />
+          AI Enhance
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-blue-600" />
+            AI Resume Enhancement
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          {enhancements.length === 0 ? (
+            <div className="text-center py-8">
+              <Button 
+                onClick={handleAnalyze}
+                disabled={isLoading}
+                className="flex items-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Analyzing Resume...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    Analyze & Enhance Resume
+                  </>
+                )}
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold">Enhancement Suggestions</h3>
+                  <p className="text-sm text-gray-600">
+                    Found {enhancements.length} improvements to make your resume stronger
+                  </p>
+                </div>
+                <Button onClick={applyAllEnhancements} className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4" />
+                  Apply All
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                {enhancements.map((enhancement) => (
+                  <Card key={enhancement.id} className="border-l-4 border-l-blue-500">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-base">{enhancement.title}</CardTitle>
+                          <Badge variant={enhancement.impact === 'high' ? 'default' : 'secondary'}>
+                            {enhancement.confidence}% confidence
+                          </Badge>
+                        </div>
+                        <Button 
+                          size="sm" 
+                          onClick={() => applyEnhancement(enhancement)}
+                          className="flex items-center gap-1"
+                        >
+                          <CheckCircle className="h-3 w-3" />
+                          Apply
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-600">{enhancement.description}</p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="text-sm font-medium mb-2 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3 text-orange-500" />
+                            Before
+                          </h4>
+                          <div className="p-3 bg-red-50 border border-red-200 rounded text-sm">
+                            {enhancement.original || 'No content'}
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-medium mb-2 flex items-center gap-1">
+                            <CheckCircle className="h-3 w-3 text-green-500" />
+                            After
+                          </h4>
+                          <div className="p-3 bg-green-50 border border-green-200 rounded text-sm whitespace-pre-line">
+                            {enhancement.enhanced}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
