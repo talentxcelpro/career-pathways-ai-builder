@@ -1,5 +1,5 @@
 
-import { FileText, Upload, Edit, Download, Mail, Settings, CheckCircle } from "lucide-react";
+import { FileText, Upload, Edit, Download, Mail, Settings, CheckCircle, Palette } from "lucide-react";
 import ResumeDashboard from "../pages/resume/ResumeDashboard";
 import CreateResume from "../pages/resume/CreateResume";
 import UploadResume from "../pages/resume/UploadResume";
@@ -9,6 +9,8 @@ import CoverLetterGenerator from "../pages/resume/CoverLetterGenerator";
 import EditCoverLetter from "../pages/resume/EditCoverLetter";
 import ResumeSettings from "../pages/resume/ResumeSettings";
 import ResumeChecker from "../pages/tools/ResumeChecker";
+import { UnifiedResumeInterface } from "../components/resume/enhanced/UnifiedResumeInterface";
+import TemplateSelectionPage from "../pages/resume/TemplateSelectionPage";
 
 export const resumeRoutes = [
   {
@@ -16,6 +18,12 @@ export const resumeRoutes = [
     to: "/resume-builder",
     icon: <FileText className="h-4 w-4" />,
     page: <ResumeDashboard />,
+  },
+  {
+    title: "Template Selection",
+    to: "/resume-builder/templates",
+    icon: <Palette className="h-4 w-4" />,
+    page: <TemplateSelectionPage />,
   },
   {
     title: "Create New Resume",
@@ -36,10 +44,16 @@ export const resumeRoutes = [
     page: <ResumeChecker />,
   },
   {
+    title: "Edit Resume - New",
+    to: "/resume-builder/edit/new",
+    icon: <Edit className="h-4 w-4" />,
+    page: <UnifiedResumeInterface mode="create" />,
+  },
+  {
     title: "Edit Resume",
     to: "/resume-builder/edit/:id",
     icon: <Edit className="h-4 w-4" />,
-    page: <StreamlinedResumeBuilder />,
+    page: <UnifiedResumeInterface mode="edit" />,
   },
   {
     title: "Edit Resume (Alternative Path)",
