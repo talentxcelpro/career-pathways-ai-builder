@@ -3,24 +3,24 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AuthProvider } from './contexts/AuthContext';
 import Dashboard from './pages/Dashboard';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Profile from './pages/Profile';
-import EditProfile from './pages/EditProfile';
-import Settings from './pages/Settings';
-import Pricing from './pages/Pricing';
-import Blog from './pages/Blog';
-import BlogPost from './pages/BlogPost';
-import Contact from './pages/Contact';
-import About from './pages/About';
-import NotFound from './pages/NotFound';
-import Upgrade from './pages/Upgrade';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import UserManagement from './pages/admin/UserManagement';
-import AnalyticsDashboard from './pages/analytics/AnalyticsDashboard';
-import ReportsDashboard from './pages/reports/ReportsDashboard';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
+// import Profile from './pages/Profile';
+// import EditProfile from './pages/EditProfile';
+// import Settings from './pages/Settings';
+// import Pricing from './pages/Pricing';
+// import Blog from './pages/Blog';
+// import BlogPost from './pages/BlogPost';
+// import Contact from './pages/Contact';
+// import About from './pages/About';
+// import NotFound from './pages/NotFound';
+// import Upgrade from './pages/Upgrade';
+// import AdminDashboard from './pages/admin/AdminDashboard';
+// import UserManagement from './pages/admin/UserManagement';
+// import AnalyticsDashboard from './pages/analytics/AnalyticsDashboard';
+// import ReportsDashboard from './pages/reports/ReportsDashboard';
 import ResumeBuilder from './pages/ResumeBuilder';
 import CreateResume from './pages/resume/CreateResume';
 import UploadResume from './pages/resume/UploadResume';
@@ -33,11 +33,13 @@ import ResumeDashboard from './pages/resume/ResumeDashboard';
 import ResumeChecker from './pages/tools/ResumeChecker';
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import EditResume from './pages/resume/EditResume';
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClient>
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Toaster />
         <BrowserRouter>
@@ -48,6 +50,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            {/* TODO: Re-enable when pages are created
             <Route path="/profile" element={<Profile />} />
             <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/settings" element={<Settings />} />
@@ -59,13 +62,12 @@ function App() {
             <Route path="*" element={<NotFound />} />
             <Route path="/upgrade" element={<Upgrade />} />
 
-            {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<UserManagement />} />
 
-            {/* Analytics and Reports */}
             <Route path="/analytics" element={<AnalyticsDashboard />} />
             <Route path="/reports" element={<ReportsDashboard />} />
+            */}
 
             {/* Resume Builder Routes */}
             <Route path="/resume-builder" element={<ResumeBuilder />} />
@@ -87,7 +89,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </AuthProvider>
-    </QueryClient>
+    </QueryClientProvider>
   );
 }
 

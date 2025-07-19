@@ -352,8 +352,9 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
 
               <TabsContent value="manage">
                 <SectionManager
-                  sections={resumeData.sectionConfig}
-                  onSectionsUpdate={(sections) => updateResumeData({ sectionConfig: sections })}
+                  resumeData={resumeData}
+                  onUpdateData={updateResumeData}
+                  onClose={() => {}}
                 />
               </TabsContent>
 

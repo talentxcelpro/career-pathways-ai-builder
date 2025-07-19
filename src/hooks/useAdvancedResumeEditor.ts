@@ -129,7 +129,7 @@ export const useAdvancedResumeEditor = (resumeId?: string, initialData?: any) =>
     setIsSaving(true);
     try {
       const { data, error } = await supabase
-        .from('ai_resumes')
+        .from('resumes')
         .upsert({
           id: resumeId,
           content: resumeData,
@@ -137,7 +137,8 @@ export const useAdvancedResumeEditor = (resumeId?: string, initialData?: any) =>
             ? `${resumeData.personalInfo.fullName}'s Resume`
             : 'My Resume',
           ats_score: aiAnalysis?.overallScore || 0,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          user_id: (await supabase.auth.getUser()).data.user?.id || ''
         }, {
           onConflict: resumeId ? 'id' : undefined
         })
