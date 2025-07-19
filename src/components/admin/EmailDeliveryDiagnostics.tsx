@@ -256,25 +256,31 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
           </Button>
           <Button
             onClick={() => {
-              // Use our new direct test function
-              supabase.functions.invoke('email-test', {}).then(({ data, error }) => {
-                if (error) {
-                  toast.error(`Direct test failed: ${error.message}`);
-                } else if (data?.success) {
-                  toast.success('✅ SendGrid working! Email sent to talentxcelpro@gmail.com');
+              toast.info('Testing with simplified function...');
+              fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/simple-email-test', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                }
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  toast.success('🎉 SUCCESS! Email sent to talentxcelpro@gmail.com - Check your inbox!');
                   setTestEmailSent(true);
                 } else {
-                  toast.error(`Test failed: ${data?.error || 'Unknown error'}`);
+                  toast.error(`Failed: ${data.error}`);
                 }
-              }).catch(err => {
-                toast.error(`Test error: ${err.message}`);
+              })
+              .catch(error => {
+                toast.error(`Network error: ${error.message}`);
               });
             }}
             variant="default"
             className="bg-green-600 hover:bg-green-700"
           >
             <Send className="h-4 w-4 mr-2" />
-            Quick Fix Test
+            SIMPLE TEST
           </Button>
         </div>
 
