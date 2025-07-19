@@ -102,13 +102,47 @@ export const useResumeData = () => {
           console.log('Resume data loaded successfully:', data);
           setIsNewResume(false);
           
-          // Process the content from database
-          const processedData = {
+          // Process the content from database and normalize data structure
+          let processedData: any = {
             ...createEmptyResumeData(),
             ...(data.content && typeof data.content === 'object' ? data.content : {}),
           };
+
+          // Handle different skills structures - normalize for ResumeEditor compatibility
+          if (processedData.skills) {
+            // If skills is an array of skill objects (EnhancedResumeData format), convert to editor format
+            if (Array.isArray(processedData.skills)) {
+              const skillsArray = processedData.skills;
+              processedData.skills = {
+                technical: skillsArray
+                  .filter((skill: any) => 
+                    skill.category?.includes('programming') || 
+                    skill.category?.includes('technical') || 
+                    skill.category?.includes('frontend') || 
+                    skill.category?.includes('backend') ||
+                    skill.category?.includes('frameworks') ||
+                    skill.category?.includes('databases') ||
+                    skill.category?.includes('cloud')
+                  )
+                  .map((skill: any) => skill.skill || skill.name || String(skill)),
+                soft: skillsArray
+                  .filter((skill: any) => skill.category === 'soft')
+                  .map((skill: any) => skill.skill || skill.name || String(skill)),
+                languages: skillsArray
+                  .filter((skill: any) => skill.category === 'languages' || skill.language)
+                  .map((skill: any) => skill.skill || skill.language || skill.name || String(skill)),
+                tools: []
+              };
+            }
+            // If skills already has the editor format but with object arrays, normalize to strings
+            else if (processedData.skills.technical && Array.isArray(processedData.skills.technical)) {
+              processedData.skills.technical = processedData.skills.technical.map((skill: any) => 
+                typeof skill === 'string' ? skill : skill?.skill || skill?.name || String(skill)
+              );
+            }
+          }
           
-          setResumeData(processedData);
+          setResumeData(processedData as EnhancedResumeData);
         } else {
           console.log('Resume not found, creating new one');
           setError('Resume not found');

@@ -341,29 +341,33 @@ export const ResumeEditor = ({ content, onChange }: ResumeEditorProps) => {
           <div>
             <label className="text-sm font-medium">Technical Skills</label>
             <div className="mt-2 flex flex-wrap gap-2">
-              {formData.skills?.technical?.map((skill: string, index: number) => (
-                <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                  {skill}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-4 w-4 p-0"
-                    onClick={() => {
-                      const updated = {
-                        ...formData,
-                        skills: {
-                          ...formData.skills,
-                          technical: formData.skills.technical.filter((_: string, i: number) => i !== index)
-                        }
-                      };
-                      setFormData(updated);
-                      onChange(updated);
-                    }}
-                  >
-                    ×
-                  </Button>
-                </Badge>
-              )) || []}
+              {formData.skills?.technical?.map((skill: any, index: number) => {
+                // Extract skill name from object or use string directly
+                const skillName = typeof skill === 'string' ? skill : skill?.skill || skill?.name || String(skill);
+                return (
+                  <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                    {skillName}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-4 w-4 p-0"
+                      onClick={() => {
+                        const updated = {
+                          ...formData,
+                          skills: {
+                            ...formData.skills,
+                            technical: formData.skills.technical.filter((_: any, i: number) => i !== index)
+                          }
+                        };
+                        setFormData(updated);
+                        onChange(updated);
+                      }}
+                    >
+                      ×
+                    </Button>
+                  </Badge>
+                );
+              }) || []}
             </div>
             <div className="mt-2 flex gap-2">
               <Input
