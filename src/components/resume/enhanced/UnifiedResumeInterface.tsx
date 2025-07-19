@@ -29,7 +29,7 @@ import { LivePreviewRenderer } from '../upload/LivePreviewRenderer';
 import { DraggableSection } from '../DraggableSection';
 
 // Import types
-import { EnhancedResumeData, PersonalInfo, ProfessionalSummary } from "@/types/enhanced-resume";
+import { EnhancedResumeData, PersonalInfo, ProfessionalSummary, DEFAULT_SECTION_CONFIG } from "@/types/enhanced-resume";
 import { useResumeDataProcessor } from './ResumeDataProcessor';
 import { exportToPDF, exportToDOCX } from '@/utils/exportResume';
 
@@ -44,10 +44,44 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
 }) => {
   const { processRawResumeData, getEmptyResumeData } = useResumeDataProcessor();
   
+  // Helper function to convert processed data to EnhancedResumeData
+  const convertToEnhancedData = useCallback((data: any): EnhancedResumeData => {
+    return {
+      personalInfo: data.personalInfo,
+      professionalSummary: {
+        content: data.summary || '',
+        keyHighlights: []
+      },
+      experience: data.experience || [],
+      education: data.education || [],
+      skills: data.skills || [],
+      projects: data.projects || [],
+      certifications: data.certifications || [],
+      awards: data.awards || [],
+      languages: [],
+      careerObjectives: undefined,
+      publications: [],
+      references: [],
+      trainings: [],
+      volunteerWork: [],
+      tools: [],
+      sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
+      selectedTemplate: 'modern',
+      sectionConfig: DEFAULT_SECTION_CONFIG,
+      customization: {
+        colorScheme: 'blue',
+        fontFamily: 'Inter',
+        fontSize: 14,
+        spacing: 'normal'
+      }
+    };
+  }, []);
+
   // Initialize resume data
   const [resumeData, setResumeData] = useState<EnhancedResumeData>(() => {
     if (initialData) {
-      return processRawResumeData(initialData);
+      const processedData = processRawResumeData(initialData);
+      return convertToEnhancedData(processedData);
     }
     return {
       personalInfo: {
@@ -70,17 +104,16 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
       projects: [],
       certifications: [],
       awards: [],
-      sectionOrder: [
-        'personalInfo',
-        'professionalSummary', 
-        'experience',
-        'education',
-        'skills',
-        'projects',
-        'certifications',
-        'awards'
-      ],
+      languages: [],
+      careerObjectives: undefined,
+      publications: [],
+      references: [],
+      trainings: [],
+      volunteerWork: [],
+      tools: [],
+      sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
       selectedTemplate: 'modern',
+      sectionConfig: DEFAULT_SECTION_CONFIG,
       customization: {
         colorScheme: 'blue',
         fontFamily: 'Inter',
