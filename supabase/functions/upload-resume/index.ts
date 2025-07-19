@@ -7,18 +7,27 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
 serve(async (req) => {
+  console.log('Upload resume function called with method:', req.method);
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    console.log('Environment check:', {
+      hasOpenAI: !!openAIApiKey,
+      hasSupabaseUrl: !!supabaseUrl,
+      hasServiceKey: !!supabaseServiceKey
+    });
+
     console.log('Processing resume upload request...');
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
     const formData = await req.formData();
     const file = formData.get('file') as File;
     const userId = formData.get('userId') as string;
@@ -34,6 +43,7 @@ serve(async (req) => {
     }
 
     // Create upload status record
+    console.log('Creating upload status record...');
     const { data: statusRecord, error: statusError } = await supabase
       .from('resume_upload_status')
       .insert({
@@ -46,22 +56,27 @@ serve(async (req) => {
       .select()
       .single();
 
-    if (statusError) throw statusError;
+    if (statusError) {
+      console.error('Status record creation failed:', statusError);
+      throw statusError;
+    }
+    console.log('Status record created:', statusRecord.id);
 
     // Extract text from file
+    console.log('Extracting text from file...');
     let extractedText = '';
     const fileBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(fileBuffer);
 
     if (file.type === 'application/pdf') {
-      // For PDF, we'll use a simple text extraction (in production, use pdf-parse)
       extractedText = await extractPDFText(uint8Array);
     } else if (file.type.includes('word') || file.name.endsWith('.docx')) {
-      // For DOCX, we'll use mammoth or similar (simplified for demo)
       extractedText = await extractDOCXText(uint8Array);
     } else {
       throw new Error('Unsupported file type');
     }
+
+    console.log('Text extracted, length:', extractedText.length);
 
     // Update progress
     await supabase
@@ -73,10 +88,13 @@ serve(async (req) => {
       .eq('id', statusRecord.id);
 
     // Parse with AI
-    const parsedData = await parseResumeWithAI(extractedText);
+    console.log('Parsing with AI...');
+    const parsedData = await parseResumeWithAI(extractedText, openAIApiKey);
+    console.log('AI parsing completed');
 
     // Calculate ATS score
     const atsScore = calculateBasicATSScore(parsedData);
+    console.log('ATS score calculated:', atsScore);
 
     // Update progress
     await supabase
@@ -87,48 +105,24 @@ serve(async (req) => {
       })
       .eq('id', statusRecord.id);
 
-    // Create resume record
+    // Create resume record - use ai_resumes table which already exists
+    console.log('Creating resume record...');
     const { data: resume, error: resumeError } = await supabase
-      .from('resumes')
+      .from('ai_resumes')
       .insert({
         user_id: userId,
         title: parsedData.personalInfo?.name ? `${parsedData.personalInfo.name}'s Resume` : 'Uploaded Resume',
-        ats_score: atsScore,
-        summary: parsedData.summary || null,
-        status: 'draft'
+        content: parsedData,
+        ats_score: atsScore
       })
       .select()
       .single();
 
-    if (resumeError) throw resumeError;
-
-    // Save sections
-    const sections = [
-      { section_type: 'personal_info', content: parsedData.personalInfo || {} },
-      { section_type: 'summary', content: { content: parsedData.summary || '' } },
-      { section_type: 'experience', content: { experiences: parsedData.workExperience || [] } },
-      { section_type: 'education', content: { education: parsedData.education || [] } },
-      { section_type: 'skills', content: { skills: parsedData.skills || [] } },
-      { section_type: 'projects', content: { projects: parsedData.projects || [] } },
-      { section_type: 'certifications', content: { certifications: parsedData.certifications || [] } }
-    ];
-
-    for (const section of sections) {
-      await supabase
-        .from('resume_sections')
-        .insert({
-          resume_id: resume.id,
-          ...section,
-          order_index: sections.indexOf(section)
-        });
+    if (resumeError) {
+      console.error('Resume creation failed:', resumeError);
+      throw resumeError;
     }
-
-    // Create analytics record
-    await supabase
-      .from('resume_analytics')
-      .insert({
-        resume_id: resume.id
-      });
+    console.log('Resume created:', resume.id);
 
     // Complete upload
     await supabase
@@ -140,6 +134,8 @@ serve(async (req) => {
         parsed_content: parsedData
       })
       .eq('id', statusRecord.id);
+
+    console.log('Upload completed successfully');
 
     return new Response(JSON.stringify({
       success: true,
@@ -154,6 +150,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error processing resume:', error);
     return new Response(JSON.stringify({ 
+      success: false,
       error: error.message || 'Failed to process resume' 
     }), {
       status: 500,
@@ -162,9 +159,9 @@ serve(async (req) => {
   }
 });
 
-// Simplified PDF text extraction (replace with proper pdf-parse in production)
+// Simplified PDF text extraction
 async function extractPDFText(buffer: Uint8Array): Promise<string> {
-  // This is a placeholder - in production, use pdf-parse or similar
+  console.log('Extracting PDF text...');
   const decoder = new TextDecoder();
   let text = decoder.decode(buffer);
   
@@ -175,9 +172,9 @@ async function extractPDFText(buffer: Uint8Array): Promise<string> {
   return text.substring(0, 10000); // Limit size
 }
 
-// Simplified DOCX text extraction (replace with mammoth in production)
+// Simplified DOCX text extraction
 async function extractDOCXText(buffer: Uint8Array): Promise<string> {
-  // This is a placeholder - in production, use mammoth.js
+  console.log('Extracting DOCX text...');
   const decoder = new TextDecoder();
   let text = decoder.decode(buffer);
   
@@ -189,9 +186,11 @@ async function extractDOCXText(buffer: Uint8Array): Promise<string> {
 }
 
 // AI-powered resume parsing
-async function parseResumeWithAI(text: string) {
+async function parseResumeWithAI(text: string, openAIApiKey?: string) {
+  console.log('Starting AI parsing...');
+  
   if (!openAIApiKey) {
-    // Fallback to basic parsing if no AI available
+    console.log('No OpenAI API key, using basic parser');
     return basicResumeParser(text);
   }
 
@@ -210,6 +209,7 @@ ${text.substring(0, 8000)}
 Return only valid JSON:`;
 
   try {
+    console.log('Calling OpenAI API...');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -228,6 +228,7 @@ Return only valid JSON:`;
     });
 
     const data = await response.json();
+    console.log('OpenAI response received');
     const parsed = JSON.parse(data.choices[0].message.content);
     return parsed;
   } catch (error) {
@@ -238,6 +239,7 @@ Return only valid JSON:`;
 
 // Basic resume parser as fallback
 function basicResumeParser(text: string) {
+  console.log('Using basic parser...');
   const lines = text.split('\n').filter(line => line.trim());
   
   // Extract email
