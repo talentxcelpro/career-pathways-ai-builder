@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -68,13 +69,17 @@ export const useResumeUpload = () => {
   const uploadResume = async (file: File): Promise<UploadResult> => {
     console.log('Starting resume upload...', file.name);
     setIsUploading(true);
-    setProgress({ percentage: 0, step: 'Preparing upload...', status: 'uploading' });
+    setProgress({ percentage: 10, step: 'Preparing upload...', status: 'uploading' });
 
     try {
-      // Get current user
+      // Check authentication first
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
+      if (userError) {
         console.error('Authentication error:', userError);
+        throw new Error('Authentication failed. Please log in and try again.');
+      }
+      
+      if (!user) {
         throw new Error('Please log in to upload a resume');
       }
       console.log('User authenticated:', user.id);
@@ -98,19 +103,24 @@ export const useResumeUpload = () => {
         throw new Error('File size must be less than 5MB');
       }
 
-      setProgress({ percentage: 10, step: 'Uploading file...', status: 'uploading' });
+      setProgress({ percentage: 20, step: 'Uploading file...', status: 'uploading' });
 
-      // Create FormData
+      // Create FormData properly
       const formData = new FormData();
       formData.append('file', file);
       formData.append('userId', user.id);
+
+      console.log('FormData created, calling edge function...');
 
       // Call upload-resume edge function
       const { data, error } = await supabase.functions.invoke('upload-resume', {
         body: formData,
       });
 
+      console.log('Edge function response:', { data, error });
+
       if (error) {
+        console.error('Upload error:', error);
         throw new Error(error.message || 'Upload failed');
       }
 
@@ -132,6 +142,7 @@ export const useResumeUpload = () => {
       }
 
     } catch (error) {
+      console.error('Upload failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Upload failed';
       setProgress({ percentage: 0, step: errorMessage, status: 'failed' });
       toast({
@@ -149,29 +160,6 @@ export const useResumeUpload = () => {
     }
   };
 
-  const checkUploadStatus = async (statusId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('resume_upload_status')
-        .select('*')
-        .eq('id', statusId)
-        .single();
-
-      if (error) throw error;
-
-      setProgress({
-        percentage: data.progress_percentage || 0,
-        step: data.current_step || 'Processing...',
-        status: data.upload_status as 'uploading' | 'processing' | 'completed' | 'failed'
-      });
-
-      return data;
-    } catch (error) {
-      console.error('Error checking upload status:', error);
-      return null;
-    }
-  };
-
   const resetProgress = () => {
     setProgress({ percentage: 0, step: 'preparing', status: 'uploading' });
     setIsUploading(false);
@@ -179,13 +167,12 @@ export const useResumeUpload = () => {
 
   return {
     uploadResume,
-    checkUploadStatus,
     resetProgress,
     isUploading,
     isProcessing: isUploading,
     uploadSuccess: progress.status === 'completed',
     processingStep: progress.step,
-    processingSteps: ['Upload', 'Parse', 'Analyze', 'Complete'],
+    processingSteps: ['Preparing', 'Uploading', 'Extracting', 'Analyzing', 'Optimizing', 'Complete'],
     processResume: uploadResume,
     resetUpload: resetProgress,
     progress
