@@ -26,7 +26,13 @@ const NewResume = () => {
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
 
   const handleCreateResume = async () => {
-    if (!user || !resumeTitle.trim()) {
+    if (!user) {
+      toast.error('Please sign in to create a resume');
+      navigate('/');
+      return;
+    }
+    
+    if (!resumeTitle.trim()) {
       toast.error('Please enter a resume title');
       return;
     }
@@ -34,6 +40,10 @@ const NewResume = () => {
     setIsCreating(true);
 
     try {
+      console.log('Creating resume for user:', user.id);
+      console.log('Resume title:', resumeTitle.trim());
+      console.log('Selected template:', selectedTemplate);
+
       const { data, error } = await supabase
         .from('ai_resumes')
         .insert({
@@ -60,13 +70,29 @@ const NewResume = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error details:', error);
+        throw error;
+      }
 
+      console.log('Resume created successfully:', data);
       toast.success('Resume created successfully!');
       navigate(`/resume-builder/edit/${data.id}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating resume:', error);
-      toast.error('Failed to create resume. Please try again.');
+      
+      // Provide more specific error messages
+      if (error?.code === 'PGRST301') {
+        toast.error('Authentication error. Please sign in again.');
+        navigate('/');
+      } else if (error?.message?.includes('JWT')) {
+        toast.error('Session expired. Please sign in again.');
+        navigate('/');
+      } else if (error?.message?.includes('duplicate key')) {
+        toast.error('A resume with this title already exists. Please choose a different title.');
+      } else {
+        toast.error(`Failed to create resume: ${error?.message || 'Unknown error'}`);
+      }
     } finally {
       setIsCreating(false);
     }
@@ -82,6 +108,12 @@ const NewResume = () => {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Button>
+            {/* Debug info */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="text-xs text-gray-500">
+                User: {user ? user.email : 'Not logged in'}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -90,6 +122,11 @@ const NewResume = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Create New Resume</h1>
           <p className="text-lg text-gray-600">Choose a template and start building your professional resume</p>
+          {!user && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700">⚠️ You need to sign in to create a resume</p>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
