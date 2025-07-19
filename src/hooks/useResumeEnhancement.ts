@@ -53,12 +53,19 @@ export const useResumeEnhancement = () => {
         sectionType: options.sectionType === 'all' ? undefined : options.sectionType
       });
       
-      // Enhanced request with fallback and proper function name
-      let { data, error } = await supabase.functions.invoke('enhance-resume', {
+      // Use unified AI gateway
+      let { data, error } = await supabase.functions.invoke('ai-gateway', {
         body: {
-          ...cleanedSections,
-          sectionType: options.sectionType === 'all' ? undefined : options.sectionType,
-          enhancementType: options.enhancementType || 'general'
+          toolSlug: 'resume-enhancer',
+          inputData: {
+            ...cleanedSections,
+            sectionType: options.sectionType === 'all' ? undefined : options.sectionType,
+            enhancementType: options.enhancementType || 'general'
+          },
+          requestMetadata: {
+            category: 'resume',
+            operation: 'resume_enhancement'
+          }
         }
       });
 
@@ -111,10 +118,10 @@ export const useResumeEnhancement = () => {
       
       // Merge enhanced content with original sections
       const enhancedSections: ParsedSections = {
-        summary: data.summary || cleanedSections.summary,
-        experience: data.experience || cleanedSections.experience,
-        skills: data.skills || cleanedSections.skills,
-        education: data.education || cleanedSections.education,
+        summary: data.data?.summary || cleanedSections.summary,
+        experience: data.data?.experience || cleanedSections.experience,
+        skills: data.data?.skills || cleanedSections.skills,
+        education: data.data?.education || cleanedSections.education,
         projects: sections.projects,
         certifications: sections.certifications,
         awards: sections.awards,

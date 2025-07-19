@@ -88,13 +88,19 @@ export const useAdvancedAIFeatures = () => {
     try {
       console.log('Performing advanced ATS analysis...');
       
-      const { data, error } = await supabase.functions.invoke('ai-comprehensive', {
+      const { data, error } = await supabase.functions.invoke('ai-gateway', {
         body: {
-          operation: 'advanced_ats_analysis',
-          resumeContent,
-          jobDescription,
-          targetRole,
-          industry
+          toolSlug: 'ats-optimizer',
+          inputData: {
+            resumeContent,
+            jobDescription,
+            targetRole,
+            industry
+          },
+          requestMetadata: {
+            category: 'resume',
+            operation: 'advanced_ats_analysis'
+          }
         }
       });
 
@@ -108,7 +114,7 @@ export const useAdvancedAIFeatures = () => {
       }
 
       toast.success('Advanced ATS analysis completed!');
-      return data.analysis;
+      return data.data;
 
     } catch (error) {
       console.error('ATS analysis failed:', error);
@@ -131,14 +137,20 @@ export const useAdvancedAIFeatures = () => {
     try {
       console.log('Optimizing resume for specific job...');
       
-      const { data, error } = await supabase.functions.invoke('ai-comprehensive', {
+      const { data, error } = await supabase.functions.invoke('ai-gateway', {
         body: {
-          operation: 'job_specific_optimization',
-          resumeContent,
-          jobDescription,
-          targetRole,
-          industry,
-          optimizationLevel
+          toolSlug: 'job-matcher',
+          inputData: {
+            resumeContent,
+            jobDescription,
+            targetRole,
+            industry,
+            optimizationLevel
+          },
+          requestMetadata: {
+            category: 'jobs',
+            operation: 'job_specific_optimization'
+          }
         }
       });
 
@@ -152,7 +164,7 @@ export const useAdvancedAIFeatures = () => {
       }
 
       toast.success('Resume optimized for target job!');
-      return data.optimization;
+      return data.data;
 
     } catch (error) {
       console.error('Job optimization failed:', error);

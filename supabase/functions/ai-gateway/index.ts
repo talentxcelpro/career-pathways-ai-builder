@@ -1,426 +1,390 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-const supabase = createClient(
-  Deno.env.get('SUPABASE_URL') ?? '',
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-);
-
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-
-interface AIRequest {
-  // New tool-based approach
-  toolSlug?: string;
-  operationType?: string;
-  input: Record<string, any>;
-  userId?: string;
-  sessionId?: string;
-  customPrompt?: string;
-  background?: boolean; // For background processing
-  options?: {
-    temperature?: number;
-    maxTokens?: number;
-    model?: string;
-  };
-  
-  // Legacy support for existing requests
-  module?: string;
-  feature?: string;
 }
 
-interface AIResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-  usage?: {
-    tokensUsed: number;
-    responseTime: number;
-    costEstimate: number;
-  };
-  featureStatus?: {
-    enabled: boolean;
-    lastSuccess: string | null;
-  };
+interface AIToolRequest {
+  toolSlug: string;
+  inputData: any;
+  toolConfig?: any;
+  adminInputs?: any[];
+  requestMetadata?: any;
+}
+
+interface AdminInput {
+  id: string;
+  title: string;
+  input_type: string;
+  content: any;
+  category: string;
+  tool_slug: string;
+  priority: number;
+}
+
+interface ToolConfig {
+  tool_slug: string;
+  tool_name: string;
+  model_name: string;
+  system_message: string;
+  prompt_template: string;
+  temperature: number;
+  max_tokens: number;
+  rate_limit_per_hour: number;
+  rate_limit_per_day: number;
 }
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const requestBody: AIRequest = await req.json();
-    const { 
-      toolSlug, 
-      operationType = 'process',
-      module, 
-      feature, 
-      input, 
-      userId, 
-      sessionId, 
-      customPrompt, 
-      background = false,
-      options 
-    } = requestBody;
-    
-    const startTime = Date.now();
-    let toolConfig: any = null;
-    let isLegacyRequest = false;
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
 
-    // Determine if this is a new tool-based request or legacy request
-    if (toolSlug) {
-      console.log(`AI Gateway: Processing tool-based request for ${toolSlug}`);
-      
-      // Get tool configuration
-      const { data: toolData, error: toolError } = await supabase
+    const requestBody: AIToolRequest = await req.json()
+    const { toolSlug, inputData, requestMetadata } = requestBody
+
+    console.log(`Processing AI request for tool: ${toolSlug}`)
+
+    // Get tool configuration if not provided
+    let toolConfig = requestBody.toolConfig
+    if (!toolConfig) {
+      const { data: configData, error: configError } = await supabase
         .from('ai_tools_config')
         .select('*')
         .eq('tool_slug', toolSlug)
         .eq('is_enabled', true)
-        .single();
+        .single()
 
-      if (toolError || !toolData) {
-        return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: `Tool ${toolSlug} not found or disabled` 
-          }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
-        );
+      if (configError || !configData) {
+        throw new Error(`AI tool ${toolSlug} not found or disabled`)
       }
+      toolConfig = configData
+    }
 
-      toolConfig = toolData;
-      
-      // Check if this should be processed in background
-      if (background && userId) {
-        const operationId = crypto.randomUUID();
-        
-        // Queue the operation for background processing
-        await supabase
-          .from('ai_operation_queue')
-          .insert({
-            id: operationId,
-            user_id: userId,
-            tool_slug: toolSlug,
-            operation_type: operationType,
-            input_data: input,
-            status: 'pending',
-            priority: 0
-          });
-
-        return new Response(
-          JSON.stringify({ 
-            success: true,
-            data: {
-              operationId,
-              status: 'queued',
-              message: 'Operation queued for background processing'
-            }
-          }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-    } else if (module && feature) {
-      // Legacy request handling
-      isLegacyRequest = true;
-      console.log(`AI Gateway: Processing legacy request ${module}.${feature}`);
-      
-      const featureKey = feature.toLowerCase().replace(/\s+/g, '_');
-      
-      // Check if feature is enabled and get status
-      const { data: featureStatus, error: statusError } = await supabase
-        .from('ai_features_status')
+    // Get admin inputs if not provided
+    let adminInputs = requestBody.adminInputs
+    if (!adminInputs) {
+      const { data: inputsData, error: inputsError } = await supabase
+        .from('ai_admin_inputs')
         .select('*')
-        .eq('module_name', module)
-        .eq('feature_key', featureKey)
-        .single();
+        .eq('tool_slug', toolSlug)
+        .eq('is_active', true)
+        .order('priority', { ascending: false })
 
-      if (statusError) {
-        console.error('Feature status error:', statusError);
-        return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: `Feature ${module}.${feature} not found in system` 
-          }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
-        );
-      }
-
-      if (!featureStatus.enabled) {
-        return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: `Feature ${module}.${feature} is currently disabled`,
-            featureStatus: {
-              enabled: false,
-              lastSuccess: featureStatus.last_success
-            }
-          }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
-        );
-      }
-    } else {
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: 'Either toolSlug or module/feature must be provided' 
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      );
+      adminInputs = inputsData || []
     }
 
-    // Process the AI request
-    const result = await processAIRequest({
-      toolConfig,
-      isLegacyRequest,
-      module,
-      feature,
-      input,
-      customPrompt,
-      options,
-    });
-
-    const responseTime = Date.now() - startTime;
-    const tokensUsed = result.usage?.tokensUsed || 0;
-    const costEstimate = result.usage?.costEstimate || 0;
-
-    // Log the usage
-    if (userId) {
-      const logData: any = {
-        user_id: userId,
-        request_type: operationType,
-        feature_type: toolSlug ? 'tool' : 'legacy',
-        input_data: input,
-        output_data: { result: result.data },
-        response_time: responseTime,
-        tokens_used: tokensUsed,
-        cost_estimate: costEstimate,
-        success: true,
-        session_id: sessionId
-      };
-
-      if (toolSlug) {
-        logData.tool_slug = toolSlug;
-        logData.feature_key = toolSlug;
-        logData.module_name = toolConfig.category;
-      } else {
-        logData.module_name = module;
-        logData.feature_key = feature?.toLowerCase().replace(/\s+/g, '_');
-      }
-
-      await supabase.from('ai_usage_logs').insert(logData);
+    // Get OpenAI API key
+    const openAIKey = Deno.env.get('OPENAI_API_KEY')
+    if (!openAIKey) {
+      throw new Error('OpenAI API key not configured')
     }
 
-    // Update feature status for legacy requests
-    if (isLegacyRequest && module && feature) {
-      await supabase.rpc('update_ai_feature_status', {
-        p_module_name: module,
-        p_feature_key: feature.toLowerCase().replace(/\s+/g, '_'),
-        p_success: true,
-        p_response_time: responseTime
-      });
+    // Build prompt from admin inputs and tool config
+    const systemPrompt = buildSystemPrompt(toolConfig, adminInputs)
+    const userPrompt = buildUserPrompt(toolSlug, inputData, adminInputs)
+
+    console.log(`System prompt: ${systemPrompt.substring(0, 200)}...`)
+    console.log(`User prompt: ${userPrompt.substring(0, 200)}...`)
+
+    // Call OpenAI API
+    const startTime = Date.now()
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: toolConfig.model_name || 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: toolConfig.temperature || 0.7,
+        max_tokens: toolConfig.max_tokens || 2000,
+      }),
+    })
+
+    const endTime = Date.now()
+    const responseTime = endTime - startTime
+
+    if (!response.ok) {
+      const errorData = await response.text()
+      console.error('OpenAI API error:', errorData)
+      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`)
     }
 
-    const response: AIResponse = {
+    const openAIData = await response.json()
+    
+    if (!openAIData.choices || !openAIData.choices[0]) {
+      throw new Error('Invalid response from OpenAI API')
+    }
+
+    const content = openAIData.choices[0].message.content
+    const tokensUsed = openAIData.usage?.total_tokens || 0
+    const cost = calculateCost(tokensUsed, toolConfig.model_name)
+
+    // Parse the AI response based on tool type
+    const parsedData = parseAIResponse(toolSlug, content)
+
+    // Update AI features status
+    await supabase.rpc('update_ai_feature_status', {
+      p_module_name: toolConfig.category || 'general',
+      p_feature_key: toolSlug,
+      p_success: true,
+      p_response_time: responseTime
+    })
+
+    console.log(`AI request completed successfully for ${toolSlug}`)
+
+    return new Response(JSON.stringify({
       success: true,
-      data: {
-        ...result.data,
-        toolSlug: toolSlug || `${module}.${feature}`,
-        processedAt: new Date().toISOString()
-      },
-      usage: {
+      data: parsedData,
+      metadata: {
         tokensUsed,
+        cost,
         responseTime,
-        costEstimate
-      },
-      featureStatus: {
-        enabled: true,
-        lastSuccess: new Date().toISOString()
+        model: toolConfig.model_name,
+        timestamp: new Date().toISOString()
       }
-    };
-
-    return new Response(JSON.stringify(response), {
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    })
 
   } catch (error) {
-    console.error('AI Gateway Error:', error);
-    
-    const errorMessage = error.message || 'Unknown error occurred';
-    
-    // Log the error if we have the request details
+    console.error('AI Gateway error:', error)
+
+    // Try to update status on error
     try {
-      const requestBody = await req.clone().json();
-      const { toolSlug, module, feature, userId, sessionId } = requestBody;
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      )
       
-      if (userId && (toolSlug || (module && feature))) {
-        const logData: any = {
-          user_id: userId,
-          success: false,
-          error_message: errorMessage,
-          session_id: sessionId
-        };
-
-        if (toolSlug) {
-          logData.tool_slug = toolSlug;
-          logData.feature_key = toolSlug;
-          logData.feature_type = 'tool';
-        } else {
-          logData.module_name = module;
-          logData.feature_key = feature?.toLowerCase().replace(/\s+/g, '_');
-          logData.feature_type = 'legacy';
-        }
-
-        await supabase.from('ai_usage_logs').insert(logData);
-
-        // Update feature status with error for legacy requests
-        if (module && feature) {
-          await supabase.rpc('update_ai_feature_status', {
-            p_module_name: module,
-            p_feature_key: feature.toLowerCase().replace(/\s+/g, '_'),
-            p_success: false,
-            p_error_message: errorMessage
-          });
-        }
+      const body = await req.clone().json()
+      if (body.toolSlug) {
+        await supabase.rpc('update_ai_feature_status', {
+          p_module_name: body.requestMetadata?.category || 'general',
+          p_feature_key: body.toolSlug,
+          p_success: false,
+          p_error_message: error.message
+        })
       }
-    } catch (logError) {
-      console.error('Failed to log error:', logError);
+    } catch (statusError) {
+      console.warn('Failed to update error status:', statusError)
     }
 
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: errorMessage 
-      }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
+    return new Response(JSON.stringify({
+      success: false,
+      error: error.message || 'AI processing failed'
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
-});
+})
 
-// AI Request Processing Function
-async function processAIRequest(params: {
-  toolConfig?: any;
-  isLegacyRequest: boolean;
-  module?: string;
-  feature?: string;
-  input: Record<string, any>;
-  customPrompt?: string;
-  options?: any;
-}) {
-  const { toolConfig, isLegacyRequest, module, feature, input, customPrompt, options } = params;
-  
-  // Get prompt configuration
-  let promptTemplate = customPrompt;
-  let systemMessage = 'You are a helpful AI assistant for TalentXcel platform.';
-  let temperature = options?.temperature ?? 0.7;
-  let maxTokens = options?.maxTokens ?? 1000;
-  let modelName = options?.model ?? 'gpt-4.1-2025-04-14';
+function buildSystemPrompt(toolConfig: ToolConfig, adminInputs: AdminInput[]): string {
+  let systemPrompt = toolConfig.system_message || 'You are a helpful AI assistant.'
 
-  if (!customPrompt) {
-    if (toolConfig) {
-      // Use tool configuration
-      promptTemplate = toolConfig.prompt_template;
-      systemMessage = toolConfig.system_message || systemMessage;
-      temperature = toolConfig.temperature || temperature;
-      maxTokens = toolConfig.max_tokens || maxTokens;
-      modelName = toolConfig.model_name || modelName;
-    } else if (isLegacyRequest) {
-      // Use legacy prompt template lookup
-      const featureKey = feature?.toLowerCase().replace(/\s+/g, '_');
-      const { data: templateData } = await supabase
-        .from('ai_prompt_templates')
-        .select('*')
-        .eq('module_name', module)
-        .eq('feature_key', featureKey)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
-      if (templateData) {
-        promptTemplate = templateData.prompt_template;
-        systemMessage = templateData.system_message || systemMessage;
-        temperature = templateData.temperature || temperature;
-        maxTokens = templateData.max_tokens || maxTokens;
-        modelName = templateData.model_name || modelName;
-      }
+  // Add system prompts from admin inputs
+  const systemInputs = adminInputs.filter(input => input.input_type === 'system_prompt')
+  for (const input of systemInputs) {
+    if (input.content.system_message) {
+      systemPrompt += '\n\n' + input.content.system_message
     }
   }
 
-  if (!promptTemplate) {
-    throw new Error(`No prompt template found for ${toolConfig?.tool_slug || `${module}.${feature}`}`);
-  }
-
-  // Enhanced prompt processing with better placeholder replacement
-  let finalPrompt = promptTemplate;
-  for (const [key, value] of Object.entries(input)) {
-    const placeholder = `{${key}}`;
-    const processedValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
-    finalPrompt = finalPrompt.replace(new RegExp(placeholder, 'g'), processedValue);
-  }
-
-  console.log('Sending request to OpenAI...');
-
-  // Make OpenAI API call
-  const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${openAIApiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: modelName,
-      messages: [
-        { role: 'system', content: systemMessage },
-        { role: 'user', content: finalPrompt }
-      ],
-      temperature,
-      max_tokens: maxTokens,
-    }),
-  });
-
-  if (!openAIResponse.ok) {
-    throw new Error(`OpenAI API error: ${openAIResponse.status} ${openAIResponse.statusText}`);
-  }
-
-  const openAIData = await openAIResponse.json();
-  const tokensUsed = openAIData.usage?.total_tokens || 0;
-  const costEstimate = calculateCost(modelName, tokensUsed);
-
-  const aiResult = openAIData.choices[0].message.content;
-
-  return {
-    data: {
-      result: aiResult,
-      model: modelName,
-      tokensUsed,
-      timestamp: new Date().toISOString()
-    },
-    usage: {
-      tokensUsed,
-      costEstimate
-    }
-  };
+  return systemPrompt
 }
 
-// Cost calculation function
-function calculateCost(model: string, tokens: number): number {
-  const costPerThousandTokens: Record<string, number> = {
-    'gpt-4.1-2025-04-14': 0.0025,
-    'gpt-4o-mini': 0.00015,
-    'gpt-4o': 0.0025,
-  };
+function buildUserPrompt(toolSlug: string, inputData: any, adminInputs: AdminInput[]): string {
+  let userPrompt = ''
+
+  // Get template inputs
+  const templateInputs = adminInputs.filter(input => 
+    input.input_type.includes('template') || input.input_type.includes('criteria')
+  )
+
+  // Build prompt based on tool type
+  switch (toolSlug) {
+    case 'resume-enhancer':
+      userPrompt = buildResumeEnhancementPrompt(inputData, templateInputs)
+      break
+    case 'ats-optimizer':
+      userPrompt = buildATSOptimizationPrompt(inputData, templateInputs)
+      break
+    case 'cover-letter-generator':
+      userPrompt = buildCoverLetterPrompt(inputData, templateInputs)
+      break
+    case 'career-advisor':
+      userPrompt = buildCareerAdvisorPrompt(inputData, templateInputs)
+      break
+    case 'interview-prep':
+      userPrompt = buildInterviewPrepPrompt(inputData, templateInputs)
+      break
+    case 'salary-analyzer':
+      userPrompt = buildSalaryAnalysisPrompt(inputData, templateInputs)
+      break
+    default:
+      userPrompt = JSON.stringify(inputData)
+  }
+
+  return userPrompt
+}
+
+function buildResumeEnhancementPrompt(inputData: any, templates: AdminInput[]): string {
+  const sectionTemplate = templates.find(t => t.input_type === 'section_template')
   
-  const rate = costPerThousandTokens[model] || 0.002;
-  return (tokens / 1000) * rate;
+  let prompt = 'Please enhance the following resume content:\n\n'
+  
+  if (inputData.summary) prompt += `Summary: ${inputData.summary}\n\n`
+  if (inputData.experience) prompt += `Experience: ${inputData.experience}\n\n`
+  if (inputData.skills) prompt += `Skills: ${inputData.skills}\n\n`
+  if (inputData.education) prompt += `Education: ${inputData.education}\n\n`
+
+  if (sectionTemplate?.content) {
+    prompt += '\nEnhancement Guidelines:\n'
+    if (sectionTemplate.content.experience) {
+      prompt += `Experience: ${sectionTemplate.content.experience}\n`
+    }
+    if (sectionTemplate.content.skills) {
+      prompt += `Skills: ${sectionTemplate.content.skills}\n`
+    }
+    if (sectionTemplate.content.summary) {
+      prompt += `Summary: ${sectionTemplate.content.summary}\n`
+    }
+  }
+
+  prompt += '\nReturn the enhanced content in JSON format with the same section names.'
+  
+  return prompt
+}
+
+function buildATSOptimizationPrompt(inputData: any, templates: AdminInput[]): string {
+  const optimizationTemplate = templates.find(t => t.input_type === 'optimization_template')
+  
+  let prompt = 'Optimize the following resume for ATS compatibility:\n\n'
+  prompt += `Resume Content: ${JSON.stringify(inputData.resumeContent)}\n\n`
+  
+  if (inputData.jobDescription) {
+    prompt += `Job Description: ${inputData.jobDescription}\n\n`
+  }
+
+  if (optimizationTemplate?.content.template) {
+    prompt += `Optimization Guidelines: ${optimizationTemplate.content.template}\n\n`
+  }
+
+  prompt += 'Return the optimized resume in JSON format with improved ATS compatibility.'
+  
+  return prompt
+}
+
+function buildCoverLetterPrompt(inputData: any, templates: AdminInput[]): string {
+  const letterTemplate = templates.find(t => t.input_type === 'letter_template')
+  
+  let prompt = 'Generate a professional cover letter based on:\n\n'
+  prompt += `Resume: ${JSON.stringify(inputData.resumeContent)}\n\n`
+  prompt += `Job Information: ${JSON.stringify(inputData.jobData)}\n\n`
+
+  if (letterTemplate?.content.structure) {
+    prompt += `Structure: ${letterTemplate.content.structure.join(', ')}\n`
+  }
+  if (letterTemplate?.content.tone) {
+    prompt += `Tone: ${letterTemplate.content.tone}\n`
+  }
+
+  prompt += '\nReturn a professional cover letter in plain text format.'
+  
+  return prompt
+}
+
+function buildCareerAdvisorPrompt(inputData: any, templates: AdminInput[]): string {
+  const analysisTemplate = templates.find(t => t.input_type === 'analysis_template')
+  
+  let prompt = 'Provide career guidance for:\n\n'
+  prompt += `User Profile: ${JSON.stringify(inputData.userProfile)}\n\n`
+  
+  if (inputData.targetRole) {
+    prompt += `Target Role: ${inputData.targetRole}\n\n`
+  }
+
+  if (analysisTemplate?.content.template) {
+    prompt += `Analysis Framework: ${analysisTemplate.content.template}\n\n`
+  }
+
+  prompt += 'Return career recommendations in JSON format with actionable steps.'
+  
+  return prompt
+}
+
+function buildInterviewPrepPrompt(inputData: any, templates: AdminInput[]): string {
+  const questionTemplate = templates.find(t => t.input_type === 'question_template')
+  
+  let prompt = 'Generate interview preparation materials for:\n\n'
+  prompt += `Job: ${JSON.stringify(inputData.jobData)}\n\n`
+  prompt += `Candidate: ${JSON.stringify(inputData.userProfile)}\n\n`
+
+  if (questionTemplate?.content) {
+    prompt += `Question Guidelines: ${JSON.stringify(questionTemplate.content)}\n\n`
+  }
+
+  prompt += 'Return interview questions and preparation tips in JSON format.'
+  
+  return prompt
+}
+
+function buildSalaryAnalysisPrompt(inputData: any, templates: AdminInput[]): string {
+  const analysisTemplate = templates.find(t => t.input_type === 'salary_analysis')
+  
+  let prompt = 'Analyze salary data for:\n\n'
+  prompt += `Role: ${inputData.role}\n`
+  prompt += `Location: ${inputData.location}\n`
+  prompt += `Experience: ${inputData.experience} years\n\n`
+
+  if (analysisTemplate?.content.data_sources) {
+    prompt += `Analysis Sources: ${analysisTemplate.content.data_sources.join(', ')}\n\n`
+  }
+
+  prompt += 'Return salary analysis in JSON format with ranges and market insights.'
+  
+  return prompt
+}
+
+function parseAIResponse(toolSlug: string, content: string): any {
+  try {
+    // Try to parse as JSON first
+    return JSON.parse(content)
+  } catch {
+    // If not JSON, return based on tool type
+    switch (toolSlug) {
+      case 'cover-letter-generator':
+        return { coverLetter: content }
+      case 'resume-enhancer':
+        // Try to extract sections from text
+        return {
+          summary: content.includes('Summary:') ? content.split('Summary:')[1]?.split('\n\n')[0]?.trim() : content,
+          experience: content.includes('Experience:') ? content.split('Experience:')[1]?.split('\n\n')[0]?.trim() : '',
+          skills: content.includes('Skills:') ? content.split('Skills:')[1]?.split('\n\n')[0]?.trim() : '',
+          education: content.includes('Education:') ? content.split('Education:')[1]?.split('\n\n')[0]?.trim() : ''
+        }
+      default:
+        return { response: content }
+    }
+  }
+}
+
+function calculateCost(tokens: number, model: string): number {
+  // Rough cost estimation - update with actual OpenAI pricing
+  const costPer1kTokens = model.includes('gpt-4') ? 0.03 : 0.002
+  return (tokens / 1000) * costPer1kTokens
 }
