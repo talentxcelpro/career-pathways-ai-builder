@@ -1,302 +1,233 @@
+
 import React, { useState } from 'react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
-  Settings, 
+  DragDropContext, 
+  Droppable, 
+  Draggable, 
+  DropResult 
+} from '@hello-pangea/dnd';
+import { 
+  GripVertical, 
   Plus, 
   Eye, 
   EyeOff, 
-  ChevronDown, 
-  ChevronRight,
-  Info
+  User, 
+  Briefcase, 
+  GraduationCap, 
+  Award, 
+  Code, 
+  Heart 
 } from "lucide-react";
-import { 
-  ResumeSection, 
-  SectionGroup, 
-  SECTION_GROUPS, 
-  SECTION_METADATA,
-  ResumeSectionType 
-} from "@/types/enhanced-resume";
-import { DraggableSection } from "../DraggableSection";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface SectionManagerProps {
-  sections: ResumeSection[];
-  onSectionsUpdate: (sections: ResumeSection[]) => void;
-  className?: string;
+  resumeData: any;
+  onUpdateData: (updates: any) => void;
+  onClose: () => void;
 }
 
+const availableSections = [
+  { id: 'personalInfo', title: 'Personal Information', icon: User, required: true },
+  { id: 'summary', title: 'Professional Summary', icon: User, required: false },
+  { id: 'experience', title: 'Work Experience', icon: Briefcase, required: false },
+  { id: 'education', title: 'Education', icon: GraduationCap, required: false },
+  { id: 'skills', title: 'Skills', icon: Award, required: false },
+  { id: 'projects', title: 'Projects', icon: Code, required: false },
+  { id: 'certifications', title: 'Certifications', icon: Award, required: false },
+  { id: 'volunteer', title: 'Volunteer Experience', icon: Heart, required: false },
+  { id: 'languages', title: 'Languages', icon: Award, required: false },
+  { id: 'awards', title: 'Awards & Achievements', icon: Award, required: false }
+];
+
 export const SectionManager: React.FC<SectionManagerProps> = ({
-  sections,
-  onSectionsUpdate,
-  className = ""
+  resumeData,
+  onUpdateData,
+  onClose
 }) => {
-  const [expandedGroups, setExpandedGroups] = useState<Set<SectionGroup>>(
-    new Set(['basicInfo', 'professional'])
-  );
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  // Group sections by their group
-  const groupedSections = sections.reduce((acc, section) => {
-    if (!acc[section.group]) {
-      acc[section.group] = [];
-    }
-    acc[section.group].push(section);
-    return acc;
-  }, {} as Record<SectionGroup, ResumeSection[]>);
-
-  // Sort sections within each group by order
-  Object.keys(groupedSections).forEach(group => {
-    groupedSections[group as SectionGroup].sort((a, b) => a.order - b.order);
+  const [sectionOrder, setSectionOrder] = useState(() => {
+    // Get current sections in order
+    const currentSections = availableSections.filter(section => 
+      resumeData[section.id] || section.required
+    );
+    return currentSections.map(section => section.id);
   });
 
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event;
+  const [visibleSections, setVisibleSections] = useState(() => {
+    return new Set(Object.keys(resumeData).filter(key => 
+      availableSections.some(section => section.id === key)
+    ));
+  });
 
-    if (active.id !== over?.id) {
-      const oldIndex = sections.findIndex(section => section.id === active.id);
-      const newIndex = sections.findIndex(section => section.id === over.id);
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
 
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newSections = arrayMove(sections, oldIndex, newIndex);
-        // Update order numbers
-        const updatedSections = newSections.map((section, index) => ({
-          ...section,
-          order: index + 1
-        }));
-        onSectionsUpdate(updatedSections);
-      }
-    }
+    const newOrder = Array.from(sectionOrder);
+    const [reorderedItem] = newOrder.splice(result.source.index, 1);
+    newOrder.splice(result.destination.index, 0, reorderedItem);
+
+    setSectionOrder(newOrder);
   };
 
-  const toggleSection = (sectionId: string) => {
-    const updatedSections = sections.map(section =>
-      section.id === sectionId
-        ? { ...section, enabled: !section.enabled }
-        : section
-    );
-    onSectionsUpdate(updatedSections);
-  };
-
-  const toggleGroup = (group: SectionGroup) => {
-    const newExpanded = new Set(expandedGroups);
-    if (newExpanded.has(group)) {
-      newExpanded.delete(group);
+  const toggleSectionVisibility = (sectionId: string) => {
+    const newVisible = new Set(visibleSections);
+    if (newVisible.has(sectionId)) {
+      newVisible.delete(sectionId);
     } else {
-      newExpanded.add(group);
+      newVisible.add(sectionId);
     }
-    setExpandedGroups(newExpanded);
+    setVisibleSections(newVisible);
   };
 
-  const enableAllInGroup = (group: SectionGroup) => {
-    const updatedSections = sections.map(section =>
-      section.group === group
-        ? { ...section, enabled: true }
-        : section
-    );
-    onSectionsUpdate(updatedSections);
+  const addSection = (sectionId: string) => {
+    if (!visibleSections.has(sectionId)) {
+      setVisibleSections(new Set([...visibleSections, sectionId]));
+      setSectionOrder([...sectionOrder, sectionId]);
+      
+      // Initialize empty data for the section
+      const updates: any = {};
+      if (sectionId === 'projects') {
+        updates.projects = [];
+      } else if (sectionId === 'certifications') {
+        updates.certifications = [];
+      } else if (sectionId === 'volunteer') {
+        updates.volunteer = [];
+      } else if (sectionId === 'languages') {
+        updates.languages = [];
+      } else if (sectionId === 'awards') {
+        updates.awards = [];
+      }
+      
+      onUpdateData(updates);
+    }
   };
 
-  const disableAllInGroup = (group: SectionGroup) => {
-    const updatedSections = sections.map(section =>
-      section.group === group && !SECTION_METADATA[section.type].required
-        ? { ...section, enabled: false }
-        : section
-    );
-    onSectionsUpdate(updatedSections);
-  };
+  const applySectionOrder = () => {
+    // Apply the new section order and visibility
+    const orderedData: any = {};
+    
+    sectionOrder.forEach(sectionId => {
+      if (visibleSections.has(sectionId) && resumeData[sectionId]) {
+        orderedData[sectionId] = resumeData[sectionId];
+      }
+    });
 
-  const getEnabledCount = (group: SectionGroup) => {
-    return groupedSections[group]?.filter(section => section.enabled).length || 0;
-  };
-
-  const getTotalCount = (group: SectionGroup) => {
-    return groupedSections[group]?.length || 0;
+    onUpdateData({ ...resumeData, ...orderedData, _sectionOrder: sectionOrder });
+    onClose();
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Settings className="h-5 w-5" />
-            Section Manager
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Enable, disable, and reorder resume sections
-          </p>
-        </div>
-        <Badge variant="outline">
-          {sections.filter(s => s.enabled).length} / {sections.length} enabled
-        </Badge>
-      </div>
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>Manage Resume Sections</DialogTitle>
+        </DialogHeader>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="space-y-6">
-          {Object.entries(SECTION_GROUPS).map(([groupKey, groupInfo]) => {
-            const group = groupKey as SectionGroup;
-            const groupSections = groupedSections[group] || [];
-            const isExpanded = expandedGroups.has(group);
-            const enabledCount = getEnabledCount(group);
-            const totalCount = getTotalCount(group);
+        <div className="flex-1 overflow-y-auto space-y-6">
+          {/* Current Sections */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Current Sections</h3>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId="sections">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
+                    {sectionOrder.map((sectionId, index) => {
+                      const section = availableSections.find(s => s.id === sectionId);
+                      if (!section) return null;
 
-            return (
-              <Card key={group} className={`border-2 ${groupInfo.color}`}>
-                <Collapsible
-                  open={isExpanded}
-                  onOpenChange={() => toggleGroup(group)}
-                >
-                  <CollapsibleTrigger asChild>
-                    <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {isExpanded ? 
-                            <ChevronDown className="h-4 w-4" /> : 
-                            <ChevronRight className="h-4 w-4" />
-                          }
-                          <div>
-                            <CardTitle className="text-base">{groupInfo.title}</CardTitle>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {groupInfo.description}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant={enabledCount > 0 ? "default" : "secondary"}>
-                            {enabledCount} / {totalCount}
-                          </Badge>
-                          <div className="flex gap-1">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      enableAllInGroup(group);
-                                    }}
-                                  >
-                                    <Eye className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Enable all sections</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      disableAllInGroup(group);
-                                    }}
-                                  >
-                                    <EyeOff className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Disable optional sections</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </CollapsibleTrigger>
+                      const Icon = section.icon;
+                      const isVisible = visibleSections.has(sectionId);
 
-                  <CollapsibleContent>
-                    <CardContent className="pt-0">
-                      <SortableContext
-                        items={groupSections.map(s => s.id)}
-                        strategy={verticalListSortingStrategy}
-                      >
-                        <div className="space-y-2">
-                          {groupSections.map((section) => {
-                            const metadata = SECTION_METADATA[section.type];
-                            return (
-                              <DraggableSection
-                                key={section.id}
-                                id={section.id}
-                                title={metadata.title}
-                                description={metadata.description}
-                                actions={
-                                  <div className="flex items-center gap-2">
-                                    {metadata.required && (
-                                      <Badge variant="destructive" className="text-xs">
-                                        Required
-                                      </Badge>
-                                    )}
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <Button variant="ghost" size="sm">
-                                            <Info className="h-4 w-4" />
-                                          </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="max-w-xs">
-                                          <div className="space-y-2">
-                                            <p className="font-medium">{metadata.title}</p>
-                                            <p className="text-xs">{metadata.description}</p>
-                                            <div>
-                                              <p className="text-xs font-medium">Recommended for:</p>
-                                              <div className="flex flex-wrap gap-1 mt-1">
-                                                {metadata.recommendedFor.map(role => (
-                                                  <Badge key={role} variant="outline" className="text-xs">
-                                                    {role}
-                                                  </Badge>
-                                                ))}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                    <Switch
-                                      checked={section.enabled}
-                                      onCheckedChange={() => toggleSection(section.id)}
-                                      disabled={metadata.required}
-                                    />
+                      return (
+                        <Draggable key={sectionId} draggableId={sectionId} index={index}>
+                          {(provided, snapshot) => (
+                            <Card
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className={`${snapshot.isDragging ? 'shadow-lg' : ''} ${!isVisible ? 'opacity-50' : ''}`}
+                            >
+                              <CardContent className="p-4">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div
+                                      {...provided.dragHandleProps}
+                                      className="cursor-grab hover:cursor-grabbing"
+                                    >
+                                      <GripVertical className="h-5 w-5 text-slate-400" />
+                                    </div>
+                                    <Icon className="h-5 w-5 text-slate-600" />
+                                    <div>
+                                      <h4 className="font-medium">{section.title}</h4>
+                                      {section.required && (
+                                        <Badge variant="secondary" className="text-xs">Required</Badge>
+                                      )}
+                                    </div>
                                   </div>
-                                }
-                              >
-                                <div className="text-sm text-muted-foreground">
-                                  {section.enabled ? 'Section is visible in resume' : 'Section is hidden'}
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => toggleSectionVisibility(sectionId)}
+                                      disabled={section.required}
+                                    >
+                                      {isVisible ? (
+                                        <Eye className="h-4 w-4" />
+                                      ) : (
+                                        <EyeOff className="h-4 w-4" />
+                                      )}
+                                    </Button>
+                                  </div>
                                 </div>
-                              </DraggableSection>
-                            );
-                          })}
-                        </div>
-                      </SortableContext>
-                    </CardContent>
-                  </CollapsibleContent>
-                </Collapsible>
-              </Card>
-            );
-          })}
+                              </CardContent>
+                            </Card>
+                          )}
+                        </Draggable>
+                      );
+                    })}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </div>
+
+          {/* Available Sections to Add */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Add Sections</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {availableSections
+                .filter(section => !visibleSections.has(section.id))
+                .map(section => {
+                  const Icon = section.icon;
+                  return (
+                    <Button
+                      key={section.id}
+                      variant="outline"
+                      className="justify-start h-auto p-3"
+                      onClick={() => addSection(section.id)}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      <Icon className="h-4 w-4 mr-2" />
+                      {section.title}
+                    </Button>
+                  );
+                })
+              }
+            </div>
+          </div>
         </div>
-      </DndContext>
-    </div>
+
+        <div className="flex justify-end gap-2 pt-4 border-t">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={applySectionOrder}>
+            Apply Changes
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };

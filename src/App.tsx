@@ -1,117 +1,94 @@
-import React from "react";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Analytics } from "@vercel/analytics/react";
-import { navItems } from "./nav-items";
-import { NavItem } from "./types/nav-item";
-import { Navbar } from "./components/navigation/Navbar";
-import { Footer } from "./components/layout/Footer";
-import { OfflineIndicator } from "./components/shared/OfflineIndicator";
-import { AuthProvider } from "./contexts/AuthContext";
-import { AnalyticsProvider } from "./contexts/AnalyticsContext";
-import { AIProvider } from "./contexts/AIContext";
-
-import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
-import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
-import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import { MobileAppInitializer } from "./components/MobileAppInitializer";
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import { AuthProvider } from './contexts/AuthContext';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
+import Settings from './pages/Settings';
+import Pricing from './pages/Pricing';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
+import Contact from './pages/Contact';
+import About from './pages/About';
+import NotFound from './pages/NotFound';
+import Upgrade from './pages/Upgrade';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import UserManagement from './pages/admin/UserManagement';
+import AnalyticsDashboard from './pages/analytics/AnalyticsDashboard';
+import ReportsDashboard from './pages/reports/ReportsDashboard';
+import ResumeBuilder from './pages/ResumeBuilder';
+import CreateResume from './pages/resume/CreateResume';
+import UploadResume from './pages/resume/UploadResume';
+import EditResumePage from './pages/resume/EditResume';
+import ExportResume from './pages/resume/ExportResume';
+import CoverLetterGenerator from './pages/resume/CoverLetterGenerator';
+import EditCoverLetter from './pages/resume/EditCoverLetter';
+import ResumeSettings from './pages/resume/ResumeSettings';
+import ResumeDashboard from './pages/resume/ResumeDashboard';
+import ResumeChecker from './pages/tools/ResumeChecker';
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
+import EditResume from './pages/resume/EditResume';
+import { QueryClient } from "@tanstack/react-query";
 
-// Create query client with better default configurations
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-      retry: (failureCount, error: any) => {
-        // Don't retry for 4xx errors
-        if (error?.status >= 400 && error?.status < 500) {
-          return false;
-        }
-        return failureCount < 3;
-      },
-      refetchOnWindowFocus: true,
-      refetchOnReconnect: true,
-    },
-  },
-});
-
-// Routes that don't require authentication - updated to include job viewing
-const publicRoutes = [
-  '/', 
-  '/auth/login', 
-  '/auth/register', 
-  '/auth/forgot-password', 
-  '/auth/reset-password', 
-  '/auth/callback',
-  '/jobs',
-  '/jobs/:id',
-  '/companies',
-  '/companies/:id',
-  '/:slug', // Company slug route
-  '/profile/:id',
-  '/employer', // Employer landing page (shows different content based on auth)
-  '/employer/request-access',
-  '/employer/team/accept/:token' // Invitation acceptance
-];
-
-const App = () => {
+function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <TooltipProvider>
-          <AnalyticsProvider>
-            <AuthProvider>
-              <AIProvider>
-                <Toaster />
-                <MobileAppInitializer />
-                <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
-                <SearchConsoleVerification verificationCode="your-search-console-verification-code" />
-                <div className="min-h-screen flex flex-col">
-                  <OfflineIndicator />
-                  <Navbar />
-                  <main className="flex-1">
-                    <Routes>
-                      {navItems.map((item: NavItem) => {
-                         // Check if route is explicitly marked as public or in our public routes list
-                         const isPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
-                           // Handle dynamic routes like /companies/:id, /profile/:id, /:slug, /jobs/:id, and /employer/team/accept/:token
-                           if (route.includes(':')) {
-                             const routePattern = route.replace(/:[^/]+/g, '[^/]+');
-                             return new RegExp(`^${routePattern}$`).test(item.to);
-                           }
-                           return route === item.to;
-                         });
-                        
-                        return (
-                          <Route 
-                            key={item.to} 
-                            path={item.to} 
-                            element={
-                              isPublicRoute ? (
-                                item.page
-                              ) : (
-                                <ProtectedRoute>{item.page}</ProtectedRoute>
-                              )
-                            }
-                          />
-                        );
-                      })}
-                      <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
-                    </Routes>
-                  </main>
-                  <Footer />
-                </div>
-              </AIProvider>
-            </AuthProvider>
-          </AnalyticsProvider>
-          <Analytics />
-        </TooltipProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <QueryClient>
+      <AuthProvider>
+        <Toaster />
+        <BrowserRouter>
+          <Routes>
+            {/* Core Routes */}
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/edit-profile" element={<EditProfile />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<BlogPost />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<About />} />
+            <Route path="*" element={<NotFound />} />
+            <Route path="/upgrade" element={<Upgrade />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<UserManagement />} />
+
+            {/* Analytics and Reports */}
+            <Route path="/analytics" element={<AnalyticsDashboard />} />
+            <Route path="/reports" element={<ReportsDashboard />} />
+
+            {/* Resume Builder Routes */}
+            <Route path="/resume-builder" element={<ResumeBuilder />} />
+            <Route path="/resume-builder/new" element={<CreateResume />} />
+            <Route path="/resume-builder/upload" element={<UploadResume />} />
+            <Route path="/resume-builder/edit/:id" element={<EditResumePage />} />
+            <Route path="/resume-builder/export/:id" element={<ExportResume />} />
+            <Route path="/resume-builder/cover-letter" element={<CoverLetterGenerator />} />
+            <Route path="/resume-builder/cover-letter/edit/:id" element={<EditCoverLetter />} />
+            <Route path="/resume-builder/settings" element={<ResumeSettings />} />
+            <Route path="/resume-builder/dashboard" element={<ResumeDashboard />} />
+            <Route path="/resume-builder/checker" element={<ResumeChecker />} />
+            
+            {/* Enhanced Resume Builder Routes */}
+            <Route path="/resume-builder/enhanced/upload" element={<EnhancedUploadResume />} />
+            <Route path="/resume-builder/enhanced/edit/:id" element={<EditResume />} />
+            
+            {/* Add more routes as needed */}
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </QueryClient>
   );
-};
+}
 
 export default App;
