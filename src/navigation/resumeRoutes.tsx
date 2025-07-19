@@ -36,13 +36,19 @@ export const resumeRoutes = [
     page: <ResumeChecker />,
   },
   {
-    title: "Enhanced Resume Builder",
+    title: "Enhanced Resume Builder - Edit",
     to: "/resume-builder/edit/:id",
     icon: <Edit className="h-4 w-4" />,
-    page: <EnhancedResumeBuilder />,
+    page: <EnhancedResumeBuilder mode="edit" />,
   },
   {
-    title: "Resume Builder - New",
+    title: "Enhanced Resume Builder - New",
+    to: "/resume-builder/edit/new",
+    icon: <Edit className="h-4 w-4" />,
+    page: <EnhancedResumeBuilder mode="create" />,
+  },
+  {
+    title: "Enhanced Resume Builder - Create",
     to: "/resume-builder/edit",
     icon: <Edit className="h-4 w-4" />,
     page: <EnhancedResumeBuilder mode="create" />,

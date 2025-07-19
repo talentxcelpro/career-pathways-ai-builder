@@ -1,122 +1,108 @@
 
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { EnhancedResumeBuilder } from './EnhancedResumeBuilder';
-import { EnhancedResumeData, ProcessedResumeData } from '@/types/enhanced-resume';
+import { EnhancedResumeData } from '@/types/enhanced-resume';
+import { useResumeBuilder } from '@/hooks/useResumeBuilder';
+import { ResumeHeader } from './ResumeHeader';
 
 interface UnifiedResumeInterfaceProps {
-  mode?: 'create' | 'edit';
-  resumeId?: string;
+  mode: 'edit' | 'create';
+  initialData?: EnhancedResumeData;
+  onDataChange?: (data: EnhancedResumeData) => void;
 }
 
 export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
-  mode = 'create',
-  resumeId
+  mode,
+  initialData,
+  onDataChange
 }) => {
-  const location = useLocation();
-  const [resumeData, setResumeData] = useState<EnhancedResumeData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    resumeData,
+    updateResumeData,
+    isSaving,
+    hasChanges,
+    saveResume,
+    exportResume
+  } = useResumeBuilder(initialData);
 
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+  // Sync data changes with parent component
   useEffect(() => {
-    const initializeData = () => {
-      // Check if we have resume data from navigation state (upload flow)
-      const navigationData = location.state?.resumeData;
-      
-      if (navigationData) {
-        console.log('Processing navigation data:', navigationData);
-        
-        // Convert ProcessedResumeData to EnhancedResumeData
-        const convertedData: EnhancedResumeData = {
-          personalInfo: {
-            fullName: navigationData.personalInfo?.fullName || '',
-            email: navigationData.personalInfo?.email || '',
-            phone: navigationData.personalInfo?.phone || '',
-            location: navigationData.personalInfo?.location || '',
-            summary: navigationData.personalInfo?.summary || '',
-            linkedin: navigationData.personalInfo?.linkedin || '',
-            website: navigationData.personalInfo?.website || '',
-            github: navigationData.personalInfo?.github || ''
-          },
-          professionalSummary: {
-            content: navigationData.personalInfo?.summary || '',
-            keyHighlights: []
-          },
-          experience: navigationData.experience || [],
-          education: navigationData.education || [],
-          skills: navigationData.skills || [],
-          projects: navigationData.projects || [],
-          certifications: navigationData.certifications || [],
-          awards: navigationData.awards || [],
-          languages: [],
-          publications: [],
-          references: [],
-          volunteerWork: [],
-          trainings: [],
-          tools: {
-            development: [],
-            design: [],
-            analytics: [],
-            productivity: [],
-            other: []
-          },
-          careerObjectives: {
-            statement: '',
-            goals: []
-          },
-          sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
-          selectedTemplate: 'modern',
-          customization: {
-            colorScheme: 'blue',
-            fontFamily: 'Inter',
-            fontSize: 12,
-            spacing: 'normal'
-          }
-        };
-        
-        setResumeData(convertedData);
-      }
-      
-      setIsLoading(false);
-    };
-
-    initializeData();
-  }, [location.state, resumeId]);
-
-  const handleSave = async (data: EnhancedResumeData) => {
-    try {
-      console.log('Saving resume data:', data);
-      // TODO: Implement actual save logic
-      // await saveResumeData(data);
-    } catch (error) {
-      console.error('Failed to save resume:', error);
-      throw error;
+    if (resumeData && onDataChange) {
+      onDataChange(resumeData);
     }
+  }, [resumeData, onDataChange]);
+
+  const handleSave = async () => {
+    await saveResume();
+    setLastSaved(new Date());
   };
 
-  const handleExport = async (data: EnhancedResumeData) => {
-    try {
-      console.log('Exporting resume data:', data);
-      // TODO: Implement actual export logic
-      // await exportResume(data);
-    } catch (error) {
-      console.error('Failed to export resume:', error);
-      throw error;
-    }
+  const handleEnhancementApplied = (enhancedData: any) => {
+    updateResumeData(enhancedData);
   };
 
-  if (isLoading) {
+  // Show loading state if no resume data
+  if (!resumeData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Initializing resume builder...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <EnhancedResumeBuilder
-      initialData={resumeData || undefined}
-      onSave={handleSave}
-      onExport={handleExport}
-    />
+    <div className="min-h-screen bg-background">
+      <ResumeHeader
+        mode={mode}
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+        hasChanges={hasChanges}
+        onSave={handleSave}
+        resumeData={resumeData}
+        onEnhancementApplied={handleEnhancementApplied}
+      />
+      
+      <div className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Editor Panel */}
+          <div className="space-y-6">
+            <div className="bg-card rounded-lg border p-6">
+              <h2 className="text-lg font-semibold mb-4">Resume Editor</h2>
+              <p className="text-muted-foreground">
+                Resume editor interface will be implemented here.
+              </p>
+              
+              {/* Debug info in development */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="mt-4 p-4 bg-muted rounded-lg">
+                  <h3 className="font-medium mb-2">Debug Info:</h3>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>Mode: {mode}</li>
+                    <li>Has Changes: {hasChanges ? 'Yes' : 'No'}</li>
+                    <li>Is Saving: {isSaving ? 'Yes' : 'No'}</li>
+                    <li>Name: {resumeData.personalInfo.fullName || 'Empty'}</li>
+                    <li>Sections: {resumeData.sectionOrder.length}</li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Preview Panel */}
+          <div className="space-y-6">
+            <div className="bg-card rounded-lg border p-6">
+              <h2 className="text-lg font-semibold mb-4">Live Preview</h2>
+              <p className="text-muted-foreground">
+                Resume preview will be shown here.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
