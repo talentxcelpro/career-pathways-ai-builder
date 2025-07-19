@@ -10,6 +10,8 @@ import { EmailTriggerSettingsModal } from './EmailTriggerSettingsModal';
 import { BulkEmailProcessor } from './BulkEmailProcessor';
 import { EmailAnalyticsDashboard } from './EmailAnalyticsDashboard';
 import { RealTimeEmailAnalytics } from './RealTimeEmailAnalytics';
+import { EmailDeliveryDiagnostics } from './EmailDeliveryDiagnostics';
+import { EmailConfigurationGuide } from './EmailConfigurationGuide';
 
 interface EmailTrigger {
   id: string;
@@ -209,6 +211,16 @@ export const EmailAutomationManager: React.FC = () => {
       </div>
 
       {/* Tab Content */}
+      {activeTab === 'triggers' && (
+        <>
+          {/* Email Configuration Guide */}
+          <EmailConfigurationGuide />
+          
+          {/* Email Delivery Diagnostics */}
+          <EmailDeliveryDiagnostics />
+        </>
+      )}
+      
       {activeTab === 'triggers' && (
         <div className="grid gap-4">
           {triggers.map((trigger) => (
