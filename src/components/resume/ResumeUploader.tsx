@@ -111,7 +111,7 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
         selectedTemplate: 'modern-professional'
       },
       confidence: 1,
-      extractionNotes: ['Started with blank resume']
+      suggestions: ['Started with blank resume']
     });
   };
 
