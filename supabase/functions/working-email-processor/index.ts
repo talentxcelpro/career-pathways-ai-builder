@@ -108,7 +108,10 @@ Deno.serve(async (req) => {
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
                 <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
                   <div style="text-align: center; margin-bottom: 30px;">
-                    <h1 style="color: #2563eb; margin: 0; font-size: 28px;">TalentXcel</h1>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+                      <img src="https://cdn.jsdelivr.net/gh/yourusername/talentxcel-assets@main/logo.png" alt="TalentXcel" style="width: 32px; height: 32px; border-radius: 6px;" onerror="this.style.display='none'"/>
+                      <h1 style="color: #2563eb; margin: 0; font-size: 28px;">TalentXcel</h1>
+                    </div>
                     <p style="color: #64748b; margin: 5px 0 0 0;">Powering Global Career Growth</p>
                   </div>
                   

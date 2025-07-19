@@ -106,17 +106,35 @@ export const useEmailAutomation = () => {
     jobTitle: string, 
     companyName: string
   ) => {
-    return sendAutomatedEmail({
-      template: 'application_confirmation',
-      trigger: 'job_application',
-      to: userEmail,
-      subject: `Application confirmed for ${jobTitle}`,
-      data: {
-        first_name: userName,
-        job_title: jobTitle,
-        company_name: companyName
+    try {
+      // Queue email using the new automation system
+      const { error } = await supabase
+        .from('email_automation_queue')
+        .insert({
+          trigger_type: 'application_confirmation',
+          recipient_email: userEmail,
+          recipient_name: userName,
+          template_data: {
+            name: userName,
+            recipient_name: userName,
+            job_title: jobTitle,
+            company_name: companyName,
+            application_id: 'APP-' + Math.random().toString(36).substr(2, 9).toUpperCase()
+          },
+          scheduled_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('Failed to queue application confirmation email:', error);
+        throw error;
       }
-    });
+
+      console.log('Application confirmation email queued successfully');
+      return { success: true };
+    } catch (error) {
+      console.error('Error triggering application confirmation email:', error);
+      throw error;
+    }
   };
 
   const triggerTeamInviteEmail = async (
