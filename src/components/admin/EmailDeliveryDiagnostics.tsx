@@ -255,11 +255,26 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
             )}
           </Button>
           <Button
-            onClick={sendTestEmail}
-            variant="outline"
+            onClick={() => {
+              // Use our new direct test function
+              supabase.functions.invoke('email-test', {}).then(({ data, error }) => {
+                if (error) {
+                  toast.error(`Direct test failed: ${error.message}`);
+                } else if (data?.success) {
+                  toast.success('✅ SendGrid working! Email sent to talentxcelpro@gmail.com');
+                  setTestEmailSent(true);
+                } else {
+                  toast.error(`Test failed: ${data?.error || 'Unknown error'}`);
+                }
+              }).catch(err => {
+                toast.error(`Test error: ${err.message}`);
+              });
+            }}
+            variant="default"
+            className="bg-green-600 hover:bg-green-700"
           >
             <Send className="h-4 w-4 mr-2" />
-            Send Test Email
+            Quick Fix Test
           </Button>
         </div>
 
