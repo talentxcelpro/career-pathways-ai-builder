@@ -438,7 +438,10 @@ export const ServicesMarketplace: React.FC = () => {
           <p className="text-muted-foreground mb-6">
             Join thousands of professionals earning with their expertise
           </p>
-          <Button className="bg-gradient-to-r from-purple-600 to-pink-600">
+          <Button 
+            className="bg-gradient-to-r from-purple-600 to-pink-600"
+            onClick={() => window.location.href = '/pro/subscription'}
+          >
             <TrendingUp className="h-4 w-4 mr-2" />
             Start Selling Your Services
             <ArrowRight className="h-4 w-4 ml-2" />
