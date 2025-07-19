@@ -66,6 +66,7 @@ export const useResumeUpload = () => {
   const { toast } = useToast();
 
   const uploadResume = async (file: File): Promise<UploadResult> => {
+    console.log('Starting resume upload...', file.name);
     setIsUploading(true);
     setProgress({ percentage: 0, step: 'Preparing upload...', status: 'uploading' });
 
@@ -73,8 +74,10 @@ export const useResumeUpload = () => {
       // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
+        console.error('Authentication error:', userError);
         throw new Error('Please log in to upload a resume');
       }
+      console.log('User authenticated:', user.id);
 
       // Validate file
       if (!file) {
@@ -103,33 +106,29 @@ export const useResumeUpload = () => {
       formData.append('userId', user.id);
 
       // Call upload-resume edge function
-      const response = await fetch('/api/upload-resume', {
-        method: 'POST',
+      const { data, error } = await supabase.functions.invoke('upload-resume', {
         body: formData,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Upload failed');
+      if (error) {
+        throw new Error(error.message || 'Upload failed');
       }
 
-      const result = await response.json();
-
-      if (result.success) {
+      if (data && data.success) {
         setProgress({ percentage: 100, step: 'Upload completed!', status: 'completed' });
         toast({
           title: "Resume uploaded successfully!",
-          description: `ATS Score: ${result.atsScore}/100`,
+          description: `ATS Score: ${data.atsScore}/100`,
         });
         
         return {
           success: true,
-          resumeId: result.resumeId,
-          atsScore: result.atsScore,
-          parsedData: result.parsedData
+          resumeId: data.resumeId,
+          atsScore: data.atsScore,
+          parsedData: data.parsedData
         };
       } else {
-        throw new Error(result.error || 'Upload failed');
+        throw new Error(data?.error || 'Upload failed');
       }
 
     } catch (error) {

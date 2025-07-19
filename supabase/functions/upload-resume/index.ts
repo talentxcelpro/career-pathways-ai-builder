@@ -17,12 +17,16 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Processing resume upload request...');
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const formData = await req.formData();
     const file = formData.get('file') as File;
     const userId = formData.get('userId') as string;
 
+    console.log('File received:', file?.name, 'Size:', file?.size, 'User:', userId);
+
     if (!file || !userId) {
+      console.error('Missing file or userId');
       return new Response(JSON.stringify({ error: 'File and userId required' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
