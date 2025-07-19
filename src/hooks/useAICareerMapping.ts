@@ -51,6 +51,33 @@ interface MarketDataRequest {
   industryFocus?: string;
 }
 
+interface AIRecommendationRequest {
+  userId: string;
+  userProgress: any;
+  currentSkills: Array<{
+    name: string;
+    proficiency: number;
+    category: string;
+  }>;
+  targetRole: string;
+  learningPreferences?: any;
+}
+
+interface ProgressTrackingRequest {
+  userId: string;
+  roadmapId?: string;
+  taskId?: string;
+  phaseId?: string;
+  completionData?: any;
+  skillProgress?: any;
+  action: 'complete_task' | 'complete_phase' | 'update_skill_progress' | 'log_activity' | 'get_progress_summary';
+}
+
+interface CoachingRequest {
+  userId: string;
+  coachingType?: 'weekly_checkin' | 'monthly_review' | 'milestone_celebration';
+}
+
 export const useAICareerMapping = () => {
   const parseResume = useMutation({
     mutationFn: async (request: ResumeParseRequest) => {
@@ -142,16 +169,76 @@ export const useAICareerMapping = () => {
     }
   });
 
+  const getAIRecommendations = useMutation({
+    mutationFn: async (request: AIRecommendationRequest) => {
+      const { data, error } = await supabase.functions.invoke('ai-recommendations', {
+        body: request
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('AI recommendations generated!');
+    },
+    onError: (error: any) => {
+      console.error('AI recommendations error:', error);
+      toast.error(error.message || 'Failed to get recommendations');
+    }
+  });
+
+  const trackProgress = useMutation({
+    mutationFn: async (request: ProgressTrackingRequest) => {
+      const { data, error } = await supabase.functions.invoke('progress-tracker', {
+        body: request
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Progress updated successfully!');
+    },
+    onError: (error: any) => {
+      console.error('Progress tracking error:', error);
+      toast.error(error.message || 'Failed to update progress');
+    }
+  });
+
+  const getCoaching = useMutation({
+    mutationFn: async (request: CoachingRequest) => {
+      const { data, error } = await supabase.functions.invoke('automated-coaching', {
+        body: request
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Coaching session generated!');
+    },
+    onError: (error: any) => {
+      console.error('Coaching error:', error);
+      toast.error(error.message || 'Failed to get coaching');
+    }
+  });
+
   return {
     parseResume,
     generateRoadmap,
     analyzeSkillsGap,
     analyzeCareerSwitchRisk,
     fetchMarketData,
+    getAIRecommendations,
+    trackProgress,
+    getCoaching,
     isParsingResume: parseResume.isPending,
     isGeneratingRoadmap: generateRoadmap.isPending,
     isAnalyzingSkillsGap: analyzeSkillsGap.isPending,
     isAnalyzingRisk: analyzeCareerSwitchRisk.isPending,
-    isFetchingMarketData: fetchMarketData.isPending
+    isFetchingMarketData: fetchMarketData.isPending,
+    isGettingRecommendations: getAIRecommendations.isPending,
+    isTrackingProgress: trackProgress.isPending,
+    isGettingCoaching: getCoaching.isPending
   };
 };
