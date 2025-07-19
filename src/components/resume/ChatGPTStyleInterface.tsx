@@ -79,7 +79,8 @@ export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
     processingStep,
     processingSteps,
     processResume,
-    resetUpload
+    resetUpload,
+    progress
   } = useResumeUpload();
 
   const scrollToBottom = () => {
@@ -307,8 +308,8 @@ export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
             onDragLeave={handleDragEvents}
             onDragOver={handleDragEvents}
             onDrop={handleDrop}
-            processingProgress={progress.percentage || 0}
-            processingStatus={progress.step || 'Processing'}
+            processingProgress={progress?.percentage || 0}
+            processingStatus={progress?.step || 'Processing'}
           />
           
           {uploadSuccess && (
