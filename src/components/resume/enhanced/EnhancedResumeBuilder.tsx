@@ -1,456 +1,433 @@
-import React, { useState, useCallback, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Save, 
-  Eye, 
-  Settings,
-  FileText,
-  Download,
-  Sparkles,
-  Layout,
-  Target
-} from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Save, Download, Eye, Sparkles, RotateCcw, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
+import { SectionManager } from './SectionManager';
+import { ResumePreview } from './ResumePreview';
+import { EnhancementPanel } from './EnhancementPanel';
+import { ATSScoreCard } from './ATSScoreCard';
 import { 
   EnhancedResumeData, 
   DEFAULT_SECTION_CONFIG, 
-  ResumeSection,
+  ResumeSection, 
   SECTION_METADATA 
 } from "@/types/enhanced-resume";
-import { SectionManager } from "./SectionManager";
-import { PersonalInfoSection } from "./sections/PersonalInfoSection";
-import { ProfessionalSummarySection } from "./sections/ProfessionalSummarySection";
-import { WorkExperienceSection } from "./sections/WorkExperienceSection";
-import { SkillsSection } from "./sections/SkillsSection";
-import { EducationSection } from "./sections/EducationSection";
-import { CertificationsSection } from "./sections/CertificationsSection";
-import { ProjectsSection } from "./sections/ProjectsSection";
-import { LanguagesSection } from "./sections/LanguagesSection";
-import { AwardsSection } from "./sections/AwardsSection";
-import { VolunteerWorkSection } from "./sections/VolunteerWorkSection";
-import { ToolsSection } from "./sections/ToolsSection";
-import { TrainingsSection } from "./sections/TrainingsSection";
-import { CareerObjectivesSection } from "./sections/CareerObjectivesSection";
-import { ReferencesSection } from "./sections/ReferencesSection";
-import { ResumePreview } from "../ResumePreview";
 
 interface EnhancedResumeBuilderProps {
-  resumeId?: string;
-  mode?: 'create' | 'edit';
+  initialData?: Partial<EnhancedResumeData>;
+  onSave?: (data: EnhancedResumeData) => void;
+  onExport?: (data: EnhancedResumeData) => void;
 }
 
 export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
-  resumeId,
-  mode = 'edit'
+  initialData,
+  onSave,
+  onExport
 }) => {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-  
-  const [currentTab, setCurrentTab] = useState<'build' | 'manage' | 'enhance' | 'preview'>('build');
-  const [resumeData, setResumeData] = useState<EnhancedResumeData>({
-    personalInfo: {
-      fullName: '',
-      email: '',
-      phone: '',
-      location: '',
-      linkedin: '',
-      website: '',
-      github: ''
-    },
-    professionalSummary: {
-      content: '',
-      keyHighlights: []
-    },
-    workExperience: [],
-    skills: [],
-    education: [],
-    certifications: [],
-    projects: [],
-    languages: [],
-    volunteerWork: [],
-    awards: [],
-    trainings: [],
-    tools: { development: [], design: [], analytics: [], productivity: [], other: [] },
-    publications: [],
-    patents: [],
-    openSource: [],
-    academicProjects: [],
-    researchInterests: { areas: [] },
-    speakingEngagements: [],
-    portfolioLinks: [],
-    references: [],
-    sectionConfig: DEFAULT_SECTION_CONFIG
-  });
+  const [resumeData, setResumeData] = useState<EnhancedResumeData>(() => {
+    const defaultData: EnhancedResumeData = {
+      personalInfo: {
+        fullName: '',
+        email: '',
+        phone: '',
+        location: '',
+        summary: '',
+        linkedin: '',
+        website: '',
+        github: ''
+      },
+      professionalSummary: {
+        content: '',
+        keyHighlights: []
+      },
+      experience: [],
+      education: [],
+      skills: [],
+      projects: [],
+      certifications: [],
+      awards: [],
+      languages: [],
+      publications: [],
+      references: [],
+      volunteerWork: [],
+      trainings: [],
+      tools: {
+        development: [],
+        design: [],
+        analytics: [],
+        productivity: [],
+        other: []
+      },
+      careerObjectives: {
+        statement: '',
+        goals: []
+      },
+      sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
+      sectionConfig: DEFAULT_SECTION_CONFIG,
+      selectedTemplate: 'modern',
+      customization: {
+        colorScheme: 'blue',
+        fontFamily: 'Inter',
+        fontSize: 12,
+        spacing: 'normal'
+      }
+    };
 
-  const [isSaving, setIsSaving] = useState(false);
-
-  // Fetch resume data
-  const { data: resume, isLoading } = useQuery({
-    queryKey: ['enhanced-resume', resumeId],
-    queryFn: async () => {
-      if (!resumeId || !user) return null;
-      
-      const { data, error } = await supabase
-        .from('ai_resumes')
-        .select('*')
-        .eq('id', resumeId)
-        .eq('user_id', user.id)
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!resumeId && !!user && mode === 'edit'
-  });
-
-  // Load resume data when fetched
-  useEffect(() => {
-    if (resume?.content && typeof resume.content === 'object') {
-      // Merge fetched data with default structure
-      const contentData = resume.content as any;
-      const loadedData = {
-        ...resumeData,
-        ...contentData,
-        sectionConfig: contentData.sectionConfig || DEFAULT_SECTION_CONFIG
+    if (initialData) {
+      return {
+        ...defaultData,
+        ...initialData,
+        personalInfo: {
+          ...defaultData.personalInfo,
+          ...initialData.personalInfo
+        },
+        professionalSummary: {
+          ...defaultData.professionalSummary,
+          ...initialData.professionalSummary
+        },
+        customization: {
+          ...defaultData.customization,
+          ...initialData.customization
+        }
       };
-      setResumeData(loadedData);
     }
-  }, [resume]);
 
-  // Save mutation
-  const saveMutation = useMutation({
-    mutationFn: async (data: EnhancedResumeData) => {
-      if (!resumeId || !user) throw new Error('Missing required data');
-      
-      const { error } = await supabase
-        .from('ai_resumes')
-        .update({ 
-          content: data as any,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', resumeId)
-        .eq('user_id', user.id);
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['enhanced-resume', resumeId] });
-      toast.success('Resume saved successfully!');
-    },
-    onError: (error) => {
-      console.error('Save failed:', error);
-      toast.error('Failed to save resume');
-    }
+    return defaultData;
   });
+
+  const [activeTab, setActiveTab] = useState('build');
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [atsScore, setAtsScore] = useState(75);
 
   // Auto-save functionality
   useEffect(() => {
-    if (!resumeData.personalInfo.fullName || !resumeId) return;
-    
-    const timer = setTimeout(() => {
-      saveMutation.mutate(resumeData);
-    }, 3000);
+    const autoSave = setTimeout(() => {
+      handleSave();
+    }, 30000); // Auto-save every 30 seconds
 
-    return () => clearTimeout(timer);
-  }, [resumeData, resumeId]);
+    return () => clearTimeout(autoSave);
+  }, [resumeData]);
 
-  // Manual save
-  const handleSave = useCallback(async () => {
-    if (!resumeData.personalInfo.fullName.trim()) {
-      toast.error('Please add your name before saving');
-      return;
-    }
-
-    setIsSaving(true);
+  const handleSave = async () => {
     try {
-      await saveMutation.mutateAsync(resumeData);
-    } finally {
-      setIsSaving(false);
+      setSaveStatus('saving');
+      await onSave?.(resumeData);
+      setSaveStatus('saved');
+      toast.success('Resume saved successfully');
+      
+      setTimeout(() => setSaveStatus('idle'), 2000);
+    } catch (error) {
+      setSaveStatus('error');
+      toast.error('Failed to save resume');
+      console.error('Save error:', error);
     }
-  }, [resumeData, saveMutation]);
-
-  // Update resume data
-  const updateResumeData = useCallback((updates: Partial<EnhancedResumeData>) => {
-    setResumeData(prev => ({ ...prev, ...updates }));
-  }, []);
-
-  // Get enabled sections in order
-  const enabledSections = resumeData.sectionConfig
-    .filter(section => section.enabled)
-    .sort((a, b) => a.order - b.order);
-
-  // Calculate completion percentage
-  const getCompletionPercentage = () => {
-    const enabledSectionTypes = enabledSections.map(s => s.type);
-    let completedSections = 0;
-
-    enabledSectionTypes.forEach(type => {
-      switch (type) {
-        case 'personalInfo':
-          if (resumeData.personalInfo.fullName && resumeData.personalInfo.email) completedSections++;
-          break;
-        case 'professionalSummary':
-          if (resumeData.professionalSummary.content.length > 50) completedSections++;
-          break;
-        case 'workExperience':
-          if (resumeData.workExperience.length > 0) completedSections++;
-          break;
-        case 'skills':
-          if (resumeData.skills?.length > 0) completedSections++;
-          break;
-        case 'education':
-          if (resumeData.education.length > 0) completedSections++;
-          break;
-        case 'projects':
-          if (resumeData.projects.length > 0) completedSections++;
-          break;
-        default:
-          // For other sections, check if they have any content
-          const sectionData = resumeData[type as keyof EnhancedResumeData];
-          if (Array.isArray(sectionData) && sectionData.length > 0) completedSections++;
-          else if (typeof sectionData === 'object' && sectionData && Object.keys(sectionData).length > 0) completedSections++;
-      }
-    });
-
-    return Math.round((completedSections / enabledSections.length) * 100);
   };
 
-  const completionPercentage = getCompletionPercentage();
+  const handleExport = async () => {
+    try {
+      await onExport?.(resumeData);
+      toast.success('Resume exported successfully');
+    } catch (error) {
+      toast.error('Failed to export resume');
+      console.error('Export error:', error);
+    }
+  };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading resume...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleDataChange = (section: keyof EnhancedResumeData, data: any) => {
+    setResumeData(prev => ({
+      ...prev,
+      [section]: data
+    }));
+  };
+
+  const handleSectionOrderChange = (newOrder: string[]) => {
+    setResumeData(prev => ({
+      ...prev,
+      sectionOrder: newOrder
+    }));
+  };
+
+  const handleSectionConfigChange = (newConfig: ResumeSection[]) => {
+    setResumeData(prev => ({
+      ...prev,
+      sectionConfig: newConfig
+    }));
+  };
+
+  const handleEnhanceSection = async (sectionType: string, content: any) => {
+    setIsEnhancing(true);
+    try {
+      // Simulate AI enhancement
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Mock enhanced content
+      const enhancedContent = {
+        ...content,
+        enhanced: true,
+        improvements: ['Added action verbs', 'Quantified achievements', 'Improved formatting']
+      };
+      
+      handleDataChange(sectionType as keyof EnhancedResumeData, enhancedContent);
+      toast.success(`${sectionType} enhanced successfully`);
+    } catch (error) {
+      toast.error('Enhancement failed');
+      console.error('Enhancement error:', error);
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+
+  const calculateProgress = () => {
+    const requiredSections = ['personalInfo', 'experience'];
+    const completedSections = requiredSections.filter(section => {
+      const data = resumeData[section as keyof EnhancedResumeData];
+      if (Array.isArray(data)) {
+        return data.length > 0;
+      }
+      if (typeof data === 'object' && data !== null) {
+        return Object.values(data).some(value => 
+          value !== '' && value !== null && value !== undefined
+        );
+      }
+      return false;
+    });
+    
+    return (completedSections.length / requiredSections.length) * 100;
+  };
+
+  const renderSectionContent = (sectionType: string) => {
+    const metadata = SECTION_METADATA[sectionType as keyof typeof SECTION_METADATA];
+    
+    if (!metadata) return null;
+
+    switch (sectionType) {
+      case 'personalInfo':
+        return (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="fullName">Full Name *</Label>
+                <Input
+                  id="fullName"
+                  value={resumeData.personalInfo.fullName}
+                  onChange={(e) => handleDataChange('personalInfo', {
+                    ...resumeData.personalInfo,
+                    fullName: e.target.value
+                  })}
+                  placeholder="John Doe"
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={resumeData.personalInfo.email}
+                  onChange={(e) => handleDataChange('personalInfo', {
+                    ...resumeData.personalInfo,
+                    email: e.target.value
+                  })}
+                  placeholder="john@example.com"
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  value={resumeData.personalInfo.phone}
+                  onChange={(e) => handleDataChange('personalInfo', {
+                    ...resumeData.personalInfo,
+                    phone: e.target.value
+                  })}
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+              <div>
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={resumeData.personalInfo.location}
+                  onChange={(e) => handleDataChange('personalInfo', {
+                    ...resumeData.personalInfo,
+                    location: e.target.value
+                  })}
+                  placeholder="New York, NY"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="summary">Professional Summary</Label>
+              <Textarea
+                id="summary"
+                value={resumeData.personalInfo.summary}
+                onChange={(e) => handleDataChange('personalInfo', {
+                  ...resumeData.personalInfo,
+                  summary: e.target.value
+                })}
+                placeholder="Brief professional summary..."
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="linkedin">LinkedIn</Label>
+                <Input
+                  id="linkedin"
+                  value={resumeData.personalInfo.linkedin || ''}
+                  onChange={(e) => handleDataChange('personalInfo', {
+                    ...resumeData.personalInfo,
+                    linkedin: e.target.value
+                  })}
+                  placeholder="linkedin.com/in/johndoe"
+                />
+              </div>
+              <div>
+                <Label htmlFor="website">Website</Label>
+                <Input
+                  id="website"
+                  value={resumeData.personalInfo.website || ''}
+                  onChange={(e) => handleDataChange('personalInfo', {
+                    ...resumeData.personalInfo,
+                    website: e.target.value
+                  })}
+                  placeholder="www.johndoe.com"
+                />
+              </div>
+              <div>
+                <Label htmlFor="github">GitHub</Label>
+                <Input
+                  id="github"
+                  value={resumeData.personalInfo.github || ''}
+                  onChange={(e) => handleDataChange('personalInfo', {
+                    ...resumeData.personalInfo,
+                    github: e.target.value
+                  })}
+                  placeholder="github.com/johndoe"
+                />
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>Section editor for {metadata.title} will be implemented here</p>
+          </div>
+        );
+    }
+  };
+
+  const enabledSections = resumeData.sectionConfig?.filter(section => section.enabled) || [];
+  const progress = calculateProgress();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="container mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold">Enhanced Resume Builder</h1>
-            <p className="text-muted-foreground">
-              Create a comprehensive, ATS-optimized resume with 21 customizable sections
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <Badge 
-              variant={completionPercentage >= 80 ? 'default' : completionPercentage >= 50 ? 'secondary' : 'destructive'}
-              className="px-3 py-1"
-            >
-              {completionPercentage}% Complete
-            </Badge>
-            
-            <Button onClick={handleSave} disabled={isSaving} size="sm">
-              <Save className="h-4 w-4 mr-2" />
-              {isSaving ? 'Saving...' : 'Save'}
-            </Button>
-            
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-          </div>
-        </div>
-
-        {/* Main Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Main Content Area */}
-          <div className="lg:col-span-3">
-            <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as any)}>
-              <TabsList className="grid w-full grid-cols-4 mb-6">
-                <TabsTrigger value="build" className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  Build
-                </TabsTrigger>
-                <TabsTrigger value="manage" className="flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
-                  Sections
-                </TabsTrigger>
-                <TabsTrigger value="enhance" className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  Enhance
-                </TabsTrigger>
-                <TabsTrigger value="preview" className="flex items-center gap-2">
-                  <Eye className="h-4 w-4" />
-                  Preview
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="build" className="space-y-6">
-                {/* Render enabled sections in order */}
-                {enabledSections.map((section) => {
-                  const metadata = SECTION_METADATA[section.type];
-                  
-                  switch (section.type) {
-                    case 'personalInfo':
-                      return (
-                        <PersonalInfoSection
-                          key={section.id}
-                          data={resumeData.personalInfo}
-                          onChange={(data) => updateResumeData({ personalInfo: data })}
-                        />
-                      );
-                    
-                    case 'professionalSummary':
-                      return (
-                        <ProfessionalSummarySection
-                          key={section.id}
-                          data={resumeData.professionalSummary}
-                          onChange={(data) => updateResumeData({ professionalSummary: data })}
-                        />
-                      );
-                    
-                    case 'workExperience':
-                      return (
-                        <WorkExperienceSection
-                          key={section.id}
-                          data={resumeData.workExperience}
-                          onChange={(data) => updateResumeData({ workExperience: data })}
-                        />
-                      );
-                    
-                    case 'skills':
-                      return (
-                        <SkillsSection
-                          key={section.id}
-                          data={resumeData.skills}
-                          onChange={(data) => updateResumeData({ skills: data })}
-                        />
-                      );
-                    
-                    default:
-                      return (
-                        <Card key={section.id}>
-                          <CardHeader>
-                            <CardTitle>{metadata.title}</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-muted-foreground">
-                              Section editor for {metadata.title} coming soon...
-                            </p>
-                          </CardContent>
-                        </Card>
-                      );
-                  }
-                })}
-              </TabsContent>
-
-              <TabsContent value="manage">
-                <SectionManager
-                  sections={resumeData.sectionConfig}
-                  onSectionsUpdate={(sections) => updateResumeData({ sectionConfig: sections })}
-                />
-              </TabsContent>
-
-              <TabsContent value="enhance">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Sparkles className="h-5 w-5" />
-                      AI Enhancement Suite
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      AI-powered enhancement tools coming soon...
-                    </p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="preview">
-                <Card>
-                  <CardContent className="p-0">
-                    <div id="resume-preview-full">
-                      <ResumePreview
-                        content={resumeData}
-                        template={{ css_config: { primaryColor: '#2563eb' } }}
-                        fullPage={true}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
-
-          {/* Sidebar - Live Preview */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-6 space-y-4">
-              {/* Quick Stats */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Target className="h-4 w-4" />
-                    Progress
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Completion</span>
-                      <span>{completionPercentage}%</span>
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <div 
-                        className="bg-primary rounded-full h-2 transition-all duration-300" 
-                        style={{ width: `${completionPercentage}%` }}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 pt-2">
-                    <div className="text-center">
-                      <div className="text-lg font-semibold">{enabledSections.length}</div>
-                      <div className="text-xs text-muted-foreground">Sections</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-semibold">{resumeData.workExperience.length}</div>
-                      <div className="text-xs text-muted-foreground">Experience</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Mini Preview */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Layout className="h-4 w-4" />
-                    Live Preview
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div 
-                    className="transform scale-[0.3] origin-top-left overflow-hidden border rounded"
-                    style={{ width: '333%', height: '400px' }}
-                  >
-                    <ResumePreview
-                      content={resumeData}
-                      template={{ css_config: { primaryColor: '#2563eb' } }}
-                      fullPage={false}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Resume Builder</h1>
+              <p className="text-gray-600">Create and customize your professional resume</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Progress value={progress} className="w-32" />
+                <span className="text-sm text-gray-600">{Math.round(progress)}% complete</span>
+              </div>
+              <Button
+                onClick={handleSave}
+                disabled={saveStatus === 'saving'}
+                className="flex items-center gap-2"
+              >
+                {saveStatus === 'saving' ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                    Saving...
+                  </>
+                ) : saveStatus === 'saved' ? (
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    Saved
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Save
+                  </>
+                )}
+              </Button>
+              <Button onClick={handleExport} variant="outline">
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
             </div>
           </div>
         </div>
+
+        {/* Main Content */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="build">Build</TabsTrigger>
+            <TabsTrigger value="sections">Sections</TabsTrigger>
+            <TabsTrigger value="enhance">Enhance</TabsTrigger>
+            <TabsTrigger value="preview">Preview</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="build" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                {enabledSections.map((section) => (
+                  <Card key={section.id}>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        {SECTION_METADATA[section.id]?.title || section.title}
+                        {section.required && <Badge variant="destructive">Required</Badge>}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {renderSectionContent(section.id)}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div className="space-y-6">
+                <ATSScoreCard score={atsScore} />
+                <ResumePreview data={resumeData} />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="sections">
+            <SectionManager
+              sections={resumeData.sectionConfig || DEFAULT_SECTION_CONFIG}
+              onSectionOrderChange={handleSectionOrderChange}
+              onSectionConfigChange={handleSectionConfigChange}
+            />
+          </TabsContent>
+
+          <TabsContent value="enhance">
+            <EnhancementPanel
+              data={resumeData}
+              onEnhance={handleEnhanceSection}
+              isEnhancing={isEnhancing}
+            />
+          </TabsContent>
+
+          <TabsContent value="preview">
+            <ResumePreview data={resumeData} fullPage />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

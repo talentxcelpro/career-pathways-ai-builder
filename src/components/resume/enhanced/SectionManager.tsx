@@ -1,302 +1,331 @@
+
 import React, { useState } from 'react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  Settings, 
-  Plus, 
-  Eye, 
-  EyeOff, 
-  ChevronDown, 
-  ChevronRight,
-  Info
-} from "lucide-react";
+  DndContext, 
+  DragEndEvent, 
+  DragOverlay, 
+  DragStartEvent,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { 
+  arrayMove, 
+  SortableContext, 
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { 
   ResumeSection, 
   SectionGroup, 
   SECTION_GROUPS, 
-  SECTION_METADATA,
+  SECTION_METADATA, 
   ResumeSectionType 
 } from "@/types/enhanced-resume";
-import { DraggableSection } from "../DraggableSection";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { SortableItem } from './SortableItem';
+import { GripVertical, Eye, EyeOff, Plus, Settings } from "lucide-react";
 
 interface SectionManagerProps {
   sections: ResumeSection[];
-  onSectionsUpdate: (sections: ResumeSection[]) => void;
-  className?: string;
+  onSectionOrderChange: (newOrder: string[]) => void;
+  onSectionConfigChange: (newConfig: ResumeSection[]) => void;
 }
 
 export const SectionManager: React.FC<SectionManagerProps> = ({
   sections,
-  onSectionsUpdate,
-  className = ""
+  onSectionOrderChange,
+  onSectionConfigChange
 }) => {
-  const [expandedGroups, setExpandedGroups] = useState<Set<SectionGroup>>(
-    new Set(['basicInfo', 'professional'])
-  );
+  const [activeTab, setActiveTab] = useState('organize');
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [draggedSection, setDraggedSection] = useState<ResumeSection | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
 
-  // Group sections by their group
-  const groupedSections = sections.reduce((acc, section) => {
-    if (!acc[section.group]) {
-      acc[section.group] = [];
-    }
-    acc[section.group].push(section);
-    return acc;
-  }, {} as Record<SectionGroup, ResumeSection[]>);
-
-  // Sort sections within each group by order
-  Object.keys(groupedSections).forEach(group => {
-    groupedSections[group as SectionGroup].sort((a, b) => a.order - b.order);
-  });
-
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event;
-
-    if (active.id !== over?.id) {
-      const oldIndex = sections.findIndex(section => section.id === active.id);
-      const newIndex = sections.findIndex(section => section.id === over.id);
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newSections = arrayMove(sections, oldIndex, newIndex);
-        // Update order numbers
-        const updatedSections = newSections.map((section, index) => ({
-          ...section,
-          order: index + 1
-        }));
-        onSectionsUpdate(updatedSections);
-      }
-    }
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveId(active.id.toString());
+    
+    const section = sections.find(s => s.id === active.id);
+    setDraggedSection(section || null);
   };
 
-  const toggleSection = (sectionId: string) => {
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (!over || active.id === over.id) {
+      setActiveId(null);
+      setDraggedSection(null);
+      return;
+    }
+
+    const oldIndex = sections.findIndex(s => s.id === active.id);
+    const newIndex = sections.findIndex(s => s.id === over.id);
+    
+    const newSections = arrayMove(sections, oldIndex, newIndex);
+    const newOrder = newSections.map(s => s.id);
+    
+    onSectionOrderChange(newOrder);
+    onSectionConfigChange(newSections);
+    
+    setActiveId(null);
+    setDraggedSection(null);
+  };
+
+  const toggleSectionVisibility = (sectionId: string) => {
     const updatedSections = sections.map(section =>
       section.id === sectionId
         ? { ...section, enabled: !section.enabled }
         : section
     );
-    onSectionsUpdate(updatedSections);
+    onSectionConfigChange(updatedSections);
   };
 
-  const toggleGroup = (group: SectionGroup) => {
-    const newExpanded = new Set(expandedGroups);
-    if (newExpanded.has(group)) {
-      newExpanded.delete(group);
-    } else {
-      newExpanded.add(group);
+  const addSection = (sectionType: ResumeSectionType) => {
+    const existingSection = sections.find(s => s.id === sectionType);
+    if (existingSection) {
+      // Enable if it exists but is disabled
+      if (!existingSection.enabled) {
+        toggleSectionVisibility(sectionType);
+      }
+      return;
     }
-    setExpandedGroups(newExpanded);
+
+    const metadata = SECTION_METADATA[sectionType];
+    const newSection: ResumeSection = {
+      id: sectionType,
+      title: metadata.title,
+      enabled: true,
+      order: sections.length + 1
+    };
+
+    const updatedSections = [...sections, newSection];
+    onSectionConfigChange(updatedSections);
+    onSectionOrderChange(updatedSections.map(s => s.id));
   };
 
-  const enableAllInGroup = (group: SectionGroup) => {
-    const updatedSections = sections.map(section =>
-      section.group === group
-        ? { ...section, enabled: true }
-        : section
+  const enabledSections = sections.filter(s => s.enabled);
+  const disabledSections = sections.filter(s => !s.enabled);
+
+  const renderSectionCard = (section: ResumeSection, isDragging = false) => {
+    const metadata = SECTION_METADATA[section.id as ResumeSectionType];
+    
+    return (
+      <Card className={`transition-all ${isDragging ? 'opacity-50' : ''}`}>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="cursor-grab active:cursor-grabbing">
+                <GripVertical className="h-5 w-5 text-gray-400" />
+              </div>
+              <div className="flex items-center gap-2">
+                <div 
+                  className={`w-3 h-3 rounded-full`}
+                  style={{ backgroundColor: `var(--color-${metadata?.color || 'gray'})` }}
+                />
+                <span className="font-medium">{metadata?.title || section.title}</span>
+              </div>
+              {section.required && (
+                <Badge variant="destructive" className="text-xs">Required</Badge>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => toggleSectionVisibility(section.id)}
+              >
+                {section.enabled ? (
+                  <Eye className="h-4 w-4" />
+                ) : (
+                  <EyeOff className="h-4 w-4" />
+                )}
+              </Button>
+              <Button variant="ghost" size="sm">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          {metadata?.description && (
+            <p className="text-sm text-gray-600 mt-2 ml-8">
+              {metadata.description}
+            </p>
+          )}
+        </CardContent>
+      </Card>
     );
-    onSectionsUpdate(updatedSections);
-  };
-
-  const disableAllInGroup = (group: SectionGroup) => {
-    const updatedSections = sections.map(section =>
-      section.group === group && !SECTION_METADATA[section.type].required
-        ? { ...section, enabled: false }
-        : section
-    );
-    onSectionsUpdate(updatedSections);
-  };
-
-  const getEnabledCount = (group: SectionGroup) => {
-    return groupedSections[group]?.filter(section => section.enabled).length || 0;
-  };
-
-  const getTotalCount = (group: SectionGroup) => {
-    return groupedSections[group]?.length || 0;
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Settings className="h-5 w-5" />
-            Section Manager
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Enable, disable, and reorder resume sections
-          </p>
+          <h2 className="text-xl font-semibold">Manage Sections</h2>
+          <p className="text-gray-600">Organize and customize your resume sections</p>
         </div>
         <Badge variant="outline">
-          {sections.filter(s => s.enabled).length} / {sections.length} enabled
+          {enabledSections.length} of {sections.length} sections enabled
         </Badge>
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="space-y-6">
-          {Object.entries(SECTION_GROUPS).map(([groupKey, groupInfo]) => {
-            const group = groupKey as SectionGroup;
-            const groupSections = groupedSections[group] || [];
-            const isExpanded = expandedGroups.has(group);
-            const enabledCount = getEnabledCount(group);
-            const totalCount = getTotalCount(group);
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="organize">Organize</TabsTrigger>
+          <TabsTrigger value="add">Add Sections</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
+        </TabsList>
 
-            return (
-              <Card key={group} className={`border-2 ${groupInfo.color}`}>
-                <Collapsible
-                  open={isExpanded}
-                  onOpenChange={() => toggleGroup(group)}
+        <TabsContent value="organize" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Enabled Sections */}
+            <div>
+              <h3 className="text-lg font-medium mb-4">Enabled Sections</h3>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={enabledSections.map(s => s.id)}
+                  strategy={verticalListSortingStrategy}
                 >
-                  <CollapsibleTrigger asChild>
-                    <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {isExpanded ? 
-                            <ChevronDown className="h-4 w-4" /> : 
-                            <ChevronRight className="h-4 w-4" />
-                          }
-                          <div>
-                            <CardTitle className="text-base">{groupInfo.title}</CardTitle>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {groupInfo.description}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant={enabledCount > 0 ? "default" : "secondary"}>
-                            {enabledCount} / {totalCount}
-                          </Badge>
-                          <div className="flex gap-1">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      enableAllInGroup(group);
-                                    }}
-                                  >
-                                    <Eye className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Enable all sections</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      disableAllInGroup(group);
-                                    }}
-                                  >
-                                    <EyeOff className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Disable optional sections</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </CollapsibleTrigger>
+                  <div className="space-y-3">
+                    {enabledSections.map((section) => (
+                      <SortableItem key={section.id} id={section.id}>
+                        {renderSectionCard(section)}
+                      </SortableItem>
+                    ))}
+                  </div>
+                </SortableContext>
+                <DragOverlay>
+                  {draggedSection ? renderSectionCard(draggedSection, true) : null}
+                </DragOverlay>
+              </DndContext>
+            </div>
 
-                  <CollapsibleContent>
-                    <CardContent className="pt-0">
-                      <SortableContext
-                        items={groupSections.map(s => s.id)}
-                        strategy={verticalListSortingStrategy}
-                      >
-                        <div className="space-y-2">
-                          {groupSections.map((section) => {
-                            const metadata = SECTION_METADATA[section.type];
-                            return (
-                              <DraggableSection
-                                key={section.id}
-                                id={section.id}
-                                title={metadata.title}
-                                description={metadata.description}
-                                actions={
-                                  <div className="flex items-center gap-2">
-                                    {metadata.required && (
-                                      <Badge variant="destructive" className="text-xs">
-                                        Required
-                                      </Badge>
-                                    )}
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <Button variant="ghost" size="sm">
-                                            <Info className="h-4 w-4" />
-                                          </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="max-w-xs">
-                                          <div className="space-y-2">
-                                            <p className="font-medium">{metadata.title}</p>
-                                            <p className="text-xs">{metadata.description}</p>
-                                            <div>
-                                              <p className="text-xs font-medium">Recommended for:</p>
-                                              <div className="flex flex-wrap gap-1 mt-1">
-                                                {metadata.recommendedFor.map(role => (
-                                                  <Badge key={role} variant="outline" className="text-xs">
-                                                    {role}
-                                                  </Badge>
-                                                ))}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                    <Switch
-                                      checked={section.enabled}
-                                      onCheckedChange={() => toggleSection(section.id)}
-                                      disabled={metadata.required}
-                                    />
-                                  </div>
-                                }
-                              >
-                                <div className="text-sm text-muted-foreground">
-                                  {section.enabled ? 'Section is visible in resume' : 'Section is hidden'}
-                                </div>
-                              </DraggableSection>
-                            );
-                          })}
+            {/* Disabled Sections */}
+            <div>
+              <h3 className="text-lg font-medium mb-4">Disabled Sections</h3>
+              <div className="space-y-3">
+                {disabledSections.map((section) => (
+                  <div key={section.id}>
+                    {renderSectionCard(section)}
+                  </div>
+                ))}
+                {disabledSections.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>All sections are enabled</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="add" className="space-y-6">
+          <div className="grid gap-6">
+            {SECTION_GROUPS.map((group) => (
+              <Card key={group.id}>
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: `var(--color-${group.color})` }}
+                    />
+                    <CardTitle className="text-lg">{group.title}</CardTitle>
+                  </div>
+                  <p className="text-sm text-gray-600">{group.description}</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {group.sections.map((sectionType) => {
+                      const metadata = SECTION_METADATA[sectionType];
+                      const existingSection = sections.find(s => s.id === sectionType);
+                      const isEnabled = existingSection?.enabled || false;
+                      
+                      return (
+                        <div key={sectionType} className="border rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-medium">{metadata.title}</h4>
+                            <Button
+                              onClick={() => addSection(sectionType)}
+                              size="sm"
+                              variant={isEnabled ? "outline" : "default"}
+                              disabled={isEnabled}
+                            >
+                              {isEnabled ? (
+                                <Eye className="h-4 w-4" />
+                              ) : (
+                                <Plus className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                          <p className="text-sm text-gray-600">{metadata.description}</p>
                         </div>
-                      </SortableContext>
-                    </CardContent>
-                  </CollapsibleContent>
-                </Collapsible>
+                      );
+                    })}
+                  </div>
+                </CardContent>
               </Card>
-            );
-          })}
-        </div>
-      </DndContext>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="settings" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Section Settings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {sections.map((section) => {
+                  const metadata = SECTION_METADATA[section.id as ResumeSectionType];
+                  return (
+                    <div key={section.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: `var(--color-${metadata?.color || 'gray'})` }}
+                        />
+                        <span className="font-medium">{metadata?.title || section.title}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor={`toggle-${section.id}`} className="text-sm">
+                          {section.enabled ? 'Enabled' : 'Disabled'}
+                        </Label>
+                        <Switch
+                          id={`toggle-${section.id}`}
+                          checked={section.enabled}
+                          onCheckedChange={() => toggleSectionVisibility(section.id)}
+                          disabled={section.required}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

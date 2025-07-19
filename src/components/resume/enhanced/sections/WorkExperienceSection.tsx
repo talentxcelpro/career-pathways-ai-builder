@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Trash2, Plus, Calendar, Building2 } from "lucide-react";
-import { WorkExperience } from "@/types/enhanced-resume";
+import { Experience } from "@/types/enhanced-resume";
 
 interface WorkExperienceSectionProps {
-  data: WorkExperience[];
-  onChange: (data: WorkExperience[]) => void;
+  data: Experience[];
+  onChange: (data: Experience[]) => void;
 }
 
 export const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
@@ -17,7 +18,7 @@ export const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
   onChange,
 }) => {
   const addExperience = () => {
-    const newExperience: WorkExperience = {
+    const newExperience: Experience = {
       id: crypto.randomUUID(),
       title: "",
       company: "",
@@ -25,14 +26,16 @@ export const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
       startDate: "",
       endDate: "",
       current: false,
+      isCurrentRole: false,
       description: "",
       achievements: [],
+      skills: [],
       technologies: [],
     };
     onChange([...data, newExperience]);
   };
 
-  const updateExperience = (id: string, field: keyof WorkExperience, value: any) => {
+  const updateExperience = (id: string, field: keyof Experience, value: any) => {
     onChange(
       data.map((exp) =>
         exp.id === id ? { ...exp, [field]: value } : exp
@@ -142,6 +145,7 @@ export const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
                           checked={experience.current}
                           onChange={(e) => {
                             updateExperience(experience.id, "current", e.target.checked);
+                            updateExperience(experience.id, "isCurrentRole", e.target.checked);
                             if (e.target.checked) {
                               updateExperience(experience.id, "endDate", "");
                             }
