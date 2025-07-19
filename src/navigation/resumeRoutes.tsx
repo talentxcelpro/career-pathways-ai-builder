@@ -1,33 +1,40 @@
 
-import { RouteObject } from 'react-router-dom';
-import { lazy } from 'react';
+import { NavItem } from '@/types/nav-item';
+import ResumeDashboard from '@/pages/resume/ResumeDashboard';
+import AppleResumeChecker from '@/pages/resume/AppleResumeChecker';
+import EditResume from '@/pages/resume/EditResume';
+import ResumeUpload from '@/pages/resume/ResumeUpload';
+import NewResume from '@/pages/resume/NewResume';
 
-// Lazy load components for better performance
-const ResumeDashboard = lazy(() => import('@/pages/resume/ResumeDashboard'));
-const AppleResumeChecker = lazy(() => import('@/pages/resume/AppleResumeChecker'));
-const EditResume = lazy(() => import('@/pages/resume/EditResume'));
-const ResumeUpload = lazy(() => import('@/pages/resume/ResumeUpload'));
-const NewResume = lazy(() => import('@/pages/resume/NewResume'));
-
-export const resumeRoutes: RouteObject[] = [
+export const resumeRoutes: NavItem[] = [
   {
-    path: '/resume-builder',
-    element: <ResumeDashboard />,
+    title: 'Resume Dashboard',
+    to: '/resume-builder',
+    page: <ResumeDashboard />,
+    requiresAuth: true,
   },
   {
-    path: '/resume-builder/checker',
-    element: <AppleResumeChecker />,
+    title: 'Resume Checker',
+    to: '/resume-builder/checker',
+    page: <AppleResumeChecker />,
+    requiresAuth: false, // Allow free access to checker
   },
   {
-    path: '/resume-builder/edit/:id',
-    element: <EditResume />,
+    title: 'Edit Resume',
+    to: '/resume-builder/edit/:id',
+    page: <EditResume />,
+    requiresAuth: true,
   },
   {
-    path: '/resume-builder/upload',
-    element: <ResumeUpload />,
+    title: 'Upload Resume',
+    to: '/resume-builder/upload',
+    page: <ResumeUpload />,
+    requiresAuth: false, // Allow free access to upload
   },
   {
-    path: '/resume-builder/new',
-    element: <NewResume />,
+    title: 'New Resume',
+    to: '/resume-builder/new',
+    page: <NewResume />,
+    requiresAuth: true,
   },
 ];
