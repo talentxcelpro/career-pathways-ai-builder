@@ -25,21 +25,31 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
 
     // Test 1: Check SendGrid configuration using our test function
     try {
+      console.log('Testing SendGrid configuration...');
       const { data, error } = await supabase.functions.invoke('test-sendgrid', {});
+      
+      console.log('SendGrid test response:', { data, error });
 
-      if (error || (data && !data.sendgrid_configured)) {
+      if (error) {
+        console.error('SendGrid test error:', error);
+        results.push({
+          test: 'SendGrid Configuration',
+          status: 'fail',
+          message: `SendGrid test failed: ${error.message || 'Unknown error'}`
+        });
+      } else if (data && data.sendgrid_configured) {
+        results.push({
+          test: 'SendGrid Configuration',
+          status: 'pass',
+          message: `SendGrid API key is properly configured (${data.api_key_length} characters)`
+        });
+      } else {
         results.push({
           test: 'SendGrid Configuration',
           status: 'fail',
           message: data?.status === 'missing' ? 
             'SendGrid API key is not accessible to edge functions' :
-            'SendGrid API key configuration test failed'
-        });
-      } else {
-        results.push({
-          test: 'SendGrid Configuration',
-          status: 'pass',
-          message: `SendGrid API key is properly configured (${data.api_key_length} chars)`
+            `SendGrid API key configuration test failed: ${JSON.stringify(data)}`
         });
       }
     } catch (error) {
