@@ -107,45 +107,25 @@ export const UploadWizard: React.FC<UploadWizardProps> = ({ onComplete }) => {
         {/* Step Content */}
         <Card className="border-0 shadow-lg">
           <CardContent className="p-8">
-            {currentStep === 0 && (
-              <WelcomeStep
-                onNext={handleNext}
-                canGoNext={true}
-              />
-            )}
-            {currentStep === 1 && (
-              <FileUploadStep
-                onNext={handleNext}
-                onBack={handleBack}
-                onFileUpload={handleFileUpload}
-                uploadedFile={uploadedFile}
-                canGoBack={currentStep > 0}
-                canGoNext={!!uploadedFile}
-              />
-            )}
-            {currentStep === 2 && (
-              <TemplateSelectionStep
-                onNext={handleNext}
-                onBack={handleBack}
-                onTemplateSelect={handleTemplateSelect}
-                selectedTemplate={selectedTemplate}
-                canGoBack={currentStep > 0}
-                canGoNext={!!selectedTemplate}
-              />
-            )}
-            {currentStep === 3 && (
-              <ProcessingStep
-                onProcessingComplete={handleProcessingComplete}
-                uploadedFile={uploadedFile}
-                selectedTemplate={selectedTemplate}
-              />
-            )}
-            {currentStep === 4 && (
-              <SuccessStep
-                onComplete={handleComplete}
-                resumeData={resumeData}
-              />
-            )}
+            <CurrentStepComponent
+              onNext={handleNext}
+              onBack={handleBack}
+              onFileUpload={handleFileUpload}
+              onTemplateSelect={handleTemplateSelect}
+              onProcessingComplete={handleProcessingComplete}
+              onComplete={handleComplete}
+              uploadedFile={uploadedFile}
+              selectedTemplate={selectedTemplate}
+              resumeData={resumeData}
+              canGoBack={currentStep > 0}
+              canGoNext={
+                (currentStep === 0) ||
+                (currentStep === 1 && uploadedFile) ||
+                (currentStep === 2 && selectedTemplate) ||
+                (currentStep === 3 && resumeData) ||
+                (currentStep === 4)
+              }
+            />
           </CardContent>
         </Card>
 
