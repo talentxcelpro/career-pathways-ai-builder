@@ -1,425 +1,416 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { toast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { 
-  Save, 
-  Download, 
-  Eye, 
-  EyeOff, 
-  RotateCcw, 
-  Settings, 
-  Palette,
-  FileText,
-  User,
-  Briefcase,
-  GraduationCap,
-  Award,
-  Code,
-  Languages,
-  FolderOpen,
-  Plus,
-  Edit,
-  Trash2,
-  ChevronDown,
-  ChevronUp,
-  Move
+  User, FileText, Briefcase, GraduationCap, Code, 
+  FolderOpen, Award, Trophy, Eye, Download, Save,
+  Palette, Zap, BarChart3, Settings, ChevronLeft,
+  ChevronRight, Layout, Sparkles
 } from "lucide-react";
-import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+// Import all section components
+import { PersonalInfoSection } from './sections/PersonalInfoSection';
+import { ProfessionalSummarySection } from './sections/ProfessionalSummarySection';
+import { ExperienceSection } from './sections/ExperienceSection';
+import { EducationSection } from './sections/EducationSection';
+import { SkillsSection } from './sections/SkillsSection';
+import { ProjectsSection } from './sections/ProjectsSection';
+import { CertificationsSection } from './sections/CertificationsSection';
+import { AwardsSection } from './sections/AwardsSection';
+import { ResumeHeader } from './ResumeHeader';
+import { LivePreviewRenderer } from '../upload/LivePreviewRenderer';
+import { DraggableSection } from '../DraggableSection';
+
+// Import types
+import { EnhancedResumeData, PersonalInfo, ProfessionalSummary } from "@/types/enhanced-resume";
+import { useResumeDataProcessor } from './ResumeDataProcessor';
+import { exportToPDF, exportToDOCX } from '@/utils/exportResume';
 
 interface UnifiedResumeInterfaceProps {
-  mode: 'create' | 'edit';
-  resumeId?: string;
+  mode: 'edit' | 'create';
+  initialData?: any;
 }
 
-const defaultSections = [
-  { id: 'personal', title: 'Personal Information', icon: User, required: true },
-  { id: 'summary', title: 'Professional Summary', icon: FileText, required: false },
-  { id: 'experience', title: 'Work Experience', icon: Briefcase, required: true },
-  { id: 'education', title: 'Education', icon: GraduationCap, required: true },
-  { id: 'skills', title: 'Skills', icon: Code, required: true },
-  { id: 'projects', title: 'Projects', icon: FolderOpen, required: false },
-  { id: 'certifications', title: 'Certifications', icon: Award, required: false },
-  { id: 'languages', title: 'Languages', icon: Languages, required: false },
-  { id: 'awards', title: 'Awards', icon: Award, required: false }
-];
-
-export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({ 
-  mode, 
-  resumeId 
+export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
+  mode,
+  initialData
 }) => {
-  const [resumeData, setResumeData] = useState({
-    personalInfo: {
-      fullName: '',
-      email: '',
-      phone: '',
-      location: '',
-      linkedin: '',
-      portfolio: '',
-      website: ''
-    },
-    professionalSummary: {
-      content: '',
-      careerBackground: '',
-      keySkills: [],
-      targetRoles: [],
-      goals: ''
-    },
-    experience: [],
-    education: [],
-    skills: {
-      technical: [],
-      soft: [],
-      languages: []
-    },
-    projects: [],
-    certifications: [],
-    languages: [],
-    awards: []
+  const { processRawResumeData, getEmptyResumeData } = useResumeDataProcessor();
+  
+  // Initialize resume data
+  const [resumeData, setResumeData] = useState<EnhancedResumeData>(() => {
+    if (initialData) {
+      return processRawResumeData(initialData);
+    }
+    return {
+      personalInfo: {
+        fullName: '',
+        email: '',
+        phone: '',
+        location: '',
+        summary: '',
+        linkedin: '',
+        website: '',
+        github: ''
+      },
+      professionalSummary: {
+        content: '',
+        keyHighlights: []
+      },
+      experience: [],
+      education: [],
+      skills: [],
+      projects: [],
+      certifications: [],
+      awards: [],
+      sectionOrder: [
+        'personalInfo',
+        'professionalSummary', 
+        'experience',
+        'education',
+        'skills',
+        'projects',
+        'certifications',
+        'awards'
+      ],
+      selectedTemplate: 'modern',
+      customization: {
+        colorScheme: 'blue',
+        fontFamily: 'Inter',
+        fontSize: 14,
+        spacing: 'normal'
+      }
+    };
   });
 
-  const [activeSection, setActiveSection] = useState('personal');
-  const [activeSections, setActiveSections] = useState(defaultSections);
-  const [previewMode, setPreviewMode] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [rightPanelTab, setRightPanelTab] = useState('preview');
+  // Auto-save functionality
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState('modern-professional');
-  const [templateSettings, setTemplateSettings] = useState({
-    colors: {
-      primary: '#3B82F6',
-      secondary: '#64748B',
-      accent: '#F59E0B'
-    },
-    fonts: {
-      heading: 'Inter',
-      body: 'Inter'
-    },
-    spacing: 'normal',
-    layout: 'single-column'
-  });
+  const [hasChanges, setHasChanges] = useState(false);
+  const [activeSection, setActiveSection] = useState('personalInfo');
+  const [previewCollapsed, setPreviewCollapsed] = useState(false);
 
+  // Auto-save every 5 seconds if there are changes
+  useEffect(() => {
+    if (!hasChanges) return;
 
-  const handleSectionReorder = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const oldIndex = activeSections.findIndex(section => section.id === active.id);
-      const newIndex = activeSections.findIndex(section => section.id === over.id);
-      const newSections = arrayMove(activeSections, oldIndex, newIndex);
-      setActiveSections(newSections);
-      
-    }
-  };
+    const autoSaveTimer = setTimeout(async () => {
+      await handleSave();
+    }, 5000);
 
-  const updateResumeData = (updates: any) => {
-    setResumeData(prev => ({ ...prev, ...updates }));
-  };
+    return () => clearTimeout(autoSaveTimer);
+  }, [resumeData, hasChanges]);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
+    setIsSaving(true);
     try {
-      setIsSaving(true);
-      // Implementation for saving resume
+      // Simulate save operation - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       setLastSaved(new Date());
-      toast({
-        title: "Resume Saved",
-        description: "Your resume has been saved successfully.",
-      });
+      setHasChanges(false);
+      toast.success('Resume saved successfully!');
     } catch (error) {
-      toast({
-        title: "Save Failed",
-        description: "Failed to save resume. Please try again.",
-        variant: "destructive",
-      });
+      console.error('Save failed:', error);
+      toast.error('Failed to save resume');
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [resumeData]);
 
-  const handleExport = () => {
-    // Implementation for exporting resume
-    toast({
-      title: "Export Started",
-      description: "Your resume is being prepared for download.",
-    });
-  };
+  const updateResumeData = useCallback((section: string, data: any) => {
+    setResumeData(prev => ({
+      ...prev,
+      [section]: data
+    }));
+    setHasChanges(true);
+  }, []);
 
-  const renderSectionEditor = () => {
-    switch (activeSection) {
-      case 'personal':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Personal Information</h2>
-              <p className="text-gray-600 mb-6">Add your contact details and basic information</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                  <input
-                    type="text"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your full name"
-                    value={resumeData.personalInfo.fullName}
-                    onChange={(e) => updateResumeData({
-                      personalInfo: { ...resumeData.personalInfo, fullName: e.target.value }
-                    })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <input
-                    type="email"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="your.email@example.com"
-                    value={resumeData.personalInfo.email}
-                    onChange={(e) => updateResumeData({
-                      personalInfo: { ...resumeData.personalInfo, email: e.target.value }
-                    })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                  <input
-                    type="tel"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="+1 (555) 123-4567"
-                    value={resumeData.personalInfo.phone}
-                    onChange={(e) => updateResumeData({
-                      personalInfo: { ...resumeData.personalInfo, phone: e.target.value }
-                    })}
-                  />
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                  <input
-                    type="text"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="City, State, Country"
-                    value={resumeData.personalInfo.location}
-                    onChange={(e) => updateResumeData({
-                      personalInfo: { ...resumeData.personalInfo, location: e.target.value }
-                    })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn</label>
-                  <input
-                    type="url"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="https://linkedin.com/in/yourprofile"
-                    value={resumeData.personalInfo.linkedin}
-                    onChange={(e) => updateResumeData({
-                      personalInfo: { ...resumeData.personalInfo, linkedin: e.target.value }
-                    })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Portfolio/Website</label>
-                  <input
-                    type="url"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="https://yourwebsite.com"
-                    value={resumeData.personalInfo.portfolio}
-                    onChange={(e) => updateResumeData({
-                      personalInfo: { ...resumeData.personalInfo, portfolio: e.target.value }
-                    })}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      case 'summary':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Professional Summary</h2>
-              <p className="text-gray-600 mb-6">Write a compelling summary of your professional background</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Summary</label>
-              <textarea
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows={6}
-                placeholder="Write a brief summary of your professional background and key achievements..."
-                value={resumeData.professionalSummary.content}
-                onChange={(e) => updateResumeData({
-                  professionalSummary: { ...resumeData.professionalSummary, content: e.target.value }
-                })}
-              />
-            </div>
-          </div>
-        );
-      default:
-        return (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <FileText className="h-12 w-12 mx-auto" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Section Editor Coming Soon</h3>
-            <p className="text-gray-600">This section editor is being developed.</p>
-          </div>
-        );
+  const handleExportPDF = useCallback(async () => {
+    try {
+      await exportToPDF('resume-preview', `${resumeData.personalInfo.fullName || 'resume'}.pdf`);
+    } catch (error) {
+      console.error('PDF export failed:', error);
+      toast.error('Failed to export PDF');
     }
+  }, [resumeData.personalInfo.fullName]);
+
+  const handleExportDOCX = useCallback(async () => {
+    try {
+      await exportToDOCX(resumeData, `${resumeData.personalInfo.fullName || 'resume'}.docx`);
+    } catch (error) {
+      console.error('DOCX export failed:', error);
+      toast.error('Failed to export DOCX');
+    }
+  }, [resumeData]);
+
+  const calculateCompletionPercentage = useCallback(() => {
+    let completed = 0;
+    let total = 8;
+
+    // Personal Info (required)
+    if (resumeData.personalInfo.fullName && resumeData.personalInfo.email) completed++;
+    
+    // Professional Summary
+    if (resumeData.professionalSummary.content) completed++;
+    
+    // Experience
+    if (resumeData.experience.length > 0) completed++;
+    
+    // Education  
+    if (resumeData.education.length > 0) completed++;
+    
+    // Skills
+    if (resumeData.skills.length > 0) completed++;
+    
+    // Projects (optional but counts)
+    if (resumeData.projects.length > 0) completed++;
+    
+    // Certifications (optional)
+    if (resumeData.certifications.length > 0) completed++;
+    
+    // Awards (optional)
+    if (resumeData.awards.length > 0) completed++;
+
+    return Math.round((completed / total) * 100);
+  }, [resumeData]);
+
+  const sectionComponents = {
+    personalInfo: (
+      <PersonalInfoSection
+        data={resumeData.personalInfo}
+        onChange={(data) => updateResumeData('personalInfo', data)}
+      />
+    ),
+    professionalSummary: (
+      <ProfessionalSummarySection
+        data={resumeData.professionalSummary}
+        onChange={(data) => updateResumeData('professionalSummary', data)}
+      />
+    ),
+    experience: (
+      <ExperienceSection
+        data={resumeData.experience}
+        onChange={(data) => updateResumeData('experience', data)}
+      />
+    ),
+    education: (
+      <EducationSection
+        data={resumeData.education}
+        onChange={(data) => updateResumeData('education', data)}
+      />
+    ),
+    skills: (
+      <SkillsSection
+        data={resumeData.skills}
+        onChange={(data) => updateResumeData('skills', data)}
+      />
+    ),
+    projects: (
+      <ProjectsSection
+        data={resumeData.projects}
+        onChange={(data) => updateResumeData('projects', data)}
+      />
+    ),
+    certifications: (
+      <CertificationsSection
+        data={resumeData.certifications}
+        onChange={(data) => updateResumeData('certifications', data)}
+      />
+    ),
+    awards: (
+      <AwardsSection
+        data={resumeData.awards}
+        onChange={(data) => updateResumeData('awards', data)}
+      />
+    ),
   };
 
-  const renderSimplePreview = () => (
-    <div className="bg-white p-6 rounded-lg shadow-sm border max-h-96 overflow-auto">
-      <div className="text-center mb-6">
-        <h1 className="text-xl font-bold text-gray-900">
-          {resumeData.personalInfo.fullName || 'Your Name'}
-        </h1>
-        <p className="text-gray-600">
-          {resumeData.personalInfo.email || 'your.email@example.com'}
-        </p>
-        <p className="text-gray-600">
-          {resumeData.personalInfo.phone || '+1 (555) 123-4567'}
-        </p>
-        <p className="text-gray-600">
-          {resumeData.personalInfo.location || 'Your Location'}
-        </p>
-      </div>
-      
-      {resumeData.professionalSummary.content && (
-        <div className="mb-6">
-          <h3 className="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide">Professional Summary</h3>
-          <p className="text-gray-700 text-sm leading-relaxed">
-            {resumeData.professionalSummary.content}
-          </p>
-        </div>
-      )}
-    </div>
-  );
+  const sectionItems = [
+    { id: 'personalInfo', label: 'Personal Info', icon: User, required: true },
+    { id: 'professionalSummary', label: 'Professional Summary', icon: FileText, required: false },
+    { id: 'experience', label: 'Experience', icon: Briefcase, required: false },
+    { id: 'education', label: 'Education', icon: GraduationCap, required: false },
+    { id: 'skills', label: 'Skills', icon: Code, required: false },
+    { id: 'projects', label: 'Projects', icon: FolderOpen, required: false },
+    { id: 'certifications', label: 'Certifications', icon: Award, required: false },
+    { id: 'awards', label: 'Awards', icon: Trophy, required: false },
+  ];
 
-  const renderSectionButton = (section: any) => {
-    const IconComponent = section.icon;
-    return (
-      <button
-        key={section.id}
-        onClick={() => setActiveSection(section.id)}
-        className={`w-full text-left p-3 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
-          activeSection === section.id
-            ? 'bg-blue-50 border border-blue-200 text-blue-900'
-            : 'hover:bg-gray-50 text-gray-700 border border-transparent'
-        }`}
-      >
-        <IconComponent className="h-5 w-5" />
-        <span className="font-medium">{section.title}</span>
-        {section.required && (
-          <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">Required</span>
-        )}
-      </button>
-    );
-  };
+  const completionPercentage = calculateCompletionPercentage();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-40">
-        <div className="flex items-center justify-between h-16 px-6">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-xl font-semibold text-gray-900">
-              {mode === 'create' ? 'Create Resume' : 'Edit Resume'}
-            </h1>
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <span>•</span>
-              <span>Auto-saved</span>
-            </div>
+    <div className="min-h-screen bg-gray-50/30">
+      <ResumeHeader
+        mode={mode}
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+        hasChanges={hasChanges}
+        onSave={handleSave}
+        resumeData={resumeData}
+        onEnhancementApplied={(enhancedData) => {
+          setResumeData(prev => ({ ...prev, ...enhancedData }));
+          setHasChanges(true);
+        }}
+      />
+
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex gap-6 relative">
+          {/* Left Sidebar - Section Navigation */}
+          <div className="w-80 space-y-4">
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold">Resume Sections</h3>
+                <Badge variant="outline" className="bg-green-50 text-green-700">
+                  {completionPercentage}% Complete
+                </Badge>
+              </div>
+              
+              <div className="space-y-2">
+                {sectionItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeSection === item.id;
+                  const hasData = (() => {
+                    switch (item.id) {
+                      case 'personalInfo':
+                        return resumeData.personalInfo.fullName || resumeData.personalInfo.email;
+                      case 'professionalSummary':
+                        return resumeData.professionalSummary.content;
+                      case 'experience':
+                        return resumeData.experience.length > 0;
+                      case 'education':
+                        return resumeData.education.length > 0;
+                      case 'skills':
+                        return resumeData.skills.length > 0;
+                      case 'projects':
+                        return resumeData.projects.length > 0;
+                      case 'certifications':
+                        return resumeData.certifications.length > 0;
+                      case 'awards':
+                        return resumeData.awards.length > 0;
+                      default:
+                        return false;
+                    }
+                  })();
+
+                  return (
+                    <Button
+                      key={item.id}
+                      variant={isActive ? "default" : "ghost"}
+                      onClick={() => setActiveSection(item.id)}
+                      className={cn(
+                        "w-full justify-start gap-3 h-12",
+                        isActive && "bg-primary text-primary-foreground",
+                        !isActive && "hover:bg-slate-100"
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span className="flex-1 text-left">{item.label}</span>
+                      {item.required && (
+                        <Badge variant="secondary" className="text-xs">Required</Badge>
+                      )}
+                      {hasData && !isActive && (
+                        <div className="w-2 h-2 bg-green-500 rounded-full" />
+                      )}
+                    </Button>
+                  );
+                })}
+              </div>
+            </Card>
+
+            {/* Quick Actions */}
+            <Card className="p-4">
+              <h3 className="font-semibold mb-3">Quick Actions</h3>
+              <div className="space-y-2">
+                <Button
+                  onClick={handleExportPDF}
+                  variant="outline"
+                  className="w-full justify-start gap-3"
+                >
+                  <Download className="h-4 w-4" />
+                  Export PDF
+                </Button>
+                <Button
+                  onClick={handleExportDOCX}
+                  variant="outline"
+                  className="w-full justify-start gap-3"
+                >
+                  <Download className="h-4 w-4" />
+                  Export DOCX
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-3"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  AI Enhance
+                </Button>
+              </div>
+            </Card>
           </div>
-          
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPreviewMode(!previewMode)}
-            >
-              {previewMode ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              {previewMode ? 'Exit Preview' : 'Preview'}
-            </Button>
+
+          {/* Main Content Area */}
+          <div className={cn(
+            "transition-all duration-300",
+            previewCollapsed ? "flex-1" : "flex-1 max-w-2xl"
+          )}>
+            <ScrollArea className="h-[calc(100vh-120px)]">
+              <div className="pr-4">
+                {sectionComponents[activeSection as keyof typeof sectionComponents]}
+              </div>
+            </ScrollArea>
+          </div>
+
+          {/* Right Panel - Live Preview */}
+          <div className={cn(
+            "transition-all duration-300 bg-white rounded-lg border shadow-sm",
+            previewCollapsed ? "w-12" : "w-96"
+          )}>
+            <div className="flex items-center justify-between p-3 border-b">
+              {!previewCollapsed && (
+                <>
+                  <div className="flex items-center gap-2">
+                    <Eye className="h-4 w-4" />
+                    <span className="font-medium text-sm">Live Preview</span>
+                  </div>
+                  <Button
+                    onClick={() => setPreviewCollapsed(true)}
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
+              {previewCollapsed && (
+                <Button
+                  onClick={() => setPreviewCollapsed(false)}
+                  size="sm"
+                  variant="ghost"
+                  className="w-full"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
             
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSave}
-              disabled={isSaving}
-            >
-              <Save className="h-4 w-4 mr-2" />
-              {isSaving ? 'Saving...' : 'Save'}
-            </Button>
-            
-            <Button
-              size="sm"
-              onClick={handleExport}
-              className="bg-primary hover:bg-primary/90"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
+            {!previewCollapsed && (
+              <ScrollArea className="h-[calc(100vh-180px)]">
+                <div className="p-4" id="resume-preview">
+                  <LivePreviewRenderer previewData={resumeData} />
+                </div>
+              </ScrollArea>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Main Content */}
-      {previewMode ? (
-        <div className="p-6">
-          {renderSimplePreview()}
-        </div>
-      ) : (
-        <div className="flex min-h-screen">
-          {/* Left Sidebar */}
-          <div className="w-64 border-r bg-gray-50/40">
-            <div className="p-4 border-b bg-white">
-              <h2 className="font-semibold text-gray-900 mb-2">Resume Sections</h2>
-              <p className="text-sm text-gray-600">Click to edit sections</p>
-            </div>
-            <div className="p-4 space-y-2">
-              {defaultSections.map(renderSectionButton)}
-            </div>
-          </div>
-
-          {/* Center Editor */}
-          <div className="flex-1 overflow-auto">
-            <div className="max-w-4xl mx-auto p-6">
-              {renderSectionEditor()}
-            </div>
-          </div>
-
-          {/* Right Panel */}
-          <div className="w-80 border-l bg-white">
-            <Tabs value={rightPanelTab} onValueChange={setRightPanelTab} className="h-full flex flex-col">
-              <TabsList className="grid grid-cols-2 m-4 mb-0">
-                <TabsTrigger value="preview">Preview</TabsTrigger>
-                <TabsTrigger value="template">Template</TabsTrigger>
-              </TabsList>
-              <div className="flex-1 overflow-auto p-4">
-                <TabsContent value="preview" className="mt-0">
-                  {renderSimplePreview()}
-                </TabsContent>
-                <TabsContent value="template" className="mt-0">
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-3">Template</h3>
-                      <div className="grid grid-cols-2 gap-3">
-                        {['Modern', 'Classic'].map((template) => (
-                          <button key={template} className="p-3 border rounded-lg text-sm">{template}</button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </TabsContent>
-              </div>
-            </Tabs>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

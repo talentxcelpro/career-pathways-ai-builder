@@ -1,12 +1,12 @@
-import React from 'react';
+
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, FolderOpen, ExternalLink, Github } from "lucide-react";
+import { Trash2, Plus, FolderOpen, Calendar, ExternalLink, Github, Users, X } from "lucide-react";
 import { Project } from "@/types/enhanced-resume";
 
 interface ProjectsSectionProps {
@@ -16,246 +16,220 @@ interface ProjectsSectionProps {
 
 export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   data,
-  onChange
+  onChange,
 }) => {
   const addProject = () => {
     const newProject: Project = {
       id: crypto.randomUUID(),
-      title: '',
-      description: '',
+      title: "",
+      description: "",
       technologies: [],
-      startDate: '',
-      endDate: '',
-      status: 'completed',
-      url: '',
-      github: '',
-      role: '',
-      teamSize: 1,
-      impact: ''
+      startDate: "",
+      endDate: "",
+      url: "",
+      githubUrl: "",
+      teamSize: undefined,
+      role: "",
     };
     onChange([...data, newProject]);
   };
 
-  const updateProject = (id: string, updates: Partial<Project>) => {
-    onChange(data.map(project => 
-      project.id === id ? { ...project, ...updates } : project
-    ));
+  const updateProject = (id: string, field: keyof Project, value: any) => {
+    onChange(
+      data.map((project) =>
+        project.id === id ? { ...project, [field]: value } : project
+      )
+    );
   };
 
   const removeProject = (id: string) => {
-    onChange(data.filter(project => project.id !== id));
+    onChange(data.filter((project) => project.id !== id));
   };
 
-  const updateTechnologies = (id: string, techStr: string) => {
-    const technologies = techStr.split(',').map(t => t.trim()).filter(t => t);
-    updateProject(id, { technologies });
+  const addTechnology = (projectId: string, tech: string) => {
+    const project = data.find((proj) => proj.id === projectId);
+    if (project && tech.trim() && !project.technologies.includes(tech.trim())) {
+      const newTechnologies = [...project.technologies, tech.trim()];
+      updateProject(projectId, "technologies", newTechnologies);
+    }
+  };
+
+  const removeTechnology = (projectId: string, tech: string) => {
+    const project = data.find((proj) => proj.id === projectId);
+    if (project) {
+      const newTechnologies = project.technologies.filter(t => t !== tech);
+      updateProject(projectId, "technologies", newTechnologies);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FolderOpen className="h-5 w-5 text-primary" />
-          <h3 className="text-lg font-semibold">Projects</h3>
-        </div>
-        <Button onClick={addProject} size="sm">
+    <Card className="w-full">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="flex items-center gap-2">
+          <FolderOpen className="h-5 w-5" />
+          Projects
+        </CardTitle>
+        <Button onClick={addProject} size="sm" variant="outline">
           <Plus className="h-4 w-4 mr-2" />
           Add Project
         </Button>
-      </div>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {data.map((project, index) => (
+          <Card key={project.id} className="p-6 border-l-4 border-l-accent/20">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+                Project #{index + 1}
+              </div>
+              <Button
+                onClick={() => removeProject(project.id)}
+                size="sm"
+                variant="ghost"
+                className="text-destructive hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
 
-      {data.length === 0 ? (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center justify-center py-8">
-            <FolderOpen className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4">No projects yet</p>
-            <Button onClick={addProject} variant="outline">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Your First Project
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {data.map((project, index) => (
-            <Card key={project.id}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">
-                    Project #{index + 1}
-                  </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeProject(project.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor={`title-${project.id}`}>Project Title *</Label>
-                    <Input
-                      id={`title-${project.id}`}
-                      value={project.title}
-                      onChange={(e) => updateProject(project.id, { title: e.target.value })}
-                      placeholder="e.g., E-commerce Mobile App"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor={`role-${project.id}`}>Your Role</Label>
-                    <Input
-                      id={`role-${project.id}`}
-                      value={project.role}
-                      onChange={(e) => updateProject(project.id, { role: e.target.value })}
-                      placeholder="e.g., Full Stack Developer"
-                    />
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <Label htmlFor={`title-${project.id}`}>Project Title *</Label>
+                <Input
+                  id={`title-${project.id}`}
+                  value={project.title}
+                  onChange={(e) => updateProject(project.id, "title", e.target.value)}
+                  placeholder="e.g., E-commerce Platform"
+                />
+              </div>
+              <div>
+                <Label htmlFor={`role-${project.id}`}>Your Role</Label>
+                <Input
+                  id={`role-${project.id}`}
+                  value={project.role || ""}
+                  onChange={(e) => updateProject(project.id, "role", e.target.value)}
+                  placeholder="e.g., Lead Developer, Team Lead"
+                />
+              </div>
+            </div>
 
-                <div>
-                  <Label htmlFor={`description-${project.id}`}>Description *</Label>
-                  <Textarea
-                    id={`description-${project.id}`}
-                    value={project.description}
-                    onChange={(e) => updateProject(project.id, { description: e.target.value })}
-                    placeholder="Describe the project, your contributions, and outcomes..."
-                    rows={3}
-                  />
-                </div>
+            <div className="mb-4">
+              <Label htmlFor={`description-${project.id}`}>Project Description *</Label>
+              <Textarea
+                id={`description-${project.id}`}
+                value={project.description}
+                onChange={(e) => updateProject(project.id, "description", e.target.value)}
+                placeholder="Describe the project, your contributions, and the impact..."
+                rows={4}
+              />
+            </div>
 
-                <div>
-                  <Label htmlFor={`technologies-${project.id}`}>Technologies Used</Label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <Label htmlFor={`start-date-${project.id}`}>Start Date</Label>
+                <Input
+                  id={`start-date-${project.id}`}
+                  type="month"
+                  value={project.startDate || ""}
+                  onChange={(e) => updateProject(project.id, "startDate", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor={`end-date-${project.id}`}>End Date</Label>
+                <Input
+                  id={`end-date-${project.id}`}
+                  type="month"
+                  value={project.endDate || ""}
+                  onChange={(e) => updateProject(project.id, "endDate", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor={`team-size-${project.id}`}>Team Size</Label>
+                <div className="relative">
+                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id={`technologies-${project.id}`}
-                    value={project.technologies.join(', ')}
-                    onChange={(e) => updateTechnologies(project.id, e.target.value)}
-                    placeholder="e.g., React, Node.js, MongoDB, AWS"
+                    id={`team-size-${project.id}`}
+                    type="number"
+                    min="1"
+                    value={project.teamSize || ""}
+                    onChange={(e) => updateProject(project.id, "teamSize", parseInt(e.target.value) || undefined)}
+                    placeholder="e.g., 5"
+                    className="pl-10"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Separate multiple technologies with commas
-                  </p>
-                  {project.technologies.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {project.technologies.map((tech, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
                 </div>
+              </div>
+            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor={`startDate-${project.id}`}>Start Date</Label>
-                    <Input
-                      id={`startDate-${project.id}`}
-                      type="month"
-                      value={project.startDate}
-                      onChange={(e) => updateProject(project.id, { startDate: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor={`endDate-${project.id}`}>End Date</Label>
-                    <Input
-                      id={`endDate-${project.id}`}
-                      type="month"
-                      value={project.endDate}
-                      onChange={(e) => updateProject(project.id, { endDate: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor={`status-${project.id}`}>Status</Label>
-                    <Select
-                      value={project.status}
-                      onValueChange={(value: Project['status']) => 
-                        updateProject(project.id, { status: value })
-                      }
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <Label htmlFor={`url-${project.id}`}>Live Demo URL</Label>
+                <div className="relative">
+                  <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id={`url-${project.id}`}
+                    value={project.url || ""}
+                    onChange={(e) => updateProject(project.id, "url", e.target.value)}
+                    placeholder="https://your-project.com"
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor={`github-${project.id}`}>GitHub Repository</Label>
+                <div className="relative">
+                  <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id={`github-${project.id}`}
+                    value={project.githubUrl || ""}
+                    onChange={(e) => updateProject(project.id, "githubUrl", e.target.value)}
+                    placeholder="https://github.com/username/repo"
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <Label>Technologies Used</Label>
+              <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                {project.technologies.map((tech, techIndex) => (
+                  <Badge key={techIndex} variant="secondary" className="flex items-center gap-1">
+                    {tech}
+                    <Button
+                      onClick={() => removeTechnology(project.id, tech)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-4 w-4 p-0 hover:bg-transparent"
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="completed">Completed</SelectItem>
-                        <SelectItem value="ongoing">Ongoing</SelectItem>
-                        <SelectItem value="planned">Planned</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
+              </div>
+              <Input
+                placeholder="Add technology and press Enter..."
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    const value = e.currentTarget.value.trim();
+                    if (value) {
+                      addTechnology(project.id, value);
+                      e.currentTarget.value = '';
+                    }
+                  }
+                }}
+              />
+            </div>
+          </Card>
+        ))}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor={`teamSize-${project.id}`}>Team Size</Label>
-                    <Input
-                      id={`teamSize-${project.id}`}
-                      type="number"
-                      min="1"
-                      value={project.teamSize}
-                      onChange={(e) => updateProject(project.id, { teamSize: parseInt(e.target.value) || 1 })}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor={`impact-${project.id}`}>Impact/Results</Label>
-                    <Input
-                      id={`impact-${project.id}`}
-                      value={project.impact}
-                      onChange={(e) => updateProject(project.id, { impact: e.target.value })}
-                      placeholder="e.g., Increased user engagement by 40%"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor={`url-${project.id}`}>Project URL</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id={`url-${project.id}`}
-                        value={project.url}
-                        onChange={(e) => updateProject(project.id, { url: e.target.value })}
-                        placeholder="https://..."
-                      />
-                      {project.url && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => window.open(project.url, '_blank')}
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor={`github-${project.id}`}>GitHub Repository</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id={`github-${project.id}`}
-                        value={project.github}
-                        onChange={(e) => updateProject(project.id, { github: e.target.value })}
-                        placeholder="https://github.com/..."
-                      />
-                      {project.github && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => window.open(project.github, '_blank')}
-                        >
-                          <Github className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
+        {data.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>No projects added yet.</p>
+            <p className="text-sm">Click "Add Project" to get started.</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
