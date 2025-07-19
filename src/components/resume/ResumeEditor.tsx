@@ -395,6 +395,150 @@ export const ResumeEditor = ({ content, onChange }: ResumeEditorProps) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Professional Summary */}
+      {formData.professionalSummary && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Professional Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Summary</label>
+              <Textarea
+                value={formData.professionalSummary?.content || ''}
+                onChange={(e) => updateField('professionalSummary', 'content', e.target.value)}
+                placeholder="Write your professional summary..."
+                rows={4}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Certifications */}
+      {formData.certifications && formData.certifications.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Certifications</CardTitle>
+                <CardDescription>Professional certifications and licenses</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {formData.certifications?.map((cert: any, index: number) => (
+              <div key={index} className="border rounded-lg p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeArrayItem('certifications', index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Certification Name</label>
+                    <Input
+                      value={cert.name || ''}
+                      onChange={(e) => updateArrayField('certifications', index, 'name', e.target.value)}
+                      placeholder="AWS Certified Solutions Architect"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Issuing Organization</label>
+                    <Input
+                      value={cert.issuingOrganization || cert.issuer || ''}
+                      onChange={(e) => updateArrayField('certifications', index, 'issuingOrganization', e.target.value)}
+                      placeholder="Amazon Web Services"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Issue Date</label>
+                    <Input
+                      value={cert.issueDate || cert.date || ''}
+                      onChange={(e) => updateArrayField('certifications', index, 'issueDate', e.target.value)}
+                      placeholder="MM/YYYY"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Expiry Date</label>
+                    <Input
+                      value={cert.expiryDate || ''}
+                      onChange={(e) => updateArrayField('certifications', index, 'expiryDate', e.target.value)}
+                      placeholder="MM/YYYY (if applicable)"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Projects */}
+      {formData.projects && formData.projects.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Projects</CardTitle>
+                <CardDescription>Notable projects you have worked on</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {formData.projects?.map((project: any, index: number) => (
+              <div key={index} className="border rounded-lg p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeArrayItem('projects', index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Project Title</label>
+                    <Input
+                      value={project.title || ''}
+                      onChange={(e) => updateArrayField('projects', index, 'title', e.target.value)}
+                      placeholder="E-commerce Platform"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Technologies</label>
+                    <Input
+                      value={Array.isArray(project.technologies) ? project.technologies.join(', ') : project.technologies || ''}
+                      onChange={(e) => updateArrayField('projects', index, 'technologies', e.target.value.split(', '))}
+                      placeholder="React, Node.js, MongoDB"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium">Description</label>
+                  <Textarea
+                    value={project.description || ''}
+                    onChange={(e) => updateArrayField('projects', index, 'description', e.target.value)}
+                    placeholder="Describe the project and your contributions..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
