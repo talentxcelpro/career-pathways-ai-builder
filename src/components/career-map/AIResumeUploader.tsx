@@ -9,8 +9,8 @@ import { useAICareerMapping } from '@/hooks/useAICareerMapping';
 import * as pdfjs from 'pdfjs-dist';
 import mammoth from 'mammoth';
 
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Configure PDF.js worker with fallback
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface AIResumeUploaderProps {
   onResumeProcessed: (parsedData: any) => void;
@@ -24,6 +24,8 @@ export const AIResumeUploader: React.FC<AIResumeUploaderProps> = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [processingStage, setProcessingStage] = useState<string>('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   const { parseResume, isParsingResume } = useAICareerMapping();
 
@@ -50,8 +52,9 @@ export const AIResumeUploader: React.FC<AIResumeUploaderProps> = ({
     return result.value;
   };
 
-  const processFile = async (file: File) => {
+  const processFile = async (file: File, retry = false) => {
     try {
+      setError(null);
       setUploadProgress(25);
       setProcessingStage('Extracting text from file...');
 
@@ -67,6 +70,10 @@ export const AIResumeUploader: React.FC<AIResumeUploaderProps> = ({
         throw new Error('Unsupported file type. Please upload PDF, DOCX, or TXT files.');
       }
 
+      if (!resumeText.trim()) {
+        throw new Error('Could not extract text from the file. Please ensure the file contains readable text.');
+      }
+
       setUploadProgress(50);
       setProcessingStage('Processing with AI...');
 
@@ -77,15 +84,44 @@ export const AIResumeUploader: React.FC<AIResumeUploaderProps> = ({
 
       setUploadProgress(100);
       setProcessingStage('Complete!');
+      setRetryCount(0);
 
       if (result.success) {
         onResumeProcessed(result.parsedResume);
+      } else {
+        throw new Error(result.error || 'Failed to process resume');
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('File processing error:', error);
+      
+      let errorMessage = 'Unknown error occurred';
+      
+      if (error.message?.includes('Failed to send a request to the Edge Function')) {
+        errorMessage = 'Connection to AI service failed. Please check your internet connection and try again.';
+      } else if (error.message?.includes('timeout') || error.message?.includes('network')) {
+        errorMessage = 'Request timed out. Please try again.';
+      } else if (error.message?.includes('API key')) {
+        errorMessage = 'AI service configuration error. Please contact support.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
       setProcessingStage('Error processing file');
       setUploadProgress(0);
+      
+      // Auto-retry once for network errors
+      if (!retry && retryCount < 2 && 
+          (error.message?.includes('Failed to send a request') || 
+           error.message?.includes('timeout') ||
+           error.message?.includes('network'))) {
+        setRetryCount(prev => prev + 1);
+        setTimeout(() => {
+          setProcessingStage('Retrying...');
+          processFile(file, true);
+        }, 2000);
+      }
     }
   };
 
@@ -167,12 +203,36 @@ export const AIResumeUploader: React.FC<AIResumeUploaderProps> = ({
               </div>
             )}
 
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm text-red-800 font-medium">Error</p>
+                    <p className="text-sm text-red-700">{error}</p>
+                  </div>
+                </div>
+                {retryCount < 2 && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => processFile(uploadedFile!, false)}
+                    className="mt-2 w-full border-red-300 text-red-700 hover:bg-red-50"
+                  >
+                    Try Again
+                  </Button>
+                )}
+              </div>
+            )}
+
             <Button 
               variant="outline" 
               onClick={() => {
                 setUploadedFile(null);
                 setUploadProgress(0);
                 setProcessingStage('');
+                setError(null);
+                setRetryCount(0);
               }}
               className="w-full"
             >
