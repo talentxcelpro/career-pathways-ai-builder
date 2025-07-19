@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -23,6 +24,8 @@ import { ExportOptions } from './ExportOptions';
 import { useResumeBuilder } from '@/hooks/useResumeBuilder';
 import { useResumeAnalytics } from '@/hooks/useResumeAnalytics';
 import { useContentIntelligence } from '@/hooks/useContentIntelligence';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface EnhancedResumeBuilderProps {
   initialData?: EnhancedResumeData;
@@ -37,9 +40,104 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   onExport,
   mode = 'create'
 }) => {
+  const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('content');
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [fetchedData, setFetchedData] = useState<EnhancedResumeData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch resume data if we have an ID
+  useEffect(() => {
+    const fetchResumeData = async () => {
+      if (!id || id === 'new' || !user) {
+        // Create new resume with default data
+        const defaultData: EnhancedResumeData = {
+          personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
+          professionalSummary: { content: '' },
+          experience: [],
+          education: [],
+          skills: [],
+          projects: [],
+          certifications: [],
+          awards: [],
+          sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
+          selectedTemplate: 'modern-professional',
+          customization: {
+            colorScheme: 'blue',
+            fontFamily: 'inter',
+            fontSize: 12,
+            spacing: 'normal'
+          }
+        };
+        setFetchedData(defaultData);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('ai_resumes')
+          .select('*')
+          .eq('id', id)
+          .eq('user_id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (data) {
+          const resumeContent = data.content as any;
+          // Ensure the data has all required properties
+          const enrichedData: EnhancedResumeData = {
+            personalInfo: resumeContent.personalInfo || { fullName: '', email: '', phone: '', location: '', summary: '' },
+            professionalSummary: resumeContent.professionalSummary || { content: '' },
+            experience: resumeContent.experience || [],
+            education: resumeContent.education || [],
+            skills: resumeContent.skills || [],
+            projects: resumeContent.projects || [],
+            certifications: resumeContent.certifications || [],
+            awards: resumeContent.awards || [],
+            sectionOrder: resumeContent.sectionOrder || ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
+            selectedTemplate: resumeContent.selectedTemplate || 'modern-professional',
+            customization: resumeContent.customization || {
+              colorScheme: 'blue',
+              fontFamily: 'inter',
+              fontSize: 12,
+              spacing: 'normal'
+            }
+          };
+          setFetchedData(enrichedData);
+        }
+      } catch (error) {
+        console.error('Error fetching resume:', error);
+        // Create fallback data
+        const defaultData: EnhancedResumeData = {
+          personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
+          professionalSummary: { content: '' },
+          experience: [],
+          education: [],
+          skills: [],
+          projects: [],
+          certifications: [],
+          awards: [],
+          sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
+          selectedTemplate: 'modern-professional',
+          customization: {
+            colorScheme: 'blue',
+            fontFamily: 'inter',
+            fontSize: 12,
+            spacing: 'normal'
+          }
+        };
+        setFetchedData(defaultData);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchResumeData();
+  }, [id, user]);
 
   const {
     resumeData,
@@ -48,7 +146,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     hasChanges,
     saveResume,
     exportResume
-  } = useResumeBuilder(initialData);
+  } = useResumeBuilder(fetchedData || initialData);
 
   const {
     overallScore,
@@ -100,10 +198,13 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     return 'text-red-600';
   };
 
-  if (!resumeData) {
+  if (isLoading || !resumeData) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your resume...</p>
+        </div>
       </div>
     );
   }
