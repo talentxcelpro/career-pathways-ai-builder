@@ -29,143 +29,308 @@ serve(async (req) => {
     let userPrompt = '';
 
     if (operation === 'extract_and_enhance') {
-      systemPrompt = `You are an expert resume processor with dual capabilities:
-1. Advanced resume extraction and parsing 
-2. ATS optimization and enhancement
+      systemPrompt = `You are an elite AI resume extraction and enhancement specialist with comprehensive capabilities:
 
-You will analyze the resume text and provide both extraction AND enhancement in a single response.`;
+CORE COMPETENCIES:
+1. 100% Complete Data Extraction - Extract EVERY piece of information from resumes
+2. Multi-format Processing - Handle PDFs, DOCX, plain text, and various layouts
+3. Template Intelligence - Recognize and adapt to different resume formats (chronological, functional, hybrid, academic, creative)
+4. Professional Field Recognition - Understand context for tech, healthcare, finance, academia, creative fields
+5. ATS Optimization - Ensure maximum compatibility with Applicant Tracking Systems
+6. Content Enhancement - Improve weak sections with industry-standard improvements
 
-      userPrompt = `COMPREHENSIVE RESUME PROCESSING
+EXTRACTION METHODOLOGY:
+- Deep content analysis with context understanding
+- Section detection using multiple techniques (headers, formatting, content patterns)
+- Data normalization and standardization
+- Confidence scoring for each extracted element
+- Template matching for optimal presentation
 
-PHASE 1: EXTRACTION
-Extract ALL information from this resume with maximum accuracy:
+ENHANCEMENT APPROACH:
+- Industry-specific keyword optimization
+- Achievement quantification suggestions
+- Professional tone enhancement
+- ATS compatibility improvements
+- Missing section identification and recommendations
 
-CRITICAL EXTRACTION RULES:
-- IGNORE system metadata like "Resume File:", "File Type:", etc.
-- Focus ONLY on actual professional information
-- Extract real person's name from content (NOT filename)
-- Preserve exact wording and terminology
-- For PhD/engineering backgrounds, capture ALL technical details
-- Extract research experience, publications, specialized skills
-- Calculate experience durations accurately
+You process resumes with surgical precision, ensuring nothing is missed while providing actionable enhancement suggestions.`;
 
-PHASE 2: ATS ENHANCEMENT
-For each extracted section, provide an ATS-optimized enhanced version:
-- Add relevant keywords for the field
-- Improve action verbs and quantifiable achievements
-- Optimize for applicant tracking systems
-- Maintain professional tone and accuracy
-- Suggest additional skills and certifications
-- Improve formatting and structure recommendations
+      userPrompt = `ENHANCED MULTI-PHASE RESUME PROCESSING PROTOCOL
 
-RETURN COMPREHENSIVE JSON:
+=== PHASE 1: COMPREHENSIVE EXTRACTION ===
+
+EXTRACTION IMPERATIVES:
+✓ ZERO INFORMATION LOSS - Extract every detail, no matter how small
+✓ SMART FILTERING - Ignore file metadata, system info, irrelevant formatting artifacts
+✓ CONTEXT AWARENESS - Understand industry, role level, career stage from content
+✓ PRECISION PARSING - Maintain exact dates, numbers, proper nouns, technical terms
+✓ RELATIONSHIP MAPPING - Connect skills to experiences, achievements to roles
+✓ TEMPLATE DETECTION - Identify resume format (chronological, functional, academic, creative)
+
+SPECIALIZED EXTRACTION PROTOCOLS:
+→ TECHNICAL FIELDS: Capture programming languages, frameworks, tools, methodologies, certifications
+→ ACADEMIC: Extract publications, research projects, grants, conferences, teaching experience
+→ CREATIVE: Portfolio links, creative tools, design methodologies, client work
+→ HEALTHCARE: Licenses, specializations, clinical experience, patient metrics
+→ FINANCE: Financial modeling, regulatory knowledge, compliance certifications
+→ MANAGEMENT: Team sizes, budget responsibilities, process improvements, leadership achievements
+
+=== PHASE 2: INTELLIGENT ENHANCEMENT ===
+
+ENHANCEMENT STRATEGIES:
+⚡ KEYWORD OPTIMIZATION - Industry-specific terms, trending skills, ATS-friendly language
+⚡ ACHIEVEMENT AMPLIFICATION - Convert responsibilities into quantified accomplishments
+⚡ MISSING SECTION DETECTION - Identify gaps and suggest improvements
+⚡ PROFESSIONAL TONE REFINEMENT - Enhance language while preserving authenticity
+⚡ COMPETITIVE POSITIONING - Suggest ways to stand out in the field
+⚡ TEMPLATE RECOMMENDATION - Suggest optimal layout based on career profile
+
+=== PHASE 3: TEMPLATE INTELLIGENCE ===
+
+TEMPLATE ANALYSIS:
+📊 CHRONOLOGICAL - Traditional career progression, stable employment
+📊 FUNCTIONAL - Skills-focused, career changers, employment gaps
+📊 HYBRID - Combination approach, versatile professionals
+📊 ACADEMIC - Research-focused, publications, academic achievements
+📊 CREATIVE - Portfolio-driven, visual appeal, creative achievements
+📊 EXECUTIVE - Leadership focus, strategic accomplishments, board positions
+
+=== OUTPUT SPECIFICATION ===
+
+Return a comprehensive JSON structure with complete data extraction and enhancement:
 {
   "extracted": {
     "personalInfo": {
-      "fullName": "actual name from resume content",
-      "email": "exact email",
-      "phone": "standardized phone",
-      "location": "full location",
-      "summary": "complete summary word-for-word",
-      "linkedin": "linkedin URL if present",
-      "website": "website if present"
+      "fullName": "exact full name from resume content",
+      "email": "exact email address",
+      "phone": "standardized phone number",
+      "location": "complete location (city, state, country)",
+      "linkedin": "LinkedIn profile URL",
+      "portfolio": "portfolio website URL",
+      "website": "personal website URL",
+      "summary": "professional summary/objective exactly as written"
+    },
+    "professionalSummary": {
+      "content": "complete professional summary",
+      "careerBackground": "career background summary",
+      "keySkills": ["key skills mentioned"],
+      "targetRoles": ["target roles mentioned"],
+      "goals": "career goals stated"
     },
     "experience": [
       {
-        "title": "exact job title",
-        "company": "exact company name",
+        "id": "unique_id",
+        "jobTitle": "exact job title",
+        "companyName": "exact company name",
         "location": "job location",
-        "startDate": "MM/YYYY format",
+        "startDate": "MM/YYYY",
         "endDate": "MM/YYYY or Present",
-        "duration": "calculated duration",
-        "description": "complete description",
-        "achievements": ["quantified achievements"],
-        "technologies": ["technologies mentioned"],
-        "keywords": ["relevant keywords"]
+        "responsibilities": ["specific responsibilities listed"],
+        "achievements": ["quantified achievements with metrics"],
+        "skillsUsed": ["skills and technologies used"],
+        "tools": ["specific tools and platforms"],
+        "teamSize": "team size if mentioned",
+        "budgetSize": "budget managed if mentioned"
       }
     ],
     "education": [
       {
+        "id": "unique_id",
         "degree": "exact degree name",
-        "school": "exact institution",
-        "location": "school location",
-        "startDate": "start date",
-        "endDate": "graduation date",
-        "gpa": "GPA if mentioned",
-        "honors": "honors if mentioned",
-        "relevantCoursework": ["courses listed"]
+        "institutionName": "exact institution name",
+        "location": "institution location",
+        "startDate": "MM/YYYY",
+        "endDate": "MM/YYYY",
+        "grade": "grade or GPA",
+        "percentage": "percentage if mentioned",
+        "cgpa": "CGPA if mentioned",
+        "honors": "honors and awards",
+        "coursework": ["relevant coursework"],
+        "thesis": "thesis title if applicable",
+        "advisor": "thesis advisor if mentioned"
       }
     ],
     "skills": {
-      "technical": ["exact technical skills"],
-      "soft": ["soft skills mentioned"],
-      "languages": ["languages spoken"],
-      "certifications": ["certifications listed"]
+      "technical": [
+        {
+          "skill": "skill name",
+          "proficiency": "beginner|intermediate|advanced|expert",
+          "category": "programming|database|cloud|etc"
+        }
+      ],
+      "soft": [
+        {
+          "skill": "soft skill name",
+          "proficiency": "beginner|intermediate|advanced|expert"
+        }
+      ],
+      "languages": [
+        {
+          "language": "language name",
+          "proficiency": "basic|conversational|fluent|native"
+        }
+      ]
     },
-    "projects": [
-      {
-        "title": "project name",
-        "description": "project description",
-        "technologies": ["tech used"],
-        "startDate": "start if mentioned",
-        "endDate": "end if mentioned",
-        "url": "URL if provided",
-        "achievements": ["project outcomes"]
-      }
-    ],
     "certifications": [
       {
+        "id": "unique_id",
         "name": "certification name",
-        "issuer": "issuing org",
-        "date": "date obtained",
-        "url": "verification URL if provided"
+        "issuingOrganization": "issuing organization",
+        "issueDate": "MM/YYYY",
+        "expiryDate": "MM/YYYY if applicable",
+        "credentialId": "credential ID if provided",
+        "credentialUrl": "verification URL if provided"
+      }
+    ],
+    "projects": [
+      {
+        "id": "unique_id",
+        "title": "project name",
+        "description": "detailed project description",
+        "technologies": ["technologies used"],
+        "startDate": "MM/YYYY if mentioned",
+        "endDate": "MM/YYYY if mentioned",
+        "githubUrl": "GitHub URL if provided",
+        "liveUrl": "live demo URL if provided",
+        "role": "your role in the project",
+        "achievements": ["project outcomes and metrics"]
       }
     ],
     "awards": [
       {
+        "id": "unique_id",
         "name": "award name",
         "issuer": "awarding organization",
-        "date": "date received",
-        "description": "award details"
+        "date": "MM/YYYY",
+        "description": "award details and context",
+        "context": "competition, academic, professional"
       }
-    ]
+    ],
+    "languages": [
+      {
+        "language": "language name",
+        "proficiency": "basic|conversational|fluent|native",
+        "certifications": ["language certifications if any"]
+      }
+    ],
+    "hobbies": [
+      {
+        "category": "category name",
+        "items": ["specific hobbies/interests"]
+      }
+    ],
+    "publications": [
+      {
+        "title": "publication title",
+        "journal": "journal/conference name",
+        "date": "MM/YYYY",
+        "authors": ["co-authors"],
+        "url": "publication URL if available"
+      }
+    ],
+    "additional": {
+      "declaration": "declaration statement if present",
+      "references": [
+        {
+          "name": "reference name",
+          "position": "their position",
+          "company": "their company",
+          "phone": "phone if provided",
+          "email": "email if provided",
+          "relationship": "professional relationship"
+        }
+      ],
+      "availableUponRequest": true
+    },
+    "metadata": {
+      "extractionMethod": "ai-parser",
+      "processingDate": "current_date",
+      "detectedTemplate": "chronological|functional|hybrid|academic|creative",
+      "industryFocus": "detected industry/field",
+      "experienceLevel": "entry|mid|senior|executive",
+      "extractionConfidence": 0.95
+    }
   },
   "enhanced": {
-    "personalInfo": {
-      "summary": "ATS-optimized professional summary with keywords",
-      "improvements": ["specific enhancement suggestions"]
+    "templateRecommendation": {
+      "recommended": "chronological|functional|hybrid|academic|creative",
+      "reasoning": "why this template is recommended",
+      "alternativeOptions": ["other suitable templates"]
+    },
+    "professionalSummary": {
+      "enhanced": "ATS-optimized professional summary with industry keywords",
+      "keywordDensity": 85,
+      "improvements": ["specific enhancement suggestions"],
+      "missingElements": ["elements that should be added"]
     },
     "experience": [
       {
-        "title": "enhanced job title with keywords",
-        "description": "ATS-optimized description with action verbs",
-        "achievements": ["quantified achievements with metrics"],
-        "suggestedKeywords": ["additional relevant keywords"],
-        "improvements": ["specific suggestions"]
+        "originalIndex": 0,
+        "enhancedTitle": "optimized job title with keywords",
+        "enhancedDescription": "ATS-optimized description with powerful action verbs",
+        "enhancedAchievements": ["quantified achievements with specific metrics"],
+        "suggestedKeywords": ["industry-relevant keywords to add"],
+        "actionVerbs": ["powerful action verbs to use"],
+        "quantificationOpportunities": ["areas where numbers can be added"],
+        "improvements": ["specific enhancement suggestions"]
       }
     ],
     "skills": {
-      "recommended": ["additional skills to add"],
-      "keywords": ["industry-specific keywords"],
-      "certifications": ["suggested certifications"]
+      "recommendedTechnical": ["trending technical skills to add"],
+      "recommendedSoft": ["important soft skills to add"],
+      "industryKeywords": ["must-have industry keywords"],
+      "emergingSkills": ["future-relevant skills to consider"],
+      "certificationSuggestions": ["valuable certifications to pursue"]
     },
+    "missingSections": [
+      {
+        "section": "projects|certifications|volunteer",
+        "importance": "high|medium|low",
+        "reason": "why this section should be added",
+        "suggestions": ["specific content suggestions"]
+      }
+    ],
     "atsOptimization": {
-      "score": 85,
-      "keywordDensity": 75,
-      "suggestions": [
+      "overallScore": 85,
+      "breakdown": {
+        "keywordOptimization": 80,
+        "formatCompatibility": 90,
+        "contentQuality": 85,
+        "achievementQuantification": 75,
+        "professionalLanguage": 90
+      },
+      "criticalIssues": [
         {
-          "section": "experience",
-          "issue": "needs more action verbs",
-          "suggestion": "replace passive phrases with active ones",
-          "priority": "high"
+          "section": "section name",
+          "issue": "specific issue identified",
+          "solution": "recommended solution",
+          "priority": "critical|high|medium|low",
+          "impact": "potential improvement in ATS score"
+        }
+      ],
+      "quickWins": [
+        {
+          "change": "specific change to make",
+          "expectedImprovement": "5-10 point ATS score increase",
+          "effort": "low|medium|high"
         }
       ]
+    },
+    "competitiveAnalysis": {
+      "strengths": ["key competitive advantages"],
+      "weaknesses": ["areas needing improvement"],
+      "marketPosition": "entry|competitive|strong|exceptional",
+      "recommendedFocus": ["areas to emphasize for best results"]
     }
   },
-  "metadata": {
-    "processingVersion": "3.0",
-    "extractionConfidence": 0.92,
-    "enhancementLevel": "comprehensive"
+  "processing": {
+    "version": "4.0-enhanced",
+    "timestamp": "current_timestamp",
+    "confidence": 0.95,
+    "processingTime": "processing_duration",
+    "enhancementLevel": "comprehensive-plus",
+    "templateMatched": "detected_template_type",
+    "industryOptimized": "detected_industry"
   }
 }
 

@@ -32,6 +32,8 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [atsScore, setAtsScore] = useState<number>(0);
   const [originalData, setOriginalData] = useState<any>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('chronological');
+  const [templateRecommendation, setTemplateRecommendation] = useState<any>(null);
 
   // Store original data when component mounts
   useEffect(() => {
@@ -46,6 +48,17 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
       onDataChange(resumeData);
     }
   }, [resumeData, onDataChange]);
+
+  // Extract template recommendation from enhanced data (if available)
+  useEffect(() => {
+    const enhanced = (resumeData as any)?.enhanced;
+    if (enhanced?.templateRecommendation) {
+      setTemplateRecommendation(enhanced.templateRecommendation);
+      if (enhanced.templateRecommendation.recommended) {
+        setSelectedTemplate(enhanced.templateRecommendation.recommended);
+      }
+    }
+  }, [resumeData]);
 
   const handleSave = async () => {
     await saveResume();
