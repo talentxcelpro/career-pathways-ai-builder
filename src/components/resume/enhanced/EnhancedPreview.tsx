@@ -179,9 +179,9 @@ export const EnhancedPreview: React.FC<EnhancedPreviewProps> = ({
                         <div key={index}>
                           <div className="flex justify-between items-start">
                             <h3 className="font-medium text-gray-900">{edu.degree}</h3>
-                            <span className="text-sm text-gray-600">{edu.graduationDate}</span>
+                            <span className="text-sm text-gray-600">{edu.endDate}</span>
                           </div>
-                          <p className="text-gray-700">{edu.institution}</p>
+                          <p className="text-gray-700">{edu.school}</p>
                           {edu.gpa && <p className="text-sm text-gray-600">GPA: {edu.gpa}</p>}
                         </div>
                       ))}

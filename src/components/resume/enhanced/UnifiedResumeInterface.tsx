@@ -244,7 +244,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
 
   const handleExport = useCallback(async () => {
     try {
-      await exportToPDF(resumeData, `resume-${resumeData.personalInfo.fullName || 'download'}.pdf`);
+      await exportToPDF('resume-preview', `resume-${resumeData.personalInfo.fullName || 'download'}.pdf`);
       toast({
         title: "Export Successful",
         description: "Your resume has been downloaded as PDF.",
@@ -351,8 +351,8 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
       case 'tools':
         return (
           <ToolsSection
-            data={resumeData.tools}
-            onChange={(tools) => setResumeData(prev => ({ ...prev, tools }))}
+            data={resumeData.tools?.[0] || { id: '', category: '', tools: [] }}
+            onChange={(tools) => setResumeData(prev => ({ ...prev, tools: [tools] }))}
           />
         );
       default:
