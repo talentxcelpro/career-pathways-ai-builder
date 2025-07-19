@@ -2,26 +2,49 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { FileCheck, Upload, Sparkles, TrendingUp, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { FileCheck, Upload, Sparkles, TrendingUp, AlertCircle, CheckCircle, Loader2, Crown } from 'lucide-react';
+import { ResumeScoreCard } from '@/components/resume/checker/ResumeScoreCard';
+import { DetailedScoreBreakdown } from '@/components/resume/checker/DetailedScoreBreakdown';
+import { EnhancedJobTailoring } from '@/components/resume/checker/EnhancedJobTailoring';
+import { EnhancedResumePreview } from '@/components/resume/checker/EnhancedResumePreview';
+
+interface DetailedScore {
+  category: string;
+  score: number;
+  maxScore: number;
+  checks: Array<{
+    name: string;
+    passed: boolean;
+    description: string;
+    impact: 'high' | 'medium' | 'low';
+    suggestion?: string;
+  }>;
+}
 
 interface ResumeAnalysis {
-  score: number;
-  strengths: string[];
-  improvements: string[];
-  atsScore: number;
-  keywords: string[];
+  success: boolean;
+  overallScore: number;
+  detailedScores: DetailedScore[];
+  tailoringAnalysis?: DetailedScore;
   recommendations: string[];
+  atsCompatibility: number;
+  improvementPriority: Array<{
+    priority: number;
+    category: string;
+    action: string;
+  }>;
 }
 
 const ResumeCheck = () => {
   const [resumeText, setResumeText] = useState('');
+  const [jobDescription, setJobDescription] = useState('');
   const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isJobAnalyzing, setIsJobAnalyzing] = useState(false);
 
   const analyzeResume = async () => {
     if (!resumeText.trim()) {
@@ -34,56 +57,88 @@ const ResumeCheck = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      const { data: response, error } = await supabase.functions.invoke('ai-comprehensive', {
+      const { data: response, error } = await supabase.functions.invoke('ai-resume-analyzer', {
         body: {
-          type: 'resume-analyze',
-          data: {
-            resumeText,
-            targetRole: 'Software Engineer' // Could be dynamic based on user profile
-          },
-          userId: user?.id
+          resumeText,
+          targetRole: 'Software Engineer'
         }
       });
 
       if (error) throw error;
 
-      setAnalysis(response);
-      toast.success('Resume analysis completed!');
+      if (response.success) {
+        setAnalysis(response);
+        toast.success('Resume analysis completed!');
+      } else {
+        throw new Error(response.error || 'Analysis failed');
+      }
     } catch (error) {
       console.error('Resume analysis error:', error);
-      toast.error('Failed to analyze resume');
+      toast.error('Failed to analyze resume. Please try again.');
     } finally {
       setIsAnalyzing(false);
     }
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
-  };
+  const analyzeJobTailoring = async () => {
+    if (!jobDescription.trim() || !resumeText.trim()) {
+      toast.error('Please provide both resume content and job description');
+      return;
+    }
 
-  const getScoreBgColor = (score: number) => {
-    if (score >= 80) return 'bg-green-50';
-    if (score >= 60) return 'bg-yellow-50';
-    return 'bg-red-50';
+    setIsJobAnalyzing(true);
+    
+    try {
+      const { data: response, error } = await supabase.functions.invoke('ai-resume-analyzer', {
+        body: {
+          resumeText,
+          jobDescription,
+          targetRole: 'Software Engineer'
+        }
+      });
+
+      if (error) throw error;
+
+      if (response.success && response.tailoringAnalysis) {
+        setAnalysis(prev => prev ? {
+          ...prev,
+          tailoringAnalysis: response.tailoringAnalysis
+        } : response);
+        toast.success('Job tailoring analysis completed!');
+      } else {
+        throw new Error('Job tailoring analysis failed');
+      }
+    } catch (error) {
+      console.error('Job tailoring analysis error:', error);
+      toast.error('Failed to analyze job match. Please try again.');
+    } finally {
+      setIsJobAnalyzing(false);
+    }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-4">
           <FileCheck className="h-8 w-8 text-blue-600" />
-          AI Resume Analyzer
-        </h1>
-        <p className="text-gray-600 mt-2">
-          Get detailed AI-powered analysis of your resume with ATS compatibility scoring
-        </p>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              TalentXcel Resume Analyzer
+            </h1>
+            <p className="text-gray-600">
+              Get detailed AI-powered analysis with ATS compatibility scoring and job-specific insights
+            </p>
+          </div>
+          <Badge className="ml-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <Sparkles className="h-3 w-3 mr-1" />
+            AI Powered
+          </Badge>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         {/* Input Section */}
-        <div className="space-y-6">
+        <div className="xl:col-span-1 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -91,12 +146,12 @@ const ResumeCheck = () => {
                 Upload Your Resume
               </CardTitle>
               <CardDescription>
-                Paste your resume content below for AI analysis
+                Paste your resume content below for comprehensive AI analysis
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Textarea
-                placeholder="Paste your resume content here..."
+                placeholder="Paste your complete resume content here..."
                 value={resumeText}
                 onChange={(e) => setResumeText(e.target.value)}
                 className="min-h-[300px] font-mono text-sm"
@@ -105,6 +160,7 @@ const ResumeCheck = () => {
                 onClick={analyzeResume}
                 disabled={isAnalyzing || !resumeText.trim()}
                 className="w-full"
+                size="lg"
               >
                 {isAnalyzing ? (
                   <>
@@ -120,135 +176,119 @@ const ResumeCheck = () => {
               </Button>
             </CardContent>
           </Card>
+
+          {/* Job Tailoring Section */}
+          {analysis && (
+            <EnhancedJobTailoring
+              jobDescription={jobDescription}
+              setJobDescription={setJobDescription}
+              onAnalyze={analyzeJobTailoring}
+              isAnalyzing={isJobAnalyzing}
+              tailoringAnalysis={analysis.tailoringAnalysis}
+            />
+          )}
         </div>
 
         {/* Results Section */}
-        <div className="space-y-6">
+        <div className="xl:col-span-2 space-y-6">
           {analysis ? (
             <>
-              {/* Overall Score */}
-              <Card className={getScoreBgColor(analysis.score)}>
+              {/* Overall Score Card */}
+              <ResumeScoreCard score={analysis.overallScore} />
+
+              {/* Detailed Score Breakdown */}
+              <DetailedScoreBreakdown scores={analysis.detailedScores} />
+
+              {/* Priority Improvements */}
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Overall Score</span>
-                    <span className={`text-3xl font-bold ${getScoreColor(analysis.score)}`}>
-                      {analysis.score}/100
-                    </span>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Priority Improvements
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Progress value={analysis.score} className="mb-4" />
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="font-medium">ATS Score:</span>
-                      <span className={`ml-2 ${getScoreColor(analysis.atsScore)}`}>
-                        {analysis.atsScore}/100
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-medium">Grade:</span>
-                      <span className={`ml-2 ${getScoreColor(analysis.score)}`}>
-                        {analysis.score >= 80 ? 'Excellent' : 
-                         analysis.score >= 60 ? 'Good' : 'Needs Work'}
-                      </span>
-                    </div>
+                  <div className="space-y-3">
+                    {analysis.improvementPriority.slice(0, 5).map((improvement, index) => (
+                      <div key={index} className="flex items-start gap-3 p-3 rounded border bg-white">
+                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-sm font-medium flex-shrink-0">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="outline" className="text-xs">
+                              {improvement.category}
+                            </Badge>
+                            <Badge 
+                              variant={improvement.priority === 1 ? "destructive" : improvement.priority === 2 ? "default" : "secondary"}
+                              className="text-xs"
+                            >
+                              {improvement.priority === 1 ? "High" : improvement.priority === 2 ? "Medium" : "Low"} Priority
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-gray-700">{improvement.action}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Strengths */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-green-600">
-                    <CheckCircle className="h-5 w-5" />
-                    Strengths
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {analysis.strengths?.map((strength, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">{strength}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+              {/* Resume Preview */}
+              <EnhancedResumePreview />
 
-              {/* Areas for Improvement */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-orange-600">
-                    <AlertCircle className="h-5 w-5" />
-                    Areas for Improvement
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {analysis.improvements?.map((improvement, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <AlertCircle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">{improvement}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-
-              {/* Keywords */}
-              {analysis.keywords && analysis.keywords.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5" />
-                      Recommended Keywords
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {analysis.keywords.map((keyword, index) => (
-                        <Badge key={index} variant="secondary">
-                          {keyword}
-                        </Badge>
-                      ))}
+              {/* Upgrade Prompt */}
+              <Card className="bg-gradient-to-r from-blue-50 to-indigo-100 border-blue-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-blue-600 rounded-full">
+                      <Crown className="h-6 w-6 text-white" />
                     </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Recommendations */}
-              {analysis.recommendations && analysis.recommendations.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Sparkles className="h-5 w-5" />
-                      AI Recommendations
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {analysis.recommendations.map((rec, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Sparkles className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm">{rec}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-blue-900 mb-2">
+                        Unlock Your Full Potential
+                      </h3>
+                      <p className="text-blue-800 text-sm mb-4">
+                        Get access to advanced AI features, premium templates, and personalized career coaching to land your dream job faster.
+                      </p>
+                      <Button className="bg-blue-600 hover:bg-blue-700">
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Upgrade to Premium
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </>
           ) : (
             <Card>
               <CardContent className="p-12 text-center">
-                <FileCheck className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Ready to Analyze
+                <FileCheck className="h-16 w-16 text-gray-300 mx-auto mb-6" />
+                <h3 className="text-xl font-medium text-gray-900 mb-3">
+                  Ready for Professional Analysis
                 </h3>
-                <p className="text-gray-600">
-                  Paste your resume content and click "Analyze with AI" to get detailed feedback
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  Our AI will analyze your resume across multiple dimensions including ATS compatibility, 
+                  content quality, and section completeness to give you actionable insights.
                 </p>
+                <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-sm">
+                  <div className="flex items-center gap-2 text-green-600">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>ATS Compatibility</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-green-600">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Content Analysis</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-green-600">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Job Matching</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-green-600">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Improvement Tips</span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}
