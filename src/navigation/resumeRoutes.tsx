@@ -13,16 +13,16 @@ import { NewResumeBuilder } from "../pages/resume/NewResumeBuilder";
 
 export const resumeRoutes = [
   {
+    title: "NEW Resume Builder (Clean)",
+    to: "/resume/new",
+    icon: <Edit className="h-4 w-4" />,
+    page: <NewResumeBuilder />,
+  },
+  {
     title: "TalentXcel Resume Dashboard",
     to: "/resume-builder",
     icon: <FileText className="h-4 w-4" />,
     page: <ResumeDashboard />,
-  },
-  {
-    title: "New Resume Builder",
-    to: "/resume/new",
-    icon: <Edit className="h-4 w-4" />,
-    page: <NewResumeBuilder />,
   },
   {
     title: "Create New Resume",

@@ -107,13 +107,13 @@ export const NewResumeBuilder: React.FC = () => {
     setIsSaving(true);
     try {
       const { data, error } = await supabase
-        .from('ai_resumes')
+        .from('clean_resumes')
         .insert({
           user_id: user.id,
           title: resume.personalInfo.fullName ? `${resume.personalInfo.fullName}'s Resume` : 'Untitled Resume',
           content: resume as any,
-          ats_score: 85, // Default ATS score, will be calculated properly later
-          template_id: null
+          ats_score: resume.atsScore || 85,
+          template_id: resume.selectedTemplate
         })
         .select()
         .single();

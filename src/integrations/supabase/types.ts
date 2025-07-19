@@ -2209,6 +2209,48 @@ export type Database = {
         }
         Relationships: []
       }
+      clean_resumes: {
+        Row: {
+          ats_score: number | null
+          content: Json
+          created_at: string | null
+          id: string
+          is_primary: boolean | null
+          is_public: boolean | null
+          public_url_slug: string | null
+          template_id: string
+          title: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          ats_score?: number | null
+          content: Json
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          is_public?: boolean | null
+          public_url_slug?: string | null
+          template_id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          ats_score?: number | null
+          content?: Json
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          is_public?: boolean | null
+          public_url_slug?: string | null
+          template_id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       collaboration_sessions: {
         Row: {
           created_at: string
