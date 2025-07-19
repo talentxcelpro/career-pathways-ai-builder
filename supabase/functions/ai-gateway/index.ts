@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders } from '../_shared/cors.ts'
@@ -13,32 +12,39 @@ console.log('Supabase URL configured:', !!supabaseUrl)
 console.log('Service Key configured:', !!supabaseServiceKey)
 
 Deno.serve(async (req) => {
-  console.log(`📨 Incoming ${req.method} request to AI Gateway`)
+  const startTime = Date.now()
+  const requestId = crypto.randomUUID().substring(0, 8)
+  
+  console.log(`[${requestId}] 📨 Incoming ${req.method} request to AI Gateway`)
+  console.log(`[${requestId}] 🔗 Request URL: ${req.url}`)
+  console.log(`[${requestId}] 📋 Request headers:`, Object.fromEntries(req.headers.entries()))
   
   if (req.method === 'OPTIONS') {
-    console.log('✅ Handling CORS preflight request')
+    console.log(`[${requestId}] ✅ Handling CORS preflight request`)
     return new Response(null, { headers: corsHeaders })
   }
 
   // Health check endpoint
   if (req.method === 'GET') {
-    console.log('🏥 Health check requested')
+    console.log(`[${requestId}] 🏥 Health check requested`)
     return new Response(
       JSON.stringify({ 
         status: 'healthy', 
         timestamp: new Date().toISOString(),
+        requestId: requestId,
         openAI: !!openAIApiKey,
-        supabase: !!supabaseUrl
+        supabase: !!supabaseUrl,
+        processingTime: Date.now() - startTime
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 
   try {
-    console.log('🚀 Processing AI Gateway request')
+    console.log(`[${requestId}] 🚀 Processing AI Gateway request`)
     
     if (!openAIApiKey) {
-      console.error('❌ OpenAI API key not configured')
+      console.error(`[${requestId}] ❌ OpenAI API key not configured`)
       return new Response(
         JSON.stringify({ success: false, error: 'OpenAI API key not configured' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
@@ -47,10 +53,13 @@ Deno.serve(async (req) => {
 
     let requestBody;
     try {
-      requestBody = await req.json()
-      console.log('📋 Request body parsed:', { toolSlug: requestBody.toolSlug })
+      const rawBody = await req.text()
+      console.log(`[${requestId}] 📝 Raw request body:`, rawBody)
+      
+      requestBody = JSON.parse(rawBody)
+      console.log(`[${requestId}] 📋 Parsed request body:`, { toolSlug: requestBody.toolSlug, hasInputData: !!requestBody.inputData })
     } catch (error) {
-      console.error('❌ Failed to parse request body:', error)
+      console.error(`[${requestId}] ❌ Failed to parse request body:`, error)
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid JSON in request body' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
@@ -58,12 +67,12 @@ Deno.serve(async (req) => {
     }
 
     const { toolSlug, inputData, requestMetadata } = requestBody
-    console.log(`🔧 Processing tool: ${toolSlug}`)
+    console.log(`[${requestId}] 🔧 Processing tool: ${toolSlug}`)
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     // Get tool configuration
-    console.log('🔍 Fetching tool configuration...')
+    console.log(`[${requestId}] 🔍 Fetching tool configuration...`)
     const { data: toolConfig, error: configError } = await supabase
       .from('ai_tools_config')
       .select('*')
@@ -72,14 +81,14 @@ Deno.serve(async (req) => {
       .single()
 
     if (configError || !toolConfig) {
-      console.error(`❌ Tool ${toolSlug} not found or disabled:`, configError)
+      console.error(`[${requestId}] ❌ Tool ${toolSlug} not found or disabled:`, configError)
       return new Response(
         JSON.stringify({ success: false, error: `AI tool ${toolSlug} not found or disabled` }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
       )
     }
 
-    console.log(`✅ Tool config found: ${toolConfig.tool_name}`)
+    console.log(`[${requestId}] ✅ Tool config found: ${toolConfig.tool_name}`)
 
     // Prepare the prompt based on tool type
     let prompt = ''
@@ -130,8 +139,8 @@ Please provide salary analysis and market insights.`
         prompt = `${toolConfig.prompt_template}\n\nInput: ${JSON.stringify(inputData)}`
     }
 
-    console.log('🤖 Calling OpenAI API...')
-    const startTime = Date.now()
+    console.log(`[${requestId}] 🤖 Calling OpenAI API...`)
+    const openAIStartTime = Date.now()
 
     // Call OpenAI API
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -141,7 +150,7 @@ Please provide salary analysis and market insights.`
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: toolConfig.model_name || 'gpt-4.1-2025-04-14',
+        model: toolConfig.model_name || 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemMessage },
           { role: 'user', content: prompt }
@@ -151,12 +160,12 @@ Please provide salary analysis and market insights.`
       })
     })
 
-    const responseTime = Date.now() - startTime
-    console.log(`⏱️ OpenAI response time: ${responseTime}ms`)
+    const responseTime = Date.now() - openAIStartTime
+    console.log(`[${requestId}] ⏱️ OpenAI response time: ${responseTime}ms`)
 
     if (!openAIResponse.ok) {
       const errorText = await openAIResponse.text()
-      console.error('❌ OpenAI API error:', errorText)
+      console.error(`[${requestId}] ❌ OpenAI API error:`, errorText)
       throw new Error(`OpenAI API error: ${openAIResponse.status} ${errorText}`)
     }
 
@@ -167,7 +176,7 @@ Please provide salary analysis and market insights.`
       throw new Error('No content generated by OpenAI')
     }
 
-    console.log('✅ AI content generated successfully')
+    console.log(`[${requestId}] ✅ AI content generated successfully`)
 
     // Calculate usage metrics
     const tokensUsed = openAIData.usage?.total_tokens || 0
@@ -177,12 +186,10 @@ Please provide salary analysis and market insights.`
     let responseData: any = generatedContent
 
     if (toolSlug === 'resume-enhancer') {
-      // Try to parse structured response for resume enhancement
       try {
         const parsed = JSON.parse(generatedContent)
         responseData = parsed
       } catch {
-        // If not JSON, structure the response
         responseData = {
           summary: generatedContent.includes('Summary:') ? 
             generatedContent.split('Summary:')[1]?.split('Experience:')[0]?.trim() : inputData.summary,
@@ -211,10 +218,11 @@ Please provide salary analysis and market insights.`
         response_time: responseTime
       })
     } catch (logError) {
-      console.warn('⚠️ Failed to log usage:', logError)
+      console.warn(`[${requestId}] ⚠️ Failed to log usage:`, logError)
     }
 
-    console.log('🎉 AI Gateway processing completed successfully')
+    const totalTime = Date.now() - startTime
+    console.log(`[${requestId}] 🎉 AI Gateway processing completed successfully in ${totalTime}ms`)
 
     return new Response(
       JSON.stringify({
@@ -222,18 +230,21 @@ Please provide salary analysis and market insights.`
         data: responseData,
         tokensUsed,
         cost: estimatedCost,
-        responseTime
+        responseTime,
+        requestId
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 
   } catch (error: any) {
-    console.error('❌ AI Gateway error:', error)
+    const totalTime = Date.now() - startTime
+    console.error(`[${requestId}] ❌ AI Gateway error after ${totalTime}ms:`, error)
     
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message || 'AI processing failed'
+        error: error.message || 'AI processing failed',
+        requestId
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -29,46 +29,42 @@ export const useAIService = () => {
     try {
       console.log(`🚀 Invoking AI tool: ${options.toolSlug}`, options);
 
-      // First test if the function is accessible with a health check
-      console.log('🏥 Testing AI Gateway health...');
+      // Direct HTTP call to the edge function
+      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-gateway`;
       
-      try {
-        const healthResponse = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-gateway`, {
-          method: 'GET',
-          headers: {
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
-          }
-        });
-        
-        if (healthResponse.ok) {
-          const healthData = await healthResponse.json();
-          console.log('✅ AI Gateway health check passed:', healthData);
-        } else {
-          console.warn('⚠️ Health check failed:', healthResponse.status);
-        }
-      } catch (healthError) {
-        console.warn('⚠️ Health check error:', healthError);
-      }
+      console.log('📨 Making direct HTTP call to:', functionUrl);
 
-      // Invoke the unified AI gateway directly
-      console.log('📨 Calling AI Gateway function...');
-      const { data, error } = await supabase.functions.invoke('ai-gateway', {
-        body: {
-          toolSlug: options.toolSlug,
-          inputData: options.inputData,
-          requestMetadata: {
-            category: options.category,
-            priority: options.priority || 0,
-            timestamp: new Date().toISOString()
-          }
+      const requestBody = {
+        toolSlug: options.toolSlug,
+        inputData: options.inputData,
+        requestMetadata: {
+          category: options.category,
+          priority: options.priority || 0,
+          timestamp: new Date().toISOString()
         }
+      };
+
+      console.log('📋 Request body:', requestBody);
+
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+        },
+        body: JSON.stringify(requestBody)
       });
 
-      if (error) {
-        console.error('❌ AI service invocation error:', error);
-        throw new Error(`Edge Function Error: ${error.message || 'Unknown error occurred'}`);
+      console.log('📦 Response status:', response.status);
+      console.log('📦 Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ HTTP error response:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
+      const data = await response.json();
       console.log('📦 AI Gateway response:', data);
 
       if (!data) {
