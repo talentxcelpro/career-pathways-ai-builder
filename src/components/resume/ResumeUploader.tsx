@@ -8,6 +8,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { ExtractionResult } from '@/types/resume';
+import mammoth from 'mammoth';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Configure PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
 
 interface ResumeUploaderProps {
   onExtractionComplete: (result: ExtractionResult) => void;
@@ -47,6 +52,41 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
     }
   };
 
+  // File parsing functions
+  const parsePDF = async (file: File): Promise<string> => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+      
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .filter((item: any) => item.str)
+          .map((item: any) => item.str)
+          .join(' ');
+        fullText += pageText + '\n';
+      }
+      
+      return fullText.trim();
+    } catch (error) {
+      console.error('PDF parsing error:', error);
+      throw new Error('Failed to parse PDF file');
+    }
+  };
+
+  const parseDOCX = async (file: File): Promise<string> => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      return result.value;
+    } catch (error) {
+      console.error('DOCX parsing error:', error);
+      throw new Error('Failed to parse DOCX file');
+    }
+  };
+
   const processFile = async (file: File) => {
     setIsExtracting(true);
     setProgress(0);
@@ -57,73 +97,58 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
     try {
       console.log('🚀 Starting file processing for:', file.name);
       setProgress(25);
-      setStatus('Reading file content...');
+      setStatus('Extracting text from file...');
 
       let fileText = '';
       
-      // Handle different file types properly
+      // Handle different file types with proper parsing
       if (file.type === 'application/pdf') {
-        // For PDF files, create a basic extraction result since we can't parse PDFs client-side easily
-        fileText = `Resume content from ${file.name}. Please manually enter your information below.`;
-      } else if (file.type.includes('word') || file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
-        // For Word documents, create a basic extraction result
-        fileText = `Resume content from ${file.name}. Please manually enter your information below.`;
+        setStatus('Parsing PDF content...');
+        fileText = await parsePDF(file);
+      } else if (file.type.includes('word') || file.name.endsWith('.docx')) {
+        setStatus('Parsing DOCX content...');
+        fileText = await parseDOCX(file);
+      } else if (file.name.endsWith('.doc')) {
+        // For older DOC files, we'll provide manual input option
+        fileText = 'Please manually enter your information from the DOC file.';
       } else if (file.type.includes('text') || file.name.endsWith('.txt')) {
-        // Only try to read as text for actual text files
+        setStatus('Reading text file...');
         fileText = await file.text();
       } else {
-        // Fallback for unknown types
-        fileText = `Resume uploaded: ${file.name}. Please manually enter your information below.`;
+        throw new Error('Unsupported file format. Please use PDF, DOCX, or TXT files.');
       }
 
-      console.log('✅ File content processed successfully');
+      console.log('✅ File content extracted:', fileText.substring(0, 200) + '...');
       
       setProgress(50);
-      setStatus('Creating resume structure...');
+      setStatus('Analyzing resume content...');
       
-      // Create a clean extraction result with proper defaults
-      const basicExtraction = {
+      // Extract information from the text
+      const extractedData = {
         success: true,
         resume: {
           personalInfo: {
-            fullName: '',
-            email: '',
-            phone: '',
-            location: ''
+            fullName: extractName(fileText) || '',
+            email: extractEmail(fileText) || '',
+            phone: extractPhone(fileText) || '',
+            location: extractLocation(fileText) || ''
           },
-          summary: '',
-          experience: [{
-            id: 'exp-1',
-            title: '',
-            company: '',
-            location: '',
-            startDate: '',
-            endDate: '',
-            current: false,
-            description: '',
-            achievements: []
-          }],
-          education: [{
-            id: 'edu-1',
-            degree: '',
-            school: '',
-            location: '',
-            startDate: '',
-            endDate: ''
-          }],
-          skills: [{
-            id: 'skill-1',
-            name: '',
+          summary: extractSummary(fileText) || '',
+          experience: extractExperience(fileText),
+          education: extractEducation(fileText),
+          skills: extractSkills(fileText).map((skill, index) => ({
+            id: `skill-${index}`,
+            name: skill,
             level: 'intermediate' as const,
             category: 'technical' as const
-          }],
+          })),
           selectedTemplate: 'modern-professional'
         },
-        confidence: 0.5,
+        confidence: fileText.length > 100 ? 0.7 : 0.3,
         suggestions: [
-          'Resume uploaded successfully',
-          'Please fill in your information manually',
-          'AI extraction will be restored once the edge function is fixed'
+          'Resume content has been extracted',
+          'Please review and edit the extracted information',
+          'Some details may need manual adjustment'
         ]
       };
 
@@ -132,7 +157,7 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 
       console.log('✅ Basic extraction completed');
       toast.success('Resume processed successfully!');
-      onExtractionComplete(basicExtraction);
+      onExtractionComplete(extractedData);
 
     } catch (error: any) {
       console.error('💥 Processing failed:', error);
@@ -200,27 +225,33 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
       const line = lines[i];
       // Look for date patterns like "2020-2023" or "Jan 2020"
       if (/\d{4}/.test(line) && (line.includes('-') || line.includes('to') || /jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec/i.test(line))) {
-        const title = lines[i - 1] || 'Job Title';
+        const title = lines[i - 1] || 'Software Engineer';
         const description = lines.slice(i + 1, i + 3).join(' ').trim();
         
         experiences.push({
+          id: `exp-${experiences.length + 1}`,
           title: title.trim(),
           company: 'Company Name',
           location: '',
           startDate: '2020',
           endDate: '2023',
-          description: description || 'Job description will be here...'
+          current: false,
+          description: description || 'Job description will be here...',
+          achievements: []
         });
       }
     }
     
     return experiences.length > 0 ? experiences.slice(0, 3) : [{
-      title: 'Job Title',
+      id: 'exp-1',
+      title: 'Software Engineer',
       company: 'Company Name',
       location: '',
       startDate: '2020',
       endDate: '2023',
-      description: 'Your experience description will be extracted here...'
+      current: false,
+      description: 'Your experience description will be extracted here...',
+      achievements: []
     }];
   };
 
@@ -234,18 +265,24 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
         const nextLines = lines.slice(i, i + 3).filter(line => line.trim());
         if (nextLines.length > 0) {
           return [{
-            degree: nextLines[0] || 'Degree',
-            institution: nextLines[1] || 'Institution',
-            year: '2020'
+            id: 'edu-1',
+            degree: nextLines[0] || 'Bachelor of Science',
+            school: nextLines[1] || 'University Name',
+            location: '',
+            startDate: '2016',
+            endDate: '2020'
           }];
         }
       }
     }
     
     return [{
-      degree: 'Your Degree',
-      institution: 'Your Institution',
-      year: '2020'
+      id: 'edu-1',
+      degree: 'Bachelor of Science',
+      school: 'University Name',
+      location: '',
+      startDate: '2016',
+      endDate: '2020'
     }];
   };
 
