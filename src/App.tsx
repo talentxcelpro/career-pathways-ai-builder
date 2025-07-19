@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from './contexts/AuthContext';
-import { AppLayout } from './components/layout/AppLayout';
+
 import Dashboard from './pages/Dashboard';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -39,9 +39,10 @@ function App() {
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <AppLayout>
-            <Toaster />
-            <Routes>
+          <div className="min-h-screen bg-background">
+            <main className="flex-1">
+              <Toaster />
+              <Routes>
               {/* Core Routes */}
               <Route path="/" element={<Dashboard />} />
               <Route path="/network" element={<Network />} />
@@ -65,8 +66,9 @@ function App() {
               {/* Enhanced Resume Builder Routes */}
               <Route path="/resume-builder/enhanced/upload" element={<EnhancedUploadResume />} />
               <Route path="/resume-builder/enhanced/edit/:id" element={<EditResume />} />
-            </Routes>
-          </AppLayout>
+              </Routes>
+            </main>
+          </div>
         </AuthProvider>
       </QueryClientProvider>
     </BrowserRouter>
