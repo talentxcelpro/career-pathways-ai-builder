@@ -64,7 +64,6 @@ const NewResume = () => {
             certifications: [],
             awards: []
           },
-          template_id: selectedTemplate,
           ats_score: 0
         })
         .select()
