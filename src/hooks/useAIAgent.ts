@@ -197,7 +197,11 @@ export const useAIAgent = () => {
       // Use existing AI service to get response
       try {
         // Add to AI context for cross-module intelligence
-        addMessage(content);
+        addMessage({
+          content,
+          type: 'user',
+          module: moduleName
+        });
 
         // Simulate AI response for now - in production, this would call the AI service
         const aiResponse: AIAgentMessage = {
