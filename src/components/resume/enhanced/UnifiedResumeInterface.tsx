@@ -7,6 +7,10 @@ import { ResumePreview } from '../ResumePreview';
 import { ATSScoreChecker } from '../ATSScoreChecker';
 import { DataExtractionVerifier } from './DataExtractionVerifier';
 import { EnhancedTemplateSelector } from './EnhancedTemplateSelector';
+import { JobSpecificOptimizer } from '../optimization/JobSpecificOptimizer';
+import { ContentEnhancementLibrary } from '../content/ContentEnhancementLibrary';
+import { ResumeExamplesGallery } from '../examples/ResumeExamplesGallery';
+import { AdvancedAIFeatures } from '../ai/AdvancedAIFeatures';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface UnifiedResumeInterfaceProps {
@@ -111,12 +115,15 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
       
       <div className="container mx-auto px-4 py-6">
         <Tabs defaultValue="editor" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="editor">Editor</TabsTrigger>
             <TabsTrigger value="templates">Templates</TabsTrigger>
+            <TabsTrigger value="optimization">Optimization</TabsTrigger>
+            <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="examples">Examples</TabsTrigger>
+            <TabsTrigger value="ai-features">AI Features</TabsTrigger>
             <TabsTrigger value="preview">Preview</TabsTrigger>
             <TabsTrigger value="ats">ATS Score</TabsTrigger>
-            <TabsTrigger value="verification">Verification</TabsTrigger>
           </TabsList>
 
           <TabsContent value="editor" className="space-y-6">
@@ -155,6 +162,64 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
             </div>
           </TabsContent>
 
+          <TabsContent value="optimization" className="space-y-6">
+            <div className="bg-card rounded-lg border">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold">Job-Specific Optimization</h2>
+                <p className="text-sm text-muted-foreground">Optimize your resume for specific job postings</p>
+              </div>
+              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <JobSpecificOptimizer
+                  resumeData={resumeData}
+                  onOptimization={updateResumeData}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="content" className="space-y-6">
+            <div className="bg-card rounded-lg border">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold">Content Enhancement</h2>
+                <p className="text-sm text-muted-foreground">Access our library of proven content and bullet points</p>
+              </div>
+              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <ContentEnhancementLibrary
+                  onContentSelect={(content) => console.log('Selected content:', content)}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="examples" className="space-y-6">
+            <div className="bg-card rounded-lg border">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold">Resume Examples Gallery</h2>
+                <p className="text-sm text-muted-foreground">Browse real resume examples from successful candidates</p>
+              </div>
+              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <ResumeExamplesGallery
+                  onExampleSelect={(example) => console.log('Selected example:', example)}
+                  onTemplateApply={setSelectedTemplate}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="ai-features" className="space-y-6">
+            <div className="bg-card rounded-lg border">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold">Advanced AI Features</h2>
+                <p className="text-sm text-muted-foreground">AI-powered career insights and predictions</p>
+              </div>
+              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <AdvancedAIFeatures
+                  resumeData={resumeData}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
           <TabsContent value="preview" className="space-y-6">
             <div className="bg-card rounded-lg border">
               <div className="p-4 border-b">
@@ -181,22 +246,6 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                   resumeContent={resumeData}
                   currentScore={atsScore}
                   onScoreUpdate={setAtsScore}
-                />
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="verification" className="space-y-6">
-            <div className="bg-card rounded-lg border">
-              <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold">Data Extraction Verification</h2>
-                <p className="text-sm text-muted-foreground">Verify that all resume data was extracted correctly from the original source</p>
-              </div>
-              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
-                <DataExtractionVerifier
-                  originalData={originalData}
-                  processedData={resumeData}
-                  onRefresh={() => window.location.reload()}
                 />
               </div>
             </div>
