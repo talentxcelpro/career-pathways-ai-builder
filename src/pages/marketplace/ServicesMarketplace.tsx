@@ -428,8 +428,8 @@ export default function ServicesMarketplace() {
           }}
         />
         
-        <div className="relative container mx-auto px-6 py-12">
-          <div className="text-center max-w-4xl mx-auto">
+        <div className="relative container mx-auto px-6 py-6">
+          <div className="text-center max-w-3xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -443,15 +443,9 @@ export default function ServicesMarketplace() {
                 className="relative"
               >
                 <div className="absolute -inset-4 bg-gradient-to-r from-green-400/20 via-blue-500/20 to-purple-600/20 rounded-3xl blur-xl animate-pulse" />
-                <h1 className="relative text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-white leading-[0.95]">
+                <h1 className="relative text-lg md:text-xl lg:text-2xl font-bold tracking-tight mb-2 text-white leading-tight">
                   <span className="block bg-gradient-to-r from-white via-green-200 to-blue-200 bg-clip-text text-transparent animate-fade-in">
-                    Empowering every professional
-                  </span>
-                  <span className="block text-green-400 drop-shadow-lg animate-fade-in [animation-delay:0.3s]">
-                    to do meaningful work, grow continuously,
-                  </span>
-                  <span className="block text-yellow-400 drop-shadow-lg animate-fade-in [animation-delay:0.6s]">
-                    and connect with purpose
+                    Empowering every professional to do meaningful work, grow continuously, and connect with purpose
                   </span>
                 </h1>
               </motion.div>
@@ -460,12 +454,11 @@ export default function ServicesMarketplace() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.2 }}
-                className="text-base lg:text-lg text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto font-light"
+                className="text-sm lg:text-base text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto font-light"
               >
                 Join a marketplace where talent meets opportunity. 
                 <span className="text-green-400 font-semibold"> Build your career.</span>
                 <span className="text-blue-400 font-semibold"> Scale your impact.</span>
-                <span className="text-purple-400 font-semibold"> Transform lives.</span>
               </motion.p>
               
               {/* Search Interface - Primary CTA */}
