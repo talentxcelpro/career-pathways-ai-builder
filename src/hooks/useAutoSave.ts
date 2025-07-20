@@ -1,77 +1,53 @@
-import { useCallback, useEffect, useRef } from 'react';
-import { toast } from 'sonner';
 
-interface UseAutoSaveOptions {
+import { useState, useEffect, useCallback } from 'react';
+import { useDebounce } from './useDebounce';
+
+interface UseAutoSaveProps {
   data: any;
-  saveFunction: (data: any) => Promise<void>;
+  onSave: (data: any) => Promise<void>;
   delay?: number;
-  enabled?: boolean;
 }
 
-export const useAutoSave = ({ data, saveFunction, delay = 2000, enabled = true }: UseAutoSaveOptions) => {
-  const timeoutRef = useRef<NodeJS.Timeout>();
-  const lastSavedDataRef = useRef<string>('');
-  const isSavingRef = useRef(false);
+export const useAutoSave = ({ data, onSave, delay = 30000 }: UseAutoSaveProps) => {
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const debouncedData = useDebounce(data, 3000); // 3 second delay for debouncing
 
-  const debouncedSave = useCallback(async () => {
-    if (!enabled || isSavingRef.current) return;
-
-    const currentDataString = JSON.stringify(data);
+  const save = useCallback(async () => {
+    if (!data) return;
     
-    // Don't save if data hasn't changed
-    if (currentDataString === lastSavedDataRef.current) return;
-
+    setSaveStatus('saving');
     try {
-      isSavingRef.current = true;
-      await saveFunction(data);
-      lastSavedDataRef.current = currentDataString;
-      
-      // Show subtle save confirmation
-      toast.success('Draft auto-saved', {
-        duration: 1500,
-        position: 'bottom-right',
-      });
+      await onSave(data);
+      setSaveStatus('saved');
+      setLastSaved(new Date());
     } catch (error) {
       console.error('Auto-save failed:', error);
-      toast.error('Auto-save failed. Please save manually.', {
-        duration: 3000,
-      });
-    } finally {
-      isSavingRef.current = false;
+      setSaveStatus('error');
     }
-  }, [data, saveFunction, enabled]);
+  }, [data, onSave]);
 
+  // Auto-save on data change (debounced)
   useEffect(() => {
-    if (!enabled) return;
-
-    // Clear existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
+    if (debouncedData && saveStatus !== 'saving') {
+      save();
     }
+  }, [debouncedData, save, saveStatus]);
 
-    // Set new timeout
-    timeoutRef.current = setTimeout(debouncedSave, delay);
-
-    // Cleanup
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [data, debouncedSave, delay, enabled]);
-
-  // Cleanup on unmount
+  // Periodic auto-save
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+    const interval = setInterval(() => {
+      if (data && saveStatus !== 'saving') {
+        save();
       }
-    };
-  }, []);
+    }, delay);
+
+    return () => clearInterval(interval);
+  }, [data, save, delay, saveStatus]);
 
   return {
-    triggerSave: debouncedSave,
-    isSaving: isSavingRef.current,
-    lastSavedData: lastSavedDataRef.current
+    saveStatus,
+    lastSaved,
+    save
   };
 };

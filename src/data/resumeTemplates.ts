@@ -1,203 +1,228 @@
-export interface ResumeTemplate {
-  id: string;
-  name: string;
-  description: string;
-  category: 'modern' | 'classic' | 'creative' | 'minimal' | 'professional' | 'academic';
-  preview: string;
-  isPremium: boolean;
-  features: string[];
-  colorSchemes: Array<{
-    id: string;
-    name: string;
-    primary: string;
-    secondary: string;
-    accent: string;
-  }>;
-  layout: {
-    columns: 1 | 2;
-    headerStyle: 'centered' | 'left' | 'right' | 'split';
-    sectionStyle: 'boxed' | 'minimal' | 'bordered' | 'highlighted';
-    typography: 'modern' | 'classic' | 'condensed' | 'elegant';
-  };
-  customization: {
-    allowFontChange: boolean;
-    allowColorChange: boolean;
-    allowLayoutChange: boolean;
-    allowSectionReorder: boolean;
-  };
-}
 
-export const resumeTemplates: ResumeTemplate[] = [
+export const resumeTemplates = [
+  // Modern Templates
   {
     id: 'modern-tech',
     name: 'Modern Tech',
-    description: 'Clean, modern template perfect for tech professionals',
-    category: 'modern',
-    preview: '/templates/modern-tech-preview.png',
-    isPremium: false,
-    features: ['ATS-Optimized', 'Single Column', 'Clean Typography', 'Skills Progress Bars'],
-    colorSchemes: [
-      { id: 'blue', name: 'Professional Blue', primary: '#2563eb', secondary: '#64748b', accent: '#3b82f6' },
-      { id: 'green', name: 'Growth Green', primary: '#059669', secondary: '#64748b', accent: '#10b981' },
-      { id: 'purple', name: 'Creative Purple', primary: '#7c3aed', secondary: '#64748b', accent: '#8b5cf6' }
-    ],
-    layout: {
-      columns: 1,
-      headerStyle: 'left',
-      sectionStyle: 'minimal',
-      typography: 'modern'
-    },
-    customization: {
-      allowFontChange: true,
-      allowColorChange: true,
-      allowLayoutChange: false,
-      allowSectionReorder: true
-    }
+    category: 'Modern',
+    description: 'Clean design perfect for tech professionals and developers',
+    preview: '/api/placeholder/300/400',
+    features: ['ATS-friendly', 'Two-column', 'Skill bars', 'Modern design'],
+    atsScore: 95,
+    isRecommended: true,
+    colorSchemes: ['blue', 'green', 'purple', 'gray']
   },
   {
-    id: 'executive-classic',
-    name: 'Executive Classic',
-    description: 'Traditional, authoritative template for senior roles',
-    category: 'classic',
-    preview: '/templates/executive-classic-preview.png',
-    isPremium: true,
-    features: ['Two Column', 'Professional Header', 'Achievement Focus', 'Executive Summary'],
-    colorSchemes: [
-      { id: 'navy', name: 'Executive Navy', primary: '#1e3a8a', secondary: '#475569', accent: '#3730a3' },
-      { id: 'charcoal', name: 'Charcoal Gray', primary: '#374151', secondary: '#6b7280', accent: '#4b5563' },
-      { id: 'burgundy', name: 'Burgundy', primary: '#991b1b', secondary: '#64748b', accent: '#dc2626' }
-    ],
-    layout: {
-      columns: 2,
-      headerStyle: 'centered',
-      sectionStyle: 'bordered',
-      typography: 'classic'
-    },
-    customization: {
-      allowFontChange: true,
-      allowColorChange: true,
-      allowLayoutChange: true,
-      allowSectionReorder: true
-    }
+    id: 'startup-creative',
+    name: 'Startup Creative',
+    category: 'Modern',
+    description: 'Bold and creative design for startup and creative roles',
+    preview: '/api/placeholder/300/400',
+    features: ['Creative layout', 'Color accents', 'Visual elements', 'Modern typography'],
+    atsScore: 85,
+    colorSchemes: ['orange', 'red', 'teal', 'pink']
   },
   {
-    id: 'creative-designer',
-    name: 'Creative Designer',
-    description: 'Vibrant, creative template for design professionals',
-    category: 'creative',
-    preview: '/templates/creative-designer-preview.png',
-    isPremium: true,
-    features: ['Creative Layout', 'Portfolio Section', 'Visual Skills', 'Color Accents'],
-    colorSchemes: [
-      { id: 'coral', name: 'Coral Sunset', primary: '#f97316', secondary: '#64748b', accent: '#fb923c' },
-      { id: 'teal', name: 'Ocean Teal', primary: '#0d9488', secondary: '#64748b', accent: '#14b8a6' },
-      { id: 'pink', name: 'Creative Pink', primary: '#ec4899', secondary: '#64748b', accent: '#f472b6' }
-    ],
-    layout: {
-      columns: 2,
-      headerStyle: 'split',
-      sectionStyle: 'highlighted',
-      typography: 'modern'
-    },
-    customization: {
-      allowFontChange: true,
-      allowColorChange: true,
-      allowLayoutChange: true,
-      allowSectionReorder: true
-    }
+    id: 'digital-marketing',
+    name: 'Digital Marketing Pro',
+    category: 'Modern',
+    description: 'Optimized for digital marketing and social media professionals',
+    preview: '/api/placeholder/300/400',
+    features: ['Portfolio showcase', 'Metrics focus', 'Social links', 'Campaign highlights'],
+    atsScore: 90,
+    colorSchemes: ['blue', 'purple', 'green', 'orange']
   },
   {
-    id: 'minimal-clean',
-    name: 'Minimal Clean',
-    description: 'Ultra-clean, minimalist design focusing on content',
-    category: 'minimal',
-    preview: '/templates/minimal-clean-preview.png',
-    isPremium: false,
-    features: ['Minimal Design', 'Typography Focus', 'White Space', 'Simple Layout'],
-    colorSchemes: [
-      { id: 'black', name: 'Classic Black', primary: '#000000', secondary: '#64748b', accent: '#374151' },
-      { id: 'gray', name: 'Neutral Gray', primary: '#4b5563', secondary: '#9ca3af', accent: '#6b7280' },
-      { id: 'blue-minimal', name: 'Minimal Blue', primary: '#1e40af', secondary: '#64748b', accent: '#3b82f6' }
-    ],
-    layout: {
-      columns: 1,
-      headerStyle: 'left',
-      sectionStyle: 'minimal',
-      typography: 'condensed'
-    },
-    customization: {
-      allowFontChange: false,
-      allowColorChange: true,
-      allowLayoutChange: false,
-      allowSectionReorder: true
-    }
+    id: 'data-science',
+    name: 'Data Science Expert',
+    category: 'Technical',
+    description: 'Technical layout perfect for data scientists and analysts',
+    preview: '/api/placeholder/300/400',
+    features: ['Technical skills', 'Project showcase', 'GitHub integration', 'Clean layout'],
+    atsScore: 92,
+    colorSchemes: ['blue', 'gray', 'green', 'purple']
+  },
+
+  // Traditional Templates
+  {
+    id: 'classic-professional',
+    name: 'Classic Professional',
+    category: 'Traditional',
+    description: 'Timeless design suitable for all industries',
+    preview: '/api/placeholder/300/400',
+    features: ['ATS-optimized', 'Single column', 'Traditional layout', 'Universal format'],
+    atsScore: 98,
+    isRecommended: true,
+    colorSchemes: ['black', 'blue', 'gray', 'green']
   },
   {
-    id: 'academic-research',
-    name: 'Academic Research',
-    description: 'Scholarly template for academic and research positions',
-    category: 'academic',
-    preview: '/templates/academic-research-preview.png',
-    isPremium: true,
-    features: ['Publications Section', 'Research Focus', 'Academic Format', 'References'],
-    colorSchemes: [
-      { id: 'academic-blue', name: 'Academic Blue', primary: '#1e40af', secondary: '#64748b', accent: '#2563eb' },
-      { id: 'forest', name: 'Forest Green', primary: '#166534', secondary: '#64748b', accent: '#16a34a' },
-      { id: 'maroon', name: 'Academic Maroon', primary: '#7f1d1d', secondary: '#64748b', accent: '#b91c1c' }
-    ],
-    layout: {
-      columns: 1,
-      headerStyle: 'centered',
-      sectionStyle: 'bordered',
-      typography: 'classic'
-    },
-    customization: {
-      allowFontChange: true,
-      allowColorChange: true,
-      allowLayoutChange: false,
-      allowSectionReorder: true
-    }
+    id: 'banking-finance',
+    name: 'Banking & Finance',
+    category: 'Traditional',
+    description: 'Conservative design for banking and financial services',
+    preview: '/api/placeholder/300/400',
+    features: ['Conservative style', 'Achievement focus', 'Corporate design', 'Traditional formatting'],
+    atsScore: 96,
+    colorSchemes: ['navy', 'gray', 'black', 'blue']
   },
   {
-    id: 'startup-dynamic',
-    name: 'Startup Dynamic',
-    description: 'Energetic template for startup and entrepreneurial roles',
-    category: 'modern',
-    preview: '/templates/startup-dynamic-preview.png',
-    isPremium: false,
-    features: ['Dynamic Layout', 'Startup Focus', 'Skills Emphasis', 'Growth Metrics'],
-    colorSchemes: [
-      { id: 'startup-orange', name: 'Startup Orange', primary: '#ea580c', secondary: '#64748b', accent: '#f97316' },
-      { id: 'innovation', name: 'Innovation Blue', primary: '#0284c7', secondary: '#64748b', accent: '#0ea5e9' },
-      { id: 'energy', name: 'Energy Red', primary: '#dc2626', secondary: '#64748b', accent: '#ef4444' }
-    ],
-    layout: {
-      columns: 2,
-      headerStyle: 'split',
-      sectionStyle: 'boxed',
-      typography: 'modern'
-    },
-    customization: {
-      allowFontChange: true,
-      allowColorChange: true,
-      allowLayoutChange: true,
-      allowSectionReorder: true
-    }
+    id: 'legal-professional',
+    name: 'Legal Professional',
+    category: 'Traditional',
+    description: 'Formal layout for legal and law professionals',
+    preview: '/api/placeholder/300/400',
+    features: ['Formal design', 'Education focus', 'Bar admissions', 'Case experience'],
+    atsScore: 94,
+    colorSchemes: ['black', 'navy', 'gray', 'brown']
+  },
+  {
+    id: 'healthcare-medical',
+    name: 'Healthcare Medical',
+    category: 'Traditional',
+    description: 'Professional design for healthcare and medical professionals',
+    preview: '/api/placeholder/300/400',
+    features: ['Medical format', 'Certification focus', 'Clinical experience', 'Clean design'],
+    atsScore: 93,
+    colorSchemes: ['blue', 'green', 'gray', 'teal']
+  },
+
+  // Creative Templates
+  {
+    id: 'graphic-designer',
+    name: 'Graphic Designer',
+    category: 'Creative',
+    description: 'Visual portfolio-focused design for graphic designers',
+    preview: '/api/placeholder/300/400',
+    features: ['Portfolio showcase', 'Visual elements', 'Creative layout', 'Color emphasis'],
+    atsScore: 78,
+    colorSchemes: ['rainbow', 'purple', 'orange', 'pink']
+  },
+  {
+    id: 'marketing-creative',
+    name: 'Marketing Creative',
+    category: 'Creative',
+    description: 'Eye-catching design for marketing and advertising professionals',
+    preview: '/api/placeholder/300/400',
+    features: ['Campaign highlights', 'Visual metrics', 'Brand focus', 'Creative elements'],
+    atsScore: 82,
+    colorSchemes: ['red', 'orange', 'purple', 'blue']
+  },
+  {
+    id: 'media-arts',
+    name: 'Media & Arts',
+    category: 'Creative',
+    description: 'Artistic layout for media, arts, and entertainment professionals',
+    preview: '/api/placeholder/300/400',
+    features: ['Artistic design', 'Portfolio links', 'Creative projects', 'Media focus'],
+    atsScore: 75,
+    colorSchemes: ['purple', 'pink', 'orange', 'teal']
+  },
+
+  // Industry-Specific Templates
+  {
+    id: 'engineering',
+    name: 'Engineering Professional',
+    category: 'Engineering',
+    description: 'Technical layout for engineers and technical professionals',
+    preview: '/api/placeholder/300/400',
+    features: ['Technical focus', 'Project details', 'Certification emphasis', 'Clean structure'],
+    atsScore: 91,
+    colorSchemes: ['blue', 'gray', 'green', 'navy']
+  },
+  {
+    id: 'sales-executive',
+    name: 'Sales Executive',
+    category: 'Business',
+    description: 'Results-driven design for sales and business development',
+    preview: '/api/placeholder/300/400',
+    features: ['Metrics focus', 'Achievement emphasis', 'Client testimonials', 'Results-driven'],
+    atsScore: 89,
+    colorSchemes: ['blue', 'green', 'orange', 'red']
+  },
+  {
+    id: 'hr-professional',
+    name: 'HR Professional',
+    category: 'Business',
+    description: 'People-focused design for HR and talent acquisition roles',
+    preview: '/api/placeholder/300/400',
+    features: ['People focus', 'Soft skills emphasis', 'Culture fit', 'Relationship building'],
+    atsScore: 87,
+    colorSchemes: ['blue', 'green', 'purple', 'teal']
+  },
+  {
+    id: 'education-teacher',
+    name: 'Education Professional',
+    category: 'Education',
+    description: 'Academic-focused design for teachers and educators',
+    preview: '/api/placeholder/300/400',
+    features: ['Education focus', 'Certification display', 'Teaching experience', 'Academic achievements'],
+    atsScore: 88,
+    colorSchemes: ['blue', 'green', 'purple', 'orange']
+  },
+
+  // Experience-Level Templates
+  {
+    id: 'entry-level',
+    name: 'Entry Level Professional',
+    category: 'Entry Level',
+    description: 'Perfect for new graduates and entry-level professionals',
+    preview: '/api/placeholder/300/400',
+    features: ['Education highlight', 'Internship focus', 'Potential-based', 'Skill emphasis'],
+    atsScore: 86,
+    isRecommended: true,
+    colorSchemes: ['blue', 'green', 'purple', 'orange']
+  },
+  {
+    id: 'mid-career',
+    name: 'Mid-Career Professional',
+    category: 'Mid Level',
+    description: 'Balanced design for experienced professionals',
+    preview: '/api/placeholder/300/400',
+    features: ['Experience focus', 'Achievement emphasis', 'Skill development', 'Career progression'],
+    atsScore: 90,
+    colorSchemes: ['blue', 'gray', 'green', 'navy']
+  },
+  {
+    id: 'executive-leader',
+    name: 'Executive Leader',
+    category: 'Executive',
+    description: 'Premium design for C-level and senior executives',
+    preview: '/api/placeholder/300/400',
+    features: ['Leadership focus', 'Board experience', 'Strategic achievements', 'Executive summary'],
+    atsScore: 93,
+    colorSchemes: ['black', 'navy', 'gray', 'blue']
+  },
+  {
+    id: 'career-change',
+    name: 'Career Transition',
+    category: 'Career Change',
+    description: 'Designed for professionals changing careers or industries',
+    preview: '/api/placeholder/300/400',
+    features: ['Transferable skills', 'Career narrative', 'Skill translation', 'Adaptability focus'],
+    atsScore: 84,
+    colorSchemes: ['blue', 'green', 'purple', 'teal']
+  },
+  {
+    id: 'freelancer-consultant',
+    name: 'Freelancer & Consultant',
+    category: 'Freelance',
+    description: 'Portfolio-style design for freelancers and consultants',
+    preview: '/api/placeholder/300/400',
+    features: ['Client testimonials', 'Rate display', 'Portfolio showcase', 'Service highlights'],
+    atsScore: 80,
+    colorSchemes: ['blue', 'purple', 'orange', 'green']
   }
 ];
 
-export const getTemplatesByCategory = (category: ResumeTemplate['category']) => {
+export const getTemplatesByCategory = (category?: string) => {
+  if (!category) return resumeTemplates;
   return resumeTemplates.filter(template => template.category === category);
+};
+
+export const getRecommendedTemplates = () => {
+  return resumeTemplates.filter(template => template.isRecommended);
 };
 
 export const getTemplateById = (id: string) => {
   return resumeTemplates.find(template => template.id === id);
-};
-
-export const getFreeTemplates = () => {
-  return resumeTemplates.filter(template => !template.isPremium);
-};
-
-export const getPremiumTemplates = () => {
-  return resumeTemplates.filter(template => template.isPremium);
 };
