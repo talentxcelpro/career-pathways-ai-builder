@@ -94,6 +94,7 @@ export interface EnhancedParsingResult {
       top_skills_matched: string[];
       confidence_score: number;
       completeness_percentage: number;
+      extraction_method?: string;
     };
   };
   error?: string;
@@ -347,6 +348,8 @@ export class EnhancedResumeExtractor {
       const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
       
       let fullText = '';
+      let hasImagePages = false;
+      
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
@@ -354,7 +357,25 @@ export class EnhancedResumeExtractor {
           .filter((item): item is any => 'str' in item)
           .map((item: any) => item.str)
           .join(' ');
-        fullText += pageText + '\n';
+        
+        // Check if page has minimal text (likely image-based)
+        if (pageText.trim().length < 50) {
+          console.log(`📷 Page ${i} appears to be image-based, attempting OCR...`);
+          hasImagePages = true;
+          try {
+            const ocrText = await this.extractTextWithOCR(page);
+            fullText += ocrText + '\n';
+          } catch (ocrError) {
+            console.warn(`⚠️ OCR failed for page ${i}:`, ocrError);
+            fullText += pageText + '\n'; // Fallback to extracted text
+          }
+        } else {
+          fullText += pageText + '\n';
+        }
+      }
+      
+      if (hasImagePages) {
+        console.log('✅ PDF processing completed with OCR assistance');
       }
       
       return fullText;
@@ -378,6 +399,211 @@ export class EnhancedResumeExtractor {
 
   private static async extractFromText(file: File): Promise<string> {
     return await file.text();
+  }
+
+  // Phase 4: OCR Integration for image-based PDFs
+  private static async extractTextWithOCR(page: any): Promise<string> {
+    try {
+      // Import Tesseract.js dynamically
+      const Tesseract = (await import('tesseract.js')).default;
+      
+      // Render page to canvas
+      const viewport = page.getViewport({ scale: 2.0 }); // Higher scale for better OCR
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d')!;
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      
+      await page.render({
+        canvasContext: context,
+        viewport: viewport,
+      }).promise;
+      
+      // Convert canvas to blob for Tesseract
+      const imageData = canvas.toDataURL('image/png');
+      
+      console.log('🔍 Running OCR on page...');
+      
+      // Run OCR with optimized settings for documents
+      const { data: { text } } = await Tesseract.recognize(imageData, 'eng', {
+        logger: (m: any) => {
+          if (m.status === 'recognizing text') {
+            console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+          }
+        }
+      });
+      
+      console.log('✅ OCR completed successfully');
+      return text;
+    } catch (error) {
+      console.error('❌ OCR failed:', error);
+      throw new Error('OCR text extraction failed');
+    }
+  }
+
+  // Phase 4: Enhanced error handling with progressive enhancement
+  static async parseResumeWithFallbacks(file: File, onProgress?: (step: string, progress: number) => void): Promise<EnhancedParsingResult> {
+    const progressCallback = onProgress || (() => {});
+    
+    try {
+      progressCallback('Initializing parsing...', 0);
+      console.log('🚀 Starting enhanced resume parsing with fallbacks for:', file.name);
+      
+      // Step 1: Basic file validation
+      progressCallback('Validating file...', 10);
+      if (!this.validateFile(file)) {
+        throw new Error('Invalid file type or size');
+      }
+      
+      // Step 2: Text extraction with multiple attempts
+      progressCallback('Extracting text...', 20);
+      let extractedText = '';
+      let extractionMethod = '';
+      
+      try {
+        extractedText = await this.extractTextFromFile(file);
+        extractionMethod = 'standard';
+        progressCallback('Text extraction completed', 40);
+      } catch (extractionError) {
+        console.warn('⚠️ Standard extraction failed, trying OCR fallback...', extractionError);
+        progressCallback('Standard extraction failed, trying OCR...', 30);
+        
+        try {
+          extractedText = await this.extractTextWithOCRFallback(file);
+          extractionMethod = 'ocr';
+          progressCallback('OCR extraction completed', 40);
+        } catch (ocrError) {
+          console.error('❌ All extraction methods failed:', ocrError);
+          throw new Error('Could not extract text from file using any method');
+        }
+      }
+
+      if (!extractedText || extractedText.trim().length < 20) {
+        throw new Error('Insufficient text content extracted from file');
+      }
+
+      // Step 3: Text preprocessing
+      progressCallback('Preprocessing text...', 50);
+      const processedText = this.preprocessText(extractedText);
+
+      // Step 4: AI parsing with fallbacks
+      progressCallback('AI parsing...', 60);
+      let result: EnhancedParsingResult;
+      
+      try {
+        result = await this.callAIParser(processedText, file.name);
+        if (result.success && result.data) {
+          progressCallback('AI parsing successful', 90);
+          result.data.key_metrics.extraction_method = extractionMethod;
+          return result;
+        }
+      } catch (aiError) {
+        console.warn('⚠️ AI parsing failed, using rule-based fallback:', aiError);
+      }
+
+      // Step 5: Rule-based fallback
+      progressCallback('Using rule-based parsing...', 70);
+      const fallbackResult = await this.fallbackParsing(processedText);
+      const fieldConfidence = this.calculateFieldConfidence(fallbackResult);
+      const atsMetrics = this.calculateATSCompatibility(fallbackResult, extractedText);
+      const qualityMetrics = this.calculateContentQuality(fallbackResult, extractedText);
+      
+      progressCallback('Parsing completed', 100);
+      
+      return {
+        success: true,
+        data: {
+          structured_resume: fallbackResult,
+          raw_text: extractedText,
+          field_confidence: fieldConfidence,
+          ats_compatibility: atsMetrics,
+          content_quality: qualityMetrics,
+          key_metrics: {
+            years_experience: this.calculateExperience(fallbackResult.work_experience),
+            top_skills_matched: this.getAllSkillsArray(fallbackResult.skills).slice(0, 5),
+            confidence_score: 60, // Lower confidence for fallback
+            completeness_percentage: this.calculateCompleteness(fallbackResult),
+            extraction_method: extractionMethod
+          }
+        }
+      };
+
+    } catch (error) {
+      console.error('❌ Enhanced parsing with fallbacks failed:', error);
+      progressCallback('Parsing failed', 0);
+      
+      return {
+        success: false,
+        error: this.getUserFriendlyError(error.message)
+      };
+    }
+  }
+
+  // Phase 4: File validation
+  private static validateFile(file: File): boolean {
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/msword',
+      'text/plain'
+    ];
+    
+    if (file.size > maxSize) {
+      throw new Error('File size exceeds 10MB limit');
+    }
+    
+    if (!allowedTypes.includes(file.type)) {
+      throw new Error('Unsupported file type. Please use PDF, DOCX, DOC, or TXT files.');
+    }
+    
+    return true;
+  }
+
+  // Phase 4: OCR fallback for completely image-based files
+  private static async extractTextWithOCRFallback(file: File): Promise<string> {
+    if (file.type.includes('pdf')) {
+      // For PDFs, extract as images and run OCR
+      const pdfjs = await import('pdfjs-dist');
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+      
+      let fullText = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const ocrText = await this.extractTextWithOCR(page);
+        fullText += ocrText + '\n';
+      }
+      
+      return fullText;
+    } else {
+      // For image files, run OCR directly
+      const Tesseract = (await import('tesseract.js')).default;
+      const { data: { text } } = await Tesseract.recognize(file, 'eng');
+      return text;
+    }
+  }
+
+  // Phase 4: User-friendly error messages
+  private static getUserFriendlyError(errorMessage: string): string {
+    const errorMap: { [key: string]: string } = {
+      'Insufficient text content': 'The file appears to be mostly images or has very little text. Please ensure your resume contains readable text.',
+      'Failed to extract text from PDF': 'Unable to read the PDF file. Please try converting it to a different format or ensure it\'s not password protected.',
+      'Failed to extract text from DOCX': 'Unable to read the Word document. Please try saving it in a different format.',
+      'Unsupported file type': 'Please upload a PDF, Word document (DOCX/DOC), or text file.',
+      'File size exceeds': 'The file is too large. Please compress it or use a smaller file (max 10MB).',
+      'OCR text extraction failed': 'Could not extract text from images in your resume. Please try a text-based resume format.',
+      'AI parsing failed': 'Our AI service is temporarily unavailable. We\'ve parsed your resume using our backup system.',
+      'Missing OpenAI API key': 'AI parsing is temporarily unavailable. Your resume has been processed using our standard parser.'
+    };
+    
+    for (const [key, message] of Object.entries(errorMap)) {
+      if (errorMessage.toLowerCase().includes(key.toLowerCase())) {
+        return message;
+      }
+    }
+    
+    return 'An unexpected error occurred while processing your resume. Please try again or contact support if the issue persists.';
   }
 
   private static async fallbackParsing(text: string): Promise<ParsedResumeData> {

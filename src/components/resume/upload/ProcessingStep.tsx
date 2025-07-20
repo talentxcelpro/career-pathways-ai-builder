@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { ProcessingSteps } from '@/components/resume/checker/ProcessingSteps';
 import { EnhancedResumeExtractor, EnhancedParsingResult } from '@/utils/enhancedResumeExtraction';
+import { ParsingFeedback } from './ParsingFeedback';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface ProcessingStepProps {
   onProcessingComplete: (data: any) => void;
@@ -16,9 +19,14 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [processingComplete, setProcessingComplete] = useState(false);
+  const [processingError, setProcessingError] = useState<string | null>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [parsedData, setParsedData] = useState<any>(null);
+  const [currentProgress, setCurrentProgress] = useState('');
 
   const processingSteps = [
-    'Uploading file...',
+    'Validating file...',
+    'Extracting text content...',
     'Advanced text extraction...',
     'AI-powered parsing with NLP...',
     'Structure analysis & validation...',
@@ -37,39 +45,22 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
     if (!uploadedFile) return;
 
     try {
-      // Step 1: File upload (already done)
-      setCurrentStep(0);
-      await delay(500);
-
-      // Step 2: Text extraction
-      setCurrentStep(1);
-      await delay(1000);
-
-      // Step 3: AI-powered parsing
-      setCurrentStep(2);
+      setProcessingError(null);
       console.log('🚀 Starting enhanced resume parsing...');
       
-      const result: EnhancedParsingResult = await EnhancedResumeExtractor.parseResume(uploadedFile);
+      // Use the new enhanced parser with progress tracking
+      const result: EnhancedParsingResult = await EnhancedResumeExtractor.parseResumeWithFallbacks(
+        uploadedFile,
+        (step: string, progress: number) => {
+          setCurrentProgress(step);
+          const stepIndex = Math.floor((progress / 100) * (processingSteps.length - 1));
+          setCurrentStep(stepIndex);
+        }
+      );
       
       if (!result.success) {
         throw new Error(result.error || 'Failed to parse resume');
       }
-
-      // Step 4: Structure analysis
-      setCurrentStep(3);
-      await delay(800);
-
-      // Step 5: ATS optimization
-      setCurrentStep(4);
-      await delay(700);
-
-      // Step 6: Enhancement suggestions
-      setCurrentStep(5);
-      await delay(600);
-
-      // Step 7: Finalize
-      setCurrentStep(6);
-      await delay(500);
 
       console.log('✅ Enhanced parsing completed successfully');
       
@@ -95,7 +86,7 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
             endDate: exp.duration.split('-')[1]?.trim() || 'Present',
             current: exp.duration.toLowerCase().includes('present') || exp.duration.toLowerCase().includes('current'),
             description: exp.description,
-            achievements: []
+            achievements: exp.achievements || []
           })),
           education: result.data!.structured_resume.education.map((edu, index) => ({
             id: `edu-${index}`,
@@ -117,10 +108,10 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
           languages: result.data!.structured_resume.languages
         },
         enhancementScore: {
-          atsCompatibility: result.data!.key_metrics.confidence_score,
-          readabilityScore: 85,
-          keywordDensity: 78,
-          formatConsistency: 92
+          atsCompatibility: result.data!.ats_compatibility?.score || 0,
+          readabilityScore: result.data!.content_quality?.overall_score || 0,
+          keywordDensity: result.data!.ats_compatibility?.keyword_density || 0,
+          formatConsistency: result.data!.ats_compatibility?.format_score || 0
         },
         recommendations: [
           'Add more quantified achievements to work experience',
@@ -138,18 +129,24 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
         processingMetrics: {
           confidenceScore: result.data!.key_metrics.confidence_score,
           processingTime: Date.now(),
-          extractionMethod: 'ai-enhanced',
-          yearsExperience: result.data!.key_metrics.years_experience
-        }
+          extractionMethod: result.data!.key_metrics.extraction_method || 'ai-enhanced',
+          yearsExperience: result.data!.key_metrics.years_experience,
+          completenessPercentage: result.data!.key_metrics.completeness_percentage
+        },
+        fieldConfidence: result.data!.field_confidence,
+        atsCompatibility: result.data!.ats_compatibility,
+        contentQuality: result.data!.content_quality
       };
 
+      setParsedData(transformedData);
       setProcessingComplete(true);
       onProcessingComplete(transformedData);
 
     } catch (error) {
       console.error('❌ Resume processing failed:', error);
+      setProcessingError(error.message);
       
-      // Create fallback data structure
+      // Create fallback data structure for graceful degradation
       const fallbackData = {
         enhancedContent: {
           personalInfo: {
@@ -178,42 +175,133 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
         recommendations: [
           'Unable to parse resume automatically',
           'Please manually enter your information',
-          'Consider using a different file format'
+          'Consider using a different file format or ensure the file is text-based'
         ],
-        error: error.message
+        error: error.message,
+        processingMetrics: {
+          confidenceScore: 0,
+          extractionMethod: 'failed'
+        }
       };
 
+      setParsedData(fallbackData);
       onProcessingComplete(fallbackData);
     }
   };
 
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  if (processingComplete) {
+  // Show feedback form after successful parsing
+  if (processingComplete && !processingError && showFeedback && parsedData) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center space-y-4">
+          <div className="mx-auto w-16 h-16 bg-green-50 rounded-full flex items-center justify-center">
+            <CheckCircle2 className="h-8 w-8 text-green-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Resume Processed Successfully!
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Your resume has been parsed using advanced AI. Help us improve by providing feedback.
+            </p>
+          </div>
+        </div>
+        
+        <ParsingFeedback 
+          resumeData={parsedData}
+          onFeedbackSubmitted={() => setShowFeedback(false)}
+        />
+
+        <div className="flex justify-center">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowFeedback(false)}
+          >
+            Skip Feedback
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show success state with option to provide feedback
+  if (processingComplete && !processingError) {
     return (
       <div className="text-center space-y-4">
         <div className="mx-auto w-16 h-16 bg-green-50 rounded-full flex items-center justify-center">
-          <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+          <CheckCircle2 className="h-8 w-8 text-green-600" />
         </div>
         <div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             Resume Processed Successfully!
           </h3>
-          <p className="text-gray-600">
+          <p className="text-gray-600 mb-4">
             Your resume has been parsed and enhanced using advanced AI techniques.
           </p>
+          
+          {parsedData?.processingMetrics?.extractionMethod === 'ocr' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <p className="text-sm text-blue-800">
+                📷 We used OCR technology to extract text from your image-based resume
+              </p>
+            </div>
+          )}
+          
+          <Button 
+            variant="outline" 
+            onClick={() => setShowFeedback(true)}
+            className="mt-2"
+          >
+            Provide Feedback
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state with retry option
+  if (processingError) {
+    return (
+      <div className="text-center space-y-4">
+        <div className="mx-auto w-16 h-16 bg-red-50 rounded-full flex items-center justify-center">
+          <AlertCircle className="h-8 w-8 text-red-600" />
+        </div>
+        <div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Processing Error
+          </h3>
+          <p className="text-gray-600 mb-4">
+            {processingError}
+          </p>
+          <Button 
+            onClick={() => {
+              setProcessingError(null);
+              setCurrentStep(0);
+              processResume();
+            }}
+            variant="outline"
+          >
+            Try Again
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <ProcessingSteps
-      steps={processingSteps}
-      currentStep={currentStep}
-      fileName={uploadedFile?.name || 'resume'}
-    />
+    <div className="space-y-4">
+      <ProcessingSteps
+        steps={processingSteps}
+        currentStep={currentStep}
+        fileName={uploadedFile?.name || 'resume'}
+      />
+      {currentProgress && (
+        <div className="text-center">
+          <p className="text-sm text-gray-600">{currentProgress}</p>
+        </div>
+      )}
+    </div>
   );
 };
