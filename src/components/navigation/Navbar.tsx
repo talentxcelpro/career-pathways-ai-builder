@@ -32,9 +32,7 @@ import {
   Shield,
   ChevronDown,
   CheckCircle,
-  Clock,
-  Bot,
-  MessageCircle
+  Clock
 } from "lucide-react";
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { useEmployerAccess } from '@/hooks/useEmployerAccess';

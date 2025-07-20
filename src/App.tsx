@@ -12,7 +12,6 @@ import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import { AIProvider } from "./contexts/AIContext";
-import { FloatingChatbot } from "./components/ai-agent/FloatingChatbot";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -110,7 +109,6 @@ const App = () => {
                     </Routes>
                   </main>
                   <Footer />
-                  <FloatingChatbot />
                 </div>
               </AIProvider>
             </AuthProvider>

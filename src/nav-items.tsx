@@ -17,7 +17,6 @@ import { resumeRoutes } from "./navigation/resumeRoutes";
 import { adminRoutes } from "./navigation/adminRoutes";
 import { enterpriseRoutes } from "./navigation/enterpriseRoutes";
 import { proRoutes } from "./navigation/proRoutes";
-import { aiAgentRoutes } from "./navigation/aiAgentRoutes";
 
 export const navItems = [
   ...coreRoutes,
@@ -34,7 +33,6 @@ export const navItems = [
   ...employerRoutes,
   ...marketplaceRoutes,
   ...proRoutes,
-  ...aiAgentRoutes,
   
   ...seoRoutes,
   ...adminRoutes,
