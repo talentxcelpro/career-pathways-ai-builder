@@ -53,6 +53,7 @@ export const AgentChatInterface: React.FC<AgentChatInterfaceProps> = ({
 
   const getModuleColor = (moduleName: string) => {
     const colors: Record<string, string> = {
+      general: 'from-primary to-accent',
       network: 'from-blue-500 to-cyan-500',
       jobs: 'from-emerald-500 to-green-500',
       employer: 'from-purple-500 to-violet-500',
@@ -62,7 +63,7 @@ export const AgentChatInterface: React.FC<AgentChatInterfaceProps> = ({
       learning: 'from-indigo-500 to-blue-500',
       'career-map': 'from-amber-500 to-yellow-500'
     };
-    return colors[moduleName] || 'from-gray-500 to-gray-600';
+    return colors[moduleName] || 'from-primary to-accent';
   };
 
   const renderMessage = (msg: AIAgentMessage, index: number) => {

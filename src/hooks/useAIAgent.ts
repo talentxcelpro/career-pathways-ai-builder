@@ -194,28 +194,64 @@ export const useAIAgent = () => {
 
       if (updateError) throw updateError;
 
-      // Use existing AI service to get response
-      try {
-        // Add to AI context for cross-module intelligence
-        addMessage({
-          content,
-          type: 'user',
-          module: moduleName
-        });
+        // Use existing AI service to get response
+        try {
+          // Add to AI context for cross-module intelligence
+          addMessage({
+            content,
+            type: 'user',
+            module: moduleName
+          });
 
-        // Simulate AI response for now - in production, this would call the AI service
-        const aiResponse: AIAgentMessage = {
-          id: crypto.randomUUID(),
-          type: 'assistant',
-          content: `Based on your ${moduleName} query: "${content}", I'll help you with intelligent insights and recommendations. This is a simulated response - the actual AI integration will provide detailed, contextual assistance for your career needs.`,
-          timestamp: new Date().toISOString(),
-          module_name: moduleName,
-          metadata: {
-            model: 'talentxcel-agent',
-            confidence: 0.95,
-            processing_time: Math.random() * 1000 + 500
+          // Call AI Gateway for intelligent response
+          const { data: { session } } = await supabase.auth.getSession();
+          const aiServiceResponse = await fetch('/functions/v1/ai-gateway', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session?.access_token}`
+            },
+            body: JSON.stringify({
+              toolSlug: 'career-advisor',
+              inputData: {
+                query: content,
+                module: moduleName,
+                context: conversation.context_data,
+                conversationHistory: updatedMessages.slice(-5) // Last 5 messages for context
+              },
+              requestMetadata: { category: moduleName }
+            })
+          });
+
+          let aiResponseContent = '';
+          let aiMetadata = {};
+
+          if (aiServiceResponse.ok) {
+            const result = await aiServiceResponse.json();
+            if (result.success && result.data) {
+              aiResponseContent = result.data.content || result.data.response || 'I understand your question. Let me help you with that.';
+              aiMetadata = {
+                model: result.data.model || 'gpt-4.1-2025-04-14',
+                confidence: result.data.confidence || 0.95,
+                processing_time: result.responseTime || 1000,
+                cost: result.cost || 0,
+                tokens_used: result.tokensUsed || 0
+              };
+            } else {
+              throw new Error(result.error || 'AI service returned no data');
+            }
+          } else {
+            throw new Error('AI service unavailable');
           }
-        };
+
+          const aiResponse: AIAgentMessage = {
+            id: crypto.randomUUID(),
+            type: 'assistant',
+            content: aiResponseContent,
+            timestamp: new Date().toISOString(),
+            module_name: moduleName,
+            metadata: aiMetadata
+          };
 
         const finalMessages = [...updatedMessages, aiResponse];
 

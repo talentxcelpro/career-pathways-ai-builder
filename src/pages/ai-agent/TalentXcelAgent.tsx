@@ -11,6 +11,15 @@ import { useAIAgent } from '@/hooks/useAIAgent';
 
 const AGENT_MODULES = [
   {
+    id: 'general',
+    name: 'General Chat',
+    icon: Bot,
+    description: 'General career guidance and platform-wide assistance',
+    color: 'from-primary to-accent',
+    promptCount: 100,
+    features: ['General advice', 'Platform help', 'Career guidance']
+  },
+  {
     id: 'network',
     name: 'Network',
     icon: Network,
@@ -172,9 +181,16 @@ export const TalentXcelAgent = () => {
               <Button 
                 variant="outline" 
                 size="lg"
-                onClick={() => setShowChat(true)}
+                onClick={() => {
+                  setSelectedModule('general');
+                  setShowChat(true);
+                  if (!currentConversation) {
+                    createConversation('general');
+                  }
+                }}
               >
-                Start Conversation
+                <Bot className="w-5 h-5 mr-2" />
+                Start Quick Chat
               </Button>
             </div>
           </motion.div>

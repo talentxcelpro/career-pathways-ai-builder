@@ -117,12 +117,48 @@ Please optimize this resume for ATS compatibility.`
         break
 
       case 'career-advisor':
-        prompt = `${toolConfig.prompt_template}
+        // Handle TalentXcel Agent chat requests
+        if (inputData.query && inputData.module) {
+          const modulePrompts: Record<string, string> = {
+            'network': 'You are a professional networking AI assistant. Help with building connections, LinkedIn optimization, networking events, and personal branding.',
+            'jobs': 'You are a job search AI assistant. Help with job search strategy, interview prep, resume tailoring, and career transitions.',
+            'employer': 'You are a recruitment AI assistant. Help with candidate evaluation, hiring strategy, and talent acquisition.',
+            'companies': 'You are a company research AI assistant. Help with culture analysis, market insights, and competitive intelligence.',
+            'resume-builder': 'You are a resume optimization AI assistant. Help with content enhancement, ATS optimization, and formatting.',
+            'tools': 'You are a career tools AI assistant. Help with assessments, skill analysis, and professional development.',
+            'learning': 'You are a learning development AI assistant. Help with learning paths, skill prioritization, and certifications.',
+            'career-map': 'You are a career planning AI assistant. Help with roadmaps, goal setting, and strategic planning.'
+          };
+          
+          systemMessage = modulePrompts[inputData.module] || systemMessage;
+          
+          let contextPrompt = '';
+          if (inputData.conversationHistory && inputData.conversationHistory.length > 0) {
+            contextPrompt = '\n\nConversation History:\n' + 
+              inputData.conversationHistory
+                .slice(-3)
+                .map((msg: any) => `${msg.type === 'user' ? 'User' : 'Assistant'}: ${msg.content}`)
+                .join('\n');
+          }
+          
+          prompt = `User is asking about ${inputData.module} module: "${inputData.query}"
+
+Provide helpful, actionable advice that's:
+- Specific and practical
+- Professional and encouraging  
+- Focused on career growth
+- Tailored to their ${inputData.module} needs
+
+Keep responses concise but comprehensive (2-4 paragraphs max).${contextPrompt}`;
+        } else {
+          // Legacy career advisor functionality
+          prompt = `${toolConfig.prompt_template}
 
 User Profile: ${JSON.stringify(inputData.userProfile)}
 ${inputData.targetRole ? `Target Role: ${inputData.targetRole}` : ''}
 
-Please provide career guidance and recommendations.`
+Please provide career guidance and recommendations.`;
+        }
         break
 
       case 'salary-analyzer':
