@@ -416,72 +416,146 @@ export default function ServicesMarketplace() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-white to-muted/20">
-      {/* Immersive Hero Section */}
-      <div className="relative overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] via-accent/[0.03] to-primary/[0.02]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,hsl(var(--primary)/0.1),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--accent)/0.1),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_40%,hsl(var(--primary)/0.05),transparent_50%)]" />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50/30 to-white">
+      {/* Upwork-Inspired Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        {/* Background Image Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-800/90 to-slate-900/95" />
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
         
-        <div className="relative container mx-auto px-4 pt-24 pb-20">
-          <div className="text-center max-w-5xl mx-auto">
+        <div className="relative container mx-auto px-6 pt-20 pb-28">
+          <div className="text-center max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.25, 0.25, 0, 1] }}
             >
-              {/* Premium Badge */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 mb-8"
-              >
-                <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-foreground/80">Professional Services Excellence</span>
-              </motion.div>
-              
-              <h1 className="text-6xl lg:text-7xl font-bold tracking-tight mb-8 bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent leading-tight">
-                Elite Talent
-                <span className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                  Marketplace
-                </span>
+              {/* Main Headline - Upwork Style */}
+              <h1 className="text-5xl lg:text-7xl font-bold tracking-tight mb-8 text-white leading-[0.9]">
+                How work should
+                <span className="block text-green-400">work</span>
               </h1>
               
-              <p className="text-xl lg:text-2xl text-muted-foreground mb-12 leading-relaxed max-w-3xl mx-auto font-light">
-                Connect with world-class professionals. Premium services. 
-                <span className="text-foreground/80 font-medium"> Exceptional results.</span>
+              <p className="text-xl lg:text-2xl text-gray-300 mb-12 leading-relaxed max-w-4xl mx-auto">
+                Forget the old rules. You can have the best people. Right now. Right here.
               </p>
               
-              {/* Enhanced CTAs */}
-              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                <Button 
-                  asChild
-                  size="lg"
-                  className="group relative overflow-hidden bg-gradient-to-r from-primary via-primary/95 to-primary hover:from-primary/90 hover:via-primary/85 hover:to-primary/90 text-white px-10 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-primary/25"
-                >
-                  <Link to="/marketplace/post-service" className="flex items-center gap-3 relative z-10">
-                    <div className="p-1 rounded-full bg-white/20">
-                      <Plus className="h-5 w-5" />
+              {/* Search Interface - Primary CTA */}
+              <div className="max-w-2xl mx-auto mb-12">
+                <div className="bg-white rounded-2xl p-2 shadow-2xl">
+                  <div className="flex">
+                    <div className="flex-1 relative">
+                      <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                      <Input
+                        placeholder="Search by role, skills, or keywords"
+                        className="pl-12 h-14 border-0 text-lg placeholder:text-gray-500 focus:ring-0 focus:outline-none bg-transparent"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
                     </div>
-                    <span>Join as Expert</span>
-                    <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-                
-                <div className="text-center sm:text-left">
-                  <p className="text-sm text-muted-foreground font-medium">
-                    🚀 <span className="text-primary font-semibold">2,000+</span> verified experts
-                  </p>
-                  <p className="text-xs text-muted-foreground/80">
-                    Earning average <span className="text-foreground font-semibold">$5,000/month</span>
-                  </p>
+                    <Button 
+                      size="lg"
+                      className="bg-green-600 hover:bg-green-700 text-white px-8 h-14 rounded-xl font-semibold"
+                    >
+                      Search
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Popular Searches */}
+              <div className="mb-16">
+                <p className="text-gray-400 mb-4 text-sm font-medium">POPULAR SEARCHES</p>
+                <div className="flex flex-wrap gap-3 justify-center">
+                  {['Design my mobile app', 'Hire a virtual assistant', 'AI/ML consultant', 'Build my website', 'Marketing strategy'].map((search, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="sm"
+                      className="border-gray-600 text-gray-300 hover:bg-white/10 hover:border-gray-400 rounded-full px-4 py-2"
+                      onClick={() => setSearchTerm(search)}
+                    >
+                      {search}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Trusted By Logos */}
+              <div className="border-t border-gray-700 pt-12">
+                <p className="text-gray-500 text-sm mb-8 tracking-wide">TRUSTED BY</p>
+                <div className="flex items-center justify-center gap-12 opacity-60">
+                  <div className="text-gray-400 font-bold text-lg">Microsoft</div>
+                  <div className="text-gray-400 font-bold text-lg">Airbnb</div>
+                  <div className="text-gray-400 font-bold text-lg">Bissell</div>
+                  <div className="text-gray-400 font-bold text-lg">GE</div>
                 </div>
               </div>
             </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Categories Section - Upwork Style */}
+      <div className="bg-white py-20">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Explore millions of pros
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Find the perfect professional for any project. From quick tasks to complex challenges.
+            </p>
+          </div>
+          
+          {/* Category Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-16">
+            {categories.slice(1).map((category, index) => (
+              <motion.button
+                key={category.key}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                onClick={() => setSelectedCategory(category.key)}
+                className="group p-6 bg-white rounded-2xl border border-gray-200 hover:border-green-200 hover:shadow-lg transition-all duration-300 text-center"
+              >
+                <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-xl flex items-center justify-center group-hover:bg-green-100 transition-colors">
+                  <div className="text-gray-600 group-hover:text-green-600 transition-colors">
+                    {category.icon}
+                  </div>
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">{category.label}</h3>
+                <div className="flex items-center justify-center gap-1 text-sm text-gray-500">
+                  <span>100+ skills</span>
+                  <ChevronRight className="h-3 w-3" />
+                </div>
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Skills Search */}
+          <div className="max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+              Find freelancers by relevant skills
+            </h3>
+            <div className="relative">
+              <Input
+                placeholder="Search custom skills"
+                className="h-14 pl-6 pr-32 text-lg border-gray-300 rounded-xl focus:border-green-500 focus:ring-green-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Button 
+                className="absolute right-2 top-2 bg-green-600 hover:bg-green-700 h-10 px-6 rounded-lg font-semibold"
+              >
+                Continue
+              </Button>
+            </div>
           </div>
         </div>
       </div>
