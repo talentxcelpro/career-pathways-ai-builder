@@ -1391,8 +1391,42 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                         </div>
                       </div>
                     )}
+                    {/* Footer Branding */}
+                    <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+                      <div className="text-sm text-gray-500">
+                        <div className="font-semibold text-blue-600 mb-1">Created with TalentXcel Resume Builder</div>
+                        <div>AI-Enhanced Professional Resume • Visit talentxcel.net</div>
+                      </div>
+                    </div>
                   </div>
                 </ScrollArea>
+                
+                {/* PDF Download Button */}
+                <div className="p-6 border-t border-gray-100 bg-gray-50/50">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-600">
+                      <div className="font-medium text-gray-900">Powered by TalentXcel</div>
+                      <div>Professional Resume Builder with AI Enhancement</div>
+                    </div>
+                    <Button 
+                      onClick={downloadPDF}
+                      disabled={isGeneratingPDF}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3 text-white font-medium"
+                    >
+                      {isGeneratingPDF ? (
+                        <>
+                          <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+                          Generating PDF...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-5 w-5 mr-2" />
+                          Download PDF
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center justify-between text-lg">
@@ -1480,10 +1514,46 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                   Generate Cover Letter
                 </Button>
                 
-                <div className="grid grid-cols-2 gap-2">
-                  <Button 
-                    variant="outline"
-                    onClick={downloadPDF}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => window.open('https://talentxcel.net/', '_blank')}
+                  className="w-full text-xs"
+                >
+                  Learn More • Upgrade to Pro
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Enhanced Live Preview Section - 4 columns */}
+          <div className="lg:col-span-4">
+            <Card className="bg-white/70 backdrop-blur-sm border border-gray-200/50 shadow-xl shadow-black/5 h-[calc(100vh-200px)]">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="flex items-center justify-between text-xl">
+                  <div className="flex items-center gap-3">
+                    <Eye className="h-6 w-6 text-blue-600" />
+                    <span>Live Preview</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge variant="secondary" className="text-sm px-3 py-1">
+                      {templates[selectedTemplate as keyof typeof templates]?.name}
+                    </Badge>
+                    {atsScore !== null && (
+                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${getATSScoreColor(atsScore)}`}>
+                        ATS: {atsScore}%
+                      </div>
+                    )}
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 h-full">
+                <ScrollArea className="h-[calc(100vh-350px)]">
+                  <div 
+                    ref={resumePreviewRef}
+                    className="space-y-6 p-8 bg-white m-6 rounded-xl border-2 border-gray-100 shadow-lg text-base leading-relaxed"
+                    style={{ minHeight: '11in', width: '8.5in', maxWidth: '100%', margin: '0 auto' }}
+                  >
                     disabled={isGeneratingPDF}
                     className="h-10"
                   >
@@ -1672,6 +1742,33 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                     )}
                   </div>
                 </ScrollArea>
+                
+                {/* PDF Download Button */}
+                <div className="p-6 border-t border-gray-100 bg-gray-50/50">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-600">
+                      <div className="font-medium text-gray-900">Powered by TalentXcel</div>
+                      <div>Professional Resume Builder with AI Enhancement</div>
+                    </div>
+                    <Button 
+                      onClick={downloadPDF}
+                      disabled={isGeneratingPDF}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3 text-white font-medium"
+                    >
+                      {isGeneratingPDF ? (
+                        <>
+                          <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+                          Generating PDF...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-5 w-5 mr-2" />
+                          Download PDF
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
