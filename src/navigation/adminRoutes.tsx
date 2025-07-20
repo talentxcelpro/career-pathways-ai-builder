@@ -1,4 +1,4 @@
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout } from "lucide-react";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
 import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
@@ -24,6 +24,9 @@ import AdminAIManagement from "../pages/AdminAIManagement";
 import CollegesManagement from "../pages/admin/CollegesManagement";
 import { ProUsersPage } from "../components/admin/ProUsersPage";
 import SEOManagement from "../pages/admin/SEOManagement";
+import AdvancedSEOManager from "../pages/admin/AdvancedSEOManager";
+import AdCampaignManager from "../pages/admin/AdCampaignManager";
+import SmartPageBuilder from "../pages/admin/SmartPageBuilder";
 
 export const adminRoutes = [
   {
@@ -248,5 +251,32 @@ export const adminRoutes = [
     icon: <Search className="h-4 w-4" />,
     page: <SEOManagement />,
     requiresAuth: true,
+  },
+  {
+    title: "Advanced SEO Manager",
+    to: "/admin/advanced-seo",
+    icon: <Search className="h-4 w-4" />,
+    page: <AdvancedSEOManager />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Comprehensive SEO management tools"
+  },
+  {
+    title: "Ad Campaign Manager", 
+    to: "/admin/ad-campaigns",
+    icon: <Megaphone className="h-4 w-4" />,
+    page: <AdCampaignManager />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Create and manage advertising campaigns"
+  },
+  {
+    title: "Smart Page Builder",
+    to: "/admin/page-builder", 
+    icon: <Layout className="h-4 w-4" />,
+    page: <SmartPageBuilder />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Create and customize landing pages"
   }
 ];
