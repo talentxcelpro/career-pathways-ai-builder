@@ -10,6 +10,7 @@ import ResumeSettings from "../pages/resume/ResumeSettings";
 import ResumeChecker from "../pages/tools/ResumeChecker";
 import { EnhancedResumeBuilder } from "../components/resume/enhanced/EnhancedResumeBuilder";
 import { NewResumeBuilder } from "../pages/resume/NewResumeBuilder";
+import { ModernResumeBuilder } from "../components/resume/modern/ModernResumeBuilder";
 
 export const resumeRoutes = [
   {
@@ -19,10 +20,10 @@ export const resumeRoutes = [
     page: <NewResumeBuilder />,
   },
   {
-    title: "TalentXcel Resume Dashboard",
-    to: "/resume-builder",
+    title: "Modern Resume Builder",
+    to: "/resume-builder", 
     icon: <FileText className="h-4 w-4" />,
-    page: <ResumeDashboard />,
+    page: <ModernResumeBuilder />,
   },
   {
     title: "Create New Resume",
