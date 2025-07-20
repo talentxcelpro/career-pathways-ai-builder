@@ -389,4 +389,3 @@ function calculateContentQuality(resume: any, rawText: string) {
     achievement_focus: Math.min(Math.round(achievementFocus), 100)
   };
 }
-}
