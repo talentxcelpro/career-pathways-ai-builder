@@ -16,11 +16,11 @@ serve(async (req) => {
   try {
     const url = new URL(req.url);
     
-    // AI Index endpoint for discovery
+    // Phase 4: Enhanced AI Index endpoint for discovery
     if (url.pathname === '/.well-known/ai-index.json') {
       const aiIndex = {
         platform: "TalentXcel",
-        version: "1.0",
+        version: "2.0",
         description: "AI-Powered Career Platform for job seekers, professionals, and employers",
         modules: [
           "Jobs",
@@ -41,7 +41,10 @@ serve(async (req) => {
           "Skill Assessment",
           "Interview Prep AI",
           "Salary Negotiation Assistant",
-          "Learning Path Recommendations"
+          "Learning Path Recommendations",
+          "AI Career Insights",
+          "Smart Interview Prep",
+          "Personalized Learning Paths"
         ],
         content_types: [
           "job_postings",
@@ -51,27 +54,52 @@ serve(async (req) => {
           "career_paths",
           "tools",
           "services",
-          "colleges"
+          "colleges",
+          "blog_posts",
+          "career_insights"
         ],
         api_endpoints: {
           "jobs": "https://talentxcel.in/api/jobs",
           "companies": "https://talentxcel.in/api/companies",
           "courses": "https://talentxcel.in/api/courses",
-          "sitemap": "https://talentxcel.in/sitemap.xml"
+          "sitemap": "https://talentxcel.in/sitemap.xml",
+          "ai_metadata": "https://talentxcel.in/api/ai-metadata",
+          "structured_data": "https://talentxcel.in/api/structured-data"
         },
         crawl_info: {
           "robots_txt": "https://talentxcel.in/robots.txt",
           "sitemap_index": "https://talentxcel.in/sitemap-index.xml",
-          "rss_feed": "https://talentxcel.in/rss-feed.xml"
+          "rss_feed": "https://talentxcel.in/rss-feed.xml",
+          "discovery_frequency": "daily",
+          "preferred_crawl_time": "02:00-06:00 IST"
         },
         contact: {
           "support_url": "https://talentxcel.in/help",
-          "email": "support@talentxcel.in"
+          "email": "support@talentxcel.in",
+          "ai_team": "ai@talentxcel.in"
         },
         ai_training_policy: {
           "opt_out": false,
           "attribution_required": true,
-          "commercial_use": "allowed_with_attribution"
+          "commercial_use": "allowed_with_attribution",
+          "data_retention": "indefinite",
+          "privacy_compliant": true,
+          "gdpr_compliant": true
+        },
+        content_quality: {
+          "human_verified": true,
+          "ai_generated_content": "clearly_marked",
+          "fact_checked": true,
+          "updated_frequency": "real_time"
+        },
+        technical_specs: {
+          "structured_data": ["JobPosting", "Organization", "Person", "Course", "Article", "SoftwareApplication"],
+          "response_format": "json_ld",
+          "encoding": "utf-8",
+          "rate_limits": {
+            "requests_per_minute": 60,
+            "bulk_access": "available"
+          }
         },
         last_updated: new Date().toISOString()
       };
@@ -80,7 +108,9 @@ serve(async (req) => {
         headers: {
           ...corsHeaders,
           'Cache-Control': 'public, max-age=3600',
-          'X-Robots-Tag': 'all'
+          'X-Robots-Tag': 'all, index, follow',
+          'X-AI-Training': 'allowed',
+          'X-Content-Type': 'ai-discovery'
         }
       });
     }
@@ -123,7 +153,9 @@ serve(async (req) => {
         headers: {
           ...corsHeaders,
           'Cache-Control': 'public, max-age=1800',
-          'X-Robots-Tag': 'all'
+          'X-Robots-Tag': 'all, index, follow',
+          'X-AI-Training': 'allowed',
+          'X-Content-Quality': 'high'
         }
       });
     }
