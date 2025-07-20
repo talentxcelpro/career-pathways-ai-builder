@@ -12,6 +12,7 @@ import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import { AIProvider } from "./contexts/AIContext";
+import { FloatingAIWidget } from "./components/ai-agent/FloatingAIWidget";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -109,6 +110,7 @@ const App = () => {
                     </Routes>
                   </main>
                   <Footer />
+                  <FloatingAIWidget />
                 </div>
               </AIProvider>
             </AuthProvider>

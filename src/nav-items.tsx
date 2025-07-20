@@ -1,40 +1,33 @@
-import { NavItem } from "./types/nav-item";
-import { coreRoutes } from "./navigation/coreRoutes";
+import { homeRoutes } from "./navigation/homeRoutes";
 import { authRoutes } from "./navigation/authRoutes";
-import { jobRoutes } from "./navigation/jobRoutes";
-import { companiesRoutes } from "./navigation/companiesRoutes";
-import { learningRoutes } from "./navigation/learningRoutes";
 import { networkRoutes } from "./navigation/networkRoutes";
-import { profileRoutes } from "./navigation/profileRoutes";
-import { careerMapRoutes } from "./navigation/careerMapRoutes";
-import { toolsRoutes } from "./navigation/toolsRoutes";
-
+import { jobRoutes } from "./navigation/jobRoutes";
 import { employerRoutes } from "./navigation/employerRoutes";
-import { collegesRoutes } from "./navigation/collegesRoutes";
-import { marketplaceRoutes } from "./navigation/marketplaceRoutes";
-import { seoRoutes } from "./navigation/seoRoutes";
+import { companyRoutes } from "./navigation/companyRoutes";
 import { resumeRoutes } from "./navigation/resumeRoutes";
+import { toolRoutes } from "./navigation/toolRoutes";
+import { serviceRoutes } from "./navigation/serviceRoutes";
+import { learningRoutes } from "./navigation/learningRoutes";
+import { collegeRoutes } from "./navigation/collegeRoutes";
+import { careerMapRoutes } from "./navigation/careerMapRoutes";
 import { adminRoutes } from "./navigation/adminRoutes";
-import { enterpriseRoutes } from "./navigation/enterpriseRoutes";
-import { proRoutes } from "./navigation/proRoutes";
+import { profileRoutes } from "./navigation/profileRoutes";
+import { aiRoutes } from "./navigation/aiRoutes";
 
 export const navItems = [
-  ...coreRoutes,
+  ...homeRoutes,
   ...authRoutes,
-  ...profileRoutes,
-  ...jobRoutes,
-  ...learningRoutes,
-  ...toolsRoutes,
-  ...resumeRoutes,
   ...networkRoutes,
-  ...companiesRoutes,
-  ...collegesRoutes,
-  ...careerMapRoutes,
+  ...jobRoutes,
   ...employerRoutes,
-  ...marketplaceRoutes,
-  ...proRoutes,
-  
-  ...seoRoutes,
+  ...companyRoutes,
+  ...resumeRoutes,
+  ...toolRoutes,
+  ...serviceRoutes,  
+  ...learningRoutes,
+  ...collegeRoutes,
+  ...careerMapRoutes,
+  ...aiRoutes,
   ...adminRoutes,
-  ...enterpriseRoutes,
+  ...profileRoutes,
 ];
