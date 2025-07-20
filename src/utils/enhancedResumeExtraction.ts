@@ -510,6 +510,12 @@ export class EnhancedResumeExtractor {
       
       progressCallback('Parsing completed', 100);
       
+      // Phase 4: Validate extracted data quality
+      const dataQuality = this.validateExtractedData(fallbackResult);
+      if (dataQuality.isEmpty) {
+        throw new Error(`No meaningful data extracted: ${dataQuality.reason}`);
+      }
+      
       return {
         success: true,
         data: {
@@ -521,9 +527,10 @@ export class EnhancedResumeExtractor {
           key_metrics: {
             years_experience: this.calculateExperience(fallbackResult.work_experience),
             top_skills_matched: this.getAllSkillsArray(fallbackResult.skills).slice(0, 5),
-            confidence_score: 60, // Lower confidence for fallback
+            confidence_score: dataQuality.confidenceAdjustment, // Adjust based on data quality
             completeness_percentage: this.calculateCompleteness(fallbackResult),
-            extraction_method: extractionMethod
+            extraction_method: extractionMethod,
+            data_quality: dataQuality
           }
         }
       };
@@ -928,6 +935,183 @@ export class EnhancedResumeExtractor {
     });
     
     return totalYears;
+  }
+
+  // Phase 4: Validate extracted data quality
+  private static validateExtractedData(resume: ParsedResumeData): {
+    isEmpty: boolean;
+    reason: string;
+    confidenceAdjustment: number;
+    suggestions: string[];
+  } {
+    const issues: string[] = [];
+    let isEmpty = false;
+    let confidenceScore = 80;
+    const suggestions: string[] = [];
+
+    // Check if basic contact info is missing
+    const hasBasicInfo = resume.name.trim().length > 0 || 
+                        resume.email.trim().length > 0 || 
+                        resume.phone.trim().length > 0;
+
+    if (!hasBasicInfo) {
+      issues.push('No contact information found');
+      confidenceScore -= 30;
+      suggestions.push('Ensure your resume contains clear contact information at the top');
+    }
+
+    // Check if any substantial content exists
+    const hasContent = resume.work_experience.length > 0 || 
+                      resume.education.length > 0 || 
+                      this.getAllSkillsArray(resume.skills).length > 0 ||
+                      resume.summary.trim().length > 0;
+
+    if (!hasContent) {
+      isEmpty = true;
+      issues.push('No substantial content found (no experience, education, skills, or summary)');
+      suggestions.push('Check if your resume file is readable or try a different format');
+      suggestions.push('If using a PDF, ensure it contains selectable text, not just images');
+    }
+
+    // Check for very short content that might indicate parsing failure
+    const totalTextLength = [
+      resume.name,
+      resume.email,
+      resume.summary,
+      ...resume.work_experience.map(exp => exp.description),
+      ...resume.education.map(edu => edu.degree + edu.institution)
+    ].join('').length;
+
+    if (totalTextLength < 50 && !isEmpty) {
+      issues.push('Extracted content is very minimal');
+      confidenceScore -= 20;
+      suggestions.push('The extracted text seems very short - please verify your file contains readable content');
+    }
+
+    return {
+      isEmpty,
+      reason: issues.join('; '),
+      confidenceAdjustment: Math.max(confidenceScore, 10),
+      suggestions
+    };
+  }
+
+  // Phase 4: Enhanced user-friendly error messages with specific guidance
+  private static getUserFriendlyError(errorMessage: string): string {
+    const errorMap: { [key: string]: string } = {
+      'No meaningful data extracted': 'We couldn\'t extract readable content from your resume. This usually happens when:\n\n• The file is mostly images (try using a text-based resume)\n• The file is corrupted or password-protected\n• The file format isn\'t supported properly\n\nTry converting your resume to a simple PDF with selectable text or upload a Word document.',
+      'No contact information found': 'We couldn\'t find your contact information. Please ensure your resume includes:\n\n• Your full name\n• Email address\n• Phone number\n\nMake sure this information is clearly visible at the top of your resume.',
+      'No substantial content found': 'Your resume appears to be empty or unreadable. Please check that:\n\n• The file isn\'t corrupted\n• The file contains actual text (not just images)\n• You\'ve uploaded the correct file\n\nIf you\'re using a scanned resume, try using OCR software first.',
+      'Insufficient text content': 'The file appears to contain very little readable text. This could mean:\n\n• Your resume is image-based (needs OCR processing)\n• The file is corrupted\n• The format isn\'t supported\n\nTry uploading a different version or format.',
+      'Failed to extract text from PDF': 'We couldn\'t read your PDF file. Common solutions:\n\n• Make sure the PDF isn\'t password-protected\n• Try exporting/saving as a new PDF\n• Use "Save as PDF" instead of "Print to PDF"\n• Convert to Word document format',
+      'Failed to extract text from DOCX': 'We couldn\'t read your Word document. Try:\n\n• Saving in .docx format (not .doc)\n• Checking the file isn\'t corrupted\n• Copying content to a new document\n• Exporting as PDF instead',
+      'Unsupported file type': 'Please upload one of these supported formats:\n\n• PDF (.pdf)\n• Word Document (.docx or .doc)\n• Plain Text (.txt)\n\nMake sure your file has the correct extension.',
+      'File size exceeds': 'Your file is too large (maximum 10MB). Try:\n\n• Compressing the PDF\n• Reducing image quality if any\n• Removing unnecessary pages\n• Converting to a simpler format',
+      'OCR text extraction failed': 'We couldn\'t extract text from your image-based resume. Options:\n\n• Use a resume template with selectable text\n• Convert images to text using OCR software first\n• Manually recreate your resume in a text format\n• Use our resume builder to create a new one',
+      'AI parsing failed': 'Our AI service is temporarily unavailable, but we processed your resume with our backup system. The results may be less accurate.',
+      'Missing OpenAI API key': 'AI parsing is temporarily unavailable. Your resume was processed using our standard parser.'
+    };
+    
+    for (const [key, message] of Object.entries(errorMap)) {
+      if (errorMessage.toLowerCase().includes(key.toLowerCase())) {
+        return message;
+      }
+    }
+    
+    return 'An unexpected error occurred while processing your resume. Please try again or contact support if the issue persists.';
+  }
+}
+  }
+
+  // Phase 4: Validate extracted data quality
+  private static validateExtractedData(resume: ParsedResumeData): {
+    isEmpty: boolean;
+    reason: string;
+    confidenceAdjustment: number;
+    suggestions: string[];
+  } {
+    const issues: string[] = [];
+    let isEmpty = false;
+    let confidenceScore = 80;
+    const suggestions: string[] = [];
+
+    // Check if basic contact info is missing
+    const hasBasicInfo = resume.name.trim().length > 0 || 
+                        resume.email.trim().length > 0 || 
+                        resume.phone.trim().length > 0;
+
+    if (!hasBasicInfo) {
+      issues.push('No contact information found');
+      confidenceScore -= 30;
+      suggestions.push('Ensure your resume contains clear contact information at the top');
+    }
+
+    // Check if any substantial content exists
+    const hasContent = resume.work_experience.length > 0 || 
+                      resume.education.length > 0 || 
+                      this.getAllSkillsArray(resume.skills).length > 0 ||
+                      resume.summary.trim().length > 0;
+
+    if (!hasContent) {
+      isEmpty = true;
+      issues.push('No substantial content found (no experience, education, skills, or summary)');
+      suggestions.push('Check if your resume file is readable or try a different format');
+      suggestions.push('If using a PDF, ensure it contains selectable text, not just images');
+    }
+
+    // Check for very short content that might indicate parsing failure
+    const totalTextLength = [
+      resume.name,
+      resume.email,
+      resume.summary,
+      ...resume.work_experience.map(exp => exp.description),
+      ...resume.education.map(edu => edu.degree + edu.institution)
+    ].join('').length;
+
+    if (totalTextLength < 50 && !isEmpty) {
+      issues.push('Extracted content is very minimal');
+      confidenceScore -= 20;
+      suggestions.push('The extracted text seems very short - please verify your file contains readable content');
+    }
+
+    // Check for image-based content indicators
+    if (resume.name.includes('image') || resume.summary.includes('image')) {
+      issues.push('Content appears to be image-based');
+      suggestions.push('Your resume may be image-based. Try using OCR or converting to a text-based format');
+    }
+
+    return {
+      isEmpty,
+      reason: issues.join('; '),
+      confidenceAdjustment: Math.max(confidenceScore, 10),
+      suggestions
+    };
+  }
+
+  // Phase 4: Enhanced user-friendly error messages with specific guidance
+  private static getUserFriendlyError(errorMessage: string): string {
+    const errorMap: { [key: string]: string } = {
+      'No meaningful data extracted': 'We couldn\'t extract readable content from your resume. This usually happens when:\n\n• The file is mostly images (try using a text-based resume)\n• The file is corrupted or password-protected\n• The file format isn\'t supported properly\n\nTry converting your resume to a simple PDF with selectable text or upload a Word document.',
+      'No contact information found': 'We couldn\'t find your contact information. Please ensure your resume includes:\n\n• Your full name\n• Email address\n• Phone number\n\nMake sure this information is clearly visible at the top of your resume.',
+      'No substantial content found': 'Your resume appears to be empty or unreadable. Please check that:\n\n• The file isn\'t corrupted\n• The file contains actual text (not just images)\n• You\'ve uploaded the correct file\n\nIf you\'re using a scanned resume, try using OCR software first.',
+      'Insufficient text content': 'The file appears to contain very little readable text. This could mean:\n\n• Your resume is image-based (needs OCR processing)\n• The file is corrupted\n• The format isn\'t supported\n\nTry uploading a different version or format.',
+      'Failed to extract text from PDF': 'We couldn\'t read your PDF file. Common solutions:\n\n• Make sure the PDF isn\'t password-protected\n• Try exporting/saving as a new PDF\n• Use "Save as PDF" instead of "Print to PDF"\n• Convert to Word document format',
+      'Failed to extract text from DOCX': 'We couldn\'t read your Word document. Try:\n\n• Saving in .docx format (not .doc)\n• Checking the file isn\'t corrupted\n• Copying content to a new document\n• Exporting as PDF instead',
+      'Unsupported file type': 'Please upload one of these supported formats:\n\n• PDF (.pdf)\n• Word Document (.docx or .doc)\n• Plain Text (.txt)\n\nMake sure your file has the correct extension.',
+      'File size exceeds': 'Your file is too large (maximum 10MB). Try:\n\n• Compressing the PDF\n• Reducing image quality if any\n• Removing unnecessary pages\n• Converting to a simpler format',
+      'OCR text extraction failed': 'We couldn\'t extract text from your image-based resume. Options:\n\n• Use a resume template with selectable text\n• Convert images to text using OCR software first\n• Manually recreate your resume in a text format\n• Use our resume builder to create a new one',
+      'AI parsing failed': 'Our AI service is temporarily unavailable, but we processed your resume with our backup system. The results may be less accurate.',
+      'Missing OpenAI API key': 'AI parsing is temporarily unavailable. Your resume was processed using our standard parser.'
+    };
+    
+    for (const [key, message] of Object.entries(errorMap)) {
+      if (errorMessage.toLowerCase().includes(key.toLowerCase())) {
+        return message;
+      }
+    }
+    
+    return 'An unexpected error occurred while processing your resume. Please try again or contact support if the issue persists.';
+  }
   }
 
   // Enhanced utility methods for Phase 3

@@ -1,8 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { ProcessingSteps } from '@/components/resume/checker/ProcessingSteps';
 import { EnhancedResumeExtractor, EnhancedParsingResult } from '@/utils/enhancedResumeExtraction';
 import { ParsingFeedback } from './ParsingFeedback';
+import { EmptyDataGuidance } from './EmptyDataGuidance';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
@@ -10,19 +10,26 @@ interface ProcessingStepProps {
   onProcessingComplete: (data: any) => void;
   uploadedFile: File | null;
   selectedTemplate: string;
+  onRetryProcessing?: () => void;
+  onUploadNew?: () => void;
 }
 
 export const ProcessingStep: React.FC<ProcessingStepProps> = ({
   onProcessingComplete,
   uploadedFile,
-  selectedTemplate
+  selectedTemplate,
+  onRetryProcessing,
+  onUploadNew
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [processingComplete, setProcessingComplete] = useState(false);
   const [processingError, setProcessingError] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showEmptyDataGuidance, setShowEmptyDataGuidance] = useState(false);
   const [parsedData, setParsedData] = useState<any>(null);
   const [currentProgress, setCurrentProgress] = useState('');
+  const [extractedText, setExtractedText] = useState('');
+  const [extractionMethod, setExtractionMethod] = useState('standard');
 
   const processingSteps = [
     'Validating file...',
@@ -63,6 +70,48 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
       }
 
       console.log('✅ Enhanced parsing completed successfully');
+      
+      // Store raw extraction details for guidance
+      setExtractedText(result.data!.raw_text);
+      setExtractionMethod(result.data!.key_metrics.extraction_method || 'standard');
+      
+      // Check if data is meaningful
+      const hasData = result.data!.structured_resume.name.trim() || 
+                     result.data!.structured_resume.email.trim() ||
+                     result.data!.structured_resume.work_experience.length > 0 ||
+                     result.data!.structured_resume.education.length > 0;
+      
+      if (!hasData) {
+        setShowEmptyDataGuidance(true);
+        setProcessingComplete(true);
+        // Still pass the data for debugging but show guidance
+        const emptyDataResult = {
+          enhancedContent: {
+            personalInfo: {
+              fullName: '',
+              email: '',
+              phone: '',
+              location: '',
+              linkedin: '',
+              github: '',
+              portfolio: ''
+            },
+            summary: '',
+            experience: [],
+            education: [],
+            skills: [],
+            certifications: [],
+            projects: [],
+            languages: []
+          },
+          isEmpty: true,
+          extractedText: result.data!.raw_text,
+          extractionMethod: result.data!.key_metrics.extraction_method
+        };
+        setParsedData(emptyDataResult);
+        onProcessingComplete(emptyDataResult);
+        return;
+      }
       
       // Transform the parsed data to match expected format
       const transformedData = {
@@ -191,8 +240,44 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
 
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+  // Show empty data guidance
+  if (processingComplete && showEmptyDataGuidance && parsedData) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center space-y-4">
+          <div className="mx-auto w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center">
+            <AlertCircle className="h-8 w-8 text-yellow-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Resume Processed, But No Data Found
+            </h3>
+            <p className="text-gray-600 mb-4">
+              We processed your file successfully, but couldn't extract meaningful resume content.
+            </p>
+          </div>
+        </div>
+        
+        <EmptyDataGuidance 
+          extractedText={extractedText}
+          extractionMethod={extractionMethod}
+          onRetry={() => {
+            setShowEmptyDataGuidance(false);
+            setProcessingComplete(false);
+            setProcessingError(null);
+            setCurrentStep(0);
+            processResume();
+          }}
+          onUploadNew={() => {
+            onUploadNew?.();
+          }}
+        />
+      </div>
+    );
+  }
+
   // Show feedback form after successful parsing
-  if (processingComplete && !processingError && showFeedback && parsedData) {
+  if (processingComplete && !processingError && !showEmptyDataGuidance && showFeedback && parsedData) {
     return (
       <div className="space-y-6">
         <div className="text-center space-y-4">
@@ -227,7 +312,7 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
   }
 
   // Show success state with option to provide feedback
-  if (processingComplete && !processingError) {
+  if (processingComplete && !processingError && !showEmptyDataGuidance) {
     return (
       <div className="text-center space-y-4">
         <div className="mx-auto w-16 h-16 bg-green-50 rounded-full flex items-center justify-center">
