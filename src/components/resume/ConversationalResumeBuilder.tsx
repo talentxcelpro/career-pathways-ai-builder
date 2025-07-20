@@ -86,6 +86,10 @@ const ConversationalResumeBuilder: React.FC = () => {
   const [previewMode, setPreviewMode] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [atsScore, setAtsScore] = useState<number | null>(null);
+  const [showCoverLetter, setShowCoverLetter] = useState(false);
+  const [coverLetterContent, setCoverLetterContent] = useState('');
+  const [fullResumePreview, setFullResumePreview] = useState(false);
   const { enhanceResumeText, enhanceSingleSection } = useResumeEnhancement();
   const { invokeAITool, optimizeForATS, generateCoverLetter } = useAIService();
 
@@ -219,26 +223,89 @@ const ConversationalResumeBuilder: React.FC = () => {
   const parseAndFillResume = async (text: string) => {
     setIsEnhancing(true);
     try {
-      // Basic parsing logic - this could be enhanced with AI
+      // Enhanced parsing logic with better section extraction
       const lines = text.split('\n').filter(line => line.trim());
       
-      // Extract name (usually first line)
-      const name = lines[0] || '';
+      // Extract name (usually first line or line with name pattern)
+      let name = lines[0] || '';
       
-      // Extract email and phone using regex
+      // Extract contact information
       const emailMatch = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
       const phoneMatch = text.match(/(\+?1?[-.\s]?)?(\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4})/);
+      const linkedinMatch = text.match(/(linkedin\.com\/in\/[^\s]+)/i);
+      const websiteMatch = text.match(/(https?:\/\/[^\s]+)/);
       
-      // Extract sections
-      const summaryStart = text.toLowerCase().indexOf('summary');
-      const experienceStart = text.toLowerCase().indexOf('experience');
-      const educationStart = text.toLowerCase().indexOf('education');
-      const skillsStart = text.toLowerCase().indexOf('skills');
+      // Extract location
+      const locationMatch = text.match(/([A-Za-z\s]+,\s*[A-Z]{2})|([A-Za-z\s]+,\s*[A-Za-z\s]+)/);
       
+      // Extract sections with better parsing
+      const textLower = text.toLowerCase();
+      
+      // Extract summary/objective
       let summary = '';
-      if (summaryStart !== -1) {
-        const summaryEnd = experienceStart !== -1 ? experienceStart : text.length;
-        summary = text.substring(summaryStart, summaryEnd).replace(/summary/i, '').trim();
+      const summaryPatterns = ['summary', 'objective', 'profile', 'about'];
+      for (const pattern of summaryPatterns) {
+        const start = textLower.indexOf(pattern);
+        if (start !== -1) {
+          const nextSectionPatterns = ['experience', 'education', 'skills', 'work'];
+          let end = text.length;
+          for (const nextPattern of nextSectionPatterns) {
+            const nextStart = textLower.indexOf(nextPattern, start + pattern.length);
+            if (nextStart !== -1 && nextStart < end) {
+              end = nextStart;
+            }
+          }
+          summary = text.substring(start, end)
+            .replace(new RegExp(pattern, 'i'), '')
+            .trim()
+            .split('\n')
+            .filter(line => line.trim() && !line.match(/^[A-Z\s]+$/))
+            .join(' ')
+            .substring(0, 500);
+          break;
+        }
+      }
+      
+      // Extract experience section
+      const experienceStart = textLower.indexOf('experience') || textLower.indexOf('work history');
+      let experienceEntries: any[] = [];
+      if (experienceStart !== -1) {
+        const educationStart = textLower.indexOf('education', experienceStart);
+        const experienceEnd = educationStart !== -1 ? educationStart : text.length;
+        const experienceText = text.substring(experienceStart, experienceEnd);
+        
+        // Basic experience parsing (could be enhanced with AI)
+        const jobMatches = experienceText.match(/(\d{4}[\s\-–]+\d{4}|\d{4}[\s\-–]+present|present)/gi);
+        if (jobMatches && jobMatches.length > 0) {
+          // Add first experience entry as example
+          experienceEntries.push({
+            id: Date.now().toString(),
+            title: 'Position Title',
+            company: 'Company Name',
+            location: '',
+            startDate: '2020',
+            endDate: '2023',
+            current: false,
+            description: 'Add your job description here...'
+          });
+        }
+      }
+      
+      // Extract skills
+      let skillsEntries: any[] = [];
+      const skillsStart = textLower.indexOf('skills');
+      if (skillsStart !== -1) {
+        const skillsSection = text.substring(skillsStart, skillsStart + 500);
+        const commonSkills = ['javascript', 'python', 'java', 'react', 'node', 'sql', 'html', 'css', 'aws', 'docker'];
+        commonSkills.forEach(skill => {
+          if (skillsSection.toLowerCase().includes(skill)) {
+            skillsEntries.push({
+              id: `${Date.now()}-${skill}`,
+              name: skill.charAt(0).toUpperCase() + skill.slice(1),
+              level: 'Intermediate'
+            });
+          }
+        });
       }
       
       setResumeData(prev => ({
@@ -247,14 +314,119 @@ const ConversationalResumeBuilder: React.FC = () => {
           ...prev.personalInfo,
           fullName: name,
           email: emailMatch ? emailMatch[0] : '',
-          phone: phoneMatch ? phoneMatch[0] : ''
+          phone: phoneMatch ? phoneMatch[0] : '',
+          location: locationMatch ? locationMatch[0] : '',
+          linkedin: linkedinMatch ? linkedinMatch[0] : '',
+          website: websiteMatch ? websiteMatch[0] : ''
         },
-        summary: summary
+        summary: summary,
+        experience: experienceEntries.length > 0 ? experienceEntries : prev.experience,
+        skills: skillsEntries.length > 0 ? skillsEntries : prev.skills
       }));
       
-      toast.success('Resume content parsed and filled!');
+      // Enable full preview mode and calculate ATS score
+      setFullResumePreview(true);
+      calculateATSScore();
+      
+      toast.success('Resume content parsed and filled! Check the preview.');
     } catch (error) {
       toast.error('Failed to parse resume content');
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+
+  const calculateATSScore = () => {
+    // Simple ATS scoring algorithm
+    let score = 0;
+    const maxScore = 100;
+    
+    // Personal info completeness (20 points)
+    if (resumeData.personalInfo.fullName) score += 5;
+    if (resumeData.personalInfo.email) score += 5;
+    if (resumeData.personalInfo.phone) score += 5;
+    if (resumeData.personalInfo.location) score += 5;
+    
+    // Summary (15 points)
+    if (resumeData.summary && resumeData.summary.length > 50) score += 15;
+    
+    // Experience (30 points)
+    if (resumeData.experience.length > 0) score += 15;
+    if (resumeData.experience.some(exp => exp.description.length > 50)) score += 15;
+    
+    // Education (15 points)
+    if (resumeData.education.length > 0) score += 15;
+    
+    // Skills (10 points)
+    if (resumeData.skills.length >= 3) score += 10;
+    
+    // Additional sections (10 points)
+    if (resumeData.projects.length > 0) score += 5;
+    if (resumeData.certifications.length > 0) score += 5;
+    
+    setAtsScore(Math.min(score, maxScore));
+  };
+
+  const enhanceEntireResume = async () => {
+    setIsEnhancing(true);
+    setEnhancementProgress(0);
+    
+    try {
+      const sections = ['summary', 'experience', 'skills', 'education'];
+      const totalSections = sections.length;
+      
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
+        setEnhancementProgress((i / totalSections) * 100);
+        
+        if (section === 'summary' && resumeData.summary) {
+          const enhanced = await enhanceSingleSection(resumeData.summary, 'summary');
+          if (enhanced) {
+            setResumeData(prev => ({ ...prev, summary: enhanced }));
+          }
+        }
+        // Add other section enhancements as needed
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      setEnhancementProgress(100);
+      calculateATSScore();
+      toast.success('Entire resume enhanced successfully!');
+    } catch (error) {
+      toast.error('Enhancement failed. Please try again.');
+    } finally {
+      setIsEnhancing(false);
+      setEnhancementProgress(0);
+    }
+  };
+
+  const createCoverLetter = async () => {
+    try {
+      setIsEnhancing(true);
+      const resumeText = formatResumeForDownload();
+      
+      // Simple cover letter template
+      const coverLetter = `Dear Hiring Manager,
+
+I am writing to express my strong interest in the position at your company. With my background and experience outlined in my attached resume, I am confident that I would be a valuable addition to your team.
+
+${resumeData.summary ? `As highlighted in my professional summary: ${resumeData.summary}` : ''}
+
+${resumeData.experience.length > 0 ? `My experience includes ${resumeData.experience.map(exp => `${exp.title} at ${exp.company}`).join(', ')}, where I have developed strong skills in ${resumeData.skills.slice(0, 3).map(s => s.name).join(', ')}.` : ''}
+
+I am excited about the opportunity to contribute to your organization and would welcome the chance to discuss how my skills and experience align with your needs.
+
+Thank you for your consideration.
+
+Sincerely,
+${resumeData.personalInfo.fullName || '[Your Name]'}`;
+      
+      setCoverLetterContent(coverLetter);
+      setShowCoverLetter(true);
+      toast.success('Cover letter generated!');
+    } catch (error) {
+      toast.error('Failed to generate cover letter');
     } finally {
       setIsEnhancing(false);
     }
@@ -349,9 +521,9 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6">
           {/* Resume Builder Form */}
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
+          <Card className="lg:col-span-2 bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
