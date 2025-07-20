@@ -17,7 +17,7 @@ export const useResumeUpload = () => {
   const { uploadFile } = useFileUpload({
     bucket: 'resumes',
     maxSize: 10 * 1024 * 1024,
-    allowedTypes: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']
+    allowedTypes: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword', 'text/plain']
   });
 
   const processingSteps = [
@@ -35,10 +35,16 @@ export const useResumeUpload = () => {
     
     const file = files[0];
     
-    // Validate file type
-    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
+    // Enhanced file validation
+    const allowedTypes = [
+      'application/pdf', 
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+      'application/msword',
+      'text/plain'
+    ];
+    
     if (!allowedTypes.includes(file.type)) {
-      toast.error('Please upload a PDF or Word document');
+      toast.error('Please upload a PDF, Word document, or text file');
       return;
     }
     
@@ -52,39 +58,52 @@ export const useResumeUpload = () => {
     setProcessingStep(0);
     
     try {
-      // Step 1: Upload file
+      // Step 1: Upload file to storage
       setProcessingStep(1);
       const fileUrl = await uploadFile(file, `resume-${Date.now()}.${file.name.split('.').pop()}`);
       console.log('File uploaded successfully:', fileUrl);
       
-      // Step 2: Enhanced AI Processing
-      setProcessingStep(2);
-      const processor = new EnhancedResumeProcessor();
-      const extractedContent = await processor.processResume(file);
-      console.log('Enhanced content processed:', extractedContent);
+      // Step 2-7: Enhanced AI Processing handled by ProcessingStep component
+      // The actual processing will be done in the ProcessingStep component
+      // This hook just handles the file upload and database operations
       
-      // Step 3: Advanced structure analysis (built into processor)
-      setProcessingStep(3);
-      console.log('Structure analysis complete');
+      setUploadSuccess(true);
+      toast.success('Resume uploaded successfully! Processing will begin in the next step.');
       
-      // Step 4: ATS Optimization (built into processor) 
-      setProcessingStep(4);
-      console.log('ATS optimization complete - Score:', extractedContent.enhancementScore?.atsCompatibility || 0);
+    } catch (error) {
+      console.error('Error uploading resume:', error);
       
-      // Step 5: Generate enhancement suggestions (built into processor)
-      setProcessingStep(5);
-      console.log('Enhancement suggestions generated:', extractedContent.recommendations?.length || 0);
+      let errorMessage = 'Error uploading resume. Please try again.';
+      if (error.message?.includes('File size')) {
+        errorMessage = 'File is too large. Please use a file smaller than 10MB.';
+      } else if (error.message?.includes('File type')) {
+        errorMessage = 'Unsupported file type. Please use PDF, Word, or text files.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
       
-      // Step 6: Create enhanced resume entry in database
-      setProcessingStep(6);
+      toast.error(errorMessage);
+      setIsProcessing(false);
+    }
+  };
+
+  const saveProcessedResume = async (processedData: any) => {
+    if (!user) {
+      toast.error('Please sign in to save your resume');
+      return;
+    }
+
+    try {
       const { data, error } = await supabase
         .from('ai_resumes')
         .insert({
           user_id: user.id,
-          title: `Enhanced Resume from ${file.name}`,
-          content: extractedContent.enhancedContent as any, // Convert to Json type
-          ats_score: extractedContent.enhancementScore?.atsCompatibility || 75,
-          template_id: null // Use null instead of string to avoid UUID errors
+          title: processedData.enhancedContent.personalInfo.fullName 
+            ? `${processedData.enhancedContent.personalInfo.fullName}'s Resume`
+            : 'Enhanced Resume',
+          content: processedData.enhancedContent as any,
+          ats_score: processedData.enhancementScore?.atsCompatibility || 75,
+          template_id: processedData.selectedTemplate || 'modern-professional'
         })
         .select()
         .single();
@@ -94,31 +113,17 @@ export const useResumeUpload = () => {
         throw error;
       }
       
-      console.log('Resume created in database:', data);
-      setUploadSuccess(true);
-      toast.success('Resume processed successfully!');
+      console.log('Enhanced resume saved to database:', data);
+      toast.success('Resume processed and saved successfully!');
       
-      // Navigate to edit mode after a short delay
+      // Navigate to edit mode
       setTimeout(() => {
         navigate(`/resume-builder/edit/${data.id}`);
-      }, 2000);
+      }, 1500);
+
     } catch (error) {
-      console.error('Error processing resume:', error);
-      
-      // Provide more specific error messages
-      let errorMessage = 'Error processing resume. Please try again.';
-      if (error.message?.includes('AI extraction failed')) {
-        errorMessage = 'Failed to extract resume content. The AI service may still be deploying. Please try again in a few minutes.';
-      } else if (error.message?.includes('AI enhancement failed')) {
-        errorMessage = 'Failed to enhance resume. The AI service may still be deploying. Please try again in a few minutes.';
-      } else if (error.message?.includes('Database')) {
-        errorMessage = 'Database error occurred. Please try again.';
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      toast.error(errorMessage);
-      setIsProcessing(false);
+      console.error('Error saving processed resume:', error);
+      toast.error('Failed to save processed resume. Please try again.');
     }
   };
 
@@ -134,6 +139,7 @@ export const useResumeUpload = () => {
     processingStep,
     processingSteps,
     processResume,
+    saveProcessedResume,
     resetUpload
   };
 };
