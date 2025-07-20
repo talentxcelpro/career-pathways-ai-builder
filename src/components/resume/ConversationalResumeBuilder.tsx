@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Send, FileText, Sparkles, Download, Copy, RefreshCw, Target, Award, Brain, Zap, User, Briefcase, GraduationCap, Plus, Trash2, Edit, Upload, Eye, Palette } from "lucide-react";
 import { useResumeEnhancement } from "@/hooks/useResumeEnhancement";
 import { useAIService } from "@/hooks/useAIService";
@@ -203,10 +204,16 @@ const ConversationalResumeBuilder: React.FC = () => {
   };
 
   const templates = {
-    modern: { name: 'Modern', color: 'purple', preview: '/api/placeholder/300/400' },
-    classic: { name: 'Classic', color: 'blue', preview: '/api/placeholder/300/400' },
-    creative: { name: 'Creative', color: 'green', preview: '/api/placeholder/300/400' },
-    minimal: { name: 'Minimal', color: 'gray', preview: '/api/placeholder/300/400' }
+    modern: { name: 'Modern Professional', color: 'purple', description: 'Clean and contemporary design' },
+    classic: { name: 'Classic Traditional', color: 'blue', description: 'Timeless and professional' },
+    creative: { name: 'Creative Bold', color: 'green', description: 'Stand out with unique design' },
+    minimal: { name: 'Minimal Clean', color: 'gray', description: 'Simple and elegant' },
+    executive: { name: 'Executive Premium', color: 'indigo', description: 'For senior positions' },
+    tech: { name: 'Tech Innovation', color: 'cyan', description: 'Perfect for tech roles' },
+    elegant: { name: 'Elegant Refined', color: 'rose', description: 'Sophisticated and polished' },
+    corporate: { name: 'Corporate Professional', color: 'slate', description: 'Business-focused design' },
+    startup: { name: 'Startup Dynamic', color: 'orange', description: 'Energy and innovation' },
+    academic: { name: 'Academic Scholar', color: 'emerald', description: 'For research and education' }
   };
 
   const parseAndFillResume = async (text: string) => {
@@ -324,7 +331,7 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Create professional resumes with AI-powered enhancement
+            Create professional resumes with TalentXcel enhancement
           </p>
           <div className="flex items-center justify-center gap-6 text-sm text-gray-500">
             <div className="flex items-center gap-2">
@@ -337,71 +344,12 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
             </div>
             <div className="flex items-center gap-2">
               <Brain className="h-4 w-4" />
-              <span>AI Enhanced</span>
+              <span>TalentXcel Enhanced</span>
             </div>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Template Selector */}
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5 text-purple-600" />
-                Choose Template
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                {Object.entries(templates).map(([key, template]) => (
-                  <Card 
-                    key={key}
-                    className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
-                      selectedTemplate === key ? 'ring-2 ring-purple-500' : ''
-                    }`}
-                    onClick={() => setSelectedTemplate(key)}
-                  >
-                    <CardContent className="p-3">
-                      <div className="aspect-[3/4] bg-gray-100 rounded mb-2 flex items-center justify-center">
-                        <FileText className="h-8 w-8 text-gray-400" />
-                      </div>
-                      <p className="text-sm font-medium text-center">{template.name}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              
-              <div className="space-y-3 pt-4 border-t">
-                <Label htmlFor="paste-resume">Quick Start: Paste Resume</Label>
-                <Textarea
-                  id="paste-resume"
-                  placeholder="Paste your existing resume content here and we'll automatically fill the form..."
-                  className="min-h-[100px]"
-                  onChange={(e) => {
-                    if (e.target.value.length > 50) {
-                      parseAndFillResume(e.target.value);
-                      e.target.value = '';
-                    }
-                  }}
-                />
-                <Button 
-                  variant="outline" 
-                  className="w-full" 
-                  onClick={() => {
-                    const textarea = document.getElementById('paste-resume') as HTMLTextAreaElement;
-                    if (textarea?.value) {
-                      parseAndFillResume(textarea.value);
-                      textarea.value = '';
-                    }
-                  }}
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Parse & Fill Resume
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
+        <div className="grid lg:grid-cols-2 gap-8">
           {/* Resume Builder Form */}
           <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
             <CardHeader>
@@ -410,7 +358,29 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                   <Edit className="h-5 w-5 text-purple-600" />
                   Resume Builder
                 </CardTitle>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="template-select" className="text-sm font-medium">Template:</Label>
+                    <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                      <SelectTrigger className="w-[200px]">
+                        <SelectValue placeholder="Choose template" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(templates).map(([key, template]) => (
+                          <SelectItem key={key} value={key}>
+                            <div className="flex items-center gap-2">
+                              <div className={`w-3 h-3 rounded-full bg-${template.color}-500`}></div>
+                              <div>
+                                <div className="font-medium">{template.name}</div>
+                                <div className="text-xs text-gray-500">{template.description}</div>
+                              </div>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
                   <Button
                     size="sm"
                     variant="outline"
@@ -430,6 +400,37 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                   </Button>
                 </div>
               </div>
+              
+              {/* Quick Paste Section */}
+              <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
+                <Label htmlFor="paste-resume" className="text-sm font-medium">Quick Start: Paste Resume</Label>
+                <div className="flex gap-2 mt-2">
+                  <Textarea
+                    id="paste-resume"
+                    placeholder="Paste your existing resume content here and we'll automatically fill the form..."
+                    className="flex-1 min-h-[60px]"
+                    onChange={(e) => {
+                      if (e.target.value.length > 50) {
+                        parseAndFillResume(e.target.value);
+                        e.target.value = '';
+                      }
+                    }}
+                  />
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      const textarea = document.getElementById('paste-resume') as HTMLTextAreaElement;
+                      if (textarea?.value) {
+                        parseAndFillResume(textarea.value);
+                        textarea.value = '';
+                      }
+                    }}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Parse
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -442,7 +443,7 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                   <TabsTrigger value="extras" className="text-xs">Extras</TabsTrigger>
                 </TabsList>
 
-                <ScrollArea className="h-[400px]">
+                <ScrollArea className="h-[600px]">
                   <TabsContent value="personal" className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -536,7 +537,7 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                         ) : (
                           <Sparkles className="h-4 w-4 mr-1" />
                         )}
-                        AI Enhance
+                        TalentXcel Enhance
                       </Button>
                     </div>
                     <Textarea
@@ -549,7 +550,7 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                     {isEnhancing && (
                       <div className="space-y-2">
                         <Progress value={enhancementProgress} />
-                        <p className="text-sm text-gray-600">AI is enhancing your summary...</p>
+                        <p className="text-sm text-gray-600">TalentXcel is enhancing your summary...</p>
                       </div>
                     )}
                   </TabsContent>
@@ -841,11 +842,18 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
               </div>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[600px] p-6 bg-white rounded-lg border">
-                <div className="space-y-6 text-sm">
+              <ScrollArea className="h-[700px] p-6 bg-white rounded-lg border">
+                <div className="space-y-6 text-sm max-w-2xl mx-auto">
                   {/* Header */}
-                  <div className="text-center border-b pb-4">
-                    <h1 className="text-2xl font-bold text-gray-900">
+                  <div className="text-center border-b pb-6">
+                    <h1 className={`text-3xl font-bold mb-4 ${
+                      selectedTemplate === 'modern' ? 'text-purple-600' :
+                      selectedTemplate === 'classic' ? 'text-blue-600' :
+                      selectedTemplate === 'creative' ? 'text-green-600' :
+                      selectedTemplate === 'tech' ? 'text-cyan-600' :
+                      selectedTemplate === 'executive' ? 'text-indigo-600' :
+                      'text-gray-900'
+                    }`}>
                       {resumeData.personalInfo.fullName || "Your Name"}
                     </h1>
                     <div className="text-gray-600 mt-2 space-y-1">
@@ -860,7 +868,12 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                   {/* Summary */}
                   {resumeData.summary && (
                     <div>
-                      <h2 className="text-lg font-bold text-gray-900 mb-3 border-b">PROFESSIONAL SUMMARY</h2>
+                      <h2 className={`text-xl font-bold mb-4 border-b-2 pb-2 ${
+                        selectedTemplate === 'modern' ? 'text-purple-600 border-purple-200' :
+                        selectedTemplate === 'classic' ? 'text-blue-600 border-blue-200' :
+                        selectedTemplate === 'creative' ? 'text-green-600 border-green-200' :
+                        'text-gray-900 border-gray-200'
+                      }`}>PROFESSIONAL SUMMARY</h2>
                       <p className="text-gray-700 leading-relaxed">{resumeData.summary}</p>
                     </div>
                   )}
