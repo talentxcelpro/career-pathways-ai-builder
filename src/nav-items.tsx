@@ -1,31 +1,31 @@
-import { homeRoutes } from "./navigation/homeRoutes";
+import { coreRoutes } from "./navigation/coreRoutes";
 import { authRoutes } from "./navigation/authRoutes";
 import { networkRoutes } from "./navigation/networkRoutes";
 import { jobRoutes } from "./navigation/jobRoutes";
 import { employerRoutes } from "./navigation/employerRoutes";
-import { companyRoutes } from "./navigation/companyRoutes";
+import { companiesRoutes } from "./navigation/companiesRoutes";
 import { resumeRoutes } from "./navigation/resumeRoutes";
-import { toolRoutes } from "./navigation/toolRoutes";
-import { serviceRoutes } from "./navigation/serviceRoutes";
+import { toolsRoutes } from "./navigation/toolsRoutes";
+import { marketplaceRoutes } from "./navigation/marketplaceRoutes";
 import { learningRoutes } from "./navigation/learningRoutes";
-import { collegeRoutes } from "./navigation/collegeRoutes";
+import { collegesRoutes } from "./navigation/collegesRoutes";
 import { careerMapRoutes } from "./navigation/careerMapRoutes";
 import { adminRoutes } from "./navigation/adminRoutes";
 import { profileRoutes } from "./navigation/profileRoutes";
 import { aiRoutes } from "./navigation/aiRoutes";
 
 export const navItems = [
-  ...homeRoutes,
+  ...coreRoutes,
   ...authRoutes,
   ...networkRoutes,
   ...jobRoutes,
   ...employerRoutes,
-  ...companyRoutes,
+  ...companiesRoutes,
   ...resumeRoutes,
-  ...toolRoutes,
-  ...serviceRoutes,  
+  ...toolsRoutes,
+  ...marketplaceRoutes,  
   ...learningRoutes,
-  ...collegeRoutes,
+  ...collegesRoutes,
   ...careerMapRoutes,
   ...aiRoutes,
   ...adminRoutes,
