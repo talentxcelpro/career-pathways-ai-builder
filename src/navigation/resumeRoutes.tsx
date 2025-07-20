@@ -25,7 +25,11 @@ export const resumeRoutes = [
     element: <Navigate to="/resume/new" replace />
   },
   {
-    path: '/resume-builder/:id',
-    element: <Navigate to="/resume/edit/$1" replace />
+    path: '/resume-builder/*',
+    element: <Navigate to="/resume/new" replace />
+  },
+  {
+    path: '/resume-builder/edit/:id',
+    element: <Navigate to="/resume/edit/:id" replace />
   }
 ];

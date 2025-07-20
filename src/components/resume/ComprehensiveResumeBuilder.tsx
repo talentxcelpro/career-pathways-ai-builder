@@ -350,7 +350,7 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
           <Button 
             variant="ghost" 
             size="sm"
-            onClick={() => navigate('/resume-builder')}
+            onClick={() => navigate('/resume')}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
