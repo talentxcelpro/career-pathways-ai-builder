@@ -435,15 +435,41 @@ export default function ServicesMarketplace() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.25, 0.25, 0, 1] }}
             >
-              {/* Main Headline - Upwork Style */}
-              <h1 className="text-5xl lg:text-7xl font-bold tracking-tight mb-8 text-white leading-[0.9]">
-                How work should
-                <span className="block text-green-400">work</span>
-              </h1>
+              {/* Energetic Hero with Animation */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, ease: [0.25, 0.25, 0, 1] }}
+                className="relative"
+              >
+                <div className="absolute -inset-4 bg-gradient-to-r from-green-400/20 via-blue-500/20 to-purple-600/20 rounded-3xl blur-xl animate-pulse" />
+                <h1 className="relative text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 text-white leading-[0.95]">
+                  <span className="block bg-gradient-to-r from-white via-green-200 to-blue-200 bg-clip-text text-transparent animate-fade-in">
+                    Empowering every professional
+                  </span>
+                  <span className="block text-green-400 drop-shadow-lg animate-fade-in [animation-delay:0.3s]">
+                    to do meaningful work,
+                  </span>
+                  <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 bg-clip-text text-transparent animate-fade-in [animation-delay:0.6s]">
+                    grow continuously,
+                  </span>
+                  <span className="block text-yellow-400 drop-shadow-lg animate-fade-in [animation-delay:0.9s]">
+                    and connect with purpose
+                  </span>
+                </h1>
+              </motion.div>
               
-              <p className="text-xl lg:text-2xl text-gray-300 mb-12 leading-relaxed max-w-4xl mx-auto">
-                Forget the old rules. You can have the best people. Right now. Right here.
-              </p>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.2 }}
+                className="text-xl lg:text-2xl text-gray-300 mb-12 leading-relaxed max-w-4xl mx-auto font-light"
+              >
+                Join a marketplace where talent meets opportunity. 
+                <span className="text-green-400 font-semibold"> Build your career.</span>
+                <span className="text-blue-400 font-semibold"> Scale your impact.</span>
+                <span className="text-purple-400 font-semibold"> Transform lives.</span>
+              </motion.p>
               
               {/* Search Interface - Primary CTA */}
               <div className="max-w-2xl mx-auto mb-12">
