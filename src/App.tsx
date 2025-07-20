@@ -19,21 +19,13 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 
-// Create query client with better default configurations
+// Create query client with simpler configuration to avoid potential issues
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-      retry: (failureCount, error: any) => {
-        // Don't retry for 4xx errors
-        if (error?.status >= 400 && error?.status < 500) {
-          return false;
-        }
-        return failureCount < 3;
-      },
-      refetchOnWindowFocus: true,
-      refetchOnReconnect: true,
+      retry: 2,
+      refetchOnWindowFocus: false,
     },
   },
 });
@@ -59,64 +51,62 @@ const publicRoutes = [
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <TooltipProvider>
-          <AnalyticsProvider>
-            <AuthProvider>
-              <AIProvider>
-                <Toaster />
-                <MobileAppInitializer />
-                <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
-                <SearchConsoleVerification verificationCode="your-search-console-verification-code" />
-                <div className="min-h-screen flex flex-col">
-                  <OfflineIndicator />
-                  <Navbar />
-                  <main className="flex-1">
-                    <Routes>
-                      {navItems.map((item: NavItem) => {
-                         // Check if route is explicitly marked as public or in our public routes list
-                         const isPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
-                           // Handle dynamic routes like /companies/:id, /profile/:id, /:slug, /jobs/:id, and /employer/team/accept/:token
-                           if (route.includes(':')) {
-                             const routePattern = route.replace(/:[^/]+/g, '[^/]+');
-                             return new RegExp(`^${routePattern}$`).test(item.to);
-                           }
-                           return route === item.to;
-                         });
-                        
-                        return (
-                          <Route 
-                            key={item.to} 
-                            path={item.to} 
-                            element={
-                              isPublicRoute ? (
-                                item.page
-                              ) : (
-                                <ProtectedRoute>{item.page}</ProtectedRoute>
-                              )
-                            }
-                          />
-                        );
-                      })}
-                      <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
+    <BrowserRouter>
+      <TooltipProvider>
+        <AnalyticsProvider>
+          <AuthProvider>
+            <AIProvider>
+              <Toaster />
+              <MobileAppInitializer />
+              <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
+              <SearchConsoleVerification verificationCode="your-search-console-verification-code" />
+              <div className="min-h-screen flex flex-col">
+                <OfflineIndicator />
+                <Navbar />
+                <main className="flex-1">
+                  <Routes>
+                    {navItems.map((item: NavItem) => {
+                       // Check if route is explicitly marked as public or in our public routes list
+                       const isPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
+                         // Handle dynamic routes like /companies/:id, /profile/:id, /:slug, /jobs/:id, and /employer/team/accept/:token
+                         if (route.includes(':')) {
+                           const routePattern = route.replace(/:[^/]+/g, '[^/]+');
+                           return new RegExp(`^${routePattern}$`).test(item.to);
+                         }
+                         return route === item.to;
+                       });
                       
-                      {/* Legacy resume builder redirects */}
-                      <Route path="/resume" element={<Navigate to="/resume/new" replace />} />
-                      <Route path="/resume-builder" element={<Navigate to="/resume/new" replace />} />
-                      <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
-                      <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
-                    </Routes>
-                  </main>
-                  <Footer />
-                </div>
-                <Analytics />
-              </AIProvider>
-            </AuthProvider>
-          </AnalyticsProvider>
-        </TooltipProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+                      return (
+                        <Route 
+                          key={item.to} 
+                          path={item.to} 
+                          element={
+                            isPublicRoute ? (
+                              item.page
+                            ) : (
+                              <ProtectedRoute>{item.page}</ProtectedRoute>
+                            )
+                          }
+                        />
+                      );
+                    })}
+                    <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
+                    
+                    {/* Legacy resume builder redirects */}
+                    <Route path="/resume" element={<Navigate to="/resume/new" replace />} />
+                    <Route path="/resume-builder" element={<Navigate to="/resume/new" replace />} />
+                    <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
+                    <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
+                  </Routes>
+                </main>
+                <Footer />
+              </div>
+              <Analytics />
+            </AIProvider>
+          </AuthProvider>
+        </AnalyticsProvider>
+      </TooltipProvider>
+    </BrowserRouter>
   );
 };
 
