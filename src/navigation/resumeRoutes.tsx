@@ -9,7 +9,7 @@ import EditCoverLetter from "../pages/resume/EditCoverLetter";
 import ResumeSettings from "../pages/resume/ResumeSettings";
 import ResumeChecker from "../pages/tools/ResumeChecker";
 import { EnhancedResumeBuilder } from "../components/resume/enhanced/EnhancedResumeBuilder";
-import { NewResumeBuilder } from "../pages/resume/NewResumeBuilder";
+import NewResumeBuilder from "../pages/resume/NewResumeBuilder";
 
 export const resumeRoutes = [
   {
