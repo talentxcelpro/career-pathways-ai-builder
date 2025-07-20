@@ -1,33 +1,40 @@
+import { NavItem } from "./types/nav-item";
 import { coreRoutes } from "./navigation/coreRoutes";
 import { authRoutes } from "./navigation/authRoutes";
-import { networkRoutes } from "./navigation/networkRoutes";
 import { jobRoutes } from "./navigation/jobRoutes";
-import { employerRoutes } from "./navigation/employerRoutes";
 import { companiesRoutes } from "./navigation/companiesRoutes";
-import { resumeRoutes } from "./navigation/resumeRoutes";
-import { toolsRoutes } from "./navigation/toolsRoutes";
-import { marketplaceRoutes } from "./navigation/marketplaceRoutes";
 import { learningRoutes } from "./navigation/learningRoutes";
-import { collegesRoutes } from "./navigation/collegesRoutes";
-import { careerMapRoutes } from "./navigation/careerMapRoutes";
-import { adminRoutes } from "./navigation/adminRoutes";
+import { networkRoutes } from "./navigation/networkRoutes";
 import { profileRoutes } from "./navigation/profileRoutes";
-import { aiRoutes } from "./navigation/aiRoutes";
+import { careerMapRoutes } from "./navigation/careerMapRoutes";
+import { toolsRoutes } from "./navigation/toolsRoutes";
+
+import { employerRoutes } from "./navigation/employerRoutes";
+import { collegesRoutes } from "./navigation/collegesRoutes";
+import { marketplaceRoutes } from "./navigation/marketplaceRoutes";
+import { seoRoutes } from "./navigation/seoRoutes";
+import { resumeRoutes } from "./navigation/resumeRoutes";
+import { adminRoutes } from "./navigation/adminRoutes";
+import { enterpriseRoutes } from "./navigation/enterpriseRoutes";
+import { proRoutes } from "./navigation/proRoutes";
 
 export const navItems = [
   ...coreRoutes,
   ...authRoutes,
-  ...networkRoutes,
+  ...profileRoutes,
   ...jobRoutes,
-  ...employerRoutes,
-  ...companiesRoutes,
-  ...resumeRoutes,
-  ...toolsRoutes,
-  ...marketplaceRoutes,  
   ...learningRoutes,
+  ...toolsRoutes,
+  ...resumeRoutes,
+  ...networkRoutes,
+  ...companiesRoutes,
   ...collegesRoutes,
   ...careerMapRoutes,
-  ...aiRoutes,
+  ...employerRoutes,
+  ...marketplaceRoutes,
+  ...proRoutes,
+  
+  ...seoRoutes,
   ...adminRoutes,
-  ...profileRoutes,
+  ...enterpriseRoutes,
 ];
