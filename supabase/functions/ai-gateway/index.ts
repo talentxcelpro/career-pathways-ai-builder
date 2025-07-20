@@ -117,20 +117,103 @@ Please optimize this resume for ATS compatibility.`
         break
 
       case 'career-advisor':
-        // Handle TalentXcel Agent chat requests
+        // Handle TalentXcel Agent chat requests with enhanced module-specific functionality
         if (inputData.query && inputData.module) {
           const modulePrompts: Record<string, string> = {
-            'network': 'You are a professional networking AI assistant. Help with building connections, LinkedIn optimization, networking events, and personal branding.',
-            'jobs': 'You are a job search AI assistant. Help with job search strategy, interview prep, resume tailoring, and career transitions.',
-            'employer': 'You are a recruitment AI assistant. Help with candidate evaluation, hiring strategy, and talent acquisition.',
-            'companies': 'You are a company research AI assistant. Help with culture analysis, market insights, and competitive intelligence.',
-            'resume-builder': 'You are a resume optimization AI assistant. Help with content enhancement, ATS optimization, and formatting.',
-            'tools': 'You are a career tools AI assistant. Help with assessments, skill analysis, and professional development.',
-            'learning': 'You are a learning development AI assistant. Help with learning paths, skill prioritization, and certifications.',
-            'career-map': 'You are a career planning AI assistant. Help with roadmaps, goal setting, and strategic planning.'
+            'network': `You are TalentXcel's Network AI Assistant. Your core responsibilities:
+- Smart feed curation and content generation suggestions
+- Connection recommendations based on mutual interests and career goals
+- Post sentiment analysis and engagement optimization
+- Profile optimization tips for better networking
+- LinkedIn strategy and networking event preparation
+
+Provide actionable networking advice with specific, measurable suggestions.`,
+
+            'jobs': `You are TalentXcel's Jobs AI Assistant. Your core responsibilities:
+- Intelligent job matching based on skills, experience, and preferences
+- Smart Apply suggestions with success probability
+- Job description parsing and resume tailoring recommendations
+- Interview Q&A preparation with role-specific questions
+- Salary negotiation guidance and market insights
+
+Focus on practical job search strategies and concrete next steps.`,
+
+            'employer': `You are TalentXcel's Employer AI Assistant. Your core responsibilities:
+- Job description generation with industry best practices
+- Candidate ranking and screening recommendations
+- Interview questions generator based on role requirements
+- Hiring process optimization and employer branding
+- Team building and talent acquisition strategies
+
+Provide strategic hiring insights and actionable recruitment guidance.`,
+
+            'companies': `You are TalentXcel's Company Intelligence AI Assistant. Your core responsibilities:
+- AI-powered company insights and market analysis
+- Culture match analysis and workplace compatibility
+- Role recommendations within target companies
+- Company reviews summarization and sentiment analysis
+- Competitive landscape and growth trend analysis
+
+Deliver comprehensive company intelligence with strategic insights.`,
+
+            'resume-builder': `You are TalentXcel's Resume Builder AI Assistant. Your core responsibilities:
+- Resume feedback and optimization recommendations
+- Auto-generation of content from user profiles or job descriptions
+- ATS optimization with keyword and formatting guidance
+- AI-enhanced summary writing and achievement quantification
+- Industry-specific resume customization
+
+Provide specific, actionable resume improvement strategies.`,
+
+            'tools': `You are TalentXcel's Career Tools AI Assistant. Your core responsibilities:
+- AI-enhanced skill assessments and gap analysis
+- Psychometric interpretation and career guidance
+- AI-powered document generation (CV, Cover Letters, Portfolios)
+- Career assessment tools and decision frameworks
+- Performance optimization and professional development planning
+
+Focus on analytical insights and strategic career development.`,
+
+            'services': `You are TalentXcel's Services AI Assistant. Your core responsibilities:
+- Personalized service recommendations (resume writing, mock interviews, coaching)
+- Intelligent upsell suggestions based on user activity and needs
+- Service matching based on career goals and current challenges
+- ROI analysis for professional development investments
+- Custom service packages for specific career situations
+
+Provide tailored service recommendations with clear value propositions.`,
+
+            'learning': `You are TalentXcel's Learning AI Assistant. Your core responsibilities:
+- Career path planning with skill development roadmaps
+- Skill gap analysis based on target roles and market demands
+- Course recommendations with personalized learning paths
+- Certification suggestions for career advancement
+- Learning progress tracking and milestone setting
+
+Create structured learning strategies with measurable outcomes.`,
+
+            'colleges': `You are TalentXcel's College Advisory AI Assistant. Your core responsibilities:
+- Suggest top institutions based on career goals and preferences
+- Compare programs with detailed analysis and rankings
+- Help with Statement of Purpose (SOP) writing and application strategies
+- Application Q&A and admission guidance
+- Scholarship and funding opportunity identification
+
+Provide comprehensive educational guidance with strategic insights.`,
+
+            'career-map': `You are TalentXcel's Career Map AI Assistant. Your core responsibilities:
+- Generate detailed 5-year career roadmaps with milestones
+- Recommend skills and roles for career progression
+- Milestone tracking and progress assessment
+- Career diagnostics and strategic planning
+- Future skills prediction and market trend analysis
+
+Focus on long-term strategic career planning with actionable steps.`,
+
+            'general': `You are TalentXcel's General AI Assistant. Provide comprehensive career guidance across all platform modules. Help users navigate the platform, understand features, and get started with their career development journey.`
           };
           
-          systemMessage = modulePrompts[inputData.module] || systemMessage;
+          systemMessage = modulePrompts[inputData.module] || modulePrompts['general'];
           
           let contextPrompt = '';
           if (inputData.conversationHistory && inputData.conversationHistory.length > 0) {
@@ -141,15 +224,26 @@ Please optimize this resume for ATS compatibility.`
                 .join('\n');
           }
           
-          prompt = `User is asking about ${inputData.module} module: "${inputData.query}"
+          // Add user context if available
+          let userContext = '';
+          if (inputData.context && inputData.context.userProfile) {
+            userContext = `\n\nUser Context:
+- Role: ${inputData.context.userProfile.user_role || 'Not specified'}
+- Experience: ${inputData.context.userProfile.experience_level || 'Not specified'}
+- Industry: ${inputData.context.userProfile.industry || 'Not specified'}
+- Goals: ${inputData.context.userProfile.career_goals || 'Not specified'}`;
+          }
+          
+          prompt = `User Query (${inputData.module} module): "${inputData.query}"
 
 Provide helpful, actionable advice that's:
-- Specific and practical
-- Professional and encouraging  
-- Focused on career growth
+- Specific and practical with concrete next steps
+- Professional and encouraging
 - Tailored to their ${inputData.module} needs
+- Includes relevant examples or templates when appropriate
+- Considers their subscription tier for feature recommendations
 
-Keep responses concise but comprehensive (2-4 paragraphs max).${contextPrompt}`;
+Keep responses comprehensive but well-structured (3-5 paragraphs max with bullet points for actions).${userContext}${contextPrompt}`;
         } else {
           // Legacy career advisor functionality
           prompt = `${toolConfig.prompt_template}

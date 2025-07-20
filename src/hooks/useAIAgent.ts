@@ -172,6 +172,13 @@ export const useAIAgent = () => {
 
       if (!conversation) throw new Error('No conversation available');
 
+      // Get user profile for context
+      const { data: userProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', conversation.user_id)
+        .single();
+
       const userMessage: AIAgentMessage = {
         id: crypto.randomUUID(),
         type: 'user',
@@ -216,7 +223,10 @@ export const useAIAgent = () => {
               inputData: {
                 query: content,
                 module: moduleName,
-                context: conversation.context_data,
+                context: { 
+                  ...conversation.context_data,
+                  userProfile: userProfile
+                },
                 conversationHistory: updatedMessages.slice(-5) // Last 5 messages for context
               },
               requestMetadata: { category: moduleName }
