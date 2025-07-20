@@ -2,7 +2,7 @@ import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { navItems } from "./nav-items";
 import { NavItem } from "./types/nav-item";
@@ -100,6 +100,12 @@ const App = () => {
                         );
                       })}
                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
+                      
+                      {/* Legacy resume builder redirects */}
+                      <Route path="/resume" element={<Navigate to="/resume/new" replace />} />
+                      <Route path="/resume-builder" element={<Navigate to="/resume/new" replace />} />
+                      <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
+                      <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
                     </Routes>
                   </main>
                   <Footer />

@@ -1,35 +1,18 @@
 
-import { lazy } from 'react';
-import { Navigate } from 'react-router-dom';
-
-// Lazy load components for better performance
-const ComprehensiveResumeBuilder = lazy(() => import('@/pages/resume/ComprehensiveResumeBuilder'));
-const EditResume = lazy(() => import('@/pages/resume/EditResume'));
+import { FileText } from "lucide-react";
+import ComprehensiveResumeBuilder from "@/pages/resume/ComprehensiveResumeBuilder";
+import EditResume from "@/pages/resume/EditResume";
 
 export const resumeRoutes = [
   {
-    path: '/resume',
-    element: <Navigate to="/resume/new" replace />
+    title: "Resume Builder",
+    to: "/resume/new",
+    icon: <FileText className="h-4 w-4" />,
+    page: <ComprehensiveResumeBuilder />,
   },
   {
-    path: '/resume/new',
-    element: <ComprehensiveResumeBuilder />
+    title: "Edit Resume",
+    to: "/resume/edit/:id",
+    page: <EditResume />,
   },
-  {
-    path: '/resume/edit/:id',
-    element: <EditResume />
-  },
-  // Legacy route redirects
-  {
-    path: '/resume-builder',
-    element: <Navigate to="/resume/new" replace />
-  },
-  {
-    path: '/resume-builder/*',
-    element: <Navigate to="/resume/new" replace />
-  },
-  {
-    path: '/resume-builder/edit/:id',
-    element: <Navigate to="/resume/edit/:id" replace />
-  }
 ];
