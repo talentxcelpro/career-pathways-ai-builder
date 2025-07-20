@@ -1,5 +1,4 @@
-
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search } from "lucide-react";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
 import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
@@ -24,6 +23,7 @@ import AIMLTrainingCenter from "../pages/admin/AIMLTrainingCenter";
 import AdminAIManagement from "../pages/AdminAIManagement";
 import CollegesManagement from "../pages/admin/CollegesManagement";
 import { ProUsersPage } from "../components/admin/ProUsersPage";
+import SEOManagement from "../pages/admin/SEOManagement";
 
 export const adminRoutes = [
   {
@@ -241,5 +241,12 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessDashboard" as const,
     description: "Create new subscription plans"
+  },
+  {
+    title: "SEO Management",
+    to: "/admin/seo",
+    icon: <Search className="h-4 w-4" />,
+    page: <SEOManagement />,
+    requiresAuth: true,
   }
 ];
