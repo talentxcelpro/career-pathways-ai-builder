@@ -1,9 +1,9 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ResumeUploader } from '@/components/resume/ResumeUploader';
 import { TemplateSelector } from '@/components/resume/TemplateSelector';
 import { ResumeEditor } from '@/components/resume/ResumeEditor';
+import { AIResumeEnhancer } from '@/components/resume/ai/AIResumeEnhancer';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight, Save, Download } from 'lucide-react';
@@ -53,7 +53,7 @@ const EMPTY_RESUME: Resume = {
   selectedTemplate: 'modern-professional'
 };
 
-type Step = 'upload' | 'template' | 'edit' | 'preview';
+type Step = 'upload' | 'template' | 'edit' | 'enhance' | 'preview';
 
 export const NewResumeBuilder: React.FC = () => {
   const navigate = useNavigate();
@@ -68,6 +68,7 @@ export const NewResumeBuilder: React.FC = () => {
     { id: 'upload', title: 'Upload Resume', description: 'Upload your existing resume' },
     { id: 'template', title: 'Choose Template', description: 'Select a professional template' },
     { id: 'edit', title: 'Edit Content', description: 'Review and edit your information' },
+    { id: 'enhance', title: 'AI Enhancement', description: 'Enhance with AI-powered tools' },
     { id: 'preview', title: 'Preview & Save', description: 'Final review and save' }
   ];
 
@@ -96,6 +97,13 @@ export const NewResumeBuilder: React.FC = () => {
   const handleTemplateSelect = (templateId: string) => {
     setResume(prev => ({ ...prev, selectedTemplate: templateId }));
     setCurrentStep('edit');
+  };
+
+  const handleEnhancementComplete = (enhancedData: any) => {
+    if (enhancedData?.structured_resume) {
+      setResume(prev => ({ ...prev, ...enhancedData.structured_resume }));
+      toast.success('Resume enhanced with AI improvements!');
+    }
   };
 
   const handleSave = async () => {
@@ -138,13 +146,17 @@ export const NewResumeBuilder: React.FC = () => {
         return resume.selectedTemplate !== '';
       case 'edit':
         return resume.personalInfo.fullName && resume.personalInfo.email;
-      default:
+      case 'enhance':
         return true;
+      case 'preview':
+        return false;
+      default:
+        return false;
     }
   };
 
   const handleNext = () => {
-    const stepOrder: Step[] = ['upload', 'template', 'edit', 'preview'];
+    const stepOrder: Step[] = ['upload', 'template', 'edit', 'enhance', 'preview'];
     const currentIndex = stepOrder.indexOf(currentStep);
     if (currentIndex < stepOrder.length - 1) {
       setCurrentStep(stepOrder[currentIndex + 1]);
@@ -152,7 +164,7 @@ export const NewResumeBuilder: React.FC = () => {
   };
 
   const handleBack = () => {
-    const stepOrder: Step[] = ['upload', 'template', 'edit', 'preview'];
+    const stepOrder: Step[] = ['upload', 'template', 'edit', 'enhance', 'preview'];
     const currentIndex = stepOrder.indexOf(currentStep);
     if (currentIndex > 0) {
       setCurrentStep(stepOrder[currentIndex - 1]);
@@ -223,6 +235,13 @@ export const NewResumeBuilder: React.FC = () => {
             </div>
           )}
 
+          {currentStep === 'enhance' && (
+            <AIResumeEnhancer 
+              resumeData={resume}
+              onEnhancementComplete={handleEnhancementComplete}
+            />
+          )}
+
           {currentStep === 'preview' && (
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4">Resume Preview</h2>
@@ -265,7 +284,7 @@ export const NewResumeBuilder: React.FC = () => {
                 onClick={handleNext}
                 disabled={!canGoNext()}
               >
-                Next
+                {currentStep === 'edit' ? 'Enhance with AI' : 'Next'}
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             )}
