@@ -40,8 +40,11 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({
       startDate: '',
       endDate: '',
       current: false,
+      isCurrentRole: false,
       description: '',
-      achievements: []
+      achievements: [],
+      skills: [],
+      technologies: []
     };
     onChange({
       ...data,

@@ -102,17 +102,25 @@ export const StreamlinedResumeCreator: React.FC = () => {
           website: contactInfo.website || ''
         },
         experience: enhancedSections.experience ? 
-          enhancedSections.experience.split('\n\n').map((exp, index) => ({
-            id: `exp-${index}`,
-            title: `Position ${index + 1}`,
-            company: 'Company Name',
-            location: '',
-            startDate: '',
-            endDate: '',
-            current: false,
-            description: exp.trim(),
-            achievements: []
-          })) : [],
+          (Array.isArray(enhancedSections.experience) 
+            ? enhancedSections.experience 
+            : typeof enhancedSections.experience === 'string'
+              ? enhancedSections.experience.split('\n\n').map((exp, index) => ({
+                  id: `exp-${index}`,
+                  title: `Position ${index + 1}`,
+                  company: 'Company Name',
+                  location: '',
+                  startDate: '',
+                  endDate: '',
+                  current: false,
+                  isCurrentRole: false,
+                  description: exp.trim(),
+                  achievements: [],
+                  skills: [],
+                  technologies: []
+                }))
+              : []
+          ) : [],
         education: enhancedSections.education ?
           enhancedSections.education.split('\n').filter(Boolean).map((edu, index) => ({
             id: `edu-${index}`,
