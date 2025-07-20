@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { EnhancedResumeData } from '@/types/enhanced-resume';
 import { useResumeBuilder } from '@/hooks/useResumeBuilder';
@@ -7,6 +6,7 @@ import { ResumeEditor } from './ResumeEditor';
 import { ResumePreview } from '../ResumePreview';
 import { ATSScoreChecker } from '../ATSScoreChecker';
 import { DataExtractionVerifier } from './DataExtractionVerifier';
+import { EnhancedTemplateSelector } from './EnhancedTemplateSelector';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface UnifiedResumeInterfaceProps {
@@ -32,8 +32,17 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [atsScore, setAtsScore] = useState<number>(0);
   const [originalData, setOriginalData] = useState<any>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('chronological');
-  const [templateRecommendation, setTemplateRecommendation] = useState<any>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('modern-minimal');
+  const [customizationSettings, setCustomizationSettings] = useState({
+    colorScheme: 'professional-blue',
+    fontFamily: 'inter',
+    fontSize: 11,
+    spacing: 'normal' as const,
+    sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
+    showPhoto: true,
+    showBorder: false,
+    accentColor: '#2563eb'
+  });
 
   // Store original data when component mounts
   useEffect(() => {
@@ -69,6 +78,16 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
     updateResumeData(enhancedData);
   };
 
+  const handleExport = async (format: string, settings: any) => {
+    try {
+      console.log('Exporting resume:', { format, settings });
+      await exportResume(format);
+    } catch (error) {
+      console.error('Export failed:', error);
+      throw error;
+    }
+  };
+
   // Show loading state if no resume data
   if (!resumeData) {
     return (
@@ -95,11 +114,12 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
       
       <div className="container mx-auto px-4 py-6">
         <Tabs defaultValue="editor" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="editor">Editor</TabsTrigger>
+            <TabsTrigger value="templates">Templates</TabsTrigger>
             <TabsTrigger value="preview">Preview</TabsTrigger>
-            <TabsTrigger value="ats">ATS Score Card</TabsTrigger>
-            <TabsTrigger value="verification">Data Verification</TabsTrigger>
+            <TabsTrigger value="ats">ATS Score</TabsTrigger>
+            <TabsTrigger value="verification">Verification</TabsTrigger>
           </TabsList>
 
           <TabsContent value="editor" className="space-y-6">
@@ -112,6 +132,27 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                 <ResumeEditor
                   data={resumeData}
                   onChange={updateResumeData}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="templates" className="space-y-6">
+            <div className="bg-card rounded-lg border">
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold">Template & Design</h2>
+                <p className="text-sm text-muted-foreground">Choose and customize your resume template</p>
+              </div>
+              <div className="p-4">
+                <EnhancedTemplateSelector
+                  selectedTemplate={selectedTemplate}
+                  onTemplateSelect={setSelectedTemplate}
+                  customizationSettings={customizationSettings}
+                  onCustomizationChange={setCustomizationSettings}
+                  resumeData={resumeData}
+                  onExport={handleExport}
+                  onNext={() => console.log('Next step')}
+                  onBack={() => console.log('Back step')}
                 />
               </div>
             </div>
