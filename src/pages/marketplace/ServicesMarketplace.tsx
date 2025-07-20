@@ -417,19 +417,19 @@ export default function ServicesMarketplace() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-slate-50/30 to-white">
-      {/* Upwork-Inspired Hero Section */}
+      {/* Compact Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         {/* Background Image Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-800/90 to-slate-900/95" />
         <div 
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-10"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         />
         
-        <div className="relative container mx-auto px-6 pt-20 pb-28">
-          <div className="text-center max-w-6xl mx-auto">
+        <div className="relative container mx-auto px-6 py-12">
+          <div className="text-center max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -443,17 +443,14 @@ export default function ServicesMarketplace() {
                 className="relative"
               >
                 <div className="absolute -inset-4 bg-gradient-to-r from-green-400/20 via-blue-500/20 to-purple-600/20 rounded-3xl blur-xl animate-pulse" />
-                <h1 className="relative text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 text-white leading-[0.95]">
+                <h1 className="relative text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-white leading-[0.95]">
                   <span className="block bg-gradient-to-r from-white via-green-200 to-blue-200 bg-clip-text text-transparent animate-fade-in">
                     Empowering every professional
                   </span>
                   <span className="block text-green-400 drop-shadow-lg animate-fade-in [animation-delay:0.3s]">
-                    to do meaningful work,
+                    to do meaningful work, grow continuously,
                   </span>
-                  <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 bg-clip-text text-transparent animate-fade-in [animation-delay:0.6s]">
-                    grow continuously,
-                  </span>
-                  <span className="block text-yellow-400 drop-shadow-lg animate-fade-in [animation-delay:0.9s]">
+                  <span className="block text-yellow-400 drop-shadow-lg animate-fade-in [animation-delay:0.6s]">
                     and connect with purpose
                   </span>
                 </h1>
@@ -463,7 +460,7 @@ export default function ServicesMarketplace() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.2 }}
-                className="text-xl lg:text-2xl text-gray-300 mb-12 leading-relaxed max-w-4xl mx-auto font-light"
+                className="text-base lg:text-lg text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto font-light"
               >
                 Join a marketplace where talent meets opportunity. 
                 <span className="text-green-400 font-semibold"> Build your career.</span>
