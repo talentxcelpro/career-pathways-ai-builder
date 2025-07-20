@@ -110,10 +110,10 @@ const App = () => {
                   </main>
                   <Footer />
                 </div>
+                <Analytics />
               </AIProvider>
             </AuthProvider>
           </AnalyticsProvider>
-          <Analytics />
         </TooltipProvider>
       </BrowserRouter>
     </QueryClientProvider>
