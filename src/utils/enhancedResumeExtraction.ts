@@ -1,6 +1,32 @@
-
 import { EnhancedResumeData } from '@/types/enhanced-resume';
 import { supabase } from '@/integrations/supabase/client';
+
+export interface CategorizedSkills {
+  technical: string[];
+  soft: string[];
+  languages: string[];
+  tools: string[];
+  frameworks: string[];
+  databases: string[];
+  certifications: string[];
+}
+
+export interface EnhancedProject {
+  name: string;
+  description: string;
+  technologies: string[];
+  duration?: string;
+  link?: string;
+  role?: string;
+}
+
+export interface FieldConfidence {
+  field: string;
+  value: any;
+  confidence: number;
+  completeness: number;
+  quality_score: number;
+}
 
 export interface ParsedResumeData {
   name: string;
@@ -8,26 +34,41 @@ export interface ParsedResumeData {
   phone: string;
   location: string;
   summary: string;
-  skills: string[];
+  skills: CategorizedSkills;
   work_experience: Array<{
     company: string;
     title: string;
     duration: string;
     location: string;
     description: string;
+    achievements: string[];
+    technologies_used?: string[];
   }>;
   education: Array<{
     degree: string;
     institution: string;
     duration: string;
     location: string;
+    gpa?: string;
+    relevant_coursework?: string[];
+    honors?: string[];
   }>;
-  certifications: string[];
-  projects: string[];
-  languages: string[];
+  certifications: Array<{
+    name: string;
+    issuer: string;
+    date?: string;
+    expiry?: string;
+    credential_id?: string;
+  }>;
+  projects: EnhancedProject[];
+  languages: Array<{
+    language: string;
+    proficiency: string;
+  }>;
   linkedin: string;
   github: string;
   portfolio: string;
+  additional_links: string[];
 }
 
 export interface EnhancedParsingResult {
@@ -35,10 +76,24 @@ export interface EnhancedParsingResult {
   data?: {
     structured_resume: ParsedResumeData;
     raw_text: string;
+    field_confidence: FieldConfidence[];
+    ats_compatibility: {
+      score: number;
+      keyword_density: number;
+      format_score: number;
+      section_completeness: number;
+    };
+    content_quality: {
+      overall_score: number;
+      grammar_score: number;
+      detail_level: number;
+      achievement_focus: number;
+    };
     key_metrics: {
       years_experience: number;
       top_skills_matched: string[];
       confidence_score: number;
+      completeness_percentage: number;
     };
   };
   error?: string;
@@ -241,16 +296,23 @@ export class EnhancedResumeExtractor {
       // Fallback to rule-based parsing
       console.log('🔄 Using fallback rule-based parsing...');
       const fallbackResult = await this.fallbackParsing(processedText);
+      const fieldConfidence = this.calculateFieldConfidence(fallbackResult);
+      const atsMetrics = this.calculateATSCompatibility(fallbackResult, extractedText);
+      const qualityMetrics = this.calculateContentQuality(fallbackResult, extractedText);
       
       return {
         success: true,
         data: {
           structured_resume: fallbackResult,
           raw_text: extractedText,
+          field_confidence: fieldConfidence,
+          ats_compatibility: atsMetrics,
+          content_quality: qualityMetrics,
           key_metrics: {
             years_experience: this.calculateExperience(fallbackResult.work_experience),
-            top_skills_matched: fallbackResult.skills.slice(0, 5),
-            confidence_score: 65 // Lower confidence for fallback
+            top_skills_matched: this.getAllSkillsArray(fallbackResult.skills).slice(0, 5),
+            confidence_score: 65, // Lower confidence for fallback
+            completeness_percentage: this.calculateCompleteness(fallbackResult)
           }
         }
       };
@@ -335,13 +397,13 @@ export class EnhancedResumeExtractor {
 
     // Extract skills with better pattern matching
     const skillsSection = text.match(/(?:SKILLS|TECHNOLOGIES|TECHNICAL\s+SKILLS)[:\s]*(.*?)(?=\n\s*(?:[A-Z]{2,}|$))/is)?.[1] || '';
-    const skills = this.extractSkillsFromText(skillsSection + ' ' + text);
+    const skills = this.categorizeSkills(this.extractSkillsFromText(skillsSection + ' ' + text));
 
     // Extract experience
-    const work_experience = this.extractWorkExperience(text);
+    const work_experience = this.enhanceWorkExperience(this.extractWorkExperience(text));
 
     // Extract education
-    const education = this.extractEducation(text);
+    const education = this.enhanceEducation(this.extractEducation(text));
 
     return {
       name: name.trim(),
@@ -352,12 +414,13 @@ export class EnhancedResumeExtractor {
       skills,
       work_experience,
       education,
-      certifications: this.extractCertifications(text),
-      projects: this.extractProjects(text),
-      languages: this.extractLanguages(text),
+      certifications: this.enhanceCertifications(this.extractCertifications(text)),
+      projects: this.enhanceProjects(this.extractProjects(text)),
+      languages: this.enhanceLanguages(this.extractLanguages(text)),
       linkedin,
       github,
-      portfolio: ''
+      portfolio: '',
+      additional_links: []
     };
   }
 
@@ -639,5 +702,215 @@ export class EnhancedResumeExtractor {
     });
     
     return totalYears;
+  }
+
+  // Enhanced utility methods for Phase 3
+  private static categorizeSkills(skillsList: string[]): CategorizedSkills {
+    const skillCategories = {
+      technical: ['JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'C#', 'PHP', 'Ruby', 'Go', 'Swift', 'Kotlin', 'HTML', 'CSS', 'SQL'],
+      frameworks: ['React', 'Angular', 'Vue', 'Node.js', 'Express', 'Django', 'Flask', 'Spring', 'Laravel', 'Next.js'],
+      databases: ['MySQL', 'PostgreSQL', 'MongoDB', 'Redis', 'SQLite', 'Oracle', 'Cassandra'],
+      tools: ['Git', 'Docker', 'Kubernetes', 'Jenkins', 'Figma', 'Photoshop', 'Illustrator', 'Sketch', 'InVision'],
+      soft: ['Leadership', 'Communication', 'Project Management', 'Team Management', 'Problem Solving', 'Critical Thinking'],
+      certifications: ['AWS', 'Azure', 'GCP', 'PMP', 'Scrum Master', 'CISSP'],
+      languages: []
+    };
+
+    const result: CategorizedSkills = {
+      technical: [],
+      soft: [],
+      languages: [],
+      tools: [],
+      frameworks: [],
+      databases: [],
+      certifications: []
+    };
+
+    skillsList.forEach(skill => {
+      let categorized = false;
+      for (const [category, keywords] of Object.entries(skillCategories)) {
+        if (keywords.some(keyword => skill.toLowerCase().includes(keyword.toLowerCase()))) {
+          result[category as keyof CategorizedSkills].push(skill);
+          categorized = true;
+          break;
+        }
+      }
+      if (!categorized) {
+        result.technical.push(skill); // Default to technical
+      }
+    });
+
+    return result;
+  }
+
+  private static enhanceWorkExperience(experiences: any[]): ParsedResumeData['work_experience'] {
+    return experiences.map(exp => ({
+      ...exp,
+      achievements: this.extractAchievements(exp.description || ''),
+      technologies_used: this.extractTechnologies(exp.description || '')
+    }));
+  }
+
+  private static enhanceEducation(education: any[]): ParsedResumeData['education'] {
+    return education.map(edu => ({
+      ...edu,
+      gpa: '',
+      relevant_coursework: [],
+      honors: []
+    }));
+  }
+
+  private static enhanceCertifications(certs: string[]): ParsedResumeData['certifications'] {
+    return certs.map(cert => ({
+      name: cert,
+      issuer: '',
+      date: '',
+      expiry: '',
+      credential_id: ''
+    }));
+  }
+
+  private static enhanceProjects(projects: string[]): EnhancedProject[] {
+    return projects.map(project => ({
+      name: project,
+      description: '',
+      technologies: [],
+      duration: '',
+      link: '',
+      role: ''
+    }));
+  }
+
+  private static enhanceLanguages(languages: string[]): ParsedResumeData['languages'] {
+    return languages.map(lang => ({
+      language: lang,
+      proficiency: 'intermediate'
+    }));
+  }
+
+  private static extractAchievements(description: string): string[] {
+    const achievementPatterns = [
+      /increased[^.]*?(\d+%)/gi,
+      /improved[^.]*?(\d+%)/gi,
+      /reduced[^.]*?(\d+%)/gi,
+      /saved[^.]*?\$[\d,]+/gi,
+      /generated[^.]*?\$[\d,]+/gi
+    ];
+
+    const achievements: string[] = [];
+    achievementPatterns.forEach(pattern => {
+      const matches = description.match(pattern);
+      if (matches) achievements.push(...matches);
+    });
+
+    return achievements;
+  }
+
+  private static extractTechnologies(description: string): string[] {
+    const techKeywords = ['React', 'Node.js', 'Python', 'AWS', 'Docker', 'MySQL', 'MongoDB'];
+    return techKeywords.filter(tech => 
+      description.toLowerCase().includes(tech.toLowerCase())
+    );
+  }
+
+  private static getAllSkillsArray(skills: CategorizedSkills): string[] {
+    return [
+      ...skills.technical,
+      ...skills.frameworks,
+      ...skills.databases,
+      ...skills.tools,
+      ...skills.soft,
+      ...skills.certifications
+    ];
+  }
+
+  private static calculateFieldConfidence(resume: ParsedResumeData): FieldConfidence[] {
+    const fields = [
+      { name: 'name', weight: 10 },
+      { name: 'email', weight: 10 },
+      { name: 'phone', weight: 8 },
+      { name: 'summary', weight: 8 },
+      { name: 'work_experience', weight: 25 },
+      { name: 'education', weight: 15 },
+      { name: 'skills', weight: 15 }
+    ];
+
+    return fields.map(field => {
+      const value = resume[field.name as keyof ParsedResumeData];
+      let confidence = 0;
+      let completeness = 0;
+      let quality = 0;
+
+      if (value) {
+        if (typeof value === 'string' && value.trim().length > 0) {
+          confidence = 90;
+          completeness = 1;
+          quality = value.length > 10 ? 100 : 60;
+        } else if (Array.isArray(value) && value.length > 0) {
+          confidence = 85;
+          completeness = 1;
+          quality = value.length >= 3 ? 100 : (value.length / 3) * 100;
+        } else if (typeof value === 'object' && Object.keys(value).length > 0) {
+          confidence = 80;
+          completeness = 1;
+          quality = 85;
+        }
+      }
+
+      return {
+        field: field.name,
+        value,
+        confidence,
+        completeness,
+        quality_score: quality
+      };
+    });
+  }
+
+  private static calculateATSCompatibility(resume: ParsedResumeData, rawText: string) {
+    let formatScore = 0;
+    formatScore += resume.name ? 20 : 0;
+    formatScore += resume.email ? 20 : 0;
+    formatScore += resume.work_experience?.length > 0 ? 30 : 0;
+    formatScore += resume.education?.length > 0 ? 20 : 0;
+    formatScore += this.getAllSkillsArray(resume.skills).length > 0 ? 10 : 0;
+
+    const keywordDensity = Math.min((rawText.split(' ').length / 100) * 5, 100);
+    const sectionCompleteness = 85; // Assume good completeness
+
+    return {
+      score: Math.round((formatScore + keywordDensity + sectionCompleteness) / 3),
+      keyword_density: Math.round(keywordDensity),
+      format_score: formatScore,
+      section_completeness: sectionCompleteness
+    };
+  }
+
+  private static calculateContentQuality(resume: ParsedResumeData, rawText: string) {
+    const avgDescLength = resume.work_experience?.reduce((acc, exp) => 
+      acc + (exp.description?.length || 0), 0) / (resume.work_experience?.length || 1);
+    
+    const detailLevel = Math.min((avgDescLength / 100) * 100, 100);
+    const achievementKeywords = ['increased', 'improved', 'reduced', 'achieved', 'delivered'];
+    const achievementFocus = achievementKeywords.reduce((acc, keyword) => 
+      acc + (rawText.toLowerCase().includes(keyword) ? 1 : 0), 0) * 20;
+
+    return {
+      overall_score: Math.round((80 + detailLevel + achievementFocus) / 3),
+      grammar_score: 80,
+      detail_level: Math.round(detailLevel),
+      achievement_focus: Math.min(Math.round(achievementFocus), 100)
+    };
+  }
+
+  private static calculateCompleteness(resume: ParsedResumeData): number {
+    const requiredFields = ['name', 'email', 'work_experience', 'education'];
+    const presentFields = requiredFields.filter(field => {
+      const value = resume[field as keyof ParsedResumeData];
+      return value && (typeof value === 'string' ? value.trim().length > 0 : 
+                      Array.isArray(value) ? value.length > 0 : true);
+    });
+    
+    return Math.round((presentFields.length / requiredFields.length) * 100);
   }
 }

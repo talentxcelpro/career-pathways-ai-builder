@@ -106,7 +106,7 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
             endDate: edu.duration.split('-')[1]?.trim() || '',
             gpa: ''
           })),
-          skills: result.data!.structured_resume.skills.map((skill, index) => ({
+          skills: Object.values(result.data!.structured_resume.skills).flat().map((skill, index) => ({
             id: `skill-${index}`,
             name: skill,
             category: 'technical' as const,
