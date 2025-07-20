@@ -485,15 +485,15 @@ export default function ServicesMarketplace() {
               </div>
 
               {/* Popular Searches */}
-              <div className="mb-16">
-                <p className="text-gray-400 mb-4 text-sm font-medium">POPULAR SEARCHES</p>
+              <div className="mb-8">
+                <p className="text-white/80 mb-4 text-sm font-semibold tracking-wide">POPULAR SEARCHES</p>
                 <div className="flex flex-wrap gap-3 justify-center">
                   {['Design my mobile app', 'Hire a virtual assistant', 'AI/ML consultant', 'Build my website', 'Marketing strategy'].map((search, index) => (
                     <Button
                       key={index}
                       variant="outline"
                       size="sm"
-                      className="border-gray-600 text-gray-300 hover:bg-white/10 hover:border-gray-400 rounded-full px-4 py-2"
+                      className="border-white/30 bg-white/10 text-white hover:bg-white/20 hover:border-white/50 rounded-full px-4 py-2 font-medium backdrop-blur-sm"
                       onClick={() => setSearchTerm(search)}
                     >
                       {search}
