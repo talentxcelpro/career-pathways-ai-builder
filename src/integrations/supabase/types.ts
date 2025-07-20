@@ -1728,6 +1728,36 @@ export type Database = {
         }
         Relationships: []
       }
+      breadcrumb_configs: {
+        Row: {
+          breadcrumb_structure: Json
+          created_at: string
+          id: string
+          is_active: boolean | null
+          page_pattern: string
+          priority: number | null
+          updated_at: string
+        }
+        Insert: {
+          breadcrumb_structure?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          page_pattern: string
+          priority?: number | null
+          updated_at?: string
+        }
+        Update: {
+          breadcrumb_structure?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          page_pattern?: string
+          priority?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bulk_operation_queue: {
         Row: {
           completed_at: string | null
@@ -6021,6 +6051,42 @@ export type Database = {
         }
         Relationships: []
       }
+      hreflang_configs: {
+        Row: {
+          alternate_url: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          language_code: string
+          page_url: string
+          region_code: string | null
+          updated_at: string
+        }
+        Insert: {
+          alternate_url: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          language_code: string
+          page_url: string
+          region_code?: string | null
+          updated_at?: string
+        }
+        Update: {
+          alternate_url?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          language_code?: string
+          page_url?: string
+          region_code?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       industry_skills_library: {
         Row: {
           created_at: string | null
@@ -6072,6 +6138,45 @@ export type Database = {
           id?: string
           interest_items?: string[] | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      internal_links_optimization: {
+        Row: {
+          anchor_text: string
+          created_at: string
+          id: string
+          is_follow: boolean | null
+          link_type: string | null
+          position_in_content: number | null
+          relevance_score: number | null
+          source_url: string
+          target_url: string
+          updated_at: string
+        }
+        Insert: {
+          anchor_text: string
+          created_at?: string
+          id?: string
+          is_follow?: boolean | null
+          link_type?: string | null
+          position_in_content?: number | null
+          relevance_score?: number | null
+          source_url: string
+          target_url: string
+          updated_at?: string
+        }
+        Update: {
+          anchor_text?: string
+          created_at?: string
+          id?: string
+          is_follow?: boolean | null
+          link_type?: string | null
+          position_in_content?: number | null
+          relevance_score?: number | null
+          source_url?: string
+          target_url?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -11322,6 +11427,54 @@ export type Database = {
         }
         Relationships: []
       }
+      search_engine_submissions: {
+        Row: {
+          created_at: string
+          engine_name: string
+          id: string
+          last_checked: string | null
+          max_retries: number | null
+          priority: number | null
+          response_data: Json | null
+          retry_count: number | null
+          status: string | null
+          submission_type: string
+          submitted_at: string | null
+          target_url: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          engine_name: string
+          id?: string
+          last_checked?: string | null
+          max_retries?: number | null
+          priority?: number | null
+          response_data?: Json | null
+          retry_count?: number | null
+          status?: string | null
+          submission_type: string
+          submitted_at?: string | null
+          target_url: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          engine_name?: string
+          id?: string
+          last_checked?: string | null
+          max_retries?: number | null
+          priority?: number | null
+          response_data?: Json | null
+          retry_count?: number | null
+          status?: string | null
+          submission_type?: string
+          submitted_at?: string | null
+          target_url?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       section_analytics: {
         Row: {
           completion_percentage: number | null
@@ -11408,6 +11561,54 @@ export type Database = {
           template_data?: Json
           updated_at?: string | null
           usage_count?: number | null
+        }
+        Relationships: []
+      }
+      seo_cache: {
+        Row: {
+          cache_key: string
+          content: Json
+          created_at: string
+          expires_at: string | null
+          hit_count: number | null
+          id: string
+          is_fresh: boolean | null
+          last_generated: string
+          meta_data: Json | null
+          page_id: string | null
+          page_type: string
+          structured_data: Json | null
+          updated_at: string
+        }
+        Insert: {
+          cache_key: string
+          content?: Json
+          created_at?: string
+          expires_at?: string | null
+          hit_count?: number | null
+          id?: string
+          is_fresh?: boolean | null
+          last_generated?: string
+          meta_data?: Json | null
+          page_id?: string | null
+          page_type: string
+          structured_data?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          cache_key?: string
+          content?: Json
+          created_at?: string
+          expires_at?: string | null
+          hit_count?: number | null
+          id?: string
+          is_fresh?: boolean | null
+          last_generated?: string
+          meta_data?: Json | null
+          page_id?: string | null
+          page_type?: string
+          structured_data?: Json | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -11537,6 +11738,60 @@ export type Database = {
           path?: string
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_monitoring: {
+        Row: {
+          accessibility_score: number | null
+          created_at: string
+          external_links_count: number | null
+          id: string
+          indexing_status: Json | null
+          internal_links_count: number | null
+          meta_quality_score: number | null
+          metrics: Json
+          monitored_at: string | null
+          page_type: string
+          page_url: string
+          performance_score: number | null
+          search_rankings: Json | null
+          structured_data_errors: Json | null
+          updated_at: string
+        }
+        Insert: {
+          accessibility_score?: number | null
+          created_at?: string
+          external_links_count?: number | null
+          id?: string
+          indexing_status?: Json | null
+          internal_links_count?: number | null
+          meta_quality_score?: number | null
+          metrics?: Json
+          monitored_at?: string | null
+          page_type: string
+          page_url: string
+          performance_score?: number | null
+          search_rankings?: Json | null
+          structured_data_errors?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          accessibility_score?: number | null
+          created_at?: string
+          external_links_count?: number | null
+          id?: string
+          indexing_status?: Json | null
+          internal_links_count?: number | null
+          meta_quality_score?: number | null
+          metrics?: Json
+          monitored_at?: string | null
+          page_type?: string
+          page_url?: string
+          performance_score?: number | null
+          search_rankings?: Json | null
+          structured_data_errors?: Json | null
+          updated_at?: string
         }
         Relationships: []
       }

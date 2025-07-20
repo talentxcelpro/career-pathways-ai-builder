@@ -19,6 +19,7 @@ export const useAdvancedSEO = (config: AdvancedSEOConfig = {}) => {
     cls: null,
     ttfb: null
   });
+  const [hreflangTags, setHreflangTags] = useState<string[]>([]);
 
   useEffect(() => {
     // Preload critical resources

@@ -1,11 +1,16 @@
-
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Content-Type': 'application/xml',
+};
+
+interface SitemapConfig {
+  baseUrl: string;
+  changefreq?: string;
+  priority?: number;
+  lastmod?: string;
 }
 
 serve(async (req) => {
@@ -14,178 +19,281 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    console.log('Sitemap generator called');
 
-    const url = new URL(req.url);
-    const sitemapType = url.searchParams.get('type') || 'main';
-    const baseUrl = 'https://talentxcel.in';
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log(`Generating sitemap type: ${sitemapType}`);
+    const { type = 'main', lastmod } = await req.json().catch(() => ({}));
 
-    if (sitemapType === 'index') {
-      // Generate sitemap index
-      const now = new Date().toISOString();
-      const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>${baseUrl}/sitemap.xml</loc>
-    <lastmod>${now}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${baseUrl}/jobs-sitemap.xml</loc>
-    <lastmod>${now}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${baseUrl}/companies-sitemap.xml</loc>
-    <lastmod>${now}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${baseUrl}/courses-sitemap.xml</loc>
-    <lastmod>${now}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${baseUrl}/seo-pages-sitemap.xml</loc>
-    <lastmod>${now}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${baseUrl}/news-sitemap.xml</loc>
-    <lastmod>${now}</lastmod>
-  </sitemap>
-</sitemapindex>`;
+    let sitemap = '';
 
-      return new Response(sitemapIndex, {
-        headers: {
-          ...corsHeaders,
-          'Cache-Control': 'public, max-age=3600'
-        }
-      });
+    switch (type) {
+      case 'main':
+        sitemap = await generateMainSitemap(supabase);
+        break;
+      case 'jobs':
+        sitemap = await generateJobsSitemap(supabase);
+        break;
+      case 'companies':
+        sitemap = await generateCompaniesSitemap(supabase);
+        break;
+      case 'courses':
+        sitemap = await generateCoursesSitemap(supabase);
+        break;
+      case 'seo-pages':
+        sitemap = await generateSEOPagesSitemap(supabase);
+        break;
+      case 'index':
+        sitemap = generateSitemapIndex();
+        break;
+      default:
+        sitemap = await generateMainSitemap(supabase);
     }
 
-    if (sitemapType === 'jobs') {
-      // Generate jobs sitemap
-      const { data: jobs } = await supabase
-        .from('jobs')
-        .select('id, updated_at')
-        .eq('is_active', true)
-        .order('updated_at', { ascending: false })
-        .limit(5000);
+    // Store sitemap in cache
+    await supabase.from('seo_cache').upsert({
+      cache_key: `sitemap_${type}`,
+      content: { sitemap },
+      page_type: 'sitemap',
+      page_id: type,
+      expires_at: getExpirationDate(24 * 60), // 24 hours
+      is_fresh: true,
+      hit_count: 0
+    }, {
+      onConflict: 'cache_key'
+    });
 
-      const xmlUrls = jobs?.map(job => `  <url>
-    <loc>${baseUrl}/jobs/${job.id}</loc>
-    <lastmod>${job.updated_at}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>`).join('\n') || '';
+    console.log(`Generated ${type} sitemap with ${sitemap.split('<url>').length - 1} URLs`);
 
-      const jobsSitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${xmlUrls}
-</urlset>`;
-
-      return new Response(jobsSitemap, { headers: corsHeaders });
-    }
-
-    if (sitemapType === 'companies') {
-      // Generate companies sitemap
-      const { data: companies } = await supabase
-        .from('companies')
-        .select('id, updated_at')
-        .order('updated_at', { ascending: false })
-        .limit(2000);
-
-      const xmlUrls = companies?.map(company => `  <url>
-    <loc>${baseUrl}/companies/${company.id}</loc>
-    <lastmod>${company.updated_at}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>`).join('\n') || '';
-
-      const companiesSitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${xmlUrls}
-</urlset>`;
-
-      return new Response(companiesSitemap, { headers: corsHeaders });
-    }
-
-    if (sitemapType === 'seo-pages') {
-      // Generate SEO landing pages sitemap
-      const now = new Date().toISOString();
-      const seoPages = [
-        // Jobs by location
-        ...['bangalore', 'mumbai', 'delhi', 'hyderabad', 'chennai', 'pune']
-          .map(location => `  <url>
-    <loc>${baseUrl}/jobs/location/${location}</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>`),
-        
-        // Jobs by role
-        ...['software-engineer', 'data-scientist', 'product-manager', 'devops-engineer']
-          .map(role => `  <url>
-    <loc>${baseUrl}/jobs/role/${role}</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>`),
-
-        // Salary guides
-        ...['software-engineer', 'data-scientist', 'product-manager']
-          .map(role => `  <url>
-    <loc>${baseUrl}/salary/${role}</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>`)
-      ];
-
-      const seoSitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${seoPages.join('\n')}
-</urlset>`;
-
-      return new Response(seoSitemap, { headers: corsHeaders });
-    }
-
-    // Default main sitemap
-    const staticPages = [
-      { url: '/', priority: 1.0, changefreq: 'daily' },
-      { url: '/jobs', priority: 0.9, changefreq: 'daily' },
-      { url: '/companies', priority: 0.8, changefreq: 'weekly' },
-      { url: '/learning', priority: 0.8, changefreq: 'daily' },
-      { url: '/network', priority: 0.7, changefreq: 'daily' },
-      { url: '/tools', priority: 0.7, changefreq: 'weekly' },
-      { url: '/career-map', priority: 0.7, changefreq: 'weekly' },
-      { url: '/colleges', priority: 0.6, changefreq: 'monthly' },
-      { url: '/about', priority: 0.5, changefreq: 'monthly' },
-      { url: '/contact', priority: 0.5, changefreq: 'monthly' },
-    ];
-
-    const now = new Date().toISOString();
-    const xmlUrls = staticPages.map(page => `  <url>
-    <loc>${baseUrl}${page.url}</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
-  </url>`).join('\n');
-
-    const mainSitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${xmlUrls}
-</urlset>`;
-
-    return new Response(mainSitemap, { headers: corsHeaders });
+    return new Response(sitemap, {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'public, max-age=3600'
+      }
+    });
 
   } catch (error) {
     console.error('Sitemap generation error:', error);
-    return new Response(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-</urlset>`, {
-      status: 500,
-      headers: corsHeaders
-    });
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
   }
-})
+});
+
+async function generateMainSitemap(supabase: any): Promise<string> {
+  const baseUrl = 'https://talentxcel.in';
+  
+  const staticPages = [
+    { loc: '/', changefreq: 'daily', priority: '1.0' },
+    { loc: '/jobs', changefreq: 'hourly', priority: '0.9' },
+    { loc: '/companies', changefreq: 'daily', priority: '0.8' },
+    { loc: '/learning', changefreq: 'weekly', priority: '0.8' },
+    { loc: '/network', changefreq: 'daily', priority: '0.7' },
+    { loc: '/salary', changefreq: 'weekly', priority: '0.6' },
+    { loc: '/social', changefreq: 'weekly', priority: '0.5' }
+  ];
+
+  let urls = staticPages.map(page => 
+    `  <url>
+    <loc>${baseUrl}${page.loc}</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`
+  ).join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+}
+
+async function generateJobsSitemap(supabase: any): Promise<string> {
+  const baseUrl = 'https://talentxcel.in';
+  
+  // Get active jobs (last 6 months)
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+  const { data: jobs } = await supabase
+    .from('jobs')
+    .select('id, title, updated_at, created_at')
+    .eq('is_active', true)
+    .gte('created_at', sixMonthsAgo.toISOString())
+    .order('updated_at', { ascending: false })
+    .limit(50000);
+
+  if (!jobs || jobs.length === 0) {
+    return generateEmptySitemap();
+  }
+
+  const urls = jobs.map((job: any) => 
+    `  <url>
+    <loc>${baseUrl}/jobs/${job.id}</loc>
+    <lastmod>${job.updated_at ? job.updated_at.split('T')[0] : job.created_at.split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`
+  ).join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+}
+
+async function generateCompaniesSitemap(supabase: any): Promise<string> {
+  const baseUrl = 'https://talentxcel.in';
+  
+  const { data: companies } = await supabase
+    .from('companies')
+    .select('id, slug, updated_at, created_at')
+    .eq('is_active', true)
+    .order('updated_at', { ascending: false })
+    .limit(10000);
+
+  if (!companies || companies.length === 0) {
+    return generateEmptySitemap();
+  }
+
+  const urls = companies.map((company: any) => 
+    `  <url>
+    <loc>${baseUrl}/companies/${company.slug || company.id}</loc>
+    <lastmod>${company.updated_at ? company.updated_at.split('T')[0] : company.created_at.split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`
+  ).join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+}
+
+async function generateCoursesSitemap(supabase: any): Promise<string> {
+  const baseUrl = 'https://talentxcel.in';
+  
+  const { data: courses } = await supabase
+    .from('courses')
+    .select('id, title, updated_at, created_at')
+    .eq('is_active', true)
+    .order('updated_at', { ascending: false })
+    .limit(10000);
+
+  if (!courses || courses.length === 0) {
+    return generateEmptySitemap();
+  }
+
+  const urls = courses.map((course: any) => 
+    `  <url>
+    <loc>${baseUrl}/learning/${course.id}</loc>
+    <lastmod>${course.updated_at ? course.updated_at.split('T')[0] : course.created_at.split('T')[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`
+  ).join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+}
+
+async function generateSEOPagesSitemap(supabase: any): Promise<string> {
+  const baseUrl = 'https://talentxcel.in';
+  
+  // Get unique locations, roles, and skills for SEO pages
+  const locations = ['mumbai', 'delhi', 'bangalore', 'hyderabad', 'pune', 'chennai'];
+  const roles = ['software-engineer', 'data-scientist', 'product-manager', 'designer'];
+  const skills = ['react', 'python', 'java', 'machine-learning', 'aws'];
+
+  const seoPages = [];
+
+  // Location-based job pages
+  locations.forEach(location => {
+    seoPages.push(`/jobs/location/${location}`);
+  });
+
+  // Role-based job pages
+  roles.forEach(role => {
+    seoPages.push(`/jobs/role/${role}`);
+  });
+
+  // Skill-based job pages
+  skills.forEach(skill => {
+    seoPages.push(`/jobs/skill/${skill}`);
+  });
+
+  // Company location pages
+  locations.forEach(location => {
+    seoPages.push(`/companies/location/${location}`);
+  });
+
+  // Salary guides
+  roles.forEach(role => {
+    seoPages.push(`/salary/${role}`);
+  });
+
+  const urls = seoPages.map(page => 
+    `  <url>
+    <loc>${baseUrl}${page}</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>`
+  ).join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+}
+
+function generateSitemapIndex(): string {
+  const baseUrl = 'https://talentxcel.in';
+  const lastmod = new Date().toISOString().split('T')[0];
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${baseUrl}/sitemap.xml</loc>
+    <lastmod>${lastmod}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${baseUrl}/jobs-sitemap.xml</loc>
+    <lastmod>${lastmod}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${baseUrl}/companies-sitemap.xml</loc>
+    <lastmod>${lastmod}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${baseUrl}/courses-sitemap.xml</loc>
+    <lastmod>${lastmod}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${baseUrl}/seo-pages-sitemap.xml</loc>
+    <lastmod>${lastmod}</lastmod>
+  </sitemap>
+</sitemapindex>`;
+}
+
+function generateEmptySitemap(): string {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+</urlset>`;
+}
+
+function getExpirationDate(minutes: number): string {
+  const date = new Date();
+  date.setMinutes(date.getMinutes() + minutes);
+  return date.toISOString();
+}
