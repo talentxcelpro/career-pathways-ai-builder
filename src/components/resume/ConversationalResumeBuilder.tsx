@@ -9,7 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Send, FileText, Sparkles, Download, Copy, RefreshCw, Target, Award, Brain, Zap, User, Briefcase, GraduationCap, Plus, Trash2, Edit } from "lucide-react";
+import { Send, FileText, Sparkles, Download, Copy, RefreshCw, Target, Award, Brain, Zap, User, Briefcase, GraduationCap, Plus, Trash2, Edit, Upload, Eye, Palette } from "lucide-react";
 import { useResumeEnhancement } from "@/hooks/useResumeEnhancement";
 import { useAIService } from "@/hooks/useAIService";
 import { toast } from "sonner";
@@ -83,6 +83,8 @@ const ConversationalResumeBuilder: React.FC = () => {
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [enhancementProgress, setEnhancementProgress] = useState(0);
   const [previewMode, setPreviewMode] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState('modern');
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const { enhanceResumeText, enhanceSingleSection } = useResumeEnhancement();
   const { invokeAITool, optimizeForATS, generateCoverLetter } = useAIService();
 
@@ -200,8 +202,59 @@ const ConversationalResumeBuilder: React.FC = () => {
     }
   };
 
-  const downloadResume = () => {
-    const content = `
+  const templates = {
+    modern: { name: 'Modern', color: 'purple', preview: '/api/placeholder/300/400' },
+    classic: { name: 'Classic', color: 'blue', preview: '/api/placeholder/300/400' },
+    creative: { name: 'Creative', color: 'green', preview: '/api/placeholder/300/400' },
+    minimal: { name: 'Minimal', color: 'gray', preview: '/api/placeholder/300/400' }
+  };
+
+  const parseAndFillResume = async (text: string) => {
+    setIsEnhancing(true);
+    try {
+      // Basic parsing logic - this could be enhanced with AI
+      const lines = text.split('\n').filter(line => line.trim());
+      
+      // Extract name (usually first line)
+      const name = lines[0] || '';
+      
+      // Extract email and phone using regex
+      const emailMatch = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+      const phoneMatch = text.match(/(\+?1?[-.\s]?)?(\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4})/);
+      
+      // Extract sections
+      const summaryStart = text.toLowerCase().indexOf('summary');
+      const experienceStart = text.toLowerCase().indexOf('experience');
+      const educationStart = text.toLowerCase().indexOf('education');
+      const skillsStart = text.toLowerCase().indexOf('skills');
+      
+      let summary = '';
+      if (summaryStart !== -1) {
+        const summaryEnd = experienceStart !== -1 ? experienceStart : text.length;
+        summary = text.substring(summaryStart, summaryEnd).replace(/summary/i, '').trim();
+      }
+      
+      setResumeData(prev => ({
+        ...prev,
+        personalInfo: {
+          ...prev.personalInfo,
+          fullName: name,
+          email: emailMatch ? emailMatch[0] : '',
+          phone: phoneMatch ? phoneMatch[0] : ''
+        },
+        summary: summary
+      }));
+      
+      toast.success('Resume content parsed and filled!');
+    } catch (error) {
+      toast.error('Failed to parse resume content');
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+
+  const formatResumeForDownload = () => {
+    return `
 ${resumeData.personalInfo.fullName}
 ${resumeData.personalInfo.email} | ${resumeData.personalInfo.phone}
 ${resumeData.personalInfo.location}
@@ -239,7 +292,16 @@ ${project.link ? `Link: ${project.link}` : ''}
 ${resumeData.certifications.length > 0 ? `CERTIFICATIONS
 ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${cert.date})`).join('\n')}` : ''}
     `.trim();
-    
+  };
+
+  const copyResumeText = () => {
+    const content = formatResumeForDownload();
+    navigator.clipboard.writeText(content);
+    toast.success('Resume copied to clipboard!');
+  };
+
+  const downloadResume = () => {
+    const content = formatResumeForDownload();
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -280,18 +342,98 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Resume Builder Form */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Template Selector */}
           <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Edit className="h-5 w-5 text-purple-600" />
-                Resume Builder
+                <Palette className="h-5 w-5 text-purple-600" />
+                Choose Template
               </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                {Object.entries(templates).map(([key, template]) => (
+                  <Card 
+                    key={key}
+                    className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
+                      selectedTemplate === key ? 'ring-2 ring-purple-500' : ''
+                    }`}
+                    onClick={() => setSelectedTemplate(key)}
+                  >
+                    <CardContent className="p-3">
+                      <div className="aspect-[3/4] bg-gray-100 rounded mb-2 flex items-center justify-center">
+                        <FileText className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <p className="text-sm font-medium text-center">{template.name}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              <div className="space-y-3 pt-4 border-t">
+                <Label htmlFor="paste-resume">Quick Start: Paste Resume</Label>
+                <Textarea
+                  id="paste-resume"
+                  placeholder="Paste your existing resume content here and we'll automatically fill the form..."
+                  className="min-h-[100px]"
+                  onChange={(e) => {
+                    if (e.target.value.length > 50) {
+                      parseAndFillResume(e.target.value);
+                      e.target.value = '';
+                    }
+                  }}
+                />
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => {
+                    const textarea = document.getElementById('paste-resume') as HTMLTextAreaElement;
+                    if (textarea?.value) {
+                      parseAndFillResume(textarea.value);
+                      textarea.value = '';
+                    }
+                  }}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Parse & Fill Resume
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Resume Builder Form */}
+          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Edit className="h-5 w-5 text-purple-600" />
+                  Resume Builder
+                </CardTitle>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={copyResumeText}
+                    className="shadow-sm"
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setPreviewMode(!previewMode)}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Preview
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6">
+                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
                   <TabsTrigger value="personal" className="text-xs">Personal</TabsTrigger>
                   <TabsTrigger value="summary" className="text-xs">Summary</TabsTrigger>
                   <TabsTrigger value="experience" className="text-xs">Experience</TabsTrigger>
@@ -300,7 +442,7 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                   <TabsTrigger value="extras" className="text-xs">Extras</TabsTrigger>
                 </TabsList>
 
-                <ScrollArea className="h-[500px]">
+                <ScrollArea className="h-[400px]">
                   <TabsContent value="personal" className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
