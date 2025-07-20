@@ -538,9 +538,9 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
       </div>
 
       <div className="max-w-7xl mx-auto p-6">
-        <div className="grid lg:grid-cols-5 gap-6">
-          {/* Form Section - 3 columns */}
-          <div className="lg:col-span-3">
+        <div className="grid lg:grid-cols-7 gap-6">
+          {/* Form + Tools Section - 3 columns */}
+          <div className="lg:col-span-3 space-y-6">
             <Card className="bg-white/70 backdrop-blur-sm border border-gray-200/50 shadow-xl shadow-black/5">
               <CardHeader className="border-b border-gray-100">
                 <div className="flex items-center justify-between">
@@ -1089,13 +1089,311 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                 </Tabs>
               </CardContent>
             </Card>
-          </div>
 
-          {/* Preview Section - 2 columns */}
-          <div className="lg:col-span-2 space-y-6">
             {/* ATS Score Card */}
             {atsScore !== null && (
               <Card className="bg-white/70 backdrop-blur-sm border border-gray-200/50 shadow-xl shadow-black/5">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center justify-between text-lg">
+                    <div className="flex items-center gap-2">
+                      <Target className="h-5 w-5 text-green-600" />
+                      <span>ATS Compatibility</span>
+                    </div>
+                    <Badge 
+                      className={`text-lg px-4 py-1 ${getATSScoreColor(atsScore)}`}
+                    >
+                      {atsScore}%
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Progress value={atsScore} className="h-2 mb-4" />
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span>Contact Info</span>
+                        <Badge variant="outline">
+                          {resumeData.personalInfo.fullName && resumeData.personalInfo.email ? '✓' : '○'}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Summary</span>
+                        <Badge variant="outline">
+                          {resumeData.summary?.length > 50 ? '✓' : '○'}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span>Experience</span>
+                        <Badge variant="outline">
+                          {resumeData.experience.length > 0 ? '✓' : '○'}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Skills</span>
+                        <Badge variant="outline">
+                          {resumeData.skills.length >= 3 ? '✓' : '○'}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Enhancement Tools */}
+            <Card className="bg-white/70 backdrop-blur-sm border border-gray-200/50 shadow-xl shadow-black/5">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Sparkles className="h-5 w-5 text-purple-600" />
+                  TalentXcel Tools
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button 
+                  onClick={enhanceEntireResume}
+                  disabled={isEnhancing}
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 h-12"
+                >
+                  {isEnhancing ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      Enhancing... {enhancementProgress.toFixed(0)}%
+                    </>
+                  ) : (
+                    <>
+                      <Brain className="h-4 w-4 mr-2" />
+                      Enhance Resume
+                    </>
+                  )}
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={createCoverLetter}
+                  disabled={isEnhancing}
+                  className="w-full h-12"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Generate Cover Letter
+                </Button>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    variant="outline"
+                    onClick={downloadPDF}
+                    disabled={isGeneratingPDF}
+                    className="h-10"
+                  >
+                    {isGeneratingPDF ? (
+                      <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
+                      <Download className="h-4 w-4 mr-1" />
+                    )}
+                    PDF
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={copyResumeText}
+                    className="h-10"
+                  >
+                    <Copy className="h-4 w-4 mr-1" />
+                    Copy
+                  </Button>
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => window.open('https://talentxcel.net/', '_blank')}
+                  className="w-full text-xs"
+                >
+                  Learn More • Upgrade to Pro
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Enhanced Live Preview Section - 4 columns */}
+          <div className="lg:col-span-4">
+            <Card className="bg-white/70 backdrop-blur-sm border border-gray-200/50 shadow-xl shadow-black/5 h-[calc(100vh-200px)]">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="flex items-center justify-between text-xl">
+                  <div className="flex items-center gap-3">
+                    <Eye className="h-6 w-6 text-blue-600" />
+                    <span>Live Preview</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge variant="secondary" className="text-sm px-3 py-1">
+                      {templates[selectedTemplate as keyof typeof templates]?.name}
+                    </Badge>
+                    {atsScore !== null && (
+                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${getATSScoreColor(atsScore)}`}>
+                        ATS: {atsScore}%
+                      </div>
+                    )}
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 h-full">
+                <ScrollArea className="h-[calc(100vh-300px)]">
+                  <div 
+                    ref={resumePreviewRef}
+                    className="space-y-6 p-8 bg-white m-6 rounded-xl border-2 border-gray-100 shadow-lg text-base leading-relaxed"
+                    style={{ minHeight: '11in', width: '8.5in', maxWidth: '100%', margin: '0 auto' }}
+                  >
+                    {/* Header */}
+                    <div className="text-center border-b-2 border-gray-200 pb-6">
+                      <h1 className="text-3xl font-bold text-gray-900 mb-3">
+                        {resumeData.personalInfo.fullName || 'Your Name'}
+                      </h1>
+                      <div className="flex flex-wrap justify-center gap-3 text-gray-600 mb-2">
+                        {resumeData.personalInfo.email && (
+                          <span className="font-medium">{resumeData.personalInfo.email}</span>
+                        )}
+                        {resumeData.personalInfo.phone && resumeData.personalInfo.email && (
+                          <span className="text-gray-400">•</span>
+                        )}
+                        {resumeData.personalInfo.phone && (
+                          <span className="font-medium">{resumeData.personalInfo.phone}</span>
+                        )}
+                        {resumeData.personalInfo.location && (resumeData.personalInfo.phone || resumeData.personalInfo.email) && (
+                          <span className="text-gray-400">•</span>
+                        )}
+                        {resumeData.personalInfo.location && (
+                          <span className="font-medium">{resumeData.personalInfo.location}</span>
+                        )}
+                      </div>
+                      {(resumeData.personalInfo.linkedin || resumeData.personalInfo.website) && (
+                        <div className="flex justify-center gap-4 text-blue-600 font-medium">
+                          {resumeData.personalInfo.linkedin && (
+                            <span>{resumeData.personalInfo.linkedin}</span>
+                          )}
+                          {resumeData.personalInfo.website && (
+                            <span>{resumeData.personalInfo.website}</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Summary */}
+                    {resumeData.summary && (
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1">
+                          Professional Summary
+                        </h2>
+                        <p className="text-gray-700 leading-relaxed text-base">{resumeData.summary}</p>
+                      </div>
+                    )}
+
+                    {/* Experience */}
+                    {resumeData.experience.length > 0 && (
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-300 pb-1">
+                          Professional Experience
+                        </h2>
+                        <div className="space-y-5">
+                          {resumeData.experience.map((exp) => (
+                            <div key={exp.id} className="border-l-4 border-blue-500 pl-5">
+                              <h3 className="text-lg font-bold text-gray-900">{exp.title}</h3>
+                              <p className="text-blue-600 font-semibold text-base">{exp.company}</p>
+                              <p className="text-gray-600 mb-3">
+                                {exp.location} • {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
+                              </p>
+                              {exp.description && (
+                                <p className="text-gray-700 leading-relaxed">{exp.description}</p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Education */}
+                    {resumeData.education.length > 0 && (
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-300 pb-1">
+                          Education
+                        </h2>
+                        <div className="space-y-4">
+                          {resumeData.education.map((edu) => (
+                            <div key={edu.id}>
+                              <h3 className="text-lg font-bold text-gray-900">{edu.degree}</h3>
+                              <p className="text-blue-600 font-semibold">{edu.institution}</p>
+                              <p className="text-gray-600">
+                                {edu.location} • {edu.graduationDate}
+                                {edu.gpa && ` • GPA: ${edu.gpa}`}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Skills */}
+                    {resumeData.skills.length > 0 && (
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-300 pb-1">
+                          Technical Skills
+                        </h2>
+                        <div className="flex flex-wrap gap-3">
+                          {resumeData.skills.map((skill) => (
+                            <Badge key={skill.id} variant="secondary" className="text-sm px-4 py-2 font-medium">
+                              {skill.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Projects */}
+                    {resumeData.projects.length > 0 && (
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-300 pb-1">
+                          Notable Projects
+                        </h2>
+                        <div className="space-y-4">
+                          {resumeData.projects.map((project) => (
+                            <div key={project.id}>
+                              <h3 className="text-lg font-bold text-gray-900">{project.name}</h3>
+                              <p className="text-gray-700 mb-2">{project.description}</p>
+                              {project.technologies && (
+                                <p className="text-blue-600 font-medium">Technologies: {project.technologies}</p>
+                              )}
+                              {project.link && (
+                                <a href={project.link} className="text-blue-600 hover:underline font-medium">
+                                  {project.link}
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Certifications */}
+                    {resumeData.certifications.length > 0 && (
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-300 pb-1">
+                          Certifications
+                        </h2>
+                        <div className="space-y-3">
+                          {resumeData.certifications.map((cert) => (
+                            <div key={cert.id} className="flex justify-between items-center">
+                              <div>
+                                <span className="font-bold text-gray-900">{cert.name}</span>
+                                <span className="text-gray-600"> - {cert.issuer}</span>
+                              </div>
+                              <span className="text-gray-600 font-medium">{cert.date}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </CardContent>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center justify-between text-lg">
                     <div className="flex items-center gap-2">
