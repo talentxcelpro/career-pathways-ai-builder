@@ -3,219 +3,266 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Send, FileText, Sparkles, Download, Copy, RefreshCw, Target, Award, Brain, Zap, User, Briefcase, GraduationCap } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Send, FileText, Sparkles, Download, Copy, RefreshCw, Target, Award, Brain, Zap, User, Briefcase, GraduationCap, Plus, Trash2, Edit } from "lucide-react";
 import { useResumeEnhancement } from "@/hooks/useResumeEnhancement";
 import { useAIService } from "@/hooks/useAIService";
-import { useAdvancedResumeAI } from "@/hooks/useAdvancedResumeAI";
 import { toast } from "sonner";
 
-interface Message {
-  id: string;
-  type: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-  data?: any;
-}
-
-interface ConversationStarter {
-  title: string;
-  description: string;
-  prompt: string;
+interface ResumeData {
+  personalInfo: {
+    fullName: string;
+    email: string;
+    phone: string;
+    location: string;
+    linkedin: string;
+    website: string;
+  };
+  summary: string;
+  experience: Array<{
+    id: string;
+    title: string;
+    company: string;
+    location: string;
+    startDate: string;
+    endDate: string;
+    current: boolean;
+    description: string;
+  }>;
+  education: Array<{
+    id: string;
+    degree: string;
+    institution: string;
+    location: string;
+    graduationDate: string;
+    gpa: string;
+  }>;
+  skills: Array<{
+    id: string;
+    name: string;
+    level: string;
+  }>;
+  projects: Array<{
+    id: string;
+    name: string;
+    description: string;
+    technologies: string;
+    link: string;
+  }>;
+  certifications: Array<{
+    id: string;
+    name: string;
+    issuer: string;
+    date: string;
+  }>;
 }
 
 const ConversationalResumeBuilder: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [currentResume, setCurrentResume] = useState<any>(null);
-  const [showStarters, setShowStarters] = useState(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { enhanceResumeText, enhanceSingleSection, isEnhancing } = useResumeEnhancement();
+  const [resumeData, setResumeData] = useState<ResumeData>({
+    personalInfo: {
+      fullName: '',
+      email: '',
+      phone: '',
+      location: '',
+      linkedin: '',
+      website: ''
+    },
+    summary: '',
+    experience: [],
+    education: [],
+    skills: [],
+    projects: [],
+    certifications: []
+  });
+  const [activeTab, setActiveTab] = useState('personal');
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [enhancementProgress, setEnhancementProgress] = useState(0);
+  const [previewMode, setPreviewMode] = useState(false);
+  const { enhanceResumeText, enhanceSingleSection } = useResumeEnhancement();
   const { invokeAITool, optimizeForATS, generateCoverLetter } = useAIService();
-  const { 
-    enhanceContent, 
-    scoreResume, 
-    optimizeForATS: advancedATSOptimization,
-    generateCoverLetter: advancedCoverLetter,
-    isProcessing: isAIProcessing 
-  } = useAdvancedResumeAI();
 
-  const conversationStarters: ConversationStarter[] = [
-    {
-      title: "✨ Enhance Existing Resume",
-      description: "Transform your current resume into a powerful, ATS-optimized masterpiece",
-      prompt: "I'll analyze and enhance your resume with advanced AI techniques. Please paste your resume content, and I'll:\n\n🎯 **Professional Language Enhancement** - Convert weak phrases into powerful, action-oriented statements\n📊 **Achievement Quantification** - Transform responsibilities into measurable accomplishments\n🤖 **ATS Optimization** - Ensure perfect compatibility with Applicant Tracking Systems\n✍️ **Grammar & Style Polish** - Professional tone with clarity improvements\n🔍 **Keyword Integration** - Industry-specific terminology for maximum impact\n\nSimply paste your resume text below!"
-    },
-    {
-      title: "🚀 Build from Scratch",
-      description: "Create a professional resume step-by-step with AI guidance",
-      prompt: "Let's build your resume from the ground up! I'll guide you through each section with intelligent questions and suggestions.\n\n**Getting Started:**\n• What's your target role or industry?\n• How many years of experience do you have?\n• What are your key achievements?\n\nI'll help structure everything into a compelling professional narrative that stands out to employers!"
-    },
-    {
-      title: "🎯 ATS Optimization Expert",
-      description: "Advanced ATS analysis with compatibility scoring and keyword optimization",
-      prompt: "I'll perform comprehensive ATS optimization using advanced parsing algorithms:\n\n📈 **ATS Compatibility Score** - Detailed analysis with improvement recommendations\n🔑 **Strategic Keyword Placement** - Industry-specific terms positioned for maximum impact\n📋 **Format Optimization** - Structure that passes all major ATS systems\n⚡ **Quick Wins Identification** - Immediate improvements for better visibility\n\nShare your resume and target job description (optional) for complete optimization!"
-    },
-    {
-      title: "📝 AI Cover Letter Generator",
-      description: "Create compelling, personalized cover letters that complement your resume",
-      prompt: "I'll craft a persuasive cover letter that perfectly complements your resume:\n\n✨ **Personalized Content** - Tailored to the specific role and company\n🎭 **Tone Matching** - Professional style that reflects your personality\n🔗 **Resume Integration** - Seamlessly connects with your key qualifications\n📊 **Success Metrics** - Proven templates that get results\n\nProvide your resume and the job posting for a custom cover letter!"
-    }
-  ];
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping]);
-
-  const addMessage = (type: 'user' | 'assistant', content: string, data?: any) => {
-    const message: Message = {
+  const addExperience = () => {
+    const newExperience = {
       id: Date.now().toString(),
-      type,
-      content,
-      timestamp: new Date(),
-      data
+      title: '',
+      company: '',
+      location: '',
+      startDate: '',
+      endDate: '',
+      current: false,
+      description: ''
     };
-    setMessages(prev => [...prev, message]);
+    setResumeData(prev => ({
+      ...prev,
+      experience: [...prev.experience, newExperience]
+    }));
   };
 
-  const handleStarterClick = (starter: ConversationStarter) => {
-    setShowStarters(false);
-    addMessage('assistant', starter.prompt);
+  const addEducation = () => {
+    const newEducation = {
+      id: Date.now().toString(),
+      degree: '',
+      institution: '',
+      location: '',
+      graduationDate: '',
+      gpa: ''
+    };
+    setResumeData(prev => ({
+      ...prev,
+      education: [...prev.education, newEducation]
+    }));
   };
 
-  const simulateTyping = async (content: string, delay: number = 30) => {
-    setIsTyping(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setIsTyping(false);
-    addMessage('assistant', content);
+  const addSkill = () => {
+    const newSkill = {
+      id: Date.now().toString(),
+      name: '',
+      level: 'Intermediate'
+    };
+    setResumeData(prev => ({
+      ...prev,
+      skills: [...prev.skills, newSkill]
+    }));
   };
 
-  const processUserInput = async (input: string) => {
-    addMessage('user', input);
-    setInputValue('');
-    setShowStarters(false);
+  const addProject = () => {
+    const newProject = {
+      id: Date.now().toString(),
+      name: '',
+      description: '',
+      technologies: '',
+      link: ''
+    };
+    setResumeData(prev => ({
+      ...prev,
+      projects: [...prev.projects, newProject]
+    }));
+  };
 
-    // Detect intent and respond accordingly
-    const lowerInput = input.toLowerCase();
-    
-    if (lowerInput.includes('paste') || lowerInput.includes('enhance') || lowerInput.includes('improve')) {
-      await simulateTyping("Great! Please paste your resume content below, and I'll enhance it with:\n\n🔹 Professional language improvement\n🔹 ATS optimization\n🔹 Better formatting and structure\n🔹 Achievement-focused content\n\nJust paste the text and I'll get started!");
-    } else if (lowerInput.includes('from scratch') || lowerInput.includes('new resume') || lowerInput.includes('build')) {
-      await simulateTyping("Perfect! Let's build your resume from scratch. I'll guide you through each step:\n\n**Step 1: Basic Information**\nTell me:\n• Your full name\n• Professional email\n• Phone number\n• Location (city, state)\n• LinkedIn profile (if you have one)\n\n**Step 2: Professional Summary**\nWhat's your target role and key strengths?");
-    } else if (lowerInput.includes('ats') || lowerInput.includes('applicant tracking')) {
-      await simulateTyping("I'll optimize your resume for ATS systems! This includes:\n\n✅ Keyword optimization\n✅ Proper formatting for ATS scanning\n✅ Section structure improvements\n✅ Compatibility scoring\n\nPlease share your resume content and any job posting you're targeting.");
-    } else if (lowerInput.includes('cover letter')) {
-      await simulateTyping("I'll help create a compelling cover letter! Please provide:\n\n1. Your resume or key qualifications\n2. The job posting or company details\n3. Any specific achievements to highlight\n\nI'll craft a personalized letter that complements your resume perfectly.");
-    } else if (input.length > 200) {
-      // Likely resume content
-      await handleResumeEnhancement(input);
-    } else {
-      await simulateTyping("I understand you want help with your resume. Here's what I can do:\n\n🔹 **Enhance existing content** - paste your resume for improvement\n🔹 **Build from scratch** - guided resume creation\n🔹 **ATS optimization** - make it ATS-friendly\n🔹 **Cover letter** - create matching cover letters\n\nWhat would you like to work on?");
+  const addCertification = () => {
+    const newCertification = {
+      id: Date.now().toString(),
+      name: '',
+      issuer: '',
+      date: ''
+    };
+    setResumeData(prev => ({
+      ...prev,
+      certifications: [...prev.certifications, newCertification]
+    }));
+  };
+
+  const removeItem = (section: keyof ResumeData, id: string) => {
+    if (Array.isArray(resumeData[section])) {
+      setResumeData(prev => ({
+        ...prev,
+        [section]: (prev[section] as any[]).filter(item => item.id !== id)
+      }));
     }
   };
 
-  const handleResumeEnhancement = async (content: string) => {
-    setIsTyping(true);
+  const updateItem = (section: keyof ResumeData, id: string, field: string, value: any) => {
+    if (Array.isArray(resumeData[section])) {
+      setResumeData(prev => ({
+        ...prev,
+        [section]: (prev[section] as any[]).map(item => 
+          item.id === id ? { ...item, [field]: value } : item
+        )
+      }));
+    }
+  };
+
+  const enhanceSection = async (section: string, content: string) => {
+    setIsEnhancing(true);
+    setEnhancementProgress(0);
     
     try {
-      // Use advanced AI for content enhancement
-      const enhancementResult = await enhanceContent(content);
+      setEnhancementProgress(50);
+      const enhanced = await enhanceSingleSection(content, section as any);
       
-      if (enhancementResult?.success) {
-        const enhanced = enhancementResult.data;
-        setCurrentResume(enhanced);
-        setIsTyping(false);
-        
-        addMessage('assistant', "🎉 **TalentXcel AI Enhancement Complete!**\n\nYour resume has been transformed with:\n\n🚀 **Professional Language Enhancement** - Action-oriented, impactful phrasing\n📊 **Achievement Quantification** - Results-focused content with metrics\n🤖 **ATS Optimization** - Keyword-rich and system-friendly formatting\n✨ **Grammar & Style Polish** - Clear, professional tone throughout\n🎯 **Impact Maximization** - Compelling narrative that highlights your value\n\nYour enhanced resume is displayed below!", enhanced);
-        
-        // Generate and show ATS analysis
-        setTimeout(async () => {
-          const analysis = await scoreResume(content);
-          if (analysis) {
-            addMessage('assistant', `📊 **Comprehensive Resume Analysis**\n\n**Overall Scores:**\n• ATS Compatibility: ${analysis.atsScore}/100\n• Impact & Clarity: ${analysis.impactScore}/100\n• Keyword Optimization: ${analysis.keywordDensity}/100\n• Readability: ${analysis.readabilityScore}/100\n\n**Key Strengths:**\n${analysis.strengths.map(s => `• ${s}`).join('\n')}\n\n**Improvement Areas:**\n${analysis.weaknesses.map(w => `• ${w}`).join('\n')}\n\n**Next Steps:**\n${analysis.suggestions.map(s => `• ${s}`).join('\n')}\n\nWould you like me to optimize it further for a specific job posting or industry?`);
-          }
-        }, 3000);
-      } else {
-        // Fallback to original enhancement
-        const enhanced = await enhanceResumeText(content, { 
-          enhancementType: 'professional',
-          sectionType: 'all'
-        });
-
-        if (enhanced) {
-          setCurrentResume(enhanced);
-          setIsTyping(false);
-          addMessage('assistant', "✅ **Resume Enhancement Complete!**\n\nI've improved your resume with professional language and ATS optimization. Your enhanced resume is displayed below!", enhanced);
+      if (enhanced) {
+        if (section === 'summary') {
+          setResumeData(prev => ({ ...prev, summary: enhanced }));
         }
+        setEnhancementProgress(100);
+        toast.success(`${section} enhanced successfully!`);
       }
     } catch (error) {
-      setIsTyping(false);
-      addMessage('assistant', "I encountered an issue enhancing your resume. Our AI service is temporarily busy - please try again in a moment, or contact support if the problem persists.");
-    }
-  };
-
-  const handleSendMessage = async () => {
-    if (!inputValue.trim() || isEnhancing) return;
-    await processUserInput(inputValue);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
+      toast.error('Enhancement failed. Please try again.');
+    } finally {
+      setIsEnhancing(false);
+      setEnhancementProgress(0);
     }
   };
 
   const downloadResume = () => {
-    if (!currentResume) return;
-    
-    const content = Object.entries(currentResume)
-      .filter(([key, value]) => value && typeof value === 'string')
-      .map(([key, value]) => `${key.toUpperCase()}\n${value}\n`)
-      .join('\n');
+    const content = `
+${resumeData.personalInfo.fullName}
+${resumeData.personalInfo.email} | ${resumeData.personalInfo.phone}
+${resumeData.personalInfo.location}
+${resumeData.personalInfo.linkedin ? `LinkedIn: ${resumeData.personalInfo.linkedin}` : ''}
+${resumeData.personalInfo.website ? `Website: ${resumeData.personalInfo.website}` : ''}
+
+PROFESSIONAL SUMMARY
+${resumeData.summary}
+
+EXPERIENCE
+${resumeData.experience.map(exp => `
+${exp.title} at ${exp.company}
+${exp.location} | ${exp.startDate} - ${exp.current ? 'Present' : exp.endDate}
+${exp.description}
+`).join('\n')}
+
+EDUCATION
+${resumeData.education.map(edu => `
+${edu.degree}
+${edu.institution}, ${edu.location}
+${edu.graduationDate}${edu.gpa ? ` | GPA: ${edu.gpa}` : ''}
+`).join('\n')}
+
+SKILLS
+${resumeData.skills.map(skill => `• ${skill.name} (${skill.level})`).join('\n')}
+
+${resumeData.projects.length > 0 ? `PROJECTS
+${resumeData.projects.map(project => `
+${project.name}
+${project.description}
+Technologies: ${project.technologies}
+${project.link ? `Link: ${project.link}` : ''}
+`).join('\n')}` : ''}
+
+${resumeData.certifications.length > 0 ? `CERTIFICATIONS
+${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${cert.date})`).join('\n')}` : ''}
+    `.trim();
     
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'enhanced-resume.txt';
+    a.download = 'resume.txt';
     a.click();
     URL.revokeObjectURL(url);
   };
 
-  const copyToClipboard = () => {
-    if (!currentResume) return;
-    
-    const content = Object.entries(currentResume)
-      .filter(([key, value]) => value && typeof value === 'string')
-      .map(([key, value]) => `${key.toUpperCase()}\n${value}\n`)
-      .join('\n');
-    
-    navigator.clipboard.writeText(content);
-    toast.success('Resume copied to clipboard!');
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
-      <div className="max-w-6xl mx-auto p-6 space-y-8">
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
         <div className="text-center space-y-4 py-8">
           <div className="flex items-center justify-center gap-3">
             <div className="p-3 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl">
               <Sparkles className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              TalentXcel AI Resume Builder
+              TalentXcel Resume Builder
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Professional resume enhancement powered by advanced AI technology
+            Create professional resumes with AI-powered enhancement
           </p>
           <div className="flex items-center justify-center gap-6 text-sm text-gray-500">
             <div className="flex items-center gap-2">
@@ -228,152 +275,558 @@ const ConversationalResumeBuilder: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <Brain className="h-4 w-4" />
-              <span>AI Powered</span>
+              <span>AI Enhanced</span>
             </div>
           </div>
         </div>
 
-        {showStarters && messages.length === 0 && (
-          <div className="grid md:grid-cols-2 gap-6">
-            {conversationStarters.map((starter, index) => {
-              const icons = [Zap, User, Target, FileText];
-              const IconComponent = icons[index];
-              return (
-                <Card 
-                  key={index}
-                  className="cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-105 border-0 bg-white/80 backdrop-blur-sm hover:bg-white group"
-                  onClick={() => handleStarterClick(starter)}
-                >
-                  <CardHeader className="pb-4">
-                    <CardTitle className="text-lg flex items-center gap-3">
-                      <div className="p-2 bg-gradient-to-br from-purple-100 to-blue-100 rounded-lg group-hover:from-purple-600 group-hover:to-blue-600 transition-all duration-300">
-                        <IconComponent className="h-5 w-5 text-purple-600 group-hover:text-white transition-colors duration-300" />
-                      </div>
-                      <span className="group-hover:text-purple-600 transition-colors duration-300">
-                        {starter.title}
-                      </span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 text-sm leading-relaxed">{starter.description}</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Resume Builder Form */}
+          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Edit className="h-5 w-5 text-purple-600" />
+                Resume Builder
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+                <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6">
+                  <TabsTrigger value="personal" className="text-xs">Personal</TabsTrigger>
+                  <TabsTrigger value="summary" className="text-xs">Summary</TabsTrigger>
+                  <TabsTrigger value="experience" className="text-xs">Experience</TabsTrigger>
+                  <TabsTrigger value="education" className="text-xs">Education</TabsTrigger>
+                  <TabsTrigger value="skills" className="text-xs">Skills</TabsTrigger>
+                  <TabsTrigger value="extras" className="text-xs">Extras</TabsTrigger>
+                </TabsList>
 
-        <Card className="min-h-[600px] bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
-          <CardContent className="p-0">
-            <ScrollArea className="h-[600px] p-8">
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] p-5 rounded-2xl shadow-lg ${
-                    message.type === 'user' 
-                      ? 'bg-gradient-to-br from-purple-600 to-blue-600 text-white' 
-                      : 'bg-white text-gray-900 border border-gray-100'
-                  }`}>
-                    <div className="whitespace-pre-wrap">{message.content}</div>
-                      {message.data && currentResume && (
-                        <div className="mt-6 p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-gray-100 shadow-inner">
-                          <div className="flex justify-between items-center mb-6">
-                            <div>
-                              <h4 className="font-bold text-gray-800 text-lg flex items-center gap-2">
-                                <Award className="h-5 w-5 text-purple-600" />
-                                Enhanced Resume Preview
-                              </h4>
-                              <p className="text-sm text-gray-600 mt-1">AI-optimized and ATS-ready</p>
-                            </div>
-                            <div className="flex gap-3">
-                              <Button size="sm" variant="outline" onClick={copyToClipboard} className="shadow-sm">
-                                <Copy className="h-4 w-4 mr-2" />
-                                Copy
-                              </Button>
-                              <Button size="sm" onClick={downloadResume} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-sm">
-                                <Download className="h-4 w-4 mr-2" />
-                                Download
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="space-y-6 text-sm">
-                            {Object.entries(currentResume).map(([section, content]) => {
-                              if (!content) return null;
-                              const sectionIcons = {
-                                summary: User,
-                                experience: Briefcase,
-                                education: GraduationCap,
-                                skills: Target
-                              };
-                              const IconComponent = sectionIcons[section as keyof typeof sectionIcons] || FileText;
-                              return (
-                                <div key={section} className="bg-white p-4 rounded-lg border border-gray-100">
-                                  <h5 className="font-bold text-gray-800 mb-3 capitalize flex items-center gap-2">
-                                    <IconComponent className="h-4 w-4 text-purple-600" />
-                                    {section.replace(/([A-Z])/g, ' $1').trim()}
-                                  </h5>
-                                  <div className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                    {typeof content === 'string' ? content : JSON.stringify(content, null, 2)}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                        </div>
+                <ScrollArea className="h-[500px]">
+                  <TabsContent value="personal" className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="fullName">Full Name *</Label>
+                        <Input
+                          id="fullName"
+                          value={resumeData.personalInfo.fullName}
+                          onChange={(e) => setResumeData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, fullName: e.target.value }
+                          }))}
+                          placeholder="John Doe"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={resumeData.personalInfo.email}
+                          onChange={(e) => setResumeData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, email: e.target.value }
+                          }))}
+                          placeholder="john@example.com"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phone">Phone *</Label>
+                        <Input
+                          id="phone"
+                          value={resumeData.personalInfo.phone}
+                          onChange={(e) => setResumeData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, phone: e.target.value }
+                          }))}
+                          placeholder="(555) 123-4567"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="location">Location *</Label>
+                        <Input
+                          id="location"
+                          value={resumeData.personalInfo.location}
+                          onChange={(e) => setResumeData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, location: e.target.value }
+                          }))}
+                          placeholder="City, State"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="linkedin">LinkedIn</Label>
+                        <Input
+                          id="linkedin"
+                          value={resumeData.personalInfo.linkedin}
+                          onChange={(e) => setResumeData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, linkedin: e.target.value }
+                          }))}
+                          placeholder="linkedin.com/in/johndoe"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="website">Website</Label>
+                        <Input
+                          id="website"
+                          value={resumeData.personalInfo.website}
+                          onChange={(e) => setResumeData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, website: e.target.value }
+                          }))}
+                          placeholder="johndoe.com"
+                        />
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="summary" className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="summary">Professional Summary</Label>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => enhanceSection('summary', resumeData.summary)}
+                        disabled={isEnhancing || !resumeData.summary}
+                        className="bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 hover:from-purple-700 hover:to-blue-700"
+                      >
+                        {isEnhancing ? (
+                          <RefreshCw className="h-4 w-4 animate-spin mr-1" />
+                        ) : (
+                          <Sparkles className="h-4 w-4 mr-1" />
+                        )}
+                        AI Enhance
+                      </Button>
+                    </div>
+                    <Textarea
+                      id="summary"
+                      value={resumeData.summary}
+                      onChange={(e) => setResumeData(prev => ({ ...prev, summary: e.target.value }))}
+                      placeholder="Write a compelling professional summary that highlights your key skills, experience, and career goals..."
+                      className="min-h-[150px]"
+                    />
+                    {isEnhancing && (
+                      <div className="space-y-2">
+                        <Progress value={enhancementProgress} />
+                        <p className="text-sm text-gray-600">AI is enhancing your summary...</p>
                       </div>
                     )}
-                  </div>
-                </div>
-              ))}
-              
-              {isTyping && (
-                <div className="flex justify-start">
-                  <div className="bg-white p-5 rounded-2xl shadow-lg border border-gray-100">
-                    <div className="flex items-center gap-3">
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </TabsContent>
+
+                  <TabsContent value="experience" className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Work Experience</Label>
+                      <Button size="sm" onClick={addExperience} variant="outline">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Experience
+                      </Button>
+                    </div>
+                    {resumeData.experience.map((exp, index) => (
+                      <Card key={exp.id} className="border border-gray-200">
+                        <CardContent className="p-4 space-y-3">
+                          <div className="flex justify-between items-start">
+                            <h4 className="font-medium">Experience #{index + 1}</h4>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => removeItem('experience', exp.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <Input
+                              placeholder="Job Title"
+                              value={exp.title}
+                              onChange={(e) => updateItem('experience', exp.id, 'title', e.target.value)}
+                            />
+                            <Input
+                              placeholder="Company Name"
+                              value={exp.company}
+                              onChange={(e) => updateItem('experience', exp.id, 'company', e.target.value)}
+                            />
+                            <Input
+                              placeholder="Location"
+                              value={exp.location}
+                              onChange={(e) => updateItem('experience', exp.id, 'location', e.target.value)}
+                            />
+                            <div className="flex gap-2">
+                              <Input
+                                placeholder="Start Date"
+                                value={exp.startDate}
+                                onChange={(e) => updateItem('experience', exp.id, 'startDate', e.target.value)}
+                              />
+                              <Input
+                                placeholder="End Date"
+                                value={exp.endDate}
+                                onChange={(e) => updateItem('experience', exp.id, 'endDate', e.target.value)}
+                                disabled={exp.current}
+                              />
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`current-${exp.id}`}
+                              checked={exp.current}
+                              onChange={(e) => updateItem('experience', exp.id, 'current', e.target.checked)}
+                            />
+                            <Label htmlFor={`current-${exp.id}`}>Currently working here</Label>
+                          </div>
+                          <Textarea
+                            placeholder="Describe your achievements and responsibilities..."
+                            value={exp.description}
+                            onChange={(e) => updateItem('experience', exp.id, 'description', e.target.value)}
+                            className="min-h-[100px]"
+                          />
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </TabsContent>
+
+                  <TabsContent value="education" className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Education</Label>
+                      <Button size="sm" onClick={addEducation} variant="outline">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Education
+                      </Button>
+                    </div>
+                    {resumeData.education.map((edu, index) => (
+                      <Card key={edu.id} className="border border-gray-200">
+                        <CardContent className="p-4 space-y-3">
+                          <div className="flex justify-between items-start">
+                            <h4 className="font-medium">Education #{index + 1}</h4>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => removeItem('education', edu.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <Input
+                              placeholder="Degree"
+                              value={edu.degree}
+                              onChange={(e) => updateItem('education', edu.id, 'degree', e.target.value)}
+                            />
+                            <Input
+                              placeholder="Institution"
+                              value={edu.institution}
+                              onChange={(e) => updateItem('education', edu.id, 'institution', e.target.value)}
+                            />
+                            <Input
+                              placeholder="Location"
+                              value={edu.location}
+                              onChange={(e) => updateItem('education', edu.id, 'location', e.target.value)}
+                            />
+                            <Input
+                              placeholder="Graduation Date"
+                              value={edu.graduationDate}
+                              onChange={(e) => updateItem('education', edu.id, 'graduationDate', e.target.value)}
+                            />
+                            <Input
+                              placeholder="GPA (optional)"
+                              value={edu.gpa}
+                              onChange={(e) => updateItem('education', edu.id, 'gpa', e.target.value)}
+                            />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </TabsContent>
+
+                  <TabsContent value="skills" className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Skills</Label>
+                      <Button size="sm" onClick={addSkill} variant="outline">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Skill
+                      </Button>
+                    </div>
+                    <div className="grid gap-3">
+                      {resumeData.skills.map((skill, index) => (
+                        <div key={skill.id} className="flex items-center gap-3">
+                          <Input
+                            placeholder="Skill name"
+                            value={skill.name}
+                            onChange={(e) => updateItem('skills', skill.id, 'name', e.target.value)}
+                            className="flex-1"
+                          />
+                          <select
+                            value={skill.level}
+                            onChange={(e) => updateItem('skills', skill.id, 'level', e.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-md"
+                          >
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                            <option value="Expert">Expert</option>
+                          </select>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => removeItem('skills', skill.id)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="extras" className="space-y-6">
+                    {/* Projects */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <Label>Projects</Label>
+                        <Button size="sm" onClick={addProject} variant="outline">
+                          <Plus className="h-4 w-4 mr-1" />
+                          Add Project
+                        </Button>
                       </div>
-                      <span className="text-sm text-gray-600 font-medium">TalentXcel AI is analyzing...</span>
+                      {resumeData.projects.map((project, index) => (
+                        <Card key={project.id} className="border border-gray-200">
+                          <CardContent className="p-4 space-y-3">
+                            <div className="flex justify-between items-start">
+                              <h4 className="font-medium">Project #{index + 1}</h4>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => removeItem('projects', project.id)}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <Input
+                              placeholder="Project Name"
+                              value={project.name}
+                              onChange={(e) => updateItem('projects', project.id, 'name', e.target.value)}
+                            />
+                            <Textarea
+                              placeholder="Project Description"
+                              value={project.description}
+                              onChange={(e) => updateItem('projects', project.id, 'description', e.target.value)}
+                            />
+                            <Input
+                              placeholder="Technologies Used"
+                              value={project.technologies}
+                              onChange={(e) => updateItem('projects', project.id, 'technologies', e.target.value)}
+                            />
+                            <Input
+                              placeholder="Project Link (optional)"
+                              value={project.link}
+                              onChange={(e) => updateItem('projects', project.id, 'link', e.target.value)}
+                            />
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Certifications */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <Label>Certifications</Label>
+                        <Button size="sm" onClick={addCertification} variant="outline">
+                          <Plus className="h-4 w-4 mr-1" />
+                          Add Certification
+                        </Button>
+                      </div>
+                      {resumeData.certifications.map((cert, index) => (
+                        <Card key={cert.id} className="border border-gray-200">
+                          <CardContent className="p-4 space-y-3">
+                            <div className="flex justify-between items-start">
+                              <h4 className="font-medium">Certification #{index + 1}</h4>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => removeItem('certifications', cert.id)}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <div className="grid grid-cols-1 gap-3">
+                              <Input
+                                placeholder="Certification Name"
+                                value={cert.name}
+                                onChange={(e) => updateItem('certifications', cert.id, 'name', e.target.value)}
+                              />
+                              <Input
+                                placeholder="Issuing Organization"
+                                value={cert.issuer}
+                                onChange={(e) => updateItem('certifications', cert.id, 'issuer', e.target.value)}
+                              />
+                              <Input
+                                placeholder="Date Obtained"
+                                value={cert.date}
+                                onChange={(e) => updateItem('certifications', cert.id, 'date', e.target.value)}
+                              />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+                </ScrollArea>
+              </Tabs>
+            </CardContent>
+          </Card>
+
+          {/* Resume Preview */}
+          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-purple-600" />
+                  Resume Preview
+                </CardTitle>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={downloadResume}
+                    className="shadow-sm"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[600px] p-6 bg-white rounded-lg border">
+                <div className="space-y-6 text-sm">
+                  {/* Header */}
+                  <div className="text-center border-b pb-4">
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      {resumeData.personalInfo.fullName || "Your Name"}
+                    </h1>
+                    <div className="text-gray-600 mt-2 space-y-1">
+                      {resumeData.personalInfo.email && <div>{resumeData.personalInfo.email}</div>}
+                      {resumeData.personalInfo.phone && <div>{resumeData.personalInfo.phone}</div>}
+                      {resumeData.personalInfo.location && <div>{resumeData.personalInfo.location}</div>}
+                      {resumeData.personalInfo.linkedin && <div>{resumeData.personalInfo.linkedin}</div>}
+                      {resumeData.personalInfo.website && <div>{resumeData.personalInfo.website}</div>}
                     </div>
                   </div>
+
+                  {/* Summary */}
+                  {resumeData.summary && (
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900 mb-3 border-b">PROFESSIONAL SUMMARY</h2>
+                      <p className="text-gray-700 leading-relaxed">{resumeData.summary}</p>
+                    </div>
+                  )}
+
+                  {/* Experience */}
+                  {resumeData.experience.length > 0 && (
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900 mb-3 border-b">EXPERIENCE</h2>
+                      <div className="space-y-4">
+                        {resumeData.experience.map((exp) => (
+                          <div key={exp.id}>
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <h3 className="font-semibold text-gray-900">{exp.title}</h3>
+                                <p className="text-gray-700">{exp.company}</p>
+                              </div>
+                              <div className="text-right text-gray-600">
+                                <p>{exp.location}</p>
+                                <p>{exp.startDate} - {exp.current ? 'Present' : exp.endDate}</p>
+                              </div>
+                            </div>
+                            {exp.description && (
+                              <p className="text-gray-700 leading-relaxed">{exp.description}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Education */}
+                  {resumeData.education.length > 0 && (
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900 mb-3 border-b">EDUCATION</h2>
+                      <div className="space-y-3">
+                        {resumeData.education.map((edu) => (
+                          <div key={edu.id}>
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-semibold text-gray-900">{edu.degree}</h3>
+                                <p className="text-gray-700">{edu.institution}</p>
+                              </div>
+                              <div className="text-right text-gray-600">
+                                <p>{edu.location}</p>
+                                <p>{edu.graduationDate}</p>
+                                {edu.gpa && <p>GPA: {edu.gpa}</p>}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Skills */}
+                  {resumeData.skills.length > 0 && (
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900 mb-3 border-b">SKILLS</h2>
+                      <div className="flex flex-wrap gap-2">
+                        {resumeData.skills.map((skill) => (
+                          <Badge key={skill.id} variant="secondary" className="bg-purple-100 text-purple-800">
+                            {skill.name} ({skill.level})
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Projects */}
+                  {resumeData.projects.length > 0 && (
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900 mb-3 border-b">PROJECTS</h2>
+                      <div className="space-y-3">
+                        {resumeData.projects.map((project) => (
+                          <div key={project.id}>
+                            <h3 className="font-semibold text-gray-900">{project.name}</h3>
+                            <p className="text-gray-700">{project.description}</p>
+                            {project.technologies && (
+                              <p className="text-gray-600">Technologies: {project.technologies}</p>
+                            )}
+                            {project.link && (
+                              <p className="text-purple-600">{project.link}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Certifications */}
+                  {resumeData.certifications.length > 0 && (
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900 mb-3 border-b">CERTIFICATIONS</h2>
+                      <div className="space-y-2">
+                        {resumeData.certifications.map((cert) => (
+                          <div key={cert.id} className="flex justify-between">
+                            <span className="font-medium text-gray-900">{cert.name}</span>
+                            <span className="text-gray-600">{cert.issuer} ({cert.date})</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <div ref={messagesEndRef} />
-          </ScrollArea>
-          
-          <div className="p-6 border-t bg-gray-50/50">
-            <div className="flex gap-4">
-              <Textarea
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="Describe what you need help with, or paste your resume content here..."
-                className="flex-1 min-h-[80px] resize-none border-2 border-gray-200 focus:border-purple-300 bg-white shadow-sm"
-                disabled={isEnhancing || isTyping}
-              />
-              <Button 
-                onClick={handleSendMessage}
-                disabled={!inputValue.trim() || isEnhancing || isTyping}
-                className="px-8 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg"
-                size="lg"
-              >
-                {isEnhancing ? <RefreshCw className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-              </Button>
-            </div>
-            
-            {(isEnhancing || isTyping) && (
-              <div className="mt-4">
-                <Progress value={isEnhancing ? 75 : 35} className="h-3" />
-                <p className="text-sm text-gray-600 mt-2 font-medium">
-                  {isEnhancing ? '🚀 AI is enhancing your resume with advanced optimization...' : '🧠 Processing your request with TalentXcel AI...'}
-                </p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-        </Card>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
 
         <Card className="bg-gradient-to-r from-purple-100 via-blue-100 to-indigo-100 border-0 shadow-xl">
           <CardContent className="p-8">
@@ -395,12 +848,14 @@ const ConversationalResumeBuilder: React.FC = () => {
                   variant="outline" 
                   className="border-2 border-purple-200 hover:border-purple-300 text-purple-700 hover:bg-purple-50"
                   size="lg"
+                  onClick={() => window.open('https://talentxcel.net/', '_blank')}
                 >
                   Learn More
                 </Button>
                 <Button 
                   className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg" 
                   size="lg"
+                  onClick={() => window.open('https://talentxcel.net/', '_blank')}
                 >
                   Upgrade to Pro
                 </Button>
