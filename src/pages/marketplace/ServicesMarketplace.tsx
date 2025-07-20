@@ -229,48 +229,61 @@ export default function ServicesMarketplace() {
 
   const ServiceCard: React.FC<{ service: Service; featured?: boolean }> = ({ service, featured = false }) => (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{ y: -4 }}
-      className={`group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-sm border border-slate-200/50 hover:border-primary/30 transition-all duration-300 ${
-        featured ? 'ring-2 ring-primary/20 shadow-lg' : 'hover:shadow-xl'
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className={`group relative overflow-hidden rounded-3xl bg-white/90 backdrop-blur-xl border border-white/20 hover:border-primary/30 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 ${
+        featured ? 'ring-2 ring-primary/30 shadow-xl shadow-primary/5 bg-gradient-to-br from-white to-primary/[0.02]' : ''
       }`}
     >
+      {/* Gradient Overlay for Featured */}
       {featured && (
-        <div className="absolute top-4 right-4 z-10">
-          <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white border-none">
-            <Sparkles className="h-3 w-3 mr-1" />
-            Featured
-          </Badge>
-        </div>
+        <>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] via-transparent to-accent/[0.02] pointer-events-none" />
+          <div className="absolute top-6 right-6 z-10">
+            <Badge className="bg-gradient-to-r from-primary via-primary/95 to-accent text-white border-none shadow-lg px-3 py-1.5 rounded-full">
+              <Sparkles className="h-3 w-3 mr-1.5" />
+              <span className="font-semibold">Featured</span>
+            </Badge>
+          </div>
+        </>
       )}
       
-      <div className="p-6">
-        {/* Provider Info */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-14 w-14 ring-2 ring-white/50 shadow-sm">
-              <AvatarImage src={service.profile_picture_url} alt={service.provider_name} />
-              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/5">
-                <User className="h-6 w-6 text-primary" />
-              </AvatarFallback>
-            </Avatar>
+      <div className="relative p-8">
+        {/* Premium Provider Info */}
+        <div className="flex items-start justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Avatar className="h-16 w-16 ring-3 ring-white/80 shadow-lg">
+                <AvatarImage src={service.profile_picture_url} alt={service.provider_name} className="object-cover" />
+                <AvatarFallback className="bg-gradient-to-br from-primary/20 via-primary/10 to-accent/10 text-primary text-lg font-bold">
+                  {service.provider_name.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              {service.is_verified && (
+                <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-lg">
+                  <Shield className="h-4 w-4 text-primary" />
+                </div>
+              )}
+            </div>
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-semibold text-lg text-slate-800">{service.provider_name}</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="font-bold text-xl text-foreground">{service.provider_name}</h3>
                 {service.is_verified && (
-                  <Shield className="h-4 w-4 text-blue-500" />
+                  <Badge className="bg-blue-500/10 text-blue-600 border-blue-200 px-2 py-0.5 text-xs">
+                    ✓ Verified
+                  </Badge>
                 )}
               </div>
-              <p className="text-sm text-slate-600 mb-1">{service.professional_title}</p>
-              <div className="flex items-center gap-3 text-xs text-slate-500">
-                <div className="flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
+              <p className="text-muted-foreground font-medium mb-2">{service.professional_title}</p>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4" />
                   <span>{service.provider_location}</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
+                <div className="flex items-center gap-1.5">
+                  <Clock className="h-4 w-4" />
                   <span>{service.years_experience}</span>
                 </div>
               </div>
@@ -279,95 +292,111 @@ export default function ServicesMarketplace() {
         </div>
 
         {/* Service Title & Description */}
-        <div className="mb-4">
-          <h4 className="font-semibold text-xl mb-2 text-slate-800 line-clamp-2">{service.title}</h4>
-          <p className="text-sm text-slate-600 line-clamp-3 mb-3 leading-relaxed">
+        <div className="mb-6">
+          <h4 className="font-bold text-2xl mb-3 text-foreground line-clamp-2 leading-tight">{service.title}</h4>
+          <p className="text-muted-foreground line-clamp-3 mb-4 leading-relaxed text-base">
             {service.description}
           </p>
           
-          {/* What's Included */}
+          {/* What's Included - Enhanced */}
           {service.whats_included.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {service.whats_included.slice(0, 3).map((item, index) => (
-                <Badge key={index} variant="secondary" className="text-xs bg-green-50 text-green-700 border-green-200">
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  {item}
-                </Badge>
-              ))}
-              {service.whats_included.length > 3 && (
-                <Badge variant="outline" className="text-xs text-slate-500">
-                  +{service.whats_included.length - 3} more
-                </Badge>
-              )}
+            <div className="bg-gradient-to-r from-green-50/50 to-emerald-50/50 rounded-2xl p-4 mb-4 border border-green-100/50">
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span className="text-sm font-semibold text-green-800">What's Included</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {service.whats_included.slice(0, 3).map((item, index) => (
+                  <Badge key={index} className="bg-white/80 text-green-700 border-green-200/50 px-3 py-1 rounded-full text-xs font-medium">
+                    ✓ {item}
+                  </Badge>
+                ))}
+                {service.whats_included.length > 3 && (
+                  <Badge variant="outline" className="text-xs text-muted-foreground border-border/50 rounded-full">
+                    +{service.whats_included.length - 3} more included
+                  </Badge>
+                )}
+              </div>
             </div>
           )}
         </div>
 
-        {/* Rating & Reviews */}
-        <div className="flex items-center gap-4 mb-4">
-          <div className="flex items-center gap-1">
-            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm font-medium text-slate-700">{service.average_rating.toFixed(1)}</span>
-            <span className="text-xs text-slate-500">({service.total_reviews} reviews)</span>
+        {/* Rating & Reviews - Enhanced */}
+        <div className="flex items-center justify-between mb-6 p-4 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 rounded-2xl border border-yellow-100/50">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+              <span className="text-lg font-bold text-foreground">{service.average_rating.toFixed(1)}</span>
+              <span className="text-sm text-muted-foreground">({service.total_reviews} reviews)</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <CheckCircle className="h-4 w-4 text-green-500" />
-            <span className="text-xs text-slate-500">{service.total_orders} completed</span>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-green-100/50 rounded-full">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <span className="text-sm font-semibold text-green-700">{service.total_orders} completed</span>
+            </div>
           </div>
         </div>
 
-        {/* Pricing & Delivery */}
-        <div className="flex items-center justify-between mb-4">
+        {/* Pricing & Delivery - Premium */}
+        <div className="flex items-end justify-between mb-6 p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl border border-primary/10">
           <div>
-            <div className="text-2xl font-bold text-slate-800">
+            <div className="text-3xl font-bold text-foreground mb-1">
               {formatPrice(service.price, service.currency)}
             </div>
-            <div className="text-xs text-slate-500 flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              Delivered in {service.delivery_time_days} days
+            <div className="text-sm text-muted-foreground flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              <span className="font-medium">Delivered in {service.delivery_time_days} days</span>
             </div>
           </div>
           
           {/* Payment Methods */}
-          <div className="flex flex-wrap gap-1">
-            {service.payment_methods.slice(0, 2).map((method, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
-                {method}
+          <div className="flex flex-col gap-2 items-end">
+            <div className="flex flex-wrap gap-1.5 justify-end">
+              {service.payment_methods.slice(0, 2).map((method, index) => (
+                <Badge key={index} variant="outline" className="text-xs bg-white/50 border-border/30 rounded-full">
+                  {method}
+                </Badge>
+              ))}
+            </div>
+            <span className="text-xs text-muted-foreground">Payment options</span>
+          </div>
+        </div>
+
+        {/* Contact Preferences */}
+        <div className="flex items-center gap-3 mb-6 p-3 bg-blue-50/30 rounded-xl border border-blue-100/50">
+          <MessageCircle className="h-4 w-4 text-blue-600" />
+          <span className="text-sm font-medium text-blue-900">Available via:</span>
+          <div className="flex gap-2">
+            {service.contact_preferences.map((pref, index) => (
+              <Badge key={index} className="bg-blue-100/50 text-blue-700 border-blue-200/50 px-2 py-1 rounded-full text-xs">
+                {pref}
               </Badge>
             ))}
           </div>
         </div>
 
-        {/* Contact Preferences */}
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-xs text-slate-500">Contact:</span>
-          {service.contact_preferences.map((pref, index) => (
-            <Badge key={index} variant="secondary" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-              {pref}
-            </Badge>
-          ))}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-2">
+        {/* Premium Action Buttons */}
+        <div className="flex gap-3">
           <Button 
             asChild
             variant="outline" 
-            size="sm"
-            className="flex-1 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+            size="lg"
+            className="flex-1 border-border/50 hover:border-primary/30 hover:bg-primary/5 rounded-xl py-3 font-semibold transition-all duration-300"
           >
-            <Link to={service.profile_link} target="_blank" className="flex items-center gap-1">
-              <ExternalLink className="h-3 w-3" />
-              View Profile
+            <Link to={service.profile_link} target="_blank" className="flex items-center gap-2">
+              <ExternalLink className="h-4 w-4" />
+              <span>View Profile</span>
             </Link>
           </Button>
           <Button 
             asChild
-            size="sm"
-            className="flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80"
+            size="lg"
+            className="flex-1 bg-gradient-to-r from-primary via-primary/95 to-accent hover:from-primary/90 hover:via-primary/85 hover:to-accent/90 rounded-xl py-3 font-bold text-white shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            <Link to={`/services/${service.id}`}>
-              Book Now
+            <Link to={`/services/${service.id}`} className="flex items-center gap-2">
+              <span>Book Now</span>
+              <ChevronRight className="h-4 w-4" />
             </Link>
           </Button>
         </div>
@@ -387,38 +416,70 @@ export default function ServicesMarketplace() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-background via-white to-muted/20">
+      {/* Immersive Hero Section */}
+      <div className="relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] via-accent/[0.03] to-primary/[0.02]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,hsl(var(--primary)/0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--accent)/0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_40%,hsl(var(--primary)/0.05),transparent_50%)]" />
+        </div>
+        
+        <div className="relative container mx-auto px-4 pt-24 pb-20">
+          <div className="text-center max-w-5xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8, ease: [0.25, 0.25, 0, 1] }}
             >
-              <h1 className="text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                Professional Services Marketplace
+              {/* Premium Badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 mb-8"
+              >
+                <Sparkles className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium text-foreground/80">Professional Services Excellence</span>
+              </motion.div>
+              
+              <h1 className="text-6xl lg:text-7xl font-bold tracking-tight mb-8 bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent leading-tight">
+                Elite Talent
+                <span className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                  Marketplace
+                </span>
               </h1>
-              <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-                Discover and connect with verified experts. Book services directly. Build your dream career.
+              
+              <p className="text-xl lg:text-2xl text-muted-foreground mb-12 leading-relaxed max-w-3xl mx-auto font-light">
+                Connect with world-class professionals. Premium services. 
+                <span className="text-foreground/80 font-medium"> Exceptional results.</span>
               </p>
               
-              {/* CTA for Providers */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              {/* Enhanced CTAs */}
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                 <Button 
                   asChild
                   size="lg"
-                  className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white px-8 py-3 rounded-full"
+                  className="group relative overflow-hidden bg-gradient-to-r from-primary via-primary/95 to-primary hover:from-primary/90 hover:via-primary/85 hover:to-primary/90 text-white px-10 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-primary/25"
                 >
-                  <Link to="/marketplace/post-service" className="flex items-center gap-2">
-                    <Plus className="h-4 w-4" />
-                    Become a Provider
+                  <Link to="/marketplace/post-service" className="flex items-center gap-3 relative z-10">
+                    <div className="p-1 rounded-full bg-white/20">
+                      <Plus className="h-5 w-5" />
+                    </div>
+                    <span>Join as Expert</span>
+                    <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-                <p className="text-sm text-slate-500">
-                  Join 500+ verified professionals earning on TalentXcel
-                </p>
+                
+                <div className="text-center sm:text-left">
+                  <p className="text-sm text-muted-foreground font-medium">
+                    🚀 <span className="text-primary font-semibold">2,000+</span> verified experts
+                  </p>
+                  <p className="text-xs text-muted-foreground/80">
+                    Earning average <span className="text-foreground font-semibold">$5,000/month</span>
+                  </p>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -426,35 +487,43 @@ export default function ServicesMarketplace() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Enhanced Search and Filters */}
+        {/* Premium Search Interface */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="mb-8"
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mb-12 -mt-10 relative z-10"
         >
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-slate-200/50">
+          <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 max-w-4xl mx-auto">
+            {/* Search Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-foreground mb-2">Find Your Perfect Expert</h2>
+              <p className="text-muted-foreground">Browse thousands of verified professionals</p>
+            </div>
+            
             <div className="flex flex-col lg:flex-row gap-4 mb-6">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+              <div className="flex-1 relative group">
+                <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 group-focus-within:text-primary transition-colors" />
                 <Input
                   placeholder="Search for services, providers, or skills..."
-                  className="pl-12 h-12 bg-white/80 border-slate-200/50 rounded-xl"
+                  className="pl-14 h-14 bg-background border-border/50 rounded-2xl text-lg placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
               
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full lg:w-48 h-12 bg-white/80 border-slate-200/50 rounded-xl">
+                <SelectTrigger className="w-full lg:w-64 h-14 bg-background border-border/50 rounded-2xl text-lg">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white/95 backdrop-blur-xl border-white/20">
                   {categories.map(category => (
-                    <SelectItem key={category.key} value={category.key}>
-                      <div className="flex items-center gap-2">
-                        {category.icon}
-                        <span>{category.label}</span>
+                    <SelectItem key={category.key} value={category.key} className="py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="p-1 rounded-lg bg-primary/10 text-primary">
+                          {category.icon}
+                        </div>
+                        <span className="font-medium">{category.label}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -462,46 +531,69 @@ export default function ServicesMarketplace() {
               </Select>
               
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full lg:w-48 h-12 bg-white/80 border-slate-200/50 rounded-xl">
-                  <SelectValue placeholder="Sort by" />
+                <SelectTrigger className="w-full lg:w-48 h-14 bg-background border-border/50 rounded-2xl text-lg">
+                  <div className="flex items-center gap-2">
+                    <SortAsc className="h-5 w-5 text-muted-foreground" />
+                    <SelectValue placeholder="Sort by" />
+                  </div>
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="best-rated">Best Rated</SelectItem>
-                  <SelectItem value="most-booked">Most Booked</SelectItem>
-                  <SelectItem value="newest">Newest</SelectItem>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
+                <SelectContent className="bg-white/95 backdrop-blur-xl border-white/20">
+                  <SelectItem value="best-rated" className="py-3">⭐ Best Rated</SelectItem>
+                  <SelectItem value="most-booked" className="py-3">🔥 Most Booked</SelectItem>
+                  <SelectItem value="newest" className="py-3">✨ Newest</SelectItem>
+                  <SelectItem value="price-low" className="py-3">💰 Price: Low to High</SelectItem>
+                  <SelectItem value="price-high" className="py-3">💎 Price: High to Low</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Toggle 
+            
+            {/* Smart Quick Filters */}
+            <div className="flex flex-wrap gap-3 pt-6 border-t border-border/30">
+              <Toggle
                 pressed={showAvailableOnly}
                 onPressedChange={setShowAvailableOnly}
-                className="text-sm rounded-full data-[state=on]:bg-green-100 data-[state=on]:text-green-700"
+                className="px-4 py-2 rounded-xl bg-white border border-border/50 hover:bg-primary/5 hover:border-primary/30 data-[state=on]:bg-primary data-[state=on]:text-white"
               >
                 🟢 Available Now
               </Toggle>
+              <Badge variant="outline" className="px-4 py-2 rounded-xl border-border/50 bg-white">
+                {sortedServices.length} services found
+              </Badge>
             </div>
           </div>
         </motion.div>
 
-        {/* Featured Services */}
+        {/* Premium Featured Services */}
         {featuredServices.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
-            className="mb-12"
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mb-16"
           >
-            <div className="flex items-center gap-2 mb-6">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <h2 className="text-3xl font-bold text-slate-800">Featured Professionals</h2>
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 mb-6">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <span className="text-sm font-semibold text-primary">Featured Excellence</span>
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                Premium 
+                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"> Professionals</span>
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Hand-picked experts with exceptional track records and outstanding results
+              </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredServices.map((service) => (
-                <ServiceCard key={service.id} service={service} featured />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredServices.map((service, index) => (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
+                >
+                  <ServiceCard service={service} featured />
+                </motion.div>
               ))}
             </div>
           </motion.div>
@@ -509,29 +601,58 @@ export default function ServicesMarketplace() {
 
         {/* All Services Grid */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.4 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-bold text-slate-800">All Services</h2>
-            <p className="text-slate-600">{sortedServices.length} services available</p>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-4xl font-bold text-foreground mb-2">All Services</h2>
+              <p className="text-muted-foreground">Discover your perfect professional match</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-primary">{sortedServices.length}</p>
+              <p className="text-sm text-muted-foreground">services available</p>
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedServices.map((service) => (
-              <ServiceCard key={service.id} service={service} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {sortedServices.map((service, index) => (
+              <motion.div
+                key={service.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+              >
+                <ServiceCard service={service} />
+              </motion.div>
             ))}
           </div>
           
           {sortedServices.length === 0 && (
-            <div className="text-center py-16">
-              <div className="text-slate-400 mb-4">
-                <MessageCircle className="h-16 w-16 mx-auto mb-4" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="text-center py-20"
+            >
+              <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-12 max-w-lg mx-auto border border-white/20">
+                <div className="text-muted-foreground/50 mb-6">
+                  <MessageCircle className="h-20 w-20 mx-auto mb-4" />
+                </div>
+                <h3 className="text-2xl font-bold text-foreground mb-4">No services found</h3>
+                <p className="text-muted-foreground mb-6">Try adjusting your search criteria or explore different categories</p>
+                <Button 
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedCategory('all');
+                  }}
+                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 rounded-xl"
+                >
+                  Reset Filters
+                </Button>
               </div>
-              <h3 className="text-xl font-semibold text-slate-600 mb-2">No services found</h3>
-              <p className="text-slate-500">Try adjusting your search or filters</p>
-            </div>
+            </motion.div>
           )}
         </motion.div>
       </div>
