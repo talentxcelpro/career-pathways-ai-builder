@@ -214,18 +214,6 @@ export const Navbar = () => {
 
               {/* User Menu */}
               <div className="flex items-center space-x-4">
-                
-                {/* AI Chat Button */}
-                <Link to="/ai-agent">
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-medium"
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Chat
-                  </Button>
-                </Link>
 
                 {/* Notifications */}
                 <Link to="/network/notifications">
