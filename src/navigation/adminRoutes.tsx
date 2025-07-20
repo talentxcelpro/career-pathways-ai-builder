@@ -1,4 +1,4 @@
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag } from "lucide-react";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
 import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
@@ -27,6 +27,9 @@ import SEOManagement from "../pages/admin/SEOManagement";
 import AdvancedSEOManager from "../pages/admin/AdvancedSEOManager";
 import AdCampaignManager from "../pages/admin/AdCampaignManager";
 import SmartPageBuilder from "../pages/admin/SmartPageBuilder";
+import AIAssistantPanel from "../pages/admin/AIAssistantPanel";
+import AdvancedContentHub from "../pages/admin/AdvancedContentHub";
+import FeatureFlagsManager from "../pages/admin/FeatureFlagsManager";
 
 export const adminRoutes = [
   {
@@ -278,5 +281,32 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessDashboard" as const,
     description: "Create and customize landing pages"
+  },
+  {
+    title: "AI Assistant Panel",
+    to: "/admin/ai-assistant",
+    icon: <Brain className="h-4 w-4" />,
+    page: <AIAssistantPanel />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Smart AI suggestions and insights"
+  },
+  {
+    title: "Advanced Content Hub",
+    to: "/admin/content-hub",
+    icon: <FileText className="h-4 w-4" />,
+    page: <AdvancedContentHub />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "AI-powered content creation and management"
+  },
+  {
+    title: "Feature Flags Manager",
+    to: "/admin/feature-flags",
+    icon: <Flag className="h-4 w-4" />,
+    page: <FeatureFlagsManager />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Control feature rollouts and A/B testing"
   }
 ];
