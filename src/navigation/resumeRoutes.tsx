@@ -9,7 +9,7 @@ import EditCoverLetter from "../pages/resume/EditCoverLetter";
 import ResumeSettings from "../pages/resume/ResumeSettings";
 import ResumeChecker from "../pages/tools/ResumeChecker";
 import { EnhancedResumeBuilder } from "../components/resume/enhanced/EnhancedResumeBuilder";
-import NewResumeBuilder from "../pages/resume/NewResumeBuilder";
+import { NewResumeBuilder } from "../pages/resume/NewResumeBuilder";
 
 export const resumeRoutes = [
   {
@@ -22,7 +22,7 @@ export const resumeRoutes = [
     title: "TalentXcel Resume Dashboard",
     to: "/resume-builder",
     icon: <FileText className="h-4 w-4" />,
-    page: <NewResumeBuilder />,
+    page: <ResumeDashboard />,
   },
   {
     title: "Create New Resume",
