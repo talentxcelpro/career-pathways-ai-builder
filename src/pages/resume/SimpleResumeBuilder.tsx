@@ -52,24 +52,30 @@ const SimpleResumeBuilder = () => {
   const formatResumeForDownload = (content: any) => {
     let formatted = '';
     
+    const formatValue = (value: any) => {
+      if (typeof value === 'string') return value;
+      if (typeof value === 'object') return JSON.stringify(value, null, 2);
+      return String(value);
+    };
+    
     if (content.summary) {
       formatted += 'PROFESSIONAL SUMMARY\n';
-      formatted += content.summary + '\n\n';
+      formatted += formatValue(content.summary) + '\n\n';
     }
     
     if (content.experience) {
       formatted += 'PROFESSIONAL EXPERIENCE\n';
-      formatted += content.experience + '\n\n';
+      formatted += formatValue(content.experience) + '\n\n';
     }
     
     if (content.education) {
       formatted += 'EDUCATION\n';
-      formatted += content.education + '\n\n';
+      formatted += formatValue(content.education) + '\n\n';
     }
     
     if (content.skills) {
       formatted += 'SKILLS\n';
-      formatted += content.skills + '\n\n';
+      formatted += formatValue(content.skills) + '\n\n';
     }
     
     return formatted;
@@ -226,19 +232,34 @@ const SimpleResumeBuilder = () => {
                         {enhancedContent.experience && (
                           <div>
                             <h4 className="font-semibold text-gray-800 mb-2">Experience</h4>
-                            <div className="text-gray-700 whitespace-pre-wrap">{enhancedContent.experience}</div>
+                            <div className="text-gray-700 whitespace-pre-wrap">
+                              {typeof enhancedContent.experience === 'string' 
+                                ? enhancedContent.experience 
+                                : JSON.stringify(enhancedContent.experience, null, 2)
+                              }
+                            </div>
                           </div>
                         )}
                         {enhancedContent.education && (
                           <div>
                             <h4 className="font-semibold text-gray-800 mb-2">Education</h4>
-                            <div className="text-gray-700 whitespace-pre-wrap">{enhancedContent.education}</div>
+                            <div className="text-gray-700 whitespace-pre-wrap">
+                              {typeof enhancedContent.education === 'string' 
+                                ? enhancedContent.education 
+                                : JSON.stringify(enhancedContent.education, null, 2)
+                              }
+                            </div>
                           </div>
                         )}
                         {enhancedContent.skills && (
                           <div>
                             <h4 className="font-semibold text-gray-800 mb-2">Skills</h4>
-                            <div className="text-gray-700 whitespace-pre-wrap">{enhancedContent.skills}</div>
+                            <div className="text-gray-700 whitespace-pre-wrap">
+                              {typeof enhancedContent.skills === 'string' 
+                                ? enhancedContent.skills 
+                                : JSON.stringify(enhancedContent.skills, null, 2)
+                              }
+                            </div>
                           </div>
                         )}
                       </div>
