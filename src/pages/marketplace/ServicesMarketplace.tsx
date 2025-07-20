@@ -501,77 +501,7 @@ export default function ServicesMarketplace() {
                   ))}
                 </div>
               </div>
-
-              {/* Trusted By Logos */}
-              <div className="border-t border-gray-700 pt-12">
-                <p className="text-gray-500 text-sm mb-8 tracking-wide">TRUSTED BY</p>
-                <div className="flex items-center justify-center gap-12 opacity-60">
-                  <div className="text-gray-400 font-bold text-lg">Microsoft</div>
-                  <div className="text-gray-400 font-bold text-lg">Airbnb</div>
-                  <div className="text-gray-400 font-bold text-lg">Bissell</div>
-                  <div className="text-gray-400 font-bold text-lg">GE</div>
-                </div>
-              </div>
             </motion.div>
-          </div>
-        </div>
-      </div>
-
-      {/* Categories Section - Upwork Style */}
-      <div className="bg-white py-20">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Explore millions of pros
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Find the perfect professional for any project. From quick tasks to complex challenges.
-            </p>
-          </div>
-          
-          {/* Category Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-16">
-            {categories.slice(1).map((category, index) => (
-              <motion.button
-                key={category.key}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                onClick={() => setSelectedCategory(category.key)}
-                className="group p-6 bg-white rounded-2xl border border-gray-200 hover:border-green-200 hover:shadow-lg transition-all duration-300 text-center"
-              >
-                <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-xl flex items-center justify-center group-hover:bg-green-100 transition-colors">
-                  <div className="text-gray-600 group-hover:text-green-600 transition-colors">
-                    {category.icon}
-                  </div>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{category.label}</h3>
-                <div className="flex items-center justify-center gap-1 text-sm text-gray-500">
-                  <span>100+ skills</span>
-                  <ChevronRight className="h-3 w-3" />
-                </div>
-              </motion.button>
-            ))}
-          </div>
-
-          {/* Skills Search */}
-          <div className="max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-              Find freelancers by relevant skills
-            </h3>
-            <div className="relative">
-              <Input
-                placeholder="Search custom skills"
-                className="h-14 pl-6 pr-32 text-lg border-gray-300 rounded-xl focus:border-green-500 focus:ring-green-500"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <Button 
-                className="absolute right-2 top-2 bg-green-600 hover:bg-green-700 h-10 px-6 rounded-lg font-semibold"
-              >
-                Continue
-              </Button>
-            </div>
           </div>
         </div>
       </div>
