@@ -93,3 +93,6 @@ verify_jwt = false
 
 [functions.working-email-processor]
 verify_jwt = false
+
+[functions.ai-keyword-optimizer]
+verify_jwt = false

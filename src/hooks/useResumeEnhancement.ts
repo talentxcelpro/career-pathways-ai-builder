@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -27,6 +28,12 @@ export const useResumeEnhancement = () => {
 
     try {
       console.log('Starting resume enhancement with options:', options);
+      console.log('Resume text length:', text?.length || 0);
+      
+      // Validate input
+      if (!text || text.trim().length === 0) {
+        throw new Error('Please provide resume text to enhance');
+      }
       
       // Step 1: Parse sections from text
       setEnhancementProgress(25);
@@ -42,31 +49,27 @@ export const useResumeEnhancement = () => {
         education: parser.cleanSectionContent(sections.education)
       };
 
-      // Step 3: Enhance via AI
+      // Step 3: Prepare data for AI enhancement
       setEnhancementProgress(60);
       
-      console.log('Calling ai-resume-enhancement function with data:', {
-        summary: cleanedSections.summary ? cleanedSections.summary.substring(0, 100) + '...' : 'empty',
-        experience: cleanedSections.experience ? cleanedSections.experience.substring(0, 100) + '...' : 'empty',
-        skills: cleanedSections.skills ? cleanedSections.skills.substring(0, 100) + '...' : 'empty',
-        education: cleanedSections.education ? cleanedSections.education.substring(0, 100) + '...' : 'empty',
-        sectionType: options.sectionType === 'all' ? undefined : options.sectionType
+      const requestData = {
+        resumeText: text,
+        ...cleanedSections,
+        sectionType: options.sectionType === 'all' ? undefined : options.sectionType,
+        enhancementType: options.enhancementType || 'general',
+        userId: (await supabase.auth.getUser()).data.user?.id
+      };
+      
+      console.log('Calling enhance-resume function with data:', {
+        textLength: text.length,
+        sectionsFound: Object.keys(cleanedSections).filter(key => cleanedSections[key as keyof typeof cleanedSections]),
+        sectionType: requestData.sectionType,
+        enhancementType: requestData.enhancementType
       });
       
-      // Use unified AI gateway
-      let { data, error } = await supabase.functions.invoke('ai-gateway', {
-        body: {
-          toolSlug: 'resume-enhancer',
-          inputData: {
-            ...cleanedSections,
-            sectionType: options.sectionType === 'all' ? undefined : options.sectionType,
-            enhancementType: options.enhancementType || 'general'
-          },
-          requestMetadata: {
-            category: 'resume',
-            operation: 'resume_enhancement'
-          }
-        }
+      // Try Supabase client first
+      let { data, error } = await supabase.functions.invoke('enhance-resume', {
+        body: requestData
       });
 
       // Direct fetch fallback if Supabase client fails
@@ -80,11 +83,7 @@ export const useResumeEnhancement = () => {
               'apikey': SUPABASE_ANON_KEY,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-              ...cleanedSections,
-              sectionType: options.sectionType === 'all' ? undefined : options.sectionType,
-              enhancementType: options.enhancementType || 'general'
-            })
+            body: JSON.stringify(requestData)
           });
 
           if (response.ok) {
@@ -92,10 +91,13 @@ export const useResumeEnhancement = () => {
             error = null;
             console.log('✅ Direct fetch fallback successful');
           } else {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            const errorText = await response.text();
+            console.error('❌ Direct fetch failed:', errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
           }
         } catch (fetchError) {
           console.error('❌ Both Supabase client and direct fetch failed:', fetchError);
+          throw fetchError;
         }
       }
 
@@ -109,9 +111,9 @@ export const useResumeEnhancement = () => {
         throw new Error(`Enhancement service error: ${data.error}`);
       }
       
-      if (!data) {
-        console.error('Enhancement returned no data');
-        throw new Error('Enhancement service returned no data');
+      if (!data || !data.success) {
+        console.error('Enhancement returned no data or failed');
+        throw new Error('Enhancement service returned no data or failed');
       }
 
       setEnhancementProgress(90);
@@ -138,7 +140,9 @@ export const useResumeEnhancement = () => {
       console.error('Resume enhancement failed:', error);
       
       let errorMessage = 'Failed to enhance resume';
-      if (error.message?.includes('AI service')) {
+      if (error.message?.includes('provide resume text')) {
+        errorMessage = 'Please provide resume text to enhance';
+      } else if (error.message?.includes('AI service')) {
         errorMessage = 'AI enhancement service is currently unavailable. Please try again in a few minutes.';
       } else if (error.message) {
         errorMessage = error.message;
@@ -161,15 +165,23 @@ export const useResumeEnhancement = () => {
     try {
       console.log(`Enhancing single section: ${sectionType}`);
       
+      if (!sectionContent || sectionContent.trim().length === 0) {
+        throw new Error(`Please provide ${sectionType} content to enhance`);
+      }
+      
       const cleanedContent = parser.cleanSectionContent(sectionContent);
       
-      // Enhanced request with fallback and proper function name
+      const requestData = {
+        resumeText: cleanedContent,
+        [sectionType]: cleanedContent,
+        sectionType,
+        enhancementType: 'section_specific',
+        userId: (await supabase.auth.getUser()).data.user?.id
+      };
+      
+      // Enhanced request with fallback
       let { data, error } = await supabase.functions.invoke('enhance-resume', {
-        body: {
-          [sectionType]: cleanedContent,
-          sectionType,
-          enhancementType: 'section_specific'
-        }
+        body: requestData
       });
 
       // Direct fetch fallback if Supabase client fails
@@ -183,11 +195,7 @@ export const useResumeEnhancement = () => {
               'apikey': SUPABASE_ANON_KEY,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-              [sectionType]: cleanedContent,
-              sectionType,
-              enhancementType: 'section_specific'
-            })
+            body: JSON.stringify(requestData)
           });
 
           if (response.ok) {
@@ -195,10 +203,12 @@ export const useResumeEnhancement = () => {
             error = null;
             console.log('✅ Direct fetch fallback successful for section');
           } else {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
           }
         } catch (fetchError) {
           console.error('❌ Both Supabase client and direct fetch failed for section:', fetchError);
+          throw fetchError;
         }
       }
 
@@ -212,7 +222,7 @@ export const useResumeEnhancement = () => {
         throw new Error(data.error);
       }
 
-      const enhancedContent = data[sectionType];
+      const enhancedContent = data.data?.[sectionType] || data[sectionType];
       if (!enhancedContent) {
         throw new Error('No enhanced content returned');
       }
@@ -226,7 +236,9 @@ export const useResumeEnhancement = () => {
       console.error(`${sectionType} enhancement failed:`, error);
       
       let errorMessage = `Failed to enhance ${sectionType} section`;
-      if (error.message?.includes('AI service')) {
+      if (error.message?.includes('provide')) {
+        errorMessage = error.message;
+      } else if (error.message?.includes('AI service')) {
         errorMessage = 'AI enhancement service is currently unavailable. Please try again in a few minutes.';
       } else if (error.message) {
         errorMessage = error.message;
