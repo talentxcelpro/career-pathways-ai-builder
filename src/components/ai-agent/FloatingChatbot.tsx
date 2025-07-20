@@ -205,7 +205,7 @@ export const FloatingChatbot: React.FC<FloatingChatbotProps> = ({ className }) =
                           selectedModule={selectedModule}
                           conversation={currentConversation}
                           onSendMessage={handleSendMessage}
-                          onBack={() => {}} // No back button in floating mode
+                          onBack={null} // No back button in floating mode
                           isLoading={isLoading}
                         />
                       </div>

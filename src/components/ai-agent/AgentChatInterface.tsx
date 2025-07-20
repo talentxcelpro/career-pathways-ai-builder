@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Bot, User, Copy, ThumbsUp, ThumbsDown, Loader2, Sparkles } from 'lucide-react';
+import { Send, ArrowLeft, Bot, User, Copy, ThumbsUp, ThumbsDown, Loader2, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,7 +13,7 @@ interface AgentChatInterfaceProps {
   selectedModule: string | null;
   conversation: AIAgentConversation | null;
   onSendMessage: (message: string, moduleName: string) => void;
-  onBack: () => void;
+  onBack?: (() => void) | null;
   isLoading: boolean;
 }
 
@@ -155,14 +155,16 @@ export const AgentChatInterface: React.FC<AgentChatInterfaceProps> = ({
       {/* Header */}
       <CardHeader className="border-b bg-gradient-to-r from-card to-accent/10">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onBack}
-            className="p-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
+          {onBack && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBack}
+              className="p-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+          )}
           
           <div className="flex-1">
             <CardTitle className="flex items-center gap-3">
@@ -190,17 +192,76 @@ export const AgentChatInterface: React.FC<AgentChatInterfaceProps> = ({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center py-12"
+              className="space-y-6"
             >
-              <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${getModuleColor(selectedModule || 'network')} flex items-center justify-center`}>
+              <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${getModuleColor(selectedModule || 'general')} flex items-center justify-center`}>
                 <Bot className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">
-                Welcome to {selectedModule?.charAt(0).toUpperCase() + selectedModule?.slice(1)} Assistant
-              </h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                I'm here to help you with intelligent insights and recommendations for your {selectedModule} needs. What would you like to explore?
-              </p>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold mb-2">
+                  General Assistant (AI-Powered)
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  How can we help you today?
+                </p>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Choose from popular questions or ask your own.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium text-muted-foreground mb-3">📝 Quick Questions You Can Ask:</h4>
+                
+                {[
+                  {
+                    icon: "🔍",
+                    question: "What are the best career options for someone with my skills?",
+                    description: "(Auto-detects your resume or lets you input your skills)"
+                  },
+                  {
+                    icon: "🎯", 
+                    question: "Help me build a 5-year career roadmap.",
+                    description: "(Get a role-wise, goal-driven career plan)"
+                  },
+                  {
+                    icon: "💼",
+                    question: "Suggest certifications for a Project Manager career.",
+                    description: "(AI recommends top certifications based on your goals)"
+                  },
+                  {
+                    icon: "📄",
+                    question: "Analyze and enhance my resume.",
+                    description: "(Upload or paste your resume for AI optimization)"
+                  },
+                  {
+                    icon: "🤝",
+                    question: "How can I improve my chances of getting hired?",
+                    description: "(AI scans your profile and offers suggestions)"
+                  }
+                ].map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="group cursor-pointer p-3 rounded-lg border border-border/50 hover:border-primary/50 hover:bg-accent/20 transition-all duration-200"
+                    onClick={() => onSendMessage(item.question, selectedModule || 'general')}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg">{item.icon}</span>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm group-hover:text-primary transition-colors">
+                          "{item.question}"
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {item.description}
+                        </p>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors opacity-0 group-hover:opacity-100" />
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
           ) : (
             <div>
