@@ -61,11 +61,8 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   // Extract template recommendation from enhanced data (if available)
   useEffect(() => {
     const enhanced = (resumeData as any)?.enhanced;
-    if (enhanced?.templateRecommendation) {
-      setTemplateRecommendation(enhanced.templateRecommendation);
-      if (enhanced.templateRecommendation.recommended) {
-        setSelectedTemplate(enhanced.templateRecommendation.recommended);
-      }
+    if (enhanced?.templateRecommendation?.recommended) {
+      setSelectedTemplate(enhanced.templateRecommendation.recommended);
     }
   }, [resumeData]);
 

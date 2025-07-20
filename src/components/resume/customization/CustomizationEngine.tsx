@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Palette, Type, Layout, Spacing, 
+  Palette, Type, Layout, AlignJustify, 
   Move, Eye, RotateCcw, Save
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
@@ -239,7 +239,10 @@ export const CustomizationEngine: React.FC<CustomizationEngineProps> = ({
         <TabsContent value="layout" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Spacing & Layout</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <AlignJustify className="h-4 w-4" />
+                Spacing & Layout
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
