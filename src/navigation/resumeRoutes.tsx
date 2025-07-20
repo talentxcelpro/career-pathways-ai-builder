@@ -22,7 +22,7 @@ export const resumeRoutes = [
     title: "TalentXcel Resume Dashboard",
     to: "/resume-builder",
     icon: <FileText className="h-4 w-4" />,
-    page: <ResumeDashboard />,
+    page: <NewResumeBuilder />,
   },
   {
     title: "Create New Resume",
