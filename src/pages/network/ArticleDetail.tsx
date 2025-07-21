@@ -54,30 +54,39 @@ const ArticleDetail = () => {
     queryFn: async () => {
       if (!id) throw new Error('Article ID is required');
 
-      // Increment view count
-      if (user) {
-        await supabase.rpc('increment_view_count', { post_id: id });
-      }
+      // Increment view count - implement later if needed
 
-      const { data, error } = await supabase
+      // First get the post
+      const { data: postData, error: postError } = await supabase
         .from('posts')
-        .select(`
-          *,
-          profiles!posts_author_id_fkey(
-            id,
-            full_name,
-            profile_picture_url,
-            title,
-            current_company,
-            headline,
-            location
-          )
-        `)
+        .select('*')
         .eq('id', id)
         .eq('post_type', 'article')
         .single();
 
-      if (error) throw error;
+      if (postError) throw postError;
+
+      // Then get the profile data
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select(`
+          id,
+          full_name,
+          profile_picture_url,
+          title,
+          current_company,
+          headline,
+          location
+        `)
+        .eq('id', postData.author_id)
+        .single();
+
+      // Combine the data (profile might be null if not found)
+      const data = {
+        ...postData,
+        profiles: profileData || null
+      };
+
       return data;
     },
     enabled: !!id
@@ -289,7 +298,7 @@ const ArticleDetail = () => {
                 </div>
                 <div className="flex items-center gap-1">
                   <Eye className="h-4 w-4" />
-                  <span>{article.views_count || 0} views</span>
+                  <span>{article.likes_count || 0} views</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
@@ -382,9 +391,9 @@ const ArticleDetail = () => {
               <div className="flex items-center gap-2">
                 <PostActions
                   postId={article.id}
-                  initialLikesCount={article.likes_count || 0}
-                  initialCommentsCount={article.comments_count || 0}
-                  initialSharesCount={article.shares_count || 0}
+                  initialLikes={article.likes_count || 0}
+                  initialComments={article.comments_count || 0}
+                  initialShares={article.shares_count || 0}
                   onCommentClick={() => setShowComments(!showComments)}
                 />
               </div>
@@ -410,7 +419,7 @@ const ArticleDetail = () => {
               <div className="mt-8 pt-8 border-t">
                 <CommentsSection
                   postId={article.id}
-                  commentsCount={article.comments_count || 0}
+                  isOpen={true}
                 />
               </div>
             )}

@@ -49,16 +49,7 @@ const Articles = () => {
     queryFn: async () => {
       let query = supabase
         .from('posts')
-        .select(`
-          *,
-          profiles!posts_author_id_fkey(
-            id,
-            full_name,
-            profile_picture_url,
-            title,
-            current_company
-          )
-        `)
+        .select('*')
         .eq('post_type', 'article')
         .eq('status', 'published')
         .order('created_at', { ascending: false });
@@ -84,9 +75,36 @@ const Articles = () => {
         query = query.or(`headline.ilike.%${searchQuery}%,tagline.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`);
       }
 
-      const { data, error } = await query.limit(20);
+      const { data: postsData, error } = await query.limit(20);
       if (error) throw error;
-      return data;
+
+      if (!postsData || postsData.length === 0) return [];
+
+      // Get unique author IDs
+      const authorIds = [...new Set(postsData.map(post => post.author_id))];
+
+      // Get profiles for all authors
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select(`
+          id,
+          full_name,
+          profile_picture_url,
+          title,
+          current_company
+        `)
+        .in('id', authorIds);
+
+      if (profilesError) console.error('Profile fetch error:', profilesError);
+
+      // Create a map of profiles by ID
+      const profilesMap = new Map(profilesData?.map(profile => [profile.id, profile]) || []);
+
+      // Combine posts with their profiles
+      return postsData.map(post => ({
+        ...post,
+        profiles: profilesMap.get(post.author_id) || null
+      }));
     }
   });
 
@@ -94,24 +112,41 @@ const Articles = () => {
   const { data: trendingArticles } = useQuery({
     queryKey: ['trendingArticles'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: postsData, error } = await supabase
         .from('posts')
-        .select(`
-          *,
-          profiles!posts_author_id_fkey(
-            id,
-            full_name,
-            profile_picture_url,
-            title
-          )
-        `)
+        .select('*')
         .eq('post_type', 'article')
         .eq('status', 'published')
-        .order('views_count', { ascending: false })
+        .order('likes_count', { ascending: false })
         .limit(5);
 
       if (error) throw error;
-      return data;
+      if (!postsData || postsData.length === 0) return [];
+
+      // Get unique author IDs
+      const authorIds = [...new Set(postsData.map(post => post.author_id))];
+
+      // Get profiles for all authors
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select(`
+          id,
+          full_name,
+          profile_picture_url,
+          title
+        `)
+        .in('id', authorIds);
+
+      if (profilesError) console.error('Profile fetch error:', profilesError);
+
+      // Create a map of profiles by ID
+      const profilesMap = new Map(profilesData?.map(profile => [profile.id, profile]) || []);
+
+      // Combine posts with their profiles
+      return postsData.map(post => ({
+        ...post,
+        profiles: profilesMap.get(post.author_id) || null
+      }));
     }
   });
 
