@@ -92,19 +92,27 @@ export const PublicPostDetail: React.FC = () => {
       // Get author info separately
       const { data: authorData, error: authorError } = await supabase
         .from('profiles')
-        .select('full_name, avatar_url, title, user_role')
+        .select('full_name, profile_picture_url, title, user_role')
         .eq('id', postData.author_id)
         .single();
 
-      if (authorError) {
-        setError('Failed to load author information');
-        return;
-      }
-
-      setPost({
+      // Create the final post object with proper author data
+      const finalPost: PublicPostData = {
         ...postData,
-        author: authorData
-      });
+        author: authorError || !authorData ? {
+          full_name: 'Unknown Author',
+          avatar_url: null,
+          title: null,
+          user_role: null
+        } : {
+          full_name: authorData.full_name,
+          avatar_url: authorData.profile_picture_url || null,
+          title: authorData.title || null,
+          user_role: authorData.user_role || null
+        }
+      };
+
+      setPost(finalPost);
     } catch (err) {
       console.error('Error fetching post:', err);
       setError('Failed to load post');
