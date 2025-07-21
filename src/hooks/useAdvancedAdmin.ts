@@ -2,15 +2,17 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-// Simplified hooks for new admin features
-// These will work once the database migration is applied
-
 export const useSEOMetadata = () => {
   return useQuery({
     queryKey: ['seo-metadata'],
     queryFn: async () => {
-      // Return mock data until migration is applied
-      return [];
+      const { data, error } = await supabase
+        .from('seo_metadata')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
     },
   });
 };
@@ -20,9 +22,14 @@ export const useCreateSEOMetadata = () => {
   
   return useMutation({
     mutationFn: async (metadata: any) => {
-      // Mock implementation until migration is applied
-      console.log('SEO metadata would be created:', metadata);
-      return { id: 'mock', ...metadata };
+      const { data, error } = await supabase
+        .from('seo_metadata')
+        .insert([{ ...metadata, created_by: (await supabase.auth.getUser()).data.user?.id }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['seo-metadata'] });
@@ -38,7 +45,13 @@ export const useAdCampaigns = () => {
   return useQuery({
     queryKey: ['ad-campaigns'],
     queryFn: async () => {
-      return [];
+      const { data, error } = await supabase
+        .from('ad_campaigns')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
     },
   });
 };
@@ -48,8 +61,14 @@ export const useCreateAdCampaign = () => {
   
   return useMutation({
     mutationFn: async (campaign: any) => {
-      console.log('Campaign would be created:', campaign);
-      return { id: 'mock', ...campaign };
+      const { data, error } = await supabase
+        .from('ad_campaigns')
+        .insert([{ ...campaign, created_by: (await supabase.auth.getUser()).data.user?.id }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ad-campaigns'] });
@@ -65,18 +84,13 @@ export const useFeatureFlags = () => {
   return useQuery({
     queryKey: ['feature-flags'],
     queryFn: async () => {
-      return [
-        {
-          id: '1',
-          flag_name: 'advanced_seo_manager',
-          description: 'Enable advanced SEO management tools',
-          is_enabled: true,
-          rollout_percentage: 100,
-          target_audience: {},
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }
-      ];
+      const { data, error } = await supabase
+        .from('feature_flags')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
     },
   });
 };
@@ -86,8 +100,15 @@ export const useToggleFeatureFlag = () => {
   
   return useMutation({
     mutationFn: async ({ id, is_enabled }: { id: string; is_enabled: boolean }) => {
-      console.log('Feature flag would be toggled:', { id, is_enabled });
-      return { id, is_enabled };
+      const { data, error } = await supabase
+        .from('feature_flags')
+        .update({ is_enabled })
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
@@ -103,7 +124,13 @@ export const useContentHub = () => {
   return useQuery({
     queryKey: ['content-hub'],
     queryFn: async () => {
-      return [];
+      const { data, error } = await supabase
+        .from('content_hub')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
     },
   });
 };
@@ -113,8 +140,14 @@ export const useCreateContent = () => {
   
   return useMutation({
     mutationFn: async (content: any) => {
-      console.log('Content would be created:', content);
-      return { id: 'mock', ...content };
+      const { data, error } = await supabase
+        .from('content_hub')
+        .insert([{ ...content, author_id: (await supabase.auth.getUser()).data.user?.id }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['content-hub'] });
@@ -130,7 +163,13 @@ export const usePageBuilderPages = () => {
   return useQuery({
     queryKey: ['page-builder-pages'],
     queryFn: async () => {
-      return [];
+      const { data, error } = await supabase
+        .from('page_builder_pages')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
     },
   });
 };
@@ -140,8 +179,14 @@ export const useCreatePage = () => {
   
   return useMutation({
     mutationFn: async (page: any) => {
-      console.log('Page would be created:', page);
-      return { id: 'mock', ...page };
+      const { data, error } = await supabase
+        .from('page_builder_pages')
+        .insert([{ ...page, created_by: (await supabase.auth.getUser()).data.user?.id }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['page-builder-pages'] });
@@ -157,7 +202,14 @@ export const useAIPromptLibrary = () => {
   return useQuery({
     queryKey: ['ai-prompt-library'],
     queryFn: async () => {
-      return [];
+      const { data, error } = await supabase
+        .from('ai_prompt_library')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
     },
   });
 };
@@ -167,8 +219,14 @@ export const useCreateAIPrompt = () => {
   
   return useMutation({
     mutationFn: async (prompt: any) => {
-      console.log('AI prompt would be created:', prompt);
-      return { id: 'mock', ...prompt };
+      const { data, error } = await supabase
+        .from('ai_prompt_library')
+        .insert([{ ...prompt, created_by: (await supabase.auth.getUser()).data.user?.id }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ai-prompt-library'] });

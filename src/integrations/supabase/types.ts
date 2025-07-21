@@ -91,6 +91,54 @@ export type Database = {
         }
         Relationships: []
       }
+      ad_campaigns: {
+        Row: {
+          budget_settings: Json | null
+          campaign_name: string
+          campaign_type: string
+          created_at: string | null
+          created_by: string | null
+          creative_assets: Json | null
+          end_date: string | null
+          id: string
+          performance_metrics: Json | null
+          start_date: string | null
+          status: string | null
+          targeting_rules: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          budget_settings?: Json | null
+          campaign_name: string
+          campaign_type: string
+          created_at?: string | null
+          created_by?: string | null
+          creative_assets?: Json | null
+          end_date?: string | null
+          id?: string
+          performance_metrics?: Json | null
+          start_date?: string | null
+          status?: string | null
+          targeting_rules?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          budget_settings?: Json | null
+          campaign_name?: string
+          campaign_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          creative_assets?: Json | null
+          end_date?: string | null
+          id?: string
+          performance_metrics?: Json | null
+          start_date?: string | null
+          status?: string | null
+          targeting_rules?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       admin_activity_log: {
         Row: {
           action_type: string
@@ -996,6 +1044,54 @@ export type Database = {
           status?: string | null
           tool_slug?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      ai_prompt_library: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          model_settings: Json | null
+          prompt_category: string
+          prompt_name: string
+          prompt_text: string
+          rating: number | null
+          system_message: string | null
+          updated_at: string | null
+          usage_count: number | null
+          variables: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          model_settings?: Json | null
+          prompt_category: string
+          prompt_name: string
+          prompt_text: string
+          rating?: number | null
+          system_message?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
+          variables?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          model_settings?: Json | null
+          prompt_category?: string
+          prompt_name?: string
+          prompt_text?: string
+          rating?: number | null
+          system_message?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
+          variables?: Json | null
         }
         Relationships: []
       }
@@ -4224,6 +4320,57 @@ export type Database = {
         }
         Relationships: []
       }
+      content_hub: {
+        Row: {
+          author_id: string | null
+          content: string
+          content_type: string
+          created_at: string | null
+          editor_id: string | null
+          excerpt: string | null
+          id: string
+          metadata: Json | null
+          publish_date: string | null
+          seo_data: Json | null
+          status: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          content: string
+          content_type: string
+          created_at?: string | null
+          editor_id?: string | null
+          excerpt?: string | null
+          id?: string
+          metadata?: Json | null
+          publish_date?: string | null
+          seo_data?: Json | null
+          status?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          content_type?: string
+          created_at?: string | null
+          editor_id?: string | null
+          excerpt?: string | null
+          id?: string
+          metadata?: Json | null
+          publish_date?: string | null
+          seo_data?: Json | null
+          status?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       content_moderation: {
         Row: {
           automated_flags: Json | null
@@ -5870,6 +6017,48 @@ export type Database = {
           },
         ]
       }
+      feature_flags: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          flag_name: string
+          flag_type: string | null
+          flag_value: Json | null
+          id: string
+          is_enabled: boolean | null
+          rollout_percentage: number | null
+          target_audience: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          flag_name: string
+          flag_type?: string | null
+          flag_value?: Json | null
+          id?: string
+          is_enabled?: boolean | null
+          rollout_percentage?: number | null
+          target_audience?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          flag_name?: string
+          flag_type?: string | null
+          flag_value?: Json | null
+          id?: string
+          is_enabled?: boolean | null
+          rollout_percentage?: number | null
+          target_audience?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string | null
@@ -6117,6 +6306,51 @@ export type Database = {
           skill_category?: string
           skill_keywords?: string[] | null
           skill_name?: string
+        }
+        Relationships: []
+      }
+      integration_configs: {
+        Row: {
+          config_data: Json
+          created_at: string | null
+          created_by: string | null
+          credentials: Json | null
+          error_message: string | null
+          id: string
+          integration_name: string
+          integration_type: string
+          is_active: boolean | null
+          last_sync: string | null
+          sync_status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          config_data?: Json
+          created_at?: string | null
+          created_by?: string | null
+          credentials?: Json | null
+          error_message?: string | null
+          id?: string
+          integration_name: string
+          integration_type: string
+          is_active?: boolean | null
+          last_sync?: string | null
+          sync_status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          config_data?: Json
+          created_at?: string | null
+          created_by?: string | null
+          credentials?: Json | null
+          error_message?: string | null
+          id?: string
+          integration_name?: string
+          integration_type?: string
+          is_active?: boolean | null
+          last_sync?: string | null
+          sync_status?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -7790,6 +8024,54 @@ export type Database = {
         }
         Relationships: []
       }
+      page_builder_pages: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_published: boolean | null
+          is_template: boolean | null
+          page_content: Json
+          page_name: string
+          page_slug: string
+          page_type: string | null
+          performance_score: number | null
+          seo_settings: Json | null
+          template_category: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_published?: boolean | null
+          is_template?: boolean | null
+          page_content?: Json
+          page_name: string
+          page_slug: string
+          page_type?: string | null
+          performance_score?: number | null
+          seo_settings?: Json | null
+          template_category?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_published?: boolean | null
+          is_template?: boolean | null
+          page_content?: Json
+          page_name?: string
+          page_slug?: string
+          page_type?: string | null
+          performance_score?: number | null
+          seo_settings?: Json | null
+          template_category?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -7842,6 +8124,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      performance_analytics: {
+        Row: {
+          device_type: string | null
+          id: string
+          location: string | null
+          metadata: Json | null
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          page_url: string | null
+          timestamp: string | null
+        }
+        Insert: {
+          device_type?: string | null
+          id?: string
+          location?: string | null
+          metadata?: Json | null
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          page_url?: string | null
+          timestamp?: string | null
+        }
+        Update: {
+          device_type?: string | null
+          id?: string
+          location?: string | null
+          metadata?: Json | null
+          metric_name?: string
+          metric_type?: string
+          metric_value?: number
+          page_url?: string | null
+          timestamp?: string | null
+        }
+        Relationships: []
       }
       performance_benchmarks: {
         Row: {
@@ -11741,6 +12059,78 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_metadata: {
+        Row: {
+          canonical_url: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          keywords: string[] | null
+          meta_robots: string | null
+          og_description: string | null
+          og_image: string | null
+          og_title: string | null
+          og_type: string | null
+          page_identifier: string
+          page_type: string
+          schema_markup: Json | null
+          title: string | null
+          twitter_card: string | null
+          twitter_description: string | null
+          twitter_image: string | null
+          twitter_title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          canonical_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          keywords?: string[] | null
+          meta_robots?: string | null
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
+          og_type?: string | null
+          page_identifier: string
+          page_type: string
+          schema_markup?: Json | null
+          title?: string | null
+          twitter_card?: string | null
+          twitter_description?: string | null
+          twitter_image?: string | null
+          twitter_title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          canonical_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          keywords?: string[] | null
+          meta_robots?: string | null
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
+          og_type?: string | null
+          page_identifier?: string
+          page_type?: string
+          schema_markup?: Json | null
+          title?: string | null
+          twitter_card?: string | null
+          twitter_description?: string | null
+          twitter_image?: string | null
+          twitter_title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       seo_monitoring: {
         Row: {
           accessibility_score: number | null
@@ -12504,6 +12894,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_announcements: {
+        Row: {
+          announcement_type: string | null
+          content: string
+          created_at: string | null
+          created_by: string | null
+          end_date: string | null
+          id: string
+          is_active: boolean | null
+          is_dismissible: boolean | null
+          start_date: string | null
+          target_audience: Json | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          announcement_type?: string | null
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_dismissible?: boolean | null
+          start_date?: string | null
+          target_audience?: Json | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          announcement_type?: string | null
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_dismissible?: boolean | null
+          start_date?: string | null
+          target_audience?: Json | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      site_redirects: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          destination_url: string
+          hit_count: number | null
+          id: string
+          is_active: boolean | null
+          redirect_type: number | null
+          source_url: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          destination_url: string
+          hit_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          redirect_type?: number | null
+          source_url: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          destination_url?: string
+          hit_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          redirect_type?: number | null
+          source_url?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       skill_assessments: {
         Row: {
@@ -13921,6 +14392,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_behavior_analytics: {
+        Row: {
+          element_selector: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          page_url: string
+          session_id: string | null
+          timestamp: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          element_selector?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          page_url: string
+          session_id?: string | null
+          timestamp?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          element_selector?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          page_url?: string
+          session_id?: string | null
+          timestamp?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       user_career_goals: {
         Row: {
