@@ -62,9 +62,38 @@ export const PostActions: React.FC<PostActionsProps> = ({
     }
   });
 
-  // Save functionality - temporarily disabled until saved_posts table is created
+  // Save mutation - now working with saved_posts table
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Must be logged in');
+
+      if (isSaved) {
+        const { error } = await supabase
+          .from('saved_posts')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('saved_posts')
+          .insert({ post_id: postId, user_id: user.id });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      setIsSaved(!isSaved);
+      toast.success(isSaved ? 'Post removed from saved' : 'Post saved');
+    },
+    onError: (error) => {
+      toast.error('Failed to save post');
+      console.error('Save error:', error);
+    }
+  });
+
   const handleSave = () => {
-    toast.info('Save functionality coming soon!');
+    saveMutation.mutate();
   };
 
   const handleLike = () => {

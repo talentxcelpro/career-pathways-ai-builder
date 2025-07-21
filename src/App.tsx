@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
+import { HelmetProvider } from "react-helmet-async";
 import { navItems } from "./nav-items";
 import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
@@ -30,7 +31,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Routes that don't require authentication - updated to include job viewing
+// Routes that don't require authentication - updated to include job viewing and public post routes
 const publicRoutes = [
   '/', 
   '/auth/login', 
@@ -46,24 +47,31 @@ const publicRoutes = [
   '/profile/:id',
   '/employer', // Employer landing page (shows different content based on auth)
   '/employer/request-access',
-  '/employer/team/accept/:token' // Invitation acceptance
+  '/employer/team/accept/:token', // Invitation acceptance
+  '/p/post/:postId', // Public post route
+  '/p/job/:jobId', // Public job route (future)
+  '/p/company/:companyId', // Public company route (future)
+  '/p/college/:collegeId', // Public college route (future)
+  '/p/article/:articleId', // Public article route (future)
+  '/p/profile/:profileId' // Public profile route (future)
 ];
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <TooltipProvider>
-        <AnalyticsProvider>
-          <AuthProvider>
-            <AIProvider>
-              <Toaster />
-              <MobileAppInitializer />
-              <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
-              <SearchConsoleVerification verificationCode="your-search-console-verification-code" />
-              <div className="min-h-screen flex flex-col">
-                <OfflineIndicator />
-                <Navbar />
-                <main className="flex-1">
+    <HelmetProvider>
+      <BrowserRouter>
+        <TooltipProvider>
+          <AnalyticsProvider>
+            <AuthProvider>
+              <AIProvider>
+                <Toaster />
+                <MobileAppInitializer />
+                <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
+                <SearchConsoleVerification verificationCode="your-search-console-verification-code" />
+                <div className="min-h-screen flex flex-col">
+                  <OfflineIndicator />
+                  <Navbar />
+                  <main className="flex-1">
                   <Routes>
                     {navItems.map((item: NavItem) => {
                        // Check if route is explicitly marked as public or in our public routes list
@@ -98,15 +106,16 @@ const App = () => {
                     <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
                     <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
                   </Routes>
-                </main>
-                <Footer />
-              </div>
-              <Analytics />
-            </AIProvider>
-          </AuthProvider>
-        </AnalyticsProvider>
-      </TooltipProvider>
-    </BrowserRouter>
+                  </main>
+                  <Footer />
+                </div>
+                <Analytics />
+              </AIProvider>
+            </AuthProvider>
+          </AnalyticsProvider>
+        </TooltipProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 };
 
