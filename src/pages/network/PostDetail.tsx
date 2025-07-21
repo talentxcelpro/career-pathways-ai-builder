@@ -1,19 +1,21 @@
-
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MoreHorizontal, Share2, MessageCircle } from "lucide-react";
+import { ArrowLeft, MoreHorizontal, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
+import { ShareButton } from "@/components/shared/ShareButton";
+import { useShareContent } from "@/hooks/useShareContent";
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [showComments, setShowComments] = useState(true);
+  const { createPostShareData } = useShareContent();
 
   const { data: post, isLoading } = useQuery({
     queryKey: ['post', id],
@@ -116,6 +118,8 @@ const PostDetail = () => {
     );
   }
 
+  const shareContent = createPostShareData(post);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -125,10 +129,12 @@ const PostDetail = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Posts
           </Link>
-          <Button variant="outline" size="sm">
-            <Share2 className="h-4 w-4 mr-2" />
-            Share
-          </Button>
+          <ShareButton
+            content={shareContent}
+            variant="outline"
+            size="sm"
+            showText={true}
+          />
         </div>
 
         {/* Post Detail */}
@@ -211,6 +217,7 @@ const PostDetail = () => {
               initialComments={post.comments_count || 0}
               initialShares={post.shares_count || 0}
               onCommentClick={() => setShowComments(!showComments)}
+              postData={post}
             />
           </CardContent>
         </Card>

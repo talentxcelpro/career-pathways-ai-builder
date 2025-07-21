@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,8 @@ import { Link } from 'react-router-dom';
 import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
 import { PostMenu } from "@/components/posts/PostMenu";
+import { QuickShareActions } from "@/components/shared/QuickShareActions";
+import { useShareContent } from "@/hooks/useShareContent";
 import ProBadge from "@/components/network/ProBadge";
 
 interface PostCardProps {
@@ -40,6 +41,8 @@ export const PostCard: React.FC<PostCardProps> = ({
   openComments,
   onCommentClick
 }) => {
+  const { createPostShareData } = useShareContent();
+
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -68,6 +71,8 @@ export const PostCard: React.FC<PostCardProps> = ({
     }
     return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
   };
+
+  const shareContent = createPostShareData(post);
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -106,13 +111,16 @@ export const PostCard: React.FC<PostCardProps> = ({
               <p className="text-xs text-gray-500">{formatTimeAgo(post.created_at)}</p>
             </div>
           </div>
-          <PostMenu
-            postId={post.id}
-            authorId={post.author_id || ''}
-            currentUserId={post.author_id}
-            postContent={post.content}
-            isOwnPost={true}
-          />
+          <div className="flex items-center gap-2">
+            <QuickShareActions content={shareContent} />
+            <PostMenu
+              postId={post.id}
+              authorId={post.author_id || ''}
+              currentUserId={post.author_id}
+              postContent={post.content}
+              isOwnPost={true}
+            />
+          </div>
         </div>
 
         {/* Post Content - Make clickable to navigate to detail page */}
@@ -176,6 +184,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           initialComments={post.comments_count || 0}
           initialShares={post.shares_count || 0}
           onCommentClick={() => onCommentClick?.(post.id)}
+          postData={post}
         />
 
         {/* Comments Section */}
