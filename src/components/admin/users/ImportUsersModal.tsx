@@ -165,79 +165,57 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
         errors: [] as string[]
       };
 
+      // Process users sequentially with better error handling
       for (let i = 0; i < users.length; i++) {
         const user = users[i];
-        setImportProgress(Math.round(((i + 1) / users.length) * 100));
+        const progress = Math.round(((i + 1) / users.length) * 100);
+        setImportProgress(progress);
+
+        console.log(`Processing user ${i + 1}/${users.length}: ${user.email}`);
 
         try {
-          console.log(`Creating user ${i + 1}/${users.length}:`, user);
-          
-          // Add delay between requests to prevent rate limiting
-          if (i > 0) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-          
-          const { data: { session } } = await supabase.auth.getSession();
-          if (!session) {
-            throw new Error('Authentication session not found');
+          // Get fresh session for each request
+          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+          if (sessionError || !session) {
+            throw new Error('Authentication session invalid');
           }
 
-          // Retry logic for network issues
-          let attempts = 0;
-          const maxAttempts = 3;
-          let lastError = null;
-
-          while (attempts < maxAttempts) {
-            try {
-              const { data, error } = await supabase.functions.invoke('admin-create-user', {
-                body: {
-                  userEmail: user.email,
-                  userName: user.name,
-                  userRole: user.role || 'job_seeker',
-                  temporaryPassword: user.temporaryPassword || 'TempPass123!'
-                },
-                headers: {
-                  'Authorization': `Bearer ${session.access_token}`,
-                }
-              });
-
-              if (error) {
-                console.error(`Error creating user ${user.email}:`, error);
-                results.failed++;
-                results.errors.push(`${user.email}: ${error.message}`);
-                break;
-              } else if (!data?.success) {
-                console.error(`User creation failed for ${user.email}:`, data?.error);
-                results.failed++;
-                results.errors.push(`${user.email}: ${data?.error || 'Unknown error'}`);
-                break;
-              } else {
-                console.log(`Successfully created user: ${user.email}`);
-                results.successful++;
-                break;
-              }
-            } catch (networkError) {
-              attempts++;
-              lastError = networkError;
-              
-              if (attempts < maxAttempts) {
-                console.log(`Retry ${attempts} for ${user.email} after network error:`, networkError);
-                await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
-              }
+          // Create user with direct Edge Function call
+          const { data, error } = await supabase.functions.invoke('admin-create-user', {
+            body: {
+              userEmail: user.email,
+              userName: user.name,
+              userRole: user.role || 'job_seeker',
+              temporaryPassword: user.temporaryPassword || 'TempPass123!'
+            },
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+              'Content-Type': 'application/json'
             }
+          });
+
+          if (error) {
+            throw new Error(`Network error: ${error.message}`);
           }
 
-          // If all attempts failed
-          if (attempts >= maxAttempts && lastError) {
-            console.error(`All attempts failed for user ${user.email}:`, lastError);
-            results.failed++;
-            results.errors.push(`${user.email}: ${lastError.message} (after ${maxAttempts} attempts)`);
+          if (!data?.success) {
+            throw new Error(data?.error || 'User creation failed');
           }
 
-        } catch (userError) {
-          console.error(`Exception creating user ${user.email}:`, userError);
+          // Success
+          results.successful++;
+          console.log(`✓ Successfully created: ${user.email}`);
+          
+        } catch (error: any) {
           results.failed++;
-          results.errors.push(`${user.email}: ${userError.message}`);
+          const errorMsg = error.message || 'Unknown error';
+          results.errors.push(`${user.email}: ${errorMsg}`);
+          console.error(`✗ Failed to create ${user.email}:`, error);
+        }
+
+        // Small delay between requests
+        if (i < users.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
 
