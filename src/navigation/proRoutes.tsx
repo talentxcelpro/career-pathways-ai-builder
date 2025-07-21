@@ -7,6 +7,7 @@ import AdvancedAnalytics from "../pages/pro/AdvancedAnalytics";
 import CRMDashboard from "../pages/pro/CRMDashboard";
 import { ProProfile } from "../pages/pro/ProProfile";
 import ProSubscriptionPolicy from "../pages/pro/ProSubscriptionPolicy";
+import ProSetup from "../pages/pro/ProSetup";
 import { Settings } from "lucide-react";
 
 export const proRoutes: NavItem[] = [
@@ -21,6 +22,12 @@ export const proRoutes: NavItem[] = [
     to: "/pro/services",
     page: <ServiceManagement />,
     icon: <Settings className="h-4 w-4" />,
+    requiresAuth: true
+  },
+  {
+    title: "Pro Setup",
+    to: "/pro/setup",
+    page: <ProSetup />,
     requiresAuth: true
   },
   {
