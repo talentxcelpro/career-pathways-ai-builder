@@ -171,6 +171,46 @@ const emailTemplates = {
         `).join('') || '<p>No trending jobs this month.</p>'}
       </div>
     `
+  }),
+
+  profile_completion_reminder: (data: any) => ({
+    subject: `Complete Your Profile - ${data.name || 'there'}`,
+    html: `
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #2563eb; margin: 0; font-size: 28px; font-weight: bold;">Complete Your Profile</h1>
+          <p style="color: #64748b; font-size: 16px; margin: 10px 0 0 0;">Unlock better job opportunities</p>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 25px; border-radius: 12px; margin: 20px 0; color: white; text-align: center;">
+          <h2 style="margin: 0 0 15px 0; font-size: 20px;">Hi ${data.name || 'there'}!</h2>
+          <p style="margin: 0; font-size: 16px; opacity: 0.95;">Your profile is almost ready! Complete it now to get better job matches and stand out to employers.</p>
+        </div>
+        
+        <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+          <h3 style="margin-top: 0; color: #92400e;">Why complete your profile?</h3>
+          <ul style="color: #92400e; margin: 0; padding-left: 20px;">
+            <li>Get 3x more job matches</li>
+            <li>Increase visibility to recruiters</li>
+            <li>Access exclusive opportunities</li>
+            <li>Show your professional skills</li>
+          </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 35px 0;">
+          <a href="https://talentxcel.in/profile" 
+             style="display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);">
+            ✨ Complete My Profile
+          </a>
+        </div>
+        
+        <div style="text-align: center;">
+          <p style="color: #6b7280; font-size: 13px; margin: 0;">
+            This email was sent automatically by TalentXCE. Please do not reply to this email.
+          </p>
+        </div>
+      </div>
+    `
   })
 };
 
