@@ -28,7 +28,7 @@ export const checkEdgeFunctionHealth = async (): Promise<boolean> => {
     }
 
     // Fallback to direct fetch
-    const functionUrl = `https://dthlgsnakhofinssokm.supabase.co/functions/v1/admin-create-user`;
+    const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/admin-create-user`;
 
     const response = await fetch(functionUrl, {
       method: 'GET',
