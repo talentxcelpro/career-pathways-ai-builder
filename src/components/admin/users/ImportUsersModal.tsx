@@ -139,18 +139,16 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
   const mapRowData = (row: any) => {
     const mappedData: any = {};
     
-    // Debug logging
-    console.log('Row data:', row);
-    console.log('Column mapping:', columnMapping);
-    
     Object.entries(columnMapping).forEach(([sourceCol, targetCol]) => {
-      if (row[sourceCol] !== undefined) {
-        console.log(`Mapping ${sourceCol} -> ${targetCol}: "${row[sourceCol]}"`);
-        mappedData[targetCol] = row[sourceCol];
+      if (row[sourceCol] !== undefined && row[sourceCol] !== null) {
+        let value = row[sourceCol];
+        // Ensure we're not mapping empty strings as "true"
+        if (typeof value === 'string') {
+          value = value.trim();
+        }
+        mappedData[targetCol] = value;
       }
     });
-    
-    console.log('Mapped data before normalization:', mappedData);
     
     // Normalize values
     if (mappedData.status) {
@@ -171,10 +169,6 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
 
   const validateUserData = (userData: any) => {
     const errors = [];
-    
-    // Debug logging
-    console.log('Validating user data:', userData);
-    console.log('Email value:', userData.email, 'Type:', typeof userData.email);
     
     if (!userData.full_name?.trim()) {
       errors.push('Full name is required');
@@ -291,6 +285,17 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
 
         try {
           const mappedUser = mapRowData(row);
+          
+          // Diagnostic check for email field
+          if (mappedUser.email === 'true' || mappedUser.email === true) {
+            console.error('Email mapping error detected:', {
+              rowData: row,
+              columnMapping,
+              mappedUser,
+              emailSourceColumn: Object.keys(columnMapping).find(k => columnMapping[k] === 'email')
+            });
+          }
+          
           const validationErrors = validateUserData(mappedUser);
           
           if (validationErrors.length > 0) {
