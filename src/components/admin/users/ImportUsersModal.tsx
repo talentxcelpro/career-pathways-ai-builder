@@ -172,35 +172,68 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
         try {
           console.log(`Creating user ${i + 1}/${users.length}:`, user);
           
+          // Add delay between requests to prevent rate limiting
+          if (i > 0) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+          
           const { data: { session } } = await supabase.auth.getSession();
           if (!session) {
             throw new Error('Authentication session not found');
           }
 
-          const { data, error } = await supabase.functions.invoke('admin-create-user', {
-            body: {
-              userEmail: user.email,
-              userName: user.name,
-              userRole: user.role || 'job_seeker',
-              temporaryPassword: user.temporaryPassword || 'TempPass123!'
-            },
-            headers: {
-              'Authorization': `Bearer ${session.access_token}`,
-            }
-          });
+          // Retry logic for network issues
+          let attempts = 0;
+          const maxAttempts = 3;
+          let lastError = null;
 
-          if (error) {
-            console.error(`Error creating user ${user.email}:`, error);
-            results.failed++;
-            results.errors.push(`${user.email}: ${error.message}`);
-          } else if (!data?.success) {
-            console.error(`User creation failed for ${user.email}:`, data?.error);
-            results.failed++;
-            results.errors.push(`${user.email}: ${data?.error || 'Unknown error'}`);
-          } else {
-            console.log(`Successfully created user: ${user.email}`);
-            results.successful++;
+          while (attempts < maxAttempts) {
+            try {
+              const { data, error } = await supabase.functions.invoke('admin-create-user', {
+                body: {
+                  userEmail: user.email,
+                  userName: user.name,
+                  userRole: user.role || 'job_seeker',
+                  temporaryPassword: user.temporaryPassword || 'TempPass123!'
+                },
+                headers: {
+                  'Authorization': `Bearer ${session.access_token}`,
+                }
+              });
+
+              if (error) {
+                console.error(`Error creating user ${user.email}:`, error);
+                results.failed++;
+                results.errors.push(`${user.email}: ${error.message}`);
+                break;
+              } else if (!data?.success) {
+                console.error(`User creation failed for ${user.email}:`, data?.error);
+                results.failed++;
+                results.errors.push(`${user.email}: ${data?.error || 'Unknown error'}`);
+                break;
+              } else {
+                console.log(`Successfully created user: ${user.email}`);
+                results.successful++;
+                break;
+              }
+            } catch (networkError) {
+              attempts++;
+              lastError = networkError;
+              
+              if (attempts < maxAttempts) {
+                console.log(`Retry ${attempts} for ${user.email} after network error:`, networkError);
+                await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
+              }
+            }
           }
+
+          // If all attempts failed
+          if (attempts >= maxAttempts && lastError) {
+            console.error(`All attempts failed for user ${user.email}:`, lastError);
+            results.failed++;
+            results.errors.push(`${user.email}: ${lastError.message} (after ${maxAttempts} attempts)`);
+          }
+
         } catch (userError) {
           console.error(`Exception creating user ${user.email}:`, userError);
           results.failed++;
