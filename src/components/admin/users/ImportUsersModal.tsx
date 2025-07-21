@@ -1,15 +1,12 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, Download, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
-import { useDropzone } from 'react-dropzone';
-import { toast } from 'sonner';
+import { Progress } from '@/components/ui/progress';
+import { Loader2, Upload, Download, FileText, CheckCircle, XCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { checkEdgeFunctionHealth, testEdgeFunctionDebug } from '@/utils/edgeFunction';
+import { toast } from 'sonner';
 
 interface ImportUsersModalProps {
   open: boolean;
@@ -17,394 +14,468 @@ interface ImportUsersModalProps {
   onUsersImported: () => void;
 }
 
+interface ParsedUser {
+  email: string;
+  name: string;
+  role: string;
+  temporaryPassword?: string;
+  rowIndex: number;
+  isValid: boolean;
+  errors: string[];
+}
+
+interface ColumnMapping {
+  email: string | null;
+  name: string | null;
+  role: string | null;
+  password: string | null;
+}
+
 export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
   open,
   onOpenChange,
   onUsersImported
 }) => {
-  const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [isImporting, setIsImporting] = useState(false);
-  const [isTesting, setIsTesting] = useState(false);
-  const [importProgress, setImportProgress] = useState(0);
-  const [importResults, setImportResults] = useState<{
+  const [file, setFile] = useState<File | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [results, setResults] = useState<{
     successful: number;
     failed: number;
-    errors: string[];
+    errors: Array<{ email: string; error: string }>;
   } | null>(null);
-  const [edgeFunctionStatus, setEdgeFunctionStatus] = useState<{
-    isHealthy: boolean;
-    debugInfo: any;
-  } | null>(null);
+  const [parsedUsers, setParsedUsers] = useState<ParsedUser[]>([]);
+  const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
+  const [showPreview, setShowPreview] = useState(false);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      setCsvFile(acceptedFiles[0]);
-    }
-  }, []);
+  // Enhanced CSV column detection
+  const detectColumnMapping = (headers: string[]): ColumnMapping => {
+    const normalizedHeaders = headers.map(h => h.toLowerCase().trim());
+    
+    const emailPatterns = ['email', 'email_address', 'emailaddress', 'mail', 'e-mail'];
+    const namePatterns = ['name', 'full_name', 'fullname', 'full name', 'username', 'user_name'];
+    const rolePatterns = ['role', 'user_role', 'userrole', 'type', 'account_type'];
+    const passwordPatterns = ['password', 'temp_password', 'temporary_password', 'pwd'];
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'text/csv': ['.csv'],
-      'application/vnd.ms-excel': ['.csv']
-    },
-    multiple: false
-  });
-
-  const testEdgeFunction = async () => {
-    setIsTesting(true);
-    try {
-      console.log('Testing Edge Function health and debug...');
-      
-      // Test health check
-      const isHealthy = await checkEdgeFunctionHealth();
-      console.log('Edge Function health check result:', isHealthy);
-      
-      // Test debug endpoint
-      let debugInfo = null;
-      try {
-        debugInfo = await testEdgeFunctionDebug();
-        console.log('Debug info received:', debugInfo);
-      } catch (debugError) {
-        console.error('Debug test failed:', debugError);
-        debugInfo = { error: debugError.message };
-      }
-      
-      setEdgeFunctionStatus({
-        isHealthy,
-        debugInfo
-      });
-      
-      if (isHealthy) {
-        toast.success('Edge Function is working correctly!');
-      } else {
-        toast.error('Edge Function health check failed');
-      }
-    } catch (error) {
-      console.error('Edge Function test failed:', error);
-      toast.error('Edge Function test failed: ' + error.message);
-      setEdgeFunctionStatus({
-        isHealthy: false,
-        debugInfo: { error: error.message }
-      });
-    } finally {
-      setIsTesting(false);
-    }
+    return {
+      email: findMatchingHeader(normalizedHeaders, headers, emailPatterns),
+      name: findMatchingHeader(normalizedHeaders, headers, namePatterns),
+      role: findMatchingHeader(normalizedHeaders, headers, rolePatterns),
+      password: findMatchingHeader(normalizedHeaders, headers, passwordPatterns)
+    };
   };
 
-  const parseCsvFile = (file: File): Promise<any[]> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const csv = e.target?.result as string;
-          const lines = csv.split('\n').filter(line => line.trim());
-          
-          if (lines.length < 2) {
-            reject(new Error('CSV file must have at least a header row and one data row'));
-            return;
-          }
-          
-          const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-          const users = [];
-          
-          for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-            if (values.length === headers.length) {
-              const user: any = {};
-              headers.forEach((header, index) => {
-                user[header] = values[index];
-              });
-              
-              // Validate required fields
-              if (user.email && user.name) {
-                users.push({
-                  email: user.email,
-                  name: user.name,
-                  role: user.role || 'job_seeker',
-                  temporaryPassword: user.password || 'TempPass123!'
-                });
-              }
-            }
-          }
-          
-          resolve(users);
-        } catch (error) {
-          reject(new Error('Failed to parse CSV file: ' + error.message));
-        }
+  const findMatchingHeader = (normalized: string[], original: string[], patterns: string[]): string | null => {
+    for (const pattern of patterns) {
+      const index = normalized.findIndex(h => h.includes(pattern));
+      if (index !== -1) return original[index];
+    }
+    return null;
+  };
+
+  const validateUserData = (user: any, rowIndex: number): ParsedUser => {
+    const errors: string[] = [];
+    
+    // Validate email
+    const email = String(user.email || '').trim();
+    if (!email) {
+      errors.push('Email is required');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push('Invalid email format');
+    }
+
+    // Validate name
+    const name = String(user.name || '').trim();
+    if (!name) {
+      errors.push('Name is required');
+    } else if (name.length < 2) {
+      errors.push('Name must be at least 2 characters');
+    }
+
+    // Validate role
+    const role = String(user.role || 'job_seeker').toLowerCase().trim();
+    const validRoles = ['job_seeker', 'employer', 'admin'];
+    const normalizedRole = validRoles.includes(role) ? role : 'job_seeker';
+
+    return {
+      email,
+      name,
+      role: normalizedRole,
+      temporaryPassword: user.temporaryPassword || 'TempPass123!',
+      rowIndex,
+      isValid: errors.length === 0,
+      errors
+    };
+  };
+
+  const parseCSV = (text: string): ParsedUser[] => {
+    console.log('Starting CSV parsing...');
+    
+    const lines = text.split('\n').filter(line => line.trim());
+    if (lines.length === 0) {
+      toast.error('CSV file is empty');
+      return [];
+    }
+
+    // Parse headers
+    const headers = lines[0].split(',').map(h => h.trim().replace(/['"]/g, ''));
+    setCsvHeaders(headers);
+    console.log('CSV Headers found:', headers);
+
+    // Detect column mapping
+    const columnMapping = detectColumnMapping(headers);
+    console.log('Column mapping detected:', columnMapping);
+
+    // Validate required columns are found
+    if (!columnMapping.email || !columnMapping.name) {
+      const missingColumns = [];
+      if (!columnMapping.email) missingColumns.push('email');
+      if (!columnMapping.name) missingColumns.push('name');
+      
+      toast.error(`Required columns not found: ${missingColumns.join(', ')}. Please check your CSV headers.`);
+      return [];
+    }
+
+    const users: ParsedUser[] = [];
+    
+    // Parse data rows
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.trim().replace(/['"]/g, ''));
+      
+      if (values.length !== headers.length) {
+        console.warn(`Row ${i + 1} has ${values.length} values but expected ${headers.length}`);
+        continue;
+      }
+
+      const rowData: any = {};
+      headers.forEach((header, index) => {
+        rowData[header] = values[index];
+      });
+
+      // Map to standard fields
+      const userData = {
+        email: rowData[columnMapping.email!],
+        name: rowData[columnMapping.name!],
+        role: columnMapping.role ? rowData[columnMapping.role] : 'job_seeker',
+        temporaryPassword: columnMapping.password ? rowData[columnMapping.password] : undefined
       };
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsText(file);
-    });
+
+      console.log(`Row ${i + 1} data:`, userData);
+      
+      const validatedUser = validateUserData(userData, i + 1);
+      users.push(validatedUser);
+    }
+
+    console.log(`Parsed ${users.length} users from CSV`);
+    return users;
   };
 
-  const importUsers = async () => {
-    if (!csvFile) {
-      toast.error('Please select a CSV file first');
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
+
+    if (!selectedFile.name.toLowerCase().endsWith('.csv')) {
+      toast.error('Please select a CSV file');
       return;
     }
 
-    setIsImporting(true);
-    setImportProgress(0);
-    setImportResults(null);
-
-    try {
-      // Parse CSV file
-      const users = await parseCsvFile(csvFile);
-      console.log('Parsed users from CSV:', users);
-      
-      if (users.length === 0) {
-        toast.error('No valid users found in CSV file');
-        return;
+    setFile(selectedFile);
+    setResults(null);
+    setShowPreview(false);
+    
+    // Parse and preview the file
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      const parsed = parseCSV(text);
+      setParsedUsers(parsed);
+      if (parsed.length > 0) {
+        setShowPreview(true);
       }
-
-      // Import users one by one to track progress
-      const results = {
-        successful: 0,
-        failed: 0,
-        errors: [] as string[]
-      };
-
-      // Process users sequentially with better error handling
-      for (let i = 0; i < users.length; i++) {
-        const user = users[i];
-        const progress = Math.round(((i + 1) / users.length) * 100);
-        setImportProgress(progress);
-
-        console.log(`Processing user ${i + 1}/${users.length}:`, {
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          userEmailPresent: !!user.email,
-          userNamePresent: !!user.name
-        });
-
-        try {
-          // Get fresh session for each request
-          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-          if (sessionError || !session) {
-            throw new Error('Authentication session invalid');
-          }
-
-          // Create user with direct Edge Function call
-          const requestBody = {
-            userEmail: user.email,
-            userName: user.name,
-            userRole: user.role || 'job_seeker',
-            temporaryPassword: user.temporaryPassword || 'TempPass123!'
-          };
-
-          console.log(`Sending request for ${user.email}:`, requestBody);
-          const { data, error } = await supabase.functions.invoke('admin-create-user', {
-            body: requestBody,
-            headers: {
-              'Authorization': `Bearer ${session.access_token}`,
-              'Content-Type': 'application/json'
-            }
-          });
-
-          if (error) {
-            throw new Error(`Network error: ${error.message}`);
-          }
-
-          if (!data?.success) {
-            throw new Error(data?.error || 'User creation failed');
-          }
-
-          // Success
-          results.successful++;
-          console.log(`✓ Successfully created: ${user.email}`);
-          
-        } catch (error: any) {
-          results.failed++;
-          const errorMsg = error.message || 'Unknown error';
-          results.errors.push(`${user.email}: ${errorMsg}`);
-          console.error(`✗ Failed to create ${user.email}:`, error);
-        }
-
-        // Small delay between requests
-        if (i < users.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
-      }
-
-      setImportResults(results);
-      
-      if (results.successful > 0) {
-        toast.success(`Successfully imported ${results.successful} users`);
-        onUsersImported();
-      }
-      
-      if (results.failed > 0) {
-        toast.error(`Failed to import ${results.failed} users`);
-      }
-    } catch (error) {
-      console.error('Import process failed:', error);
-      toast.error('Import failed: ' + error.message);
-    } finally {
-      setIsImporting(false);
-    }
+    };
+    reader.readAsText(selectedFile);
   };
 
   const downloadTemplate = () => {
-    const csvContent = 'email,name,role,password\njohn.doe@example.com,John Doe,job_seeker,TempPass123!\njane.smith@example.com,Jane Smith,employer,SecurePass456!';
+    const csvContent = 'email,name,role,temporary_password\nuser@example.com,John Doe,job_seeker,TempPass123!\nemployer@company.com,Jane Smith,employer,SecurePass456!';
     const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'user-import-template.csv';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'user-import-template.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
-  const handleClose = () => {
-    setCsvFile(null);
-    setImportResults(null);
-    setImportProgress(0);
-    setEdgeFunctionStatus(null);
-    onOpenChange(false);
+  const importUsers = async () => {
+    if (!file || parsedUsers.length === 0) return;
+
+    // Check if there are any valid users to import
+    const validUsers = parsedUsers.filter(user => user.isValid);
+    if (validUsers.length === 0) {
+      toast.error('No valid users found to import. Please fix the validation errors first.');
+      return;
+    }
+
+    setImporting(true);
+    setProgress(0);
+
+    const results = {
+      successful: 0,
+      failed: 0,
+      errors: [] as Array<{ email: string; error: string }>
+    };
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error('Authentication session not found');
+      setImporting(false);
+      return;
+    }
+
+    // Import only valid users
+    for (let i = 0; i < validUsers.length; i++) {
+      const user = validUsers[i];
+      
+      try {
+        const requestBody = {
+          userEmail: user.email,
+          userName: user.name,
+          userRole: user.role,
+          temporaryPassword: user.temporaryPassword
+        };
+
+        console.log(`Importing user ${i + 1}/${validUsers.length}:`, requestBody);
+
+        const { data, error } = await supabase.functions.invoke('admin-create-user', {
+          body: requestBody,
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (error) {
+          console.error(`Import failed for ${user.email}:`, error);
+          results.failed++;
+          results.errors.push({
+            email: user.email,
+            error: error.message || 'Unknown error occurred'
+          });
+        } else if (data?.success) {
+          console.log(`Successfully imported ${user.email}`);
+          results.successful++;
+        } else {
+          console.error(`Import failed for ${user.email}:`, data);
+          results.failed++;
+          results.errors.push({
+            email: user.email,
+            error: data?.error || 'Edge Function returned failure'
+          });
+        }
+      } catch (error: any) {
+        console.error(`Exception during import for ${user.email}:`, error);
+        results.failed++;
+        results.errors.push({
+          email: user.email,
+          error: error.message || 'Network error occurred'
+        });
+      }
+
+      setProgress(((i + 1) / validUsers.length) * 100);
+    }
+
+    setResults(results);
+    setImporting(false);
+
+    if (results.successful > 0) {
+      toast.success(`Successfully imported ${results.successful} users`);
+      if (results.failed === 0) {
+        onUsersImported();
+        onOpenChange(false);
+      }
+    }
+
+    if (results.failed > 0) {
+      toast.error(`Failed to import ${results.failed} users`);
+    }
+  };
+
+  const resetModal = () => {
+    setFile(null);
+    setParsedUsers([]);
+    setCsvHeaders([]);
+    setShowPreview(false);
+    setResults(null);
+    setProgress(0);
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={(open) => {
+      onOpenChange(open);
+      if (!open) resetModal();
+    }}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Import Users from CSV</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Edge Function Status Section */}
+          {/* CSV Template Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label className="text-base font-medium">Edge Function Status</Label>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={testEdgeFunction}
-                disabled={isTesting}
-                className="flex items-center gap-2"
-              >
-                {isTesting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <CheckCircle className="h-4 w-4" />
-                )}
-                Test Edge Function
+              <h3 className="text-lg font-medium">CSV Template</h3>
+              <Button variant="outline" onClick={downloadTemplate} className="flex items-center gap-2">
+                <Download className="h-4 w-4" />
+                Download Template
               </Button>
             </div>
+            <Alert>
+              <FileText className="h-4 w-4" />
+              <AlertDescription>
+                Your CSV must include columns for: <strong>email</strong> and <strong>name</strong> (required). 
+                Optional columns: <strong>role</strong> (job_seeker/employer/admin), <strong>temporary_password</strong>.
+                Column names are case-insensitive and flexible (e.g., "Email", "email", "email_address" all work).
+              </AlertDescription>
+            </Alert>
+          </div>
 
-            {edgeFunctionStatus && (
-              <Alert variant={edgeFunctionStatus.isHealthy ? "default" : "destructive"}>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  <div className="space-y-2">
-                    <p>
-                      <strong>Status:</strong> {edgeFunctionStatus.isHealthy ? 'Healthy' : 'Unhealthy'}
-                    </p>
-                    {edgeFunctionStatus.debugInfo && (
-                      <div>
-                        <strong>Debug Info:</strong>
-                        <pre className="mt-1 text-xs bg-gray-100 p-2 rounded overflow-auto">
-                          {JSON.stringify(edgeFunctionStatus.debugInfo, null, 2)}
-                        </pre>
-                      </div>
-                    )}
-                  </div>
-                </AlertDescription>
-              </Alert>
+          {/* File Selection */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Select CSV File</h3>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleFileSelect}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+            {file && (
+              <p className="text-sm text-gray-600">Selected: {file.name}</p>
             )}
           </div>
 
-          {/* Template Download */}
-          <div className="flex items-center justify-between">
-            <Label className="text-base font-medium">CSV Template</Label>
-            <Button variant="outline" size="sm" onClick={downloadTemplate}>
-              <Download className="h-4 w-4 mr-2" />
-              Download Template
-            </Button>
-          </div>
-
-          {/* File Upload */}
-          <div className="space-y-2">
-            <Label>Select CSV File</Label>
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                isDragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-              }`}
-            >
-              <input {...getInputProps()} />
-              <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-              {csvFile ? (
-                <p className="text-sm font-medium text-green-600">
-                  Selected: {csvFile.name}
-                </p>
-              ) : (
-                <p className="text-sm text-gray-600">
-                  {isDragActive
-                    ? 'Drop the CSV file here...'
-                    : 'Drag and drop a CSV file here, or click to select'}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Import Progress */}
-          {isImporting && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Import Progress</Label>
-                <span className="text-sm text-gray-600">{importProgress}%</span>
+          {/* CSV Preview and Validation */}
+          {showPreview && parsedUsers.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">CSV Preview & Validation</h3>
+              
+              {/* Summary */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <div className="text-sm text-blue-600">Total Rows</div>
+                  <div className="text-xl font-semibold text-blue-800">{parsedUsers.length}</div>
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <div className="text-sm text-green-600">Valid Users</div>
+                  <div className="text-xl font-semibold text-green-800">
+                    {parsedUsers.filter(u => u.isValid).length}
+                  </div>
+                </div>
+                <div className="bg-red-50 p-3 rounded-lg">
+                  <div className="text-sm text-red-600">Invalid Users</div>
+                  <div className="text-xl font-semibold text-red-800">
+                    {parsedUsers.filter(u => !u.isValid).length}
+                  </div>
+                </div>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${importProgress}%` }}
-                />
+
+              {/* Headers Found */}
+              <div>
+                <h4 className="font-medium mb-2">CSV Headers Detected:</h4>
+                <div className="flex flex-wrap gap-2">
+                  {csvHeaders.map((header, index) => (
+                    <span key={index} className="px-2 py-1 bg-gray-100 rounded text-sm">
+                      {header}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Validation Results */}
+              <div className="max-h-60 overflow-y-auto border rounded-lg">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="p-2 text-left">Status</th>
+                      <th className="p-2 text-left">Email</th>
+                      <th className="p-2 text-left">Name</th>
+                      <th className="p-2 text-left">Role</th>
+                      <th className="p-2 text-left">Issues</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {parsedUsers.map((user, index) => (
+                      <tr key={index} className={user.isValid ? 'bg-green-50' : 'bg-red-50'}>
+                        <td className="p-2">
+                          {user.isValid ? (
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <XCircle className="h-4 w-4 text-red-600" />
+                          )}
+                        </td>
+                        <td className="p-2">{user.email}</td>
+                        <td className="p-2">{user.name}</td>
+                        <td className="p-2">{user.role}</td>
+                        <td className="p-2">
+                          {user.errors.length > 0 && (
+                            <div className="text-red-600 text-xs">
+                              {user.errors.join(', ')}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           )}
 
-          {/* Import Results */}
-          {importResults && (
-            <Alert>
-              <CheckCircle className="h-4 w-4" />
-              <AlertDescription>
+          {/* Import Progress */}
+          {importing && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Importing Users...</h3>
+              <Progress value={progress} className="w-full" />
+              <p className="text-sm text-gray-600">Progress: {Math.round(progress)}%</p>
+            </div>
+          )}
+
+          {/* Results */}
+          {results && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Import Results</h3>
+              <Alert variant={results.failed > 0 ? "destructive" : "default"}>
+                <AlertDescription>
+                  <strong>Import Complete:</strong> {results.successful} successful, {results.failed} failed
+                </AlertDescription>
+              </Alert>
+              
+              {results.errors.length > 0 && (
                 <div className="space-y-2">
-                  <p>
-                    <strong>Import Complete:</strong> {importResults.successful} successful, {importResults.failed} failed
-                  </p>
-                  {importResults.errors.length > 0 && (
-                    <div>
-                      <strong>Errors:</strong>
-                      <ul className="mt-1 text-xs space-y-1">
-                        {importResults.errors.slice(0, 5).map((error, index) => (
-                          <li key={index} className="text-red-600">• {error}</li>
-                        ))}
-                        {importResults.errors.length > 5 && (
-                          <li className="text-gray-600">... and {importResults.errors.length - 5} more</li>
-                        )}
-                      </ul>
-                    </div>
-                  )}
+                  <h4 className="font-medium text-red-600">Errors:</h4>
+                  <div className="max-h-40 overflow-y-auto space-y-1">
+                    {results.errors.map((error, index) => (
+                      <div key={index} className="text-sm bg-red-50 p-2 rounded">
+                        <strong>{error.email}:</strong> {error.error}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </AlertDescription>
-            </Alert>
+              )}
+            </div>
           )}
 
           {/* Action Buttons */}
           <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={handleClose}>
+            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={importing}>
               Cancel
             </Button>
             <Button
               onClick={importUsers}
-              disabled={!csvFile || isImporting}
+              disabled={!file || importing || parsedUsers.filter(u => u.isValid).length === 0}
               className="flex items-center gap-2"
             >
-              {isImporting ? (
+              {importing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Upload className="h-4 w-4" />
