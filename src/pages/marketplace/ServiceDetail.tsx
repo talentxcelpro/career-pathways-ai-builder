@@ -50,7 +50,7 @@ export default function ServiceDetail() {
       // Then get the provider profile
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url, location, is_verified')
+        .select('id, full_name, profile_picture_url, location, verification_status')
         .eq('id', serviceData.provider_id)
         .single();
 
@@ -58,9 +58,9 @@ export default function ServiceDetail() {
       const enrichedService: Service = {
         ...serviceData,
         provider_name: profileData?.full_name || 'Unknown Provider',
-        provider_avatar: profileData?.avatar_url || null,
+        provider_avatar: profileData?.profile_picture_url || null,
         provider_location: profileData?.location || serviceData.location,
-        is_verified: profileData?.is_verified || false
+        is_verified: profileData?.verification_status === 'verified'
       };
 
       setService(enrichedService);

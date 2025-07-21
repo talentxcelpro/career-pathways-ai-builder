@@ -28,9 +28,9 @@ interface BookingRequest {
   client_email: string;
   client_phone?: string;
   service_title: string;
-  message: string;
+  project_description: string;
   budget_range?: string;
-  timeline?: string;
+  preferred_start_date?: string;
   status: string;
   created_at: string;
   updated_at: string;
@@ -76,7 +76,7 @@ export default function ServiceBookingsList() {
       const clientIds = bookingsData.map(booking => booking.client_id);
       const { data: profilesData } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url, location')
+        .select('id, full_name, profile_picture_url, location')
         .in('id', clientIds);
 
       // Combine booking data with profile data
@@ -90,13 +90,13 @@ export default function ServiceBookingsList() {
           client_email: booking.client_email,
           client_phone: booking.client_phone,
           service_title: booking.services.title,
-          message: booking.message,
+          project_description: booking.project_description,
           budget_range: booking.budget_range,
-          timeline: booking.timeline,
+          preferred_start_date: booking.preferred_start_date,
           status: booking.status,
           created_at: booking.created_at,
           updated_at: booking.updated_at,
-          client_avatar: profile?.avatar_url,
+          client_avatar: profile?.profile_picture_url,
           client_location: profile?.location
         };
       });
@@ -241,14 +241,14 @@ export default function ServiceBookingsList() {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {/* Client Message */}
+            {/* Project Description */}
             <div>
-              <h4 className="font-medium mb-2">Client Message:</h4>
-              <p className="text-sm bg-muted p-3 rounded-md">{booking.message}</p>
+              <h4 className="font-medium mb-2">Project Description:</h4>
+              <p className="text-sm bg-muted p-3 rounded-md">{booking.project_description}</p>
             </div>
 
             {/* Project Details */}
-            {(booking.budget_range || booking.timeline) && (
+            {(booking.budget_range || booking.preferred_start_date) && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {booking.budget_range && (
                   <div>
@@ -256,10 +256,10 @@ export default function ServiceBookingsList() {
                     <p className="text-sm text-muted-foreground">{booking.budget_range}</p>
                   </div>
                 )}
-                {booking.timeline && (
+                {booking.preferred_start_date && (
                   <div>
-                    <h5 className="font-medium text-sm">Timeline:</h5>
-                    <p className="text-sm text-muted-foreground">{booking.timeline}</p>
+                    <h5 className="font-medium text-sm">Preferred Start Date:</h5>
+                    <p className="text-sm text-muted-foreground">{booking.preferred_start_date}</p>
                   </div>
                 )}
               </div>

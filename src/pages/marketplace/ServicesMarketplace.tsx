@@ -89,7 +89,7 @@ export default function ServicesMarketplace() {
       const providerIds = [...new Set(servicesData.map(s => s.provider_id))];
       const { data: profilesData } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url, location, is_verified')
+        .select('id, full_name, profile_picture_url, location, verification_status')
         .in('id', providerIds);
 
       // Combine service and profile data
@@ -104,13 +104,13 @@ export default function ServicesMarketplace() {
           delivery_time_days: service.delivery_time_days,
           provider_id: service.provider_id,
           provider_name: profile?.full_name || 'Unknown Provider',
-          provider_avatar: profile?.avatar_url,
+          provider_avatar: profile?.profile_picture_url,
           provider_location: profile?.location || service.location,
           average_rating: service.average_rating || 0,
           total_reviews: service.total_reviews || 0,
           total_orders: service.total_orders || 0,
           is_featured: service.is_featured || false,
-          is_verified: profile?.is_verified || false,
+          is_verified: profile?.verification_status === 'verified',
           tags: service.tags || []
         };
       });
