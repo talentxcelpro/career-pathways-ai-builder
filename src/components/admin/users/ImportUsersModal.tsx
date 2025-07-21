@@ -1,486 +1,378 @@
-import React, { useState, useRef } from 'react';
+
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { CheckCircle, XCircle, Upload, AlertCircle, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { Upload, X, Check, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ImportUsersModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onUsersImported: () => void;
 }
 
+interface ImportResult {
+  email: string;
+  name: string;
+  success: boolean;
+  error?: string;
+  userId?: string;
+}
+
+interface ParsedUser {
+  email: string;
+  name: string;
+  role?: string;
+}
+
 export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
-  isOpen,
-  onClose,
+  open,
+  onOpenChange,
   onUsersImported
 }) => {
-  const [file, setFile] = useState<File | null>(null);
-  const [csvData, setCsvData] = useState<any[]>([]);
-  const [headers, setHeaders] = useState<string[]>([]);
-  const [columnMapping, setColumnMapping] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [mappingErrors, setMappingErrors] = useState<string[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [csvData, setCsvData] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
+  const [importResults, setImportResults] = useState<ImportResult[]>([]);
+  const [progress, setProgress] = useState(0);
+  const [showResults, setShowResults] = useState(false);
 
-  const targetFields = [
-    { value: 'full_name', label: 'Full Name' },
-    { value: 'email', label: 'Email' },
-    { value: 'user_role', label: 'User Role' },
-    { value: 'status', label: 'Status' },
-    { value: 'send_welcome_email', label: 'Send Welcome Email' }
-  ];
+  const parseCsvData = (data: string): ParsedUser[] => {
+    const lines = data.trim().split('\n');
+    const users: ParsedUser[] = [];
 
-  const autoMapColumns = (csvHeaders: string[]) => {
-    const mapping: Record<string, string> = {};
-    const usedTargets = new Set<string>();
-    
-    csvHeaders.forEach(header => {
-      const normalizedHeader = header.toLowerCase().trim();
-      let targetField = '';
+    // Check if first line is a header
+    const firstLine = lines[0].toLowerCase();
+    const hasHeader = firstLine.includes('email') || firstLine.includes('name') || firstLine.includes('role');
+    const dataLines = hasHeader ? lines.slice(1) : lines;
+
+    for (const line of dataLines) {
+      if (!line.trim()) continue;
       
-      // Improved auto-mapping logic
-      if (normalizedHeader.includes('name') || normalizedHeader === 'full_name') {
-        targetField = 'full_name';
-      } else if (normalizedHeader === 'email' || normalizedHeader.includes('email_address')) {
-        targetField = 'email';
-      } else if (normalizedHeader.includes('role') || normalizedHeader === 'user_role') {
-        targetField = 'user_role';
-      } else if (normalizedHeader === 'status' || normalizedHeader.includes('account_status')) {
-        targetField = 'status';
-      } else if (normalizedHeader === 'send_welcome_email' || normalizedHeader.includes('welcome_email') || normalizedHeader.includes('send_email')) {
-        targetField = 'send_welcome_email';
-      }
+      const columns = line.split(',').map(col => col.trim().replace(/"/g, ''));
       
-      // Only map if target field is found and not already used
-      if (targetField && !usedTargets.has(targetField)) {
-        mapping[header] = targetField;
-        usedTargets.add(targetField);
-      }
-    });
-    
-    return mapping;
-  };
-
-  const validateColumnMapping = (mapping: Record<string, string>) => {
-    const errors: string[] = [];
-    const usedTargets: Record<string, string[]> = {};
-    
-    // Check for duplicate target mappings
-    Object.entries(mapping).forEach(([sourceCol, targetCol]) => {
-      if (targetCol && targetCol !== 'none') {
-        if (!usedTargets[targetCol]) {
-          usedTargets[targetCol] = [];
+      if (columns.length >= 2) {
+        const email = columns[0];
+        const name = columns[1];
+        const role = columns[2] || 'job_seeker';
+        
+        // Basic email validation
+        if (email && email.includes('@') && name) {
+          users.push({ email, name, role });
         }
-        usedTargets[targetCol].push(sourceCol);
       }
-    });
-    
-    // Report duplicate mappings
-    Object.entries(usedTargets).forEach(([targetCol, sourceCols]) => {
-      if (sourceCols.length > 1) {
-        errors.push(`Multiple columns mapped to "${targetCol}": ${sourceCols.join(', ')}`);
-      }
-    });
-    
-    // Check for required fields
-    if (!usedTargets['email']) {
-      errors.push('Email column mapping is required');
     }
-    
-    if (!usedTargets['full_name']) {
-      errors.push('Full Name column mapping is required');
-    }
-    
-    return errors;
+
+    return users;
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (!selectedFile) return;
+  const createUser = async (user: ParsedUser): Promise<ImportResult> => {
+    try {
+      // Generate a temporary password
+      const temporaryPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
 
-    if (!selectedFile.name.toLowerCase().endsWith('.csv')) {
-      toast.error('Please select a CSV file');
-      return;
-    }
+      console.log('Creating user via Edge Function:', user.email);
 
-    setFile(selectedFile);
-    parseCSV(selectedFile);
-  };
-
-  const parseCSV = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      const lines = text.split('\n').filter(line => line.trim());
-      
-      if (lines.length < 2) {
-        toast.error('CSV file must contain at least a header row and one data row');
-        return;
-      }
-
-      const csvHeaders = lines[0].split(',').map(header => header.trim().replace(/"/g, ''));
-      const data = lines.slice(1).map(line => {
-        const values = line.split(',').map(value => value.trim().replace(/"/g, ''));
-        const row: any = {};
-        csvHeaders.forEach((header, index) => {
-          row[header] = values[index] || '';
-        });
-        return row;
+      // Call the admin-create-user Edge Function
+      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+        body: {
+          userEmail: user.email,
+          userName: user.name,
+          userRole: user.role || 'job_seeker',
+          temporaryPassword
+        }
       });
 
-      setHeaders(csvHeaders);
-      setCsvData(data);
-      
-      // Auto-map columns and validate
-      const autoMapping = autoMapColumns(csvHeaders);
-      setColumnMapping(autoMapping);
-      
-      const errors = validateColumnMapping(autoMapping);
-      setMappingErrors(errors);
-    };
-    reader.readAsText(file);
-  };
-
-  const handleMappingChange = (sourceColumn: string, targetField: string) => {
-    const newMapping = { ...columnMapping };
-    
-    // Remove any existing mapping to this target field
-    Object.keys(newMapping).forEach(key => {
-      if (newMapping[key] === targetField && key !== sourceColumn) {
-        newMapping[key] = 'none';
+      if (error) {
+        console.error('Edge Function error:', error);
+        return {
+          email: user.email,
+          name: user.name,
+          success: false,
+          error: error.message || 'Unknown error from Edge Function'
+        };
       }
-    });
-    
-    newMapping[sourceColumn] = targetField;
-    setColumnMapping(newMapping);
-    
-    // Validate new mapping
-    const errors = validateColumnMapping(newMapping);
-    setMappingErrors(errors);
-  };
 
-  const mapRowData = (row: any) => {
-    const mappedData: any = {};
-    
-    Object.entries(columnMapping).forEach(([sourceCol, targetCol]) => {
-      if (targetCol && row[sourceCol] !== undefined && row[sourceCol] !== null) {
-        let value = row[sourceCol];
-        
-        // Handle string values
-        if (typeof value === 'string') {
-          value = value.trim();
-          
-          // Special handling for send_welcome_email field
-          if (targetCol === 'send_welcome_email') {
-            // Convert string boolean values to actual boolean
-            if (value.toLowerCase() === 'true' || value === '1' || value.toLowerCase() === 'yes') {
-              value = true;
-            } else if (value.toLowerCase() === 'false' || value === '0' || value.toLowerCase() === 'no') {
-              value = false;
-            } else {
-              value = Boolean(value); // Default fallback
-            }
-          }
-        }
-        
-        mappedData[targetCol] = value;
+      if (!data?.success) {
+        console.error('Edge Function returned failure:', data);
+        return {
+          email: user.email,
+          name: user.name,
+          success: false,
+          error: data?.error || 'User creation failed'
+        };
       }
-    });
-    
-    // Normalize values
-    if (mappedData.status) {
-      const status = mappedData.status.toString().toLowerCase();
-      if (['active', 'true', '1', 'yes'].includes(status)) {
-        mappedData.profile_completed = true;
-      } else if (['inactive', 'false', '0', 'no'].includes(status)) {
-        mappedData.profile_completed = false;
-      }
-    }
-    
-    // Set default values
-    if (!mappedData.user_role) {
-      mappedData.user_role = 'job_seeker';
-    }
-    
-    if (mappedData.send_welcome_email === undefined) {
-      mappedData.send_welcome_email = true;
-    }
 
-    return mappedData;
-  };
+      console.log('User created successfully:', user.email);
 
-  const validateUserData = (userData: any) => {
-    const errors = [];
-    
-    if (!userData.full_name?.trim()) {
-      errors.push('Full name is required');
+      return {
+        email: user.email,
+        name: user.name,
+        success: true,
+        userId: data.userId
+      };
+
+    } catch (error: any) {
+      console.error('Error creating user:', user.email, error);
+      return {
+        email: user.email,
+        name: user.name,
+        success: false,
+        error: error.message || 'Unknown error occurred'
+      };
     }
-    
-    if (!userData.email?.trim()) {
-      errors.push('Valid email is required');
-    } else {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(userData.email.toString())) {
-        errors.push('Valid email is required');
-      }
-    }
-    
-    const validRoles = ['job_seeker', 'employer', 'admin', 'candidate'];
-    if (userData.user_role && !validRoles.includes(userData.user_role)) {
-      errors.push(`Invalid user role: ${userData.user_role}`);
-    }
-    
-    return errors;
   };
 
   const handleImport = async () => {
-    if (mappingErrors.length > 0) {
-      toast.error('Please fix column mapping errors before importing');
+    if (!csvData.trim()) {
+      toast.error('Please enter CSV data to import');
       return;
     }
 
-    setIsLoading(true);
-    const results = { success: 0, errors: [] as string[] };
+    const users = parseCsvData(csvData);
+    
+    if (users.length === 0) {
+      toast.error('No valid users found in CSV data');
+      return;
+    }
 
-    try {
-      for (let i = 0; i < csvData.length; i++) {
-        const row = csvData[i];
+    if (users.length > 100) {
+      toast.error('Maximum 100 users can be imported at once');
+      return;
+    }
 
-        try {
-          const mappedUser = mapRowData(row);
-          const validationErrors = validateUserData(mappedUser);
-          
-          if (validationErrors.length > 0) {
-            results.errors.push(`Row ${i + 2} (${mappedUser.email || 'No email'}): ${validationErrors.join(', ')}`);
-            continue;
-          }
+    setIsImporting(true);
+    setProgress(0);
+    setImportResults([]);
+    setShowResults(true);
 
-          // Create user account
-          const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-            email: mappedUser.email,
-            password: Math.random().toString(36).substring(2, 15),
-            email_confirm: true,
-          });
+    const results: ImportResult[] = [];
 
-          if (authError) {
-            results.errors.push(`Row ${i + 2} (${mappedUser.email}): ${authError.message}`);
-            continue;
-          }
+    // Process users in batches to avoid overwhelming the system
+    const batchSize = 5;
+    for (let i = 0; i < users.length; i += batchSize) {
+      const batch = users.slice(i, i + batchSize);
+      
+      // Process batch in parallel
+      const batchPromises = batch.map(user => createUser(user));
+      const batchResults = await Promise.all(batchPromises);
+      
+      results.push(...batchResults);
+      setImportResults([...results]);
+      setProgress((results.length / users.length) * 100);
 
-          // Create profile
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-              id: authData.user.id,
-              email: mappedUser.email,
-              full_name: mappedUser.full_name,
-              user_role: mappedUser.user_role,
-              profile_completed: mappedUser.profile_completed ?? true,
-            });
-
-          if (profileError) {
-            results.errors.push(`Row ${i + 2} (${mappedUser.email}): Failed to create profile - ${profileError.message}`);
-            continue;
-          }
-
-          // Send welcome email if requested
-          if (mappedUser.send_welcome_email) {
-            await supabase.from('email_queue').insert({
-              to_email: mappedUser.email,
-              template: 'welcome_email',
-              subject: 'Welcome to TalentXcel Pro!',
-              data: {
-                name: mappedUser.full_name,
-                login_url: `${window.location.origin}/login`
-              }
-            });
-          }
-
-          results.success++;
-        } catch (error: any) {
-          results.errors.push(`Row ${i + 2}: ${error.message}`);
-        }
+      // Small delay between batches to avoid rate limiting
+      if (i + batchSize < users.length) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
+    }
 
-      // Show results
-      if (results.success > 0) {
-        toast.success(`${results.success} users imported successfully`);
-      }
+    setIsImporting(false);
+    
+    const successCount = results.filter(r => r.success).length;
+    const failCount = results.filter(r => !r.success).length;
 
-      if (results.errors.length > 0) {
-        const errorMessage = `${results.errors.length} users failed to import. Check the results for details.`;
-        toast.error(errorMessage);
-        console.error('Import Errors:', results.errors);
-      }
-
-      if (results.success > 0) {
+    if (successCount > 0) {
+      toast.success(`Successfully imported ${successCount} users`);
+      if (successCount === users.length) {
         onUsersImported();
-        onClose();
       }
+    }
 
-    } catch (error: any) {
-      toast.error(`Import failed: ${error.message}`);
-    } finally {
-      setIsLoading(false);
+    if (failCount > 0) {
+      toast.error(`${failCount} users failed to import. Check the results for details.`);
     }
   };
 
-  const resetImport = () => {
-    setFile(null);
-    setCsvData([]);
-    setHeaders([]);
-    setColumnMapping({});
-    setMappingErrors([]);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+  const downloadResults = () => {
+    const csvContent = [
+      'Email,Name,Status,Error',
+      ...importResults.map(result => 
+        `"${result.email}","${result.name}","${result.success ? 'Success' : 'Failed'}","${result.error || ''}"`
+      )
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'import-results.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
+
+  const handleClose = () => {
+    setCsvData('');
+    setImportResults([]);
+    setShowResults(false);
+    setProgress(0);
+    onOpenChange(false);
+  };
+
+  const successCount = importResults.filter(r => r.success).length;
+  const failCount = importResults.filter(r => !r.success).length;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Import Users from CSV</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Upload className="h-5 w-5" />
+            Import Users
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* File Upload Section */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <Input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv"
-                onChange={handleFileSelect}
-                className="flex-1"
-              />
-              {file && (
-                <Button variant="outline" size="sm" onClick={resetImport}>
-                  <X className="h-4 w-4 mr-2" />
-                  Clear
-                </Button>
-              )}
-            </div>
-
-            {file && (
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm font-medium">File: {file.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {csvData.length} rows to import
-                </p>
+          {!showResults && (
+            <>
+              <div className="space-y-2">
+                <Label>CSV Format Instructions</Label>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Use the following CSV format (with or without headers):
+                    </p>
+                    <code className="text-xs bg-muted p-2 rounded block">
+                      email,name,role<br />
+                      john@example.com,John Doe,job_seeker<br />
+                      jane@example.com,Jane Smith,employer
+                    </code>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Role is optional and defaults to 'job_seeker'. Available roles: job_seeker, employer, candidate
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
-            )}
-          </div>
 
-          {/* Column Mapping Section */}
-          {headers.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="csvData">CSV Data</Label>
+                <Textarea
+                  id="csvData"
+                  value={csvData}
+                  onChange={(e) => setCsvData(e.target.value)}
+                  placeholder="Paste your CSV data here..."
+                  className="min-h-[200px] font-mono text-sm"
+                />
+              </div>
+            </>
+          )}
+
+          {showResults && (
             <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-semibold">Column Mapping</h3>
-                {mappingErrors.length > 0 && (
-                  <div className="flex items-center gap-2 text-destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                    <span className="text-sm">Mapping errors detected</span>
-                  </div>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">Import Results</h3>
+                {importResults.length > 0 && (
+                  <Button variant="outline" size="sm" onClick={downloadResults}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Results
+                  </Button>
                 )}
               </div>
 
-              {mappingErrors.length > 0 && (
-                <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                  <h4 className="font-medium text-destructive mb-2">Mapping Errors:</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-destructive">
-                    {mappingErrors.map((error, index) => (
-                      <li key={index}>{error}</li>
-                    ))}
-                  </ul>
+              {isImporting && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Importing users...</span>
+                    <span>{Math.round(progress)}%</span>
+                  </div>
+                  <Progress value={progress} className="w-full" />
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {headers.map((header) => (
-                  <div key={header} className="space-y-2">
-                    <Label>CSV Column: <span className="font-mono">{header}</span></Label>
-                    <Select
-                      value={columnMapping[header] || 'none'}
-                      onValueChange={(value) => handleMappingChange(header, value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select target field" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">Don't import</SelectItem>
-                        {targetFields.map((field) => (
-                          <SelectItem key={field.value} value={field.value}>
-                            {field.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+              {!isImporting && importResults.length > 0 && (
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5 text-green-500" />
+                        <div>
+                          <p className="font-medium">{successCount}</p>
+                          <p className="text-sm text-muted-foreground">Successful</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center gap-2">
+                        <XCircle className="h-5 w-5 text-red-500" />
+                        <div>
+                          <p className="font-medium">{failCount}</p>
+                          <p className="text-sm text-muted-foreground">Failed</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="h-5 w-5 text-blue-500" />
+                        <div>
+                          <p className="font-medium">{importResults.length}</p>
+                          <p className="text-sm text-muted-foreground">Total</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
 
-          {/* Preview Section */}
-          {csvData.length > 0 && mappingErrors.length === 0 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Preview (First 3 rows)</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full border border-border rounded-lg">
-                  <thead className="bg-muted">
+              <div className="max-h-60 overflow-y-auto border rounded">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted sticky top-0">
                     <tr>
-                      {targetFields.map((field) => {
-                        const isMapped = Object.values(columnMapping).includes(field.value);
-                        return (
-                          <th key={field.value} className="px-4 py-2 text-left text-sm font-medium">
-                            {field.label}
-                            {isMapped && <Check className="inline h-4 w-4 ml-2 text-green-600" />}
-                          </th>
-                        );
-                      })}
+                      <th className="text-left p-2 font-medium">Email</th>
+                      <th className="text-left p-2 font-medium">Name</th>
+                      <th className="text-left p-2 font-medium">Status</th>
+                      <th className="text-left p-2 font-medium">Error</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {csvData.slice(0, 3).map((row, index) => {
-                      const mappedRow = mapRowData(row);
-                      return (
-                        <tr key={index} className="border-t">
-                          {targetFields.map((field) => (
-                            <td key={field.value} className="px-4 py-2 text-sm">
-                              {mappedRow[field.value] !== undefined ? 
-                                String(mappedRow[field.value]) : 
-                                '-'
-                              }
-                            </td>
-                          ))}
-                        </tr>
-                      );
-                    })}
+                    {importResults.map((result, index) => (
+                      <tr key={index} className="border-t">
+                        <td className="p-2">{result.email}</td>
+                        <td className="p-2">{result.name}</td>
+                        <td className="p-2">
+                          <div className="flex items-center gap-1">
+                            {result.success ? (
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <XCircle className="h-4 w-4 text-red-500" />
+                            )}
+                            <span className={result.success ? 'text-green-600' : 'text-red-600'}>
+                              {result.success ? 'Success' : 'Failed'}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-2 text-xs text-muted-foreground">
+                          {result.error || '-'}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex gap-3">
-            <Button 
-              onClick={handleImport} 
-              disabled={isLoading || csvData.length === 0 || mappingErrors.length > 0}
-              className="flex items-center gap-2"
-            >
-              <Upload className="h-4 w-4" />
-              {isLoading ? 'Importing...' : 'Import Users'}
+          <div className="flex justify-end gap-3 pt-4 border-t">
+            <Button variant="outline" onClick={handleClose}>
+              {showResults ? 'Close' : 'Cancel'}
             </Button>
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
+            {!showResults && (
+              <Button onClick={handleImport} disabled={!csvData.trim() || isImporting}>
+                {isImporting ? 'Importing...' : 'Import Users'}
+              </Button>
+            )}
+            {showResults && !isImporting && failCount === 0 && (
+              <Button onClick={() => { handleClose(); onUsersImported(); }}>
+                Done
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>

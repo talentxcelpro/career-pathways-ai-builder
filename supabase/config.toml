@@ -1,98 +1,30 @@
 
 project_id = "dthlgsnakhoftinssokm"
 
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
 [auth]
 enabled = true
-
-[functions.ai-gateway]
-verify_jwt = false
-
-[functions.ai-agent]
-verify_jwt = true
-
-[functions.test-function]
-verify_jwt = false
-
-[functions.test-sendgrid]
-verify_jwt = false
-
-[auth.email]
+port = 54324
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://dthlgsnakhoftinssokm.supabase.co/auth/v1/callback"]
+jwt_expiry = 3600
 enable_signup = true
-
-[functions.ai-resume-extraction]
-verify_jwt = true
-
-[functions.enhance-resume]
-verify_jwt = false
-
-[functions.ai-resume-content]
-verify_jwt = true
-
-[functions.ai-comprehensive]
-verify_jwt = true
-
-[functions.ai-resume-parser]
-verify_jwt = true
-
-[functions.comprehensive-resume-extractor]
-verify_jwt = true
-
-[functions.ai-job-generator]
-verify_jwt = true
-
-[functions.ai-comment-generator]
-verify_jwt = true
-
-[functions.ai-post-rewriter]
-verify_jwt = true
-
-[functions.ai-trending-topics]
-verify_jwt = true
-
-[functions.ai-tools]
-verify_jwt = true
-
-[functions.notify-employer-request]
-verify_jwt = true
-
-[functions.razorpay-payment]
-verify_jwt = true
-
-[functions.url-metadata]
-verify_jwt = true
-
-[functions.ai-resume-reprocessor]
-verify_jwt = true
-
-[functions.send-email]
-verify_jwt = true
-
-[functions.process-email-queue]
-verify_jwt = false
+enable_confirmations = false
 
 [functions.admin-create-user]
 verify_jwt = true
 
-[functions.health-check]
+[functions.send-welcome-email]
 verify_jwt = false
 
-[functions.unified-email-service]
-verify_jwt = true
-
-[functions.email-webhook]
-verify_jwt = false
-
-[functions.smart-email-processor]
-verify_jwt = false
-
-[functions.email-test]
-verify_jwt = false
-
-[functions.simple-email-test]
+[functions.send-automated-email]
 verify_jwt = false
 
 [functions.working-email-processor]
-verify_jwt = false
-
-[functions.ai-keyword-optimizer]
 verify_jwt = false

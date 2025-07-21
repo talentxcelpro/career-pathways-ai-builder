@@ -1,267 +1,220 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
-import { corsHeaders } from "../_shared/cors.ts";
 
-// Force redeployment - Updated timestamp: 2025-07-12T05:26:00Z
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.1';
 
-Deno.serve(async (req) => {
-  console.log(`[${new Date().toISOString()}] Received ${req.method} request from ${req.headers.get('Origin')} to admin-create-user`)
-  
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
+interface CreateUserRequest {
+  userEmail: string;
+  userName: string;
+  userRole?: string;
+  temporaryPassword?: string;
+}
+
+interface CreateUserResponse {
+  success: boolean;
+  userId?: string;
+  error?: string;
+}
+
+const handler = async (req: Request): Promise<Response> => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
-    // Handle CORS preflight requests
-    if (req.method === 'OPTIONS') {
-      console.log('Handling CORS preflight request')
-      return new Response('ok', { headers: corsHeaders });
-    }
-
-    // Health check endpoint
-    if (req.method === 'GET') {
-      console.log('Health check request')
-      return new Response(JSON.stringify({ 
-        status: 'healthy', 
-        timestamp: new Date().toISOString(),
-        service: 'admin-create-user',
-        env_check: {
-          has_supabase_url: !!Deno.env.get('SUPABASE_URL'),
-          has_service_role: !!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
-          has_anon_key: !!Deno.env.get('SUPABASE_ANON_KEY')
-        }
-      }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Only handle POST requests for user creation
-    if (req.method !== 'POST') {
-      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-        status: 405,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    console.log('Processing POST request for user creation')
-
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    );
-
     // Get the authorization header
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      console.error('No authorization header provided')
-      return new Response(JSON.stringify({ error: 'Authorization header missing' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    const authorization = req.headers.get('authorization');
+    if (!authorization) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'No authorization header' }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
+
+    // Create regular supabase client to verify admin status
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      },
+      global: {
+        headers: {
+          authorization
+        }
+      }
+    });
 
     // Verify the user is authenticated and is an admin
-    const token = authHeader.replace('Bearer ', '');
-    
-    // Create a client with the user's token for permission checking
-    const supabaseUser = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: {
-            Authorization: authHeader,
-          },
-        },
-      }
-    );
-
-    const { data: { user }, error: userError } = await supabaseUser.auth.getUser();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     if (userError || !user) {
-      console.error('User verification error:', userError);
-      return new Response(JSON.stringify({ error: 'Invalid token or user not found' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    console.log('User authenticated:', user.email);
-
-    // Check if user is admin - check user_roles table directly
-    let isAdmin = false;
-    
-    try {
-      // Method 1: Check user_roles table using admin client
-      const { data: userRoles, error: rolesError } = await supabaseAdmin
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .in('role', ['super_admin', 'admin']);
-      
-      if (!rolesError && userRoles && userRoles.length > 0) {
-        isAdmin = true;
-        console.log('Admin verified via user_roles table:', userRoles[0].role);
-      } else {
-        // Method 2: Fallback - check email directly for super admin
-        const { data: adminUser, error: emailCheckError } = await supabaseAdmin.auth.admin.getUserById(user.id);
-        if (!emailCheckError && adminUser?.user?.email === 'talentxcelpro@gmail.com') {
-          isAdmin = true;
-          console.log('Admin verified via direct email check (super admin)');
+      console.error('Authentication error:', userError);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Authentication failed' }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
         }
-      }
-    } catch (error) {
-      console.error('Admin check failed:', error);
-      // Try email fallback as last resort
-      try {
-        const { data: adminUser, error: emailCheckError } = await supabaseAdmin.auth.admin.getUserById(user.id);
-        if (!emailCheckError && adminUser?.user?.email === 'talentxcelpro@gmail.com') {
-          isAdmin = true;
-          console.log('Admin verified via email fallback');
+      );
+    }
+
+    // Check if user is admin using the existing function
+    const { data: isAdmin, error: adminError } = await supabase
+      .rpc('is_app_admin', { _user_id: user.id });
+
+    if (adminError || !isAdmin) {
+      console.error('Admin check failed:', adminError);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Admin privileges required' }),
+        {
+          status: 403,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
         }
-      } catch (emailError) {
-        console.error('All admin checks failed:', emailError);
+      );
+    }
+
+    // Parse request body
+    const { userEmail, userName, userRole = 'job_seeker', temporaryPassword }: CreateUserRequest = await req.json();
+
+    if (!userEmail || !userName) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Email and name are required' }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Create service role client for admin operations
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
       }
-    }
-
-    if (!isAdmin) {
-      console.error('User is not admin:', user.email);
-      return new Response(JSON.stringify({ error: 'Insufficient permissions. Admin access required.' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Parse and validate request body
-    let requestBody;
-    try {
-      requestBody = await req.json();
-    } catch (parseError) {
-      console.error('Failed to parse request body:', parseError);
-      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const { email, password, fullName, role, status, sendWelcomeEmail } = requestBody;
-
-    // Validate required fields
-    if (!email || !password || !fullName) {
-      console.error('Missing required fields:', { email: !!email, password: !!password, fullName: !!fullName });
-      return new Response(JSON.stringify({ 
-        error: 'Missing required fields', 
-        details: 'email, password, and fullName are required' 
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    console.log('Creating user:', { email, fullName, role, status });
-
-    // Create the user in Auth (trigger will automatically create profile)
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      user_metadata: {
-        full_name: fullName
-      },
-      email_confirm: true // Auto-confirm email
     });
 
-    if (authError) {
-      console.error('Auth error:', authError);
-      return new Response(JSON.stringify({ error: authError.message }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    console.log('Creating user:', userEmail, userName);
+
+    // Create the auth user with service role privileges
+    const { data: authUser, error: createError } = await adminClient.auth.admin.createUser({
+      email: userEmail,
+      password: temporaryPassword || Math.random().toString(36).slice(-8),
+      email_confirm: true, // Skip email confirmation for admin-created users
+      user_metadata: {
+        full_name: userName
+      }
+    });
+
+    if (createError) {
+      console.error('Failed to create auth user:', createError);
+      return new Response(
+        JSON.stringify({ success: false, error: createError.message }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
-    console.log('User created in auth:', authData.user.id);
+    if (!authUser.user) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'User creation failed - no user returned' }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
 
-    // Wait briefly for the trigger to create the profile
-    await new Promise(resolve => setTimeout(resolve, 100));
+    console.log('Auth user created:', authUser.user.id);
 
-    // Update the profile with admin-specified values (profile was created by trigger)
-    const { error: profileError } = await supabaseAdmin
+    // Create the profile using service role client
+    const { error: profileError } = await adminClient
       .from('profiles')
-      .update({
-        full_name: fullName,
-        email: email,
-        user_role: role,
-        profile_completed: status === 'active',
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', authData.user.id);
+      .insert({
+        id: authUser.user.id,
+        email: userEmail,
+        full_name: userName,
+        user_role: userRole as any,
+        profile_completed: false,
+        first_login: true,
+        onboarding_completed: false
+      });
 
     if (profileError) {
-      console.error('Profile update error details:', {
-        error: profileError,
-        code: profileError.code,
-        details: profileError.details,
-        hint: profileError.hint,
-        message: profileError.message
-      });
+      console.error('Failed to create profile:', profileError);
+      // If profile creation fails, we should clean up the auth user
+      await adminClient.auth.admin.deleteUser(authUser.user.id);
       
-      // Clean up auth user if profile update fails
-      try {
-        await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
-        console.log('Cleaned up auth user after profile update failure');
-      } catch (cleanupError) {
-        console.error('Failed to cleanup auth user:', cleanupError);
-      }
-      
-      return new Response(JSON.stringify({ 
-        error: 'Failed to update user profile', 
-        details: profileError.message,
-        code: profileError.code 
-      }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    console.log('Profile created successfully');
-
-    // Send welcome email if requested
-    if (sendWelcomeEmail) {
-      try {
-        const { error: emailError } = await supabaseAdmin.functions.invoke('send-welcome-email', {
-          body: {
-            userEmail: email,
-            userName: fullName,
-            temporaryPassword: password
-          }
-        });
-        
-        if (emailError) {
-          console.error('Welcome email error:', emailError);
+      return new Response(
+        JSON.stringify({ success: false, error: `Profile creation failed: ${profileError.message}` }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
         }
-      } catch (emailErr) {
-        console.error('Failed to send welcome email:', emailErr);
-      }
+      );
     }
 
-    console.log('User creation completed successfully');
+    console.log('Profile created successfully for:', userEmail);
 
-    return new Response(JSON.stringify({ 
-      success: true, 
-      user: {
-        id: authData.user.id,
-        email: authData.user.email,
-        full_name: fullName,
-        user_role: role
+    // Queue welcome email by calling the send-welcome-email function
+    try {
+      const { error: emailError } = await adminClient.functions.invoke('send-welcome-email', {
+        body: {
+          userEmail,
+          userName,
+          temporaryPassword
+        }
+      });
+      
+      if (emailError) {
+        console.error('Failed to queue welcome email:', emailError);
+        // Don't fail the whole operation if email fails
       }
-    }), {
+    } catch (emailError) {
+      console.error('Error queuing welcome email:', emailError);
+      // Don't fail the whole operation if email fails
+    }
+
+    const response: CreateUserResponse = {
+      success: true,
+      userId: authUser.user.id
+    };
+
+    console.log('User creation completed successfully:', userEmail);
+
+    return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: {
+        "Content-Type": "application/json",
+        ...corsHeaders,
+      },
     });
 
-  } catch (error) {
-    console.error('Function error:', error);
-    return new Response(JSON.stringify({ 
-      error: 'Internal server error',
-      details: error.message 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+  } catch (error: any) {
+    console.error("Error in admin-create-user function:", error);
+    return new Response(
+      JSON.stringify({ success: false, error: error.message || 'Internal server error' }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      }
+    );
   }
-});
+};
+
+serve(handler);
