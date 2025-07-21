@@ -5,13 +5,15 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Settings, Mail, Users, TrendingUp, Activity } from 'lucide-react';
+import { Settings, Mail, Users, TrendingUp, Activity, BarChart3, Shield } from 'lucide-react';
 import { EmailTriggerSettingsModal } from './EmailTriggerSettingsModal';
 import { BulkEmailProcessor } from './BulkEmailProcessor';
 import { EmailAnalyticsDashboard } from './EmailAnalyticsDashboard';
 import { RealTimeEmailAnalytics } from './RealTimeEmailAnalytics';
 import { EmailDeliveryDiagnostics } from './EmailDeliveryDiagnostics';
 import { EmailConfigurationGuide } from './EmailConfigurationGuide';
+import { ProfileCompletionInsights } from './ProfileCompletionInsights';
+import { EmailDeliveryTracker } from './EmailDeliveryTracker';
 
 interface EmailTrigger {
   id: string;
@@ -30,7 +32,7 @@ export const EmailAutomationManager: React.FC = () => {
   const [selectedTrigger, setSelectedTrigger] = useState<EmailTrigger | null>(null);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'triggers' | 'analytics' | 'bulk' | 'realtime'>('triggers');
+  const [activeTab, setActiveTab] = useState<'triggers' | 'analytics' | 'bulk' | 'realtime' | 'insights' | 'delivery'>('triggers');
 
   const defaultTriggers: EmailTrigger[] = [
     {
@@ -182,9 +184,11 @@ export const EmailAutomationManager: React.FC = () => {
 
   const tabButtons = [
     { id: 'triggers' as const, label: 'Email Triggers', icon: Mail },
+    { id: 'insights' as const, label: 'Profile Insights', icon: BarChart3 },
     { id: 'analytics' as const, label: 'Analytics', icon: TrendingUp },
     { id: 'bulk' as const, label: 'Bulk Email', icon: Users },
-    { id: 'realtime' as const, label: 'Real-time Queue', icon: Activity }
+    { id: 'realtime' as const, label: 'Real-time Queue', icon: Activity },
+    { id: 'delivery' as const, label: 'Delivery Tracking', icon: Shield }
   ];
 
   if (isLoading) {
@@ -269,9 +273,11 @@ export const EmailAutomationManager: React.FC = () => {
         </div>
       )}
 
+      {activeTab === 'insights' && <ProfileCompletionInsights />}
       {activeTab === 'analytics' && <EmailAnalyticsDashboard />}
       {activeTab === 'bulk' && <BulkEmailProcessor />}
       {activeTab === 'realtime' && <RealTimeEmailAnalytics />}
+      {activeTab === 'delivery' && <EmailDeliveryTracker />}
 
       <EmailTriggerSettingsModal
         trigger={selectedTrigger}

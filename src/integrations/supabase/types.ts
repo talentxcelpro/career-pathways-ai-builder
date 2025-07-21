@@ -5438,6 +5438,51 @@ export type Database = {
           },
         ]
       }
+      email_delivery_tracking: {
+        Row: {
+          bounce_reason: string | null
+          clicked_at: string | null
+          created_at: string | null
+          delivery_status: string | null
+          delivery_timestamp: string | null
+          email_queue_id: string | null
+          id: string
+          message_id: string | null
+          opened_at: string | null
+          recipient_email: string
+          spam_score: number | null
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          bounce_reason?: string | null
+          clicked_at?: string | null
+          created_at?: string | null
+          delivery_status?: string | null
+          delivery_timestamp?: string | null
+          email_queue_id?: string | null
+          id?: string
+          message_id?: string | null
+          opened_at?: string | null
+          recipient_email: string
+          spam_score?: number | null
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          bounce_reason?: string | null
+          clicked_at?: string | null
+          created_at?: string | null
+          delivery_status?: string | null
+          delivery_timestamp?: string | null
+          email_queue_id?: string | null
+          id?: string
+          message_id?: string | null
+          opened_at?: string | null
+          recipient_email?: string
+          spam_score?: number | null
+          unsubscribed_at?: string | null
+        }
+        Relationships: []
+      }
       email_notification_settings: {
         Row: {
           created_at: string
@@ -15635,6 +15680,10 @@ export type Database = {
           skill_gaps: Json
         }[]
       }
+      calculate_profile_completion_percentage: {
+        Args: { profile_row: Database["public"]["Tables"]["profiles"]["Row"] }
+        Returns: number
+      }
       calculate_reading_time: {
         Args: { content_text: string }
         Returns: number
@@ -15725,6 +15774,17 @@ export type Database = {
           reaction_type: string
           emoji_code: string
           count: number
+        }[]
+      }
+      get_profile_completion_insights: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          total_users: number
+          complete_profiles: number
+          incomplete_profiles: number
+          completion_rate: number
+          avg_completion_score: number
+          users_needing_reminders: number
         }[]
       }
       get_user_app_role: {
