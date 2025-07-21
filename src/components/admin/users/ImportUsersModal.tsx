@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, XCircle, Upload, AlertCircle, Download } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Upload, X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -16,18 +16,13 @@ interface ImportUsersModalProps {
   onUsersImported: () => void;
 }
 
-interface ImportResult {
-  email: string;
-  name: string;
-  success: boolean;
-  error?: string;
-  userId?: string;
-}
-
-interface ParsedUser {
+interface UserRecord {
   email: string;
   name: string;
   role?: string;
+  status: 'pending' | 'processing' | 'success' | 'error';
+  error?: string;
+  details?: string;
 }
 
 export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
@@ -35,344 +30,384 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
   onOpenChange,
   onUsersImported
 }) => {
-  const [csvData, setCsvData] = useState('');
-  const [isImporting, setIsImporting] = useState(false);
-  const [importResults, setImportResults] = useState<ImportResult[]>([]);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [users, setUsers] = useState<UserRecord[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [showResults, setShowResults] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string[]>([]);
 
-  const parseCsvData = (data: string): ParsedUser[] => {
-    const lines = data.trim().split('\n');
-    const users: ParsedUser[] = [];
-
-    // Check if first line is a header
-    const firstLine = lines[0].toLowerCase();
-    const hasHeader = firstLine.includes('email') || firstLine.includes('name') || firstLine.includes('role');
-    const dataLines = hasHeader ? lines.slice(1) : lines;
-
-    for (const line of dataLines) {
-      if (!line.trim()) continue;
-      
-      const columns = line.split(',').map(col => col.trim().replace(/"/g, ''));
-      
-      if (columns.length >= 2) {
-        const email = columns[0];
-        const name = columns[1];
-        const role = columns[2] || 'job_seeker';
-        
-        // Basic email validation
-        if (email && email.includes('@') && name) {
-          users.push({ email, name, role });
-        }
-      }
-    }
-
-    return users;
+  const addDebugInfo = (message: string) => {
+    console.log('[ImportUsers Debug]:', message);
+    setDebugInfo(prev => [...prev, `${new Date().toISOString()}: ${message}`]);
   };
 
-  const createUser = async (user: ParsedUser): Promise<ImportResult> => {
+  const parseCsvFile = (file: File): Promise<UserRecord[]> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const csv = e.target?.result as string;
+          const lines = csv.split('\n').filter(line => line.trim());
+          
+          if (lines.length < 2) {
+            throw new Error('CSV file must have at least a header row and one data row');
+          }
+
+          const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+          console.log('CSV Headers:', headers);
+          
+          // Find column indices
+          const emailIndex = headers.findIndex(h => h.includes('email'));
+          const nameIndex = headers.findIndex(h => h.includes('name'));
+          const roleIndex = headers.findIndex(h => h.includes('role'));
+
+          if (emailIndex === -1 || nameIndex === -1) {
+            throw new Error('CSV must contain email and name columns');
+          }
+
+          const parsedUsers: UserRecord[] = [];
+          
+          for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+            
+            if (values.length > emailIndex && values.length > nameIndex && values[emailIndex] && values[nameIndex]) {
+              parsedUsers.push({
+                email: values[emailIndex],
+                name: values[nameIndex],
+                role: roleIndex >= 0 ? values[roleIndex] || 'job_seeker' : 'job_seeker',
+                status: 'pending'
+              });
+            }
+          }
+
+          addDebugInfo(`Parsed ${parsedUsers.length} users from CSV`);
+          resolve(parsedUsers);
+        } catch (error) {
+          addDebugInfo(`CSV parsing error: ${error.message}`);
+          reject(error);
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
+    });
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.csv')) {
+      toast.error('Please select a CSV file');
+      return;
+    }
+
     try {
-      // Generate a temporary password
-      const temporaryPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+      setCsvFile(file);
+      const parsedUsers = await parseCsvFile(file);
+      setUsers(parsedUsers);
+      addDebugInfo(`File selected: ${file.name}, size: ${file.size} bytes`);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to parse CSV file');
+      addDebugInfo(`File parsing failed: ${error.message}`);
+    }
+  };
 
-      console.log('Creating user via Edge Function:', user.email);
+  const testEdgeFunction = async (): Promise<void> => {
+    addDebugInfo('Testing Edge Function connectivity...');
+    
+    try {
+      // Check session first
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        addDebugInfo(`Session error: ${sessionError.message}`);
+        throw new Error(`Authentication error: ${sessionError.message}`);
+      }
 
-      // Call the admin-create-user Edge Function
+      if (!session) {
+        addDebugInfo('No active session found');
+        throw new Error('No active session. Please log in again.');
+      }
+
+      addDebugInfo(`Session valid. User: ${session.user.email}, Token length: ${session.access_token.length}`);
+
+      // Test function with a simple health check
+      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+        body: { 
+          healthCheck: true,
+          userEmail: 'test@example.com',
+          userName: 'Test User'
+        }
+      });
+
+      if (error) {
+        addDebugInfo(`Function invocation error: ${JSON.stringify(error)}`);
+        throw error;
+      }
+
+      addDebugInfo(`Function test response: ${JSON.stringify(data)}`);
+    } catch (error: any) {
+      addDebugInfo(`Function test failed: ${error.message}`);
+      throw error;
+    }
+  };
+
+  const createUser = async (user: UserRecord): Promise<void> => {
+    try {
+      addDebugInfo(`Creating user: ${user.email}`);
+      
+      // Get current session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No valid session found');
+      }
+
       const { data, error } = await supabase.functions.invoke('admin-create-user', {
         body: {
           userEmail: user.email,
           userName: user.name,
           userRole: user.role || 'job_seeker',
-          temporaryPassword
+          temporaryPassword: Math.random().toString(36).slice(-8)
         }
       });
 
       if (error) {
-        console.error('Edge Function error:', error);
-        return {
-          email: user.email,
-          name: user.name,
-          success: false,
-          error: error.message || 'Unknown error from Edge Function'
-        };
+        addDebugInfo(`User creation error for ${user.email}: ${JSON.stringify(error)}`);
+        throw error;
       }
 
-      if (!data?.success) {
-        console.error('Edge Function returned failure:', data);
-        return {
-          email: user.email,
-          name: user.name,
-          success: false,
-          error: data?.error || 'User creation failed'
-        };
+      if (!data || !data.success) {
+        const errorMsg = data?.error || 'Unknown error occurred';
+        addDebugInfo(`User creation failed for ${user.email}: ${errorMsg}`);
+        throw new Error(errorMsg);
       }
 
-      console.log('User created successfully:', user.email);
-
-      return {
-        email: user.email,
-        name: user.name,
-        success: true,
-        userId: data.userId
-      };
-
+      addDebugInfo(`User created successfully: ${user.email} (ID: ${data.userId})`);
     } catch (error: any) {
-      console.error('Error creating user:', user.email, error);
-      return {
-        email: user.email,
-        name: user.name,
-        success: false,
-        error: error.message || 'Unknown error occurred'
-      };
+      addDebugInfo(`Failed to create user ${user.email}: ${error.message}`);
+      throw error;
     }
   };
 
   const handleImport = async () => {
-    if (!csvData.trim()) {
-      toast.error('Please enter CSV data to import');
-      return;
-    }
-
-    const users = parseCsvData(csvData);
-    
     if (users.length === 0) {
-      toast.error('No valid users found in CSV data');
+      toast.error('No users to import');
       return;
     }
 
-    if (users.length > 100) {
-      toast.error('Maximum 100 users can be imported at once');
-      return;
-    }
-
-    setIsImporting(true);
+    setIsProcessing(true);
     setProgress(0);
-    setImportResults([]);
-    setShowResults(true);
-
-    const results: ImportResult[] = [];
-
-    // Process users in batches to avoid overwhelming the system
-    const batchSize = 5;
-    for (let i = 0; i < users.length; i += batchSize) {
-      const batch = users.slice(i, i + batchSize);
-      
-      // Process batch in parallel
-      const batchPromises = batch.map(user => createUser(user));
-      const batchResults = await Promise.all(batchPromises);
-      
-      results.push(...batchResults);
-      setImportResults([...results]);
-      setProgress((results.length / users.length) * 100);
-
-      // Small delay between batches to avoid rate limiting
-      if (i + batchSize < users.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-    }
-
-    setIsImporting(false);
+    setDebugInfo([]);
     
-    const successCount = results.filter(r => r.success).length;
-    const failCount = results.filter(r => !r.success).length;
+    try {
+      // Test function first
+      addDebugInfo('Starting import process...');
+      await testEdgeFunction();
+      addDebugInfo('Edge Function test passed');
 
-    if (successCount > 0) {
-      toast.success(`Successfully imported ${successCount} users`);
-      if (successCount === users.length) {
-        onUsersImported();
+      let successCount = 0;
+      let failCount = 0;
+
+      for (let i = 0; i < users.length; i++) {
+        const user = users[i];
+        
+        // Update user status to processing
+        setUsers(prev => prev.map(u => 
+          u.email === user.email ? { ...u, status: 'processing' } : u
+        ));
+
+        try {
+          await createUser(user);
+          
+          // Update user status to success
+          setUsers(prev => prev.map(u => 
+            u.email === user.email 
+              ? { ...u, status: 'success', details: 'User created successfully' } 
+              : u
+          ));
+          
+          successCount++;
+        } catch (error: any) {
+          // Update user status to error
+          setUsers(prev => prev.map(u => 
+            u.email === user.email 
+              ? { 
+                  ...u, 
+                  status: 'error', 
+                  error: error.message,
+                  details: `Failed: ${error.message}`
+                } 
+              : u
+          ));
+          
+          failCount++;
+        }
+
+        // Update progress
+        setProgress(((i + 1) / users.length) * 100);
+        
+        // Small delay between requests
+        if (i < users.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
       }
-    }
 
-    if (failCount > 0) {
-      toast.error(`${failCount} users failed to import. Check the results for details.`);
+      addDebugInfo(`Import completed. Success: ${successCount}, Failed: ${failCount}`);
+      
+      if (successCount > 0) {
+        toast.success(`Successfully imported ${successCount} users${failCount > 0 ? ` (${failCount} failed)` : ''}`);
+        onUsersImported();
+      } else {
+        toast.error('No users were imported successfully');
+      }
+
+    } catch (error: any) {
+      addDebugInfo(`Import process failed: ${error.message}`);
+      toast.error(`Import failed: ${error.message}`);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const downloadResults = () => {
-    const csvContent = [
-      'Email,Name,Status,Error',
-      ...importResults.map(result => 
-        `"${result.email}","${result.name}","${result.success ? 'Success' : 'Failed'}","${result.error || ''}"`
-      )
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'import-results.csv';
-    a.click();
-    window.URL.revokeObjectURL(url);
-  };
-
-  const handleClose = () => {
-    setCsvData('');
-    setImportResults([]);
-    setShowResults(false);
+  const reset = () => {
+    setCsvFile(null);
+    setUsers([]);
     setProgress(0);
-    onOpenChange(false);
+    setDebugInfo([]);
   };
 
-  const successCount = importResults.filter(r => r.success).length;
-  const failCount = importResults.filter(r => !r.success).length;
+  const getStatusIcon = (status: UserRecord['status']) => {
+    switch (status) {
+      case 'success':
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'error':
+        return <AlertCircle className="h-4 w-4 text-red-600" />;
+      case 'processing':
+        return <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />;
+      default:
+        return <div className="h-4 w-4 rounded-full bg-gray-300" />;
+    }
+  };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5" />
-            Import Users
-          </DialogTitle>
+          <DialogTitle>Import Users from CSV</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          {!showResults && (
-            <>
-              <div className="space-y-2">
-                <Label>CSV Format Instructions</Label>
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Use the following CSV format (with or without headers):
-                    </p>
-                    <code className="text-xs bg-muted p-2 rounded block">
-                      email,name,role<br />
-                      john@example.com,John Doe,job_seeker<br />
-                      jane@example.com,Jane Smith,employer
-                    </code>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Role is optional and defaults to 'job_seeker'. Available roles: job_seeker, employer, candidate
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
+          {/* File Upload */}
+          <div className="space-y-2">
+            <Label htmlFor="csv-file">Select CSV File</Label>
+            <div className="flex items-center gap-4">
+              <Input
+                id="csv-file"
+                type="file"
+                accept=".csv"
+                onChange={handleFileSelect}
+                disabled={isProcessing}
+                className="flex-1"
+              />
+              {csvFile && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={reset}
+                  disabled={isProcessing}
+                >
+                  <X className="h-4 w-4" />
+                  Clear
+                </Button>
+              )}
+            </div>
+            <p className="text-sm text-gray-600">
+              CSV should have columns: email, name, role (optional)
+            </p>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="csvData">CSV Data</Label>
-                <Textarea
-                  id="csvData"
-                  value={csvData}
-                  onChange={(e) => setCsvData(e.target.value)}
-                  placeholder="Paste your CSV data here..."
-                  className="min-h-[200px] font-mono text-sm"
-                />
+          {/* Progress */}
+          {isProcessing && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Import Progress</span>
+                <span className="text-sm text-gray-600">{Math.round(progress)}%</span>
               </div>
-            </>
+              <Progress value={progress} />
+            </div>
           )}
 
-          {showResults && (
+          {/* Users List */}
+          {users.length > 0 && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Import Results</h3>
-                {importResults.length > 0 && (
-                  <Button variant="outline" size="sm" onClick={downloadResults}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Results
-                  </Button>
-                )}
-              </div>
-
-              {isImporting && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Importing users...</span>
-                    <span>{Math.round(progress)}%</span>
+              <h3 className="text-lg font-semibold">Users to Import ({users.length})</h3>
+              <div className="max-h-64 overflow-y-auto space-y-2">
+                {users.map((user, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 p-3 border rounded-lg"
+                  >
+                    {getStatusIcon(user.status)}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{user.name}</span>
+                        <span className="text-sm text-gray-600">({user.email})</span>
+                        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                          {user.role}
+                        </span>
+                      </div>
+                      {user.details && (
+                        <p className={`text-xs mt-1 ${
+                          user.status === 'error' ? 'text-red-600' : 'text-green-600'
+                        }`}>
+                          {user.details}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <Progress value={progress} className="w-full" />
-                </div>
-              )}
-
-              {!isImporting && importResults.length > 0 && (
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                        <div>
-                          <p className="font-medium">{successCount}</p>
-                          <p className="text-sm text-muted-foreground">Successful</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center gap-2">
-                        <XCircle className="h-5 w-5 text-red-500" />
-                        <div>
-                          <p className="font-medium">{failCount}</p>
-                          <p className="text-sm text-muted-foreground">Failed</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center gap-2">
-                        <AlertCircle className="h-5 w-5 text-blue-500" />
-                        <div>
-                          <p className="font-medium">{importResults.length}</p>
-                          <p className="text-sm text-muted-foreground">Total</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-
-              <div className="max-h-60 overflow-y-auto border rounded">
-                <table className="w-full text-sm">
-                  <thead className="bg-muted sticky top-0">
-                    <tr>
-                      <th className="text-left p-2 font-medium">Email</th>
-                      <th className="text-left p-2 font-medium">Name</th>
-                      <th className="text-left p-2 font-medium">Status</th>
-                      <th className="text-left p-2 font-medium">Error</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {importResults.map((result, index) => (
-                      <tr key={index} className="border-t">
-                        <td className="p-2">{result.email}</td>
-                        <td className="p-2">{result.name}</td>
-                        <td className="p-2">
-                          <div className="flex items-center gap-1">
-                            {result.success ? (
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                            ) : (
-                              <XCircle className="h-4 w-4 text-red-500" />
-                            )}
-                            <span className={result.success ? 'text-green-600' : 'text-red-600'}>
-                              {result.success ? 'Success' : 'Failed'}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="p-2 text-xs text-muted-foreground">
-                          {result.error || '-'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                ))}
               </div>
             </div>
           )}
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button variant="outline" onClick={handleClose}>
-              {showResults ? 'Close' : 'Cancel'}
+          {/* Debug Information */}
+          {debugInfo.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Info className="h-4 w-4 text-blue-600" />
+                <span className="text-sm font-medium">Debug Information</span>
+              </div>
+              <div className="max-h-32 overflow-y-auto bg-gray-50 p-3 rounded text-xs font-mono">
+                {debugInfo.map((info, index) => (
+                  <div key={index} className="text-gray-700">
+                    {info}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isProcessing}
+            >
+              Cancel
             </Button>
-            {!showResults && (
-              <Button onClick={handleImport} disabled={!csvData.trim() || isImporting}>
-                {isImporting ? 'Importing...' : 'Import Users'}
-              </Button>
-            )}
-            {showResults && !isImporting && failCount === 0 && (
-              <Button onClick={() => { handleClose(); onUsersImported(); }}>
-                Done
-              </Button>
-            )}
+            <Button
+              onClick={handleImport}
+              disabled={users.length === 0 || isProcessing}
+              className="flex items-center gap-2"
+            >
+              {isProcessing ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              {isProcessing ? 'Importing...' : `Import ${users.length} Users`}
+            </Button>
           </div>
         </div>
       </DialogContent>
