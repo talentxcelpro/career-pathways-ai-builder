@@ -177,19 +177,36 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
     try {
       console.log('Importing user:', user);
       
-      const requestBody = {
-        userEmail: user.email,
-        userName: user.name,
-        userRole: user.role,
-        temporaryPassword: user.temporaryPassword || 'TempPass123!'
+      // Ensure required fields are present and properly formatted
+      const requestBody: {
+        userEmail: string;
+        userName: string;
+        userRole: string;
+        temporaryPassword?: string;
+      } = {
+        userEmail: user.email?.toString().trim(),
+        userName: user.name?.toString().trim(),
+        userRole: user.role || 'job_seeker'
       };
 
-      console.log('Request body:', requestBody);
+      // Only add password if provided
+      if (user.temporaryPassword) {
+        requestBody.temporaryPassword = user.temporaryPassword.toString().trim();
+      }
+
+      console.log('Request body before sending:', JSON.stringify(requestBody, null, 2));
+      
+      // Validate required fields locally before sending
+      if (!requestBody.userEmail || !requestBody.userName) {
+        throw new Error(`Missing required fields: email=${!!requestBody.userEmail}, name=${!!requestBody.userName}`);
+      }
 
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         throw new Error('No authentication session found');
       }
+
+      console.log('Making request to admin-create-user...');
 
       const { data, error } = await supabase.functions.invoke('admin-create-user', {
         body: requestBody,
