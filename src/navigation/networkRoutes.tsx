@@ -21,6 +21,8 @@ import Notifications from "../pages/network/Notifications";
 import Suggestions from "../pages/network/Suggestions";
 import UserProfile from "../pages/network/UserProfile";
 import PublicUserProfile from "../pages/network/PublicUserProfile";
+import Articles from "../pages/network/Articles";
+import ArticleDetail from "../pages/network/ArticleDetail";
 
 export const networkRoutes = [
   {
@@ -53,6 +55,16 @@ export const networkRoutes = [
     title: "Post Detail",
     to: "/network/posts/:id",
     page: <PostDetail />,
+  },
+  {
+    title: "Articles",
+    to: "/network/articles",
+    page: <Articles />,
+  },
+  {
+    title: "Article Detail",
+    to: "/network/articles/:id",
+    page: <ArticleDetail />,
   },
   {
     title: "Network Groups",

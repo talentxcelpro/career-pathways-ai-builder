@@ -58,6 +58,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
   const [selectedHashtags, setSelectedHashtags] = useState<string[]>([]);
   const [mediaFiles, setMediaFiles] = useState<any[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  const [postType, setPostType] = useState<'post' | 'article'>('post');
 
   // AI Quality Score calculation
   const [aiScore, setAiScore] = useState<{
@@ -201,11 +202,13 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         .from('posts')
         .insert({
           content: fullContent,
+          post_type: postType,
           author_id: user?.id,
           media_urls: mediaFiles.map(file => file.url),
           location: location || null,
           is_public: privacy === 'public',
-          intent_tags: selectedIntents
+          intent_tags: selectedIntents,
+          featured_image_url: postType === 'article' && mediaFiles.length > 0 ? mediaFiles[0].url : null
         })
         .select()
         .single();
@@ -356,45 +359,59 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     <div className="space-y-4">
       <Card className="w-full overflow-hidden">
         <CardHeader className="pb-3">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12 ring-2 ring-primary/20">
-              <AvatarImage src={user?.user_metadata?.avatar_url} className="object-cover" />
-              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white font-bold">
-                {user?.user_metadata?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <p className="font-semibold text-lg">{user?.user_metadata?.full_name || 'Your Name'}</p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-6 text-xs"
-                  onClick={() => {
-                    const nextIndex = (privacyOptions.findIndex(opt => opt.value === privacy) + 1) % privacyOptions.length;
-                    setPrivacy(privacyOptions[nextIndex].value as any);
-                  }}
-                >
-                  {currentPrivacy && (
-                    <>
-                      <currentPrivacy.icon className="h-3 w-3 mr-1" />
-                      {currentPrivacy.label}
-                    </>
-                  )}
-                </Button>
+            <div className="flex items-center gap-3">
+              <Avatar className="h-12 w-12 ring-2 ring-primary/20">
+                <AvatarImage src={user?.user_metadata?.avatar_url} className="object-cover" />
+                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white font-bold">
+                  {user?.user_metadata?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <p className="font-semibold text-lg">{user?.user_metadata?.full_name || 'Your Name'}</p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 text-xs"
+                    onClick={() => {
+                      const nextIndex = (privacyOptions.findIndex(opt => opt.value === privacy) + 1) % privacyOptions.length;
+                      setPrivacy(privacyOptions[nextIndex].value as any);
+                    }}
+                  >
+                    {currentPrivacy && (
+                      <>
+                        <currentPrivacy.icon className="h-3 w-3 mr-1" />
+                        {currentPrivacy.label}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant={postType === 'article' ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-6 text-xs"
+                    onClick={() => setPostType(postType === 'post' ? 'article' : 'post')}
+                  >
+                    {postType === 'article' ? 'Article' : 'Post'}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
         </CardHeader>
         
         <CardContent className="space-y-4">
           <div className="space-y-3">
             <Textarea
               ref={textareaRef}
-              placeholder="What's happening in your career? Share your insights..."
+              placeholder={postType === 'article' 
+                ? "Write your article content here... Share insights, experiences, and knowledge."
+                : "What's happening in your career? Share your insights..."
+              }
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
-              className="min-h-[120px] resize-none border-0 p-0 text-lg placeholder:text-muted-foreground focus-visible:ring-0"
+              className={postType === 'article' 
+                ? "min-h-[300px] resize-none border-0 p-0 text-lg placeholder:text-muted-foreground focus-visible:ring-0"
+                : "min-h-[120px] resize-none border-0 p-0 text-lg placeholder:text-muted-foreground focus-visible:ring-0"
+              }
             />
 
             {/* AI Quality Score */}

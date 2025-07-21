@@ -1794,6 +1794,59 @@ export type Database = {
           },
         ]
       }
+      article_bookmarks: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_bookmarks_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      article_subscriptions: {
+        Row: {
+          author_id: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          author_id: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       awards: {
         Row: {
           award_date: string | null
@@ -8574,11 +8627,14 @@ export type Database = {
       }
       posts: {
         Row: {
+          article_category: string | null
           author_id: string | null
           comments_count: number | null
           content: string
           content_type: string | null
           created_at: string | null
+          featured_image_url: string | null
+          headline: string | null
           id: string
           intent_tags: string[] | null
           is_public: boolean | null
@@ -8587,16 +8643,23 @@ export type Database = {
           media_urls: string[] | null
           post_type: string | null
           preview_url: string | null
+          reading_time: number | null
           shares_count: number | null
+          status: string | null
+          tagline: string | null
           tags: string[] | null
           updated_at: string | null
+          word_count: number | null
         }
         Insert: {
+          article_category?: string | null
           author_id?: string | null
           comments_count?: number | null
           content: string
           content_type?: string | null
           created_at?: string | null
+          featured_image_url?: string | null
+          headline?: string | null
           id?: string
           intent_tags?: string[] | null
           is_public?: boolean | null
@@ -8605,16 +8668,23 @@ export type Database = {
           media_urls?: string[] | null
           post_type?: string | null
           preview_url?: string | null
+          reading_time?: number | null
           shares_count?: number | null
+          status?: string | null
+          tagline?: string | null
           tags?: string[] | null
           updated_at?: string | null
+          word_count?: number | null
         }
         Update: {
+          article_category?: string | null
           author_id?: string | null
           comments_count?: number | null
           content?: string
           content_type?: string | null
           created_at?: string | null
+          featured_image_url?: string | null
+          headline?: string | null
           id?: string
           intent_tags?: string[] | null
           is_public?: boolean | null
@@ -8623,9 +8693,13 @@ export type Database = {
           media_urls?: string[] | null
           post_type?: string | null
           preview_url?: string | null
+          reading_time?: number | null
           shares_count?: number | null
+          status?: string | null
+          tagline?: string | null
           tags?: string[] | null
           updated_at?: string | null
+          word_count?: number | null
         }
         Relationships: []
       }
@@ -15381,6 +15455,10 @@ export type Database = {
           skill_gaps: Json
         }[]
       }
+      calculate_reading_time: {
+        Args: { content_text: string }
+        Returns: number
+      }
       calculate_resume_completion_enhanced: {
         Args: { resume_uuid: string }
         Returns: number
@@ -15401,6 +15479,10 @@ export type Database = {
           user_preferences?: Json
         }
         Returns: undefined
+      }
+      count_words: {
+        Args: { content_text: string }
+        Returns: number
       }
       create_notification: {
         Args: {
@@ -15645,6 +15727,15 @@ export type Database = {
         | "offered"
         | "hired"
         | "rejected"
+      article_category:
+        | "news"
+        | "opinion"
+        | "tutorial"
+        | "industry_update"
+        | "career_advice"
+        | "technology"
+        | "business"
+        | "other"
       interview_status: "scheduled" | "completed" | "cancelled" | "rescheduled"
       team_role: "admin" | "recruiter" | "hr_manager" | "viewer" | "owner"
       user_role: "job_seeker" | "employer" | "admin" | "candidate"
@@ -15785,6 +15876,16 @@ export const Constants = {
         "offered",
         "hired",
         "rejected",
+      ],
+      article_category: [
+        "news",
+        "opinion",
+        "tutorial",
+        "industry_update",
+        "career_advice",
+        "technology",
+        "business",
+        "other",
       ],
       interview_status: ["scheduled", "completed", "cancelled", "rescheduled"],
       team_role: ["admin", "recruiter", "hr_manager", "viewer", "owner"],
