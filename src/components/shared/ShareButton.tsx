@@ -9,7 +9,7 @@ import { useShareContent } from '@/hooks/useShareContent';
 interface ShareButtonProps {
   content: ShareableContent;
   variant?: 'default' | 'outline' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
   showText?: boolean;
   className?: string;
 }
