@@ -74,7 +74,11 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
     const roleIndex = headers.findIndex(h => ['role', 'user_role', 'type'].includes(h));
 
     if (nameIndex === -1 || emailIndex === -1) {
-      throw new Error('CSV must contain name and email columns');
+      const missingColumns = [];
+      if (nameIndex === -1) missingColumns.push('name (or full_name, fullname)');
+      if (emailIndex === -1) missingColumns.push('email (or email_address)');
+      
+      throw new Error(`CSV missing required columns: ${missingColumns.join(', ')}. Found headers: ${headers.join(', ')}`);
     }
 
     return lines.slice(1).map(line => {
