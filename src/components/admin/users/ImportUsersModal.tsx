@@ -139,11 +139,18 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
   const mapRowData = (row: any) => {
     const mappedData: any = {};
     
+    // Debug logging
+    console.log('Row data:', row);
+    console.log('Column mapping:', columnMapping);
+    
     Object.entries(columnMapping).forEach(([sourceCol, targetCol]) => {
       if (row[sourceCol] !== undefined) {
+        console.log(`Mapping ${sourceCol} -> ${targetCol}: "${row[sourceCol]}"`);
         mappedData[targetCol] = row[sourceCol];
       }
     });
+    
+    console.log('Mapped data before normalization:', mappedData);
     
     // Normalize values
     if (mappedData.status) {
