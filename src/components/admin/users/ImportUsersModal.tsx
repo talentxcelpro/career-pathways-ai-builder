@@ -1,11 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
+import { Upload, AlertCircle, CheckCircle, X, Bug } from 'lucide-react';
 import { toast } from 'sonner';
-import { Upload, Download, AlertCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { checkEdgeFunctionHealth } from '@/utils/edgeFunction';
 
@@ -15,56 +18,52 @@ interface ImportUsersModalProps {
   onUsersImported: () => void;
 }
 
-interface UserData {
+interface UserToImport {
   name: string;
   email: string;
   role: string;
-  status?: 'pending' | 'processing' | 'success' | 'error';
-  error?: string;
+  status: string;
+  sendWelcomeEmail: boolean;
 }
 
 interface ImportResult {
-  success: boolean;
   email: string;
+  success: boolean;
   error?: string;
   userId?: string;
 }
-
-const debugLog = (message: string, data?: any) => {
-  const timestamp = new Date().toISOString();
-  const logMessage = `${timestamp}: ${message}`;
-  console.log(logMessage, data || '');
-};
 
 export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
   open,
   onOpenChange,
   onUsersImported
 }) => {
-  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
-  const [users, setUsers] = useState<UserData[]>([]);
-  const [importResults, setImportResults] = useState<ImportResult[]>([]);
-  const [debugInfo, setDebugInfo] = useState<string[]>([]);
+  const [progress, setProgress] = useState(0);
+  const [results, setResults] = useState<ImportResult[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const [parsedUsers, setParsedUsers] = useState<UserToImport[]>([]);
+  const [debugMode, setDebugMode] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [currentUser, setCurrentUser] = useState<string>('');
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
 
-  const addDebugInfo = (message: string, data?: any) => {
-    debugLog(message, data);
-    setDebugInfo(prev => [...prev, `${new Date().toISOString()}: ${message}${data ? ` - ${JSON.stringify(data)}` : ''}`]);
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile && selectedFile.type === 'text/csv') {
+      setFile(selectedFile);
+      setResults([]);
+      setShowResults(false);
+      setParsedUsers([]);
+      setDebugInfo(null);
+    } else {
+      toast.error('Please select a valid CSV file');
+    }
   };
 
-  const validateCsvData = (data: any[]): UserData[] => {
-    return data
-      .filter(row => row.name && row.email)
-      .map(row => ({
-        name: row.name?.trim(),
-        email: row.email?.trim().toLowerCase(),
-        role: row.role?.trim() || 'job_seeker',
-        status: 'pending' as const
-      }))
-      .filter(user => user.name && user.email && user.email.includes('@'));
-  };
-
-  const parseCsv = (content: string): UserData[] => {
+  const parseCSV = async (content: string): Promise<UserToImport[]> => {
     const lines = content.split('\n').filter(line => line.trim());
     if (lines.length < 2) return [];
 
@@ -72,340 +71,450 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
     const nameIndex = headers.findIndex(h => ['name', 'full_name', 'fullname'].includes(h));
     const emailIndex = headers.findIndex(h => ['email', 'email_address'].includes(h));
     const roleIndex = headers.findIndex(h => ['role', 'user_role', 'type'].includes(h));
+    const statusIndex = headers.findIndex(h => ['status', 'user_status'].includes(h));
+    const welcomeEmailIndex = headers.findIndex(h => ['send_welcome_email', 'welcome_email', 'notify'].includes(h));
 
-    if (nameIndex === -1 || emailIndex === -1) {
-      const missingColumns = [];
-      if (nameIndex === -1) missingColumns.push('name (or full_name, fullname)');
-      if (emailIndex === -1) missingColumns.push('email (or email_address)');
+    const missingColumns = [];
+    if (nameIndex === -1) missingColumns.push('name (or full_name, fullname)');
+    if (emailIndex === -1) missingColumns.push('email');
+
+    if (missingColumns.length > 0) {
+      const foundHeaders = headers.join(', ');
+      throw new Error(`CSV missing required columns: ${missingColumns.join(', ')}. Found headers: "${foundHeaders}"`);
+    }
+
+    const users: UserToImport[] = [];
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
       
-      throw new Error(`CSV missing required columns: ${missingColumns.join(', ')}. Found headers: ${headers.join(', ')}`);
+      const name = values[nameIndex]?.trim();
+      const email = values[emailIndex]?.trim();
+      
+      if (!name || !email) continue;
+
+      users.push({
+        name,
+        email,
+        role: values[roleIndex]?.trim() || 'job_seeker',
+        status: values[statusIndex]?.trim() || 'active',
+        sendWelcomeEmail: ['true', '1', 'yes'].includes(values[welcomeEmailIndex]?.toLowerCase() || 'true')
+      });
     }
 
-    return lines.slice(1).map(line => {
-      const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
-      return {
-        name: values[nameIndex] || '',
-        email: values[emailIndex] || '',
-        role: values[roleIndex] || 'job_seeker',
-        status: 'pending' as const
-      };
-    }).filter(user => user.name && user.email);
+    return users;
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setCsvFile(file);
-    setUsers([]);
-    setImportResults([]);
-    setDebugInfo([]);
-
+  const testDebugEndpoint = async () => {
     try {
-      const content = await file.text();
-      const parsedUsers = parseCsv(content);
-      setUsers(parsedUsers);
-      addDebugInfo(`Parsed ${parsedUsers.length} users from CSV`);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to parse CSV';
-      addDebugInfo(`CSV parsing error: ${message}`);
-      toast.error(message);
+      console.log('Testing debug endpoint...');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No session found');
+      }
+
+      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+        body: { debug: true },
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        }
+      });
+
+      if (error) {
+        console.error('Debug endpoint error:', error);
+        setDebugInfo({ error: error.message, type: 'supabase_error' });
+      } else {
+        console.log('Debug endpoint response:', data);
+        setDebugInfo(data);
+      }
+    } catch (error: any) {
+      console.error('Debug endpoint exception:', error);
+      setDebugInfo({ error: error.message, type: 'exception' });
     }
   };
 
-  const createUserWithRetry = async (user: UserData, maxRetries = 3): Promise<ImportResult> => {
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+  const createUserWithRetry = async (user: UserToImport, maxAttempts = 3): Promise<ImportResult> => {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        addDebugInfo(`Creating user ${user.email}, attempt ${attempt}/${maxRetries}`);
-        
+        console.log(`Creating user ${user.email}, attempt ${attempt}/${maxAttempts}`);
+        setCurrentUser(`${user.email} (attempt ${attempt}/${maxAttempts})`);
+
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
-          throw new Error('No valid session found');
+          throw new Error('Authentication session not found');
         }
 
-        // Try Supabase client first
-        const { data, error } = await supabase.functions.invoke('admin-create-user', {
-          body: {
-            userEmail: user.email,
-            userName: user.name,
-            userRole: user.role,
-            temporaryPassword: Math.random().toString(36).slice(-8)
+        console.log(`Session valid. User: ${session.user?.email}, Token length: ${session.access_token?.length}`);
+
+        // Create controller for this request with 30 second timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+        try {
+          const { data, error } = await supabase.functions.invoke('admin-create-user', {
+            body: {
+              userEmail: user.email,
+              userName: user.name,
+              userRole: user.role,
+              temporaryPassword: Math.random().toString(36).slice(-8)
+            },
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+            }
+          });
+
+          clearTimeout(timeoutId);
+
+          if (error) {
+            console.error(`Supabase client error for ${user.email}:`, error);
+            throw new Error(error.message || 'Failed to send a request to the Edge Function');
           }
-        });
 
-        if (error) {
-          addDebugInfo(`Supabase client error for ${user.email}:`, error);
-          throw error;
+          if (data?.success) {
+            console.log(`User ${user.email} created successfully:`, data.userId);
+            return {
+              email: user.email,
+              success: true,
+              userId: data.userId
+            };
+          } else {
+            throw new Error(data?.error || 'Unknown error from Edge Function');
+          }
+        } catch (invokeError: any) {
+          clearTimeout(timeoutId);
+          
+          if (invokeError.name === 'AbortError') {
+            throw new Error('Request timeout (30 seconds)');
+          }
+          
+          console.error(`Attempt ${attempt} failed for ${user.email}:`, invokeError.message);
+          
+          if (attempt === maxAttempts) {
+            throw invokeError;
+          }
+          
+          // Exponential backoff: 2^attempt seconds
+          const delay = Math.pow(2, attempt) * 1000;
+          console.log(`Waiting ${delay}ms before retry...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
         }
-
-        if (data?.success) {
-          addDebugInfo(`User ${user.email} created successfully via Supabase client`);
-          return {
-            success: true,
-            email: user.email,
-            userId: data.userId
-          };
-        } else {
-          throw new Error(data?.error || 'Unknown error from edge function');
-        }
-
       } catch (error: any) {
-        addDebugInfo(`Attempt ${attempt} failed for ${user.email}:`, error.message);
+        console.error(`Attempt ${attempt} failed for ${user.email}:`, error.message);
         
-        if (attempt === maxRetries) {
+        if (attempt === maxAttempts) {
           return {
-            success: false,
             email: user.email,
-            error: error.message || 'Failed to create user after multiple attempts'
+            success: false,
+            error: error.message
           };
         }
-        
-        // Wait before retry (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
       }
     }
 
     return {
-      success: false,
       email: user.email,
-      error: 'Max retries exceeded'
+      success: false,
+      error: 'All attempts failed'
     };
   };
 
   const handleImport = async () => {
-    if (!users.length) {
-      toast.error('No users to import');
-      return;
-    }
-
-    setIsImporting(true);
-    setImportResults([]);
-    addDebugInfo('Starting import process...');
+    if (!file) return;
 
     try {
-      // Test Edge Function connectivity first
-      addDebugInfo('Testing Edge Function connectivity...');
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error('No valid session found');
+      setIsImporting(true);
+      setProgress(0);
+      setResults([]);
+      setShowResults(false);
+
+      const content = await file.text();
+      const users = await parseCSV(content);
+      console.log(`Parsed ${users.length} users from CSV`);
+      setParsedUsers(users);
+
+      if (users.length === 0) {
+        toast.error('No valid users found in CSV file');
+        return;
       }
 
-      addDebugInfo(`Session valid. User: ${session.user?.email}, Token length: ${session.access_token?.length}`);
+      console.log('Starting import process...');
 
+      // Test Edge Function connectivity first
+      console.log('Testing Edge Function connectivity...');
       const isHealthy = await checkEdgeFunctionHealth();
       if (!isHealthy) {
-        const errorMsg = 'Edge Function health check failed';
-        addDebugInfo(errorMsg);
-        throw new Error(errorMsg);
+        throw new Error('Edge Function is not responding. Please check the function status.');
       }
 
-      addDebugInfo('Edge Function health check passed, proceeding with import...');
+      console.log('Edge Function health check passed, proceeding with import...');
 
-      // Process users in batches of 5 to avoid overwhelming the function
-      const batchSize = 5;
-      const results: ImportResult[] = [];
+      // Create abort controller for the entire import process
+      const controller = new AbortController();
+      setAbortController(controller);
+
+      const importResults: ImportResult[] = [];
       
-      for (let i = 0; i < users.length; i += batchSize) {
-        const batch = users.slice(i, i + batchSize);
-        addDebugInfo(`Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(users.length/batchSize)}`);
+      // Process users sequentially (one at a time)
+      for (let i = 0; i < users.length; i++) {
+        if (controller.signal.aborted) {
+          console.log('Import process aborted by user');
+          break;
+        }
+
+        const user = users[i];
+        console.log(`Processing user ${i + 1}/${users.length}: ${user.email}`);
         
-        // Update status for current batch
-        setUsers(prev => prev.map((user, index) => 
-          batch.find(batchUser => batchUser.email === user.email) && index >= i && index < i + batchSize
-            ? { ...user, status: 'processing' }
-            : user
-        ));
+        const result = await createUserWithRetry(user);
+        importResults.push(result);
 
-        // Process batch in parallel
-        const batchPromises = batch.map(user => createUserWithRetry(user));
-        const batchResults = await Promise.all(batchPromises);
+        // Update progress
+        const progressPercent = ((i + 1) / users.length) * 100;
+        setProgress(progressPercent);
         
-        results.push(...batchResults);
-        setImportResults(results);
-
-        // Update user status based on results
-        setUsers(prev => prev.map(user => {
-          const result = batchResults.find(r => r.email === user.email);
-          if (result) {
-            return {
-              ...user,
-              status: result.success ? 'success' : 'error',
-              error: result.error
-            };
-          }
-          return user;
-        }));
-
-        // Small delay between batches
-        if (i + batchSize < users.length) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+        // Update results in real-time
+        setResults([...importResults]);
+        
+        // Small delay between requests to avoid overwhelming the system
+        if (i < users.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
       }
 
-      const successful = results.filter(r => r.success).length;
-      const failed = results.filter(r => !r.success).length;
+      setResults(importResults);
+      setShowResults(true);
 
-      addDebugInfo(`Import completed: ${successful} successful, ${failed} failed`);
-      
+      const successful = importResults.filter(r => r.success).length;
+      const failed = importResults.filter(r => !r.success).length;
+
+      console.log(`Import completed: ${successful} successful, ${failed} failed`);
+
       if (successful > 0) {
-        toast.success(`Successfully imported ${successful} users${failed > 0 ? ` (${failed} failed)` : ''}`);
+        toast.success(`Successfully imported ${successful} users`);
         onUsersImported();
-      } else {
-        toast.error('No users were successfully imported');
+      }
+
+      if (failed > 0) {
+        toast.error(`Failed to import ${failed} users. Check the results for details.`);
       }
 
     } catch (error: any) {
-      const errorMessage = error.message || 'Import process failed';
-      addDebugInfo(`Import process failed: ${errorMessage}`);
-      toast.error(errorMessage);
+      console.error('Import error:', error);
+      toast.error(error.message || 'Failed to import users');
     } finally {
       setIsImporting(false);
+      setCurrentUser('');
+      setAbortController(null);
     }
   };
 
-  const downloadTemplate = () => {
-    const csvContent = 'name,email,role\nJohn Doe,john@example.com,job_seeker\nJane Smith,jane@example.com,employer';
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'user-import-template.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const reset = () => {
-    setCsvFile(null);
-    setUsers([]);
-    setImportResults([]);
-    setDebugInfo([]);
-  };
-
-  const getStatusIcon = (status?: string) => {
-    switch (status) {
-      case 'processing':
-        return <Loader2 className="h-4 w-4 animate-spin text-blue-500" />;
-      case 'success':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'error':
-        return <XCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return <div className="h-4 w-4 rounded-full bg-gray-300" />;
+  const handleCancel = () => {
+    if (abortController) {
+      abortController.abort();
+      toast.info('Import process cancelled');
     }
   };
+
+  const handleClose = () => {
+    if (isImporting) {
+      handleCancel();
+    }
+    setFile(null);
+    setResults([]);
+    setShowResults(false);
+    setParsedUsers([]);
+    setProgress(0);
+    setDebugInfo(null);
+    setCurrentUser('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    onOpenChange(false);
+  };
+
+  const successfulImports = results.filter(r => r.success).length;
+  const failedImports = results.filter(r => !r.success).length;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Import Users from CSV</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {!csvFile && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={downloadTemplate}
-                  className="flex items-center gap-2"
-                >
-                  <Download className="h-4 w-4" />
-                  Download Template
-                </Button>
-              </div>
-
-              <div>
-                <Label htmlFor="csvFile">Upload CSV File</Label>
-                <Input
-                  id="csvFile"
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileChange}
-                  className="mt-2"
-                />
-                <p className="text-sm text-gray-600 mt-1">
-                  CSV should contain: name, email, and optionally role columns
-                </p>
-              </div>
-            </div>
-          )}
-
-          {csvFile && users.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">
-                  Users to Import ({users.length})
-                </h3>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={reset}>
-                    Reset
-                  </Button>
-                  <Button 
-                    onClick={handleImport} 
-                    disabled={isImporting}
-                    className="flex items-center gap-2"
-                  >
-                    {isImporting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Upload className="h-4 w-4" />
-                    )}
-                    {isImporting ? 'Importing...' : 'Import Users'}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="border rounded-lg max-h-64 overflow-y-auto">
-                <div className="grid grid-cols-4 gap-4 p-3 bg-gray-50 font-medium text-sm">
-                  <div>Status</div>
-                  <div>Name</div>
-                  <div>Email</div>
-                  <div>Role</div>
-                </div>
-                {users.map((user, index) => (
-                  <div key={index} className="grid grid-cols-4 gap-4 p-3 border-t text-sm">
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(user.status)}
-                    </div>
-                    <div>{user.name}</div>
-                    <div className="text-blue-600">{user.email}</div>
-                    <div className="capitalize">{user.role.replace('_', ' ')}</div>
-                  </div>
-                ))}
-              </div>
-
-              {users.some(user => user.status === 'error') && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-red-800 mb-2">Import Errors:</h4>
-                  <div className="space-y-1">
-                    {users.filter(user => user.status === 'error').map((user, index) => (
-                      <div key={index} className="text-sm text-red-700">
-                        <strong>{user.email}:</strong> {user.error}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {debugInfo.length > 0 && (
-            <div className="bg-gray-50 border rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertCircle className="h-4 w-4 text-blue-500" />
-                <h4 className="font-semibold text-gray-800">Debug Information:</h4>
-              </div>
-              <div className="max-h-48 overflow-y-auto">
-                <pre className="text-xs text-gray-600 whitespace-pre-wrap">
-                  {debugInfo.join('\n')}
-                </pre>
-              </div>
-            </div>
+        {/* Debug Mode Toggle */}
+        <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setDebugMode(!debugMode)}
+            className="flex items-center gap-2"
+          >
+            <Bug className="h-4 w-4" />
+            {debugMode ? 'Hide Debug' : 'Show Debug'}
+          </Button>
+          {debugMode && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={testDebugEndpoint}
+              disabled={isImporting}
+            >
+              Test Edge Function
+            </Button>
           )}
         </div>
+
+        {/* Debug Information */}
+        {debugMode && debugInfo && (
+          <Card>
+            <CardContent className="p-4">
+              <h4 className="font-medium mb-2">Debug Information</h4>
+              <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto">
+                {JSON.stringify(debugInfo, null, 2)}
+              </pre>
+            </CardContent>
+          </Card>
+        )}
+
+        {!showResults ? (
+          <div className="space-y-6">
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                CSV file should contain columns: <strong>full_name, email</strong>. 
+                Optional columns: <strong>role, status, send_welcome_email</strong>
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-2">
+              <Label htmlFor="csv-file">Select CSV File</Label>
+              <Input
+                ref={fileInputRef}
+                id="csv-file"
+                type="file"
+                accept=".csv"
+                onChange={handleFileSelect}
+                disabled={isImporting}
+              />
+            </div>
+
+            {file && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{file.name}</p>
+                      <p className="text-sm text-gray-500">
+                        Size: {(file.size / 1024).toFixed(1)} KB
+                      </p>
+                      {parsedUsers.length > 0 && (
+                        <p className="text-sm text-green-600">
+                          {parsedUsers.length} users parsed and ready to import
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setFile(null);
+                        setParsedUsers([]);
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = '';
+                        }
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {isImporting && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Import Progress</span>
+                    <span>{Math.round(progress)}%</span>
+                  </div>
+                  <Progress value={progress} className="w-full" />
+                </div>
+                
+                {currentUser && (
+                  <p className="text-sm text-gray-600">
+                    Processing: {currentUser}
+                  </p>
+                )}
+
+                <Button
+                  variant="outline"
+                  onClick={handleCancel}
+                  className="w-full"
+                >
+                  Cancel Import
+                </Button>
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              <Button
+                onClick={handleImport}
+                disabled={!file || isImporting}
+                className="flex-1"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                {isImporting ? 'Importing...' : 'Import Users'}
+              </Button>
+              <Button variant="outline" onClick={handleClose}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="flex items-center justify-center gap-2 text-green-600">
+                    <CheckCircle className="h-5 w-5" />
+                    <span className="font-medium">Successful</span>
+                  </div>
+                  <p className="text-2xl font-bold text-green-600">{successfulImports}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="flex items-center justify-center gap-2 text-red-600">
+                    <AlertCircle className="h-5 w-5" />
+                    <span className="font-medium">Failed</span>
+                  </div>
+                  <p className="text-2xl font-bold text-red-600">{failedImports}</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {failedImports > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-medium">Import Errors:</h4>
+                <div className="max-h-60 overflow-y-auto space-y-1">
+                  {results
+                    .filter(r => !r.success)
+                    .map((result, index) => (
+                      <div key={index} className="text-sm bg-red-50 p-2 rounded">
+                        <strong>{result.email}:</strong> {result.error}
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              <Button onClick={handleClose} className="flex-1">
+                Close
+              </Button>
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

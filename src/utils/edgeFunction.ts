@@ -11,7 +11,7 @@ export const checkEdgeFunctionHealth = async (): Promise<boolean> => {
 
     console.log('Checking Edge Function health...');
     
-    // Method 1: Try Supabase client first with health check payload
+    // Method 1: Try Supabase client with health check payload
     try {
       console.log('Attempting health check via Supabase client...');
       const { data, error } = await supabase.functions.invoke('admin-create-user', {
@@ -56,37 +56,37 @@ export const checkEdgeFunctionHealth = async (): Promise<boolean> => {
     } catch (fetchError) {
       console.error('Direct fetch health check failed:', fetchError);
     }
-
-    // Method 3: Try direct POST with health check payload
-    try {
-      console.log('Attempting health check via direct POST...');
-      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/admin-create-user`;
-
-      const response = await fetch(functionUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ healthCheck: true })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Direct POST health check passed:', data);
-        return data.success && data.healthCheck;
-      } else {
-        const errorText = await response.text();
-        console.error('Direct POST health check failed:', response.status, errorText);
-      }
-    } catch (fetchError) {
-      console.error('Direct POST health check failed:', fetchError);
-    }
     
     return false;
   } catch (error) {
     console.error('Edge function health check failed:', error);
     return false;
+  }
+};
+
+export const testEdgeFunctionDebug = async (): Promise<any> => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw new Error('No session found');
+    }
+
+    console.log('Testing Edge Function debug endpoint...');
+    
+    const { data, error } = await supabase.functions.invoke('admin-create-user', {
+      body: { debug: true },
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+      }
+    });
+    
+    if (error) {
+      throw new Error(error.message);
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Debug endpoint test failed:', error);
+    throw error;
   }
 };

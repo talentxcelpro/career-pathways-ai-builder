@@ -14,6 +14,7 @@ interface CreateUserRequest {
   userRole?: string;
   temporaryPassword?: string;
   healthCheck?: boolean;
+  debug?: boolean;
 }
 
 interface CreateUserResponse {
@@ -21,26 +22,63 @@ interface CreateUserResponse {
   userId?: string;
   error?: string;
   healthCheck?: boolean;
+  debug?: any;
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  const requestId = crypto.randomUUID().substring(0, 8);
+  console.log(`[${requestId}] Received ${req.method} request to admin-create-user`);
+
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
+    console.log(`[${requestId}] CORS preflight request`);
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log(`Received ${req.method} request to admin-create-user`);
+    // Environment variable check
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    console.log(`[${requestId}] Environment check:`, {
+      hasUrl: !!supabaseUrl,
+      hasAnonKey: !!supabaseAnonKey,
+      hasServiceKey: !!supabaseServiceKey,
+      urlLength: supabaseUrl?.length || 0,
+      anonKeyLength: supabaseAnonKey?.length || 0,
+      serviceKeyLength: supabaseServiceKey?.length || 0
+    });
+
+    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+      console.error(`[${requestId}] Missing required environment variables`);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Server configuration error: Missing required environment variables',
+          debug: {
+            hasUrl: !!supabaseUrl,
+            hasAnonKey: !!supabaseAnonKey,
+            hasServiceKey: !!supabaseServiceKey
+          }
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
 
     // Handle GET requests for health checks
     if (req.method === "GET") {
-      console.log("Health check via GET method");
+      console.log(`[${requestId}] Health check via GET method`);
       return new Response(
         JSON.stringify({ 
           success: true, 
           healthCheck: true, 
           message: "Edge Function is healthy",
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          requestId
         }),
         {
           status: 200,
@@ -52,7 +90,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Get the authorization header
     const authorization = req.headers.get('authorization');
     if (!authorization) {
-      console.error('No authorization header provided');
+      console.error(`[${requestId}] No authorization header provided`);
       return new Response(
         JSON.stringify({ success: false, error: 'No authorization header' }),
         {
@@ -62,17 +100,18 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log('Authorization header present, length:', authorization.length);
+    console.log(`[${requestId}] Authorization header present, length:`, authorization.length);
 
-    // Parse request body
-    const requestBody = await req.json().catch(e => {
-      console.error('Failed to parse request body:', e);
-      return null;
-    });
-
-    if (!requestBody) {
+    // Parse request body with better error handling
+    let requestBody;
+    try {
+      const bodyText = await req.text();
+      console.log(`[${requestId}] Request body length:`, bodyText.length);
+      requestBody = JSON.parse(bodyText);
+    } catch (parseError) {
+      console.error(`[${requestId}] Failed to parse request body:`, parseError);
       return new Response(
-        JSON.stringify({ success: false, error: 'Invalid request body' }),
+        JSON.stringify({ success: false, error: 'Invalid request body: ' + parseError.message }),
         {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -80,15 +119,42 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Handle debug requests
+    if (requestBody.debug) {
+      console.log(`[${requestId}] Debug request received`);
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          debug: true, 
+          message: "Debug endpoint working",
+          environment: {
+            hasUrl: !!supabaseUrl,
+            hasAnonKey: !!supabaseAnonKey,
+            hasServiceKey: !!supabaseServiceKey,
+            urlLength: supabaseUrl?.length || 0,
+            anonKeyLength: supabaseAnonKey?.length || 0,
+            serviceKeyLength: supabaseServiceKey?.length || 0
+          },
+          timestamp: new Date().toISOString(),
+          requestId
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     // Handle health check requests
     if (requestBody.healthCheck) {
-      console.log("Health check request received");
+      console.log(`[${requestId}] Health check request received`);
       return new Response(
         JSON.stringify({ 
           success: true, 
           healthCheck: true, 
           message: "Edge Function is healthy and authenticated",
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          requestId
         }),
         {
           status: 200,
@@ -100,7 +166,7 @@ const handler = async (req: Request): Promise<Response> => {
     const { userEmail, userName, userRole = 'job_seeker', temporaryPassword }: CreateUserRequest = requestBody;
 
     if (!userEmail || !userName) {
-      console.error('Missing required fields:', { userEmail: !!userEmail, userName: !!userName });
+      console.error(`[${requestId}] Missing required fields:`, { userEmail: !!userEmail, userName: !!userName });
       return new Response(
         JSON.stringify({ success: false, error: 'Email and name are required' }),
         {
@@ -110,17 +176,9 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    console.log(`[${requestId}] Creating user:`, userEmail, userName);
+
     // Create regular supabase client to verify admin status
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
-    console.log('Environment variables check:', {
-      hasUrl: !!supabaseUrl,
-      hasAnonKey: !!supabaseAnonKey,
-      hasServiceKey: !!supabaseServiceKey
-    });
-
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: false,
@@ -134,13 +192,13 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     // Verify the user is authenticated and is an admin
-    console.log('Verifying user authentication...');
+    console.log(`[${requestId}] Verifying user authentication...`);
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     if (userError || !user) {
-      console.error('Authentication error:', userError);
+      console.error(`[${requestId}] Authentication error:`, userError);
       return new Response(
-        JSON.stringify({ success: false, error: 'Authentication failed' }),
+        JSON.stringify({ success: false, error: 'Authentication failed: ' + (userError?.message || 'No user') }),
         {
           status: 401,
           headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -148,15 +206,15 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log('User authenticated:', user.email);
+    console.log(`[${requestId}] User authenticated:`, user.email);
 
     // Check if user is admin using the existing function
-    console.log('Checking admin privileges...');
+    console.log(`[${requestId}] Checking admin privileges...`);
     const { data: isAdmin, error: adminError } = await supabase
       .rpc('is_app_admin', { _user_id: user.id });
 
     if (adminError || !isAdmin) {
-      console.error('Admin check failed:', adminError, 'isAdmin:', isAdmin);
+      console.error(`[${requestId}] Admin check failed:`, adminError, 'isAdmin:', isAdmin);
       return new Response(
         JSON.stringify({ success: false, error: 'Admin privileges required' }),
         {
@@ -166,7 +224,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log('Admin privileges verified');
+    console.log(`[${requestId}] Admin privileges verified`);
 
     // Create service role client for admin operations
     const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
@@ -176,7 +234,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
     });
 
-    console.log('Creating user:', userEmail, userName);
+    console.log(`[${requestId}] Creating auth user...`);
 
     // Create the auth user with service role privileges
     const { data: authUser, error: createError } = await adminClient.auth.admin.createUser({
@@ -189,7 +247,7 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     if (createError) {
-      console.error('Failed to create auth user:', createError);
+      console.error(`[${requestId}] Failed to create auth user:`, createError);
       return new Response(
         JSON.stringify({ success: false, error: createError.message }),
         {
@@ -200,7 +258,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     if (!authUser.user) {
-      console.error('User creation failed - no user returned');
+      console.error(`[${requestId}] User creation failed - no user returned`);
       return new Response(
         JSON.stringify({ success: false, error: 'User creation failed - no user returned' }),
         {
@@ -210,9 +268,10 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log('Auth user created:', authUser.user.id);
+    console.log(`[${requestId}] Auth user created:`, authUser.user.id);
 
     // Create the profile using service role client
+    console.log(`[${requestId}] Creating profile...`);
     const { error: profileError } = await adminClient
       .from('profiles')
       .insert({
@@ -226,9 +285,14 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
     if (profileError) {
-      console.error('Failed to create profile:', profileError);
+      console.error(`[${requestId}] Failed to create profile:`, profileError);
       // If profile creation fails, we should clean up the auth user
-      await adminClient.auth.admin.deleteUser(authUser.user.id);
+      try {
+        await adminClient.auth.admin.deleteUser(authUser.user.id);
+        console.log(`[${requestId}] Cleaned up auth user after profile creation failure`);
+      } catch (cleanupError) {
+        console.error(`[${requestId}] Failed to cleanup auth user:`, cleanupError);
+      }
       
       return new Response(
         JSON.stringify({ success: false, error: `Profile creation failed: ${profileError.message}` }),
@@ -239,10 +303,11 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log('Profile created successfully for:', userEmail);
+    console.log(`[${requestId}] Profile created successfully for:`, userEmail);
 
     // Queue welcome email by calling the send-welcome-email function
     try {
+      console.log(`[${requestId}] Queuing welcome email...`);
       const { error: emailError } = await adminClient.functions.invoke('send-welcome-email', {
         body: {
           userEmail,
@@ -252,11 +317,13 @@ const handler = async (req: Request): Promise<Response> => {
       });
       
       if (emailError) {
-        console.error('Failed to queue welcome email:', emailError);
+        console.error(`[${requestId}] Failed to queue welcome email:`, emailError);
         // Don't fail the whole operation if email fails
+      } else {
+        console.log(`[${requestId}] Welcome email queued successfully`);
       }
     } catch (emailError) {
-      console.error('Error queuing welcome email:', emailError);
+      console.error(`[${requestId}] Error queuing welcome email:`, emailError);
       // Don't fail the whole operation if email fails
     }
 
@@ -265,7 +332,7 @@ const handler = async (req: Request): Promise<Response> => {
       userId: authUser.user.id
     };
 
-    console.log('User creation completed successfully:', userEmail);
+    console.log(`[${requestId}] User creation completed successfully:`, userEmail);
 
     return new Response(JSON.stringify(response), {
       status: 200,
@@ -276,9 +343,14 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
   } catch (error: any) {
-    console.error("Error in admin-create-user function:", error);
+    console.error(`[${requestId}] Error in admin-create-user function:`, error);
+    console.error(`[${requestId}] Error stack:`, error.stack);
     return new Response(
-      JSON.stringify({ success: false, error: error.message || 'Internal server error' }),
+      JSON.stringify({ 
+        success: false, 
+        error: error.message || 'Internal server error',
+        requestId 
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
