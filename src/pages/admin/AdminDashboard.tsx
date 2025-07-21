@@ -11,6 +11,7 @@ import { QuickActionsPanel } from '@/components/admin/QuickActionsPanel';
 import { PlatformOverviewWidget } from '@/components/admin/dashboard/PlatformOverviewWidget';
 import EmailSystemTest from '@/components/admin/EmailSystemTest';
 import { EmailQueueManager } from '@/components/admin/EmailQueueManager';
+import ProfileReminderEmailSender from '@/components/admin/ProfileReminderEmailSender';
 import { useAdminStats } from '@/hooks/useAdminStats';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
@@ -64,9 +65,11 @@ const AdminDashboard = () => {
         {/* Email System Test Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
           <EmailSystemTest />
-          <div className="lg:col-span-2">
-            <EmailQueueManager />
-          </div>
+          <ProfileReminderEmailSender />
+        </div>
+        
+        <div className="lg:col-span-2">
+          <EmailQueueManager />
         </div>
       </div>
     </UnifiedAdminLayout>
