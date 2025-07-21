@@ -1,205 +1,260 @@
 
 import React from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { 
-  Sidebar,
-  SidebarContent, 
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent
-} from '@/components/ui/sidebar';
-import { 
-  LayoutDashboard, 
+  Shield, 
   Users, 
-  Briefcase, 
   Building2, 
-  GraduationCap, 
+  Home, 
   Network, 
-  Wrench, 
+  Briefcase, 
   FileText, 
-  Map,
-  UserCheck,
-  Shield,
-  BarChart3,
+  Wrench, 
+  GraduationCap, 
+  Map, 
+  CreditCard, 
+  BarChart3, 
+  Lock,
   Settings,
-  Crown,
-  UserPlus
+  Bell,
+  ChevronLeft,
+  ChevronRight,
+  Mail,
+  Brain,
+  Crown
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
-import { useAdminPermissions } from '@/hooks/useAdminPermissions';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarTrigger,
+  useSidebar,
+} from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useAdminStats } from '@/hooks/useAdminStats';
 
-interface SidebarItem {
-  title: string;
-  url: string;
-  icon: React.ComponentType<{ className?: string }>;
-  permission?: keyof import('@/types/admin').AdminPermissions;
-}
-
-const sidebarItems: SidebarItem[] = [
+const adminMenuItems = [
   {
-    title: "Dashboard",
-    url: "/admin",
-    icon: LayoutDashboard,
-    permission: 'canAccessDashboard'
-  },
-  {
-    title: "Users",
-    url: "/admin/users",
-    icon: Users,
-    permission: 'canAccessUsers'
-  },
-  {
-    title: "Jobs",
-    url: "/admin/jobs",
-    icon: Briefcase,
-    permission: 'canAccessJobs'
-  },
-  {
-    title: "Companies",
-    url: "/admin/companies",
-    icon: Building2,
-    permission: 'canAccessCompanies'
-  },
-  {
-    title: "Learning",
-    url: "/admin/learning",
-    icon: GraduationCap,
-    permission: 'canAccessLearning'
-  },
-  {
-    title: "Network",
-    url: "/admin/network",
-    icon: Network,
-    permission: 'canAccessNetwork'
-  },
-  {
-    title: "Tools",
-    url: "/admin/tools",
-    icon: Wrench,
-    permission: 'canAccessTools'
-  },
-  {
-    title: "Resumes",
-    url: "/admin/resumes",
-    icon: FileText,
-    permission: 'canAccessResumes'
-  },
-  {
-    title: "Career Map",
-    url: "/admin/career-map",
-    icon: Map,
-    permission: 'canAccessCareerMap'
-  },
-  {
-    title: "Employer Requests",
-    url: "/admin/employer-requests",
-    icon: UserCheck,
-    permission: 'canAccessEmployerRequests'
-  }
-];
-
-const managementItems: SidebarItem[] = [
-  {
-    title: "Admin Management",
-    url: "/admin/admins",
+    title: 'Dashboard',
+    url: '/admin',
     icon: Shield,
-    permission: 'canAccessAdmins'
+    description: 'Overview and analytics'
   },
   {
-    title: "Bulk Admin Creation",
-    url: "/admin/bulk-create",
-    icon: UserPlus,
-    permission: 'canAccessAdmins'
+    title: 'User Management',
+    url: '/admin/users',
+    icon: Users,
+    description: 'Manage all users'
   },
   {
-    title: "Analytics",
-    url: "/admin/analytics",
+    title: 'Pro Users',
+    url: '/admin/pro-users',
+    icon: Crown,
+    description: 'Manage Pro subscriptions & Elite users'
+  },
+  {
+    title: 'Employer Requests',
+    url: '/admin/employer-requests',
+    icon: Building2,
+    description: 'Review employer applications',
+    badge: 'dynamic' // This will be updated dynamically
+  },
+  {
+    title: 'Jobs Management',
+    url: '/admin/jobs',
+    icon: Briefcase,
+    description: 'Manage job postings'
+  },
+  {
+    title: 'Companies',
+    url: '/admin/companies',
+    icon: Building2,
+    description: 'Company profiles & verification'
+  },
+  {
+    title: 'Employer Dashboard',
+    url: '/employer',
+    icon: Building2,
+    description: 'Access employer features'
+  },
+  {
+    title: 'Network',
+    url: '/admin/network',
+    icon: Network,
+    description: 'Social network moderation'
+  },
+  {
+    title: 'Learning',
+    url: '/admin/learning',
+    icon: GraduationCap,
+    description: 'Courses & learning paths'
+  },
+  {
+    title: 'Colleges',
+    url: '/admin/colleges',
+    icon: GraduationCap,
+    description: 'College management & verification'
+  },
+  {
+    title: 'Career Map',
+    url: '/admin/career-map',
+    icon: Map,
+    description: 'Career guidance system'
+  },
+  {
+    title: 'Resume Management',
+    url: '/admin/resumes',
+    icon: FileText,
+    description: 'Resume templates & tools'
+  },
+  {
+    title: 'Tools',
+    url: '/admin/tools',
+    icon: Wrench,
+    description: 'AI tools & utilities'
+  },
+  {
+    title: 'Home Content',
+    url: '/admin/home',
+    icon: Home,
+    description: 'Homepage management'
+  },
+  {
+    title: 'Analytics',
+    url: '/admin/analytics',
     icon: BarChart3,
-    permission: 'canAccessAnalytics'
+    description: 'Reports & insights'
   },
   {
-    title: "Settings",
-    url: "/admin/settings",
+    title: 'Payments',
+    url: '/admin/payments',
+    icon: CreditCard,
+    description: 'Pricing & billing'
+  },
+  {
+    title: 'Security',
+    url: '/admin/security',
+    icon: Lock,
+    description: 'Logs & security'
+  },
+  {
+    title: 'Email Automation',
+    url: '/admin/email-automation',
+    icon: Mail,
+    description: 'Manage email templates & triggers'
+  },
+  {
+    title: 'AI/ML Training Center',
+    url: '/admin/ai-ml-training',
+    icon: Brain,
+    description: 'Train and manage custom AI models for TalentXcel services'
+  },
+  {
+    title: 'AI Management',
+    url: '/admin/ai-management',
+    icon: Brain,
+    description: 'Monitor and manage AI features across the platform'
+  },
+  {
+    title: 'Admin Management',
+    url: '/admin/admins',
     icon: Settings,
-    permission: 'canAccessSecurity'
+    description: 'Manage administrators'
+  },
+  {
+    title: 'Create Course',
+    url: '/admin/learning/create',
+    icon: GraduationCap,
+    description: 'Create new learning courses'
+  },
+  {
+    title: 'Create Pricing Plan',
+    url: '/admin/pricing/create',
+    icon: CreditCard,
+    description: 'Create new subscription plans'
   }
 ];
 
-export const AdminSidebar = () => {
+export const AdminSidebar: React.FC = () => {
+  const { state } = useSidebar();
   const location = useLocation();
-  const { hasPermission } = useAdminPermissions();
+  const currentPath = location.pathname;
+  const isCollapsed = state === 'collapsed';
+  const { data: adminStats } = useAdminStats();
 
-  const isActive = (url: string) => {
-    if (url === '/admin') {
-      return location.pathname === '/admin';
+  const isActive = (path: string) => {
+    if (path === '/admin') {
+      return currentPath === '/admin';
     }
-    return location.pathname.startsWith(url);
+    return currentPath.startsWith(path);
   };
 
-  const filteredSidebarItems = sidebarItems.filter(item => 
-    !item.permission || hasPermission(item.permission)
-  );
-
-  const filteredManagementItems = managementItems.filter(item => 
-    !item.permission || hasPermission(item.permission)
-  );
+  const getNavClasses = (path: string) => {
+    const active = isActive(path);
+    return `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+      active 
+        ? 'bg-primary text-primary-foreground font-medium' 
+        : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+    }`;
+  };
 
   return (
-    <Sidebar className="border-r bg-white">
-      <SidebarHeader className="border-b p-4">
-        <div className="flex items-center gap-2">
-          <Crown className="h-6 w-6 text-yellow-500" />
-          <span className="font-bold text-lg">TalentXcel Admin</span>
-        </div>
-      </SidebarHeader>
+    <Sidebar collapsible="icon">
+      <div className="flex items-center justify-between p-4 border-b">
+        {!isCollapsed && (
+          <div className="flex items-center gap-2">
+            <Shield className="h-6 w-6 text-primary" />
+            <span className="font-bold text-lg">Admin Panel</span>
+          </div>
+        )}
+        <SidebarTrigger className="h-8 w-8" />
+      </div>
 
-      <SidebarContent>
+      <SidebarContent className="px-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
+            Platform Management
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {filteredSidebarItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild
-                    isActive={isActive(item.url)}
-                  >
-                    <Link to={item.url} className="flex items-center gap-2">
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
+              {adminMenuItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavClasses(item.url)}>
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!isCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">{item.title}</span>
+                            {item.badge && item.badge === 'dynamic' && item.url === '/admin/employer-requests' && (
+                              <Badge variant="destructive" className="text-xs">
+                                {adminStats?.pendingEmployerRequests || 0}
+                              </Badge>
+                            )}
+                            {item.badge && item.badge !== 'dynamic' && (
+                              <Badge variant="destructive" className="text-xs">
+                                {item.badge}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        {filteredManagementItems.length > 0 && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Management</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {filteredManagementItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      asChild
-                      isActive={isActive(item.url)}
-                    >
-                      <Link to={item.url} className="flex items-center gap-2">
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
       </SidebarContent>
     </Sidebar>
   );

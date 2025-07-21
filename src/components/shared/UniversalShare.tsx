@@ -52,29 +52,16 @@ export const UniversalShare: React.FC<UniversalShareProps> = ({
   const { toast } = useToast();
 
   const generateShareUrl = () => {
-    // Import domain config
-    const DOMAIN_CONFIG = {
-      getBaseUrl: () => {
-        if (typeof window !== 'undefined') {
-          const isDevelopment = window.location.hostname === 'localhost' || 
-                               window.location.hostname.includes('lovableproject.com');
-          return isDevelopment ? window.location.origin : 'https://talentxcel.in';
-        }
-        return 'https://talentxcel.in';
-      }
-    };
-    
-    const baseUrl = DOMAIN_CONFIG.getBaseUrl();
+    const baseUrl = window.location.origin;
     if (content.url) return content.url;
     
-    // Use public URLs for sharing
     const pathMap = {
-      post: `/p/post/${content.id}`,
-      job: `/p/job/${content.id}`,
-      company: `/p/company/${content.id}`,
-      college: `/p/college/${content.id}`,
-      article: `/p/article/${content.id}`,
-      profile: `/p/profile/${content.id}`
+      post: `/network/posts/${content.id}`,
+      job: `/jobs/${content.id}`,
+      company: `/companies/${content.id}`,
+      college: `/colleges/${content.id}`,
+      article: `/network/articles/${content.id}`,
+      profile: `/network/people/${content.id}`
     };
     
     return `${baseUrl}${pathMap[content.type]}`;

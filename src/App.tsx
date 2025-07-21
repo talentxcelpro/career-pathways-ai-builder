@@ -1,97 +1,113 @@
-
+import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
+import { navItems } from "./nav-items";
+import { NavItem } from "./types/nav-item";
+import { Navbar } from "./components/navigation/Navbar";
+import { Footer } from "./components/layout/Footer";
+import { OfflineIndicator } from "./components/shared/OfflineIndicator";
+import { AuthProvider } from "./contexts/AuthContext";
+import { AnalyticsProvider } from "./contexts/AnalyticsContext";
+import { AIProvider } from "./contexts/AIContext";
 
-// Public pages
-import Index from "./pages/Index";
-import Register from "./pages/auth/Register";
-import Login from "./pages/auth/Login";
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import PublicJobDetail from "./pages/public/PublicJobDetail";
-import PublicCompanyDetail from "./pages/public/PublicCompanyDetail";
-import PublicPostDetail from "./pages/public/PublicPostDetail";
+import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
+import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { MobileAppInitializer } from "./components/MobileAppInitializer";
+import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 
-// Main app pages
-import Network from "./pages/Network";
-import Jobs from "./pages/Jobs";
-import Learning from "./pages/Learning";
-import CareerMap from "./pages/CareerMap";
-import AITools from "./pages/AITools";
-import Profile from "./pages/Profile";
-import Resumes from "./pages/Resumes";
-import Employer from "./pages/Employer";
-import EmployerTeam from "./pages/EmployerTeam";
-import Companies from "./pages/Companies";
-import CompanyDetail from "./pages/CompanyDetail";
-import JobDetail from "./pages/JobDetail";
-import OnboardingPage from "./pages/OnboardingPage";
-import Messages from "./pages/Messages";
-import Notifications from "./pages/Notifications";
-import Settings from "./pages/Settings";
-import Subscriptions from "./pages/Subscriptions";
-import CollegeAdmissions from "./pages/CollegeAdmissions";
-import MyApplications from "./pages/jobs/MyApplications";
+// Create query client with simpler configuration to avoid potential issues
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 2,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
-// Admin pages
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import UserManagement from "./pages/admin/UserManagement";
-import AdminManagement from "./pages/admin/AdminManagement";
-import BulkAdminCreation from "./pages/admin/BulkAdminCreation";
-import EmailAutomation from "./pages/admin/EmailAutomation";
+// Routes that don't require authentication - updated to include job viewing
+const publicRoutes = [
+  '/', 
+  '/auth/login', 
+  '/auth/register', 
+  '/auth/forgot-password', 
+  '/auth/reset-password', 
+  '/auth/callback',
+  '/jobs',
+  '/jobs/:id',
+  '/companies',
+  '/companies/:id',
+  '/:slug', // Company slug route
+  '/profile/:id',
+  '/employer', // Employer landing page (shows different content based on auth)
+  '/employer/request-access',
+  '/employer/team/accept/:token' // Invitation acceptance
+];
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Index />} />
-            <Route path="/auth/register" element={<Register />} />
-            <Route path="/auth/login" element={<Login />} />
-            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-            <Route path="/public/jobs/:id" element={<PublicJobDetail />} />
-            <Route path="/public/companies/:slug" element={<PublicCompanyDetail />} />
-            <Route path="/public/posts/:id" element={<PublicPostDetail />} />
-            
-            {/* Protected routes */}
-            <Route path="/onboarding" element={<OnboardingPage />} />
-            <Route path="/network" element={<Network />} />
-            <Route path="/jobs" element={<Jobs />} />
-            <Route path="/jobs/:id" element={<JobDetail />} />
-            <Route path="/learning" element={<Learning />} />
-            <Route path="/career-map" element={<CareerMap />} />
-            <Route path="/ai-tools" element={<AITools />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/resumes" element={<Resumes />} />
-            <Route path="/employer" element={<Employer />} />
-            <Route path="/employer/team" element={<EmployerTeam />} />
-            <Route path="/companies" element={<Companies />} />
-            <Route path="/companies/:slug" element={<CompanyDetail />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/subscriptions" element={<Subscriptions />} />
-            <Route path="/college-admissions" element={<CollegeAdmissions />} />
-            <Route path="/my-applications" element={<MyApplications />} />
-            
-            {/* Admin routes */}
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<UserManagement />} />
-            <Route path="/admin/admins" element={<AdminManagement />} />
-            <Route path="/admin/bulk-create" element={<BulkAdminCreation />} />
-            <Route path="/admin/email-automation" element={<EmailAutomation />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  return (
+    <BrowserRouter>
+      <TooltipProvider>
+        <AnalyticsProvider>
+          <AuthProvider>
+            <AIProvider>
+              <Toaster />
+              <MobileAppInitializer />
+              <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
+              <SearchConsoleVerification verificationCode="your-search-console-verification-code" />
+              <div className="min-h-screen flex flex-col">
+                <OfflineIndicator />
+                <Navbar />
+                <main className="flex-1">
+                  <Routes>
+                    {navItems.map((item: NavItem) => {
+                       // Check if route is explicitly marked as public or in our public routes list
+                       const isPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
+                         // Handle dynamic routes like /companies/:id, /profile/:id, /:slug, /jobs/:id, and /employer/team/accept/:token
+                         if (route.includes(':')) {
+                           const routePattern = route.replace(/:[^/]+/g, '[^/]+');
+                           return new RegExp(`^${routePattern}$`).test(item.to);
+                         }
+                         return route === item.to;
+                       });
+                      
+                      return (
+                        <Route 
+                          key={item.to} 
+                          path={item.to} 
+                          element={
+                            isPublicRoute ? (
+                              item.page
+                            ) : (
+                              <ProtectedRoute>{item.page}</ProtectedRoute>
+                            )
+                          }
+                        />
+                      );
+                    })}
+                    <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
+                    
+                    {/* Legacy resume builder redirects */}
+                    <Route path="/resume" element={<Navigate to="/resume/new" replace />} />
+                    <Route path="/resume-builder" element={<Navigate to="/resume/new" replace />} />
+                    <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
+                    <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
+                  </Routes>
+                </main>
+                <Footer />
+              </div>
+              <Analytics />
+            </AIProvider>
+          </AuthProvider>
+        </AnalyticsProvider>
+      </TooltipProvider>
+    </BrowserRouter>
+  );
+};
 
 export default App;

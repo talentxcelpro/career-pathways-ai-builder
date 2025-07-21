@@ -10143,50 +10143,6 @@ export type Database = {
         }
         Relationships: []
       }
-      public_post_views: {
-        Row: {
-          country_code: string | null
-          device_type: string | null
-          id: string
-          post_id: string
-          referrer: string | null
-          session_id: string | null
-          user_agent: string | null
-          viewed_at: string
-          viewer_ip: unknown | null
-        }
-        Insert: {
-          country_code?: string | null
-          device_type?: string | null
-          id?: string
-          post_id: string
-          referrer?: string | null
-          session_id?: string | null
-          user_agent?: string | null
-          viewed_at?: string
-          viewer_ip?: unknown | null
-        }
-        Update: {
-          country_code?: string | null
-          device_type?: string | null
-          id?: string
-          post_id?: string
-          referrer?: string | null
-          session_id?: string | null
-          user_agent?: string | null
-          viewed_at?: string
-          viewer_ip?: unknown | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "public_post_views_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       publications: {
         Row: {
           created_at: string | null
@@ -11830,35 +11786,6 @@ export type Database = {
           },
         ]
       }
-      saved_posts: {
-        Row: {
-          created_at: string
-          id: string
-          post_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          post_id: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          post_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "saved_posts_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       saved_tool_results: {
         Row: {
           content: Json
@@ -13041,48 +12968,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      sharing_analytics: {
-        Row: {
-          clicked_count: number | null
-          content_id: string
-          content_type: string
-          conversion_count: number | null
-          id: string
-          platform: string
-          referrer: string | null
-          share_url: string
-          shared_at: string
-          shared_by: string | null
-          user_agent: string | null
-        }
-        Insert: {
-          clicked_count?: number | null
-          content_id: string
-          content_type: string
-          conversion_count?: number | null
-          id?: string
-          platform: string
-          referrer?: string | null
-          share_url: string
-          shared_at?: string
-          shared_by?: string | null
-          user_agent?: string | null
-        }
-        Update: {
-          clicked_count?: number | null
-          content_id?: string
-          content_type?: string
-          conversion_count?: number | null
-          id?: string
-          platform?: string
-          referrer?: string | null
-          share_url?: string
-          shared_at?: string
-          shared_by?: string | null
-          user_agent?: string | null
-        }
-        Relationships: []
       }
       site_announcements: {
         Row: {
@@ -15792,28 +15677,6 @@ export type Database = {
           processed_count: number
           simulated_events: number
         }[]
-      }
-      track_public_post_view: {
-        Args: {
-          p_post_id: string
-          p_viewer_ip?: unknown
-          p_user_agent?: string
-          p_referrer?: string
-          p_session_id?: string
-        }
-        Returns: string
-      }
-      track_share_analytics: {
-        Args: {
-          p_content_type: string
-          p_content_id: string
-          p_platform: string
-          p_share_url: string
-          p_shared_by?: string
-          p_referrer?: string
-          p_user_agent?: string
-        }
-        Returns: string
       }
       track_template_usage: {
         Args: {
