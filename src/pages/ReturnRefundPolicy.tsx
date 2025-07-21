@@ -72,7 +72,7 @@ If you purchase services from verified professionals (such as mentors, resume wr
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                This policy is effective from January 1, 2024, and was last updated on January 1, 2024.
+                This policy is effective from July 01, 2025, and was last updated on July 01, 2025.
               </p>
               <p className="text-sm text-muted-foreground mt-2">
                 At TalentXcel, we are committed to providing a seamless and transparent experience for all our users. Please read our Return, Refund, and Cancellation Policy carefully before making any purchases or subscribing to any of our services.

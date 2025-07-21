@@ -19,7 +19,7 @@ const PrivacyPolicy = () => {
         <Card className="mb-8">
           <CardContent className="p-6 text-center">
             <p className="text-gray-600">
-              <strong>Effective Date:</strong> December 1, 2024 | <strong>Last Updated:</strong> December 1, 2024
+              <strong>Effective Date:</strong> July 01, 2025 | <strong>Last Updated:</strong> July 01, 2025
             </p>
             <p className="text-sm text-gray-500 mt-2">
               We may update this privacy policy from time to time. We will notify you of any significant changes via email or through our platform.

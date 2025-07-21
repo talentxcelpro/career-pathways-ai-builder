@@ -85,7 +85,7 @@ const Terms = () => {
         <Card className="mb-8">
           <CardContent className="p-6 text-center">
             <p className="text-gray-600">
-              <strong>Effective Date:</strong> June 2025
+              <strong>Effective Date:</strong> July 01, 2025
             </p>
             <p className="text-sm text-gray-500 mt-2">
               These terms govern your use of TalentXcel services and supersede all prior agreements.

@@ -41,6 +41,9 @@ const About = () => {
           <p className="text-xl text-blue-100 max-w-2xl mx-auto">
             Transforming the way professionals connect, learn, and grow with AI-powered career solutions.
           </p>
+          <p className="text-sm text-blue-200 mt-4">
+            <strong>Effective:</strong> July 01, 2025
+          </p>
         </div>
       </div>
 
