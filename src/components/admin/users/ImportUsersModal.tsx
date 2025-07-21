@@ -165,6 +165,10 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
   const validateUserData = (userData: any) => {
     const errors = [];
     
+    // Debug logging
+    console.log('Validating user data:', userData);
+    console.log('Email value:', userData.email, 'Type:', typeof userData.email);
+    
     if (!userData.full_name?.trim()) {
       errors.push('Full name is required');
     }
