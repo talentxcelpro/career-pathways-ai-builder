@@ -326,18 +326,6 @@ export default function ServicesMarketplace() {
           </div>
         </div>
 
-        {/* Contact Preferences */}
-        <div className="flex items-center gap-3 mb-6 p-3 bg-blue-50/30 rounded-xl border border-blue-100/50">
-          <MessageCircle className="h-4 w-4 text-blue-600" />
-          <span className="text-sm font-medium text-blue-900">Available via:</span>
-          <div className="flex gap-2">
-            {service.contact_preferences.map((pref, index) => (
-              <Badge key={index} className="bg-blue-100/50 text-blue-700 border-blue-200/50 px-2 py-1 rounded-full text-xs">
-                {pref}
-              </Badge>
-            ))}
-          </div>
-        </div>
 
         {/* Premium Action Buttons */}
         <div className="flex gap-3">
@@ -347,7 +335,7 @@ export default function ServicesMarketplace() {
             size="lg"
             className="flex-1 border-border/50 hover:border-primary/30 hover:bg-primary/5 rounded-xl py-3 font-semibold transition-all duration-300"
           >
-            <Link to={service.profile_link} target="_blank" className="flex items-center gap-2">
+            <Link to={`/profile/${service.provider_id}`} className="flex items-center gap-2">
               <ExternalLink className="h-4 w-4" />
               <span>View Profile</span>
             </Link>
@@ -357,7 +345,7 @@ export default function ServicesMarketplace() {
             size="lg"
             className="flex-1 bg-gradient-to-r from-primary via-primary/95 to-accent hover:from-primary/90 hover:via-primary/85 hover:to-accent/90 rounded-xl py-3 font-bold text-white shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            <Link to={`/services/${service.id}`} className="flex items-center gap-2">
+            <Link to={`/services/book/${service.id}`} className="flex items-center gap-2">
               <span>Book Now</span>
               <ChevronRight className="h-4 w-4" />
             </Link>
@@ -392,33 +380,37 @@ export default function ServicesMarketplace() {
         />
         
         <div className="relative container mx-auto px-6 py-6">
-          <div className="text-center max-w-3xl mx-auto">
+          <div className="text-center max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.25, 0.25, 0, 1] }}
             >
-              {/* Energetic Hero with Animation */}
+              {/* TalentXcel Marketplace Header */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1, ease: [0.25, 0.25, 0, 1] }}
                 className="relative"
               >
-                <div className="absolute -inset-4 bg-gradient-to-r from-green-400/20 via-blue-500/20 to-purple-600/20 rounded-3xl blur-xl animate-pulse" />
-                <h1 className="relative text-lg md:text-xl lg:text-2xl font-bold tracking-tight mb-2 text-white leading-tight">
-                  <span className="block bg-gradient-to-r from-white via-green-200 to-blue-200 bg-clip-text text-transparent animate-fade-in">
-                    Empowering every professional to do meaningful work, grow continuously, and connect with purpose
+                <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-3xl blur-xl animate-pulse" />
+                <h1 className="relative text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-3 text-white leading-tight">
+                  <span className="block bg-gradient-to-r from-white via-primary-foreground to-accent-foreground bg-clip-text text-transparent">
+                    TalentXcel Marketplace
                   </span>
                 </h1>
+                <p className="relative text-lg md:text-xl text-primary-foreground/90 font-medium mb-2">
+                  Connect with Expert Professionals
+                </p>
               </motion.div>
               
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.2 }}
-                className="text-sm lg:text-base text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto font-light"
+                transition={{ duration: 0.8, delay: 0.6 }}
+                className="text-sm lg:text-base text-muted-foreground/80 mb-4 leading-relaxed max-w-3xl mx-auto font-light"
               >
+                Discover talented professionals, book expert services, and grow your career with personalized guidance from verified experts.
                 Join a marketplace where talent meets opportunity. 
                 <span className="text-green-400 font-semibold"> Build your career.</span>
                 <span className="text-blue-400 font-semibold"> Scale your impact.</span>

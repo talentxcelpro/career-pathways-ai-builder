@@ -6,6 +6,7 @@ import LearningHub from "../pages/LearningHub";
 import ServicesMarketplace from "../pages/marketplace/ServicesMarketplace";
 import ServicesIntegration from "../pages/marketplace/ServicesIntegration";
 import TestingOptimization from "../pages/marketplace/TestingOptimization";
+import ServiceBookingForm from "../pages/marketplace/ServiceBookingForm";
 
 export const marketplaceRoutes = [
   {
@@ -27,6 +28,11 @@ export const marketplaceRoutes = [
     title: "Service Detail by ID",
     to: "/services/:id",
     page: <ServiceDetail />,
+  },
+  {
+    title: "Service Booking",
+    to: "/services/book/:id",
+    page: <ServiceBookingForm />,
   },
   {
     title: "Post Service",
