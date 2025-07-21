@@ -136,7 +136,7 @@ Key points covered:
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {content?.filter(c => c.ai_generated).length || 0}
+                {content?.filter(c => (c.metadata as any)?.ai_generated).length || 0}
               </div>
               <p className="text-sm text-purple-600">By AI</p>
             </CardContent>
@@ -386,7 +386,7 @@ Key points covered:
                               {item.status}
                             </Badge>
                             <Badge variant="outline">{item.content_type}</Badge>
-                            {item.ai_generated && (
+                            {(item.metadata as any)?.ai_generated && (
                               <Badge variant="secondary">AI Generated</Badge>
                             )}
                           </div>
@@ -415,19 +415,19 @@ Key points covered:
                             <div>
                               <div className="text-muted-foreground">Views</div>
                               <div className="font-medium">
-                                {item.performance_metrics?.views || 0}
+                                {(item.metadata as any)?.performance_metrics?.views || 0}
                               </div>
                             </div>
                             <div>
                               <div className="text-muted-foreground">Engagement</div>
                               <div className="font-medium">
-                                {item.performance_metrics?.engagement_rate || '0%'}
+                                {(item.metadata as any)?.performance_metrics?.engagement_rate || '0%'}
                               </div>
                             </div>
                             <div>
                               <div className="text-muted-foreground">Distribution</div>
                               <div className="font-medium">
-                                {item.distribution_channels?.length || 0} channels
+                                {(item.metadata as any)?.distribution_channels?.length || 0} channels
                               </div>
                             </div>
                           </div>

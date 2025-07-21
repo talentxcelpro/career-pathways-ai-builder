@@ -248,8 +248,8 @@ const SmartPageBuilder = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <h3 className="font-medium">{page.page_name}</h3>
-                            <Badge className={getStatusColor(page.status)}>
-                              {page.status}
+                            <Badge className={getStatusColor(page.is_published ? 'published' : 'draft')}>
+                              {page.is_published ? 'Published' : 'Draft'}
                             </Badge>
                             <Badge variant="outline">{page.page_type}</Badge>
                             {page.is_template && (

@@ -290,25 +290,25 @@ const AdCampaignManager = () => {
                             <div>
                               <div className="text-muted-foreground">Budget</div>
                               <div className="font-medium">
-                                ${campaign.budget_settings?.budget || 0}
+                                ${(campaign.budget_settings as any)?.budget || 0}
                               </div>
                             </div>
                             <div>
                               <div className="text-muted-foreground">Impressions</div>
                               <div className="font-medium">
-                                {campaign.performance_data?.impressions || 0}
+                                {(campaign.performance_metrics as any)?.impressions || 0}
                               </div>
                             </div>
                             <div>
                               <div className="text-muted-foreground">Clicks</div>
                               <div className="font-medium">
-                                {campaign.performance_data?.clicks || 0}
+                                {(campaign.performance_metrics as any)?.clicks || 0}
                               </div>
                             </div>
                             <div>
                               <div className="text-muted-foreground">CTR</div>
                               <div className="font-medium">
-                                {campaign.performance_data?.ctr || '0.00'}%
+                                {(campaign.performance_metrics as any)?.ctr || '0.00'}%
                               </div>
                             </div>
                           </div>
@@ -418,10 +418,10 @@ const AdCampaignManager = () => {
                               {campaign.status}
                             </Badge>
                           </td>
-                          <td className="p-2">{campaign.performance_data?.impressions || 0}</td>
-                          <td className="p-2">{campaign.performance_data?.clicks || 0}</td>
-                          <td className="p-2">{campaign.performance_data?.ctr || '0.00'}%</td>
-                          <td className="p-2">${campaign.performance_data?.spend || 0}</td>
+                          <td className="p-2">{(campaign.performance_metrics as any)?.impressions || 0}</td>
+                          <td className="p-2">{(campaign.performance_metrics as any)?.clicks || 0}</td>
+                          <td className="p-2">{(campaign.performance_metrics as any)?.ctr || '0.00'}%</td>
+                          <td className="p-2">${(campaign.performance_metrics as any)?.spend || 0}</td>
                         </tr>
                       ))}
                     </tbody>

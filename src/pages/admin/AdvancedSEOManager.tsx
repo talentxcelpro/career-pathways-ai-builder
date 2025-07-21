@@ -235,13 +235,13 @@ const AdvancedSEOManager = () => {
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="outline">{item.entity_type}</Badge>
+                            <Badge variant="outline">{item.page_type}</Badge>
                             <span className="text-sm text-muted-foreground">
-                              {item.page_path || `Entity ID: ${item.entity_id}`}
+                              {item.page_identifier}
                             </span>
                           </div>
                           <h3 className="font-medium">{item.title}</h3>
-                          <p className="text-sm text-gray-600 mt-1">{item.meta_description}</p>
+                          <p className="text-sm text-gray-600 mt-1">{item.description}</p>
                           {item.keywords && (
                             <div className="flex flex-wrap gap-1 mt-2">
                               {item.keywords.map((keyword: string, idx: number) => (
