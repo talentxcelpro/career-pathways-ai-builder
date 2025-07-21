@@ -72,7 +72,7 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
     
     // Check for duplicate target mappings
     Object.entries(mapping).forEach(([sourceCol, targetCol]) => {
-      if (targetCol && targetCol !== '') {
+      if (targetCol && targetCol !== 'none') {
         if (!usedTargets[targetCol]) {
           usedTargets[targetCol] = [];
         }
@@ -152,7 +152,7 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
     // Remove any existing mapping to this target field
     Object.keys(newMapping).forEach(key => {
       if (newMapping[key] === targetField && key !== sourceColumn) {
-        newMapping[key] = '';
+        newMapping[key] = 'none';
       }
     });
     
@@ -406,14 +406,14 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
                   <div key={header} className="space-y-2">
                     <Label>CSV Column: <span className="font-mono">{header}</span></Label>
                     <Select
-                      value={columnMapping[header] || ''}
+                      value={columnMapping[header] || 'none'}
                       onValueChange={(value) => handleMappingChange(header, value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select target field" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Don't import</SelectItem>
+                        <SelectItem value="none">Don't import</SelectItem>
                         {targetFields.map((field) => (
                           <SelectItem key={field.value} value={field.value}>
                             {field.label}
