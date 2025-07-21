@@ -40,20 +40,25 @@ export const RealTimeEmailAnalytics: React.FC = () => {
 
   const fetchEmailQueue = async () => {
     try {
-      const { data, error } = await supabase
-        .from('email_automation_queue')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(20);
+      // Fetch from both email queue tables
+      const [automationResponse, simpleResponse] = await Promise.all([
+        supabase
+          .from('email_automation_queue')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(15),
+        supabase
+          .from('email_queue_simple')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(15)
+      ]);
 
-      if (error) {
-        console.error('Error fetching email queue:', error);
-        toast.error('Failed to fetch email queue');
-        return;
-      }
+      const combinedEmails: EmailQueueItem[] = [];
 
-      if (data) {
-        const formattedData: EmailQueueItem[] = data.map(item => ({
+      // Process automation queue emails
+      if (automationResponse.data) {
+        const automationEmails: EmailQueueItem[] = automationResponse.data.map(item => ({
           id: item.id,
           recipient_email: item.recipient_email,
           recipient_name: item.recipient_name,
@@ -64,8 +69,38 @@ export const RealTimeEmailAnalytics: React.FC = () => {
           error_message: item.error_message,
           attempts: item.attempts || 0
         }));
-        setEmailQueue(formattedData);
+        combinedEmails.push(...automationEmails);
       }
+
+      // Process simple queue emails
+      if (simpleResponse.data) {
+        const simpleEmails: EmailQueueItem[] = simpleResponse.data.map(item => ({
+          id: item.id,
+          recipient_email: item.to_email,
+          recipient_name: undefined,
+          trigger_type: item.template_name || 'manual',
+          status: item.status as 'pending' | 'processing' | 'sent' | 'failed',
+          created_at: item.created_at,
+          sent_at: item.sent_at,
+          error_message: item.error_message,
+          attempts: item.retry_count || 0
+        }));
+        combinedEmails.push(...simpleEmails);
+      }
+
+      // Sort combined results by creation date
+      combinedEmails.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      
+      setEmailQueue(combinedEmails.slice(0, 20)); // Show top 20 results
+
+      if (automationResponse.error || simpleResponse.error) {
+        console.error('Error fetching email queues:', { 
+          automationError: automationResponse.error, 
+          simpleError: simpleResponse.error 
+        });
+        toast.error('Failed to fetch some email queue data');
+      }
+
     } catch (error) {
       console.error('Error in fetchEmailQueue:', error);
       toast.error('Failed to load email queue');
