@@ -171,7 +171,13 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
         const progress = Math.round(((i + 1) / users.length) * 100);
         setImportProgress(progress);
 
-        console.log(`Processing user ${i + 1}/${users.length}: ${user.email}`);
+        console.log(`Processing user ${i + 1}/${users.length}:`, {
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          userEmailPresent: !!user.email,
+          userNamePresent: !!user.name
+        });
 
         try {
           // Get fresh session for each request
@@ -181,6 +187,14 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
           }
 
           // Create user with direct Edge Function call
+          const requestBody = {
+            userEmail: user.email,
+            userName: user.name,
+            userRole: user.role || 'job_seeker',
+            temporaryPassword: user.temporaryPassword || 'TempPass123!'
+          };
+
+          console.log(`Sending request for ${user.email}:`, requestBody);
           const { data, error } = await supabase.functions.invoke('admin-create-user', {
             body: {
               userEmail: user.email,
