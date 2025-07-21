@@ -216,6 +216,35 @@ export const useEmailAutomation = () => {
     });
   };
 
+  const triggerProfileCompletionReminder = async (userEmail: string, userName: string) => {
+    try {
+      // Queue email using the new automation system
+      const { error } = await supabase
+        .from('email_automation_queue')
+        .insert({
+          trigger_type: 'profile_completion_reminder',
+          recipient_email: userEmail,
+          recipient_name: userName,
+          template_data: {
+            name: userName || 'there',
+            recipient_name: userName || 'there'
+          },
+          scheduled_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('Failed to queue profile completion reminder:', error);
+        throw error;
+      }
+
+      console.log('Profile completion reminder queued successfully');
+      return { success: true };
+    } catch (error) {
+      console.error('Error triggering profile completion reminder:', error);
+      throw error;
+    }
+  };
+
   return {
     isProcessing,
     sendAutomatedEmail,
@@ -226,6 +255,7 @@ export const useEmailAutomation = () => {
     triggerTeamInviteEmail,
     triggerPasswordResetEmail,
     triggerInterviewScheduledEmail,
-    triggerMonthlyDigestEmail
+    triggerMonthlyDigestEmail,
+    triggerProfileCompletionReminder
   };
 };

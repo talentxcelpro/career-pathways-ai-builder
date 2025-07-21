@@ -125,6 +125,7 @@ export const EmailAutomationManager: React.FC = () => {
       job_application: 'Job Application Submitted',
       employer_approval: 'Employer Request Approved',
       profile_reminder: 'Profile Incomplete Reminder',
+      profile_completion_reminder: 'Profile Completion Reminder',
       job_match: 'Job Match Notification'
     };
     return mapping[triggerType] || triggerType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -136,6 +137,7 @@ export const EmailAutomationManager: React.FC = () => {
       job_application: 'Sent when a user submits a job application',
       employer_approval: 'Sent when an employer request is approved',
       profile_reminder: 'Sent to users with incomplete profiles after 24 hours',
+      profile_completion_reminder: 'Professional email encouraging users to complete their profile and unlock features',
       job_match: 'Sent when a job matches user preferences'
     };
     return mapping[triggerType] || 'Email trigger';

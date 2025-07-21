@@ -15640,6 +15640,10 @@ export type Database = {
         }
         Returns: string
       }
+      queue_profile_completion_reminders: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       reject_company_access_request: {
         Args: { request_id: string; reason?: string }
         Returns: undefined
