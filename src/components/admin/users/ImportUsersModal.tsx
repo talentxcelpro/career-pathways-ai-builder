@@ -291,10 +291,10 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
           // Send welcome email if requested
           if (mappedUser.send_welcome_email) {
             await supabase.from('email_queue').insert({
-              recipient_email: mappedUser.email,
-              recipient_name: mappedUser.full_name,
-              template_name: 'welcome_email',
-              template_data: {
+              to_email: mappedUser.email,
+              template: 'welcome_email',
+              subject: 'Welcome to TalentXcel Pro!',
+              data: {
                 name: mappedUser.full_name,
                 login_url: `${window.location.origin}/login`
               }
