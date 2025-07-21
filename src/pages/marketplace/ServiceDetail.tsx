@@ -1,103 +1,125 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, MapPin, Clock, Mail, Phone, Globe, User } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Star, MapPin, Clock, CheckCircle, ExternalLink, User, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { Service } from "@/types/service";
-import ServiceReviews from "@/components/marketplace/ServiceReviews";
 
 export default function ServiceDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (id) {
-      fetchService();
+      fetchServiceDetail(id);
     }
   }, [id]);
 
-  const fetchService = async () => {
+  const fetchServiceDetail = async (serviceId: string) => {
     try {
-      const { data, error } = await supabase
+      setLoading(true);
+      
+      // First get the service
+      const { data: serviceData, error: serviceError } = await supabase
         .from('services')
-        .select(`
-          *,
-          profiles!services_provider_id_fkey (
-            full_name,
-            avatar_url,
-            location
-          )
-        `)
-        .eq('id', id)
+        .select('*')
+        .eq('id', serviceId)
+        .eq('is_active', true)
         .single();
 
-      if (error) throw error;
+      if (serviceError) {
+        console.error('Service query error:', serviceError);
+        throw new Error('Service not found');
+      }
 
-      const dataAny = data as any;
-      const transformedService: Service = {
-        id: dataAny.id,
-        provider_id: dataAny.provider_id,
-        title: dataAny.title,
-        professional_title: dataAny.professional_title || '',
-        years_experience: dataAny.years_experience || '',
-        location: dataAny.location || '',
-        description: dataAny.description,
-        whats_included: dataAny.whats_included || [],
-        client_requirements: dataAny.client_requirements || '',
-        delivery_time_days: dataAny.delivery_time_days,
-        price: dataAny.price || 0,
-        currency: dataAny.currency,
-        payment_methods: dataAny.payment_methods || [],
-        contact_email: dataAny.contact_email || true,
-        contact_phone: dataAny.contact_phone || false,
-        contact_website: dataAny.contact_website || false,
-        website_url: dataAny.website_url || '',
-        phone_number: dataAny.phone_number || '',
-        tags: dataAny.tags || [],
-        portfolio_files: dataAny.portfolio_files || [],
-        is_active: dataAny.is_active,
-        is_featured: dataAny.is_featured,
-        average_rating: dataAny.average_rating || 0,
-        total_reviews: dataAny.total_reviews || 0,
-        total_orders: dataAny.total_orders || 0,
-        created_at: dataAny.created_at,
-        updated_at: dataAny.updated_at,
-        provider_name: dataAny.profiles?.full_name || 'Unknown Provider',
-        provider_avatar: dataAny.profiles?.avatar_url,
-        provider_location: dataAny.location || dataAny.profiles?.location,
-        is_verified: false
+      if (!serviceData) {
+        throw new Error('Service not found');
+      }
+
+      // Then get the provider profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, location, is_verified')
+        .eq('id', serviceData.provider_id)
+        .single();
+
+      // Combine service and profile data
+      const enrichedService: Service = {
+        ...serviceData,
+        provider_name: profileData?.full_name || 'Unknown Provider',
+        provider_avatar: profileData?.avatar_url || null,
+        provider_location: profileData?.location || serviceData.location,
+        is_verified: profileData?.is_verified || false
       };
 
-      setService(transformedService);
+      setService(enrichedService);
     } catch (error) {
       console.error('Error fetching service:', error);
+      toast({
+        title: "Error",
+        description: "Service not found or has been removed",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const formatPrice = (price: number, currency: string) => {
-    const currencySymbols: { [key: string]: string } = {
-      USD: '$',
-      EUR: '€',
-      GBP: '£',
-      INR: '₹'
-    };
-    
-    return `${currencySymbols[currency] || currency} ${price.toFixed(2)}`;
+  const handleBookService = () => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to book this service",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
+    navigate(`/services/book/${id}`);
+  };
+
+  const handleViewProfile = () => {
+    if (service?.provider_id) {
+      navigate(`/profile/${service.provider_id}`);
+    }
+  };
+
+  const handleContactProvider = () => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to contact the provider",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
+    // For now, just show contact info
+    toast({
+      title: "Contact Information",
+      description: `Contact ${service?.provider_name} through the booking form or their profile`,
+    });
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Loading service...</p>
+      <div className="container mx-auto py-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-2 text-muted-foreground">Loading service details...</p>
+          </div>
         </div>
       </div>
     );
@@ -106,10 +128,17 @@ export default function ServiceDetail() {
   if (!service) {
     return (
       <div className="container mx-auto py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Service not found</h1>
-          <p className="text-muted-foreground">The service you're looking for doesn't exist or has been removed.</p>
-        </div>
+        <Card className="max-w-md mx-auto text-center">
+          <CardContent className="pt-6">
+            <h2 className="text-2xl font-bold mb-2">Service Not Found</h2>
+            <p className="text-muted-foreground mb-4">
+              The service you're looking for doesn't exist or has been removed.
+            </p>
+            <Button onClick={() => navigate('/services')}>
+              Browse All Services
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -125,175 +154,204 @@ export default function ServiceDetail() {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <CardTitle className="text-2xl mb-2">{service.title}</CardTitle>
-                  <div className="flex items-center gap-2 mb-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={service.provider_avatar} alt={service.provider_name} />
-                      <AvatarFallback>
-                        <User className="h-6 w-6" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium">{service.provider_name}</p>
-                      {service.professional_title && (
-                        <p className="text-sm text-muted-foreground">{service.professional_title}</p>
-                      )}
-                      {service.provider_location && (
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <MapPin className="h-3 w-3" />
-                          <span>{service.provider_location}</span>
-                        </div>
-                      )}
+                  {service.professional_title && (
+                    <p className="text-lg text-muted-foreground mb-2">{service.professional_title}</p>
+                  )}
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    {service.provider_location && (
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        <span>{service.provider_location}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      <span>{service.delivery_time_days} days delivery</span>
                     </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-primary mb-1">
-                    {formatPrice(service.price, service.currency)}
-                  </div>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>{service.delivery_time_days} days delivery</span>
-                  </div>
-                </div>
+                {service.is_featured && (
+                  <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                    Featured
+                  </Badge>
+                )}
               </div>
             </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-2 mb-4">
+                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                <span className="font-medium">{service.average_rating.toFixed(1)}</span>
+                <span className="text-muted-foreground">
+                  ({service.total_reviews} reviews)
+                </span>
+                <span className="text-muted-foreground">•</span>
+                <span className="text-muted-foreground">
+                  {service.total_orders} orders completed
+                </span>
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                {service.tags.map((tag) => (
+                  <Badge key={tag} variant="outline">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
           </Card>
 
-          {/* Service Description */}
+          {/* Description */}
           <Card>
             <CardHeader>
               <CardTitle>About This Service</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground leading-relaxed">{service.description}</p>
+              <div className="prose max-w-none">
+                <p className="whitespace-pre-wrap">{service.description}</p>
+              </div>
             </CardContent>
           </Card>
 
           {/* What's Included */}
-          {service.whats_included.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>What's Included</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {service.whats_included.map((item, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-green-500 mt-1">✓</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
+          <Card>
+            <CardHeader>
+              <CardTitle>What's Included</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {service.whats_included.map((item, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
 
-          {/* Client Requirements */}
+          {/* Requirements */}
           {service.client_requirements && (
             <Card>
               <CardHeader>
                 <CardTitle>Requirements</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">{service.client_requirements}</p>
+                <p className="whitespace-pre-wrap">{service.client_requirements}</p>
               </CardContent>
             </Card>
           )}
-
-          {/* Reviews */}
-          <ServiceReviews serviceId={service.id} />
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Order Card */}
+          {/* Provider Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle>About the Provider</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3 mb-4">
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={service.provider_avatar || undefined} />
+                  <AvatarFallback>
+                    {service.provider_name?.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold">{service.provider_name}</h3>
+                    {service.is_verified && (
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    )}
+                  </div>
+                  {service.years_experience && (
+                    <p className="text-sm text-muted-foreground">
+                      {service.years_experience} experience
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={handleViewProfile}
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  View Profile
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={handleContactProvider}
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Contact Provider
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Pricing & Order */}
           <Card>
             <CardHeader>
               <CardTitle>Order This Service</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span>Price</span>
-                <span className="font-semibold">{formatPrice(service.price, service.currency)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Delivery Time</span>
-                <span className="font-semibold">{service.delivery_time_days} days</span>
-              </div>
-              <Button className="w-full" size="lg">
-                Order Now
-              </Button>
-              <Button variant="outline" className="w-full">
-                Contact Provider
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Rating Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Rating & Reviews</CardTitle>
-            </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="flex items-center gap-1">
-                  <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                  <span className="text-xl font-bold">{service.average_rating.toFixed(1)}</span>
+              <div className="text-center mb-4">
+                <div className="text-3xl font-bold">
+                  ₹{service.price.toLocaleString()}
                 </div>
-                <span className="text-muted-foreground">
-                  ({service.total_reviews} reviews)
-                </span>
+                <div className="text-sm text-muted-foreground">
+                  {service.delivery_time_days} days delivery
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {service.total_orders} orders completed
-              </p>
+              
+              <Separator className="my-4" />
+              
+              <div className="space-y-3">
+                <div className="text-sm">
+                  <strong>Payment Methods:</strong>
+                  <div className="mt-1">
+                    {service.payment_methods.length > 0 
+                      ? service.payment_methods.join(', ')
+                      : 'Contact provider for payment details'
+                    }
+                  </div>
+                </div>
+                
+                <div className="text-sm">
+                  <strong>Contact Options:</strong>
+                  <div className="mt-1 space-y-1">
+                    {service.contact_email && (
+                      <div>✓ Email available</div>
+                    )}
+                    {service.contact_phone && service.phone_number && (
+                      <div>✓ Phone: {service.phone_number}</div>
+                    )}
+                    {service.contact_website && service.website_url && (
+                      <div>✓ Website: {service.website_url}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              <Separator className="my-4" />
+              
+              <Button 
+                className="w-full" 
+                size="lg"
+                onClick={handleBookService}
+              >
+                Book Now
+              </Button>
+              
+              <div className="text-xs text-muted-foreground text-center mt-3">
+                Payment handled directly between buyer and seller
+              </div>
             </CardContent>
           </Card>
-
-          {/* Contact Options */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Options</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {service.contact_email && (
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  <span className="text-sm">Email available</span>
-                </div>
-              )}
-              {service.contact_phone && service.phone_number && (
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  <span className="text-sm">Phone available</span>
-                </div>
-              )}
-              {service.contact_website && service.website_url && (
-                <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4" />
-                  <span className="text-sm">Website available</span>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Tags */}
-          {service.tags.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Tags</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {service.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, MapPin, Clock, CheckCircle, ExternalLink } from "lucide-react";
+import { Star, MapPin, Clock, CheckCircle, User } from "lucide-react";
 import { formatCompactCurrency } from "@/utils/currencyUtils";
 
 interface ServiceCardProps {
@@ -12,18 +12,16 @@ interface ServiceCardProps {
     id: string;
     title: string;
     description: string;
-    category: string;
-    service_type: string;
-    price_type: string;
-    base_price: number;
+    price: number;
     currency: string;
     delivery_time_days: number;
     provider_name: string;
+    provider_id: string;
     provider_avatar?: string;
     provider_location?: string;
-    rating: number;
-    reviews_count: number;
-    orders_completed: number;
+    average_rating: number;
+    total_reviews: number;
+    total_orders: number;
     is_featured: boolean;
     is_verified?: boolean;
     tags: string[];
@@ -36,10 +34,14 @@ export default function ServiceCard({ service, onServiceClick }: ServiceCardProp
     onServiceClick?.(service.id);
   };
 
-  const handleContactProvider = (e: React.MouseEvent) => {
+  const handleViewProfile = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // This would open a contact modal or redirect to provider's contact page
-    console.log('Contact provider:', service.provider_name);
+    window.open(`/profile/${service.provider_id}`, '_blank');
+  };
+
+  const handleBookNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(`/services/book/${service.id}`, '_blank');
   };
 
   return (
@@ -105,9 +107,9 @@ export default function ServiceCard({ service, onServiceClick }: ServiceCardProp
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span className="font-medium">{service.rating}</span>
+            <span className="font-medium">{service.average_rating}</span>
             <span className="text-muted-foreground">
-              ({service.reviews_count} reviews)
+              ({service.total_reviews} reviews)
             </span>
           </div>
           <div className="flex items-center gap-1 text-muted-foreground">
@@ -120,24 +122,23 @@ export default function ServiceCard({ service, onServiceClick }: ServiceCardProp
           <div className="flex items-center justify-between">
             <div>
               <span className="text-lg font-semibold">
-                ₹{formatCompactCurrency(service.base_price)}
+                ₹{formatCompactCurrency(service.price)}
               </span>
               <span className="text-sm text-muted-foreground ml-1">
-                {service.price_type === 'hourly' ? '/hour' : 
-                 service.price_type === 'package' ? '/package' : 'fixed'}
+                {service.total_orders > 0 && `(${service.total_orders} orders)`}
               </span>
             </div>
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={handleContactProvider}
+                onClick={handleViewProfile}
               >
-                <ExternalLink className="h-4 w-4 mr-1" />
-                Contact
+                <User className="h-4 w-4 mr-1" />
+                View
               </Button>
-              <Button size="sm" onClick={handleViewService}>
-                View Details
+              <Button size="sm" onClick={handleBookNow}>
+                Book Now
               </Button>
             </div>
           </div>
