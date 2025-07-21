@@ -95,69 +95,32 @@ export default function ServicesMarketplace() {
       setLoading(true);
       const { data: servicesData, error } = await supabase
         .from('services')
-        .select(`
-          *,
-          profiles (
-            id,
-            full_name,
-            avatar_url,
-            location,
-            title
-          )
-        `)
+        .select('*')
         .eq('is_active', true)
         .eq('status', 'published')
         .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching services:', error);
-        // Fallback without profiles
-        const { data: fallbackData, error: fallbackError } = await supabase
-          .from('services')
-          .select('*')
-          .eq('is_active', true)
-          .eq('status', 'published')
-          .order('created_at', { ascending: false });
-
-        if (fallbackError) {
-          toast({
-            title: "Error",
-            description: "Failed to load services. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        const transformedServices = fallbackData?.map(service => ({
-          ...service,
-          provider_name: 'Professional Provider',
-          provider_avatar: '',
-          provider_location: service.location || 'Location not specified',
-          is_verified: true,
-          profile_picture_url: service.profile_picture_url || `https://talentxcel.in/profile/user/${service.provider_id}/avatar`,
-          profile_link: service.profile_link || `https://talentxcel.in/profile/user/${service.provider_id}`,
-          contact_preferences: service.contact_preferences || [],
-          payment_methods: service.payment_methods || []
-        })) || [];
-
-        setServices(transformedServices);
+        toast({
+          title: "Error",
+          description: "Failed to load services. Please try again.",
+          variant: "destructive",
+        });
         return;
       }
 
-      const transformedServices = servicesData?.map(service => {
-        const profileData = service.profiles as any;
-        return {
-          ...service,
-          provider_name: profileData?.full_name || 'Professional Provider',
-          provider_avatar: profileData?.avatar_url || '',
-          provider_location: service.location || profileData?.location || 'Location not specified',
-          is_verified: true,
-          profile_picture_url: service.profile_picture_url || profileData?.avatar_url || `https://talentxcel.in/profile/user/${service.provider_id}/avatar`,
-          profile_link: service.profile_link || `https://talentxcel.in/profile/user/${service.provider_id}`,
-          contact_preferences: service.contact_preferences || [],
-          payment_methods: service.payment_methods || []
-        };
-      }) || [];
+      const transformedServices = servicesData?.map(service => ({
+        ...service,
+        provider_name: 'Professional Provider',
+        provider_avatar: '',
+        provider_location: service.location || 'Location not specified',
+        is_verified: true,
+        profile_picture_url: service.profile_picture_url || `https://talentxcel.in/profile/user/${service.provider_id}/avatar`,
+        profile_link: service.profile_link || `https://talentxcel.in/profile/user/${service.provider_id}`,
+        contact_preferences: service.contact_preferences || [],
+        payment_methods: service.payment_methods || []
+      })) || [];
 
       setServices(transformedServices);
     } catch (error) {
