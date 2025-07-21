@@ -30,6 +30,10 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [showMapping, setShowMapping] = useState(false);
+  const [detectedHeaders, setDetectedHeaders] = useState<string[]>([]);
+  const [columnMapping, setColumnMapping] = useState<Record<string, string>>({});
+  const [previewData, setPreviewData] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const csvTemplate = `full_name,email,role,status,send_welcome_email
@@ -50,24 +54,78 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
     toast.success('Template downloaded!');
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile && selectedFile.type === 'text/csv') {
+    if (selectedFile && (selectedFile.type === 'text/csv' || selectedFile.name.endsWith('.csv'))) {
       setFile(selectedFile);
       setImportResult(null);
+      
+      // Parse file to detect headers and show preview
+      try {
+        const csvText = await selectedFile.text();
+        const { headers, rows } = parseCSV(csvText);
+        
+        setDetectedHeaders(headers);
+        setPreviewData(rows.slice(0, 5)); // Show first 5 rows as preview
+        
+        // Auto-map common column variations
+        const autoMapping: Record<string, string> = {};
+        headers.forEach(header => {
+          const lowerHeader = header.toLowerCase();
+          if (lowerHeader.includes('name') || lowerHeader === 'full_name') {
+            autoMapping[header] = 'full_name';
+          } else if (lowerHeader.includes('email')) {
+            autoMapping[header] = 'email';
+          } else if (lowerHeader.includes('role')) {
+            autoMapping[header] = 'role';
+          } else if (lowerHeader.includes('status')) {
+            autoMapping[header] = 'status';
+          } else if (lowerHeader.includes('welcome')) {
+            autoMapping[header] = 'send_welcome_email';
+          }
+        });
+        
+        setColumnMapping(autoMapping);
+        setShowMapping(true);
+        
+      } catch (error) {
+        toast.error('Failed to parse CSV file');
+        console.error('CSV parsing error:', error);
+      }
     } else {
       toast.error('Please select a valid CSV file');
       e.target.value = '';
     }
   };
 
-  const parseCSV = (csvText: string) => {
+  const detectSeparator = (csvText: string) => {
+    const firstLine = csvText.split('\n')[0];
+    const separators = [',', '\t', ';', '|'];
+    
+    let bestSeparator = ',';
+    let maxColumns = 0;
+    
+    separators.forEach(sep => {
+      const columns = firstLine.split(sep).length;
+      if (columns > maxColumns) {
+        maxColumns = columns;
+        bestSeparator = sep;
+      }
+    });
+    
+    return bestSeparator;
+  };
+
+  const parseCSV = (csvText: string): { headers: string[]; rows: any[]; } => {
     const lines = csvText.split('\n').filter(line => line.trim());
-    const headers = lines[0].split(',').map(h => h.trim());
+    if (lines.length === 0) return { headers: [], rows: [] };
+    
+    const separator = detectSeparator(csvText);
+    const headers = lines[0].split(separator).map(h => h.trim().replace(/^"|"$/g, ''));
     const rows = [];
 
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+      const values = lines[i].split(separator).map(v => v.trim().replace(/^"|"$/g, ''));
       const row: any = {};
       headers.forEach((header, index) => {
         row[header] = values[index] || '';
@@ -75,7 +133,33 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
       rows.push({ ...row, rowNumber: i + 1 });
     }
     
-    return rows;
+    return { headers, rows };
+  };
+
+  const mapRowData = (row: any) => {
+    const mappedData: any = {};
+    
+    Object.entries(columnMapping).forEach(([sourceCol, targetCol]) => {
+      if (row[sourceCol] !== undefined) {
+        mappedData[targetCol] = row[sourceCol];
+      }
+    });
+    
+    // Normalize values
+    if (mappedData.status) {
+      mappedData.status = mappedData.status.toLowerCase();
+    }
+    if (mappedData.role) {
+      mappedData.role = mappedData.role.toLowerCase();
+    }
+    if (mappedData.send_welcome_email) {
+      const value = mappedData.send_welcome_email.toLowerCase();
+      mappedData.send_welcome_email = value === 'true' || value === '1' || value === 'yes';
+    } else {
+      mappedData.send_welcome_email = true; // Default to true
+    }
+    
+    return mappedData;
   };
 
   const validateUserData = (userData: any) => {
@@ -90,12 +174,12 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
     }
     
     const validRoles = ['candidate', 'job_seeker', 'employer', 'admin'];
-    if (!validRoles.includes(userData.role)) {
+    if (!userData.role || !validRoles.includes(userData.role)) {
       errors.push('Invalid role. Must be: candidate, job_seeker, employer, or admin');
     }
     
     const validStatuses = ['active', 'inactive'];
-    if (!validStatuses.includes(userData.status)) {
+    if (!userData.status || !validStatuses.includes(userData.status)) {
       errors.push('Invalid status. Must be: active or inactive');
     }
     
@@ -152,7 +236,7 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
       fullName: userData.full_name,
       role: userData.role,
       status: userData.status,
-      sendWelcomeEmail: userData.send_welcome_email === 'true'
+      sendWelcomeEmail: userData.send_welcome_email === true
     });
 
     return { success: true, password, user: data.user };
@@ -164,37 +248,51 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
       return;
     }
 
+    // Validate that all required fields are mapped
+    const requiredFields = ['full_name', 'email', 'role', 'status'];
+    const missingMappings = requiredFields.filter(field => 
+      !Object.values(columnMapping).includes(field)
+    );
+    
+    if (missingMappings.length > 0) {
+      toast.error(`Please map the following required fields: ${missingMappings.join(', ')}`);
+      return;
+    }
+
     setIsProcessing(true);
     setProgress(0);
+    setShowMapping(false);
 
     try {
       const csvText = await file.text();
-      const users = parseCSV(csvText);
+      const { rows } = parseCSV(csvText);
       
       const result: ImportResult = {
-        total: users.length,
+        total: rows.length,
         successful: 0,
         failed: 0,
         errors: []
       };
 
-      for (let i = 0; i < users.length; i++) {
-        const user = users[i];
-        setProgress(((i + 1) / users.length) * 100);
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        setProgress(((i + 1) / rows.length) * 100);
 
         try {
-          const validationErrors = validateUserData(user);
+          const mappedUser = mapRowData(row);
+          const validationErrors = validateUserData(mappedUser);
+          
           if (validationErrors.length > 0) {
             throw new Error(validationErrors.join(', '));
           }
 
-          await createUser(user);
+          await createUser(mappedUser);
           result.successful++;
         } catch (error: any) {
           result.failed++;
           result.errors.push({
-            row: user.rowNumber,
-            email: user.email || 'Unknown',
+            row: row.rowNumber,
+            email: row[Object.keys(columnMapping).find(k => columnMapping[k] === 'email') || 'email'] || 'Unknown',
             error: error.message
           });
         }
@@ -223,6 +321,10 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
     setFile(null);
     setImportResult(null);
     setProgress(0);
+    setShowMapping(false);
+    setDetectedHeaders([]);
+    setColumnMapping({});
+    setPreviewData([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -282,6 +384,89 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
             </div>
           )}
 
+          {/* Column Mapping */}
+          {showMapping && detectedHeaders.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <FileText className="h-5 w-5 text-primary" />
+                <h3 className="font-medium">Map Your Columns</h3>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {detectedHeaders.map((header, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className="w-1/2">
+                      <Label className="text-sm text-muted-foreground">
+                        Your Column: <span className="font-medium text-foreground">{header}</span>
+                      </Label>
+                    </div>
+                    <div className="w-1/2">
+                      <select
+                        value={columnMapping[header] || ''}
+                        onChange={(e) => setColumnMapping(prev => ({
+                          ...prev,
+                          [header]: e.target.value
+                        }))}
+                        className="w-full p-2 border border-input rounded-md bg-background"
+                      >
+                        <option value="">-- Skip Column --</option>
+                        <option value="full_name">Full Name *</option>
+                        <option value="email">Email *</option>
+                        <option value="role">Role *</option>
+                        <option value="status">Status *</option>
+                        <option value="send_welcome_email">Send Welcome Email</option>
+                      </select>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {previewData.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="font-medium mb-2">Data Preview (first 5 rows):</h4>
+                  <div className="overflow-x-auto border rounded-lg">
+                    <table className="w-full text-sm">
+                      <thead className="bg-muted/50">
+                        <tr>
+                          {detectedHeaders.map((header, index) => (
+                            <th key={index} className="p-2 text-left border-r">
+                              {header}
+                              {columnMapping[header] && (
+                                <div className="text-xs text-primary font-normal">
+                                  → {columnMapping[header]}
+                                </div>
+                              )}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {previewData.map((row, rowIndex) => (
+                          <tr key={rowIndex} className="border-t">
+                            {detectedHeaders.map((header, colIndex) => (
+                              <td key={colIndex} className="p-2 border-r max-w-32 truncate">
+                                {row[header] || ''}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+              
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Required fields:</strong> Full Name, Email, Role, Status
+                  <br />
+                  <strong>Optional:</strong> Send Welcome Email (defaults to true)
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+
           {/* Import Results */}
           {importResult && (
             <div className="space-y-4">
@@ -325,13 +510,26 @@ Mike Johnson,mike@example.com,candidate,inactive,true`;
               <Button onClick={resetImport} className="flex-1">
                 Import Another File
               </Button>
+            ) : showMapping ? (
+              <>
+                <Button variant="outline" onClick={() => setShowMapping(false)} className="flex-1">
+                  Back to Upload
+                </Button>
+                <Button
+                  onClick={handleImport}
+                  disabled={isProcessing || Object.values(columnMapping).filter(v => ['full_name', 'email', 'role', 'status'].includes(v)).length < 4}
+                  className="flex-1"
+                >
+                  {isProcessing ? 'Importing...' : 'Import Users'}
+                </Button>
+              </>
             ) : (
               <Button
-                onClick={handleImport}
-                disabled={!file || isProcessing}
+                onClick={() => setShowMapping(true)}
+                disabled={!file}
                 className="flex-1"
               >
-                {isProcessing ? 'Importing...' : 'Import Users'}
+                Next: Map Columns
               </Button>
             )}
           </div>
