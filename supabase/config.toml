@@ -96,3 +96,6 @@ verify_jwt = false
 
 [functions.ai-keyword-optimizer]
 verify_jwt = false
+
+[functions.bulk-create-super-admins]
+verify_jwt = true
