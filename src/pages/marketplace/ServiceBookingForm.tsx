@@ -101,12 +101,44 @@ export default function ServiceBookingForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to book a service.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSubmitting(true);
 
     try {
-      // Here you would typically send the booking request to your backend
-      // For now, we'll just show a success message
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+      // Get service provider ID
+      const { data: serviceData, error: serviceError } = await supabase
+        .from('services')
+        .select('provider_id')
+        .eq('id', id)
+        .single();
+
+      if (serviceError) throw serviceError;
+
+      // Create booking request
+      const { error: bookingError } = await supabase
+        .from('service_booking_requests')
+        .insert({
+          service_id: id,
+          client_id: user.id,
+          provider_id: serviceData.provider_id,
+          client_name: bookingForm.name,
+          client_email: bookingForm.email,
+          client_phone: bookingForm.phone,
+          project_description: bookingForm.message,
+          preferred_start_date: bookingForm.preferredDate || null,
+          budget_range: bookingForm.budget,
+          urgency: bookingForm.urgency
+        });
+
+      if (bookingError) throw bookingError;
 
       toast({
         title: "Booking Request Sent!",
@@ -115,6 +147,7 @@ export default function ServiceBookingForm() {
 
       navigate('/services');
     } catch (error) {
+      console.error('Error submitting booking request:', error);
       toast({
         title: "Error",
         description: "Failed to send booking request. Please try again.",

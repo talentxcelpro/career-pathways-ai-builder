@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Calendar, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import ServiceForm from "@/components/pro/ServiceForm";
 import ServiceList from "@/components/pro/ServiceList";
+import ServiceBookingsList from "@/components/pro/ServiceBookingsList";
 import { Service } from "@/types/service";
 
 export default function ServiceManagement() {
@@ -143,9 +145,9 @@ export default function ServiceManagement() {
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Manage Services</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Services Dashboard</h1>
           <p className="text-muted-foreground mt-2">
-            Create and manage your professional services
+            Manage your services and client booking requests
           </p>
         </div>
         <Button onClick={() => setShowForm(true)}>
@@ -154,15 +156,34 @@ export default function ServiceManagement() {
         </Button>
       </div>
 
-      <ServiceList
-        services={services}
-        onEdit={(serviceId) => {
-          setEditingService(serviceId);
-          setShowForm(true);
-        }}
-        onDelete={handleDeleteService}
-        onToggleStatus={handleToggleStatus}
-      />
+      <Tabs defaultValue="bookings" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="bookings" className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            Client Requests
+          </TabsTrigger>
+          <TabsTrigger value="services" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            My Services
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="bookings" className="space-y-4">
+          <ServiceBookingsList />
+        </TabsContent>
+
+        <TabsContent value="services" className="space-y-4">
+          <ServiceList
+            services={services}
+            onEdit={(serviceId) => {
+              setEditingService(serviceId);
+              setShowForm(true);
+            }}
+            onDelete={handleDeleteService}
+            onToggleStatus={handleToggleStatus}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

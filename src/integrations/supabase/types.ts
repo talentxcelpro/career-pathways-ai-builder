@@ -12496,6 +12496,71 @@ export type Database = {
           },
         ]
       }
+      service_booking_requests: {
+        Row: {
+          budget_range: string | null
+          client_email: string
+          client_id: string
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          id: string
+          preferred_start_date: string | null
+          project_description: string
+          provider_id: string
+          provider_response: string | null
+          responded_at: string | null
+          service_id: string
+          status: string | null
+          updated_at: string
+          urgency: string | null
+        }
+        Insert: {
+          budget_range?: string | null
+          client_email: string
+          client_id: string
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          id?: string
+          preferred_start_date?: string | null
+          project_description: string
+          provider_id: string
+          provider_response?: string | null
+          responded_at?: string | null
+          service_id: string
+          status?: string | null
+          updated_at?: string
+          urgency?: string | null
+        }
+        Update: {
+          budget_range?: string | null
+          client_email?: string
+          client_id?: string
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          id?: string
+          preferred_start_date?: string | null
+          project_description?: string
+          provider_id?: string
+          provider_response?: string | null
+          responded_at?: string | null
+          service_id?: string
+          status?: string | null
+          updated_at?: string
+          urgency?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_booking_requests_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_bookings: {
         Row: {
           booking_date: string | null
