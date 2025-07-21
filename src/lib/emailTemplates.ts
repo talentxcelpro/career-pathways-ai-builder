@@ -161,6 +161,57 @@ const templates = {
       <a href="https://talentxcel.in/jobs" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">View All Jobs</a>
       <p style="color: #64748b; font-size: 14px; margin-top: 20px;">Sent via TalentXcel</p>
     </div>
+  `,
+  invite_member: (data: TemplateData) => `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #2563eb;">Team Invitation! 👥</h2>
+      <p>Hi ${data.recipient_name}!</p>
+      <p><strong>${data.inviter_name}</strong> has invited you to join their team on TalentXcel.</p>
+      <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p><strong>Invitation Code:</strong> ${data.invite_code}</p>
+      </div>
+      <a href="https://talentxcel.in/auth/register?code=${data.invite_code}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Accept Invitation</a>
+      <p style="color: #64748b; font-size: 14px; margin-top: 20px;">Sent via TalentXcel</p>
+    </div>
+  `,
+  password_reset: (data: TemplateData) => `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #2563eb;">Password Reset Request 🔐</h2>
+      <p>Hi ${data.name}!</p>
+      <p>You've requested to reset your password. Click the link below to create a new password:</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${data.reset_link}" style="background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">Reset Password</a>
+      </div>
+      <p style="color: #64748b; font-size: 14px;">If you didn't request this, please ignore this email.</p>
+    </div>
+  `,
+  interview_scheduled: (data: TemplateData) => `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #2563eb;">Interview Scheduled! 🎉</h2>
+      <p>Hi ${data.candidate_name}!</p>
+      <p>Your interview has been scheduled for the position at ${data.company_name}.</p>
+      <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p><strong>Date:</strong> ${data.interview_date}</p>
+        <p><strong>Time:</strong> ${data.interview_time}</p>
+        <p><strong>Mode:</strong> ${data.interview_type}</p>
+        ${data.meeting_link ? `<p><strong>Meeting Link:</strong> <a href="${data.meeting_link}">${data.meeting_link}</a></p>` : ''}
+      </div>
+      <p>Good luck with your interview!</p>
+    </div>
+  `,
+  monthly_digest: (data: TemplateData) => `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #2563eb;">Your ${data.month} Monthly Digest 📊</h2>
+      <p>Hi ${data.first_name}!</p>
+      <p>Here's your monthly activity summary:</p>
+      <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p><strong>New Connections:</strong> ${data.connections_count || 0}</p>
+        <p><strong>Jobs Applied:</strong> ${data.jobs_applied || 0}</p>
+        <p><strong>Certifications Earned:</strong> ${data.certifications_count || 0}</p>
+        <p><strong>Jobs Suggested:</strong> ${data.jobs_suggested || 0}</p>
+      </div>
+      <a href="https://talentxcel.in/profile" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">View Profile</a>
+    </div>
   `
 };
 

@@ -7,7 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 
 // Public pages
 import Index from "./pages/Index";
-import SignUp from "./pages/auth/SignUp";
+import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import PublicJobDetail from "./pages/public/PublicJobDetail";
@@ -33,10 +33,10 @@ import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
 import Subscriptions from "./pages/Subscriptions";
 import CollegeAdmissions from "./pages/CollegeAdmissions";
-import MyApplications from "./pages/MyApplications";
+import MyApplications from "./pages/jobs/MyApplications";
 
 // Admin pages
-import AdminDashboard from "./pages/admin/Dashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import AdminManagement from "./pages/admin/AdminManagement";
 import BulkAdminCreation from "./pages/admin/BulkAdminCreation";
@@ -53,7 +53,7 @@ const App = () => (
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
-            <Route path="/auth/signup" element={<SignUp />} />
+            <Route path="/auth/register" element={<Register />} />
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/public/jobs/:id" element={<PublicJobDetail />} />
