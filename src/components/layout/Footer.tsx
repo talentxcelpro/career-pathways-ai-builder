@@ -67,6 +67,11 @@ export const Footer = () => {
                   Terms of Service
                 </Link>
               </li>
+              <li>
+                <Link to="/return-refund-policy" className="text-gray-300 hover:text-white transition-colors">
+                  Return & Refund Policy
+                </Link>
+              </li>
             </ul>
           </div>
 

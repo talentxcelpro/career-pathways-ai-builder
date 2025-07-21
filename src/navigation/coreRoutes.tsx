@@ -5,6 +5,7 @@ import Contact from "../pages/Contact";
 import Help from "../pages/Help";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import Terms from "../pages/Terms";
+import { ReturnRefundPolicy } from "../pages/ReturnRefundPolicy";
 import Blog from "../pages/Blog";
 import NotFound from "../pages/NotFound";
 import Dashboard from "../pages/Dashboard";
@@ -67,6 +68,11 @@ export const coreRoutes = [
     title: "Terms of Service",
     to: "/terms",
     page: <Terms />,
+  },
+  {
+    title: "Return & Refund Policy",
+    to: "/return-refund-policy",
+    page: <ReturnRefundPolicy />,
   },
   {
     title: "Blog",
