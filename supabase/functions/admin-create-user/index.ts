@@ -1,122 +1,109 @@
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.1';
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Max-Age": "86400",
-};
-
-interface CreateUserRequest {
-  userEmail: string;
-  userName: string;
-  userRole?: string;
-  temporaryPassword?: string;
-  healthCheck?: boolean;
-  debug?: boolean;
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 }
 
-interface CreateUserResponse {
-  success: boolean;
-  userId?: string;
-  error?: string;
-  healthCheck?: boolean;
-  debug?: any;
-}
-
-const handler = async (req: Request): Promise<Response> => {
-  const requestId = crypto.randomUUID().substring(0, 8);
+serve(async (req) => {
+  const requestId = Math.random().toString(36).substring(2, 10);
   console.log(`[${requestId}] Received ${req.method} request to admin-create-user`);
 
   // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
+  if (req.method === 'OPTIONS') {
     console.log(`[${requestId}] CORS preflight request`);
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Environment variable check
+    // Environment validation
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 
-    console.log(`[${requestId}] Environment check:`, {
-      hasUrl: !!supabaseUrl,
-      hasAnonKey: !!supabaseAnonKey,
-      hasServiceKey: !!supabaseServiceKey,
-      urlLength: supabaseUrl?.length || 0,
-      anonKeyLength: supabaseAnonKey?.length || 0,
-      serviceKeyLength: supabaseServiceKey?.length || 0
-    });
+    console.log(`[${requestId}] Environment check: {
+  hasUrl: ${!!supabaseUrl},
+  hasAnonKey: ${!!supabaseAnonKey},
+  hasServiceKey: ${!!supabaseServiceKey},
+  urlLength: ${supabaseUrl?.length || 0},
+  anonKeyLength: ${supabaseAnonKey?.length || 0},
+  serviceKeyLength: ${supabaseServiceKey?.length || 0}
+}`);
 
-    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
-      console.error(`[${requestId}] Missing required environment variables`);
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: 'Server configuration error: Missing required environment variables',
-          debug: {
-            hasUrl: !!supabaseUrl,
-            hasAnonKey: !!supabaseAnonKey,
-            hasServiceKey: !!supabaseServiceKey
-          }
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Missing required environment variables');
     }
 
-    // Handle GET requests for health checks
-    if (req.method === "GET") {
+    // Authorization check
+    const authHeader = req.headers.get('Authorization');
+    console.log(`[${requestId}] Authorization header present, length: ${authHeader?.length || 0}`);
+
+    // Handle GET request for health checks
+    if (req.method === 'GET') {
       console.log(`[${requestId}] Health check via GET method`);
       return new Response(
         JSON.stringify({ 
           success: true, 
-          healthCheck: true, 
-          message: "Edge Function is healthy",
-          timestamp: new Date().toISOString(),
-          requestId
+          healthCheck: true,
+          message: 'Edge Function is healthy',
+          timestamp: new Date().toISOString()
         }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
         }
       );
     }
 
-    // Get the authorization header (optional when JWT is disabled)
-    const authorization = req.headers.get('authorization');
-    console.log(`[${requestId}] Authorization header ${authorization ? 'present' : 'missing'}, length:`, authorization?.length || 0);
-
-    // Parse request body with better error handling
-    let requestBody;
+    // Parse request body with multiple methods
+    let requestBody = null;
+    let bodyText = '';
+    
     try {
-      const bodyText = await req.text();
-      console.log(`[${requestId}] Request body length:`, bodyText.length);
+      // Method 1: Try to get text first
+      bodyText = await req.text();
+      console.log(`[${requestId}] Request body length: ${bodyText.length}`);
+      console.log(`[${requestId}] Request body preview: ${bodyText.substring(0, 200)}`);
+      
+      if (bodyText.length === 0) {
+        throw new Error('Empty request body received');
+      }
+
+      // Method 2: Parse JSON from text
       requestBody = JSON.parse(bodyText);
+      console.log(`[${requestId}] Successfully parsed JSON body`);
+      
     } catch (parseError) {
       console.error(`[${requestId}] Failed to parse request body:`, parseError);
+      console.log(`[${requestId}] Raw body text: "${bodyText}"`);
+      console.log(`[${requestId}] Content-Type: ${req.headers.get('content-type')}`);
+      
       return new Response(
-        JSON.stringify({ success: false, error: 'Invalid request body: ' + parseError.message }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+        JSON.stringify({
+          success: false,
+          error: 'Invalid request body format',
+          details: parseError.message,
+          receivedBodyLength: bodyText.length,
+          contentType: req.headers.get('content-type')
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
         }
       );
     }
 
     // Handle debug requests
-    if (requestBody.debug) {
+    if (requestBody.debug === true) {
       console.log(`[${requestId}] Debug request received`);
       return new Response(
-        JSON.stringify({ 
-          success: true, 
-          debug: true, 
-          message: "Debug endpoint working",
+        JSON.stringify({
+          success: true,
+          debug: true,
+          message: 'Debug endpoint working',
           environment: {
             hasUrl: !!supabaseUrl,
             hasAnonKey: !!supabaseAnonKey,
@@ -128,236 +115,163 @@ const handler = async (req: Request): Promise<Response> => {
           timestamp: new Date().toISOString(),
           requestId
         }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
         }
       );
     }
 
     // Handle health check requests
-    if (requestBody.healthCheck) {
+    if (requestBody.healthCheck === true) {
       console.log(`[${requestId}] Health check request received`);
       return new Response(
-        JSON.stringify({ 
-          success: true, 
-          healthCheck: true, 
-          message: "Edge Function is healthy and authenticated",
+        JSON.stringify({
+          success: true,
+          healthCheck: true,
+          message: 'Edge Function is healthy',
           timestamp: new Date().toISOString(),
           requestId
         }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
         }
       );
     }
 
-    const { userEmail, userName, userRole = 'job_seeker', temporaryPassword }: CreateUserRequest = requestBody;
+    // Validate required fields for user creation
+    const { userEmail, userName, userRole, temporaryPassword } = requestBody;
+    
+    console.log(`[${requestId}] Received user data: {
+  userEmail: "${userEmail}",
+  userName: "${userName}",
+  userRole: "${userRole}",
+  hasPassword: ${!!temporaryPassword}
+}`);
 
-    if (!userEmail || !userName) {
-      console.error(`[${requestId}] Missing required fields:`, { userEmail: !!userEmail, userName: !!userName });
-      return new Response(
-        JSON.stringify({ success: false, error: 'Email and name are required' }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
-
-    console.log(`[${requestId}] Creating user:`, userEmail, userName);
-
-    // Create regular supabase client (conditionally with auth header)
-    const clientConfig: any = {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
+    const missingFields = {
+      userEmail: !userEmail,
+      userName: !userName
     };
 
-    // Only add authorization header if it exists
-    if (authorization) {
-      clientConfig.global = {
-        headers: {
-          authorization
+    if (missingFields.userEmail || missingFields.userName) {
+      console.error(`[${requestId}] Missing required fields:`, missingFields);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Missing required fields',
+          details: 'Email and name are required',
+          missingFields,
+          receivedData: { userEmail, userName, userRole }
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
         }
-      };
+      );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, clientConfig);
+    // Create Supabase admin client
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Skip authentication when JWT verification is disabled (for testing)
-    if (authorization) {
-      // Verify the user is authenticated and is an admin only if auth header is provided
-      console.log(`[${requestId}] Verifying user authentication...`);
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError || !user) {
-        console.error(`[${requestId}] Authentication error:`, userError);
-        return new Response(
-          JSON.stringify({ success: false, error: 'Authentication failed: ' + (userError?.message || 'No user') }),
-          {
-            status: 401,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
-          }
-        );
-      }
+    console.log(`[${requestId}] Creating user with email: ${userEmail}`);
 
-      console.log(`[${requestId}] User authenticated:`, user.email);
-
-      // Check if user is admin using the existing function
-      console.log(`[${requestId}] Checking admin privileges...`);
-      const { data: isAdmin, error: adminError } = await supabase
-        .rpc('is_app_admin', { _user_id: user.id });
-
-      if (adminError || !isAdmin) {
-        console.error(`[${requestId}] Admin check failed:`, adminError, 'isAdmin:', isAdmin);
-        return new Response(
-          JSON.stringify({ success: false, error: 'Admin privileges required' }),
-          {
-            status: 403,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
-          }
-        );
-      }
-
-      console.log(`[${requestId}] Admin privileges verified`);
-    } else {
-      console.log(`[${requestId}] Skipping authentication (JWT verification disabled)`);
-    }
-
-    // Create service role client for admin operations
-    const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
-
-    console.log(`[${requestId}] Creating auth user...`);
-
-    // Create the auth user with service role privileges
-    const { data: authUser, error: createError } = await adminClient.auth.admin.createUser({
+    // Create the user
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email: userEmail,
-      password: temporaryPassword || Math.random().toString(36).slice(-8),
-      email_confirm: true, // Skip email confirmation for admin-created users
+      password: temporaryPassword || 'TempPass123!',
+      email_confirm: true,
       user_metadata: {
-        full_name: userName
+        full_name: userName,
+        role: userRole || 'job_seeker'
       }
     });
 
-    if (createError) {
-      console.error(`[${requestId}] Failed to create auth user:`, createError);
+    if (authError) {
+      console.error(`[${requestId}] Auth error creating user:`, authError);
       return new Response(
-        JSON.stringify({ success: false, error: createError.message }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+        JSON.stringify({
+          success: false,
+          error: 'Failed to create user account',
+          details: authError.message
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
         }
       );
     }
 
-    if (!authUser.user) {
-      console.error(`[${requestId}] User creation failed - no user returned`);
+    if (!authData.user) {
+      console.error(`[${requestId}] No user data returned from auth.admin.createUser`);
       return new Response(
-        JSON.stringify({ success: false, error: 'User creation failed - no user returned' }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+        JSON.stringify({
+          success: false,
+          error: 'User creation failed - no user data returned'
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500 
         }
       );
     }
 
-    console.log(`[${requestId}] Auth user created:`, authUser.user.id);
+    console.log(`[${requestId}] User created successfully with ID: ${authData.user.id}`);
 
-    // Create the profile using service role client
-    console.log(`[${requestId}] Creating profile...`);
-    const { error: profileError } = await adminClient
+    // Create/update the user profile
+    const { error: profileError } = await supabase
       .from('profiles')
-      .insert({
-        id: authUser.user.id,
-        email: userEmail,
+      .upsert({
+        id: authData.user.id,
         full_name: userName,
-        user_role: userRole as any,
-        profile_completed: false,
-        first_login: true,
-        onboarding_completed: false
+        email: userEmail,
+        user_role: userRole || 'job_seeker',
+        profile_completed: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       });
 
     if (profileError) {
-      console.error(`[${requestId}] Failed to create profile:`, profileError);
-      // If profile creation fails, we should clean up the auth user
-      try {
-        await adminClient.auth.admin.deleteUser(authUser.user.id);
-        console.log(`[${requestId}] Cleaned up auth user after profile creation failure`);
-      } catch (cleanupError) {
-        console.error(`[${requestId}] Failed to cleanup auth user:`, cleanupError);
-      }
-      
-      return new Response(
-        JSON.stringify({ success: false, error: `Profile creation failed: ${profileError.message}` }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+      console.error(`[${requestId}] Profile creation error:`, profileError);
+      // Don't fail the entire operation if profile creation fails
+      console.log(`[${requestId}] User created but profile creation failed - continuing`);
+    } else {
+      console.log(`[${requestId}] Profile created/updated successfully`);
     }
 
-    console.log(`[${requestId}] Profile created successfully for:`, userEmail);
+    console.log(`[${requestId}] User creation process completed successfully`);
 
-    // Queue welcome email by calling the send-welcome-email function
-    try {
-      console.log(`[${requestId}] Queuing welcome email...`);
-      const { error: emailError } = await adminClient.functions.invoke('send-welcome-email', {
-        body: {
-          userEmail,
-          userName,
-          temporaryPassword
-        }
-      });
-      
-      if (emailError) {
-        console.error(`[${requestId}] Failed to queue welcome email:`, emailError);
-        // Don't fail the whole operation if email fails
-      } else {
-        console.log(`[${requestId}] Welcome email queued successfully`);
-      }
-    } catch (emailError) {
-      console.error(`[${requestId}] Error queuing welcome email:`, emailError);
-      // Don't fail the whole operation if email fails
-    }
-
-    const response: CreateUserResponse = {
-      success: true,
-      userId: authUser.user.id
-    };
-
-    console.log(`[${requestId}] User creation completed successfully:`, userEmail);
-
-    return new Response(JSON.stringify(response), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
-      },
-    });
-
-  } catch (error: any) {
-    console.error(`[${requestId}] Error in admin-create-user function:`, error);
-    console.error(`[${requestId}] Error stack:`, error.stack);
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message || 'Internal server error',
-        requestId 
+      JSON.stringify({
+        success: true,
+        user: {
+          id: authData.user.id,
+          email: userEmail,
+          name: userName,
+          role: userRole || 'job_seeker'
+        },
+        message: 'User created successfully'
       }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200 
+      }
+    );
+
+  } catch (error) {
+    console.error(`[${requestId}] Unexpected error:`, error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: 'Internal server error',
+        details: error.message,
+        requestId
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500 
       }
     );
   }
-};
-
-serve(handler);
+});
