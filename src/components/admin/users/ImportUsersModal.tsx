@@ -68,7 +68,7 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
     const lines = content.split('\n').filter(line => line.trim());
     if (lines.length < 2) return [];
 
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
     const nameIndex = headers.findIndex(h => ['name', 'full_name', 'fullname'].includes(h));
     const emailIndex = headers.findIndex(h => ['email', 'email_address'].includes(h));
     const roleIndex = headers.findIndex(h => ['role', 'user_role', 'type'].includes(h));
