@@ -196,12 +196,7 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
 
           console.log(`Sending request for ${user.email}:`, requestBody);
           const { data, error } = await supabase.functions.invoke('admin-create-user', {
-            body: {
-              userEmail: user.email,
-              userName: user.name,
-              userRole: user.role || 'job_seeker',
-              temporaryPassword: user.temporaryPassword || 'TempPass123!'
-            },
+            body: requestBody,
             headers: {
               'Authorization': `Bearer ${session.access_token}`,
               'Content-Type': 'application/json'
