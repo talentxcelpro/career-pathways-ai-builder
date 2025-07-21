@@ -4,11 +4,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, X, CheckCircle, AlertCircle, Info } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Upload, Download, AlertCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { checkEdgeFunctionHealth } from '@/utils/edgeFunction';
 
 interface ImportUsersModalProps {
   open: boolean;
@@ -16,14 +15,26 @@ interface ImportUsersModalProps {
   onUsersImported: () => void;
 }
 
-interface UserRecord {
-  email: string;
+interface UserData {
   name: string;
-  role?: string;
-  status: 'pending' | 'processing' | 'success' | 'error';
+  email: string;
+  role: string;
+  status?: 'pending' | 'processing' | 'success' | 'error';
   error?: string;
-  details?: string;
 }
+
+interface ImportResult {
+  success: boolean;
+  email: string;
+  error?: string;
+  userId?: string;
+}
+
+const debugLog = (message: string, data?: any) => {
+  const timestamp = new Date().toISOString();
+  const logMessage = `${timestamp}: ${message}`;
+  console.log(logMessage, data || '');
+};
 
 export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
   open,
@@ -31,259 +42,250 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
   onUsersImported
 }) => {
   const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [users, setUsers] = useState<UserRecord[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [isImporting, setIsImporting] = useState(false);
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [importResults, setImportResults] = useState<ImportResult[]>([]);
   const [debugInfo, setDebugInfo] = useState<string[]>([]);
 
-  const addDebugInfo = (message: string) => {
-    console.log('[ImportUsers Debug]:', message);
-    setDebugInfo(prev => [...prev, `${new Date().toISOString()}: ${message}`]);
+  const addDebugInfo = (message: string, data?: any) => {
+    debugLog(message, data);
+    setDebugInfo(prev => [...prev, `${new Date().toISOString()}: ${message}${data ? ` - ${JSON.stringify(data)}` : ''}`]);
   };
 
-  const parseCsvFile = (file: File): Promise<UserRecord[]> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const csv = e.target?.result as string;
-          const lines = csv.split('\n').filter(line => line.trim());
-          
-          if (lines.length < 2) {
-            throw new Error('CSV file must have at least a header row and one data row');
-          }
+  const validateCsvData = (data: any[]): UserData[] => {
+    return data
+      .filter(row => row.name && row.email)
+      .map(row => ({
+        name: row.name?.trim(),
+        email: row.email?.trim().toLowerCase(),
+        role: row.role?.trim() || 'job_seeker',
+        status: 'pending' as const
+      }))
+      .filter(user => user.name && user.email && user.email.includes('@'));
+  };
 
-          const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-          console.log('CSV Headers:', headers);
-          
-          // Find column indices
-          const emailIndex = headers.findIndex(h => h.includes('email'));
-          const nameIndex = headers.findIndex(h => h.includes('name'));
-          const roleIndex = headers.findIndex(h => h.includes('role'));
+  const parseCsv = (content: string): UserData[] => {
+    const lines = content.split('\n').filter(line => line.trim());
+    if (lines.length < 2) return [];
 
-          if (emailIndex === -1 || nameIndex === -1) {
-            throw new Error('CSV must contain email and name columns');
-          }
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const nameIndex = headers.findIndex(h => ['name', 'full_name', 'fullname'].includes(h));
+    const emailIndex = headers.findIndex(h => ['email', 'email_address'].includes(h));
+    const roleIndex = headers.findIndex(h => ['role', 'user_role', 'type'].includes(h));
 
-          const parsedUsers: UserRecord[] = [];
-          
-          for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-            
-            if (values.length > emailIndex && values.length > nameIndex && values[emailIndex] && values[nameIndex]) {
-              parsedUsers.push({
-                email: values[emailIndex],
-                name: values[nameIndex],
-                role: roleIndex >= 0 ? values[roleIndex] || 'job_seeker' : 'job_seeker',
-                status: 'pending'
-              });
-            }
-          }
+    if (nameIndex === -1 || emailIndex === -1) {
+      throw new Error('CSV must contain name and email columns');
+    }
 
-          addDebugInfo(`Parsed ${parsedUsers.length} users from CSV`);
-          resolve(parsedUsers);
-        } catch (error) {
-          addDebugInfo(`CSV parsing error: ${error.message}`);
-          reject(error);
-        }
+    return lines.slice(1).map(line => {
+      const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+      return {
+        name: values[nameIndex] || '',
+        email: values[emailIndex] || '',
+        role: values[roleIndex] || 'job_seeker',
+        status: 'pending' as const
       };
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsText(file);
-    });
+    }).filter(user => user.name && user.email);
   };
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.name.endsWith('.csv')) {
-      toast.error('Please select a CSV file');
-      return;
-    }
+    setCsvFile(file);
+    setUsers([]);
+    setImportResults([]);
+    setDebugInfo([]);
 
     try {
-      setCsvFile(file);
-      const parsedUsers = await parseCsvFile(file);
+      const content = await file.text();
+      const parsedUsers = parseCsv(content);
       setUsers(parsedUsers);
-      addDebugInfo(`File selected: ${file.name}, size: ${file.size} bytes`);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to parse CSV file');
-      addDebugInfo(`File parsing failed: ${error.message}`);
+      addDebugInfo(`Parsed ${parsedUsers.length} users from CSV`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to parse CSV';
+      addDebugInfo(`CSV parsing error: ${message}`);
+      toast.error(message);
     }
   };
 
-  const testEdgeFunction = async (): Promise<void> => {
-    addDebugInfo('Testing Edge Function connectivity...');
-    
-    try {
-      // Check session first
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        addDebugInfo(`Session error: ${sessionError.message}`);
-        throw new Error(`Authentication error: ${sessionError.message}`);
-      }
-
-      if (!session) {
-        addDebugInfo('No active session found');
-        throw new Error('No active session. Please log in again.');
-      }
-
-      addDebugInfo(`Session valid. User: ${session.user.email}, Token length: ${session.access_token.length}`);
-
-      // Test function with a simple health check
-      const { data, error } = await supabase.functions.invoke('admin-create-user', {
-        body: { 
-          healthCheck: true,
-          userEmail: 'test@example.com',
-          userName: 'Test User'
+  const createUserWithRetry = async (user: UserData, maxRetries = 3): Promise<ImportResult> => {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        addDebugInfo(`Creating user ${user.email}, attempt ${attempt}/${maxRetries}`);
+        
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          throw new Error('No valid session found');
         }
-      });
 
-      if (error) {
-        addDebugInfo(`Function invocation error: ${JSON.stringify(error)}`);
-        throw error;
-      }
+        // Try Supabase client first
+        const { data, error } = await supabase.functions.invoke('admin-create-user', {
+          body: {
+            userEmail: user.email,
+            userName: user.name,
+            userRole: user.role,
+            temporaryPassword: Math.random().toString(36).slice(-8)
+          }
+        });
 
-      addDebugInfo(`Function test response: ${JSON.stringify(data)}`);
-    } catch (error: any) {
-      addDebugInfo(`Function test failed: ${error.message}`);
-      throw error;
-    }
-  };
-
-  const createUser = async (user: UserRecord): Promise<void> => {
-    try {
-      addDebugInfo(`Creating user: ${user.email}`);
-      
-      // Get current session
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('No valid session found');
-      }
-
-      const { data, error } = await supabase.functions.invoke('admin-create-user', {
-        body: {
-          userEmail: user.email,
-          userName: user.name,
-          userRole: user.role || 'job_seeker',
-          temporaryPassword: Math.random().toString(36).slice(-8)
+        if (error) {
+          addDebugInfo(`Supabase client error for ${user.email}:`, error);
+          throw error;
         }
-      });
 
-      if (error) {
-        addDebugInfo(`User creation error for ${user.email}: ${JSON.stringify(error)}`);
-        throw error;
+        if (data?.success) {
+          addDebugInfo(`User ${user.email} created successfully via Supabase client`);
+          return {
+            success: true,
+            email: user.email,
+            userId: data.userId
+          };
+        } else {
+          throw new Error(data?.error || 'Unknown error from edge function');
+        }
+
+      } catch (error: any) {
+        addDebugInfo(`Attempt ${attempt} failed for ${user.email}:`, error.message);
+        
+        if (attempt === maxRetries) {
+          return {
+            success: false,
+            email: user.email,
+            error: error.message || 'Failed to create user after multiple attempts'
+          };
+        }
+        
+        // Wait before retry (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
       }
-
-      if (!data || !data.success) {
-        const errorMsg = data?.error || 'Unknown error occurred';
-        addDebugInfo(`User creation failed for ${user.email}: ${errorMsg}`);
-        throw new Error(errorMsg);
-      }
-
-      addDebugInfo(`User created successfully: ${user.email} (ID: ${data.userId})`);
-    } catch (error: any) {
-      addDebugInfo(`Failed to create user ${user.email}: ${error.message}`);
-      throw error;
     }
+
+    return {
+      success: false,
+      email: user.email,
+      error: 'Max retries exceeded'
+    };
   };
 
   const handleImport = async () => {
-    if (users.length === 0) {
+    if (!users.length) {
       toast.error('No users to import');
       return;
     }
 
-    setIsProcessing(true);
-    setProgress(0);
-    setDebugInfo([]);
-    
+    setIsImporting(true);
+    setImportResults([]);
+    addDebugInfo('Starting import process...');
+
     try {
-      // Test function first
-      addDebugInfo('Starting import process...');
-      await testEdgeFunction();
-      addDebugInfo('Edge Function test passed');
+      // Test Edge Function connectivity first
+      addDebugInfo('Testing Edge Function connectivity...');
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('No valid session found');
+      }
 
-      let successCount = 0;
-      let failCount = 0;
+      addDebugInfo(`Session valid. User: ${session.user?.email}, Token length: ${session.access_token?.length}`);
 
-      for (let i = 0; i < users.length; i++) {
-        const user = users[i];
+      const isHealthy = await checkEdgeFunctionHealth();
+      if (!isHealthy) {
+        const errorMsg = 'Edge Function health check failed';
+        addDebugInfo(errorMsg);
+        throw new Error(errorMsg);
+      }
+
+      addDebugInfo('Edge Function health check passed, proceeding with import...');
+
+      // Process users in batches of 5 to avoid overwhelming the function
+      const batchSize = 5;
+      const results: ImportResult[] = [];
+      
+      for (let i = 0; i < users.length; i += batchSize) {
+        const batch = users.slice(i, i + batchSize);
+        addDebugInfo(`Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(users.length/batchSize)}`);
         
-        // Update user status to processing
-        setUsers(prev => prev.map(u => 
-          u.email === user.email ? { ...u, status: 'processing' } : u
+        // Update status for current batch
+        setUsers(prev => prev.map((user, index) => 
+          batch.find(batchUser => batchUser.email === user.email) && index >= i && index < i + batchSize
+            ? { ...user, status: 'processing' }
+            : user
         ));
 
-        try {
-          await createUser(user);
-          
-          // Update user status to success
-          setUsers(prev => prev.map(u => 
-            u.email === user.email 
-              ? { ...u, status: 'success', details: 'User created successfully' } 
-              : u
-          ));
-          
-          successCount++;
-        } catch (error: any) {
-          // Update user status to error
-          setUsers(prev => prev.map(u => 
-            u.email === user.email 
-              ? { 
-                  ...u, 
-                  status: 'error', 
-                  error: error.message,
-                  details: `Failed: ${error.message}`
-                } 
-              : u
-          ));
-          
-          failCount++;
-        }
-
-        // Update progress
-        setProgress(((i + 1) / users.length) * 100);
+        // Process batch in parallel
+        const batchPromises = batch.map(user => createUserWithRetry(user));
+        const batchResults = await Promise.all(batchPromises);
         
-        // Small delay between requests
-        if (i < users.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 500));
+        results.push(...batchResults);
+        setImportResults(results);
+
+        // Update user status based on results
+        setUsers(prev => prev.map(user => {
+          const result = batchResults.find(r => r.email === user.email);
+          if (result) {
+            return {
+              ...user,
+              status: result.success ? 'success' : 'error',
+              error: result.error
+            };
+          }
+          return user;
+        }));
+
+        // Small delay between batches
+        if (i + batchSize < users.length) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
 
-      addDebugInfo(`Import completed. Success: ${successCount}, Failed: ${failCount}`);
+      const successful = results.filter(r => r.success).length;
+      const failed = results.filter(r => !r.success).length;
+
+      addDebugInfo(`Import completed: ${successful} successful, ${failed} failed`);
       
-      if (successCount > 0) {
-        toast.success(`Successfully imported ${successCount} users${failCount > 0 ? ` (${failCount} failed)` : ''}`);
+      if (successful > 0) {
+        toast.success(`Successfully imported ${successful} users${failed > 0 ? ` (${failed} failed)` : ''}`);
         onUsersImported();
       } else {
-        toast.error('No users were imported successfully');
+        toast.error('No users were successfully imported');
       }
 
     } catch (error: any) {
-      addDebugInfo(`Import process failed: ${error.message}`);
-      toast.error(`Import failed: ${error.message}`);
+      const errorMessage = error.message || 'Import process failed';
+      addDebugInfo(`Import process failed: ${errorMessage}`);
+      toast.error(errorMessage);
     } finally {
-      setIsProcessing(false);
+      setIsImporting(false);
     }
+  };
+
+  const downloadTemplate = () => {
+    const csvContent = 'name,email,role\nJohn Doe,john@example.com,job_seeker\nJane Smith,jane@example.com,employer';
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'user-import-template.csv';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const reset = () => {
     setCsvFile(null);
     setUsers([]);
-    setProgress(0);
+    setImportResults([]);
     setDebugInfo([]);
   };
 
-  const getStatusIcon = (status: UserRecord['status']) => {
+  const getStatusIcon = (status?: string) => {
     switch (status) {
-      case 'success':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'error':
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
       case 'processing':
-        return <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />;
+        return <Loader2 className="h-4 w-4 animate-spin text-blue-500" />;
+      case 'success':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'error':
+        return <XCircle className="h-4 w-4 text-red-500" />;
       default:
         return <div className="h-4 w-4 rounded-full bg-gray-300" />;
     }
@@ -291,124 +293,114 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Import Users from CSV</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* File Upload */}
-          <div className="space-y-2">
-            <Label htmlFor="csv-file">Select CSV File</Label>
-            <div className="flex items-center gap-4">
-              <Input
-                id="csv-file"
-                type="file"
-                accept=".csv"
-                onChange={handleFileSelect}
-                disabled={isProcessing}
-                className="flex-1"
-              />
-              {csvFile && (
+          {!csvFile && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={reset}
-                  disabled={isProcessing}
+                  onClick={downloadTemplate}
+                  className="flex items-center gap-2"
                 >
-                  <X className="h-4 w-4" />
-                  Clear
+                  <Download className="h-4 w-4" />
+                  Download Template
                 </Button>
-              )}
-            </div>
-            <p className="text-sm text-gray-600">
-              CSV should have columns: email, name, role (optional)
-            </p>
-          </div>
-
-          {/* Progress */}
-          {isProcessing && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Import Progress</span>
-                <span className="text-sm text-gray-600">{Math.round(progress)}%</span>
               </div>
-              <Progress value={progress} />
+
+              <div>
+                <Label htmlFor="csvFile">Upload CSV File</Label>
+                <Input
+                  id="csvFile"
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileChange}
+                  className="mt-2"
+                />
+                <p className="text-sm text-gray-600 mt-1">
+                  CSV should contain: name, email, and optionally role columns
+                </p>
+              </div>
             </div>
           )}
 
-          {/* Users List */}
-          {users.length > 0 && (
+          {csvFile && users.length > 0 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Users to Import ({users.length})</h3>
-              <div className="max-h-64 overflow-y-auto space-y-2">
-                {users.map((user, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-3 p-3 border rounded-lg"
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">
+                  Users to Import ({users.length})
+                </h3>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={reset}>
+                    Reset
+                  </Button>
+                  <Button 
+                    onClick={handleImport} 
+                    disabled={isImporting}
+                    className="flex items-center gap-2"
                   >
-                    {getStatusIcon(user.status)}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{user.name}</span>
-                        <span className="text-sm text-gray-600">({user.email})</span>
-                        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                          {user.role}
-                        </span>
-                      </div>
-                      {user.details && (
-                        <p className={`text-xs mt-1 ${
-                          user.status === 'error' ? 'text-red-600' : 'text-green-600'
-                        }`}>
-                          {user.details}
-                        </p>
-                      )}
+                    {isImporting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Upload className="h-4 w-4" />
+                    )}
+                    {isImporting ? 'Importing...' : 'Import Users'}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="border rounded-lg max-h-64 overflow-y-auto">
+                <div className="grid grid-cols-4 gap-4 p-3 bg-gray-50 font-medium text-sm">
+                  <div>Status</div>
+                  <div>Name</div>
+                  <div>Email</div>
+                  <div>Role</div>
+                </div>
+                {users.map((user, index) => (
+                  <div key={index} className="grid grid-cols-4 gap-4 p-3 border-t text-sm">
+                    <div className="flex items-center gap-2">
+                      {getStatusIcon(user.status)}
                     </div>
+                    <div>{user.name}</div>
+                    <div className="text-blue-600">{user.email}</div>
+                    <div className="capitalize">{user.role.replace('_', ' ')}</div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
 
-          {/* Debug Information */}
-          {debugInfo.length > 0 && (
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Info className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-medium">Debug Information</span>
-              </div>
-              <div className="max-h-32 overflow-y-auto bg-gray-50 p-3 rounded text-xs font-mono">
-                {debugInfo.map((info, index) => (
-                  <div key={index} className="text-gray-700">
-                    {info}
+              {users.some(user => user.status === 'error') && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-red-800 mb-2">Import Errors:</h4>
+                  <div className="space-y-1">
+                    {users.filter(user => user.status === 'error').map((user, index) => (
+                      <div key={index} className="text-sm text-red-700">
+                        <strong>{user.email}:</strong> {user.error}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isProcessing}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleImport}
-              disabled={users.length === 0 || isProcessing}
-              className="flex items-center gap-2"
-            >
-              {isProcessing ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              ) : (
-                <Upload className="h-4 w-4" />
+                </div>
               )}
-              {isProcessing ? 'Importing...' : `Import ${users.length} Users`}
-            </Button>
-          </div>
+            </div>
+          )}
+
+          {debugInfo.length > 0 && (
+            <div className="bg-gray-50 border rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertCircle className="h-4 w-4 text-blue-500" />
+                <h4 className="font-semibold text-gray-800">Debug Information:</h4>
+              </div>
+              <div className="max-h-48 overflow-y-auto">
+                <pre className="text-xs text-gray-600 whitespace-pre-wrap">
+                  {debugInfo.join('\n')}
+                </pre>
+              </div>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

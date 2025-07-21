@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export const checkEdgeFunctionHealth = async (): Promise<boolean> => {
@@ -10,8 +11,9 @@ export const checkEdgeFunctionHealth = async (): Promise<boolean> => {
 
     console.log('Checking Edge Function health...');
     
-    // Try Supabase client first
+    // Method 1: Try Supabase client first with health check payload
     try {
+      console.log('Attempting health check via Supabase client...');
       const { data, error } = await supabase.functions.invoke('admin-create-user', {
         body: { healthCheck: true },
         headers: {
@@ -19,35 +21,70 @@ export const checkEdgeFunctionHealth = async (): Promise<boolean> => {
         }
       });
       
-      if (!error) {
-        console.log('Edge Function health check passed (Supabase client)');
+      if (!error && data?.healthCheck) {
+        console.log('Edge Function health check passed (Supabase client):', data);
         return true;
+      } else {
+        console.log('Supabase client health check failed:', { data, error });
       }
     } catch (clientError) {
-      console.log('Supabase client health check failed, trying direct fetch');
+      console.log('Supabase client health check failed:', clientError);
     }
 
-    // Fallback to direct fetch
-    const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/admin-create-user`;
+    // Method 2: Try direct GET request
+    try {
+      console.log('Attempting health check via direct GET...');
+      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/admin-create-user`;
 
-    const response = await fetch(functionUrl, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${session.access_token}`,
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-        'Content-Type': 'application/json',
+      const response = await fetch(functionUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Direct GET health check passed:', data);
+        return true;
+      } else {
+        const errorText = await response.text();
+        console.error('Direct GET health check failed:', response.status, errorText);
       }
-    });
+    } catch (fetchError) {
+      console.error('Direct fetch health check failed:', fetchError);
+    }
 
-    const isHealthy = response.ok;
-    console.log(`Edge Function health check: ${isHealthy ? 'PASS' : 'FAIL'} (${response.status})`);
-    
-    if (!isHealthy) {
-      const errorText = await response.text();
-      console.error('Health check error:', errorText);
+    // Method 3: Try direct POST with health check payload
+    try {
+      console.log('Attempting health check via direct POST...');
+      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/admin-create-user`;
+
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ healthCheck: true })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Direct POST health check passed:', data);
+        return data.success && data.healthCheck;
+      } else {
+        const errorText = await response.text();
+        console.error('Direct POST health check failed:', response.status, errorText);
+      }
+    } catch (fetchError) {
+      console.error('Direct POST health check failed:', fetchError);
     }
     
-    return isHealthy;
+    return false;
   } catch (error) {
     console.error('Edge function health check failed:', error);
     return false;

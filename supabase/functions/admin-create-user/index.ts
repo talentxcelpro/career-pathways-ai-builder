@@ -13,12 +13,14 @@ interface CreateUserRequest {
   userName: string;
   userRole?: string;
   temporaryPassword?: string;
+  healthCheck?: boolean;
 }
 
 interface CreateUserResponse {
   success: boolean;
   userId?: string;
   error?: string;
+  healthCheck?: boolean;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -28,9 +30,29 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    console.log(`Received ${req.method} request to admin-create-user`);
+
+    // Handle GET requests for health checks
+    if (req.method === "GET") {
+      console.log("Health check via GET method");
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          healthCheck: true, 
+          message: "Edge Function is healthy",
+          timestamp: new Date().toISOString()
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     // Get the authorization header
     const authorization = req.headers.get('authorization');
     if (!authorization) {
+      console.error('No authorization header provided');
       return new Response(
         JSON.stringify({ success: false, error: 'No authorization header' }),
         {
@@ -40,10 +62,64 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    console.log('Authorization header present, length:', authorization.length);
+
+    // Parse request body
+    const requestBody = await req.json().catch(e => {
+      console.error('Failed to parse request body:', e);
+      return null;
+    });
+
+    if (!requestBody) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid request body' }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Handle health check requests
+    if (requestBody.healthCheck) {
+      console.log("Health check request received");
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          healthCheck: true, 
+          message: "Edge Function is healthy and authenticated",
+          timestamp: new Date().toISOString()
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    const { userEmail, userName, userRole = 'job_seeker', temporaryPassword }: CreateUserRequest = requestBody;
+
+    if (!userEmail || !userName) {
+      console.error('Missing required fields:', { userEmail: !!userEmail, userName: !!userName });
+      return new Response(
+        JSON.stringify({ success: false, error: 'Email and name are required' }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     // Create regular supabase client to verify admin status
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    console.log('Environment variables check:', {
+      hasUrl: !!supabaseUrl,
+      hasAnonKey: !!supabaseAnonKey,
+      hasServiceKey: !!supabaseServiceKey
+    });
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
@@ -58,6 +134,7 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     // Verify the user is authenticated and is an admin
+    console.log('Verifying user authentication...');
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     if (userError || !user) {
@@ -71,12 +148,15 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    console.log('User authenticated:', user.email);
+
     // Check if user is admin using the existing function
+    console.log('Checking admin privileges...');
     const { data: isAdmin, error: adminError } = await supabase
       .rpc('is_app_admin', { _user_id: user.id });
 
     if (adminError || !isAdmin) {
-      console.error('Admin check failed:', adminError);
+      console.error('Admin check failed:', adminError, 'isAdmin:', isAdmin);
       return new Response(
         JSON.stringify({ success: false, error: 'Admin privileges required' }),
         {
@@ -86,18 +166,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Parse request body
-    const { userEmail, userName, userRole = 'job_seeker', temporaryPassword }: CreateUserRequest = await req.json();
-
-    if (!userEmail || !userName) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Email and name are required' }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
+    console.log('Admin privileges verified');
 
     // Create service role client for admin operations
     const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
@@ -131,6 +200,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     if (!authUser.user) {
+      console.error('User creation failed - no user returned');
       return new Response(
         JSON.stringify({ success: false, error: 'User creation failed - no user returned' }),
         {
