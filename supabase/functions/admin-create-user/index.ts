@@ -168,18 +168,24 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`[${requestId}] Creating user:`, userEmail, userName);
 
-    // Create regular supabase client to verify admin status
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    // Create regular supabase client (conditionally with auth header)
+    const clientConfig: any = {
       auth: {
         autoRefreshToken: false,
         persistSession: false
-      },
-      global: {
+      }
+    };
+
+    // Only add authorization header if it exists
+    if (authorization) {
+      clientConfig.global = {
         headers: {
           authorization
         }
-      }
-    });
+      };
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, clientConfig);
 
     // Skip authentication when JWT verification is disabled (for testing)
     if (authorization) {
