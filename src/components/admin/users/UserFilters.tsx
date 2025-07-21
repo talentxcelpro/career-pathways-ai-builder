@@ -123,8 +123,8 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
       />
 
       <ImportUsersModal
-        isOpen={showImportModal}
-        onClose={() => setShowImportModal(false)}
+        open={showImportModal}
+        onOpenChange={setShowImportModal}
         onUsersImported={() => {
           setShowImportModal(false);
           onUsersChanged();
