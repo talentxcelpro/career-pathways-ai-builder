@@ -30,6 +30,9 @@ import SmartPageBuilder from "../pages/admin/SmartPageBuilder";
 import AIAssistantPanel from "../pages/admin/AIAssistantPanel";
 import AdvancedContentHub from "../pages/admin/AdvancedContentHub";
 import FeatureFlagsManager from "../pages/admin/FeatureFlagsManager";
+import AdvancedAnalyticsDashboard from "../pages/admin/AdvancedAnalyticsDashboard";
+import PerformanceMonitoring from "../pages/admin/PerformanceMonitoring";
+import IntegrationHub from "../pages/admin/IntegrationHub";
 
 export const adminRoutes = [
   {
@@ -308,5 +311,32 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessDashboard" as const,
     description: "Control feature rollouts and A/B testing"
+  },
+  {
+    title: "Analytics Dashboard",
+    to: "/admin/analytics-dashboard",
+    icon: <BarChart3 className="h-4 w-4" />,
+    page: <AdvancedAnalyticsDashboard />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Advanced analytics and insights"
+  },
+  {
+    title: "Performance Monitoring",
+    to: "/admin/performance-monitoring",
+    icon: <Shield className="h-4 w-4" />,
+    page: <PerformanceMonitoring />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "System health and performance metrics"
+  },
+  {
+    title: "Integration Hub",
+    to: "/admin/integration-hub",
+    icon: <Network className="h-4 w-4" />,
+    page: <IntegrationHub />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Manage third-party integrations"
   }
 ];
