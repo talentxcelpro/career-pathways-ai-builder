@@ -1,40 +1,45 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
 import { 
-  Image, 
-  Video, 
-  FileText, 
+  Camera, 
   MapPin, 
-  Users, 
+  Hash, 
+  Smile, 
+  ImagePlus, 
+  Video, 
+  FileText,
   Globe,
+  Users,
   Lock,
-  X,
-  Send,
-  Smile,
-  Loader2,
-  Target,
   Sparkles,
-  Wand2,
-  Hash,
-  Mic,
+  Target,
   TrendingUp,
-  Upload
+  MessageSquare,
+  Zap
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { EmojiPicker } from './EmojiPicker';
-import { LinkPreview } from '@/components/shared/LinkPreview';
-import { useFileUpload } from '@/hooks/useFileUpload';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { CareerIntentTags } from './CareerIntentTags';
-import { AIPostQualityScore } from './AIPostQualityScore';
-import { HashtagAssistant } from './HashtagAssistant';
-import { TrendingTopicsWidget } from './TrendingTopicsWidget';
-import { EnhancedMediaUpload } from './EnhancedMediaUpload';
+
+interface AIScore {
+  score: number;
+  tone: string;
+  ctaStrength: number;
+  hashtagRelevance: number;
+  viralityPotential: number;
+}
+
+interface MediaFile {
+  id: string;
+  url: string;
+  type: 'image' | 'video';
+  file: File;
+}
 
 interface EnhancedCreatePostProps {
   onPostCreate?: (post: any) => void;
@@ -42,154 +47,85 @@ interface EnhancedCreatePostProps {
 
 export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCreate }) => {
   const { user } = useAuth();
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [content, setContent] = useState('');
-  const [privacy, setPrivacy] = useState<'public' | 'connections' | 'private'>('public');
-  const [detectedLinks, setDetectedLinks] = useState<string[]>([]);
+  const [postType, setPostType] = useState<'text' | 'article'>('text');
+  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [location, setLocation] = useState('');
-  const [showLocationInput, setShowLocationInput] = useState(false);
-  const [isPosting, setIsPosting] = useState(false);
-  const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
-  const [showIntentSelector, setShowIntentSelector] = useState(false);
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
-  const [showHashtagAssistant, setShowHashtagAssistant] = useState(false);
-  const [showTrendingTopics, setShowTrendingTopics] = useState(false);
   const [selectedHashtags, setSelectedHashtags] = useState<string[]>([]);
-  const [mediaFiles, setMediaFiles] = useState<any[]>([]);
-  const [dragActive, setDragActive] = useState(false);
-  const [postType, setPostType] = useState<'post' | 'article'>('post');
-
-  // AI Quality Score calculation
-  const [aiScore, setAiScore] = useState<{
-    score: number;
-    tone: string;
-    ctaStrength: number;
-    hashtagRelevance: number;
-    viralityPotential: 'low' | 'medium' | 'high' | 'viral';
-  }>({
+  const [privacy, setPrivacy] = useState<'public' | 'connections' | 'private'>('public');
+  const [isPosting, setIsPosting] = useState(false);
+  const [aiScore, setAiScore] = useState<AIScore>({
     score: 0,
-    tone: 'professional',
+    tone: 'neutral',
     ctaStrength: 0,
     hashtagRelevance: 0,
-    viralityPotential: 'low'
+    viralityPotential: 0
   });
 
-  // Calculate AI score in real-time
-  useEffect(() => {
-    const calculateScore = () => {
-      let score = 20; // Base score
-      
-      // Content length bonus
-      if (content.length > 50) score += 20;
-      if (content.length > 150) score += 10;
-      
-      // Call-to-action detection
-      const ctaKeywords = ['apply', 'join', 'connect', 'learn', 'share', 'comment', 'like', 'follow'];
-      const ctaCount = ctaKeywords.filter(keyword => content.toLowerCase().includes(keyword)).length;
-      const ctaStrength = Math.min(ctaCount * 2, 10);
-      score += ctaStrength * 2;
-      
-      // Hashtag relevance
-      const hashtagRelevance = Math.min(selectedHashtags.length * 2, 10);
-      score += hashtagRelevance;
-      
-      // Media bonus
-      if (mediaFiles.length > 0) score += 15;
-      
-      // Engagement elements
-      if (content.includes('?')) score += 5; // Questions
-      if (content.includes('!')) score += 5; // Excitement
-      
-      const finalScore = Math.min(score, 100);
-      let viralityPotential: 'low' | 'medium' | 'high' | 'viral' = 'low';
-      
-      if (finalScore >= 90) viralityPotential = 'viral';
-      else if (finalScore >= 70) viralityPotential = 'high';
-      else if (finalScore >= 50) viralityPotential = 'medium';
-      
-      setAiScore({
-        score: finalScore,
-        tone: 'professional',
-        ctaStrength,
-        hashtagRelevance,
-        viralityPotential
-      });
-    };
-
-    calculateScore();
-  }, [content, selectedHashtags, mediaFiles]);
-
-  const privacyOptions = [
-    { value: 'public', label: 'Public', icon: Globe, description: 'Anyone can see this post' },
-    { value: 'connections', label: 'Connections', icon: Users, description: 'Only your connections can see this' },
-    { value: 'private', label: 'Private', icon: Lock, description: 'Only you can see this' }
+  const popularHashtags = [
+    '#CareerGrowth', '#JobSearch', '#Networking', '#Leadership', 
+    '#Innovation', '#Technology', '#Remote', '#AI', '#Success', '#Motivation'
   ];
 
-  const handleContentChange = (value: string) => {
-    setContent(value);
+  const emojiReactions = ['😊', '🎉', '💪', '🚀', '💡', '🔥', '👏', '❤️'];
+
+  const analyzeContent = (text: string) => {
+    const words = text.split(' ').length;
+    const hasHashtags = selectedHashtags.length > 0;
+    const hasEmoji = /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]/u.test(text);
+    const hasQuestion = text.includes('?');
+    const hasCTA = /\b(check out|learn more|read|visit|join|follow|share|comment)\b/i.test(text);
     
-    // Detect URLs in the content
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const links = value.match(urlRegex) || [];
-    setDetectedLinks([...new Set(links)]);
+    const baseScore = Math.min(words * 2, 100);
+    let score = baseScore;
+    
+    if (hasHashtags) score += 15;
+    if (hasEmoji) score += 10;
+    if (hasQuestion) score += 10;
+    if (hasCTA) score += 20;
+    
+    score = Math.min(score, 100);
+    
+    const tone = hasEmoji ? 'friendly' : hasQuestion ? 'engaging' : 'professional';
+    const ctaStrength = hasCTA ? 80 : hasQuestion ? 60 : 20;
+    const hashtagRelevance = hasHashtags ? 85 : 0;
+    const viralityPotential = hasEmoji && hasHashtags && hasCTA ? 90 : 45;
+    
+    setAiScore({
+      score,
+      tone,
+      ctaStrength,
+      hashtagRelevance,
+      viralityPotential
+    });
   };
 
-  const handleEmojiSelect = (emoji: string) => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const newContent = content.slice(0, start) + emoji + content.slice(end);
-      setContent(newContent);
-      
-      setTimeout(() => {
-        textarea.focus();
-        textarea.setSelectionRange(start + emoji.length, start + emoji.length);
-      }, 0);
+  useEffect(() => {
+    if (content) {
+      analyzeContent(content);
+    }
+  }, [content, selectedHashtags]);
+
+  const handleHashtagClick = (hashtag: string) => {
+    if (selectedHashtags.includes(hashtag)) {
+      setSelectedHashtags(prev => prev.filter(h => h !== hashtag));
     } else {
-      setContent(prev => prev + emoji);
+      setSelectedHashtags(prev => [...prev, hashtag]);
     }
   };
 
-  const handleAIRewrite = async (tone: string) => {
-    if (!content.trim()) return;
-    
-    try {
-      toast.info('AI is rewriting your post...', { duration: 2000 });
-      
-      const { data, error } = await supabase.functions.invoke('ai-post-rewriter', {
-        body: {
-          content: content.trim(),
-          tone,
-          userRole: user?.user_metadata?.role || user?.user_metadata?.user_role,
-          targetAudience: 'Professional network'
-        }
-      });
-
-      if (error) throw error;
-
-      if (data?.rewrittenContent) {
-        setContent(data.rewrittenContent);
-        toast.success(`Post rewritten in ${tone} tone! ${data.newLength} characters.`);
-      } else {
-        throw new Error('No rewritten content received');
-      }
-      
-    } catch (error) {
-      console.error('AI rewrite error:', error);
-      toast.error('Failed to rewrite with AI. Please try again.');
-    }
+  const handleEmojiClick = (emoji: string) => {
+    setContent(prev => prev + emoji);
   };
 
-  const handleVoiceToText = async () => {
-    // Voice recognition disabled
-    toast.info('Voice feature temporarily disabled');
-  };
-
-  const handlePost = async () => {
+  const handleSubmit = async () => {
     if (!content.trim()) {
       toast.error('Please write something before posting');
+      return;
+    }
+
+    if (!user?.id) {
+      toast.error('You must be logged in to create a post');
       return;
     }
 
@@ -218,8 +154,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
           media_urls: mediaFiles.map(file => file.url),
           location: location || null,
           is_public: privacy === 'public',
-          intent_tags: selectedIntents,
-          featured_image_url: postType === 'article' && mediaFiles.length > 0 ? mediaFiles[0].url : null
+          tags: selectedHashtags.map(tag => tag.replace('#', ''))
         })
         .select()
         .single();
@@ -255,16 +190,18 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       
       // Reset form
       setContent('');
+      setPostType('text');
       setMediaFiles([]);
-      setDetectedLinks([]);
       setLocation('');
-      setShowLocationInput(false);
-      setPrivacy('public');
-      setSelectedIntents([]);
       setSelectedHashtags([]);
-      setShowIntentSelector(false);
-      setShowAIAssistant(false);
-      setShowHashtagAssistant(false);
+      setPrivacy('public');
+      setAiScore({
+        score: 0,
+        tone: 'neutral',
+        ctaStrength: 0,
+        hashtagRelevance: 0,
+        viralityPotential: 0
+      });
       
       toast.success('Post created successfully!');
     } catch (error) {
@@ -276,467 +213,175 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     }
   };
 
-  const handleIntentToggle = (intentId: string) => {
-    setSelectedIntents(prev => 
-      prev.includes(intentId) 
-        ? prev.filter(id => id !== intentId)
-        : [...prev, intentId]
-    );
-  };
-
-  const handleTrendingTopicClick = (topic: string) => {
-    setContent(prev => prev + (prev ? '\n\n' : '') + `Thoughts on ${topic}... `);
-    setShowTrendingTopics(false);
-  };
-
-  // File upload handlers
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFiles(e.dataTransfer.files);
-    }
-  };
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      handleFiles(e.target.files);
-    }
-  };
-
-  const handleFiles = async (files: FileList) => {
-    if (mediaFiles.length + files.length > 5) {
-      toast.error('Maximum 5 files allowed');
-      return;
-    }
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const fileId = `${Date.now()}-${i}`;
-      
-      try {
-        // Determine file type
-        let type: 'image' | 'video' | 'document';
-        if (file.type.startsWith('image/')) type = 'image';
-        else if (file.type.startsWith('video/')) type = 'video';
-        else type = 'document';
-
-        // Upload file to Supabase Storage
-        const fileName = `${user?.id}/${Date.now()}-${file.name}`;
-        const { error: uploadError } = await supabase.storage
-          .from('post-media')
-          .upload(fileName, file);
-
-        if (uploadError) {
-          console.error('Upload error:', uploadError);
-          toast.error(`Failed to upload ${file.name}`);
-          continue;
-        }
-
-        // Get public URL
-        const { data } = supabase.storage
-          .from('post-media')
-          .getPublicUrl(fileName);
-
-        // Create media file object
-        const mediaFile = {
-          id: fileId,
-          url: data.publicUrl,
-          type,
-          name: file.name,
-          size: file.size,
-          metadata: {}
-        };
-
-        setMediaFiles(prev => [...prev, mediaFile]);
-        toast.success(`${file.name} uploaded successfully`);
-        
-      } catch (error) {
-        toast.error(`Failed to upload ${file.name}`);
-        console.error('File upload error:', error);
-      }
-    }
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const currentPrivacy = privacyOptions.find(opt => opt.value === privacy);
-
   return (
-    <div className="space-y-4">
-      <Card className="w-full overflow-hidden">
-        <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12 ring-2 ring-primary/20">
-                <AvatarImage src={user?.user_metadata?.avatar_url} className="object-cover" />
-                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white font-bold">
-                  {user?.user_metadata?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <p className="font-semibold text-lg">{user?.user_metadata?.full_name || 'Your Name'}</p>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-6 text-xs"
-                    onClick={() => {
-                      const nextIndex = (privacyOptions.findIndex(opt => opt.value === privacy) + 1) % privacyOptions.length;
-                      setPrivacy(privacyOptions[nextIndex].value as any);
-                    }}
-                  >
-                    {currentPrivacy && (
-                      <>
-                        <currentPrivacy.icon className="h-3 w-3 mr-1" />
-                        {currentPrivacy.label}
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    variant={postType === 'article' ? 'default' : 'outline'}
-                    size="sm"
-                    className="h-6 text-xs"
-                    onClick={() => setPostType(postType === 'post' ? 'article' : 'post')}
-                  >
-                    {postType === 'article' ? 'Article' : 'Post'}
-                  </Button>
-                </div>
-              </div>
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardContent className="p-6">
+        <div className="flex items-start gap-3 mb-4">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={user?.user_metadata?.avatar_url} />
+            <AvatarFallback>
+              {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <div className="flex gap-2 mb-3">
+              <Button
+                variant={postType === 'text' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setPostType('text')}
+                className="flex items-center gap-1"
+              >
+                <MessageSquare className="h-4 w-4" />
+                Post
+              </Button>
+              <Button
+                variant={postType === 'article' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setPostType('article')}
+                className="flex items-center gap-1"
+              >
+                <FileText className="h-4 w-4" />
+                Article
+              </Button>
             </div>
-        </CardHeader>
-        
-        <CardContent className="space-y-4">
-          <div className="space-y-3">
+            
             <Textarea
-              ref={textareaRef}
-              placeholder={postType === 'article' 
-                ? "Write your article content here... Share insights, experiences, and knowledge."
-                : "What's happening in your career? Share your insights..."
-              }
+              placeholder={postType === 'article' ? "Write your article..." : "What's on your mind?"}
               value={content}
-              onChange={(e) => handleContentChange(e.target.value)}
-              className={postType === 'article' 
-                ? "min-h-[300px] resize-none border-0 p-0 text-lg placeholder:text-muted-foreground focus-visible:ring-0"
-                : "min-h-[120px] resize-none border-0 p-0 text-lg placeholder:text-muted-foreground focus-visible:ring-0"
-              }
+              onChange={(e) => setContent(e.target.value)}
+              className="min-h-[120px] resize-none border-0 p-0 text-lg placeholder:text-muted-foreground focus-visible:ring-0"
             />
-
-            {/* AI Quality Score */}
-            {content.length > 10 && (
-              <AIPostQualityScore
-                score={aiScore.score}
-                tone={aiScore.tone}
-                ctaStrength={aiScore.ctaStrength}
-                hashtagRelevance={aiScore.hashtagRelevance}
-                viralityPotential={aiScore.viralityPotential}
-                isRealTime={true}
-              />
-            )}
-
-            {/* Link Previews */}
-            {detectedLinks.length > 0 && (
-              <div className="space-y-3">
-                {detectedLinks.map((link, index) => (
-                  <LinkPreview key={index} url={link} />
-                ))}
-              </div>
-            )}
-
-            {/* Inline Media Upload */}
-            {(mediaFiles.length > 0 || dragActive) && (
-              <div className="space-y-3 animate-fade-in">
-                {/* Compact Upload Area */}
-                <div 
-                  className={`border-2 border-dashed rounded-lg p-4 transition-all duration-300 ${
-                    dragActive 
-                      ? 'border-primary bg-primary/5 scale-[1.02]' 
-                      : 'border-border hover:border-primary/50 hover:bg-muted/30'
-                  }`}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <div className="flex items-center gap-3 cursor-pointer">
-                    <div className={`p-2 rounded-full transition-colors ${
-                      dragActive ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                    }`}>
-                      <Upload className={`h-4 w-4 ${dragActive ? 'animate-bounce' : ''}`} />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">
-                        {dragActive ? 'Drop files here!' : 'Drop files or click to upload'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Images, videos, documents up to 100MB
-                      </p>
-                    </div>
-                    <div className="flex gap-1">
-                      <Badge variant="secondary" className="text-xs">
-                        <Image className="h-3 w-3 mr-1" />
-                        IMG
-                      </Badge>
-                      <Badge variant="secondary" className="text-xs">
-                        <Video className="h-3 w-3 mr-1" />
-                        VID
-                      </Badge>
-                      <Badge variant="secondary" className="text-xs">
-                        <FileText className="h-3 w-3 mr-1" />
-                        DOC
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Media Files Grid */}
-                {mediaFiles.length > 0 && (
-                  <div className="grid gap-2">
-                    {mediaFiles.map((media, index) => (
-                      <div key={media.id} className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg animate-fade-in">
-                        {/* Preview */}
-                        <div className="flex-shrink-0">
-                          {media.type === 'image' && (
-                            <img
-                              src={media.url}
-                              alt={media.name}
-                              className="w-10 h-10 object-cover rounded"
-                            />
-                          )}
-                          {media.type === 'video' && (
-                            <div className="w-10 h-10 bg-muted rounded flex items-center justify-center">
-                              <Video className="h-4 w-4 text-muted-foreground" />
-                            </div>
-                          )}
-                          {media.type === 'document' && (
-                            <div className="w-10 h-10 bg-muted rounded flex items-center justify-center">
-                              <FileText className="h-4 w-4 text-muted-foreground" />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* File Info */}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{media.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {formatFileSize(media.size)}
-                            {media.metadata?.width && media.metadata?.height && (
-                              <span> • {media.metadata.width}×{media.metadata.height}</span>
-                            )}
-                          </p>
-                        </div>
-
-                        {/* Remove Button */}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setMediaFiles(prev => prev.filter(m => m.id !== media.id))}
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept="image/*,video/*,.pdf,.doc,.docx,.txt"
-              onChange={handleFileInput}
-              className="hidden"
-            />
-
-            {/* Career Intent Tags */}
-            {showIntentSelector && (
-              <CareerIntentTags
-                selectedIntents={selectedIntents}
-                onIntentToggle={handleIntentToggle}
-                showDescription={false}
-              />
-            )}
-
-            {/* Selected Intent Display */}
-            {selectedIntents.length > 0 && (
-              <CareerIntentTags
-                selectedIntents={selectedIntents}
-                onIntentToggle={() => {}}
-                variant="display"
-              />
-            )}
-
-            {/* Location Input */}
-            {showLocationInput && (
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Add location..."
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="flex-1 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-                <Button variant="ghost" size="sm" onClick={() => setShowLocationInput(false)}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
           </div>
+        </div>
 
-          {/* Enhanced Toolbar */}
-          <div className="flex items-center justify-between pt-3 border-t">
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAIAssistant(!showAIAssistant)}
-                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-              >
-                <Wand2 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowHashtagAssistant(!showHashtagAssistant)}
-                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-              >
-                <Hash className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowTrendingTopics(!showTrendingTopics)}
-                className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-              >
-                <TrendingUp className="h-4 w-4" />
-              </Button>
-              <EmojiPicker onEmojiSelect={handleEmojiSelect}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
-                >
-                  <Smile className="h-4 w-4" />
-                </Button>
-              </EmojiPicker>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleVoiceToText}
-                className="text-muted-foreground hover:text-gray-700 hover:bg-gray-50"
-                disabled
-              >
-                <Mic className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowLocationInput(true)}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
-                <MapPin className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
-              >
-                <Image className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowIntentSelector(!showIntentSelector)}
-                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-              >
-                <Target className="h-4 w-4" />
-              </Button>
+        {/* AI Analysis Panel */}
+        {content && (
+          <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="h-4 w-4 text-purple-600" />
+              <span className="font-medium text-sm">AI Content Analysis</span>
             </div>
-
-            <div className="flex items-center gap-2">
-              {/* AI Tone Buttons */}
-              {showAIAssistant && (
-                <div className="flex gap-1 flex-wrap">
-                  <Button size="sm" variant="outline" onClick={() => handleAIRewrite('professional')}>
-                    ✨ Professional
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleAIRewrite('engaging')}>
-                    🔥 Engaging
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleAIRewrite('casual')}>
-                    😊 Casual
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleAIRewrite('concise')}>
-                    ⚡ Concise
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleAIRewrite('thoughtful')}>
-                    🧠 Thoughtful
-                  </Button>
+            
+            <div className="grid grid-cols-2 gap-4 mb-3">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-gray-600">Overall Score</span>
+                  <span className="text-xs font-medium">{aiScore.score}/100</span>
                 </div>
-              )}
+                <Progress value={aiScore.score} className="h-2" />
+              </div>
               
-              <Button 
-                onClick={handlePost} 
-                disabled={!content.trim() || isPosting}
-                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-              >
-                {isPosting ? (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Posting...
-                  </div>
-                ) : (
-                  <>
-                    <Send className="h-4 w-4 mr-2" />
-                    Post
-                  </>
-                )}
-              </Button>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-gray-600">Virality Potential</span>
+                  <span className="text-xs font-medium">{aiScore.viralityPotential}/100</span>
+                </div>
+                <Progress value={aiScore.viralityPotential} className="h-2" />
+              </div>
+            </div>
+            
+            <div className="flex gap-2 text-xs">
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <Target className="h-3 w-3" />
+                Tone: {aiScore.tone}
+              </Badge>
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <Zap className="h-3 w-3" />
+                CTA: {aiScore.ctaStrength}%
+              </Badge>
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <Hash className="h-3 w-3" />
+                Hashtags: {aiScore.hashtagRelevance}%
+              </Badge>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        )}
 
-      {/* AI Assistant Panels */}
-      {showHashtagAssistant && (
-        <HashtagAssistant
-          content={content}
-          userRole={user?.user_metadata?.role}
-          userSkills={user?.user_metadata?.skills || []}
-          onHashtagsSelect={setSelectedHashtags}
-          selectedHashtags={selectedHashtags}
-        />
-      )}
+        {/* Popular Hashtags */}
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Hash className="h-4 w-4 text-blue-600" />
+            <span className="text-sm font-medium">Trending Hashtags</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {popularHashtags.map((hashtag) => (
+              <Badge
+                key={hashtag}
+                variant={selectedHashtags.includes(hashtag) ? "default" : "outline"}
+                className="cursor-pointer hover:bg-blue-100 transition-colors"
+                onClick={() => handleHashtagClick(hashtag)}
+              >
+                {hashtag}
+              </Badge>
+            ))}
+          </div>
+        </div>
 
-      {showTrendingTopics && (
-        <TrendingTopicsWidget
-          userRole={user?.user_metadata?.role}
-          onTopicClick={handleTrendingTopicClick}
-        />
-      )}
-    </div>
+        {/* Emoji Reactions */}
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Smile className="h-4 w-4 text-yellow-600" />
+            <span className="text-sm font-medium">Quick Reactions</span>
+          </div>
+          <div className="flex gap-2">
+            {emojiReactions.map((emoji) => (
+              <Button
+                key={emoji}
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-yellow-100"
+                onClick={() => handleEmojiClick(emoji)}
+              >
+                {emoji}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Media and Options */}
+        <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" className="flex items-center gap-1">
+              <ImagePlus className="h-4 w-4" />
+              Photo
+            </Button>
+            <Button variant="ghost" size="sm" className="flex items-center gap-1">
+              <Video className="h-4 w-4" />
+              Video
+            </Button>
+            <Button variant="ghost" size="sm" className="flex items-center gap-1">
+              <MapPin className="h-4 w-4" />
+              Location
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              {privacy === 'public' && <Globe className="h-4 w-4 text-green-600" />}
+              {privacy === 'connections' && <Users className="h-4 w-4 text-blue-600" />}
+              {privacy === 'private' && <Lock className="h-4 w-4 text-gray-600" />}
+              <select 
+                value={privacy} 
+                onChange={(e) => setPrivacy(e.target.value as any)}
+                className="text-sm border-0 bg-transparent"
+              >
+                <option value="public">Public</option>
+                <option value="connections">Connections</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
+
+            <Button 
+              onClick={handleSubmit} 
+              disabled={!content.trim() || isPosting}
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {isPosting ? 'Posting...' : 'Post'}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
