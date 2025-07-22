@@ -18,6 +18,8 @@ import { SearchConsoleVerification } from "./components/analytics/SearchConsoleV
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
+import UserManagement from "@/pages/admin/UserManagement";
+import SecurityCenter from "@/pages/admin/SecurityCenter";
 
 // Create query client with simpler configuration to avoid potential issues
 const queryClient = new QueryClient({
@@ -102,6 +104,8 @@ const App = () => {
                         );
                       })}
                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
+                      <Route path="/admin/users" element={<UserManagement />} />
+                      <Route path="/admin/security" element={<SecurityCenter />} />
                       
                       {/* Legacy resume builder redirects */}
                       <Route path="/resume" element={<Navigate to="/resume/new" replace />} />

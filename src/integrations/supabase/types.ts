@@ -6115,6 +6115,45 @@ export type Database = {
           },
         ]
       }
+      failed_login_attempts: {
+        Row: {
+          attempt_count: number
+          blocked_until: string | null
+          created_at: string
+          email: string
+          first_attempt_at: string
+          id: string
+          ip_address: unknown
+          last_attempt_at: string
+          location_data: Json | null
+          user_agent: string | null
+        }
+        Insert: {
+          attempt_count?: number
+          blocked_until?: string | null
+          created_at?: string
+          email: string
+          first_attempt_at?: string
+          id?: string
+          ip_address: unknown
+          last_attempt_at?: string
+          location_data?: Json | null
+          user_agent?: string | null
+        }
+        Update: {
+          attempt_count?: number
+          blocked_until?: string | null
+          created_at?: string
+          email?: string
+          first_attempt_at?: string
+          id?: string
+          ip_address?: unknown
+          last_attempt_at?: string
+          location_data?: Json | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       feature_flags: {
         Row: {
           created_at: string | null
@@ -6665,6 +6704,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ip_blocklist: {
+        Row: {
+          block_type: string | null
+          blocked_at: string
+          blocked_by: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          ip_address: unknown
+          is_permanent: boolean | null
+          reason: string
+        }
+        Insert: {
+          block_type?: string | null
+          blocked_at?: string
+          blocked_by?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          ip_address: unknown
+          is_permanent?: boolean | null
+          reason: string
+        }
+        Update: {
+          block_type?: string | null
+          blocked_at?: string
+          blocked_by?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          ip_address?: unknown
+          is_permanent?: boolean | null
+          reason?: string
+        }
+        Relationships: []
       }
       job_alerts: {
         Row: {
@@ -12074,6 +12149,116 @@ export type Database = {
         }
         Relationships: []
       }
+      security_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          affected_user_id: string | null
+          alert_data: Json | null
+          alert_type: string
+          auto_resolved: boolean | null
+          created_at: string
+          description: string
+          id: string
+          is_acknowledged: boolean | null
+          resolved_at: string | null
+          severity: string
+          title: string
+          triggered_by_event_id: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          affected_user_id?: string | null
+          alert_data?: Json | null
+          alert_type: string
+          auto_resolved?: boolean | null
+          created_at?: string
+          description: string
+          id?: string
+          is_acknowledged?: boolean | null
+          resolved_at?: string | null
+          severity?: string
+          title: string
+          triggered_by_event_id?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          affected_user_id?: string | null
+          alert_data?: Json | null
+          alert_type?: string
+          auto_resolved?: boolean | null
+          created_at?: string
+          description?: string
+          id?: string
+          is_acknowledged?: boolean | null
+          resolved_at?: string | null
+          severity?: string
+          title?: string
+          triggered_by_event_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_alerts_triggered_by_event_id_fkey"
+            columns: ["triggered_by_event_id"]
+            isOneToOne: false
+            referencedRelation: "security_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      security_events: {
+        Row: {
+          created_at: string
+          details: Json | null
+          device_fingerprint: string | null
+          event_category: string
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          location_data: Json | null
+          resolved_at: string | null
+          resolved_by: string | null
+          session_id: string | null
+          severity: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          device_fingerprint?: string | null
+          event_category?: string
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          location_data?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          session_id?: string | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          device_fingerprint?: string | null
+          event_category?: string
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          location_data?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          session_id?: string | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       seo_cache: {
         Row: {
           cache_key: string
@@ -15257,6 +15442,102 @@ export type Database = {
         }
         Relationships: []
       }
+      user_security_settings: {
+        Row: {
+          account_status: string | null
+          allowed_ip_addresses: unknown[] | null
+          created_at: string
+          failed_login_count: number | null
+          id: string
+          last_failed_login: string | null
+          lockout_until: string | null
+          max_concurrent_sessions: number | null
+          require_password_change: boolean | null
+          restricted_locations: string[] | null
+          security_notifications: boolean | null
+          session_timeout_minutes: number | null
+          two_factor_enabled: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_status?: string | null
+          allowed_ip_addresses?: unknown[] | null
+          created_at?: string
+          failed_login_count?: number | null
+          id?: string
+          last_failed_login?: string | null
+          lockout_until?: string | null
+          max_concurrent_sessions?: number | null
+          require_password_change?: boolean | null
+          restricted_locations?: string[] | null
+          security_notifications?: boolean | null
+          session_timeout_minutes?: number | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_status?: string | null
+          allowed_ip_addresses?: unknown[] | null
+          created_at?: string
+          failed_login_count?: number | null
+          id?: string
+          last_failed_login?: string | null
+          lockout_until?: string | null
+          max_concurrent_sessions?: number | null
+          require_password_change?: boolean | null
+          restricted_locations?: string[] | null
+          security_notifications?: boolean | null
+          session_timeout_minutes?: number | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_sessions: {
+        Row: {
+          created_at: string
+          device_info: Json | null
+          expires_at: string
+          id: string
+          ip_address: unknown | null
+          is_active: boolean | null
+          last_activity_at: string
+          location_data: Json | null
+          session_token: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_info?: Json | null
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          last_activity_at?: string
+          location_data?: Json | null
+          session_token: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_info?: Json | null
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          last_activity_at?: string
+          location_data?: Json | null
+          session_token?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_skills: {
         Row: {
           created_at: string | null
@@ -15736,6 +16017,18 @@ export type Database = {
         }
         Returns: string
       }
+      create_security_alert: {
+        Args: {
+          p_alert_type: string
+          p_severity: string
+          p_title: string
+          p_description: string
+          p_affected_user_id?: string
+          p_triggered_by_event_id?: string
+          p_alert_data?: Json
+        }
+        Returns: string
+      }
       ensure_unique_college_slug: {
         Args: { base_slug: string; college_id?: string }
         Returns: string
@@ -15838,6 +16131,10 @@ export type Database = {
         Args: { company_uuid: string }
         Returns: boolean
       }
+      is_ip_blocked: {
+        Args: { p_ip_address: unknown }
+        Returns: boolean
+      }
       is_pro_user: {
         Args: { p_user_id: string }
         Returns: boolean
@@ -15856,6 +16153,21 @@ export type Database = {
           p_event_details?: Json
           p_risk_level?: string
           p_compliance_category?: string
+        }
+        Returns: string
+      }
+      log_security_event: {
+        Args: {
+          p_user_id: string
+          p_event_type: string
+          p_event_category?: string
+          p_severity?: string
+          p_ip_address?: unknown
+          p_user_agent?: string
+          p_location_data?: Json
+          p_device_fingerprint?: string
+          p_session_id?: string
+          p_details?: Json
         }
         Returns: string
       }
@@ -15917,6 +16229,10 @@ export type Database = {
           processed_count: number
           simulated_events: number
         }[]
+      }
+      suspend_user_account: {
+        Args: { p_user_id: string; p_reason: string; p_duration_hours?: number }
+        Returns: undefined
       }
       track_public_post_view: {
         Args: {

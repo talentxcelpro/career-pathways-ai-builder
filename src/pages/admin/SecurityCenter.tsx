@@ -1,0 +1,78 @@
+import React, { useState } from 'react';
+import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
+import { SecurityDashboard } from '@/components/admin/security/SecurityDashboard';
+import { SecurityEventsTable } from '@/components/admin/security/SecurityEventsTable';
+import { SecurityAlertsPanel } from '@/components/admin/security/SecurityAlertsPanel';
+import { AccountSuspensionPanel } from '@/components/admin/security/AccountSuspensionPanel';
+import { IPManagementPanel } from '@/components/admin/security/IPManagementPanel';
+import { SessionManagementPanel } from '@/components/admin/security/SessionManagementPanel';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Shield, AlertTriangle, Ban, Monitor, Users, Globe } from 'lucide-react';
+
+const SecurityCenter = () => {
+  const [activeTab, setActiveTab] = useState('dashboard');
+
+  return (
+    <UnifiedAdminLayout 
+      title="Security Center" 
+      description="Comprehensive security management and monitoring"
+    >
+      <div className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="events" className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              Events
+            </TabsTrigger>
+            <TabsTrigger value="alerts" className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              Alerts
+            </TabsTrigger>
+            <TabsTrigger value="accounts" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Accounts
+            </TabsTrigger>
+            <TabsTrigger value="ip-management" className="flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              IP Control
+            </TabsTrigger>
+            <TabsTrigger value="sessions" className="flex items-center gap-2">
+              <Monitor className="w-4 h-4" />
+              Sessions
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="dashboard">
+            <SecurityDashboard />
+          </TabsContent>
+
+          <TabsContent value="events">
+            <SecurityEventsTable />
+          </TabsContent>
+
+          <TabsContent value="alerts">
+            <SecurityAlertsPanel />
+          </TabsContent>
+
+          <TabsContent value="accounts">
+            <AccountSuspensionPanel />
+          </TabsContent>
+
+          <TabsContent value="ip-management">
+            <IPManagementPanel />
+          </TabsContent>
+
+          <TabsContent value="sessions">
+            <SessionManagementPanel />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </UnifiedAdminLayout>
+  );
+};
+
+export default SecurityCenter;
