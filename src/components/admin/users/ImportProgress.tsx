@@ -2,7 +2,7 @@
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Pause, Play, X, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Pause, Play, X, CheckCircle, XCircle, Clock, Wifi, WifiOff } from 'lucide-react';
 
 interface ImportProgressProps {
   progress: {
@@ -12,6 +12,7 @@ interface ImportProgressProps {
     failed: number;
     currentUser?: string;
     isRunning: boolean;
+    connectionStatus?: 'testing' | 'healthy' | 'unhealthy';
   };
   isPaused: boolean;
   onPause: () => void;
@@ -28,9 +29,35 @@ export const ImportProgress: React.FC<ImportProgressProps> = ({
 }) => {
   const progressPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
 
-  if (!progress.isRunning && progress.completed === 0) {
+  if (!progress.isRunning && progress.completed === 0 && !progress.connectionStatus) {
     return null;
   }
+
+  const getConnectionStatusIcon = () => {
+    switch (progress.connectionStatus) {
+      case 'testing':
+        return <Clock className="h-4 w-4 text-blue-500 animate-spin" />;
+      case 'healthy':
+        return <Wifi className="h-4 w-4 text-green-500" />;
+      case 'unhealthy':
+        return <WifiOff className="h-4 w-4 text-red-500" />;
+      default:
+        return null;
+    }
+  };
+
+  const getConnectionStatusText = () => {
+    switch (progress.connectionStatus) {
+      case 'testing':
+        return 'Testing connection...';
+      case 'healthy':
+        return 'Connection healthy';
+      case 'unhealthy':
+        return 'Connection issues detected';
+      default:
+        return '';
+    }
+  };
 
   return (
     <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
@@ -58,6 +85,14 @@ export const ImportProgress: React.FC<ImportProgressProps> = ({
           )}
         </div>
       </div>
+
+      {/* Connection Status */}
+      {progress.connectionStatus && (
+        <div className="flex items-center gap-2 text-sm">
+          {getConnectionStatusIcon()}
+          <span>{getConnectionStatusText()}</span>
+        </div>
+      )}
 
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
@@ -89,6 +124,14 @@ export const ImportProgress: React.FC<ImportProgressProps> = ({
       {progress.currentUser && (
         <div className="text-xs text-gray-600">
           Currently processing: {progress.currentUser}
+        </div>
+      )}
+
+      {/* Import Speed Recommendations */}
+      {progress.isRunning && (
+        <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+          💡 <strong>Tip:</strong> For best results, use "Slow" speed for large imports to avoid network issues.
+          Each request is spaced 3-8 seconds apart to prevent overwhelming the server.
         </div>
       )}
     </div>

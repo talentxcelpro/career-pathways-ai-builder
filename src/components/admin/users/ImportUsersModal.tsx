@@ -1,14 +1,16 @@
-import React, { useState, useCallback } from 'react';
+
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Download, FileText, AlertCircle, Settings } from 'lucide-react';
-import Papa from 'papaparse';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Upload, FileText, AlertTriangle } from 'lucide-react';
 import { useUserImport } from '@/hooks/useUserImport';
 import { ImportProgress } from './ImportProgress';
 import { ImportResults } from './ImportResults';
+import Papa from 'papaparse';
 
 interface ImportUsersModalProps {
   open: boolean;
@@ -28,228 +30,272 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
   onOpenChange,
   onUsersImported
 }) => {
-  const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [parsedUsers, setParsedUsers] = useState<ImportUser[]>([]);
-  const [parseError, setParseError] = useState<string>('');
-  const [importSpeed, setImportSpeed] = useState<'slow' | 'medium' | 'fast'>('medium');
+  const [file, setFile] = useState<File | null>(null);
+  const [speed, setSpeed] = useState<'slow' | 'medium' | 'fast'>('slow');
   const [maxRetries, setMaxRetries] = useState(3);
+  const [users, setUsers] = useState<ImportUser[]>([]);
+  const [parseErrors, setParseErrors] = useState<string[]>([]);
 
-  const {
-    progress,
-    results,
-    isPaused,
-    importUsers,
-    pauseImport,
-    resumeImport,
-    cancelImport
-  } = useUserImport();
+  const { progress, results, isPaused, importUsers, pauseImport, resumeImport, cancelImport } = useUserImport();
 
-  const downloadTemplate = () => {
-    const template = [
-      ['email', 'name', 'role', 'temporaryPassword'],
-      ['john.doe@company.com', 'John Doe', 'job_seeker', 'TempPass123!'],
-      ['jane.smith@company.com', 'Jane Smith', 'employer', ''],
-      ['admin@company.com', 'Admin User', 'admin', 'AdminPass456!']
-    ];
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
 
-    const csv = Papa.unparse(template);
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.setAttribute('hidden', '');
-    a.setAttribute('href', url);
-    a.setAttribute('download', 'user-import-template.csv');
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
+    if (selectedFile.type !== 'text/csv' && !selectedFile.name.endsWith('.csv')) {
+      setParseErrors(['Please select a CSV file']);
+      return;
+    }
 
-  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    setFile(selectedFile);
+    setParseErrors([]);
+    setUsers([]);
 
-    setCsvFile(file);
-    setParseError('');
-    setParsedUsers([]);
-
-    Papa.parse(file, {
+    Papa.parse(selectedFile, {
       header: true,
       skipEmptyLines: true,
-      complete: (results) => {
-        if (results.errors.length > 0) {
-          setParseError(`CSV parsing error: ${results.errors[0].message}`);
+      complete: (result) => {
+        console.log('CSV Parse Result:', result);
+        
+        if (result.errors && result.errors.length > 0) {
+          const errors = result.errors.map(error => `Row ${error.row}: ${error.message}`);
+          setParseErrors(errors);
           return;
         }
 
-        const users = results.data as any[];
-        const validUsers: ImportUser[] = [];
+        const parsedUsers: ImportUser[] = [];
         const errors: string[] = [];
 
-        users.forEach((row, index) => {
-          if (!row.email || !row.name) {
-            errors.push(`Row ${index + 2}: Missing email or name`);
+        result.data.forEach((row: any, index: number) => {
+          const rowNumber = index + 2; // +2 because of header row and 0-based index
+          
+          // Check for required columns
+          if (!row.email && !row.Email && !row.EMAIL) {
+            errors.push(`Row ${rowNumber}: Missing email column (use 'email', 'Email', or 'EMAIL')`);
+            return;
+          }
+          
+          if (!row.name && !row.Name && !row.NAME && !row['Full Name'] && !row['full_name']) {
+            errors.push(`Row ${rowNumber}: Missing name column (use 'name', 'Name', 'NAME', 'Full Name', or 'full_name')`);
             return;
           }
 
-          validUsers.push({
-            email: row.email.toString().trim(),
-            name: row.name.toString().trim(),
-            role: row.role?.toString().trim() || 'job_seeker',
-            temporaryPassword: row.temporaryPassword?.toString().trim() || undefined
+          const email = (row.email || row.Email || row.EMAIL || '').toString().trim();
+          const name = (row.name || row.Name || row.NAME || row['Full Name'] || row['full_name'] || '').toString().trim();
+          const role = (row.role || row.Role || row.ROLE || row.user_role || '').toString().trim().toLowerCase();
+          const temporaryPassword = (row.password || row.Password || row.temporary_password || '').toString().trim();
+
+          if (!email) {
+            errors.push(`Row ${rowNumber}: Email is empty`);
+            return;
+          }
+
+          if (!name) {
+            errors.push(`Row ${rowNumber}: Name is empty`);
+            return;
+          }
+
+          // Validate role if provided
+          const validRoles = ['job_seeker', 'employer', 'admin'];
+          const roleToUse = role || 'job_seeker';
+          
+          if (role && !validRoles.includes(roleToUse)) {
+            errors.push(`Row ${rowNumber}: Invalid role '${role}'. Use: ${validRoles.join(', ')}`);
+            return;
+          }
+
+          parsedUsers.push({
+            email,
+            name,
+            role: roleToUse,
+            ...(temporaryPassword && { temporaryPassword })
           });
         });
 
         if (errors.length > 0) {
-          setParseError(`Validation errors:\n${errors.join('\n')}`);
-          return;
+          setParseErrors(errors);
+        } else {
+          setUsers(parsedUsers);
+          console.log(`Parsed ${parsedUsers.length} users successfully`);
         }
-
-        if (validUsers.length === 0) {
-          setParseError('No valid users found in CSV file');
-          return;
-        }
-
-        setParsedUsers(validUsers);
-        console.log(`✅ Parsed ${validUsers.length} valid users from CSV`);
       },
       error: (error) => {
-        setParseError(`Failed to parse CSV: ${error.message}`);
+        setParseErrors([`Failed to parse CSV: ${error.message}`]);
       }
     });
-  }, []);
+  };
 
   const handleImport = async () => {
-    if (parsedUsers.length === 0) {
-      setParseError('No users to import');
-      return;
-    }
+    if (users.length === 0) return;
 
-    await importUsers(parsedUsers, {
-      speed: importSpeed,
-      maxRetries
-    });
-  };
-
-  const handleRetryFailed = async (failedUsers: any[]) => {
-    const usersToRetry = failedUsers.map(result => 
-      parsedUsers.find(user => user.email === result.email)
-    ).filter(Boolean) as ImportUser[];
-
-    if (usersToRetry.length > 0) {
-      await importUsers(usersToRetry, {
-        speed: importSpeed,
-        maxRetries
-      });
+    await importUsers(users, { speed, maxRetries });
+    
+    if (!progress.isRunning) {
+      onUsersImported();
     }
   };
 
-  const handleClose = () => {
-    if (progress.isRunning) {
-      cancelImport();
-    }
-    setCsvFile(null);
-    setParsedUsers([]);
-    setParseError('');
-    onOpenChange(false);
+  const handleRetryFailed = (failedUsers: any[]) => {
+    const retryUsers: ImportUser[] = failedUsers.map(result => ({
+      email: result.email,
+      name: result.email, // We don't have the original name, so use email
+      role: 'job_seeker' // Default role for retry
+    }));
+    
+    importUsers(retryUsers, { speed, maxRetries });
   };
 
-  const handleSuccess = () => {
-    onUsersImported();
-    handleClose();
+  const getSpeedDescription = (speedOption: string) => {
+    switch (speedOption) {
+      case 'slow':
+        return '8 seconds between requests - Recommended for large imports (100+ users)';
+      case 'medium':
+        return '5 seconds between requests - Good for medium imports (20-100 users)';
+      case 'fast':
+        return '3 seconds between requests - Only for small imports (<20 users)';
+      default:
+        return '';
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Import Users from CSV</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Template Download */}
-          <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-            <div className="flex items-center gap-3">
-              <FileText className="h-5 w-5 text-blue-600" />
-              <div>
-                <p className="font-medium text-blue-900">Need a template?</p>
-                <p className="text-sm text-blue-700">Download our CSV template to get started</p>
+          {/* CSV Format Guide */}
+          <Alert>
+            <FileText className="h-4 w-4" />
+            <AlertDescription>
+              <div className="space-y-2">
+                <p><strong>Required CSV columns:</strong></p>
+                <ul className="list-disc list-inside space-y-1 text-sm">
+                  <li><strong>email</strong> - User's email address (required)</li>
+                  <li><strong>name</strong> - User's full name (required)</li>
+                  <li><strong>role</strong> - One of: job_seeker, employer, admin (optional, defaults to job_seeker)</li>
+                  <li><strong>password</strong> - Temporary password (optional, defaults to TempPass123!)</li>
+                </ul>
+                <p className="text-xs text-gray-600 mt-2">
+                  Column names are flexible: use 'Email', 'Full Name', 'user_role', etc.
+                </p>
               </div>
-            </div>
-            <Button onClick={downloadTemplate} variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Download Template
-            </Button>
-          </div>
-
-          {/* Import Settings */}
-          <div className="grid grid-cols-2 gap-4 p-4 border rounded-lg">
-            <div className="space-y-2">
-              <Label>Import Speed</Label>
-              <Select value={importSpeed} onValueChange={(value: 'slow' | 'medium' | 'fast') => setImportSpeed(value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="slow">Slow (3s delay) - Most reliable</SelectItem>
-                  <SelectItem value="medium">Medium (1.5s delay) - Balanced</SelectItem>
-                  <SelectItem value="fast">Fast (0.8s delay) - May cause timeouts</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Max Retries</Label>
-              <Select value={maxRetries.toString()} onValueChange={(value) => setMaxRetries(parseInt(value))}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 retry</SelectItem>
-                  <SelectItem value="2">2 retries</SelectItem>
-                  <SelectItem value="3">3 retries</SelectItem>
-                  <SelectItem value="5">5 retries</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+            </AlertDescription>
+          </Alert>
 
           {/* File Upload */}
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="csv-file">Select CSV File</Label>
-              <input
-                id="csv-file"
-                type="file"
-                accept=".csv"
-                onChange={handleFileChange}
-                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-            </div>
-
-            {parseError && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="whitespace-pre-line">
-                  {parseError}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {parsedUsers.length > 0 && (
-              <Alert>
-                <FileText className="h-4 w-4" />
-                <AlertDescription>
-                  Successfully parsed {parsedUsers.length} users from CSV file.
-                  {parsedUsers.length > 20 && (
-                    <span className="block mt-1 text-amber-600">
-                      ⚠️ Large import detected. Consider using "Slow" speed to avoid timeouts.
-                    </span>
-                  )}
-                </AlertDescription>
-              </Alert>
-            )}
+          <div className="space-y-2">
+            <Label htmlFor="csv-file">Upload CSV File</Label>
+            <Input
+              id="csv-file"
+              type="file"
+              accept=".csv"
+              onChange={handleFileUpload}
+              className="cursor-pointer"
+            />
           </div>
 
-          {/* Progress */}
+          {/* Parse Errors */}
+          {parseErrors.length > 0 && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                <div className="space-y-1">
+                  <p className="font-medium">CSV parsing errors:</p>
+                  <ul className="list-disc list-inside space-y-1 text-sm">
+                    {parseErrors.map((error, index) => (
+                      <li key={index}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Preview */}
+          {users.length > 0 && (
+            <div className="space-y-2">
+              <Label>Preview ({users.length} users found)</Label>
+              <div className="max-h-32 overflow-y-auto border rounded-md p-2 bg-gray-50">
+                {users.slice(0, 5).map((user, index) => (
+                  <div key={index} className="text-sm py-1">
+                    {user.email} - {user.name} ({user.role})
+                  </div>
+                ))}
+                {users.length > 5 && (
+                  <div className="text-sm text-gray-500">
+                    ... and {users.length - 5} more users
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Import Settings */}
+          {users.length > 0 && !progress.isRunning && (
+            <div className="space-y-4 border-t pt-4">
+              <div className="space-y-3">
+                <Label>Import Speed</Label>
+                <RadioGroup value={speed} onValueChange={(value: any) => setSpeed(value)}>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="slow" id="slow" />
+                      <Label htmlFor="slow" className="flex-1">
+                        <div>
+                          <div className="font-medium">Slow (Recommended)</div>
+                          <div className="text-sm text-gray-600">
+                            {getSpeedDescription('slow')}
+                          </div>
+                        </div>
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="medium" id="medium" />
+                      <Label htmlFor="medium" className="flex-1">
+                        <div>
+                          <div className="font-medium">Medium</div>
+                          <div className="text-sm text-gray-600">
+                            {getSpeedDescription('medium')}
+                          </div>
+                        </div>
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="fast" id="fast" />
+                      <Label htmlFor="fast" className="flex-1">
+                        <div>
+                          <div className="font-medium">Fast</div>
+                          <div className="text-sm text-gray-600">
+                            {getSpeedDescription('fast')}
+                          </div>
+                        </div>
+                      </Label>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="retries">Max Retries per User</Label>
+                <Input
+                  id="retries"
+                  type="number"
+                  min="1"
+                  max="5"
+                  value={maxRetries}
+                  onChange={(e) => setMaxRetries(parseInt(e.target.value) || 3)}
+                  className="w-24"
+                />
+                <p className="text-sm text-gray-600">
+                  Number of retry attempts for failed imports (recommended: 3)
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Import Progress */}
           <ImportProgress
             progress={progress}
             isPaused={isPaused}
@@ -258,30 +304,24 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
             onCancel={cancelImport}
           />
 
-          {/* Results */}
-          <ImportResults
-            results={results}
+          {/* Import Results */}
+          <ImportResults 
+            results={results} 
             onRetryFailed={handleRetryFailed}
           />
 
           {/* Actions */}
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={handleClose} disabled={progress.isRunning}>
-              {progress.isRunning ? 'Close' : 'Cancel'}
+          <div className="flex justify-between pt-4 border-t">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              {progress.isRunning ? 'Minimize' : 'Close'}
             </Button>
-            {!progress.isRunning && results.length > 0 && results.some(r => r.success) && (
-              <Button onClick={handleSuccess}>
-                Complete Import
+            
+            {users.length > 0 && !progress.isRunning && (
+              <Button onClick={handleImport} className="flex items-center gap-2">
+                <Upload className="h-4 w-4" />
+                Import {users.length} Users
               </Button>
             )}
-            <Button
-              onClick={handleImport}
-              disabled={parsedUsers.length === 0 || progress.isRunning}
-              className="flex items-center gap-2"
-            >
-              <Upload className="h-4 w-4" />
-              {progress.isRunning ? 'Importing...' : `Import ${parsedUsers.length} Users`}
-            </Button>
           </div>
         </div>
       </DialogContent>

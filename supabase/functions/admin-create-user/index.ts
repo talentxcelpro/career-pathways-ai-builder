@@ -22,14 +22,11 @@ serve(async (req) => {
     // Environment validation
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 
     console.log(`[${requestId}] Environment check: {
   hasUrl: ${!!supabaseUrl},
-  hasAnonKey: ${!!supabaseAnonKey},
   hasServiceKey: ${!!supabaseServiceKey},
   urlLength: ${supabaseUrl?.length || 0},
-  anonKeyLength: ${supabaseAnonKey?.length || 0},
   serviceKeyLength: ${supabaseServiceKey?.length || 0}
 }`);
 
@@ -39,7 +36,7 @@ serve(async (req) => {
 
     // Authorization check
     const authHeader = req.headers.get('Authorization');
-    console.log(`[${requestId}] Authorization header present, length: ${authHeader?.length || 0}`);
+    console.log(`[${requestId}] Authorization header present: ${!!authHeader}`);
 
     // Handle GET request for health checks
     if (req.method === 'GET') {
@@ -63,23 +60,19 @@ serve(async (req) => {
     let bodyText = '';
     
     try {
-      // Method 1: Try to get text first
       bodyText = await req.text();
       console.log(`[${requestId}] Request body length: ${bodyText.length}`);
-      console.log(`[${requestId}] Request body preview: ${bodyText.substring(0, 200)}`);
       
       if (bodyText.length === 0) {
         throw new Error('Empty request body received');
       }
 
-      // Method 2: Parse JSON from text
       requestBody = JSON.parse(bodyText);
       console.log(`[${requestId}] Successfully parsed JSON body`);
       
     } catch (parseError) {
       console.error(`[${requestId}] Failed to parse request body:`, parseError);
       console.log(`[${requestId}] Raw body text: "${bodyText}"`);
-      console.log(`[${requestId}] Content-Type: ${req.headers.get('content-type')}`);
       
       return new Response(
         JSON.stringify({
@@ -92,32 +85,6 @@ serve(async (req) => {
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 400 
-        }
-      );
-    }
-
-    // Handle debug requests
-    if (requestBody.debug === true) {
-      console.log(`[${requestId}] Debug request received`);
-      return new Response(
-        JSON.stringify({
-          success: true,
-          debug: true,
-          message: 'Debug endpoint working',
-          environment: {
-            hasUrl: !!supabaseUrl,
-            hasAnonKey: !!supabaseAnonKey,
-            hasServiceKey: !!supabaseServiceKey,
-            urlLength: supabaseUrl?.length || 0,
-            anonKeyLength: supabaseAnonKey?.length || 0,
-            serviceKeyLength: supabaseServiceKey?.length || 0
-          },
-          timestamp: new Date().toISOString(),
-          requestId
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200 
         }
       );
     }
@@ -150,20 +117,30 @@ serve(async (req) => {
   hasPassword: ${!!temporaryPassword}
 }`);
 
-    const missingFields = {
-      userEmail: !userEmail,
-      userName: !userName
-    };
+    // Improved validation
+    const errors = [];
+    if (!userEmail || typeof userEmail !== 'string' || !userEmail.includes('@')) {
+      errors.push('Valid email is required');
+    }
+    if (!userName || typeof userName !== 'string' || userName.trim().length < 2) {
+      errors.push('Name must be at least 2 characters');
+    }
 
-    if (missingFields.userEmail || missingFields.userName) {
-      console.error(`[${requestId}] Missing required fields:`, missingFields);
+    // Validate role against known values
+    const validRoles = ['job_seeker', 'employer', 'admin'];
+    const roleToUse = userRole || 'job_seeker';
+    if (!validRoles.includes(roleToUse)) {
+      errors.push(`Invalid role. Must be one of: ${validRoles.join(', ')}`);
+    }
+
+    if (errors.length > 0) {
+      console.error(`[${requestId}] Validation errors:`, errors);
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Missing required fields',
-          details: 'Email and name are required',
-          missingFields,
-          receivedData: { userEmail, userName, userRole }
+          error: 'Validation failed',
+          details: errors.join('; '),
+          receivedData: { userEmail, userName, userRole: roleToUse }
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -177,23 +154,32 @@ serve(async (req) => {
 
     console.log(`[${requestId}] Creating user with email: ${userEmail}`);
 
-    // Create the user
+    // Create the user with improved error handling
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email: userEmail,
       password: temporaryPassword || 'TempPass123!',
       email_confirm: true,
       user_metadata: {
         full_name: userName,
-        role: userRole || 'job_seeker'
+        role: roleToUse
       }
     });
 
     if (authError) {
       console.error(`[${requestId}] Auth error creating user:`, authError);
+      
+      // Handle specific auth errors
+      let errorMessage = 'Failed to create user account';
+      if (authError.message?.includes('already registered')) {
+        errorMessage = 'User with this email already exists';
+      } else if (authError.message?.includes('email')) {
+        errorMessage = 'Invalid email address';
+      }
+      
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Failed to create user account',
+          error: errorMessage,
           details: authError.message
         }),
         { 
@@ -219,14 +205,14 @@ serve(async (req) => {
 
     console.log(`[${requestId}] User created successfully with ID: ${authData.user.id}`);
 
-    // Create/update the user profile
+    // Create/update the user profile with proper role handling
     const { error: profileError } = await supabase
       .from('profiles')
       .upsert({
         id: authData.user.id,
         full_name: userName,
         email: userEmail,
-        user_role: userRole || 'job_seeker',
+        user_role: roleToUse, // This should now work with the enum
         profile_completed: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -234,8 +220,10 @@ serve(async (req) => {
 
     if (profileError) {
       console.error(`[${requestId}] Profile creation error:`, profileError);
-      // Don't fail the entire operation if profile creation fails
-      console.log(`[${requestId}] User created but profile creation failed - continuing`);
+      
+      // If profile creation fails, we might want to clean up the auth user
+      // For now, we'll log the error but not fail the entire operation
+      console.log(`[${requestId}] User created but profile creation failed - auth user exists`);
     } else {
       console.log(`[${requestId}] Profile created/updated successfully`);
     }
@@ -249,7 +237,7 @@ serve(async (req) => {
           id: authData.user.id,
           email: userEmail,
           name: userName,
-          role: userRole || 'job_seeker'
+          role: roleToUse
         },
         message: 'User created successfully'
       }),

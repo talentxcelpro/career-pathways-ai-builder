@@ -15,6 +15,7 @@ interface ImportResult {
   success: boolean;
   error?: string;
   retryCount?: number;
+  errorType?: 'network' | 'validation' | 'server' | 'unknown';
 }
 
 interface ImportProgress {
@@ -24,6 +25,7 @@ interface ImportProgress {
   failed: number;
   currentUser?: string;
   isRunning: boolean;
+  connectionStatus?: 'testing' | 'healthy' | 'unhealthy';
 }
 
 export const useUserImport = () => {
@@ -40,16 +42,113 @@ export const useUserImport = () => {
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+  // Test Edge Function connectivity before starting import
+  const testConnectivity = async (): Promise<boolean> => {
+    try {
+      setProgress(prev => ({ ...prev, connectionStatus: 'testing' }));
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No authentication session found');
+      }
+
+      // Test with a simple health check
+      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+        body: { healthCheck: true },
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (error || !data?.success) {
+        setProgress(prev => ({ ...prev, connectionStatus: 'unhealthy' }));
+        return false;
+      }
+
+      setProgress(prev => ({ ...prev, connectionStatus: 'healthy' }));
+      return true;
+    } catch (error) {
+      console.error('Connectivity test failed:', error);
+      setProgress(prev => ({ ...prev, connectionStatus: 'unhealthy' }));
+      return false;
+    }
+  };
+
+  // Validate user data before processing
+  const validateUserData = (users: ImportUser[]): { valid: ImportUser[], invalid: ImportResult[] } => {
+    const valid: ImportUser[] = [];
+    const invalid: ImportResult[] = [];
+
+    users.forEach(user => {
+      const errors: string[] = [];
+      
+      if (!user.email || !user.email.includes('@')) {
+        errors.push('Invalid email format');
+      }
+      
+      if (!user.name || user.name.trim().length < 2) {
+        errors.push('Name must be at least 2 characters');
+      }
+
+      if (user.role && !['job_seeker', 'employer', 'admin'].includes(user.role)) {
+        errors.push('Invalid role. Must be: job_seeker, employer, or admin');
+      }
+
+      if (errors.length > 0) {
+        invalid.push({
+          email: user.email || 'Unknown',
+          success: false,
+          error: errors.join('; '),
+          errorType: 'validation',
+          retryCount: 0
+        });
+      } else {
+        valid.push({
+          ...user,
+          role: user.role || 'job_seeker'
+        });
+      }
+    });
+
+    return { valid, invalid };
+  };
+
+  const categorizeError = (error: any): 'network' | 'validation' | 'server' | 'unknown' => {
+    const errorMessage = error.message || error.toString().toLowerCase();
+    
+    if (errorMessage.includes('failed to fetch') || 
+        errorMessage.includes('network error') || 
+        errorMessage.includes('timeout') ||
+        errorMessage.includes('connection')) {
+      return 'network';
+    }
+    
+    if (errorMessage.includes('missing required fields') || 
+        errorMessage.includes('invalid') ||
+        errorMessage.includes('email_exists')) {
+      return 'validation';
+    }
+    
+    if (errorMessage.includes('internal server error') || 
+        errorMessage.includes('500')) {
+      return 'server';
+    }
+    
+    return 'unknown';
+  };
+
   const createUserWithRetry = async (
     user: ImportUser,
     maxRetries: number = 3,
-    baseDelay: number = 1000
+    baseDelay: number = 5000 // Increased to 5 seconds
   ): Promise<ImportResult> => {
     let lastError = '';
+    let lastErrorType: 'network' | 'validation' | 'server' | 'unknown' = 'unknown';
     
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        console.log(`Attempt ${attempt}/${maxRetries} for user: ${user.email}`);
+        console.log(`🔄 Attempt ${attempt}/${maxRetries} for user: ${user.email}`);
         
         const requestBody = {
           userEmail: user.email?.toString().trim(),
@@ -58,63 +157,73 @@ export const useUserImport = () => {
           ...(user.temporaryPassword && { temporaryPassword: user.temporaryPassword.toString().trim() })
         };
 
-        // Validate required fields
-        if (!requestBody.userEmail || !requestBody.userName) {
-          throw new Error(`Missing required fields: email=${!!requestBody.userEmail}, name=${!!requestBody.userName}`);
-        }
-
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
           throw new Error('No authentication session found');
         }
 
-        // Add request timeout
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Request timeout after 30 seconds')), 30000);
-        });
+        // Add longer timeout and proper error handling
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-        const requestPromise = supabase.functions.invoke('admin-create-user', {
-          body: requestBody,
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json'
+        try {
+          const { data, error } = await supabase.functions.invoke('admin-create-user', {
+            body: requestBody,
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          clearTimeout(timeoutId);
+
+          if (error) {
+            throw new Error(error.message || 'Edge Function call failed');
           }
-        });
 
-        const { data, error } = await Promise.race([requestPromise, timeoutPromise]) as any;
+          if (!data?.success) {
+            throw new Error(data?.error || 'Unknown error from Edge Function');
+          }
 
-        if (error) {
-          throw new Error(error.message || 'Edge Function call failed');
+          console.log(`✅ User ${user.email} created successfully`);
+          return { 
+            email: user.email, 
+            success: true, 
+            retryCount: attempt,
+            errorType: undefined
+          };
+
+        } catch (fetchError: any) {
+          clearTimeout(timeoutId);
+          throw fetchError;
         }
-
-        if (!data?.success) {
-          throw new Error(data?.error || 'Unknown error from Edge Function');
-        }
-
-        console.log(`✅ User ${user.email} created successfully`);
-        return { email: user.email, success: true, retryCount: attempt };
 
       } catch (error: any) {
         lastError = error.message || 'Unknown error';
-        console.error(`❌ Attempt ${attempt} failed for ${user.email}:`, lastError);
+        lastErrorType = categorizeError(error);
+        console.error(`❌ Attempt ${attempt} failed for ${user.email}:`, lastError, `(${lastErrorType})`);
 
         // Don't retry for validation errors
-        if (lastError.includes('Missing required fields') || 
-            lastError.includes('email_exists') ||
-            lastError.includes('Invalid request body')) {
+        if (lastErrorType === 'validation') {
           break;
         }
 
         // If not the last attempt, wait with exponential backoff
         if (attempt < maxRetries) {
-          const delay = baseDelay * Math.pow(2, attempt - 1) + Math.random() * 1000;
-          console.log(`⏳ Waiting ${delay}ms before retry...`);
+          const delay = baseDelay * Math.pow(2, attempt - 1) + Math.random() * 2000;
+          console.log(`⏳ Waiting ${Math.round(delay/1000)}s before retry...`);
           await sleep(delay);
         }
       }
     }
 
-    return { email: user.email, success: false, error: lastError, retryCount: maxRetries };
+    return { 
+      email: user.email, 
+      success: false, 
+      error: lastError, 
+      errorType: lastErrorType,
+      retryCount: maxRetries 
+    };
   };
 
   const importUsers = useCallback(async (
@@ -122,82 +231,118 @@ export const useUserImport = () => {
     options: {
       speed: 'slow' | 'medium' | 'fast';
       maxRetries: number;
-    } = { speed: 'medium', maxRetries: 3 }
+    } = { speed: 'slow', maxRetries: 3 }
   ) => {
     if (users.length === 0) {
       toast.error('No users to import');
       return;
     }
 
-    // Reset state
-    setResults([]);
+    console.log(`🚀 Starting import process for ${users.length} users`);
+
+    // Step 1: Test connectivity
+    toast.info('Testing connection to server...');
+    const isConnected = await testConnectivity();
+    if (!isConnected) {
+      toast.error('❌ Connection test failed. Please check your internet connection and try again.');
+      return;
+    }
+    toast.success('✅ Connection test passed');
+
+    // Step 2: Validate user data
+    const { valid: validUsers, invalid: invalidUsers } = validateUserData(users);
+    
+    if (invalidUsers.length > 0) {
+      console.log(`⚠️ Found ${invalidUsers.length} invalid users`);
+      setResults(invalidUsers);
+    }
+
+    if (validUsers.length === 0) {
+      toast.error('No valid users to import after validation');
+      setProgress({
+        total: users.length,
+        completed: users.length,
+        successful: 0,
+        failed: invalidUsers.length,
+        isRunning: false
+      });
+      return;
+    }
+
+    // Reset state for valid users
     setIsPaused(false);
     setProgress({
       total: users.length,
-      completed: 0,
+      completed: invalidUsers.length,
       successful: 0,
-      failed: 0,
-      isRunning: true
+      failed: invalidUsers.length,
+      isRunning: true,
+      connectionStatus: 'healthy'
     });
 
+    // Much more conservative delays to prevent overwhelming the system
     const delayMap = {
-      slow: 3000,
-      medium: 1500,
-      fast: 800
+      slow: 8000,    // 8 seconds - recommended for large imports
+      medium: 5000,  // 5 seconds 
+      fast: 3000     // 3 seconds - minimum recommended
     };
     const baseDelay = delayMap[options.speed];
 
-    console.log(`🚀 Starting import of ${users.length} users with ${options.speed} speed`);
-    toast.info(`Starting import of ${users.length} users...`);
+    console.log(`📊 Processing ${validUsers.length} valid users with ${options.speed} speed (${baseDelay}ms delay)`);
+    toast.info(`Starting import of ${validUsers.length} valid users with ${options.speed} speed...`);
 
-    const importResults: ImportResult[] = [];
+    const allResults: ImportResult[] = [...invalidUsers];
 
-    for (let i = 0; i < users.length; i++) {
+    // Process users sequentially (no concurrency to avoid rate limits)
+    for (let i = 0; i < validUsers.length; i++) {
       // Check if paused
       while (isPaused) {
         await sleep(500);
       }
 
-      const user = users[i];
+      const user = validUsers[i];
       
       setProgress(prev => ({
         ...prev,
         currentUser: user.email,
-        completed: i
+        completed: invalidUsers.length + i
       }));
 
+      console.log(`👤 Processing user ${i + 1}/${validUsers.length}: ${user.email}`);
+
       const result = await createUserWithRetry(user, options.maxRetries, baseDelay);
-      importResults.push(result);
+      allResults.push(result);
 
       setProgress(prev => ({
         ...prev,
-        completed: i + 1,
+        completed: invalidUsers.length + i + 1,
         successful: prev.successful + (result.success ? 1 : 0),
         failed: prev.failed + (result.success ? 0 : 1)
       }));
 
-      setResults([...importResults]);
+      setResults([...allResults]);
 
       // Add delay between requests (except for the last one)
-      if (i < users.length - 1) {
+      if (i < validUsers.length - 1) {
+        console.log(`⏸️ Waiting ${baseDelay/1000}s before next user...`);
         await sleep(baseDelay);
       }
     }
 
     setProgress(prev => ({ ...prev, isRunning: false, currentUser: undefined }));
 
-    const successful = importResults.filter(r => r.success).length;
-    const failed = importResults.filter(r => !r.success).length;
+    const successful = allResults.filter(r => r.success).length;
+    const failed = allResults.filter(r => !r.success).length;
+
+    console.log(`📊 Import completed: ${successful} successful, ${failed} failed`);
 
     if (successful > 0 && failed === 0) {
       toast.success(`✅ All ${successful} users imported successfully!`);
     } else if (successful > 0 && failed > 0) {
-      toast.warning(`⚠️ Import complete: ${successful} successful, ${failed} failed`);
+      toast.warning(`⚠️ Import complete: ${successful} successful, ${failed} failed. Check results for details.`);
     } else {
-      toast.error(`❌ Import failed: ${failed} users could not be imported`);
+      toast.error(`❌ Import failed: ${failed} users could not be imported. Check results for details.`);
     }
-
-    console.log(`📊 Import completed: ${successful} successful, ${failed} failed`);
   }, [isPaused]);
 
   const pauseImport = useCallback(() => {

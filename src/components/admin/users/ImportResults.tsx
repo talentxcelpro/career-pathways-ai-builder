@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, CheckCircle, XCircle, RotateCcw } from 'lucide-react';
+import { ChevronDown, ChevronRight, CheckCircle, XCircle, RotateCcw, AlertTriangle, Wifi, Server, ShieldAlert } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface ImportResult {
@@ -10,6 +10,7 @@ interface ImportResult {
   success: boolean;
   error?: string;
   retryCount?: number;
+  errorType?: 'network' | 'validation' | 'server' | 'unknown';
 }
 
 interface ImportResultsProps {
@@ -23,6 +24,7 @@ export const ImportResults: React.FC<ImportResultsProps> = ({
 }) => {
   const [showSuccessful, setShowSuccessful] = useState(false);
   const [showFailed, setShowFailed] = useState(true);
+  const [expandedErrorTypes, setExpandedErrorTypes] = useState<Record<string, boolean>>({});
 
   if (results.length === 0) {
     return null;
@@ -31,20 +33,79 @@ export const ImportResults: React.FC<ImportResultsProps> = ({
   const successful = results.filter(r => r.success);
   const failed = results.filter(r => !r.success);
 
+  // Group failed results by error type
+  const failedByType = failed.reduce((acc, result) => {
+    const type = result.errorType || 'unknown';
+    if (!acc[type]) acc[type] = [];
+    acc[type].push(result);
+    return acc;
+  }, {} as Record<string, ImportResult[]>);
+
+  const getErrorTypeIcon = (type: string) => {
+    switch (type) {
+      case 'network':
+        return <Wifi className="h-4 w-4" />;
+      case 'validation':
+        return <AlertTriangle className="h-4 w-4" />;
+      case 'server':
+        return <Server className="h-4 w-4" />;
+      default:
+        return <ShieldAlert className="h-4 w-4" />;
+    }
+  };
+
+  const getErrorTypeColor = (type: string) => {
+    switch (type) {
+      case 'network':
+        return 'text-orange-600';
+      case 'validation':
+        return 'text-yellow-600';
+      case 'server':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
+
+  const getErrorTypeDescription = (type: string) => {
+    switch (type) {
+      case 'network':
+        return 'Connection or timeout issues. Try using "Slow" speed or check your internet connection.';
+      case 'validation':
+        return 'Data validation errors. Check email format, name length, and role values.';
+      case 'server':
+        return 'Server-side errors. Contact support if this persists.';
+      default:
+        return 'Unknown error type. Contact support if this persists.';
+    }
+  };
+
+  const toggleErrorType = (type: string) => {
+    setExpandedErrorTypes(prev => ({
+      ...prev,
+      [type]: !prev[type]
+    }));
+  };
+
+  // Only show retry button for network and server errors
+  const retryableErrors = failed.filter(r => 
+    r.errorType === 'network' || r.errorType === 'server' || r.errorType === 'unknown'
+  );
+
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Import Results</CardTitle>
-          {failed.length > 0 && onRetryFailed && (
+          {retryableErrors.length > 0 && onRetryFailed && (
             <Button
-              onClick={() => onRetryFailed(failed)}
+              onClick={() => onRetryFailed(retryableErrors)}
               size="sm"
               variant="outline"
               className="flex items-center gap-2"
             >
               <RotateCcw className="h-4 w-4" />
-              Retry Failed ({failed.length})
+              Retry Network/Server Errors ({retryableErrors.length})
             </Button>
           )}
         </div>
@@ -82,7 +143,7 @@ export const ImportResults: React.FC<ImportResultsProps> = ({
           </div>
         )}
 
-        {/* Failed Results */}
+        {/* Failed Results - Grouped by Error Type */}
         {failed.length > 0 && (
           <div>
             <Button
@@ -95,24 +156,74 @@ export const ImportResults: React.FC<ImportResultsProps> = ({
               Failed ({failed.length})
             </Button>
             {showFailed && (
-              <div className="mt-2 space-y-2 pl-6">
-                {failed.map((result, index) => (
-                  <div key={index} className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{result.email}</span>
-                      {result.retryCount && (
-                        <Badge variant="destructive" className="text-xs">
-                          {result.retryCount} attempts
-                        </Badge>
-                      )}
+              <div className="mt-2 space-y-3 pl-6">
+                {Object.entries(failedByType).map(([errorType, errors]) => (
+                  <div key={errorType} className="space-y-2">
+                    <Button
+                      variant="ghost"
+                      onClick={() => toggleErrorType(errorType)}
+                      className={`flex items-center gap-2 p-0 h-auto font-medium ${getErrorTypeColor(errorType)}`}
+                    >
+                      {expandedErrorTypes[errorType] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                      {getErrorTypeIcon(errorType)}
+                      {errorType.charAt(0).toUpperCase() + errorType.slice(1)} Errors ({errors.length})
+                    </Button>
+                    
+                    {/* Error type description */}
+                    <div className="text-xs text-gray-600 italic pl-8">
+                      {getErrorTypeDescription(errorType)}
                     </div>
-                    <div className="text-xs text-red-600 pl-2">
-                      {result.error || 'Unknown error'}
-                    </div>
+
+                    {expandedErrorTypes[errorType] && (
+                      <div className="pl-8 space-y-2">
+                        {errors.map((result, index) => (
+                          <div key={index} className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium">{result.email}</span>
+                              {result.retryCount && (
+                                <Badge variant="destructive" className="text-xs">
+                                  {result.retryCount} attempts
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="text-xs text-red-600 pl-2">
+                              {result.error || 'Unknown error'}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Summary and Recommendations */}
+        {failed.length > 0 && (
+          <div className="bg-blue-50 p-3 rounded-lg text-sm">
+            <div className="font-medium text-blue-800 mb-2">💡 Troubleshooting Tips:</div>
+            <ul className="text-blue-700 space-y-1 list-disc list-inside">
+              {failedByType.network && (
+                <li>
+                  <strong>Network Issues ({failedByType.network.length}):</strong> Use "Slow" import speed, 
+                  check internet connection, or try again later
+                </li>
+              )}
+              {failedByType.validation && (
+                <li>
+                  <strong>Validation Issues ({failedByType.validation.length}):</strong> Check CSV format - 
+                  emails must contain @, names must be 2+ characters, roles must be valid
+                </li>
+              )}
+              {failedByType.server && (
+                <li>
+                  <strong>Server Issues ({failedByType.server.length}):</strong> Try again in a few minutes 
+                  or contact support if persisting
+                </li>
+              )}
+            </ul>
           </div>
         )}
       </CardContent>
