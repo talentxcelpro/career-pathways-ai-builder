@@ -8,6 +8,7 @@ import { ExportButton } from '@/components/admin/ExportButton';
 import { AddUserModal } from './AddUserModal';
 import { ImportUsersModal } from './ImportUsersModal';
 import { EmailManagementPanel } from './EmailManagementPanel';
+import { BulkCSVImport } from './BulkCSVImport';
 
 interface UserFiltersProps {
   searchTerm: string;
@@ -33,6 +34,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [showEmailPanel, setShowEmailPanel] = useState(false);
+  const [showBulkImport, setShowBulkImport] = useState(false);
 
   return (
     <>
@@ -73,6 +75,29 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
             
             {/* Action Buttons Row */}
             <div className="flex gap-2">
+              <Dialog open={showBulkImport} onOpenChange={setShowBulkImport}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <Upload className="h-4 w-4" />
+                    Bulk CSV Import
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Bulk CSV Import (100-10,000 users)</DialogTitle>
+                  </DialogHeader>
+                  <BulkCSVImport 
+                    onImportComplete={() => {
+                      setShowBulkImport(false);
+                      onUsersChanged();
+                    }} 
+                  />
+                </DialogContent>
+              </Dialog>
               <Button
                 variant="outline"
                 size="sm"
@@ -80,7 +105,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
                 className="flex items-center gap-2"
               >
                 <Upload className="h-4 w-4" />
-                Import CSV
+                Standard Import
               </Button>
               <ExportButton 
                 data={filteredUsers} 
