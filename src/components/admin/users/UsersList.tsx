@@ -19,17 +19,30 @@ import {
   Mail,
   Calendar
 } from 'lucide-react';
+import { UsersPagination } from './UsersPagination';
 
 interface UsersListProps {
   users: any[];
   isLoading: boolean;
   handleUserAction: (userId: string, action: string) => void;
+  currentPage: number;
+  totalPages: number;
+  pageSize: number;
+  totalCount: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
 }
 
 export const UsersList: React.FC<UsersListProps> = ({ 
   users, 
   isLoading, 
-  handleUserAction
+  handleUserAction,
+  currentPage,
+  totalPages,
+  pageSize,
+  totalCount,
+  onPageChange,
+  onPageSizeChange
 }) => {
   if (isLoading) {
     return (
@@ -55,7 +68,7 @@ export const UsersList: React.FC<UsersListProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Users ({users?.length || 0})</CardTitle>
+        <CardTitle>Users ({totalCount || 0})</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
@@ -131,6 +144,16 @@ export const UsersList: React.FC<UsersListProps> = ({
             ))}
           </TableBody>
         </Table>
+        
+        <UsersPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalCount={totalCount || 0}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={isLoading}
+        />
       </CardContent>
     </Card>
   );

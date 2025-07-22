@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,10 +10,12 @@ export const useUserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
   const queryClient = useQueryClient();
 
   const { data: users, isLoading, error, refetch } = useQuery({
-    queryKey: ['admin-users', searchTerm, roleFilter, statusFilter],
+    queryKey: ['admin-users', searchTerm, roleFilter, statusFilter, currentPage, pageSize],
     queryFn: async () => {
       let query = supabase
         .from('profiles')
@@ -33,7 +36,14 @@ export const useUserManagement = () => {
         query = query.eq('profile_completed', false);
       }
 
-      const { data: profilesData, error: profilesError } = await query.limit(50);
+      // Apply pagination only if pageSize is not 'all'
+      if (pageSize !== -1) {
+        const from = (currentPage - 1) * pageSize;
+        const to = from + pageSize - 1;
+        query = query.range(from, to);
+      }
+
+      const { data: profilesData, error: profilesError } = await query;
       if (profilesError) {
         console.error('Error fetching profiles:', profilesError);
         throw profilesError;
@@ -43,6 +53,36 @@ export const useUserManagement = () => {
     },
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Get total count for pagination
+  const { data: totalCount } = useQuery({
+    queryKey: ['admin-users-count', searchTerm, roleFilter, statusFilter],
+    queryFn: async () => {
+      let query = supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+
+      if (searchTerm.trim()) {
+        query = query.or(`full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
+      }
+
+      if (roleFilter !== 'all') {
+        query = query.eq('user_role', roleFilter as UserRole);
+      }
+
+      if (statusFilter === 'active') {
+        query = query.eq('profile_completed', true);
+      } else if (statusFilter === 'inactive') {
+        query = query.eq('profile_completed', false);
+      }
+
+      const { count, error } = await query;
+      if (error) throw error;
+      return count || 0;
+    },
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: userStats } = useQuery({
@@ -73,7 +113,6 @@ export const useUserManagement = () => {
 
   const updateUserStatus = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
-      // For now, we'll update the profile_completed status as a proxy for active/inactive
       const { error } = await supabase
         .from('profiles')
         .update({ profile_completed: isActive })
@@ -103,7 +142,7 @@ export const useUserManagement = () => {
     }
   };
 
-  const filteredUsers = users || [];
+  const totalPages = pageSize === -1 ? 1 : Math.ceil((totalCount || 0) / pageSize);
 
   return {
     searchTerm,
@@ -112,11 +151,17 @@ export const useUserManagement = () => {
     setRoleFilter,
     statusFilter,
     setStatusFilter,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
     users,
     isLoading,
     userStats,
+    totalCount,
+    totalPages,
     handleUserAction,
-    filteredUsers,
+    filteredUsers: users || [],
     refetch
   };
 };

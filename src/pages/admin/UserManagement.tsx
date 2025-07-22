@@ -14,8 +14,14 @@ const UserManagement = () => {
     setRoleFilter,
     statusFilter,
     setStatusFilter,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
     isLoading,
     userStats,
+    totalCount,
+    totalPages,
     handleUserAction,
     filteredUsers,
     refetch
@@ -44,6 +50,12 @@ const UserManagement = () => {
           users={filteredUsers}
           isLoading={isLoading}
           handleUserAction={handleUserAction}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalCount={totalCount || 0}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
         />
       </div>
     </UnifiedAdminLayout>
