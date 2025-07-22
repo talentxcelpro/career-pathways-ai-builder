@@ -92,29 +92,21 @@ export const useUserImport = () => {
     try {
       console.log(`Sending ${users.length} users to edge function for import`);
       
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session?.access_token) {
-        throw new Error('No authentication session available');
-      }
-
-      const response = await fetch('/functions/v1/import-users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.session.access_token}`,
-        },
-        body: JSON.stringify({ users })
+      const { data, error } = await supabase.functions.invoke('import-users', {
+        body: { users }
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
+      if (error) {
+        console.error('Edge function error:', error);
+        throw new Error(error.message || 'Edge function call failed');
       }
 
-      const result = await response.json();
-      console.log('Edge function response:', result);
-      
-      return result;
+      if (!data) {
+        throw new Error('No data returned from edge function');
+      }
+
+      console.log('Edge function response:', data);
+      return data as ImportResult;
 
     } catch (error) {
       console.error('Error calling import-users edge function:', error);
