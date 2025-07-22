@@ -2,528 +2,277 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import Papa from 'papaparse';
 
-export interface ImportUser {
-  email: string;
-  name: string;
-  role: string;
-  password?: string;
+export interface ImportProgress {
+  total: number;
+  completed: number;
+  successful: number;
+  failed: number;
+  currentUser?: string;
+  isRunning: boolean;
+  connectionStatus?: 'testing' | 'healthy' | 'unhealthy';
 }
 
 export interface ImportResult {
-  email: string;
-  success: boolean;
-  error?: string;
-  retryCount?: number;
-  errorType?: 'network' | 'validation' | 'server' | 'auth' | 'unknown';
-}
-
-export interface ImportProgress {
-  phase: 'idle' | 'validating' | 'connecting' | 'importing' | 'complete';
-  currentUser: number;
-  totalUsers: number;
   successful: number;
   failed: number;
-  connectionStatus: 'checking' | 'healthy' | 'unhealthy';
-  results: ImportResult[];
-  // Add compatibility properties for ImportUsersModal
-  total: number;
-  completed: number;
-  isRunning: boolean;
-  currentUserEmail?: string;
+  errors: string[];
 }
 
-const VALID_ROLES = ['job_seeker', 'employer', 'admin', 'candidate'];
+interface UserImportData {
+  email: string;
+  name: string;
+  role: string;
+  temporaryPassword?: string;
+}
 
 export const useUserImport = () => {
-  const [isImporting, setIsImporting] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState<ImportProgress>({
-    phase: 'idle',
-    currentUser: 0,
-    totalUsers: 0,
-    successful: 0,
-    failed: 0,
-    connectionStatus: 'checking',
-    results: [],
-    // Compatibility properties
     total: 0,
     completed: 0,
-    isRunning: false,
-    currentUserEmail: undefined
+    successful: 0,
+    failed: 0,
+    isRunning: false
   });
 
-  const resetProgress = () => {
-    setProgress({
-      phase: 'idle',
-      currentUser: 0,
-      totalUsers: 0,
-      successful: 0,
-      failed: 0,
-      connectionStatus: 'checking',
-      results: [],
-      total: 0,
-      completed: 0,
-      isRunning: false,
-      currentUserEmail: undefined
-    });
-  };
+  const [isPaused, setIsPaused] = useState(false);
+  const [shouldCancel, setShouldCancel] = useState(false);
 
   const testConnectivity = async (): Promise<boolean> => {
-    console.log('🔍 Starting connectivity test...');
+    console.log('Testing connectivity for user import...');
     
+    setProgress(prev => ({ 
+      ...prev, 
+      connectionStatus: 'testing' 
+    }));
+
     try {
-      // First check authentication - this is critical
+      // Test 1: Check authentication session
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        console.error('Authentication test failed:', sessionError);
+        throw new Error('Authentication session invalid');
+      }
+      console.log('✓ Authentication session valid');
+
+      // Test 2: Test Supabase Admin API access by attempting to get current user
+      const { data: userData, error: userError } = await supabase.auth.admin.getUserById(session.user.id);
+      if (userError) {
+        console.error('Supabase Admin API test failed:', userError);
+        throw new Error('Supabase Admin API access denied');
+      }
+      console.log('✓ Supabase Admin API accessible');
+
+      // Test 3: Test database connectivity by querying profiles table
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .limit(1);
       
-      if (sessionError) {
-        console.error('❌ Session error:', sessionError);
-        setProgress(prev => ({ ...prev, connectionStatus: 'unhealthy' }));
-        toast.error('Authentication error. Please refresh and try again.');
-        return false;
+      if (profileError) {
+        console.error('Database connectivity test failed:', profileError);
+        throw new Error('Database connection failed');
       }
+      console.log('✓ Database connectivity confirmed');
 
-      if (!session?.access_token) {
-        console.error('❌ No valid session or access token found');
-        setProgress(prev => ({ ...prev, connectionStatus: 'unhealthy' }));
-        toast.error('No valid authentication session. Please log out and log back in.');
-        return false;
-      }
+      setProgress(prev => ({ 
+        ...prev, 
+        connectionStatus: 'healthy' 
+      }));
 
-      console.log('✅ Authentication session verified');
-
-      // Test the Edge Function with proper logging
-      console.log('🔗 Testing Edge Function connectivity...');
-      
-      const healthCheckStart = Date.now();
-      const { data, error } = await supabase.functions.invoke('admin-create-user', {
-        body: { healthCheck: true },
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      const healthCheckTime = Date.now() - healthCheckStart;
-      console.log(`⏱️ Health check completed in ${healthCheckTime}ms`);
-
-      if (error) {
-        console.error('❌ Edge Function error:', error);
-        setProgress(prev => ({ ...prev, connectionStatus: 'unhealthy' }));
-        toast.error(`Edge Function error: ${error.message}`);
-        return false;
-      }
-
-      if (!data?.success && !data?.healthCheck) {
-        console.error('❌ Edge Function health check failed:', data);
-        setProgress(prev => ({ ...prev, connectionStatus: 'unhealthy' }));
-        toast.error('Edge Function health check failed');
-        return false;
-      }
-
-      console.log('✅ Edge Function connectivity verified:', data);
-      setProgress(prev => ({ ...prev, connectionStatus: 'healthy' }));
+      console.log('All connectivity tests passed successfully');
       return true;
 
     } catch (error) {
-      console.error('❌ Connectivity test failed:', error);
-      setProgress(prev => ({ ...prev, connectionStatus: 'unhealthy' }));
-      toast.error(`Connection test failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Connectivity test failed:', error);
+      setProgress(prev => ({ 
+        ...prev, 
+        connectionStatus: 'unhealthy' 
+      }));
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown connectivity error';
+      toast.error(`Connectivity test failed: ${errorMessage}`);
       return false;
     }
   };
 
-  const validateUser = (user: ImportUser, index: number): { isValid: boolean; error?: string; errorType?: ImportResult['errorType'] } => {
-    console.log(`🔍 Validating user ${index + 1}:`, { email: user.email, name: user.name, role: user.role });
-
-    // Email validation
-    if (!user.email || typeof user.email !== 'string') {
-      return { isValid: false, error: 'Email is required', errorType: 'validation' };
-    }
-    
-    if (!user.email.includes('@') || user.email.length < 5) {
-      return { isValid: false, error: 'Invalid email format', errorType: 'validation' };
-    }
-
-    // Name validation
-    if (!user.name || typeof user.name !== 'string') {
-      return { isValid: false, error: 'Name is required', errorType: 'validation' };
-    }
-    
-    if (user.name.trim().length < 2) {
-      return { isValid: false, error: 'Name must be at least 2 characters', errorType: 'validation' };
-    }
-
-    // Role validation
-    if (!user.role || typeof user.role !== 'string') {
-      return { isValid: false, error: 'Role is required', errorType: 'validation' };
-    }
-    
-    if (!VALID_ROLES.includes(user.role)) {
-      return { isValid: false, error: `Invalid role. Must be one of: ${VALID_ROLES.join(', ')}`, errorType: 'validation' };
-    }
-
-    return { isValid: true };
-  };
-
-  const createSingleUser = async (user: ImportUser, retryCount: number = 0): Promise<ImportResult> => {
-    const maxRetries = 3;
-    console.log(`👤 Creating user: ${user.email} (attempt ${retryCount + 1}/${maxRetries})`);
-
+  const createUserWithProfile = async (userData: UserImportData): Promise<{ success: boolean; error?: string }> => {
     try {
-      // Create user using Supabase Auth Admin API (direct approach)
-      console.log(`📤 Creating user directly via Supabase Auth: ${user.email}`);
-      
+      console.log(`Creating user: ${userData.email}`);
+
+      // Create user with Supabase Auth Admin API
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: user.email,
-        password: user.password || 'TempPass123!',
-        email_confirm: true, // Auto-confirm email to avoid email verification step
-        user_metadata: {
-          full_name: user.name,
-          role: user.role
-        }
+        email: userData.email,
+        password: userData.temporaryPassword || 'TempPass123!',
+        email_confirm: true // Auto-confirm email to avoid verification step
       });
 
-      if (authError) {
-        console.error(`❌ Auth error for ${user.email}:`, authError);
-        
-        // Determine error type
-        let errorType: ImportResult['errorType'] = 'unknown';
-        if (authError.message?.includes('already') || authError.message?.includes('exists')) {
-          errorType = 'validation';
-        } else if (authError.message?.includes('invalid') || authError.message?.includes('format')) {
-          errorType = 'validation';
-        } else {
-          errorType = 'server';
-        }
-
-        // Retry for server errors
-        if (errorType === 'server' && retryCount < maxRetries - 1) {
-          console.log(`🔄 Retrying ${user.email} due to server error...`);
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
-          return createSingleUser(user, retryCount + 1);
-        }
-
-        return {
-          email: user.email,
-          success: false,
-          error: authError.message || 'Failed to create user in auth system',
-          retryCount: retryCount + 1,
-          errorType
+      if (authError || !authData.user) {
+        console.error('User creation failed:', authError);
+        return { 
+          success: false, 
+          error: authError?.message || 'Failed to create user account' 
         };
       }
 
-      if (!authData?.user) {
-        console.error(`❌ No user data returned for ${user.email}`);
-        return {
-          email: user.email,
-          success: false,
-          error: 'No user data returned from auth system',
-          retryCount: retryCount + 1,
-          errorType: 'server'
-        };
-      }
+      console.log(`✓ User account created: ${userData.email}`);
 
-      // Create profile record in public.profiles table
-      console.log(`📝 Creating profile record for ${user.email}`);
-      
+      // Create user profile
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: authData.user.id,
-          full_name: user.name,
-          email: user.email,
-          user_role: user.role as any, // Cast to match enum
+          full_name: userData.name,
+          user_role: userData.role as any,
+          is_employer: userData.role === 'employer',
+          employer_status: userData.role === 'employer' ? 'approved' : null,
           profile_completed: true,
           onboarding_completed: true,
           first_login: false
         });
 
       if (profileError) {
-        console.error(`❌ Profile creation error for ${user.email}:`, profileError);
+        console.error('Profile creation failed:', profileError);
         
-        // If profile creation fails, we should delete the auth user to maintain consistency
+        // Cleanup: Delete the auth user since profile creation failed
         try {
           await supabase.auth.admin.deleteUser(authData.user.id);
-          console.log(`🧹 Cleaned up auth user ${user.email} due to profile creation failure`);
+          console.log('Cleaned up auth user after profile creation failure');
         } catch (cleanupError) {
-          console.error(`❌ Failed to cleanup auth user ${user.email}:`, cleanupError);
+          console.error('Failed to cleanup auth user:', cleanupError);
         }
-
-        return {
-          email: user.email,
-          success: false,
-          error: profileError.message || 'Failed to create user profile',
-          retryCount: retryCount + 1,
-          errorType: 'server'
+        
+        return { 
+          success: false, 
+          error: `Profile creation failed: ${profileError.message}` 
         };
       }
 
-      console.log(`✅ Successfully created user: ${user.email}`);
-      return {
-        email: user.email,
-        success: true,
-        retryCount: retryCount + 1
-      };
+      console.log(`✓ User profile created: ${userData.email}`);
+      return { success: true };
 
     } catch (error) {
-      console.error(`❌ Unexpected error creating user ${user.email}:`, error);
-      
-      // Retry for unexpected errors
-      if (retryCount < maxRetries - 1) {
-        console.log(`🔄 Retrying ${user.email} due to unexpected error...`);
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
-        return createSingleUser(user, retryCount + 1);
-      }
-
-      return {
-        email: user.email,
-        success: false,
-        error: error instanceof Error ? error.message : 'Unexpected error occurred',
-        retryCount: retryCount + 1,
-        errorType: 'unknown'
+      console.error('Unexpected error during user creation:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unexpected error' 
       };
     }
   };
 
-  const parseCSV = (csvContent: string): Promise<ImportUser[]> => {
-    return new Promise((resolve, reject) => {
-      console.log('📋 Parsing CSV content...');
-      
-      Papa.parse(csvContent, {
-        header: true,
-        skipEmptyLines: true,
-        transformHeader: (header: string) => header.trim().toLowerCase(),
-        complete: (results) => {
-          console.log('📊 CSV parse results:', {
-            data: results.data,
-            errors: results.errors,
-            meta: results.meta
-          });
+  const importUsers = async (
+    users: UserImportData[],
+    speed: 'fast' | 'medium' | 'slow' = 'medium'
+  ): Promise<ImportResult> => {
+    console.log(`Starting import of ${users.length} users with ${speed} speed`);
+    
+    // Test connectivity first
+    const isConnected = await testConnectivity();
+    if (!isConnected) {
+      throw new Error('Connection test failed. Please check your internet connection and authentication.');
+    }
 
-          if (results.errors.length > 0) {
-            console.error('❌ CSV parsing errors:', results.errors);
-            reject(new Error(`CSV parsing failed: ${results.errors[0].message}`));
-            return;
-          }
+    const errors: string[] = [];
+    let successful = 0;
+    let failed = 0;
 
-          const users = results.data as ImportUser[];
-          console.log(`✅ Parsed ${users.length} users from CSV`);
-          resolve(users);
-        },
-        error: (error) => {
-          console.error('❌ CSV parsing error:', error);
-          reject(new Error(`Failed to parse CSV: ${error.message}`));
-        }
-      });
+    // Speed settings (delays between requests)
+    const delays = {
+      fast: 1000,   // 1 second
+      medium: 3000, // 3 seconds  
+      slow: 5000    // 5 seconds
+    };
+
+    setProgress({
+      total: users.length,
+      completed: 0,
+      successful: 0,
+      failed: 0,
+      isRunning: true,
+      connectionStatus: 'healthy'
     });
-  };
 
-  const importUsers = async (usersOrCsv: ImportUser[] | string, options?: { speed?: 'fast' | 'normal' | 'slow'; maxRetries?: number }) => {
-    console.log('🚀 Starting user import process...');
-    
-    setIsImporting(true);
-    resetProgress();
-    
-    const importSpeed = options?.speed || 'normal';
-    
-    try {
-      let users: ImportUser[];
+    setShouldCancel(false);
+    setIsPaused(false);
+
+    for (let i = 0; i < users.length; i++) {
+      // Check for cancellation
+      if (shouldCancel) {
+        console.log('Import cancelled by user');
+        break;
+      }
+
+      // Handle pause
+      while (isPaused && !shouldCancel) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+
+      const user = users[i];
       
-      // Handle both array of users and CSV string
-      if (typeof usersOrCsv === 'string') {
-        // Phase 1: Validate CSV
-        setProgress(prev => ({ ...prev, phase: 'validating', isRunning: true }));
-        console.log('📋 Phase 1: Validating CSV...');
-        
-        users = await parseCSV(usersOrCsv);
+      setProgress(prev => ({
+        ...prev,
+        currentUser: user.email,
+        completed: i
+      }));
+
+      const result = await createUserWithProfile(user);
+      
+      if (result.success) {
+        successful++;
+        console.log(`✓ Successfully imported: ${user.email}`);
       } else {
-        // Direct array of users
-        users = usersOrCsv;
-        setProgress(prev => ({ ...prev, phase: 'validating', isRunning: true }));
-      }
-      
-      if (users.length === 0) {
-        throw new Error('No valid users found in CSV file');
+        failed++;
+        const errorMsg = `${user.email}: ${result.error}`;
+        errors.push(errorMsg);
+        console.error(`✗ Failed to import: ${errorMsg}`);
       }
 
-      console.log(`📊 Found ${users.length} users to import`);
-      setProgress(prev => ({ ...prev, totalUsers: users.length, total: users.length }));
+      setProgress(prev => ({
+        ...prev,
+        completed: i + 1,
+        successful,
+        failed
+      }));
 
-      // Phase 2: Test connectivity
-      setProgress(prev => ({ ...prev, phase: 'connecting' }));
-      console.log('🔗 Phase 2: Testing connectivity...');
-      
-      const isConnected = await testConnectivity();
-      if (!isConnected) {
-        throw new Error('Connection test failed. Please check your internet connection and authentication.');
+      // Add delay between requests (except for the last one)
+      if (i < users.length - 1 && !shouldCancel) {
+        await new Promise(resolve => setTimeout(resolve, delays[speed]));
       }
-
-      // Phase 3: Import users
-      setProgress(prev => ({ ...prev, phase: 'importing' }));
-      console.log('👥 Phase 3: Importing users...');
-
-      const results: ImportResult[] = [];
-      const delays = { fast: 100, normal: 500, slow: 1000 };
-      const delay = delays[importSpeed];
-
-      for (let i = 0; i < users.length; i++) {
-        const user = users[i];
-        console.log(`\n--- Processing user ${i + 1}/${users.length}: ${user.email} ---`);
-
-        // Update progress
-        setProgress(prev => ({ 
-          ...prev, 
-          currentUser: i + 1,
-          completed: i + 1,
-          currentUserEmail: user.email,
-          results: [...results]
-        }));
-
-        // Validate user data
-        const validation = validateUser(user, i);
-        if (!validation.isValid) {
-          console.error(`❌ Validation failed for ${user.email}:`, validation.error);
-          results.push({
-            email: user.email,
-            success: false,
-            error: validation.error,
-            retryCount: 1,
-            errorType: validation.errorType
-          });
-          continue;
-        }
-
-        // Create user
-        const result = await createSingleUser(user);
-        results.push(result);
-
-        // Update counters
-        const successful = results.filter(r => r.success).length;
-        const failed = results.filter(r => !r.success).length;
-
-        setProgress(prev => ({ 
-          ...prev, 
-          successful,
-          failed,
-          results: [...results]
-        }));
-
-        // Add delay between requests to avoid overwhelming the server
-        if (i < users.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, delay));
-        }
-      }
-
-      // Phase 4: Complete
-      setProgress(prev => ({ ...prev, phase: 'complete', isRunning: false }));
-      
-      const finalSuccessful = results.filter(r => r.success).length;
-      const finalFailed = results.filter(r => !r.success).length;
-
-      console.log(`\n🎉 Import completed! ${finalSuccessful} successful, ${finalFailed} failed`);
-
-      if (finalSuccessful > 0) {
-        toast.success(`Successfully imported ${finalSuccessful} users!`);
-      }
-      
-      if (finalFailed > 0) {
-        toast.error(`❌ Import failed: ${finalFailed} users could not be imported. Check results for details.`);
-      }
-
-    } catch (error) {
-      console.error('❌ Import process failed:', error);
-      toast.error(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      setProgress(prev => ({ ...prev, phase: 'idle', isRunning: false }));
-    } finally {
-      setIsImporting(false);
     }
-  };
 
-  const retryFailedUsers = async (failedResults: ImportResult[]) => {
-    console.log(`🔄 Retrying ${failedResults.length} failed users...`);
+    setProgress(prev => ({
+      ...prev,
+      isRunning: false,
+      currentUser: undefined
+    }));
+
+    const result = { successful, failed, errors };
+    console.log('Import completed:', result);
     
-    setIsImporting(true);
-    
-    try {
-      // Test connectivity first
-      const isConnected = await testConnectivity();
-      if (!isConnected) {
-        throw new Error('Connection test failed');
-      }
-
-      const retryResults: ImportResult[] = [];
-      
-      for (const failedResult of failedResults) {
-        const user: ImportUser = {
-          email: failedResult.email,
-          name: 'Retry User', // We don't have the original name, but Edge Function might not need it for retry
-          role: 'job_seeker', // Default role for retry
-          password: 'TempPass123!'
-        };
-
-        const result = await createSingleUser(user);
-        retryResults.push(result);
-
-        // Update progress
-        const currentResults = progress.results.map(r => 
-          r.email === failedResult.email ? result : r
-        );
-        
-        const successful = currentResults.filter(r => r.success).length;
-        const failed = currentResults.filter(r => !r.success).length;
-
-        setProgress(prev => ({
-          ...prev,
-          successful,
-          failed,
-          results: currentResults
-        }));
-      }
-
-      const retrySuccessful = retryResults.filter(r => r.success).length;
-      
-      if (retrySuccessful > 0) {
-        toast.success(`Successfully imported ${retrySuccessful} users on retry!`);
-      } else {
-        toast.error('All retry attempts failed');
-      }
-
-    } catch (error) {
-      console.error('❌ Retry failed:', error);
-      toast.error(`Retry failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setIsImporting(false);
-    }
+    return result;
   };
 
   const pauseImport = () => {
+    console.log('Pausing import...');
     setIsPaused(true);
-    // Note: Actual pause functionality would need to be implemented
   };
 
   const resumeImport = () => {
+    console.log('Resuming import...');
     setIsPaused(false);
-    // Note: Actual resume functionality would need to be implemented
   };
 
   const cancelImport = () => {
+    console.log('Cancelling import...');
+    setShouldCancel(true);
     setIsPaused(false);
-    setIsImporting(false);
-    setProgress(prev => ({ ...prev, phase: 'idle', isRunning: false }));
   };
 
   return {
-    importUsers,
-    retryFailedUsers,
-    testConnectivity,
     progress,
-    isImporting,
-    resetProgress,
-    // Additional properties expected by ImportUsersModal
-    results: progress.results,
     isPaused,
+    importUsers,
+    testConnectivity,
     pauseImport,
     resumeImport,
     cancelImport
