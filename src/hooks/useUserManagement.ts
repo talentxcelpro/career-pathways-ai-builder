@@ -32,10 +32,11 @@ export const useUserManagement = () => {
         .order('created_at', { ascending: false });
 
       if (searchTerm.trim()) {
-        query = query.or(`full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
+        query = query.ilike('full_name', `%${searchTerm}%`);
       }
 
-      if (roleFilter !== 'all') {
+      // Handle role filtering - for admin roles we'll filter in post-processing
+      if (roleFilter !== 'all' && roleFilter !== 'admin') {
         query = query.eq('user_role', roleFilter as UserRole);
       }
 
@@ -78,7 +79,45 @@ export const useUserManagement = () => {
         throw profilesError;
       }
 
-      return profilesData || [];
+      // Get all user roles for admin detection
+      const { data: allUserRoles } = await supabase
+        .from('user_roles')
+        .select('user_id, role, is_active')
+        .eq('is_active', true)
+        .in('role', ['super_admin', 'admin', 'moderator']);
+
+      // Get emails from auth.users for each profile
+      const profilesWithEmails = await Promise.all(
+        (profilesData || []).map(async (profile) => {
+          const { data: userData } = await supabase.auth.admin.getUserById(profile.id);
+          const adminRoles = (allUserRoles || []).filter(role => role.user_id === profile.id);
+          
+          return {
+            ...profile,
+            email: userData.user?.email || 'No email',
+            admin_roles: adminRoles
+          };
+        })
+      );
+
+      // Filter by admin role if needed
+      let filteredProfiles = profilesWithEmails;
+      if (roleFilter === 'admin') {
+        filteredProfiles = profilesWithEmails.filter(profile => 
+          profile.admin_roles && profile.admin_roles.length > 0
+        );
+      }
+
+      // Apply search term filter on emails after fetching (if needed for email search)
+      if (searchTerm.trim()) {
+        const lowerSearchTerm = searchTerm.toLowerCase();
+        filteredProfiles = filteredProfiles.filter(profile => 
+          profile.email?.toLowerCase().includes(lowerSearchTerm) ||
+          profile.full_name?.toLowerCase().includes(lowerSearchTerm)
+        );
+      }
+
+      return filteredProfiles;
     },
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -92,11 +131,23 @@ export const useUserManagement = () => {
         .from('profiles')
         .select('*', { count: 'exact', head: true });
 
-      if (searchTerm.trim()) {
-        query = query.or(`full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
-      }
+      // Note: Search filtering will be handled in post-processing since emails come from auth.users
 
-      if (roleFilter !== 'all') {
+      if (roleFilter === 'admin') {
+        // For admin filter, we need to count profiles that have admin roles
+        const { data: adminUsers } = await supabase
+          .from('user_roles')
+          .select('user_id')
+          .in('role', ['super_admin', 'admin', 'moderator'])
+          .eq('is_active', true);
+        
+        if (adminUsers && adminUsers.length > 0) {
+          const adminUserIds = adminUsers.map(u => u.user_id);
+          query = query.in('id', adminUserIds);
+        } else {
+          query = query.eq('id', '00000000-0000-0000-0000-000000000000'); // No results
+        }
+      } else if (roleFilter !== 'all') {
         query = query.eq('user_role', roleFilter as UserRole);
       }
 
@@ -136,6 +187,13 @@ export const useUserManagement = () => {
   const { data: userStats } = useQuery({
     queryKey: ['user-stats'],
     queryFn: async () => {
+      // Get admin count from user_roles table
+      const { count: admins } = await supabase
+        .from('user_roles')
+        .select('*', { count: 'exact', head: true })
+        .in('role', ['super_admin', 'admin', 'moderator'])
+        .eq('is_active', true);
+
       const [
         { count: totalUsers },
         { count: activeUsers },
@@ -144,8 +202,7 @@ export const useUserManagement = () => {
         { count: unverifiedUsers },
         { count: employers },
         { count: jobSeekers },
-        { count: candidates },
-        { count: admins }
+        { count: candidates }
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('profile_completed', true),
@@ -155,8 +212,7 @@ export const useUserManagement = () => {
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('profile_completed', false),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'employer'),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'job_seeker'),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'candidate'),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'admin')
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'candidate')
       ]);
 
       return {

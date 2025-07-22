@@ -149,9 +149,20 @@ export const UsersList: React.FC<UsersListProps> = ({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge className={getRoleBadgeColor(user.user_role)}>
-                    {user.user_role?.replace('_', ' ') || 'Unknown'}
-                  </Badge>
+                  <div className="flex flex-wrap gap-1">
+                    {/* Show admin role if user has admin privileges */}
+                    {user.admin_roles && user.admin_roles.length > 0 ? (
+                      user.admin_roles.map((roleData: any, index: number) => (
+                        <Badge key={index} className="bg-red-100 text-red-800">
+                          {roleData.role?.replace('_', ' ') || 'Admin'}
+                        </Badge>
+                      ))
+                    ) : (
+                      <Badge className={getRoleBadgeColor(user.user_role)}>
+                        {user.user_role?.replace('_', ' ') || 'User'}
+                      </Badge>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <Badge variant={user.profile_completed ? 'default' : 'secondary'}>
