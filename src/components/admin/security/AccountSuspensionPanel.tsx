@@ -80,9 +80,7 @@ export const AccountSuspensionPanel = () => {
                         <SelectValue placeholder="Choose a user to suspend" />
                       </SelectTrigger>
                       <SelectContent>
-                        {filteredUsers?.filter(user => 
-                          !Array.isArray(user.user_security_settings) || !user.user_security_settings.some((setting: any) => setting?.account_status === 'suspended')
-                        ).map(user => (
+                        {filteredUsers?.map(user => (
                           <SelectItem key={user.id} value={user.id}>
                             {user.full_name} ({user.email})
                           </SelectItem>
@@ -147,9 +145,6 @@ export const AccountSuspensionPanel = () => {
           ) : (
             <div className="space-y-4">
               {suspendedUsers.map((user) => {
-                const securitySettings = user.user_security_settings?.[0];
-                const isLockoutActive = securitySettings?.lockout_until && new Date(securitySettings.lockout_until) > new Date();
-                
                 return (
                   <div key={user.id} className="border border-red-200 rounded-lg p-4 bg-red-50 dark:bg-red-950">
                     <div className="flex items-start justify-between">
@@ -160,12 +155,6 @@ export const AccountSuspensionPanel = () => {
                             <Ban className="w-3 h-3 mr-1" />
                             Suspended
                           </Badge>
-                          {isLockoutActive && (
-                            <Badge variant="outline" className="text-orange-600">
-                              <Clock className="w-3 h-3 mr-1" />
-                              Temporary
-                            </Badge>
-                          )}
                         </div>
                         <p className="text-sm text-muted-foreground mb-1">
                           Email: {user.email}
@@ -173,14 +162,6 @@ export const AccountSuspensionPanel = () => {
                         <p className="text-sm text-muted-foreground mb-1">
                           Role: {user.user_role || 'User'}
                         </p>
-                        {securitySettings?.lockout_until && (
-                          <p className="text-sm text-orange-600 font-medium">
-                            {isLockoutActive 
-                              ? `Suspended until: ${new Date(securitySettings.lockout_until).toLocaleString()}`
-                              : 'Suspension period has expired'
-                            }
-                          </p>
-                        )}
                         <p className="text-sm text-muted-foreground mt-2">
                           Account created: {formatDistanceToNow(new Date(user.created_at), { addSuffix: true })}
                         </p>
