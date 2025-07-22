@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Filter } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PeopleSearchProps {
   searchTerm: string;
@@ -22,6 +24,40 @@ export const PeopleSearch: React.FC<PeopleSearchProps> = ({
   industryFilter,
   setIndustryFilter
 }) => {
+  // Fetch unique locations from user profiles
+  const { data: locations } = useQuery({
+    queryKey: ['unique-locations'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('location')
+        .not('location', 'is', null)
+        .neq('location', '');
+        
+      if (error) throw error;
+      
+      const uniqueLocations = [...new Set(data?.map(item => item.location?.trim()).filter(Boolean))];
+      return uniqueLocations.sort();
+    }
+  });
+
+  // Fetch unique industries from user profiles
+  const { data: industries } = useQuery({
+    queryKey: ['unique-industries'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('industry')
+        .not('industry', 'is', null)
+        .neq('industry', '');
+        
+      if (error) throw error;
+      
+      const uniqueIndustries = [...new Set(data?.map(item => item.industry?.trim()).filter(Boolean))];
+      return uniqueIndustries.sort();
+    }
+  });
+
   return (
     <Card className="mb-8">
       <CardHeader>
@@ -47,10 +83,11 @@ export const PeopleSearch: React.FC<PeopleSearchProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Locations</SelectItem>
-              <SelectItem value="New York">New York</SelectItem>
-              <SelectItem value="San Francisco">San Francisco</SelectItem>
-              <SelectItem value="London">London</SelectItem>
-              <SelectItem value="Toronto">Toronto</SelectItem>
+              {locations?.map((location) => (
+                <SelectItem key={location} value={location}>
+                  {location}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Select value={industryFilter} onValueChange={setIndustryFilter}>
@@ -59,10 +96,11 @@ export const PeopleSearch: React.FC<PeopleSearchProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Industries</SelectItem>
-              <SelectItem value="Technology">Technology</SelectItem>
-              <SelectItem value="Finance">Finance</SelectItem>
-              <SelectItem value="Healthcare">Healthcare</SelectItem>
-              <SelectItem value="Education">Education</SelectItem>
+              {industries?.map((industry) => (
+                <SelectItem key={industry} value={industry}>
+                  {industry}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
