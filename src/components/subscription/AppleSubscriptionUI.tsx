@@ -115,6 +115,21 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         return;
       }
 
+      // Test edge function connectivity first
+      console.log('Testing edge function connectivity...');
+      try {
+        const { data: testData, error: testError } = await supabase.functions.invoke('test-connection');
+        console.log('Edge function test result:', testData, testError);
+      } catch (testError) {
+        console.error('Edge function connectivity test failed:', testError);
+        toast({
+          title: "Service Unavailable",
+          description: "Payment service is temporarily unavailable. Please try again in a few moments.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Find the plan by name
       const { data: planData } = await supabase
         .from('subscription_plans')
