@@ -2,7 +2,7 @@
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Pause, Play, X, CheckCircle, XCircle, Clock, Wifi, WifiOff } from 'lucide-react';
+import { Pause, Play, X, CheckCircle, XCircle, Clock, Wifi, WifiOff, Zap, Database } from 'lucide-react';
 
 interface ImportProgressProps {
   progress: {
@@ -13,6 +13,10 @@ interface ImportProgressProps {
     currentUser?: string;
     isRunning: boolean;
     connectionStatus?: 'testing' | 'healthy' | 'unhealthy';
+    processedBatches?: number;
+    totalBatches?: number;
+    processingTimeMs?: number;
+    usersPerSecond?: number;
   };
   isPaused: boolean;
   onPause: () => void;
@@ -59,10 +63,18 @@ export const ImportProgress: React.FC<ImportProgressProps> = ({
     }
   };
 
+  const formatTime = (ms: number) => {
+    const seconds = Math.round(ms / 1000);
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}m ${remainingSeconds}s`;
+  };
+
   return (
     <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
       <div className="flex items-center justify-between">
-        <h3 className="font-medium">Import Progress</h3>
+        <h3 className="font-medium">Enhanced Batch Import Progress</h3>
         <div className="flex gap-2">
           {progress.isRunning && (
             <>
@@ -104,6 +116,34 @@ export const ImportProgress: React.FC<ImportProgressProps> = ({
         <Progress value={progressPercentage} className="h-2" />
       </div>
 
+      {/* Batch Processing Information */}
+      {(progress.processedBatches !== undefined || progress.totalBatches !== undefined) && (
+        <div className="flex items-center gap-2 text-sm bg-blue-50 p-2 rounded">
+          <Database className="h-4 w-4 text-blue-500" />
+          <span>
+            Batch Processing: {progress.processedBatches || 0} / {progress.totalBatches || 0} batches
+          </span>
+        </div>
+      )}
+
+      {/* Performance Metrics */}
+      {(progress.processingTimeMs || progress.usersPerSecond) && (
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          {progress.processingTimeMs && (
+            <div className="flex items-center gap-2 bg-green-50 p-2 rounded">
+              <Clock className="h-4 w-4 text-green-500" />
+              <span>Time: {formatTime(progress.processingTimeMs)}</span>
+            </div>
+          )}
+          {progress.usersPerSecond && (
+            <div className="flex items-center gap-2 bg-purple-50 p-2 rounded">
+              <Zap className="h-4 w-4 text-purple-500" />
+              <span>Speed: {progress.usersPerSecond}/sec</span>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="grid grid-cols-3 gap-4 text-sm">
         <div className="flex items-center gap-2">
           <CheckCircle className="h-4 w-4 text-green-500" />
@@ -127,11 +167,24 @@ export const ImportProgress: React.FC<ImportProgressProps> = ({
         </div>
       )}
 
-      {/* Import Speed Recommendations */}
+      {/* Enhanced Import Speed Recommendations */}
       {progress.isRunning && (
         <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
-          💡 <strong>Tip:</strong> For best results, use "Slow" speed for large imports to avoid network issues.
-          Each request is spaced 3-8 seconds apart to prevent overwhelming the server.
+          <div className="font-semibold mb-1">🚀 Enhanced Batch Processing Active</div>
+          <div>• Users are processed in parallel batches for maximum efficiency</div>
+          <div>• "Fast" speed: Optimized for high volume (10K+ users daily)</div>
+          <div>• "Medium" speed: Balanced performance and stability</div>
+          <div>• "Slow" speed: Conservative approach for maximum reliability</div>
+        </div>
+      )}
+
+      {/* High Volume Tips */}
+      {progress.total >= 1000 && !progress.isRunning && (
+        <div className="text-xs text-green-600 bg-green-50 p-2 rounded">
+          <div className="font-semibold">💡 High Volume Import Tips:</div>
+          <div>• For 10K+ daily imports, consider using "Fast" speed</div>
+          <div>• Monitor system performance during large imports</div>
+          <div>• Split extremely large imports (50K+) into multiple sessions</div>
         </div>
       )}
     </div>

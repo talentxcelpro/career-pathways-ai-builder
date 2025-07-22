@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -10,12 +11,20 @@ export interface ImportProgress {
   currentUser?: string;
   isRunning: boolean;
   connectionStatus?: 'testing' | 'healthy' | 'unhealthy';
+  processedBatches?: number;
+  totalBatches?: number;
+  processingTimeMs?: number;
+  usersPerSecond?: number;
 }
 
 export interface ImportResult {
   successful: number;
   failed: number;
   errors: string[];
+  processedBatches?: number;
+  totalBatches?: number;
+  processingTimeMs?: number;
+  usersPerSecond?: number;
 }
 
 interface UserImportData {
@@ -23,6 +32,11 @@ interface UserImportData {
   name: string;
   role: string;
   temporaryPassword?: string;
+}
+
+interface BatchConfig {
+  batchSize: number;
+  maxConcurrency: number;
 }
 
 export const useUserImport = () => {
@@ -103,18 +117,27 @@ export const useUserImport = () => {
     }
   };
 
-  const createUsersBatch = async (users: UserImportData[]): Promise<ImportResult> => {
+  const createUsersBatch = async (
+    users: UserImportData[], 
+    batchConfig?: BatchConfig
+  ): Promise<ImportResult> => {
     try {
-      console.log(`=== Calling Edge Function ===`);
-      console.log(`Sending ${users.length} users to edge function for import`);
+      console.log(`=== Calling Enhanced Batch Edge Function ===`);
+      console.log(`Sending ${users.length} users to edge function for batch import`);
+      console.log('Batch config:', batchConfig);
       
       // Get current session for debugging
       const { data: { session } } = await supabase.auth.getSession();
       console.log('Current user:', session?.user?.email);
       console.log('Session valid:', !!session?.access_token);
       
+      const requestBody = {
+        users,
+        ...batchConfig
+      };
+
       const { data, error } = await supabase.functions.invoke('import-users', {
-        body: { users }
+        body: requestBody
       });
 
       console.log('Edge function call completed');
@@ -144,11 +167,11 @@ export const useUserImport = () => {
         throw new Error('No data returned from edge function');
       }
 
-      console.log('✓ Edge function response received:', data);
+      console.log('✓ Enhanced batch edge function response received:', data);
       return data as ImportResult;
 
     } catch (error) {
-      console.error('Error calling import-users edge function:', error);
+      console.error('Error calling enhanced import-users edge function:', error);
       
       // Enhanced error logging
       if (error instanceof Error) {
@@ -167,7 +190,7 @@ export const useUserImport = () => {
     users: UserImportData[],
     speed: 'fast' | 'medium' | 'slow' = 'medium'
   ): Promise<ImportResult> => {
-    console.log(`=== Starting Import Process ===`);
+    console.log(`=== Starting Enhanced Batch Import Process ===`);
     console.log(`Importing ${users.length} users with ${speed} speed`);
     
     // Test connectivity first
@@ -175,6 +198,14 @@ export const useUserImport = () => {
     if (!isConnected) {
       throw new Error('Connection test failed. Please check your internet connection and authentication.');
     }
+
+    // Configure batch processing based on speed and scale
+    const batchConfig: BatchConfig = {
+      batchSize: getBatchSize(speed, users.length),
+      maxConcurrency: getConcurrency(speed, users.length)
+    };
+
+    console.log('Batch configuration:', batchConfig);
 
     let errors: string[] = [];
     let successful = 0;
@@ -192,26 +223,38 @@ export const useUserImport = () => {
     setShouldCancel(false);
     setIsPaused(false);
 
-    // Process users in batches via edge function
+    // Process users via enhanced batch edge function
     try {
-      const result = await createUsersBatch(users);
+      const result = await createUsersBatch(users, batchConfig);
       successful = result.successful;
       failed = result.failed;
       errors = result.errors;
 
-      // Update progress to show completion
+      // Update progress to show completion with batch info
       setProgress(prev => ({
         ...prev,
         completed: users.length,
         successful,
-        failed
+        failed,
+        processedBatches: result.processedBatches,
+        totalBatches: result.totalBatches,
+        processingTimeMs: result.processingTimeMs,
+        usersPerSecond: result.usersPerSecond
       }));
 
+      // Show performance summary
+      if (result.processingTimeMs && result.usersPerSecond) {
+        const timeInSeconds = Math.round(result.processingTimeMs / 1000);
+        toast.success(
+          `Batch import completed in ${timeInSeconds}s (${result.usersPerSecond} users/sec)`
+        );
+      }
+
     } catch (error) {
-      console.error('Import failed:', error);
+      console.error('Enhanced batch import failed:', error);
       failed = users.length;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      errors = [`Import failed: ${errorMessage}`];
+      errors = [`Enhanced batch import failed: ${errorMessage}`];
       
       setProgress(prev => ({
         ...prev,
@@ -221,7 +264,7 @@ export const useUserImport = () => {
       }));
       
       // Show user-friendly error message
-      toast.error(`Import failed: ${errorMessage}`);
+      toast.error(`Enhanced batch import failed: ${errorMessage}`);
     }
 
     setProgress(prev => ({
@@ -231,23 +274,75 @@ export const useUserImport = () => {
     }));
 
     const result = { successful, failed, errors };
-    console.log('=== Import Process Complete ===', result);
+    console.log('=== Enhanced Batch Import Process Complete ===', result);
     
     return result;
   };
 
+  const getBatchSize = (speed: string, totalUsers: number): number => {
+    // Optimize batch size based on total volume and speed
+    if (totalUsers >= 10000) {
+      switch (speed) {
+        case 'fast': return 200;
+        case 'medium': return 150;
+        case 'slow': return 100;
+        default: return 100;
+      }
+    } else if (totalUsers >= 1000) {
+      switch (speed) {
+        case 'fast': return 100;
+        case 'medium': return 75;
+        case 'slow': return 50;
+        default: return 50;
+      }
+    } else {
+      switch (speed) {
+        case 'fast': return 50;
+        case 'medium': return 25;
+        case 'slow': return 10;
+        default: return 25;
+      }
+    }
+  };
+
+  const getConcurrency = (speed: string, totalUsers: number): number => {
+    // Optimize concurrency based on total volume and speed
+    if (totalUsers >= 10000) {
+      switch (speed) {
+        case 'fast': return 10;
+        case 'medium': return 7;
+        case 'slow': return 5;
+        default: return 5;
+      }
+    } else if (totalUsers >= 1000) {
+      switch (speed) {
+        case 'fast': return 8;
+        case 'medium': return 5;
+        case 'slow': return 3;
+        default: return 3;
+      }
+    } else {
+      switch (speed) {
+        case 'fast': return 5;
+        case 'medium': return 3;
+        case 'slow': return 2;
+        default: return 3;
+      }
+    }
+  };
+
   const pauseImport = () => {
-    console.log('Pausing import...');
+    console.log('Note: Pausing is not supported in batch mode - operation will complete current batches');
     setIsPaused(true);
   };
 
   const resumeImport = () => {
-    console.log('Resuming import...');
+    console.log('Note: Resume is not needed in batch mode');
     setIsPaused(false);
   };
 
   const cancelImport = () => {
-    console.log('Cancelling import...');
+    console.log('Note: Cancelling is not supported in batch mode - operation will complete current batches');
     setShouldCancel(true);
     setIsPaused(false);
   };

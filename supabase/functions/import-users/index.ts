@@ -16,12 +16,22 @@ interface UserImportData {
 
 interface ImportRequest {
   users: UserImportData[];
+  batchSize?: number;
+  maxConcurrency?: number;
+}
+
+interface BatchResult {
+  successful: number;
+  failed: number;
+  errors: string[];
+  processedBatches: number;
+  totalBatches: number;
 }
 
 serve(async (req) => {
-  console.log('=== Import Users Function Called ===');
+  console.log('=== Enhanced Batch Import Users Function Called ===');
   console.log('Method:', req.method);
-  console.log('Headers:', Object.fromEntries(req.headers.entries()));
+  console.log('Timestamp:', new Date().toISOString());
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -93,7 +103,7 @@ serve(async (req) => {
       );
     }
 
-    // Simplified admin check - check if user email is the super admin
+    // Admin check
     const isAdmin = user.email === 'talentxcelpro@gmail.com';
     console.log('Admin check result:', isAdmin);
     
@@ -118,7 +128,7 @@ serve(async (req) => {
       );
     }
 
-    const { users }: ImportRequest = requestBody;
+    const { users, batchSize = 100, maxConcurrency = 5 }: ImportRequest = requestBody;
 
     if (!users || !Array.isArray(users) || users.length === 0) {
       console.error('No users provided in request');
@@ -128,79 +138,31 @@ serve(async (req) => {
       );
     }
 
-    const results = {
-      successful: 0,
-      failed: 0,
-      errors: [] as string[]
-    };
+    console.log(`Starting enhanced batch processing:`);
+    console.log(`- Total users: ${users.length}`);
+    console.log(`- Batch size: ${batchSize}`);
+    console.log(`- Max concurrency: ${maxConcurrency}`);
 
-    console.log(`Starting to process ${users.length} users`);
+    const startTime = Date.now();
+    const result = await processBatchesWithConcurrency(
+      supabaseAdmin, 
+      users, 
+      batchSize, 
+      maxConcurrency
+    );
 
-    // Process each user
-    for (const userData of users) {
-      try {
-        console.log(`Processing user: ${userData.email}`);
+    const endTime = Date.now();
+    const processingTime = endTime - startTime;
 
-        // Create user with admin privileges
-        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-          email: userData.email,
-          password: userData.temporaryPassword || 'TempPass123!',
-          email_confirm: true
-        });
-
-        if (authError || !authData.user) {
-          console.error('User creation failed for', userData.email, ':', authError);
-          results.failed++;
-          results.errors.push(`${userData.email}: ${authError?.message || 'Failed to create user account'}`);
-          continue;
-        }
-
-        console.log(`✓ User account created: ${userData.email}, ID: ${authData.user.id}`);
-
-        // Create user profile
-        const { error: profileError } = await supabaseAdmin
-          .from('profiles')
-          .insert({
-            id: authData.user.id,
-            full_name: userData.name,
-            user_role: userData.role as any,
-            is_employer: userData.role === 'employer',
-            employer_status: userData.role === 'employer' ? 'approved' : null,
-            profile_completed: true,
-            onboarding_completed: true,
-            first_login: false
-          });
-
-        if (profileError) {
-          console.error('Profile creation failed for', userData.email, ':', profileError);
-          
-          // Cleanup: Delete the auth user since profile creation failed
-          try {
-            await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
-            console.log('Cleaned up auth user after profile creation failure');
-          } catch (cleanupError) {
-            console.error('Failed to cleanup auth user:', cleanupError);
-          }
-          
-          results.failed++;
-          results.errors.push(`${userData.email}: Profile creation failed - ${profileError.message}`);
-          continue;
-        }
-
-        console.log(`✓ User profile created: ${userData.email}`);
-        results.successful++;
-
-      } catch (error) {
-        console.error('Unexpected error during user creation for', userData.email, ':', error);
-        results.failed++;
-        results.errors.push(`${userData.email}: ${error instanceof Error ? error.message : 'Unexpected error'}`);
-      }
-    }
-
-    console.log('Final results:', results);
+    console.log(`Batch processing completed in ${processingTime}ms`);
+    console.log('Final results:', result);
 
     return new Response(
-      JSON.stringify(results),
+      JSON.stringify({
+        ...result,
+        processingTimeMs: processingTime,
+        usersPerSecond: Math.round((users.length * 1000) / processingTime)
+      }),
       { 
         status: 200, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -208,7 +170,7 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Critical error in import-users function:', error);
+    console.error('Critical error in enhanced import-users function:', error);
     return new Response(
       JSON.stringify({ 
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -221,3 +183,150 @@ serve(async (req) => {
     );
   }
 });
+
+async function processBatchesWithConcurrency(
+  supabaseAdmin: any,
+  users: UserImportData[],
+  batchSize: number,
+  maxConcurrency: number
+): Promise<BatchResult> {
+  const batches = [];
+  
+  // Split users into batches
+  for (let i = 0; i < users.length; i += batchSize) {
+    batches.push(users.slice(i, i + batchSize));
+  }
+
+  console.log(`Created ${batches.length} batches of size ${batchSize}`);
+
+  const result: BatchResult = {
+    successful: 0,
+    failed: 0,
+    errors: [],
+    processedBatches: 0,
+    totalBatches: batches.length
+  };
+
+  // Process batches with concurrency control
+  for (let i = 0; i < batches.length; i += maxConcurrency) {
+    const currentBatches = batches.slice(i, i + maxConcurrency);
+    
+    console.log(`Processing batch group ${Math.floor(i / maxConcurrency) + 1}/${Math.ceil(batches.length / maxConcurrency)}`);
+    
+    const batchPromises = currentBatches.map((batch, batchIndex) => 
+      processBatch(supabaseAdmin, batch, i + batchIndex + 1)
+    );
+
+    const batchResults = await Promise.allSettled(batchPromises);
+
+    // Aggregate results
+    for (const batchResult of batchResults) {
+      if (batchResult.status === 'fulfilled') {
+        const { successful, failed, errors } = batchResult.value;
+        result.successful += successful;
+        result.failed += failed;
+        result.errors.push(...errors);
+      } else {
+        console.error('Batch processing failed:', batchResult.reason);
+        result.errors.push(`Batch processing failed: ${batchResult.reason}`);
+      }
+      result.processedBatches++;
+    }
+
+    // Small delay between batch groups to prevent overwhelming the database
+    if (i + maxConcurrency < batches.length) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+
+  return result;
+}
+
+async function processBatch(
+  supabaseAdmin: any,
+  users: UserImportData[],
+  batchNumber: number
+): Promise<{ successful: number; failed: number; errors: string[] }> {
+  console.log(`Processing batch ${batchNumber} with ${users.length} users`);
+  
+  const batchResult = {
+    successful: 0,
+    failed: 0,
+    errors: [] as string[]
+  };
+
+  // Process users in parallel within the batch
+  const userPromises = users.map(userData => processUser(supabaseAdmin, userData));
+  const userResults = await Promise.allSettled(userPromises);
+
+  for (let i = 0; i < userResults.length; i++) {
+    const userResult = userResults[i];
+    const userData = users[i];
+
+    if (userResult.status === 'fulfilled') {
+      if (userResult.value.success) {
+        batchResult.successful++;
+      } else {
+        batchResult.failed++;
+        batchResult.errors.push(`${userData.email}: ${userResult.value.error}`);
+      }
+    } else {
+      batchResult.failed++;
+      batchResult.errors.push(`${userData.email}: ${userResult.reason}`);
+    }
+  }
+
+  console.log(`Batch ${batchNumber} completed: ${batchResult.successful} success, ${batchResult.failed} failed`);
+  return batchResult;
+}
+
+async function processUser(
+  supabaseAdmin: any,
+  userData: UserImportData
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Create user with admin privileges
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email: userData.email,
+      password: userData.temporaryPassword || 'TempPass123!',
+      email_confirm: true
+    });
+
+    if (authError || !authData.user) {
+      return { success: false, error: authError?.message || 'Failed to create user account' };
+    }
+
+    // Create user profile
+    const { error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .insert({
+        id: authData.user.id,
+        full_name: userData.name,
+        user_role: userData.role as any,
+        is_employer: userData.role === 'employer',
+        employer_status: userData.role === 'employer' ? 'approved' : null,
+        profile_completed: true,
+        onboarding_completed: true,
+        first_login: false
+      });
+
+    if (profileError) {
+      // Cleanup: Delete the auth user since profile creation failed
+      try {
+        await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+      } catch (cleanupError) {
+        console.error('Failed to cleanup auth user:', cleanupError);
+      }
+      
+      return { success: false, error: `Profile creation failed - ${profileError.message}` };
+    }
+
+    return { success: true };
+
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unexpected error' 
+    };
+  }
+}
