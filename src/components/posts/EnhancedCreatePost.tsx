@@ -3,73 +3,65 @@ import React, { useState, useRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Image, Video, MapPin, Hash, X, Upload, Smile } from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Camera, MapPin, Hash, Type, FileText, X, Upload, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface EnhancedCreatePostProps {
-  onPostCreated?: () => void;
-  defaultPostType?: 'post' | 'article';
+  onPostCreated: () => void;
+  defaultPostType?: 'text' | 'article';
 }
 
-export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ 
+export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({
   onPostCreated,
-  defaultPostType = 'post'
+  defaultPostType = 'text'
 }) => {
   const { user } = useAuth();
   const [content, setContent] = useState('');
-  const [postType, setPostType] = useState<'post' | 'article'>(defaultPostType);
+  const [postType, setPostType] = useState<'text' | 'article'>(defaultPostType);
   const [headline, setHeadline] = useState('');
   const [tags, setTags] = useState<string[]>([]);
-  const [currentTag, setCurrentTag] = useState('');
+  const [tagInput, setTagInput] = useState('');
   const [mediaFiles, setMediaFiles] = useState<string[]>([]);
   const [location, setLocation] = useState('');
-  const [showLocationInput, setShowLocationInput] = useState(false);
-  const [isPosting, setIsPosting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoInputRef = useRef<HTMLInputElement>(null);
 
-  const validateFile = (file: File, type: 'image' | 'video') => {
-    const maxImageSize = 10 * 1024 * 1024; // 10MB for images
-    const maxVideoSize = 50 * 1024 * 1024; // 50MB for videos
-    
-    if (type === 'image') {
-      if (!file.type.startsWith('image/')) {
-        throw new Error('Please select a valid image file');
-      }
-      if (file.size > maxImageSize) {
-        throw new Error('Image size must be less than 10MB');
-      }
-    } else if (type === 'video') {
-      if (!file.type.startsWith('video/')) {
-        throw new Error('Please select a valid video file');
-      }
-      if (file.size > maxVideoSize) {
-        throw new Error('Video size must be less than 50MB');
-      }
-    }
-  };
-
-  const handleFileUpload = async (files: FileList | null, type: 'image' | 'video') => {
+  const handleMediaUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
     const uploadedUrls: string[] = [];
 
     try {
-      for (const file of Array.from(files)) {
-        validateFile(file, type);
+      for (const file of files) {
+        // Validate file size - 10MB for images, 50MB for videos
+        const maxSize = file.type.startsWith('video/') ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+          const maxSizeMB = file.type.startsWith('video/') ? 50 : 10;
+          toast.error(`File ${file.name} is too large. Maximum size is ${maxSizeMB}MB.`);
+          continue;
+        }
 
-        const fileName = `${user?.id}/${Date.now()}-${file.name}`;
-        
+        // Validate file type
+        if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+          toast.error(`File ${file.name} is not supported. Please upload images or videos only.`);
+          continue;
+        }
+
+        const fileExt = file.name.split('.').pop();
+        const filePath = `${crypto.randomUUID()}.${fileExt}`;
+
         const { error: uploadError } = await supabase.storage
           .from('post-media')
-          .upload(fileName, file);
+          .upload(filePath, file);
 
         if (uploadError) {
           console.error('Upload error:', uploadError);
@@ -77,76 +69,53 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({
           continue;
         }
 
-        const { data } = supabase.storage
+        const { data: { publicUrl } } = supabase.storage
           .from('post-media')
-          .getPublicUrl(fileName);
+          .getPublicUrl(filePath);
 
-        uploadedUrls.push(data.publicUrl);
+        uploadedUrls.push(publicUrl);
       }
 
       setMediaFiles(prev => [...prev, ...uploadedUrls]);
-      
-      if (uploadedUrls.length > 0) {
-        toast.success(`${uploadedUrls.length} file(s) uploaded successfully`);
-      }
-    } catch (error: any) {
-      console.error('Upload error:', error);
-      toast.error(error.message || 'Failed to upload media');
+      toast.success(`${uploadedUrls.length} file(s) uploaded successfully`);
+    } catch (error) {
+      console.error('Media upload error:', error);
+      toast.error('Failed to upload media files');
     } finally {
       setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
-  const removeMedia = (urlToRemove: string) => {
-    setMediaFiles(prev => prev.filter(url => url !== urlToRemove));
-  };
-
-  const getMediaType = (url: string) => {
-    const extension = url.split('.').pop()?.toLowerCase();
-    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension || '')) return 'image';
-    if (['mp4', 'webm', 'ogg', 'mov'].includes(extension || '')) return 'video';
-    return 'file';
-  };
-
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
-          toast.success('Location detected successfully');
-        },
-        (error) => {
-          console.error('Geolocation error:', error);
-          toast.error('Unable to get your location');
-        }
-      );
-    } else {
-      toast.error('Geolocation is not supported by this browser');
-    }
+  const removeMedia = (indexToRemove: number) => {
+    setMediaFiles(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const addTag = () => {
-    if (currentTag.trim() && !tags.includes(currentTag.trim())) {
-      setTags([...tags, currentTag.trim()]);
-      setCurrentTag('');
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      setTags(prev => [...prev, tagInput.trim()]);
+      setTagInput('');
     }
   };
 
   const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
+    setTags(prev => prev.filter(tag => tag !== tagToRemove));
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ',') {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      addTag();
+      if (tagInput.trim()) {
+        addTag();
+      }
     }
   };
 
-  const handlePost = async () => {
-    if (!content.trim() && mediaFiles.length === 0) {
-      toast.error('Please add some content or media to your post');
+  const handleSubmit = async () => {
+    if (!content.trim()) {
+      toast.error('Please add some content to your post');
       return;
     }
 
@@ -155,40 +124,46 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({
       return;
     }
 
-    setIsPosting(true);
+    setIsSubmitting(true);
 
     try {
+      const postData = {
+        content: content.trim(),
+        post_type: postType,
+        author_id: user?.id,
+        media_urls: mediaFiles.length > 0 ? mediaFiles : null,
+        tags: tags.length > 0 ? tags : null,
+        location: location.trim() || null,
+        headline: postType === 'article' ? headline.trim() : null,
+        status: 'published'
+      };
+
       const { error } = await supabase
         .from('posts')
-        .insert({
-          content: content.trim(),
-          post_type: postType,
-          headline: postType === 'article' ? headline.trim() : null,
-          author_id: user?.id,
-          tags: tags.length > 0 ? tags : null,
-          media_urls: mediaFiles.length > 0 ? mediaFiles : null,
-          location: location || null,
-          status: 'published'
-        });
+        .insert([postData]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error creating post:', error);
+        toast.error('Failed to create post: ' + error.message);
+        return;
+      }
 
       // Reset form
       setContent('');
       setHeadline('');
       setTags([]);
-      setCurrentTag('');
+      setTagInput('');
       setMediaFiles([]);
       setLocation('');
-      setShowLocationInput(false);
-      
-      toast.success(`${postType === 'article' ? 'Article' : 'Post'} created successfully!`);
-      onPostCreated?.();
-    } catch (error: any) {
-      console.error('Error creating post:', error);
-      toast.error(`Failed to create ${postType}`);
+      setPostType('text');
+
+      toast.success(postType === 'article' ? 'Article published successfully!' : 'Post created successfully!');
+      onPostCreated();
+    } catch (error) {
+      console.error('Post creation error:', error);
+      toast.error('Failed to create post');
     } finally {
-      setIsPosting(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -199,24 +174,30 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({
     return 'U';
   };
 
+  const isFormValid = content.trim() && (postType === 'text' || (postType === 'article' && headline.trim()));
+
   return (
     <Card className="w-full">
       <CardContent className="p-6">
         {/* Post Type Toggle */}
         <div className="flex space-x-2 mb-4">
           <Button
-            variant={postType === 'post' ? 'default' : 'outline'}
+            variant={postType === 'text' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setPostType('post')}
+            onClick={() => setPostType('text')}
+            className="flex items-center space-x-2"
           >
-            Post
+            <Type className="h-4 w-4" />
+            <span>Post</span>
           </Button>
           <Button
             variant={postType === 'article' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setPostType('article')}
+            className="flex items-center space-x-2"
           >
-            Article
+            <FileText className="h-4 w-4" />
+            <span>Article</span>
           </Button>
         </div>
 
@@ -229,184 +210,161 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({
           <div className="flex-1 space-y-4">
             {/* Article Headline */}
             {postType === 'article' && (
-              <input
-                type="text"
+              <Input
                 placeholder="Article headline..."
                 value={headline}
                 onChange={(e) => setHeadline(e.target.value)}
-                className="w-full text-xl font-bold border-none outline-none bg-transparent placeholder:text-muted-foreground"
+                className="text-lg font-semibold"
               />
             )}
 
+            {/* Content Input */}
             <Textarea
-              placeholder={postType === 'article' ? "Write your article..." : "What's on your mind?"}
+              placeholder={postType === 'article' ? "Write your article content..." : "What's on your mind?"}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="border-none resize-none focus:ring-0 text-lg p-0"
-              rows={postType === 'article' ? 8 : 3}
+              className="min-h-[120px] resize-none border-none shadow-none focus-visible:ring-0 text-lg placeholder:text-gray-500"
             />
-
-            {/* Tags */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Hash className="h-4 w-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Add tags..."
-                  value={currentTag}
-                  onChange={(e) => setCurrentTag(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  onBlur={addTag}
-                  className="flex-1 border-none outline-none bg-transparent placeholder:text-muted-foreground"
-                />
-              </div>
-              
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center space-x-1">
-                      <span>#{tag}</span>
-                      <button
-                        onClick={() => removeTag(tag)}
-                        className="ml-1 hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
 
             {/* Media Preview */}
             {mediaFiles.length > 0 && (
-              <div className="grid grid-cols-2 gap-3">
-                {mediaFiles.map((url, index) => (
-                  <div key={index} className="relative group">
-                    <AspectRatio ratio={16 / 9} className="bg-muted rounded-lg overflow-hidden">
-                      {getMediaType(url) === 'image' ? (
-                        <img 
-                          src={url} 
-                          alt={`Upload ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <video 
-                          src={url}
-                          className="w-full h-full object-cover"
-                          controls
-                        />
-                      )}
-                    </AspectRatio>
-                    
+              <div className="grid gap-4" style={{
+                gridTemplateColumns: mediaFiles.length === 1 ? '1fr' : 
+                                   mediaFiles.length === 2 ? '1fr 1fr' :
+                                   'repeat(auto-fit, minmax(200px, 1fr))'
+              }}>
+                {mediaFiles.map((url, index) => {
+                  const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
+                  return (
+                    <div key={index} className="relative group">
+                      <AspectRatio ratio={isVideo ? 16/9 : 4/3} className="bg-muted rounded-lg overflow-hidden">
+                        {isVideo ? (
+                          <video 
+                            src={url}
+                            className="w-full h-full object-cover"
+                            controls
+                          />
+                        ) : (
+                          <img 
+                            src={url}
+                            alt={`Media ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </AspectRatio>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => removeMedia(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Tags */}
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {tags.map(tag => (
+                  <Badge key={tag} variant="secondary" className="flex items-center space-x-1">
+                    <span>#{tag}</span>
                     <Button
-                      variant="destructive"
+                      variant="ghost"
                       size="sm"
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
-                      onClick={() => removeMedia(url)}
+                      className="h-4 w-4 p-0 hover:bg-transparent"
+                      onClick={() => removeTag(tag)}
                     >
                       <X className="h-3 w-3" />
                     </Button>
-                  </div>
+                  </Badge>
                 ))}
               </div>
             )}
 
-            {/* Location Display */}
-            {showLocationInput && (
-              <div className="flex items-center space-x-2 p-3 bg-muted rounded-lg">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Enter location or use GPS"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="flex-1 bg-transparent border-none outline-none"
-                />
+            {/* Location */}
+            {location && (
+              <div className="flex items-center space-x-2 text-gray-600">
+                <MapPin className="h-4 w-4" />
+                <span className="text-sm">{location}</span>
                 <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={getCurrentLocation}
-                >
-                  GPS
-                </Button>
-                <Button
-                  size="sm"
                   variant="ghost"
-                  onClick={() => {
-                    setShowLocationInput(false);
-                    setLocation('');
-                  }}
+                  size="sm"
+                  className="h-4 w-4 p-0"
+                  onClick={() => setLocation('')}
                 >
                   <X className="h-3 w-3" />
                 </Button>
               </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-between pt-3 border-t">
-              <div className="flex space-x-2">
+            {/* Actions */}
+            <div className="flex items-center justify-between pt-4 border-t">
+              <div className="flex items-center space-x-2">
+                {/* Media Upload */}
                 <input
-                  type="file"
                   ref={fileInputRef}
-                  onChange={(e) => handleFileUpload(e.target.files, 'image')}
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                />
-                <input
                   type="file"
-                  ref={videoInputRef}
-                  onChange={(e) => handleFileUpload(e.target.files, 'video')}
-                  accept="video/*"
+                  multiple
+                  accept="image/*,video/*"
+                  onChange={handleMediaUpload}
                   className="hidden"
                 />
-                
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="text-blue-600 hover:bg-blue-50"
+                  className="flex items-center space-x-2"
                 >
-                  <Image className="h-4 w-4 mr-2" />
-                  {isUploading ? 'Uploading...' : 'Photo'}
+                  {isUploading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Camera className="h-4 w-4" />
+                  )}
+                  <span>Media</span>
                 </Button>
-                
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => videoInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="text-green-600 hover:bg-green-50"
-                >
-                  <Video className="h-4 w-4 mr-2" />
-                  Video
-                </Button>
-                
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => setShowLocationInput(!showLocationInput)}
-                  className="text-red-600 hover:bg-red-50"
-                >
-                  <MapPin className="h-4 w-4 mr-2" />
-                  Location
-                </Button>
+
+                {/* Location */}
+                <div className="flex items-center space-x-2">
+                  <MapPin className="h-4 w-4 text-gray-500" />
+                  <Input
+                    placeholder="Add location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-32 h-8 text-sm"
+                  />
+                </div>
+
+                {/* Tags */}
+                <div className="flex items-center space-x-2">
+                  <Hash className="h-4 w-4 text-gray-500" />
+                  <Input
+                    placeholder="Add tags"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="w-32 h-8 text-sm"
+                  />
+                </div>
               </div>
 
-              <Button 
-                onClick={handlePost}
-                disabled={isPosting || isUploading || (!content.trim() && mediaFiles.length === 0)}
-                className="bg-primary hover:bg-primary/90"
+              {/* Submit Button */}
+              <Button
+                onClick={handleSubmit}
+                disabled={!isFormValid || isSubmitting}
+                className="px-6"
               >
-                {isPosting ? (
+                {isSubmitting ? (
                   <>
-                    <Upload className="h-4 w-4 mr-2 animate-spin" />
-                    {postType === 'article' ? 'Publishing...' : 'Posting...'}
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Publishing...
                   </>
                 ) : (
-                  `${postType === 'article' ? 'Publish Article' : 'Post'}`
+                  postType === 'article' ? 'Publish Article' : 'Post'
                 )}
               </Button>
             </div>
