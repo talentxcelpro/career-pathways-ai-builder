@@ -17,7 +17,8 @@ const UserManagement = () => {
     isLoading,
     userStats,
     handleUserAction,
-    filteredUsers
+    filteredUsers,
+    refetch
   } = useUserManagement();
 
   return (
@@ -36,7 +37,7 @@ const UserManagement = () => {
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
           filteredUsers={filteredUsers}
-          onUsersChanged={() => window.location.reload()}
+          onUsersChanged={() => refetch()}
         />
 
         <UsersList

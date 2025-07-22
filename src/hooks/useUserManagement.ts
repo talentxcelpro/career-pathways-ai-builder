@@ -11,7 +11,7 @@ export const useUserManagement = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading, error } = useQuery({
+  const { data: users, isLoading, error, refetch } = useQuery({
     queryKey: ['admin-users', searchTerm, roleFilter, statusFilter],
     queryFn: async () => {
       let query = supabase
@@ -116,6 +116,7 @@ export const useUserManagement = () => {
     isLoading,
     userStats,
     handleUserAction,
-    filteredUsers
+    filteredUsers,
+    refetch
   };
 };
