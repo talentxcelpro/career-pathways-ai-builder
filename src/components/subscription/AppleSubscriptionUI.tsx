@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +38,7 @@ interface AppleSubscriptionUIProps {
 
 export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compact = false }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [tiers, setTiers] = useState<SubscriptionTier[]>([]);
   const [currentTier, setCurrentTier] = useState<string | null>(null);
@@ -179,6 +181,11 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
       
       setCurrentTier(tierName);
       loadSubscriptionData(); // Refresh the data
+      
+      // Redirect to /pro after successful subscription
+      setTimeout(() => {
+        navigate('/pro');
+      }, 1500); // Small delay to let user see the success message
       
     } catch (error) {
       console.error('Error subscribing:', error);
