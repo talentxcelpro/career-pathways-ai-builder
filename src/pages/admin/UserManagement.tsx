@@ -4,6 +4,7 @@ import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
 import { UserStatsCards } from '@/components/admin/users/UserStatsCards';
 import { UserFilters } from '@/components/admin/users/UserFilters';
 import { UsersList } from '@/components/admin/users/UsersList';
+import { BulkCompletionActions } from '@/components/admin/users/BulkCompletionActions';
 import { useUserManagement } from '@/hooks/useUserManagement';
 
 const UserManagement = () => {
@@ -52,6 +53,11 @@ const UserManagement = () => {
           setCompletionFilter={setCompletionFilter}
           filteredUsers={filteredUsers}
           onUsersChanged={() => refetch()}
+        />
+
+        <BulkCompletionActions 
+          users={filteredUsers}
+          onRefresh={() => refetch()}
         />
 
         <UsersList

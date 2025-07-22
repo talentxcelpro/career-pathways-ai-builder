@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,9 +17,13 @@ import {
   Edit, 
   Shield,
   Mail,
-  Calendar
+  Calendar,
+  TrendingUp
 } from 'lucide-react';
 import { UsersPagination } from './UsersPagination';
+import { ProfileCompletionBar } from './ProfileCompletionBar';
+import { ProfileCompletionReminder } from './ProfileCompletionReminder';
+import { toast } from 'sonner';
 
 interface UsersListProps {
   users: any[];
@@ -44,6 +48,22 @@ export const UsersList: React.FC<UsersListProps> = ({
   onPageChange,
   onPageSizeChange
 }) => {
+  const [reminderUser, setReminderUser] = useState<any>(null);
+  const [reminderPercentage, setReminderPercentage] = useState<number>(0);
+
+  const handleSendReminder = (userId: string, completionPercentage: number) => {
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      setReminderUser(user);
+      setReminderPercentage(completionPercentage);
+    }
+  };
+
+  const handleReminderSent = () => {
+    toast.success('Profile completion reminder sent successfully');
+    setReminderUser(null);
+    setReminderPercentage(0);
+  };
   if (isLoading) {
     return (
       <Card>
@@ -77,6 +97,12 @@ export const UsersList: React.FC<UsersListProps> = ({
               <TableHead>User</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="h-4 w-4" />
+                  Completion
+                </div>
+              </TableHead>
               <TableHead>Last Login</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -110,6 +136,13 @@ export const UsersList: React.FC<UsersListProps> = ({
                   <Badge variant={user.profile_completed ? 'default' : 'secondary'}>
                     {user.profile_completed ? 'Active' : 'Inactive'}
                   </Badge>
+                </TableCell>
+                <TableCell>
+                  <ProfileCompletionBar 
+                    user={user} 
+                    onSendReminder={handleSendReminder}
+                    compact={false}
+                  />
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1 text-sm text-gray-600">
@@ -153,6 +186,14 @@ export const UsersList: React.FC<UsersListProps> = ({
           onPageChange={onPageChange}
           onPageSizeChange={onPageSizeChange}
           isLoading={isLoading}
+        />
+
+        <ProfileCompletionReminder
+          isOpen={!!reminderUser}
+          onClose={() => setReminderUser(null)}
+          user={reminderUser}
+          completionPercentage={reminderPercentage}
+          onReminderSent={handleReminderSent}
         />
       </CardContent>
     </Card>

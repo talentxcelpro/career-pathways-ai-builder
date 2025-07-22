@@ -47,7 +47,14 @@ export const useUserManagement = () => {
       }
 
       if (completionFilter !== 'all') {
-        // Add profile completion percentage filtering logic
+      // Note: completion_percentage field filtering implementation
+      if (completionFilter === 'low') {
+        // Users with low completion (0-25%) - will be calculated client-side for now
+      } else if (completionFilter === 'medium') {
+        // Users with medium completion (26-75%)
+      } else if (completionFilter === 'high') {
+        // Users with high completion (76-100%)
+      }
         // This will be enhanced when we add completion_percentage field
       }
 
@@ -101,7 +108,14 @@ export const useUserManagement = () => {
       }
 
       if (completionFilter !== 'all') {
-        // Add profile completion percentage filtering logic
+      // Note: completion_percentage field filtering implementation
+      if (completionFilter === 'low') {
+        // Users with low completion (0-25%) - will be calculated client-side for now
+      } else if (completionFilter === 'medium') {
+        // Users with medium completion (26-75%)
+      } else if (completionFilter === 'high') {
+        // Users with high completion (76-100%)
+      }
       }
 
       const { count, error } = await query;
