@@ -81,7 +81,7 @@ export const AccountSuspensionPanel = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {filteredUsers?.filter(user => 
-                          user.user_security_settings?.[0]?.account_status !== 'suspended'
+                          !Array.isArray(user.user_security_settings) || !user.user_security_settings.some((setting: any) => setting?.account_status === 'suspended')
                         ).map(user => (
                           <SelectItem key={user.id} value={user.id}>
                             {user.full_name} ({user.email})

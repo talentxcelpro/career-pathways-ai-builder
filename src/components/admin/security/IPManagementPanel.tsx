@@ -84,7 +84,7 @@ export const IPManagementPanel = () => {
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <Globe className="w-4 h-4 text-muted-foreground" />
-                        <span className="font-medium">{attempt.ip_address}</span>
+                        <span className="font-medium">{String(attempt.ip_address)}</span>
                         <Badge variant="destructive">
                           {attempt.attempt_count} attempts
                         </Badge>
@@ -111,7 +111,7 @@ export const IPManagementPanel = () => {
                           size="sm"
                           variant="destructive"
                           onClick={() => {
-                            setNewIPAddress(attempt.ip_address);
+                            setNewIPAddress(String(attempt.ip_address));
                             setBlockReason(`Multiple failed login attempts (${attempt.attempt_count} attempts)`);
                             setIsDialogOpen(true);
                           }}
@@ -248,7 +248,7 @@ export const IPManagementPanel = () => {
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <Globe className="w-4 h-4" />
-                          <span className="font-medium">{blockedIP.ip_address}</span>
+                          <span className="font-medium">{String(blockedIP.ip_address)}</span>
                           <Badge variant={isActive ? "destructive" : "secondary"}>
                             {isActive ? 'Blocked' : 'Expired'}
                           </Badge>
@@ -265,9 +265,9 @@ export const IPManagementPanel = () => {
                         <p className="text-sm text-muted-foreground mb-1">
                           Blocked: {formatDistanceToNow(new Date(blockedIP.blocked_at), { addSuffix: true })}
                         </p>
-                        {(blockedIP.blocked_by_user as any)?.full_name && (
+                        {typeof blockedIP.profiles === 'object' && blockedIP.profiles && 'full_name' in blockedIP.profiles && (
                           <p className="text-sm text-muted-foreground mb-1">
-                            By: {(blockedIP.blocked_by_user as any).full_name} ({(blockedIP.blocked_by_user as any).email})
+                            By: {(blockedIP.profiles as any).full_name} {(blockedIP.profiles as any).email && `(${(blockedIP.profiles as any).email})`}
                           </p>
                         )}
                         {blockedIP.expires_at && !blockedIP.is_permanent && (

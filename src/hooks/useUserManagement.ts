@@ -21,7 +21,14 @@ export const useUserManagement = () => {
     queryFn: async () => {
       let query = supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          user_security_settings (
+            account_status,
+            suspension_reason,
+            suspended_until
+          )
+        `)
         .order('created_at', { ascending: false });
 
       if (searchTerm.trim()) {

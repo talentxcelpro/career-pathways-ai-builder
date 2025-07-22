@@ -46,7 +46,10 @@ export const useSecurityManagement = () => {
         .from('security_events')
         .select(`
           *,
-          profiles!inner(full_name, email)
+          profiles (
+            full_name,
+            email
+          )
         `)
         .order('created_at', { ascending: false })
         .limit(100);
@@ -64,7 +67,10 @@ export const useSecurityManagement = () => {
         .from('security_alerts')
         .select(`
           *,
-          affected_user:profiles!inner(full_name, email)
+          profiles (
+            full_name,
+            email
+          )
         `)
         .order('created_at', { ascending: false })
         .limit(50);
@@ -97,7 +103,10 @@ export const useSecurityManagement = () => {
         .from('ip_blocklist')
         .select(`
           *,
-          blocked_by_user:profiles(full_name, email)
+          profiles (
+            full_name,
+            email
+          )
         `)
         .order('blocked_at', { ascending: false });
 
@@ -114,7 +123,10 @@ export const useSecurityManagement = () => {
         .from('user_sessions')
         .select(`
           *,
-          profiles!inner(full_name, email)
+          profiles (
+            full_name,
+            email
+          )
         `)
         .eq('is_active', true)
         .order('last_activity_at', { ascending: false })
