@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { amount, currency = "INR", serviceId, packageType } = await req.json();
+    const { amount, currency = "INR", planId, serviceId, packageType } = await req.json();
 
     // Get Razorpay credentials from secrets
     const razorpayKeyId = Deno.env.get("RAZORPAY_KEY_ID");
@@ -92,14 +92,15 @@ serve(async (req) => {
       .from("service_orders")
       .insert({
         user_id: userData.user.id,
-        service_id: serviceId,
-        package_type: packageType || "Basic",
+        service_id: planId || serviceId,
+        package_type: packageType || "subscription",
         amount: amount,
         currency: currency,
         payment_status: "pending",
         razorpay_order_id: order.id,
         order_details: {
           razorpay_order: order,
+          plan_id: planId,
           package_type: packageType
         }
       });

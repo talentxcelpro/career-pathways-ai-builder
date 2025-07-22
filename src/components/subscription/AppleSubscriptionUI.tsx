@@ -51,29 +51,45 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Load subscription tiers
+      // Load subscription plans
       const { data: tiersData } = await supabase
-        .from('pro_subscription_tiers')
+        .from('subscription_plans')
         .select('*')
         .eq('is_active', true)
-        .order('marketplace_priority');
+        .order('price');
 
       if (tiersData) {
-        setTiers(tiersData.map(tier => ({
-          ...tier,
-          features: Array.isArray(tier.features) ? tier.features : JSON.parse(String(tier.features) || '[]')
-        })));
+        const formattedTiers = tiersData.map(tier => ({
+          id: tier.id,
+          name: tier.name,
+          price_monthly: tier.price,
+          features: Array.isArray(tier.features) ? tier.features.map(f => String(f)) : [],
+          max_services: 100,
+          has_crm: tier.name !== 'Basic',
+          has_analytics: tier.name !== 'Basic',
+          has_ai_tools: true,
+          has_payments: tier.name !== 'Basic',
+          has_contracts: tier.name === 'Pro Elite',
+          has_branding: tier.name === 'Pro Elite',
+          marketplace_priority: tier.name === 'Pro Business' ? 1 : tier.name === 'Pro Elite' ? 2 : 3
+        }));
+        setTiers(formattedTiers);
       }
 
       // Load current subscription
-      const { data: profileData } = await supabase
-        .from('pro_service_profiles')
-        .select('subscription_tier')
+      const { data: subscriptionData } = await supabase
+        .from('user_subscriptions')
+        .select(`
+          *,
+          subscription_plans(name)
+        `)
         .eq('user_id', user.id)
-        .single();
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1);
 
-      if (profileData) {
-        setCurrentTier(profileData.subscription_tier);
+      if (subscriptionData && subscriptionData.length > 0) {
+        setCurrentTier(subscriptionData[0].subscription_plans.name);
       }
     } catch (error) {
       console.error('Error loading subscription data:', error);
@@ -88,19 +104,41 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: profileData } = await supabase
-        .from('pro_service_profiles')
-        .select('id')
-        .eq('user_id', user.id)
+      // Find the plan by name
+      const { data: planData } = await supabase
+        .from('subscription_plans')
+        .select('*')
+        .eq('name', tierName)
+        .eq('is_active', true)
         .single();
 
-      if (profileData) {
-        const { error } = await supabase
-          .from('pro_service_profiles')
-          .update({ subscription_tier: tierName })
-          .eq('id', profileData.id);
+      if (!planData) {
+        throw new Error('Plan not found');
+      }
 
-        if (error) throw error;
+      // Create Razorpay order
+      const { data: orderData, error: orderError } = await supabase.functions.invoke('razorpay-create-order', {
+        body: { 
+          amount: planData.price, 
+          currency: planData.currency,
+          planId: planData.id,
+          packageType: 'subscription'
+        }
+      });
+
+      if (orderError) throw orderError;
+
+      // Handle demo mode
+      if (orderData.demo) {
+        const { data: verifyData, error: verifyError } = await supabase.functions.invoke('razorpay-verify-payment', {
+          body: { 
+            razorpay_order_id: orderData.orderId,
+            razorpay_payment_id: `pay_demo_${Date.now()}`,
+            razorpay_signature: 'demo_signature'
+          }
+        });
+
+        if (verifyError) throw verifyError;
 
         toast({
           title: "Welcome to TalentXcel Pro",
@@ -108,6 +146,70 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         });
         
         setCurrentTier(tierName);
+        return;
+      }
+
+      // Real Razorpay integration
+      if (typeof window !== 'undefined' && (window as any).Razorpay) {
+        const options = {
+          key: orderData.keyId,
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: 'TalentXcel Pro',
+          description: `Subscription to ${tierName}`,
+          order_id: orderData.orderId,
+          handler: async (response: any) => {
+            try {
+              const { data: verifyData, error: verifyError } = await supabase.functions.invoke('razorpay-verify-payment', {
+                body: {
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature
+                }
+              });
+
+              if (verifyError) throw verifyError;
+
+              toast({
+                title: "Welcome to TalentXcel Pro",
+                description: `You're now subscribed to ${tierName}`,
+              });
+              
+              setCurrentTier(tierName);
+            } catch (error) {
+              console.error('Payment verification error:', error);
+              toast({
+                title: "Error",
+                description: "Payment verification failed",
+                variant: "destructive",
+              });
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              setSubscribing(null);
+            }
+          },
+          prefill: {
+            name: user.user_metadata?.full_name || '',
+            email: user.email || '',
+          },
+          theme: {
+            color: '#3B82F6'
+          }
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.open();
+      } else {
+        // Load Razorpay script dynamically
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => {
+          // Retry after script loads
+          handleSubscribe(tierName);
+        };
+        document.body.appendChild(script);
       }
     } catch (error) {
       console.error('Error subscribing:', error);
@@ -116,7 +218,6 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         description: "Failed to process subscription",
         variant: "destructive"
       });
-    } finally {
       setSubscribing(null);
     }
   };

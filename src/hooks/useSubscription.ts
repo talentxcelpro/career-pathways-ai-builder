@@ -59,14 +59,27 @@ export const useSubscription = () => {
   // Fetch user's current subscription
   const fetchSubscription = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('razorpay-payment', {
-        body: { action: 'get_subscription_status' }
-      });
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setSubscription(null);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('user_subscriptions')
+        .select(`
+          *,
+          subscription_plans (*)
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1);
 
       if (error) throw error;
       
-      if (data.subscription) {
-        setSubscription(data.subscription);
+      if (data && data.length > 0) {
+        setSubscription(data[0] as UserSubscription);
       } else {
         setSubscription(null);
       }
@@ -78,27 +91,34 @@ export const useSubscription = () => {
     }
   };
 
-  // Subscribe to a plan
+  // Subscribe to a plan with Razorpay integration
   const subscribeToPlan = async (planId: string) => {
     try {
       setLoading(true);
       
-      // Create order
-      const { data: orderData, error: orderError } = await supabase.functions.invoke('razorpay-payment', {
-        body: { action: 'create_order', planId }
+      // Get plan details for payment
+      const plan = plans.find(p => p.id === planId);
+      if (!plan) throw new Error('Plan not found');
+
+      // Create Razorpay order
+      const { data: orderData, error: orderError } = await supabase.functions.invoke('razorpay-create-order', {
+        body: { 
+          amount: plan.price, 
+          currency: plan.currency,
+          planId: planId,
+          packageType: 'subscription'
+        }
       });
 
       if (orderError) throw orderError;
 
       // For demo mode, simulate payment completion
       if (orderData.demo) {
-        const { data: verifyData, error: verifyError } = await supabase.functions.invoke('razorpay-payment', {
+        const { data: verifyData, error: verifyError } = await supabase.functions.invoke('razorpay-verify-payment', {
           body: { 
-            action: 'verify_payment', 
-            planId,
-            orderId: orderData.id,
-            paymentId: `pay_demo_${Date.now()}`,
-            signature: 'demo_signature'
+            razorpay_order_id: orderData.orderId,
+            razorpay_payment_id: `pay_demo_${Date.now()}`,
+            razorpay_signature: 'demo_signature'
           }
         });
 
@@ -106,16 +126,77 @@ export const useSubscription = () => {
 
         toast({
           title: "Success!",
-          description: verifyData.message,
+          description: `Successfully subscribed to ${plan.name}`,
         });
 
-        // Refresh subscription
         await fetchSubscription();
         return true;
       }
 
-      // Real Razorpay integration would handle payment here
-      return false;
+      // Real Razorpay integration
+      if (typeof window !== 'undefined' && (window as any).Razorpay) {
+        return new Promise((resolve) => {
+          const options = {
+            key: orderData.keyId,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            name: 'TalentXcel Pro',
+            description: `Subscription to ${plan.name}`,
+            order_id: orderData.orderId,
+            handler: async (response: any) => {
+              try {
+                const { data: verifyData, error: verifyError } = await supabase.functions.invoke('razorpay-verify-payment', {
+                  body: {
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature
+                  }
+                });
+
+                if (verifyError) throw verifyError;
+
+                toast({
+                  title: "Success!",
+                  description: `Successfully subscribed to ${plan.name}`,
+                });
+
+                await fetchSubscription();
+                resolve(true);
+              } catch (error) {
+                console.error('Payment verification error:', error);
+                toast({
+                  title: "Error",
+                  description: "Payment verification failed",
+                  variant: "destructive",
+                });
+                resolve(false);
+              }
+            },
+            modal: {
+              ondismiss: () => {
+                resolve(false);
+              }
+            },
+            prefill: {
+              name: '',
+              email: '',
+            },
+            theme: {
+              color: '#3B82F6'
+            }
+          };
+
+          const rzp = new (window as any).Razorpay(options);
+          rzp.open();
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Payment system not loaded. Please refresh and try again.",
+          variant: "destructive",
+        });
+        return false;
+      }
     } catch (error) {
       console.error('Subscription error:', error);
       toast({
@@ -136,21 +217,21 @@ export const useSubscription = () => {
     try {
       setLoading(true);
       
-      const { data, error } = await supabase.functions.invoke('razorpay-payment', {
-        body: { 
-          action: 'cancel_subscription', 
-          subscriptionId: subscription.id 
-        }
-      });
+      const { error } = await supabase
+        .from('user_subscriptions')
+        .update({ 
+          status: 'cancelled',
+          cancelled_at: new Date().toISOString()
+        })
+        .eq('id', subscription.id);
 
       if (error) throw error;
 
       toast({
         title: "Success!",
-        description: data.message,
+        description: "Subscription cancelled successfully",
       });
 
-      // Refresh subscription
       await fetchSubscription();
       return true;
     } catch (error) {
