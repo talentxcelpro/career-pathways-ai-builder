@@ -31,3 +31,12 @@ verify_jwt = false
 
 [functions.bulk-csv-import]
 verify_jwt = false
+
+[functions.razorpay-create-order]
+verify_jwt = true
+
+[functions.razorpay-verify-payment]  
+verify_jwt = true
+
+[functions.check-razorpay-subscription]
+verify_jwt = true

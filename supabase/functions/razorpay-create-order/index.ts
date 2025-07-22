@@ -87,27 +87,24 @@ serve(async (req) => {
       throw new Error("Invalid user token");
     }
 
-    // Store order in database
+    // Store order in subscribers table for subscription tracking
     const { error: insertError } = await supabaseClient
-      .from("service_orders")
-      .insert({
+      .from("subscribers")
+      .upsert({
         user_id: userData.user.id,
-        service_id: planId || serviceId,
-        package_type: packageType || "subscription",
-        amount: amount,
+        email: userData.user.email,
+        subscribed: false,
+        subscription_plan: planId ? `Plan ${planId}` : 'Pro Plan',
+        subscription_tier: 'Pro',
+        amount: amount * 100, // Store in paise
         currency: currency,
-        payment_status: "pending",
-        razorpay_order_id: order.id,
-        order_details: {
-          razorpay_order: order,
-          plan_id: planId,
-          package_type: packageType
-        }
-      });
+        status: 'pending',
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id' });
 
     if (insertError) {
-      console.error("Database insert error:", insertError);
-      throw new Error("Failed to store order in database");
+      console.error("Database upsert error:", insertError);
+      throw new Error("Failed to store subscription order");
     }
 
     return new Response(

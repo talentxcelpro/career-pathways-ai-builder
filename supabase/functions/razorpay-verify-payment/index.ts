@@ -54,62 +54,45 @@ serve(async (req) => {
       throw new Error("Invalid user token");
     }
 
-    // Handle demo mode
+    // Handle demo mode  
     if (!razorpayKeySecret || razorpay_signature === 'demo_signature') {
       console.log("Demo mode payment verification");
       
-      // Find the order in database
-      const { data: orderData, error: orderError } = await supabaseClient
-        .from("service_orders")
-        .select("*")
-        .eq("razorpay_order_id", razorpay_order_id)
-        .eq("user_id", userData.user.id)
-        .single();
+      // Calculate subscription dates
+      const subscriptionStart = new Date();
+      const subscriptionEnd = new Date();
+      subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1); // 1 month subscription
 
-      if (orderError || !orderData) {
-        throw new Error("Order not found");
-      }
-
-      // Update order status
+      // Update subscription status
       const { error: updateError } = await supabaseClient
-        .from("service_orders")
+        .from("subscribers")
         .update({
-          payment_status: "completed",
-          razorpay_payment_id: razorpay_payment_id,
-          payment_verified_at: new Date().toISOString()
+          subscribed: true,
+          subscription_tier: 'Pro',
+          subscription_start: subscriptionStart.toISOString(),
+          subscription_end: subscriptionEnd.toISOString(),
+          next_billing_date: subscriptionEnd.toISOString(),
+          status: 'active',
+          last_payment_date: new Date().toISOString(),
+          last_payment_id: razorpay_payment_id,
+          updated_at: new Date().toISOString(),
         })
-        .eq("id", orderData.id);
+        .eq("user_id", userData.user.id);
 
       if (updateError) {
-        throw new Error("Failed to update order status");
-      }
-
-      // Create subscription if plan_id exists in order_details
-      if (orderData.order_details?.plan_id) {
-        const currentPeriodStart = new Date();
-        const currentPeriodEnd = new Date();
-        currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
-
-        const { error: subscriptionError } = await supabaseClient
-          .from("user_subscriptions")
-          .insert({
-            user_id: userData.user.id,
-            plan_id: orderData.order_details.plan_id,
-            status: "active",
-            current_period_start: currentPeriodStart.toISOString(),
-            current_period_end: currentPeriodEnd.toISOString()
-          });
-
-        if (subscriptionError) {
-          console.error("Failed to create subscription:", subscriptionError);
-        }
+        console.error("Failed to update subscription:", updateError);
+        throw new Error("Failed to activate subscription");
       }
 
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: "Payment verified successfully (Demo mode)",
-          order_id: orderData.id 
+          message: "Payment verified and subscription activated (Demo mode)",
+          subscription: {
+            tier: 'Pro',
+            status: 'active',
+            ends_at: subscriptionEnd.toISOString()
+          }
         }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -130,70 +113,41 @@ serve(async (req) => {
 
     console.log("Payment signature verified successfully");
 
-    // Find and update the order
-    const { data: orderData, error: orderError } = await supabaseClient
-      .from("service_orders")
-      .select("*")
-      .eq("razorpay_order_id", razorpay_order_id)
-      .eq("user_id", userData.user.id)
-      .single();
+    // Calculate subscription dates
+    const subscriptionStart = new Date();
+    const subscriptionEnd = new Date();
+    subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1); // 1 month subscription
 
-    if (orderError || !orderData) {
-      throw new Error("Order not found");
-    }
-
-    // Update order status
+    // Update subscription status
     const { error: updateError } = await supabaseClient
-      .from("service_orders")
+      .from("subscribers")
       .update({
-        payment_status: "completed",
-        razorpay_payment_id: razorpay_payment_id,
-        payment_verified_at: new Date().toISOString()
+        subscribed: true,
+        subscription_tier: 'Pro',
+        subscription_start: subscriptionStart.toISOString(),
+        subscription_end: subscriptionEnd.toISOString(),
+        next_billing_date: subscriptionEnd.toISOString(),
+        status: 'active',
+        last_payment_date: new Date().toISOString(),
+        last_payment_id: razorpay_payment_id,
+        updated_at: new Date().toISOString(),
       })
-      .eq("id", orderData.id);
+      .eq("user_id", userData.user.id);
 
     if (updateError) {
-      throw new Error("Failed to update order status");
-    }
-
-    // Create subscription if plan_id exists in order_details
-    if (orderData.order_details?.plan_id) {
-      const currentPeriodStart = new Date();
-      const currentPeriodEnd = new Date();
-      currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
-
-      const { error: subscriptionError } = await supabaseClient
-        .from("user_subscriptions")
-        .insert({
-          user_id: userData.user.id,
-          plan_id: orderData.order_details.plan_id,
-          status: "active",
-          current_period_start: currentPeriodStart.toISOString(),
-          current_period_end: currentPeriodEnd.toISOString()
-        });
-
-      if (subscriptionError) {
-        console.error("Failed to create subscription:", subscriptionError);
-        throw new Error("Payment verified but subscription creation failed");
-      }
-    }
-
-    // Get the updated order details
-    const { data: updatedOrder, error: fetchError } = await supabaseClient
-      .from("service_orders")
-      .select("*")
-      .eq("id", orderData.id)
-      .single();
-
-    if (fetchError) {
-      console.error("Failed to fetch updated order:", fetchError);
+      console.error("Failed to update subscription:", updateError);
+      throw new Error("Failed to activate subscription");
     }
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         message: "Payment verified and subscription activated successfully",
-        order: updatedOrder 
+        subscription: {
+          tier: 'Pro',
+          status: 'active', 
+          ends_at: subscriptionEnd.toISOString()
+        }
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

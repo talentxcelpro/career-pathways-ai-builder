@@ -13963,6 +13963,69 @@ export type Database = {
           },
         ]
       }
+      subscribers: {
+        Row: {
+          amount: number | null
+          created_at: string
+          currency: string | null
+          email: string
+          id: string
+          last_payment_date: string | null
+          last_payment_id: string | null
+          next_billing_date: string | null
+          razorpay_customer_id: string | null
+          razorpay_subscription_id: string | null
+          status: string | null
+          subscribed: boolean
+          subscription_end: string | null
+          subscription_plan: string | null
+          subscription_start: string | null
+          subscription_tier: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          email: string
+          id?: string
+          last_payment_date?: string | null
+          last_payment_id?: string | null
+          next_billing_date?: string | null
+          razorpay_customer_id?: string | null
+          razorpay_subscription_id?: string | null
+          status?: string | null
+          subscribed?: boolean
+          subscription_end?: string | null
+          subscription_plan?: string | null
+          subscription_start?: string | null
+          subscription_tier?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          email?: string
+          id?: string
+          last_payment_date?: string | null
+          last_payment_id?: string | null
+          next_billing_date?: string | null
+          razorpay_customer_id?: string | null
+          razorpay_subscription_id?: string | null
+          status?: string | null
+          subscribed?: boolean
+          subscription_end?: string | null
+          subscription_plan?: string | null
+          subscription_start?: string | null
+          subscription_tier?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       subscription_plans: {
         Row: {
           billing_cycle: string
@@ -15976,6 +16039,15 @@ export type Database = {
       calculate_resume_completion_enhanced: {
         Args: { resume_uuid: string }
         Returns: number
+      }
+      check_user_subscription: {
+        Args: { user_uuid: string }
+        Returns: {
+          is_subscribed: boolean
+          subscription_tier: string
+          subscription_end: string
+          status: string
+        }[]
       }
       check_vanity_url_availability: {
         Args: { url: string }
