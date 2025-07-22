@@ -172,104 +172,91 @@ export const useUserImport = () => {
     console.log(`👤 Creating user: ${user.email} (attempt ${retryCount + 1}/${maxRetries})`);
 
     try {
-      // Get fresh session for each request
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        return {
-          email: user.email,
-          success: false,
-          error: 'Authentication session expired',
-          retryCount: retryCount + 1,
-          errorType: 'auth'
-        };
-      }
-
-      const requestStart = Date.now();
+      // Create user using Supabase Auth Admin API (direct approach)
+      console.log(`📤 Creating user directly via Supabase Auth: ${user.email}`);
       
-      // Use the same approach as useUserCreation hook
-      const payload = {
-        userEmail: user.email,
-        userName: user.name,
-        userRole: user.role,
-        temporaryPassword: user.password || 'TempPass123!'
-      };
-      
-      console.log('📤 Sending payload to Edge Function:', payload);
-
-      const { data, error } = await supabase.functions.invoke('admin-create-user', {
-        body: payload,
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json'
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: user.email,
+        password: user.password || 'TempPass123!',
+        email_confirm: true, // Auto-confirm email to avoid email verification step
+        user_metadata: {
+          full_name: user.name,
+          role: user.role
         }
       });
 
-      const requestTime = Date.now() - requestStart;
-      console.log(`⏱️ Request completed in ${requestTime}ms for ${user.email}`);
-
-      if (error) {
-        console.error(`❌ Supabase function error for ${user.email}:`, error);
+      if (authError) {
+        console.error(`❌ Auth error for ${user.email}:`, authError);
         
-        // Determine error type based on error message
+        // Determine error type
         let errorType: ImportResult['errorType'] = 'unknown';
-        if (error.message?.includes('network') || error.message?.includes('timeout')) {
-          errorType = 'network';
-        } else if (error.message?.includes('auth') || error.message?.includes('token')) {
-          errorType = 'auth';
-        } else if (error.message?.includes('validation') || error.message?.includes('invalid')) {
+        if (authError.message?.includes('already') || authError.message?.includes('exists')) {
+          errorType = 'validation';
+        } else if (authError.message?.includes('invalid') || authError.message?.includes('format')) {
           errorType = 'validation';
         } else {
           errorType = 'server';
         }
 
-        // Retry for network and server errors
-        if ((errorType === 'network' || errorType === 'server') && retryCount < maxRetries - 1) {
-          console.log(`🔄 Retrying ${user.email} due to ${errorType} error...`);
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000)); // Exponential backoff
+        // Retry for server errors
+        if (errorType === 'server' && retryCount < maxRetries - 1) {
+          console.log(`🔄 Retrying ${user.email} due to server error...`);
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
           return createSingleUser(user, retryCount + 1);
         }
 
         return {
           email: user.email,
           success: false,
-          error: error.message || 'Failed to send a request to the Edge Function',
+          error: authError.message || 'Failed to create user in auth system',
           retryCount: retryCount + 1,
           errorType
         };
       }
 
-      if (!data) {
-        console.error(`❌ No data returned for ${user.email}`);
+      if (!authData?.user) {
+        console.error(`❌ No user data returned for ${user.email}`);
         return {
           email: user.email,
           success: false,
-          error: 'No data returned from Edge Function',
+          error: 'No user data returned from auth system',
           retryCount: retryCount + 1,
           errorType: 'server'
         };
       }
 
-      console.log(`📥 Response data for ${user.email}:`, data);
+      // Create profile record in public.profiles table
+      console.log(`📝 Creating profile record for ${user.email}`);
+      
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          full_name: user.name,
+          email: user.email,
+          user_role: user.role as any, // Cast to match enum
+          profile_completed: true,
+          onboarding_completed: true,
+          first_login: false
+        });
 
-      if (!data.success) {
-        console.error(`❌ Edge Function reported failure for ${user.email}:`, data.error);
+      if (profileError) {
+        console.error(`❌ Profile creation error for ${user.email}:`, profileError);
         
-        // Determine error type from Edge Function response
-        let errorType: ImportResult['errorType'] = 'unknown';
-        if (data.error?.includes('already exists') || data.error?.includes('already registered')) {
-          errorType = 'validation';
-        } else if (data.error?.includes('validation') || data.error?.includes('invalid')) {
-          errorType = 'validation';
-        } else {
-          errorType = 'server';
+        // If profile creation fails, we should delete the auth user to maintain consistency
+        try {
+          await supabase.auth.admin.deleteUser(authData.user.id);
+          console.log(`🧹 Cleaned up auth user ${user.email} due to profile creation failure`);
+        } catch (cleanupError) {
+          console.error(`❌ Failed to cleanup auth user ${user.email}:`, cleanupError);
         }
 
         return {
           email: user.email,
           success: false,
-          error: data.error || 'Unknown error from Edge Function',
+          error: profileError.message || 'Failed to create user profile',
           retryCount: retryCount + 1,
-          errorType
+          errorType: 'server'
         };
       }
 
