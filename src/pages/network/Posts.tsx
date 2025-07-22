@@ -470,7 +470,7 @@ const Posts = () => {
                     Dashboard
                   </Button>
                 </Link>
-                <Link to="/network/people" className="block">
+                <Link to="/network/connections" className="block">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
                     <Users className="h-3.5 w-3.5 mr-3" />
                     My Network

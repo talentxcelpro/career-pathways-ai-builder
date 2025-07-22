@@ -15948,6 +15948,10 @@ export type Database = {
         Args: { request_id: string }
         Returns: Json
       }
+      backfill_admin_connections: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       calculate_company_engagement_score: {
         Args: { company_uuid: string }
         Returns: number
@@ -15993,6 +15997,10 @@ export type Database = {
       count_words: {
         Args: { content_text: string }
         Returns: number
+      }
+      create_admin_connections: {
+        Args: { target_user_id: string }
+        Returns: undefined
       }
       create_notification: {
         Args: {

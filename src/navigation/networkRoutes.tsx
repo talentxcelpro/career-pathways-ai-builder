@@ -23,6 +23,7 @@ import UserProfile from "../pages/network/UserProfile";
 import PublicUserProfile from "../pages/network/PublicUserProfile";
 import Articles from "../pages/network/Articles";
 import ArticleDetail from "../pages/network/ArticleDetail";
+import MyNetwork from "../pages/network/MyNetwork";
 
 export const networkRoutes = [
   {
@@ -35,6 +36,11 @@ export const networkRoutes = [
     title: "Network People",
     to: "/network/people",
     page: <People />,
+  },
+  {
+    title: "My Network",
+    to: "/network/connections",
+    page: <MyNetwork />,
   },
   {
     title: "User Profile",

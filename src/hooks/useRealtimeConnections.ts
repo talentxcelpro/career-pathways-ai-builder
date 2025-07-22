@@ -165,6 +165,8 @@ export const useRealtimeConnections = () => {
           queryClient.invalidateQueries({ queryKey: ['connections'] });
           queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
           queryClient.invalidateQueries({ queryKey: ['connectionRequests'] });
+          queryClient.invalidateQueries({ queryKey: ['myConnections'] });
+          queryClient.invalidateQueries({ queryKey: ['pendingConnectionRequests'] });
         }
       )
       .subscribe();
