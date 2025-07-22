@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
@@ -19,10 +20,24 @@ serve(async (req) => {
     const razorpayKeySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
 
     if (!razorpayKeyId || !razorpayKeySecret) {
-      throw new Error("Razorpay credentials not configured");
+      console.log("Razorpay credentials not found, using demo mode");
+      
+      // Return demo order
+      const demoOrder = {
+        orderId: `demo_order_${Date.now()}`,
+        amount: amount * 100,
+        currency: currency,
+        keyId: "rzp_demo_key",
+        demo: true
+      };
+      
+      return new Response(JSON.stringify(demoOrder), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
     }
 
-    // Create Razorpay order
+    // Create Razorpay order with live credentials
     const orderData = {
       amount: amount * 100, // Convert to paisa
       currency: currency,
@@ -51,6 +66,7 @@ serve(async (req) => {
     }
 
     const order = await razorpayResponse.json();
+    console.log("Razorpay order created successfully:", order.id);
 
     // Initialize Supabase client
     const supabaseClient = createClient(
