@@ -23,7 +23,7 @@ interface ImportUsersModalProps {
 interface ImportUser {
   email: string;
   name: string;
-  role?: string;
+  role: string;
   temporaryPassword?: string;
 }
 
@@ -34,7 +34,7 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
 }) => {
   const [file, setFile] = useState<File | null>(null);
   const [csvText, setCsvText] = useState('');
-  const [speed, setSpeed] = useState<'slow' | 'medium' | 'fast'>('slow');
+  const [speed, setSpeed] = useState<'slow' | 'normal' | 'fast'>('slow');
   const [maxRetries, setMaxRetries] = useState(3);
   const [users, setUsers] = useState<ImportUser[]>([]);
   const [parseErrors, setParseErrors] = useState<string[]>([]);
@@ -235,7 +235,7 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
     switch (speedOption) {
       case 'slow':
         return '8 seconds between requests - Recommended for large imports (100+ users)';
-      case 'medium':
+      case 'normal':
         return '5 seconds between requests - Good for medium imports (20-100 users)';
       case 'fast':
         return '3 seconds between requests - Only for small imports (<20 users)';
@@ -371,12 +371,12 @@ kumar.aug09@gmail.com,Kumar Raja,job_seeker,TempPass123!"
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="medium" id="medium" />
-                      <Label htmlFor="medium" className="flex-1">
+                      <RadioGroupItem value="normal" id="normal" />
+                      <Label htmlFor="normal" className="flex-1">
                         <div>
-                          <div className="font-medium">Medium</div>
+                          <div className="font-medium">Normal</div>
                           <div className="text-sm text-gray-600">
-                            {getSpeedDescription('medium')}
+                            {getSpeedDescription('normal')}
                           </div>
                         </div>
                       </Label>
@@ -416,7 +416,16 @@ kumar.aug09@gmail.com,Kumar Raja,job_seeker,TempPass123!"
 
           {/* Import Progress */}
           <ImportProgress
-            progress={progress}
+            progress={{
+              total: progress.total,
+              completed: progress.completed,
+              successful: progress.successful,
+              failed: progress.failed,
+              currentUser: progress.currentUserEmail,
+              isRunning: progress.isRunning,
+              connectionStatus: progress.connectionStatus === 'healthy' ? 'healthy' : 
+                              progress.connectionStatus === 'unhealthy' ? 'unhealthy' : 'testing'
+            }}
             isPaused={isPaused}
             onPause={pauseImport}
             onResume={resumeImport}
@@ -425,7 +434,10 @@ kumar.aug09@gmail.com,Kumar Raja,job_seeker,TempPass123!"
 
           {/* Import Results */}
           <ImportResults 
-            results={results} 
+            results={results.map(r => ({
+              ...r,
+              errorType: r.errorType === 'auth' ? 'server' : r.errorType
+            }))} 
             onRetryFailed={handleRetryFailed}
           />
 

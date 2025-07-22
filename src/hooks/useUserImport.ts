@@ -27,12 +27,18 @@ export interface ImportProgress {
   failed: number;
   connectionStatus: 'checking' | 'healthy' | 'unhealthy';
   results: ImportResult[];
+  // Add compatibility properties for ImportUsersModal
+  total: number;
+  completed: number;
+  isRunning: boolean;
+  currentUserEmail?: string;
 }
 
 const VALID_ROLES = ['job_seeker', 'employer', 'admin', 'candidate'];
 
 export const useUserImport = () => {
   const [isImporting, setIsImporting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState<ImportProgress>({
     phase: 'idle',
     currentUser: 0,
@@ -40,7 +46,12 @@ export const useUserImport = () => {
     successful: 0,
     failed: 0,
     connectionStatus: 'checking',
-    results: []
+    results: [],
+    // Compatibility properties
+    total: 0,
+    completed: 0,
+    isRunning: false,
+    currentUserEmail: undefined
   });
 
   const resetProgress = () => {
@@ -51,7 +62,11 @@ export const useUserImport = () => {
       successful: 0,
       failed: 0,
       connectionStatus: 'checking',
-      results: []
+      results: [],
+      total: 0,
+      completed: 0,
+      isRunning: false,
+      currentUserEmail: undefined
     });
   };
 
@@ -318,25 +333,36 @@ export const useUserImport = () => {
     });
   };
 
-  const importUsers = async (csvContent: string, importSpeed: 'fast' | 'normal' | 'slow' = 'normal') => {
+  const importUsers = async (usersOrCsv: ImportUser[] | string, options?: { speed?: 'fast' | 'normal' | 'slow'; maxRetries?: number }) => {
     console.log('🚀 Starting user import process...');
     
     setIsImporting(true);
     resetProgress();
     
+    const importSpeed = options?.speed || 'normal';
+    
     try {
-      // Phase 1: Validate CSV
-      setProgress(prev => ({ ...prev, phase: 'validating' }));
-      console.log('📋 Phase 1: Validating CSV...');
+      let users: ImportUser[];
       
-      const users = await parseCSV(csvContent);
+      // Handle both array of users and CSV string
+      if (typeof usersOrCsv === 'string') {
+        // Phase 1: Validate CSV
+        setProgress(prev => ({ ...prev, phase: 'validating', isRunning: true }));
+        console.log('📋 Phase 1: Validating CSV...');
+        
+        users = await parseCSV(usersOrCsv);
+      } else {
+        // Direct array of users
+        users = usersOrCsv;
+        setProgress(prev => ({ ...prev, phase: 'validating', isRunning: true }));
+      }
       
       if (users.length === 0) {
         throw new Error('No valid users found in CSV file');
       }
 
       console.log(`📊 Found ${users.length} users to import`);
-      setProgress(prev => ({ ...prev, totalUsers: users.length }));
+      setProgress(prev => ({ ...prev, totalUsers: users.length, total: users.length }));
 
       // Phase 2: Test connectivity
       setProgress(prev => ({ ...prev, phase: 'connecting' }));
@@ -363,6 +389,8 @@ export const useUserImport = () => {
         setProgress(prev => ({ 
           ...prev, 
           currentUser: i + 1,
+          completed: i + 1,
+          currentUserEmail: user.email,
           results: [...results]
         }));
 
@@ -402,7 +430,7 @@ export const useUserImport = () => {
       }
 
       // Phase 4: Complete
-      setProgress(prev => ({ ...prev, phase: 'complete' }));
+      setProgress(prev => ({ ...prev, phase: 'complete', isRunning: false }));
       
       const finalSuccessful = results.filter(r => r.success).length;
       const finalFailed = results.filter(r => !r.success).length;
@@ -420,7 +448,7 @@ export const useUserImport = () => {
     } catch (error) {
       console.error('❌ Import process failed:', error);
       toast.error(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      setProgress(prev => ({ ...prev, phase: 'idle' }));
+      setProgress(prev => ({ ...prev, phase: 'idle', isRunning: false }));
     } finally {
       setIsImporting(false);
     }
@@ -483,12 +511,34 @@ export const useUserImport = () => {
     }
   };
 
+  const pauseImport = () => {
+    setIsPaused(true);
+    // Note: Actual pause functionality would need to be implemented
+  };
+
+  const resumeImport = () => {
+    setIsPaused(false);
+    // Note: Actual resume functionality would need to be implemented
+  };
+
+  const cancelImport = () => {
+    setIsPaused(false);
+    setIsImporting(false);
+    setProgress(prev => ({ ...prev, phase: 'idle', isRunning: false }));
+  };
+
   return {
     importUsers,
     retryFailedUsers,
     testConnectivity,
     progress,
     isImporting,
-    resetProgress
+    resetProgress,
+    // Additional properties expected by ImportUsersModal
+    results: progress.results,
+    isPaused,
+    pauseImport,
+    resumeImport,
+    cancelImport
   };
 };
