@@ -9,6 +9,7 @@ import { AddUserModal } from './AddUserModal';
 import { ImportUsersModal } from './ImportUsersModal';
 import { EmailManagementPanel } from './EmailManagementPanel';
 import { BulkCSVImport } from './BulkCSVImport';
+import { AdvancedFilters } from './AdvancedFilters';
 
 interface UserFiltersProps {
   searchTerm: string;
@@ -17,6 +18,10 @@ interface UserFiltersProps {
   setRoleFilter: (role: string) => void;
   statusFilter: string;
   setStatusFilter: (status: string) => void;
+  verificationFilter: string;
+  setVerificationFilter: (filter: string) => void;
+  completionFilter: string;
+  setCompletionFilter: (filter: string) => void;
   filteredUsers: any[];
   onUsersChanged: () => void;
 }
@@ -28,6 +33,10 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
   setRoleFilter,
   statusFilter,
   setStatusFilter,
+  verificationFilter,
+  setVerificationFilter,
+  completionFilter,
+  setCompletionFilter,
   filteredUsers,
   onUsersChanged
 }) => {
@@ -35,6 +44,14 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
   const [showImportModal, setShowImportModal] = useState(false);
   const [showEmailPanel, setShowEmailPanel] = useState(false);
   const [showBulkImport, setShowBulkImport] = useState(false);
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setRoleFilter('all');
+    setStatusFilter('all');
+    setVerificationFilter('all');
+    setCompletionFilter('all');
+  };
 
   return (
     <>
@@ -55,17 +72,18 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                className="px-3 py-2 border border-input bg-background rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <option value="all">All Roles</option>
                 <option value="job_seeker">Job Seekers</option>
                 <option value="employer">Employers</option>
+                <option value="candidate">Candidates</option>
                 <option value="admin">Admins</option>
               </select>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                className="px-3 py-2 border border-input bg-background rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -137,6 +155,17 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      <AdvancedFilters
+        verificationFilter={verificationFilter}
+        setVerificationFilter={setVerificationFilter}
+        completionFilter={completionFilter}
+        setCompletionFilter={setCompletionFilter}
+        roleFilter={roleFilter}
+        statusFilter={statusFilter}
+        searchTerm={searchTerm}
+        onClearFilters={handleClearFilters}
+      />
 
       <AddUserModal
         isOpen={showAddUserModal}

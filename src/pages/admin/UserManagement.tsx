@@ -14,6 +14,10 @@ const UserManagement = () => {
     setRoleFilter,
     statusFilter,
     setStatusFilter,
+    verificationFilter,
+    setVerificationFilter,
+    completionFilter,
+    setCompletionFilter,
     currentPage,
     setCurrentPage,
     pageSize,
@@ -42,6 +46,10 @@ const UserManagement = () => {
           setRoleFilter={setRoleFilter}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
+          verificationFilter={verificationFilter}
+          setVerificationFilter={setVerificationFilter}
+          completionFilter={completionFilter}
+          setCompletionFilter={setCompletionFilter}
           filteredUsers={filteredUsers}
           onUsersChanged={() => refetch()}
         />

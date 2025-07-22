@@ -10,12 +10,14 @@ export const useUserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [verificationFilter, setVerificationFilter] = useState<string>('all');
+  const [completionFilter, setCompletionFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const queryClient = useQueryClient();
 
   const { data: users, isLoading, error, refetch } = useQuery({
-    queryKey: ['admin-users', searchTerm, roleFilter, statusFilter, currentPage, pageSize],
+    queryKey: ['admin-users', searchTerm, roleFilter, statusFilter, verificationFilter, completionFilter, currentPage, pageSize],
     queryFn: async () => {
       let query = supabase
         .from('profiles')
@@ -34,6 +36,19 @@ export const useUserManagement = () => {
         query = query.eq('profile_completed', true);
       } else if (statusFilter === 'inactive') {
         query = query.eq('profile_completed', false);
+      }
+
+      // Note: email_verified field filtering will be implemented when database schema includes this field
+      if (verificationFilter === 'verified') {
+        // For now, use profile_completed as a proxy for verification
+        query = query.eq('profile_completed', true);
+      } else if (verificationFilter === 'unverified') {
+        query = query.eq('profile_completed', false);
+      }
+
+      if (completionFilter !== 'all') {
+        // Add profile completion percentage filtering logic
+        // This will be enhanced when we add completion_percentage field
       }
 
       // Apply pagination only if pageSize is not 'all'
@@ -57,7 +72,7 @@ export const useUserManagement = () => {
 
   // Get total count for pagination
   const { data: totalCount } = useQuery({
-    queryKey: ['admin-users-count', searchTerm, roleFilter, statusFilter],
+    queryKey: ['admin-users-count', searchTerm, roleFilter, statusFilter, verificationFilter, completionFilter],
     queryFn: async () => {
       let query = supabase
         .from('profiles')
@@ -77,6 +92,18 @@ export const useUserManagement = () => {
         query = query.eq('profile_completed', false);
       }
 
+      // Note: email_verified field filtering will be implemented when database schema includes this field
+      if (verificationFilter === 'verified') {
+        // For now, use profile_completed as a proxy for verification
+        query = query.eq('profile_completed', true);
+      } else if (verificationFilter === 'unverified') {
+        query = query.eq('profile_completed', false);
+      }
+
+      if (completionFilter !== 'all') {
+        // Add profile completion percentage filtering logic
+      }
+
       const { count, error } = await query;
       if (error) throw error;
       return count || 0;
@@ -91,22 +118,36 @@ export const useUserManagement = () => {
       const [
         { count: totalUsers },
         { count: activeUsers },
+        { count: inactiveUsers },
+        { count: verifiedUsers },
+        { count: unverifiedUsers },
         { count: employers },
         { count: jobSeekers },
-        { count: candidates }
+        { count: candidates },
+        { count: admins }
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('profile_completed', true),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('profile_completed', false),
+        // For now, using profile_completed as proxy for email verification
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('profile_completed', true),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('profile_completed', false),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'employer'),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'job_seeker'),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'candidate')
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'candidate'),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'admin')
       ]);
 
       return {
         totalUsers: totalUsers || 0,
         activeUsers: activeUsers || 0,
+        inactiveUsers: inactiveUsers || 0,
+        verifiedUsers: verifiedUsers || 0,
+        unverifiedUsers: unverifiedUsers || 0,
         employers: employers || 0,
-        candidates: (jobSeekers || 0) + (candidates || 0)
+        jobSeekers: jobSeekers || 0,
+        candidates: candidates || 0,
+        admins: admins || 0
       };
     }
   });
@@ -151,6 +192,10 @@ export const useUserManagement = () => {
     setRoleFilter,
     statusFilter,
     setStatusFilter,
+    verificationFilter,
+    setVerificationFilter,
+    completionFilter,
+    setCompletionFilter,
     currentPage,
     setCurrentPage,
     pageSize,
