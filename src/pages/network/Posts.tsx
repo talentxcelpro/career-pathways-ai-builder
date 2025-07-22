@@ -361,43 +361,31 @@ const Posts = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Simplified Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 bg-white/95 backdrop-blur-md p-1 rounded-2xl border border-slate-200/60 shadow-lg">
-              <Button
-                variant={feedFilter === 'all' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setFeedFilter('all')}
-                className={feedFilter === 'all' 
-                  ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-xl shadow-md" 
-                  : "text-slate-800 hover:text-slate-900 hover:bg-slate-100/80 font-medium rounded-xl"
-                }
-              >
-                All Posts
-              </Button>
-              <Button
-                variant={feedFilter === 'smart' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setFeedFilter('smart')}
-                className={feedFilter === 'smart' 
-                  ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-xl shadow-md" 
-                  : "text-slate-800 hover:text-slate-900 hover:bg-slate-100/80 font-medium rounded-xl"
-                }
-              >
-                Smart Feed
-              </Button>
-            </div>
-            
-            {/* Smart Feed Indicator */}
-            {feedFilter === 'smart' && (
-              <div className="text-sm text-slate-700">
-                <span className="mr-2">🎯 Smart Feed is personalized.</span>
-                <Link to="/profile/preferences" className="text-blue-600 hover:text-blue-700 underline font-medium">
-                  Edit Preferences
-                </Link>
-              </div>
-            )}
+        {/* Compact Header with Tabs */}
+        <div className="mb-4">
+          <div className="flex items-center gap-3 bg-white/95 backdrop-blur-md p-1 rounded-xl border border-slate-200/60 shadow-md">
+            <Button
+              variant={feedFilter === 'all' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setFeedFilter('all')}
+              className={feedFilter === 'all' 
+                ? "bg-blue-500 text-white font-medium rounded-lg" 
+                : "text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 font-medium rounded-lg"
+              }
+            >
+              All Posts
+            </Button>
+            <Button
+              variant={feedFilter === 'smart' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setFeedFilter('smart')}
+              className={feedFilter === 'smart' 
+                ? "bg-blue-500 text-white font-medium rounded-lg" 
+                : "text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 font-medium rounded-lg"
+              }
+            >
+              Smart Feed
+            </Button>
           </div>
         </div>
 
