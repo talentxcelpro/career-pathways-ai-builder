@@ -61,7 +61,7 @@ const People = () => {
         query = query.eq('industry', industryFilter);
       }
 
-      const { data, error } = await query.limit(50);
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
