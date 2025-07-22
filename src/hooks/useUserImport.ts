@@ -55,15 +55,7 @@ export const useUserImport = () => {
       }
       console.log('✓ Authentication session valid');
 
-      // Test 2: Test Supabase Admin API access by attempting to get current user
-      const { data: userData, error: userError } = await supabase.auth.admin.getUserById(session.user.id);
-      if (userError) {
-        console.error('Supabase Admin API test failed:', userError);
-        throw new Error('Supabase Admin API access denied');
-      }
-      console.log('✓ Supabase Admin API accessible');
-
-      // Test 3: Test database connectivity by querying profiles table
+      // Test 2: Test database connectivity by querying profiles table
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('id')
@@ -80,7 +72,7 @@ export const useUserImport = () => {
         connectionStatus: 'healthy' 
       }));
 
-      console.log('All connectivity tests passed successfully');
+      console.log('Connectivity tests passed - admin operations will be tested during actual import');
       return true;
 
     } catch (error) {
@@ -109,9 +101,18 @@ export const useUserImport = () => {
 
       if (authError || !authData.user) {
         console.error('User creation failed:', authError);
+        let errorMessage = authError?.message || 'Failed to create user account';
+        
+        // Provide more specific error messages for common issues
+        if (authError?.message?.includes('admin')) {
+          errorMessage = 'Admin privileges required - please check your Supabase configuration';
+        } else if (authError?.message?.includes('auth')) {
+          errorMessage = 'Authentication error - please verify your credentials';
+        }
+        
         return { 
           success: false, 
-          error: authError?.message || 'Failed to create user account' 
+          error: errorMessage
         };
       }
 
