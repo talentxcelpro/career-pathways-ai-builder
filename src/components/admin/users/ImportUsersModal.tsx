@@ -4,9 +4,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, FileText, AlertTriangle } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Upload, FileText, AlertTriangle, Type } from 'lucide-react';
 import { useUserImport } from '@/hooks/useUserImport';
 import { ImportProgress } from './ImportProgress';
 import { ImportResults } from './ImportResults';
@@ -31,6 +33,7 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
   onUsersImported
 }) => {
   const [file, setFile] = useState<File | null>(null);
+  const [csvText, setCsvText] = useState('');
   const [speed, setSpeed] = useState<'slow' | 'medium' | 'fast'>('slow');
   const [maxRetries, setMaxRetries] = useState(3);
   const [users, setUsers] = useState<ImportUser[]>([]);
@@ -52,6 +55,89 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
     setUsers([]);
 
     Papa.parse(selectedFile, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (result) => {
+        console.log('CSV Parse Result:', result);
+        
+        if (result.errors && result.errors.length > 0) {
+          const errors = result.errors.map(error => `Row ${error.row}: ${error.message}`);
+          setParseErrors(errors);
+          return;
+        }
+
+        const parsedUsers: ImportUser[] = [];
+        const errors: string[] = [];
+
+        result.data.forEach((row: any, index: number) => {
+          const rowNumber = index + 2; // +2 because of header row and 0-based index
+          
+          // Check for required columns
+          if (!row.email && !row.Email && !row.EMAIL) {
+            errors.push(`Row ${rowNumber}: Missing email column (use 'email', 'Email', or 'EMAIL')`);
+            return;
+          }
+          
+          if (!row.name && !row.Name && !row.NAME && !row['Full Name'] && !row['full_name']) {
+            errors.push(`Row ${rowNumber}: Missing name column (use 'name', 'Name', 'NAME', 'Full Name', or 'full_name')`);
+            return;
+          }
+
+          const email = (row.email || row.Email || row.EMAIL || '').toString().trim();
+          const name = (row.name || row.Name || row.NAME || row['Full Name'] || row['full_name'] || '').toString().trim();
+          const role = (row.role || row.Role || row.ROLE || row.user_role || '').toString().trim().toLowerCase();
+          const temporaryPassword = (row.password || row.Password || row.temporary_password || '').toString().trim();
+
+          if (!email) {
+            errors.push(`Row ${rowNumber}: Email is empty`);
+            return;
+          }
+
+          if (!name) {
+            errors.push(`Row ${rowNumber}: Name is empty`);
+            return;
+          }
+
+          // Validate role if provided
+          const validRoles = ['job_seeker', 'employer', 'admin'];
+          const roleToUse = role || 'job_seeker';
+          
+          if (role && !validRoles.includes(roleToUse)) {
+            errors.push(`Row ${rowNumber}: Invalid role '${role}'. Use: ${validRoles.join(', ')}`);
+            return;
+          }
+
+          parsedUsers.push({
+            email,
+            name,
+            role: roleToUse,
+            ...(temporaryPassword && { temporaryPassword })
+          });
+        });
+
+        if (errors.length > 0) {
+          setParseErrors(errors);
+        } else {
+          setUsers(parsedUsers);
+          console.log(`Parsed ${parsedUsers.length} users successfully`);
+        }
+      },
+      error: (error) => {
+        setParseErrors([`Failed to parse CSV: ${error.message}`]);
+      }
+    });
+  };
+
+  const handleTextParse = () => {
+    if (!csvText.trim()) {
+      setParseErrors(['Please enter CSV data']);
+      return;
+    }
+
+    setParseErrors([]);
+    setUsers([]);
+
+    Papa.parse(csvText.trim(), {
       header: true,
       skipEmptyLines: true,
       complete: (result) => {
@@ -185,17 +271,50 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
             </AlertDescription>
           </Alert>
 
-          {/* File Upload */}
-          <div className="space-y-2">
-            <Label htmlFor="csv-file">Upload CSV File</Label>
-            <Input
-              id="csv-file"
-              type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
-              className="cursor-pointer"
-            />
-          </div>
+          {/* Input Methods */}
+          <Tabs defaultValue="text" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="text" className="flex items-center gap-2">
+                <Type className="h-4 w-4" />
+                Paste CSV Text
+              </TabsTrigger>
+              <TabsTrigger value="file" className="flex items-center gap-2">
+                <Upload className="h-4 w-4" />
+                Upload CSV File
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="text" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="csv-text">Paste CSV Data</Label>
+                <Textarea
+                  id="csv-text"
+                  placeholder="email,name,role,password
+rahuldhi74@gmail.com,Rahul Dheeman,job_seeker,TempPass123!
+kumar.aug09@gmail.com,Kumar Raja,job_seeker,TempPass123!"
+                  value={csvText}
+                  onChange={(e) => setCsvText(e.target.value)}
+                  className="min-h-[120px] font-mono text-sm"
+                />
+                <Button onClick={handleTextParse} className="w-full">
+                  Parse CSV Data
+                </Button>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="file" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="csv-file">Upload CSV File</Label>
+                <Input
+                  id="csv-file"
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileUpload}
+                  className="cursor-pointer"
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
 
           {/* Parse Errors */}
           {parseErrors.length > 0 && (
