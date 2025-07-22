@@ -8,6 +8,9 @@ export { MinimalistTemplate } from './MinimalistTemplate';
 export { SalesTemplate } from './SalesTemplate';
 export { HealthcareTemplate } from './HealthcareTemplate';
 export { StartupTemplate } from './StartupTemplate';
+export { InnovativeTemplate } from './InnovativeTemplate';
+export { CompactTemplate } from './CompactTemplate';
+export { BoldTemplate } from './BoldTemplate';
 
 // Import the templates for the component list
 import { ClassicTemplate } from './ClassicTemplate';
@@ -20,6 +23,9 @@ import { MinimalistTemplate } from './MinimalistTemplate';
 import { SalesTemplate } from './SalesTemplate';
 import { HealthcareTemplate } from './HealthcareTemplate';
 import { StartupTemplate } from './StartupTemplate';
+import { InnovativeTemplate } from './InnovativeTemplate';
+import { CompactTemplate } from './CompactTemplate';
+import { BoldTemplate } from './BoldTemplate';
 
 export const templateList = [
   { id: 'classic', name: 'Classic', component: ClassicTemplate, category: 'Traditional' },
@@ -31,5 +37,8 @@ export const templateList = [
   { id: 'minimalist', name: 'Minimalist', component: MinimalistTemplate, category: 'Clean' },
   { id: 'sales', name: 'Sales', component: SalesTemplate, category: 'Business' },
   { id: 'healthcare', name: 'Healthcare', component: HealthcareTemplate, category: 'Medical' },
-  { id: 'startup', name: 'Startup', component: StartupTemplate, category: 'Tech' }
+  { id: 'startup', name: 'Startup', component: StartupTemplate, category: 'Tech' },
+  { id: 'innovative', name: 'Innovative', component: InnovativeTemplate, category: 'Modern' },
+  { id: 'compact', name: 'Compact', component: CompactTemplate, category: 'Minimal' },
+  { id: 'bold', name: 'Bold', component: BoldTemplate, category: 'Creative' }
 ];

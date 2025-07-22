@@ -1192,10 +1192,10 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => window.open('https://talentxcel.net/', '_blank')}
+                  onClick={() => toast.info('More templates coming soon!')}
                   className="w-full text-sm rounded-xl border-gray-200"
                 >
-                  Learn More • Upgrade to Pro
+                  More Templates
                 </Button>
               </CardContent>
             </Card>
@@ -1379,13 +1379,6 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                       </div>
                     )}
 
-                    {/* Footer Branding */}
-                    <div className="mt-12 pt-8 border-t border-gray-200 text-center">
-                      <div className="text-sm text-gray-500">
-                        <div className="font-semibold text-blue-600 mb-2">Created with TalentXcel Resume Builder</div>
-                        <div>AI-Enhanced Professional Resume • Visit talentxcel.net</div>
-                      </div>
-                    </div>
                   </div>
                 </ScrollArea>
                 
@@ -1393,8 +1386,8 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                 <div className="p-8 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-600">
-                      <div className="font-semibold text-gray-900 text-base">Powered by TalentXcel</div>
-                      <div>Professional Resume Builder with AI Enhancement</div>
+                      <div className="font-semibold text-gray-900 text-base">Professional Resume</div>
+                      <div>Ready to download</div>
                     </div>
                     <Button 
                       onClick={downloadPDF}

@@ -3,6 +3,7 @@ import { PushNotifications } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { playAppleMessageTone } from '@/utils/notificationSound';
 
 interface PushNotificationState {
   isRegistered: boolean;
@@ -69,6 +70,10 @@ export const usePushNotifications = () => {
         // Show us the notification payload if the app is open on our device
         PushNotifications.addListener('pushNotificationReceived', (notification) => {
           console.log('Push notification received: ', notification);
+          
+          // Play Apple message tone
+          playAppleMessageTone();
+          
           toast.info(notification.title || 'New notification', {
             description: notification.body
           });
