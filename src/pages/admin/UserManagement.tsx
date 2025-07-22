@@ -5,9 +5,11 @@ import { UserStatsCards } from '@/components/admin/users/UserStatsCards';
 import { UserFilters } from '@/components/admin/users/UserFilters';
 import { UsersList } from '@/components/admin/users/UsersList';
 import { BulkCompletionActions } from '@/components/admin/users/BulkCompletionActions';
+import { BulkActionsToolbar } from '@/components/admin/users/BulkActionsToolbar';
 import { useUserManagement } from '@/hooks/useUserManagement';
 
 const UserManagement = () => {
+  const [selectedUsers, setSelectedUsers] = React.useState<any[]>([]);
   const {
     searchTerm,
     setSearchTerm,
@@ -31,6 +33,22 @@ const UserManagement = () => {
     filteredUsers,
     refetch
   } = useUserManagement();
+
+  const handleUserSelect = (user: any, selected: boolean) => {
+    if (selected) {
+      setSelectedUsers(prev => [...prev, user]);
+    } else {
+      setSelectedUsers(prev => prev.filter(u => u.id !== user.id));
+    }
+  };
+
+  const handleSelectAll = (selected: boolean) => {
+    setSelectedUsers(selected ? filteredUsers : []);
+  };
+
+  const handleClearSelection = () => {
+    setSelectedUsers([]);
+  };
 
   return (
     <UnifiedAdminLayout 
@@ -60,6 +78,13 @@ const UserManagement = () => {
           onRefresh={() => refetch()}
         />
 
+        <BulkActionsToolbar
+          selectedUsers={selectedUsers}
+          allUsers={filteredUsers}
+          onClearSelection={handleClearSelection}
+          onRefresh={() => refetch()}
+        />
+
         <UsersList
           users={filteredUsers}
           isLoading={isLoading}
@@ -70,6 +95,9 @@ const UserManagement = () => {
           totalCount={totalCount || 0}
           onPageChange={setCurrentPage}
           onPageSizeChange={setPageSize}
+          selectedUsers={selectedUsers}
+          onUserSelect={handleUserSelect}
+          onSelectAll={handleSelectAll}
         />
       </div>
     </UnifiedAdminLayout>

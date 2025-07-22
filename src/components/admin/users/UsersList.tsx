@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Table,
@@ -35,6 +36,9 @@ interface UsersListProps {
   totalCount: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
+  selectedUsers: any[];
+  onUserSelect: (user: any, selected: boolean) => void;
+  onSelectAll: (selected: boolean) => void;
 }
 
 export const UsersList: React.FC<UsersListProps> = ({ 
@@ -46,7 +50,10 @@ export const UsersList: React.FC<UsersListProps> = ({
   pageSize,
   totalCount,
   onPageChange,
-  onPageSizeChange
+  onPageSizeChange,
+  selectedUsers,
+  onUserSelect,
+  onSelectAll
 }) => {
   const [reminderUser, setReminderUser] = useState<any>(null);
   const [reminderPercentage, setReminderPercentage] = useState<number>(0);
@@ -94,6 +101,13 @@ export const UsersList: React.FC<UsersListProps> = ({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={selectedUsers.length === users.length && users.length > 0}
+                  onCheckedChange={onSelectAll}
+                  aria-label="Select all users"
+                />
+              </TableHead>
               <TableHead>User</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
@@ -109,7 +123,14 @@ export const UsersList: React.FC<UsersListProps> = ({
           </TableHeader>
           <TableBody>
             {users?.map((user) => (
-              <TableRow key={user.id}>
+              <TableRow key={user.id} className={selectedUsers.some(u => u.id === user.id) ? 'bg-muted/50' : ''}>
+                <TableCell>
+                  <Checkbox
+                    checked={selectedUsers.some(u => u.id === user.id)}
+                    onCheckedChange={(checked) => onUserSelect(user, checked as boolean)}
+                    aria-label={`Select user ${user.full_name || 'Unknown'}`}
+                  />
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
