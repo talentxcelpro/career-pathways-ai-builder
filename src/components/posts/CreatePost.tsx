@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Camera, 
@@ -11,7 +13,9 @@ import {
   Lock,
   ImagePlus,
   Video,
-  Paperclip
+  Paperclip,
+  X,
+  Loader2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,6 +26,7 @@ interface Attachment {
   url: string;
   type: 'image' | 'video' | 'document';
   file?: File;
+  name: string;
 }
 
 interface CreatePostProps {
@@ -33,25 +38,48 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
   const [content, setContent] = useState('');
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [location, setLocation] = useState('');
+  const [showLocationInput, setShowLocationInput] = useState(false);
   const [privacy, setPrivacy] = useState<'public' | 'connections' | 'private'>('public');
   const [isPosting, setIsPosting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
+  const handleFileUpload = async (files: FileList | null, type: 'image' | 'video') => {
+    if (!files || files.length === 0) return;
 
+    setIsUploading(true);
     const newAttachments: Attachment[] = [];
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const fileType = file.type.split('/')[0]; // e.g., "image", "video"
+      
+      // Validate file type
+      const fileType = file.type.split('/')[0];
+      if (type === 'image' && fileType !== 'image') {
+        toast.error(`${file.name} is not an image file`);
+        continue;
+      }
+      if (type === 'video' && fileType !== 'video') {
+        toast.error(`${file.name} is not a video file`);
+        continue;
+      }
+
+      // Validate file size (10MB limit)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(`${file.name} is too large. Maximum size is 10MB.`);
+        continue;
+      }
+
       const fileExtension = file.name.split('.').pop();
       const randomId = Math.random().toString(36).substring(2, 15);
       const filename = `${randomId}.${fileExtension}`;
-      const filePath = `attachments/${user?.id}/${filename}`;
+      const filePath = `${user?.id}/${filename}`;
 
       try {
         const { data, error } = await supabase.storage
-          .from('community-posts')
+          .from('post-media')
           .upload(filePath, file, {
             cacheControl: '3600',
             upsert: false
@@ -63,12 +91,13 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
           continue;
         }
 
-        const url = `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public/community-posts/${data.path}`;
+        const url = `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public/post-media/${data.path}`;
         newAttachments.push({
           id: randomId,
           url: url,
-          type: fileType as 'image' | 'video' | 'document',
+          type: type,
           file: file,
+          name: file.name,
         });
         toast.success(`${file.name} uploaded successfully!`);
       } catch (uploadError) {
@@ -78,10 +107,41 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
     }
 
     setAttachments(prev => [...prev, ...newAttachments]);
+    setIsUploading(false);
   };
 
   const handleRemoveAttachment = (id: string) => {
     setAttachments(prev => prev.filter(att => att.id !== id));
+  };
+
+  const handlePhotoClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleVideoClick = () => {
+    videoInputRef.current?.click();
+  };
+
+  const handleLocationClick = () => {
+    setShowLocationInput(!showLocationInput);
+  };
+
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+          toast.success('Location detected!');
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          toast.error('Failed to get location. Please enter manually.');
+        }
+      );
+    } else {
+      toast.error('Geolocation is not supported by this browser.');
+    }
   };
 
   const handleSubmit = async () => {
@@ -104,7 +164,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
         .from('posts')
         .insert({
           content,
-          post_type: 'text', // Changed from default to 'text'
+          post_type: 'text',
           author_id: user.id,
           media_urls: attachments.map(att => att.url),
           location: location || null,
@@ -126,6 +186,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
       setContent('');
       setAttachments([]);
       setLocation('');
+      setShowLocationInput(false);
       setPrivacy('public');
       
       toast.success('Post created successfully!');
@@ -158,22 +219,126 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
           </div>
         </div>
 
+        {/* Hidden file inputs */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={(e) => handleFileUpload(e.target.files, 'image')}
+          accept="image/*"
+          multiple
+          className="hidden"
+        />
+        <input
+          type="file"
+          ref={videoInputRef}
+          onChange={(e) => handleFileUpload(e.target.files, 'video')}
+          accept="video/*"
+          multiple
+          className="hidden"
+        />
+
+        {/* Location Input */}
+        {showLocationInput && (
+          <div className="mb-4 p-3 border rounded-lg bg-gray-50">
+            <div className="flex items-center gap-2 mb-2">
+              <MapPin className="h-4 w-4 text-gray-600" />
+              <span className="text-sm font-medium">Add Location</span>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Enter location or click to detect"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="flex-1"
+              />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={getCurrentLocation}
+                className="whitespace-nowrap"
+              >
+                Detect
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => {
+                  setShowLocationInput(false);
+                  setLocation('');
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Media Preview */}
+        {attachments.length > 0 && (
+          <div className="mb-4">
+            <div className="grid grid-cols-2 gap-2">
+              {attachments.map((attachment) => (
+                <div key={attachment.id} className="relative group">
+                  {attachment.type === 'image' ? (
+                    <img 
+                      src={attachment.url} 
+                      alt={attachment.name}
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                  ) : (
+                    <video 
+                      src={attachment.url}
+                      className="w-full h-32 object-cover rounded-lg"
+                      controls
+                    />
+                  )}
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                    onClick={() => handleRemoveAttachment(attachment.id)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Media and Options */}
         <div className="flex items-center justify-between pt-4 border-t">
           <div className="flex gap-2">
-            <Button variant="ghost" size="sm" className="flex items-center gap-1">
-              <ImagePlus className="h-4 w-4" />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex items-center gap-1" 
+              onClick={handlePhotoClick}
+              disabled={isUploading}
+            >
+              {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
               Photo
             </Button>
-            <Button variant="ghost" size="sm" className="flex items-center gap-1">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex items-center gap-1"
+              onClick={handleVideoClick}
+              disabled={isUploading}
+            >
               <Video className="h-4 w-4" />
               Video
             </Button>
-            <Button variant="ghost" size="sm" className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" className="flex items-center gap-1" disabled>
               <Paperclip className="h-4 w-4" />
               File
             </Button>
-            <Button variant="ghost" size="sm" className="flex items-center gap-1">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex items-center gap-1"
+              onClick={handleLocationClick}
+            >
               <MapPin className="h-4 w-4" />
               Location
             </Button>
@@ -197,11 +362,18 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
 
             <Button 
               onClick={handleSubmit} 
-              disabled={!content.trim() || isPosting}
+              disabled={!content.trim() || isPosting || isUploading}
               size="sm"
               className="bg-blue-600 hover:bg-blue-700"
             >
-              {isPosting ? 'Posting...' : 'Post'}
+              {isPosting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                  Posting...
+                </>
+              ) : (
+                'Post'
+              )}
             </Button>
           </div>
         </div>
