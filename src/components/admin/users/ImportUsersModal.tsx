@@ -1,13 +1,14 @@
-
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
-import { Loader2, Upload, Download, Check, X, AlertTriangle } from 'lucide-react';
-import { toast } from 'sonner';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Upload, Download, FileText, AlertCircle, Settings } from 'lucide-react';
 import Papa from 'papaparse';
-import { supabase } from '@/integrations/supabase/client';
+import { useUserImport } from '@/hooks/useUserImport';
+import { ImportProgress } from './ImportProgress';
+import { ImportResults } from './ImportResults';
 
 interface ImportUsersModalProps {
   open: boolean;
@@ -15,19 +16,11 @@ interface ImportUsersModalProps {
   onUsersImported: () => void;
 }
 
-interface ParsedUser {
+interface ImportUser {
   email: string;
   name: string;
-  role: string;
+  role?: string;
   temporaryPassword?: string;
-  isValid: boolean;
-  issues: string[];
-}
-
-interface ImportResult {
-  success: boolean;
-  email: string;
-  error?: string;
 }
 
 export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
@@ -36,275 +29,134 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
   onUsersImported
 }) => {
   const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [isImporting, setIsImporting] = useState(false);
-  const [parsedUsers, setParsedUsers] = useState<ParsedUser[]>([]);
-  const [importResults, setImportResults] = useState<ImportResult[]>([]);
-  const [importProgress, setImportProgress] = useState(0);
-  const [showPreview, setShowPreview] = useState(false);
-  const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
+  const [parsedUsers, setParsedUsers] = useState<ImportUser[]>([]);
+  const [parseError, setParseError] = useState<string>('');
+  const [importSpeed, setImportSpeed] = useState<'slow' | 'medium' | 'fast'>('medium');
+  const [maxRetries, setMaxRetries] = useState(3);
+
+  const {
+    progress,
+    results,
+    isPaused,
+    importUsers,
+    pauseImport,
+    resumeImport,
+    cancelImport
+  } = useUserImport();
 
   const downloadTemplate = () => {
     const template = [
-      ['email', 'name', 'role', 'password'],
-      ['john.doe@example.com', 'John Doe', 'job_seeker', 'TempPass123!'],
-      ['jane.smith@company.com', 'Jane Smith', 'employer', 'SecurePass456!'],
-      ['admin@platform.com', 'Admin User', 'admin', 'AdminPass789!']
+      ['email', 'name', 'role', 'temporaryPassword'],
+      ['john.doe@company.com', 'John Doe', 'job_seeker', 'TempPass123!'],
+      ['jane.smith@company.com', 'Jane Smith', 'employer', ''],
+      ['admin@company.com', 'Admin User', 'admin', 'AdminPass456!']
     ];
 
     const csv = Papa.unparse(template);
     const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
+    const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = 'user-import-template.csv';
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'user-import-template.csv');
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   };
 
-  const detectColumnMapping = (headers: string[]): Record<string, string> => {
-    const mapping: Record<string, string> = {};
-    const lowerHeaders = headers.map(h => h.toLowerCase().trim());
-
-    // Email detection
-    const emailVariants = ['email', 'email_address', 'emailaddress', 'e-mail', 'mail'];
-    const emailIndex = lowerHeaders.findIndex(h => emailVariants.includes(h));
-    if (emailIndex >= 0) mapping.email = headers[emailIndex];
-
-    // Name detection
-    const nameVariants = ['name', 'full_name', 'fullname', 'user_name', 'username', 'display_name'];
-    const nameIndex = lowerHeaders.findIndex(h => nameVariants.includes(h));
-    if (nameIndex >= 0) mapping.name = headers[nameIndex];
-
-    // Role detection
-    const roleVariants = ['role', 'user_role', 'userrole', 'type', 'user_type', 'account_type'];
-    const roleIndex = lowerHeaders.findIndex(h => roleVariants.includes(h));
-    if (roleIndex >= 0) mapping.role = headers[roleIndex];
-
-    // Password detection
-    const passwordVariants = ['password', 'pwd', 'pass', 'temporary_password', 'temp_password', 'temp_pass'];
-    const passwordIndex = lowerHeaders.findIndex(h => passwordVariants.includes(h));
-    if (passwordIndex >= 0) mapping.temporaryPassword = headers[passwordIndex];
-
-    return mapping;
-  };
-
-  const validateUser = (user: any): { isValid: boolean; issues: string[] } => {
-    const issues: string[] = [];
-
-    if (!user.email || typeof user.email !== 'string' || user.email.trim() === '') {
-      issues.push('Email is required');
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email.trim())) {
-      issues.push('Invalid email format');
-    }
-
-    if (!user.name || typeof user.name !== 'string' || user.name.trim() === '') {
-      issues.push('Name is required');
-    }
-
-    if (user.role && !['job_seeker', 'employer', 'admin'].includes(user.role)) {
-      issues.push('Invalid role (must be: job_seeker, employer, or admin)');
-    }
-
-    return {
-      isValid: issues.length === 0,
-      issues
-    };
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setCsvFile(file);
-      parseCsv(file);
-    }
-  };
+    if (!file) return;
 
-  const parseCsv = (file: File) => {
+    setCsvFile(file);
+    setParseError('');
+    setParsedUsers([]);
+
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      transformHeader: (header) => header.trim(),
       complete: (results) => {
-        console.log('CSV Parse Results:', results);
-        
         if (results.errors.length > 0) {
-          console.error('CSV Parse Errors:', results.errors);
-          toast.error('Error parsing CSV file');
+          setParseError(`CSV parsing error: ${results.errors[0].message}`);
           return;
         }
 
-        const headers = results.meta.fields || [];
-        setCsvHeaders(headers);
-        console.log('CSV Headers:', headers);
+        const users = results.data as any[];
+        const validUsers: ImportUser[] = [];
+        const errors: string[] = [];
 
-        const columnMapping = detectColumnMapping(headers);
-        console.log('Column Mapping:', columnMapping);
+        users.forEach((row, index) => {
+          if (!row.email || !row.name) {
+            errors.push(`Row ${index + 2}: Missing email or name`);
+            return;
+          }
 
-        if (!columnMapping.email || !columnMapping.name) {
-          toast.error('CSV must contain email and name columns');
+          validUsers.push({
+            email: row.email.toString().trim(),
+            name: row.name.toString().trim(),
+            role: row.role?.toString().trim() || 'job_seeker',
+            temporaryPassword: row.temporaryPassword?.toString().trim() || undefined
+          });
+        });
+
+        if (errors.length > 0) {
+          setParseError(`Validation errors:\n${errors.join('\n')}`);
           return;
         }
 
-        const users: ParsedUser[] = results.data.map((row: any) => {
-          const user = {
-            email: row[columnMapping.email]?.toString().trim() || '',
-            name: row[columnMapping.name]?.toString().trim() || '',
-            role: row[columnMapping.role]?.toString().trim().toLowerCase() || 'job_seeker',
-            temporaryPassword: row[columnMapping.temporaryPassword]?.toString().trim() || ''
-          };
+        if (validUsers.length === 0) {
+          setParseError('No valid users found in CSV file');
+          return;
+        }
 
-          const validation = validateUser(user);
-          
-          return {
-            ...user,
-            isValid: validation.isValid,
-            issues: validation.issues
-          };
-        }).filter(user => user.email || user.name); // Filter out completely empty rows
-
-        console.log('Parsed Users:', users);
-        setParsedUsers(users);
-        setShowPreview(true);
+        setParsedUsers(validUsers);
+        console.log(`✅ Parsed ${validUsers.length} valid users from CSV`);
       },
       error: (error) => {
-        console.error('CSV Parse Error:', error);
-        toast.error('Failed to parse CSV file');
+        setParseError(`Failed to parse CSV: ${error.message}`);
       }
     });
-  };
-
-  const importUser = async (user: ParsedUser): Promise<ImportResult> => {
-    try {
-      console.log('Importing user:', user);
-      
-      // Ensure required fields are present and properly formatted
-      const requestBody: {
-        userEmail: string;
-        userName: string;
-        userRole: string;
-        temporaryPassword?: string;
-      } = {
-        userEmail: user.email?.toString().trim(),
-        userName: user.name?.toString().trim(),
-        userRole: user.role || 'job_seeker'
-      };
-
-      // Only add password if provided
-      if (user.temporaryPassword) {
-        requestBody.temporaryPassword = user.temporaryPassword.toString().trim();
-      }
-
-      console.log('Request body before sending:', JSON.stringify(requestBody, null, 2));
-      
-      // Validate required fields locally before sending
-      if (!requestBody.userEmail || !requestBody.userName) {
-        throw new Error(`Missing required fields: email=${!!requestBody.userEmail}, name=${!!requestBody.userName}`);
-      }
-
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('No authentication session found');
-      }
-
-      console.log('Making request to admin-create-user...');
-
-      const { data, error } = await supabase.functions.invoke('admin-create-user', {
-        body: requestBody,
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      console.log('Edge Function Response:', { data, error });
-
-      if (error) {
-        console.error('Edge Function Error:', error);
-        throw new Error(`Network error: ${error.message}`);
-      }
-
-      if (!data?.success) {
-        console.error('Edge Function returned error:', data);
-        throw new Error(data?.error || 'Unknown error from Edge Function');
-      }
-
-      return {
-        success: true,
-        email: user.email
-      };
-
-    } catch (error) {
-      console.error('Import error for user:', user.email, error);
-      return {
-        success: false,
-        email: user.email,
-        error: error.message
-      };
-    }
-  };
+  }, []);
 
   const handleImport = async () => {
-    if (!parsedUsers.length) return;
-
-    const validUsers = parsedUsers.filter(user => user.isValid);
-    if (validUsers.length === 0) {
-      toast.error('No valid users to import');
+    if (parsedUsers.length === 0) {
+      setParseError('No users to import');
       return;
     }
 
-    setIsImporting(true);
-    setImportResults([]);
-    setImportProgress(0);
-
-    const results: ImportResult[] = [];
-
-    for (let i = 0; i < validUsers.length; i++) {
-      const user = validUsers[i];
-      console.log(`Importing user ${i + 1}/${validUsers.length}:`, user.email);
-      
-      const result = await importUser(user);
-      results.push(result);
-      
-      setImportProgress(((i + 1) / validUsers.length) * 100);
-      
-      // Add small delay to prevent overwhelming the server
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-
-    setImportResults(results);
-    setIsImporting(false);
-
-    const successful = results.filter(r => r.success).length;
-    const failed = results.filter(r => !r.success).length;
-
-    if (successful > 0) {
-      toast.success(`Import complete: ${successful} successful, ${failed} failed`);
-      if (successful === results.length) {
-        onUsersImported();
-      }
-    } else {
-      toast.error(`Import failed: ${failed} users could not be imported`);
-    }
+    await importUsers(parsedUsers, {
+      speed: importSpeed,
+      maxRetries
+    });
   };
 
-  const resetModal = () => {
-    setCsvFile(null);
-    setParsedUsers([]);
-    setImportResults([]);
-    setImportProgress(0);
-    setShowPreview(false);
-    setCsvHeaders([]);
+  const handleRetryFailed = async (failedUsers: any[]) => {
+    const usersToRetry = failedUsers.map(result => 
+      parsedUsers.find(user => user.email === result.email)
+    ).filter(Boolean) as ImportUser[];
+
+    if (usersToRetry.length > 0) {
+      await importUsers(usersToRetry, {
+        speed: importSpeed,
+        maxRetries
+      });
+    }
   };
 
   const handleClose = () => {
-    if (!isImporting) {
-      resetModal();
-      onOpenChange(false);
+    if (progress.isRunning) {
+      cancelImport();
     }
+    setCsvFile(null);
+    setParsedUsers([]);
+    setParseError('');
+    onOpenChange(false);
   };
 
-  const validUsers = parsedUsers.filter(user => user.isValid);
-  const invalidUsers = parsedUsers.filter(user => !user.isValid);
+  const handleSuccess = () => {
+    onUsersImported();
+    handleClose();
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -314,158 +166,123 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Template Section */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium">CSV Template</h3>
-              <Button variant="outline" size="sm" onClick={downloadTemplate}>
-                <Download className="h-4 w-4 mr-2" />
-                Download Template
-              </Button>
+          {/* Template Download */}
+          <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+            <div className="flex items-center gap-3">
+              <FileText className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="font-medium text-blue-900">Need a template?</p>
+                <p className="text-sm text-blue-700">Download our CSV template to get started</p>
+              </div>
             </div>
-            
-            <Alert>
-              <AlertDescription>
-                Your CSV must include columns for: <strong>email</strong> and <strong>name</strong> (required). 
-                Optional columns: <strong>role</strong> (job_seeker/employer/admin), <strong>temporary_password</strong>. 
-                Column names are case-insensitive and flexible (e.g., "Email", "email", "email_address" all work).
-              </AlertDescription>
-            </Alert>
+            <Button onClick={downloadTemplate} variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Download Template
+            </Button>
+          </div>
+
+          {/* Import Settings */}
+          <div className="grid grid-cols-2 gap-4 p-4 border rounded-lg">
+            <div className="space-y-2">
+              <Label>Import Speed</Label>
+              <Select value={importSpeed} onValueChange={(value: 'slow' | 'medium' | 'fast') => setImportSpeed(value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="slow">Slow (3s delay) - Most reliable</SelectItem>
+                  <SelectItem value="medium">Medium (1.5s delay) - Balanced</SelectItem>
+                  <SelectItem value="fast">Fast (0.8s delay) - May cause timeouts</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Max Retries</Label>
+              <Select value={maxRetries.toString()} onValueChange={(value) => setMaxRetries(parseInt(value))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 retry</SelectItem>
+                  <SelectItem value="2">2 retries</SelectItem>
+                  <SelectItem value="3">3 retries</SelectItem>
+                  <SelectItem value="5">5 retries</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* File Upload */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium">Select CSV File</h3>
-            <div className="flex items-center space-x-4">
+            <div>
+              <Label htmlFor="csv-file">Select CSV File</Label>
               <input
+                id="csv-file"
                 type="file"
                 accept=".csv"
                 onChange={handleFileChange}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                disabled={isImporting}
+                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
             </div>
-            {csvFile && (
-              <p className="text-sm text-gray-600">
-                Selected: {csvFile.name}
-              </p>
+
+            {parseError && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="whitespace-pre-line">
+                  {parseError}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {parsedUsers.length > 0 && (
+              <Alert>
+                <FileText className="h-4 w-4" />
+                <AlertDescription>
+                  Successfully parsed {parsedUsers.length} users from CSV file.
+                  {parsedUsers.length > 20 && (
+                    <span className="block mt-1 text-amber-600">
+                      ⚠️ Large import detected. Consider using "Slow" speed to avoid timeouts.
+                    </span>
+                  )}
+                </AlertDescription>
+              </Alert>
             )}
           </div>
 
-          {/* Preview Section */}
-          {showPreview && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium">CSV Preview & Validation</h3>
-                <div className="flex space-x-4 text-sm">
-                  <span>Total Rows: <strong>{parsedUsers.length}</strong></span>
-                  <span className="text-green-600">Valid Users: <strong>{validUsers.length}</strong></span>
-                  <span className="text-red-600">Invalid Users: <strong>{invalidUsers.length}</strong></span>
-                </div>
-              </div>
+          {/* Progress */}
+          <ImportProgress
+            progress={progress}
+            isPaused={isPaused}
+            onPause={pauseImport}
+            onResume={resumeImport}
+            onCancel={cancelImport}
+          />
 
-              {csvHeaders.length > 0 && (
-                <div className="text-sm">
-                  <strong>CSV Headers Detected:</strong> {csvHeaders.join(', ')}
-                </div>
-              )}
+          {/* Results */}
+          <ImportResults
+            results={results}
+            onRetryFailed={handleRetryFailed}
+          />
 
-              <div className="border rounded-lg overflow-hidden">
-                <div className="max-h-64 overflow-y-auto">
-                  <table className="w-full text-sm">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-3 py-2 text-left">Status</th>
-                        <th className="px-3 py-2 text-left">Email</th>
-                        <th className="px-3 py-2 text-left">Name</th>
-                        <th className="px-3 py-2 text-left">Role</th>
-                        <th className="px-3 py-2 text-left">Issues</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {parsedUsers.map((user, index) => (
-                        <tr key={index} className={user.isValid ? '' : 'bg-red-50'}>
-                          <td className="px-3 py-2">
-                            {user.isValid ? (
-                              <Check className="h-4 w-4 text-green-600" />
-                            ) : (
-                              <X className="h-4 w-4 text-red-600" />
-                            )}
-                          </td>
-                          <td className="px-3 py-2">{user.email}</td>
-                          <td className="px-3 py-2">{user.name}</td>
-                          <td className="px-3 py-2">{user.role}</td>
-                          <td className="px-3 py-2 text-red-600 text-xs">
-                            {user.issues.join(', ')}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {validUsers.length > 0 && (
-                <div className="flex justify-end">
-                  <Button
-                    onClick={handleImport}
-                    disabled={isImporting}
-                    className="flex items-center gap-2"
-                  >
-                    {isImporting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Upload className="h-4 w-4" />
-                    )}
-                    Import {validUsers.length} Valid Users
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Progress Section */}
-          {isImporting && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Importing users...</span>
-                <span>{Math.round(importProgress)}%</span>
-              </div>
-              <Progress value={importProgress} />
-            </div>
-          )}
-
-          {/* Results Section */}
-          {importResults.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium">Import Results</h3>
-              
-              <div className="text-sm">
-                Import Complete: {importResults.filter(r => r.success).length} successful, {importResults.filter(r => !r.success).length} failed
-              </div>
-
-              {importResults.some(r => !r.success) && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-red-600">Errors:</h4>
-                  <div className="bg-red-50 p-3 rounded-lg max-h-32 overflow-y-auto">
-                    {importResults
-                      .filter(r => !r.success)
-                      .slice(0, 10) // Show only first 10 errors
-                      .map((result, index) => (
-                        <div key={index} className="text-sm text-red-700">
-                          • {result.email}: {result.error}
-                        </div>
-                      ))}
-                    {importResults.filter(r => !r.success).length > 10 && (
-                      <div className="text-sm text-red-600 mt-2">
-                        ... and {importResults.filter(r => !r.success).length - 10} more
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          {/* Actions */}
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={handleClose} disabled={progress.isRunning}>
+              {progress.isRunning ? 'Close' : 'Cancel'}
+            </Button>
+            {!progress.isRunning && results.length > 0 && results.some(r => r.success) && (
+              <Button onClick={handleSuccess}>
+                Complete Import
+              </Button>
+            )}
+            <Button
+              onClick={handleImport}
+              disabled={parsedUsers.length === 0 || progress.isRunning}
+              className="flex items-center gap-2"
+            >
+              <Upload className="h-4 w-4" />
+              {progress.isRunning ? 'Importing...' : `Import ${parsedUsers.length} Users`}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
