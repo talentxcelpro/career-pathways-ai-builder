@@ -63,7 +63,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
           continue;
         }
 
-        const url = `${supabase.storageUrl}/community-posts/${data.path}`;
+        const url = `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public/community-posts/${data.path}`;
         newAttachments.push({
           id: randomId,
           url: url,

@@ -166,25 +166,8 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
 
       console.log('Post created successfully:', postData);
 
-      // Save AI score
-      if (postData?.id) {
-        try {
-          await supabase
-            .from('posts_ai_scores')
-            .insert({
-              post_id: postData.id,
-              user_id: user.id,
-              score: aiScore.score,
-              tone: aiScore.tone,
-              cta_strength: aiScore.ctaStrength,
-              hashtag_relevance: aiScore.hashtagRelevance,
-              virality_potential: aiScore.viralityPotential
-            });
-        } catch (scoreError) {
-          console.warn('Failed to save AI score:', scoreError);
-          // Don't throw here as the post was created successfully
-        }
-      }
+      // AI score analysis complete - stored in component state for display
+      console.log('AI analysis completed:', aiScore);
 
       onPostCreate?.(postData);
       
