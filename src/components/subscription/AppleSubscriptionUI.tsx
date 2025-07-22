@@ -128,30 +128,34 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
       setTimeout(async () => {
 
         try {
-          // Update subscription directly in demo mode
+          // Update subscription directly in demo mode - simplified version
+          const subscriptionData = {
+            user_id: user.id,
+            email: user.email || '',
+            subscribed: true,
+            subscription_plan: tierName,
+            subscription_tier: tierName,
+            status: 'active',
+            subscription_start: new Date().toISOString(),
+            subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            last_payment_date: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+
+          console.log('Attempting to create demo subscription:', subscriptionData);
+
           const { error: updateError } = await supabase
             .from('subscribers')
-            .upsert({
-              user_id: user.id,
-              email: user.email,
-              subscribed: true,
-              subscription_plan: tierName,
-              subscription_tier: tierName,
-              amount: 39900, // Demo amount in paise
-              currency: 'INR',
-              status: 'active',
-              subscription_start: new Date().toISOString(),
-              subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
-              next_billing_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-              last_payment_date: new Date().toISOString(),
-              last_payment_id: `demo_${Date.now()}`,
-              updated_at: new Date().toISOString(),
-            }, { onConflict: 'user_id' });
+            .upsert(subscriptionData, { 
+              onConflict: 'user_id'
+            });
 
           if (updateError) {
-            console.error('Failed to update subscription:', updateError);
-            throw new Error('Failed to activate demo subscription');
+            console.error('Database error details:', updateError);
+            throw new Error(`Database error: ${updateError.message}`);
           }
+
+          console.log('Demo subscription created successfully');
 
           toast({
             title: "🎉 Demo Subscription Activated!",
@@ -245,28 +249,50 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
 
   return (
     <div className="w-full">
-      {/* Header */}
+      {/* Enhanced Header with reduced top spacing */}
       <motion.div 
-        className="text-center mb-12"
+        className="text-center mb-8 relative"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 px-4 py-2 rounded-full mb-4">
-          <Shield className="h-4 w-4 text-blue-600" />
-          <span className="text-sm font-semibold text-blue-600">TalentXcel Pro</span>
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-3xl opacity-60 blur-3xl transform -skew-y-1"></div>
+        
+        <div className="relative z-10 pt-6 pb-8">
+          <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm border border-blue-200/50 px-6 py-3 rounded-full mb-6 shadow-sm">
+            <Shield className="h-5 w-5 text-blue-600" />
+            <span className="text-sm font-semibold text-blue-600">TalentXcel Pro</span>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          </div>
+          
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4 leading-tight">
+            {compact ? 'Unlock Pro Features' : 'Supercharge Your Success'}
+          </h2>
+          
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            {compact 
+              ? 'Get access to premium tools and features that accelerate your career'
+              : '🚀 Choose the perfect plan to unlock powerful tools, analytics, and premium features designed for career excellence'
+            }
+          </p>
+          
+          {/* Add some visual elements */}
+          <div className="flex justify-center items-center space-x-6 mt-6 opacity-70">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span className="text-sm text-gray-500">Live Analytics</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span className="text-sm text-gray-500">AI-Powered Tools</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-sm text-gray-500">24/7 Support</span>
+            </div>
+          </div>
         </div>
-        
-        <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-4">
-          {compact ? 'Unlock Pro Features' : 'Supercharge Your Success'}
-        </h2>
-        
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          {compact 
-            ? 'Get access to premium tools and features that accelerate your career'
-            : 'Choose the perfect plan to unlock powerful tools, analytics, and premium features designed for career excellence'
-          }
-        </p>
       </motion.div>
 
       {/* Pricing Cards */}
@@ -281,21 +307,23 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
             key={tier.id}
             variants={itemVariants}
             className={`relative group ${
-              tier.name === 'Pro Business' ? 'md:scale-110 md:z-10' : ''
+              tier.name === 'Pro Business' ? 'md:scale-110 md:z-10 md:shadow-2xl' : ''
             }`}
+            whileHover={{ scale: 1.02, y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
           >
             <Card className={`
-              relative overflow-hidden bg-white/80 backdrop-blur-xl border-0 shadow-2xl
-              transition-all duration-500 hover:shadow-3xl hover:-translate-y-2
-              ${currentTier === tier.name ? 'ring-2 ring-blue-500' : ''}
-              ${tier.name === 'Pro Business' ? 'border-2 border-purple-200' : ''}
+              relative overflow-hidden bg-white/90 backdrop-blur-xl border-0 shadow-xl
+              transition-all duration-500 hover:shadow-2xl
+              ${currentTier === tier.name ? 'ring-2 ring-blue-500 shadow-blue-200' : ''}
+              ${tier.name === 'Pro Business' ? 'border-2 border-purple-200 shadow-purple-100' : ''}
             `}>
               {tier.name === 'Pro Business' && (
                 <div className="absolute -top-px left-0 right-0">
-                  <div className="h-px bg-gradient-to-r from-purple-500 to-pink-500"></div>
+                  <div className="h-px bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500"></div>
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-1 rounded-full text-xs font-semibold">
-                      Most Popular
+                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                      ⭐ Most Popular
                     </div>
                   </div>
                 </div>
@@ -305,11 +333,11 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
                 {/* Tier Header */}
                 <div className="text-center mb-8">
                   <div className={`
-                    inline-flex items-center justify-center w-16 h-16 rounded-2xl 
-                    bg-gradient-to-r ${getTierGradient(tier.name)} mb-4
-                    shadow-lg
+                    inline-flex items-center justify-center w-20 h-20 rounded-3xl 
+                    bg-gradient-to-r ${getTierGradient(tier.name)} mb-6
+                    shadow-xl transform hover:scale-110 transition-transform duration-300
                   `}>
-                    <div className="text-white">
+                    <div className="text-white text-xl">
                       {getTierIcon(tier.name)}
                     </div>
                   </div>

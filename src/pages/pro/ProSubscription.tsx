@@ -12,35 +12,25 @@ export const ProSubscription: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       <RazorpayScript />
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center mb-12">
+      <div className="container mx-auto px-4 py-4">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between mb-6">
           <Button 
             variant="ghost" 
             onClick={() => navigate('/pro')} 
-            className="mr-4 hover:bg-white/80"
+            className="hover:bg-white/80 text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Dashboard
           </Button>
-          <div>
-            <div className="flex items-center space-x-4 mb-2">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                TalentXcel Pro
-              </h1>
-            </div>
-            <p className="text-gray-600 text-lg">
-              Unlock your full potential with premium features
-            </p>
-            <div className="mt-4">
-              <Link 
-                to="/pro/subscription-policy" 
-                className="inline-flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors"
-              >
-                <FileText className="w-4 h-4 mr-1" />
-                View Subscription Policy & Terms
-              </Link>
-            </div>
+          <div className="text-right">
+            <Link 
+              to="/pro/subscription-policy" 
+              className="inline-flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors"
+            >
+              <FileText className="w-4 h-4 mr-1" />
+              View Subscription Policy & Terms
+            </Link>
           </div>
         </div>
 
