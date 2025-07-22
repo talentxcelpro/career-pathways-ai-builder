@@ -57,7 +57,17 @@ const App = () => {
           <AnalyticsProvider>
             <AuthProvider>
               <AIProvider>
-                <Toaster />
+                <Toaster 
+                  duration={10000}
+                  position="top-center"
+                  toastOptions={{
+                    style: {
+                      background: 'hsl(var(--background))',
+                      color: 'hsl(var(--foreground))',
+                      border: '1px solid hsl(var(--border))',
+                    },
+                  }}
+                />
                 <MobileAppInitializer />
                 <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
                 <SearchConsoleVerification verificationCode="your-search-console-verification-code" />
