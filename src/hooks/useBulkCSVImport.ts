@@ -47,7 +47,7 @@ export const useBulkCSVImport = () => {
       
       console.log('Function URL:', functionUrl);
 
-      // Fix: Send test: true instead of isTest: true
+      // Send test: true for connection test
       const testPayload = { test: true };
       console.log('Sending test payload:', testPayload);
 
@@ -151,6 +151,11 @@ export const useBulkCSVImport = () => {
       const users = await parseCSV(csvData);
       console.log('Parsed users:', users.length);
 
+      // Validate parsed data
+      if (!users || users.length === 0) {
+        throw new Error('No valid users found in CSV data');
+      }
+
       // Update progress with total count
       setProgress(prev => ({ ...prev, total: users.length }));
 
@@ -158,9 +163,9 @@ export const useBulkCSVImport = () => {
       const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc";
       const functionUrl = `${SUPABASE_URL}/functions/v1/bulk-csv-import`;
 
-      // Fix: Send users array instead of raw CSV data
+      // Fix: Send the parsed users array in csvData field
       const payload = {
-        users,
+        csvData: users, // This is the key fix - send parsed user array
         batchSize: options.batchSize || 50,
         maxConcurrent: options.maxConcurrent || 3,
         speed: options.speed || 'medium'
@@ -168,7 +173,8 @@ export const useBulkCSVImport = () => {
 
       console.log('Sending import request to:', functionUrl);
       console.log('Payload summary:', { 
-        userCount: users.length, 
+        csvDataCount: users.length, 
+        firstUser: users[0],
         batchSize: payload.batchSize, 
         maxConcurrent: payload.maxConcurrent,
         speed: payload.speed 
