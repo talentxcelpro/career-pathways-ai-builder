@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,20 +25,54 @@ export const BulkCompletionActions: React.FC<BulkCompletionActionsProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [includeNeverLoggedIn, setIncludeNeverLoggedIn] = useState(false);
 
+  // Pre-calculate completion data for all users (avoids hook violations)
+  const userCompletionData = useMemo(() => {
+    const completionMap = new Map();
+    users.forEach(user => {
+      // We can't call the hook here either, so we'll calculate manually
+      // This duplicates the logic from useProfileCompletion but avoids the hook issue
+      if (!user) {
+        completionMap.set(user?.id || Math.random(), { percentage: 0 });
+        return;
+      }
+
+      const criteria = {
+        basicInfo: !!(user.full_name && user.email && user.phone && user.location),
+        professionalInfo: !!(user.title && user.current_company && user.industry && user.experience_years),
+        aboutSection: !!(user.about && user.headline),
+        socialLinks: [user.linkedin_url, user.github_url, user.portfolio_url, user.website]
+          .filter(Boolean).length >= 2,
+        skills: !!(user.skills && Array.isArray(user.skills) && user.skills.length >= 3),
+        workExperience: !!(user.work_experiences && 
+          typeof user.work_experiences === 'object' && 
+          Object.keys(user.work_experiences).length > 0),
+        profileImages: !!(user.profile_picture_url && 
+          (user.banner_url || user.cover_image_url)),
+        resume: !!user.resume_url,
+      };
+
+      const completedCount = Object.values(criteria).filter(Boolean).length;
+      const totalCount = Object.keys(criteria).length;
+      const percentage = Math.round((completedCount / totalCount) * 100);
+
+      completionMap.set(user.id, { percentage, criteria, completedCount, totalCount });
+    });
+    return completionMap;
+  }, [users]);
+
   // Calculate users below threshold
-  const getUsersForBulkReminder = () => {
+  const eligibleUsers = useMemo(() => {
     const threshold = parseInt(selectedThreshold);
     return users.filter(user => {
-      const { percentage } = useProfileCompletion(user);
+      const completionData = userCompletionData.get(user.id);
+      const percentage = completionData?.percentage || 0;
       const meetsThreshold = percentage < threshold;
       const meetsLoginCriteria = includeNeverLoggedIn || user.last_login_at;
       return meetsThreshold && meetsLoginCriteria && user.email;
     });
-  };
+  }, [users, selectedThreshold, includeNeverLoggedIn, userCompletionData]);
 
-  const eligibleUsers = getUsersForBulkReminder();
-
-  const getCompletionStats = () => {
+  const stats = useMemo(() => {
     const stats = {
       total: users.length,
       veryLow: 0,    // 0-25%
@@ -50,7 +84,8 @@ export const BulkCompletionActions: React.FC<BulkCompletionActionsProps> = ({
     };
 
     users.forEach(user => {
-      const { percentage } = useProfileCompletion(user);
+      const completionData = userCompletionData.get(user.id);
+      const percentage = completionData?.percentage || 0;
       
       if (!user.email) {
         stats.noEmail++;
@@ -68,9 +103,7 @@ export const BulkCompletionActions: React.FC<BulkCompletionActionsProps> = ({
     });
 
     return stats;
-  };
-
-  const stats = getCompletionStats();
+  }, [users, userCompletionData]);
 
   const handleBulkReminder = async () => {
     if (eligibleUsers.length === 0) {
@@ -90,7 +123,8 @@ export const BulkCompletionActions: React.FC<BulkCompletionActionsProps> = ({
         
         const batchPromises = batch.map(async (user) => {
           try {
-            const { percentage } = useProfileCompletion(user);
+            const completionData = userCompletionData.get(user.id);
+            const percentage = completionData?.percentage || 0;
             
             const { error } = await supabase.functions.invoke('send-profile-reminder-email', {
               body: {
