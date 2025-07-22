@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -31,20 +30,65 @@ export const useBulkCSVImport = () => {
 
   const testConnection = async (): Promise<boolean> => {
     try {
+      console.log('=== CONNECTION TEST START ===');
       console.log('Testing connection to bulk-csv-import function...');
+      
+      // Get the current Supabase project URL and check configuration
+      const supabaseUrl = supabase.supabaseUrl;
+      const functionUrl = `${supabaseUrl}/functions/v1/bulk-csv-import`;
+      console.log('Supabase URL:', supabaseUrl);
+      console.log('Function URL:', functionUrl);
+      console.log('Supabase client config:', {
+        url: supabase.supabaseUrl,
+        key: supabase.supabaseKey ? `${supabase.supabaseKey.substring(0, 20)}...` : 'undefined'
+      });
+
+      const testPayload = { test: true };
+      console.log('Sending test payload:', testPayload);
+
       const { data, error } = await supabase.functions.invoke('bulk-csv-import', {
-        body: { test: true }
+        body: testPayload
       });
       
+      console.log('Raw response data:', data);
+      console.log('Raw response error:', error);
+      
       if (error) {
-        console.error('Connection test failed:', error);
+        console.error('=== CONNECTION TEST ERROR ===');
+        console.error('Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          name: error.name
+        });
+        
+        // Try to determine the type of error
+        if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+          console.error('Network error detected - function may not be deployed or accessible');
+        } else if (error.message?.includes('CORS')) {
+          console.error('CORS error detected');
+        } else if (error.message?.includes('404')) {
+          console.error('Function not found - may not be deployed');
+        }
+        
         return false;
       }
       
+      console.log('=== CONNECTION TEST SUCCESS ===');
       console.log('Connection test successful:', data);
       return true;
     } catch (error) {
-      console.error('Connection test error:', error);
+      console.error('=== CONNECTION TEST EXCEPTION ===');
+      console.error('Connection test exception:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error constructor:', error?.constructor?.name);
+      
+      // Try to get more details about the error
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+      
       return false;
     }
   };
@@ -135,6 +179,7 @@ export const useBulkCSVImport = () => {
     setProgress(null);
 
     try {
+      console.log('=== CSV IMPORT START ===');
       console.log('Starting CSV import process...');
       console.log('File info:', {
         name: csvFile.name,
@@ -142,11 +187,12 @@ export const useBulkCSVImport = () => {
         type: csvFile.type
       });
 
-      // Test connection first
+      // Test connection first with detailed logging
+      console.log('=== TESTING CONNECTION BEFORE IMPORT ===');
       toast.info('Testing connection...');
       const connectionOk = await testConnection();
       if (!connectionOk) {
-        throw new Error('Failed to connect to import service. Please try again.');
+        throw new Error('Failed to connect to import service. Please check the function deployment and try again.');
       }
 
       // Read and parse CSV
@@ -177,24 +223,31 @@ export const useBulkCSVImport = () => {
       const optimizedBatchSize = users.length > 1000 ? 200 : 100;
       const optimizedConcurrency = users.length > 5000 ? 8 : 5;
 
-      console.log('Calling bulk import function with:', {
-        userCount: users.length,
+      const finalOptions = {
         batchSize: options.batchSize || optimizedBatchSize,
         maxConcurrent: options.maxConcurrent || optimizedConcurrency
+      };
+
+      console.log('=== CALLING BULK IMPORT FUNCTION ===');
+      console.log('Calling bulk import function with:', {
+        userCount: users.length,
+        ...finalOptions
       });
 
       // Call the bulk import edge function
       const { data, error } = await supabase.functions.invoke('bulk-csv-import', {
         body: {
           csvData: users,
-          batchSize: options.batchSize || optimizedBatchSize,
-          maxConcurrent: options.maxConcurrent || optimizedConcurrency
+          ...finalOptions
         }
       });
 
-      console.log('Import function response:', { data, error });
+      console.log('=== IMPORT FUNCTION RESPONSE ===');
+      console.log('Import function response data:', data);
+      console.log('Import function response error:', error);
 
       if (error) {
+        console.error('=== IMPORT FUNCTION ERROR ===');
         console.error('Import function error:', error);
         throw new Error(`Import service error: ${error.message}`);
       }
@@ -222,9 +275,11 @@ export const useBulkCSVImport = () => {
         toast.warning(`${failed} users failed to import. Check console for details.`);
       }
 
+      console.log('=== CSV IMPORT COMPLETED ===');
       return data.progress;
 
     } catch (error) {
+      console.error('=== CSV IMPORT ERROR ===');
       console.error('CSV import error:', error);
       
       // Provide more specific error messages
@@ -233,6 +288,8 @@ export const useBulkCSVImport = () => {
         errorMessage = 'Connection failed. Please check your internet connection and try again.';
       } else if (error.message.includes('JSON')) {
         errorMessage = 'Invalid server response. Please try again.';
+      } else if (error.message.includes('Failed to connect to import service')) {
+        errorMessage = 'Import service is not available. Please check if the Edge Function is deployed.';
       }
       
       toast.error(`Import failed: ${errorMessage}`);
