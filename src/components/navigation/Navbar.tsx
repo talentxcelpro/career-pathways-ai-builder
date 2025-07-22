@@ -26,13 +26,14 @@ import {
   Crown
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useEmployerAccess } from '@/hooks/useEmployerAccess';
 import { useProSubscriptionStatus } from '@/hooks/useProSubscriptionStatus';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import NotificationBell from '@/components/notifications/NotificationBell';
 
 export const Navbar = () => {
-  const { user, signOut, hasEmployerAccess } = useAuth();
+  const { user, signOut } = useAuth();
+  const { hasEmployerAccess } = useEmployerAccess();
   const { hasActiveSubscription, loading: subscriptionLoading } = useProSubscriptionStatus();
   const location = useLocation();
   const navigate = useNavigate();
@@ -186,7 +187,9 @@ export const Navbar = () => {
             </Button>
 
             {/* Notifications */}
-            <NotificationBell />
+            <Button variant="ghost" size="sm" className="hidden md:flex">
+              <Bell className="w-4 h-4" />
+            </Button>
 
             {/* User Menu */}
             <DropdownMenu>
