@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -41,11 +42,11 @@ const ProBanner: React.FC<ProBannerProps> = ({ variant, onDismiss }) => {
                   ₹399/mo
                 </Badge>
                 <Button 
-                  onClick={() => setShowModal(true)}
+                  asChild
                   size="sm"
                   className="bg-white/95 backdrop-blur-sm text-blue-600 hover:bg-white text-[10px] sm:text-xs px-2 sm:px-3 py-1 h-6 sm:h-7 font-semibold rounded-full shadow-lg border border-white/20 transition-all duration-200"
                 >
-                  Get Pro
+                  <Link to="/pro/subscription">Get Pro</Link>
                 </Button>
                 {onDismiss && (
                   <Button 
@@ -98,11 +99,11 @@ const ProBanner: React.FC<ProBannerProps> = ({ variant, onDismiss }) => {
                 </div>
               </div>
               <Button 
-                onClick={() => setShowModal(true)}
+                asChild
                 className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-[10px] h-6 font-semibold rounded-full shadow-lg border border-white/20 transition-all duration-200"
                 size="sm"
               >
-                Get Pro
+                <Link to="/pro/subscription">Get Pro</Link>
               </Button>
             </div>
           </CardContent>
@@ -140,11 +141,11 @@ const ProBanner: React.FC<ProBannerProps> = ({ variant, onDismiss }) => {
                   ₹399/mo
                 </Badge>
                 <Button 
-                  onClick={() => setShowModal(true)}
+                  asChild
                   size="sm" 
                   className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-[10px] px-2 sm:px-3 py-1 h-6 sm:h-7 font-semibold rounded-full shadow-lg border border-white/20 text-white transition-all duration-200"
                 >
-                  Try Pro
+                  <Link to="/pro/subscription">Try Pro</Link>
                 </Button>
               </div>
             </div>

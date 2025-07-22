@@ -8,6 +8,8 @@ import CRMDashboard from "../pages/pro/CRMDashboard";
 import { ProProfile } from "../pages/pro/ProProfile";
 import ProSubscriptionPolicy from "../pages/pro/ProSubscriptionPolicy";
 import ProSetup from "../pages/pro/ProSetup";
+import ProLeads from "../pages/pro/ProLeads";
+import ProAITools from "../pages/pro/ProAITools";
 import { Settings } from "lucide-react";
 
 export const proRoutes: NavItem[] = [
@@ -46,6 +48,18 @@ export const proRoutes: NavItem[] = [
     title: "CRM Dashboard",
     to: "/pro/crm",
     page: <CRMDashboard />,
+    requiresAuth: true
+  },
+  {
+    title: "Leads",
+    to: "/pro/leads",
+    page: <ProLeads />,
+    requiresAuth: true
+  },
+  {
+    title: "AI Tools",
+    to: "/pro/ai-tools",
+    page: <ProAITools />,
     requiresAuth: true
   },
   {
