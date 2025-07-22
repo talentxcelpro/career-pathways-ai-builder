@@ -41,14 +41,16 @@ export const BulkCSVImport: React.FC<BulkCSVImportProps> = ({ onImportComplete }
     console.log('=== DIRECT FUNCTION TEST ===');
     try {
       // Test if we can reach the function directly
-      const functionUrl = `${supabase.supabaseUrl}/functions/v1/bulk-csv-import`;
+      const SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc";
+      const functionUrl = `${SUPABASE_URL}/functions/v1/bulk-csv-import`;
       console.log('Testing direct function access at:', functionUrl);
       
       const response = await fetch(functionUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabase.supabaseKey}`,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
         },
         body: JSON.stringify({ test: true })
       });
@@ -229,8 +231,8 @@ export const BulkCSVImport: React.FC<BulkCSVImportProps> = ({ onImportComplete }
           {/* Debug Information */}
           <div className="text-xs text-muted-foreground space-y-1 bg-gray-50 p-3 rounded">
             <div><strong>Debug Info:</strong></div>
-            <div>Supabase URL: {supabase.supabaseUrl}</div>
-            <div>Function URL: {supabase.supabaseUrl}/functions/v1/bulk-csv-import</div>
+            <div>Supabase URL: https://dthlgsnakhoftinssokm.supabase.co</div>
+            <div>Function URL: https://dthlgsnakhoftinssokm.supabase.co/functions/v1/bulk-csv-import</div>
             <div>Connection Status: {connectionStatus}</div>
           </div>
         </CardContent>
@@ -241,6 +243,7 @@ export const BulkCSVImport: React.FC<BulkCSVImportProps> = ({ onImportComplete }
         <ImportProgress
           progress={{
             ...progress,
+            completed: progress.processed,
             isRunning: isImporting,
             connectionStatus: connectionStatus === 'testing' ? 'testing' : 
                            connectionStatus === 'healthy' ? 'healthy' : 

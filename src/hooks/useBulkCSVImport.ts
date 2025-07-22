@@ -34,14 +34,10 @@ export const useBulkCSVImport = () => {
       console.log('Testing connection to bulk-csv-import function...');
       
       // Get the current Supabase project URL and check configuration
-      const supabaseUrl = supabase.supabaseUrl;
-      const functionUrl = `${supabaseUrl}/functions/v1/bulk-csv-import`;
-      console.log('Supabase URL:', supabaseUrl);
+      const SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
+      const functionUrl = `${SUPABASE_URL}/functions/v1/bulk-csv-import`;
+      console.log('Supabase URL:', SUPABASE_URL);
       console.log('Function URL:', functionUrl);
-      console.log('Supabase client config:', {
-        url: supabase.supabaseUrl,
-        key: supabase.supabaseKey ? `${supabase.supabaseKey.substring(0, 20)}...` : 'undefined'
-      });
 
       const testPayload = { test: true };
       console.log('Sending test payload:', testPayload);
