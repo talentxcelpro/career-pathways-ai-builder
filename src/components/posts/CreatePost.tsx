@@ -1,327 +1,385 @@
 
 import React, { useState, useRef } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Camera, MapPin, Hash, X, Loader2 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { 
+  Camera, 
+  MapPin, 
+  Globe,
+  Users,
+  Lock,
+  ImagePlus,
+  Video,
+  Paperclip,
+  X,
+  Loader2
+} from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
-interface CreatePostProps {
-  onPostCreated: () => void;
+interface Attachment {
+  id: string;
+  url: string;
+  type: 'image' | 'video' | 'document';
+  file?: File;
+  name: string;
 }
 
-export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
+interface CreatePostProps {
+  onPostCreate?: (post: any) => void;
+}
+
+export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
   const { user } = useAuth();
   const [content, setContent] = useState('');
-  const [mediaFiles, setMediaFiles] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [location, setLocation] = useState('');
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showLocationInput, setShowLocationInput] = useState(false);
+  const [privacy, setPrivacy] = useState<'public' | 'connections' | 'private'>('public');
+  const [isPosting, setIsPosting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
-  const handleMediaUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
+  const handleFileUpload = async (files: FileList | null, type: 'image' | 'video') => {
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
-    const uploadedUrls: string[] = [];
+    const newAttachments: Attachment[] = [];
 
-    try {
-      for (const file of files) {
-        // Validate file size - 10MB for images, 50MB for videos
-        const maxSize = file.type.startsWith('video/') ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
-        if (file.size > maxSize) {
-          const maxSizeMB = file.type.startsWith('video/') ? 50 : 10;
-          toast.error(`File ${file.name} is too large. Maximum size is ${maxSizeMB}MB.`);
-          continue;
-        }
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      
+      // Validate file type
+      const fileType = file.type.split('/')[0];
+      if (type === 'image' && fileType !== 'image') {
+        toast.error(`${file.name} is not an image file`);
+        continue;
+      }
+      if (type === 'video' && fileType !== 'video') {
+        toast.error(`${file.name} is not a video file`);
+        continue;
+      }
 
-        // Validate file type
-        if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-          toast.error(`File ${file.name} is not supported. Please upload images or videos only.`);
-          continue;
-        }
+      // Validate file size (10MB limit)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(`${file.name} is too large. Maximum size is 10MB.`);
+        continue;
+      }
 
-        const fileExt = file.name.split('.').pop();
-        const filePath = `${crypto.randomUUID()}.${fileExt}`;
+      const fileExtension = file.name.split('.').pop();
+      const randomId = Math.random().toString(36).substring(2, 15);
+      const filename = `${randomId}.${fileExtension}`;
+      const filePath = `${user?.id}/${filename}`;
 
-        const { error: uploadError } = await supabase.storage
+      try {
+        const { data, error } = await supabase.storage
           .from('post-media')
-          .upload(filePath, file);
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
-        if (uploadError) {
-          console.error('Upload error:', uploadError);
+        if (error) {
+          console.error('Error uploading file:', error);
           toast.error(`Failed to upload ${file.name}`);
           continue;
         }
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('post-media')
-          .getPublicUrl(filePath);
-
-        uploadedUrls.push(publicUrl);
-      }
-
-      setMediaFiles(prev => [...prev, ...uploadedUrls]);
-      toast.success(`${uploadedUrls.length} file(s) uploaded successfully`);
-    } catch (error) {
-      console.error('Media upload error:', error);
-      toast.error('Failed to upload media files');
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        const url = `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public/post-media/${data.path}`;
+        newAttachments.push({
+          id: randomId,
+          url: url,
+          type: type,
+          file: file,
+          name: file.name,
+        });
+        toast.success(`${file.name} uploaded successfully!`);
+      } catch (uploadError) {
+        console.error('Upload error:', uploadError);
+        toast.error(`Failed to upload ${file.name}`);
       }
     }
+
+    setAttachments(prev => [...prev, ...newAttachments]);
+    setIsUploading(false);
   };
 
-  const removeMedia = (indexToRemove: number) => {
-    setMediaFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+  const handleRemoveAttachment = (id: string) => {
+    setAttachments(prev => prev.filter(att => att.id !== id));
   };
 
-  const addTag = () => {
-    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      setTags(prev => [...prev, tagInput.trim()]);
-      setTagInput('');
-    }
+  const handlePhotoClick = () => {
+    fileInputRef.current?.click();
   };
 
-  const removeTag = (tagToRemove: string) => {
-    setTags(prev => prev.filter(tag => tag !== tagToRemove));
+  const handleVideoClick = () => {
+    videoInputRef.current?.click();
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      if (tagInput.trim()) {
-        addTag();
-      }
+  const handleLocationClick = () => {
+    setShowLocationInput(!showLocationInput);
+  };
+
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+          toast.success('Location detected!');
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          toast.error('Failed to get location. Please enter manually.');
+        }
+      );
+    } else {
+      toast.error('Geolocation is not supported by this browser.');
     }
   };
 
   const handleSubmit = async () => {
     if (!content.trim()) {
-      toast.error('Please add some content to your post');
+      toast.error('Please write something before posting');
       return;
     }
 
-    setIsSubmitting(true);
+    if (!user?.id) {
+      toast.error('You must be logged in to create a post');
+      return;
+    }
 
+    setIsPosting(true);
     try {
-      const postData = {
-        content: content.trim(),
-        post_type: 'text',
-        author_id: user?.id,
-        media_urls: mediaFiles.length > 0 ? mediaFiles : null,
-        tags: tags.length > 0 ? tags : null,
-        location: location.trim() || null,
-        status: 'published'
-      };
-
-      const { error } = await supabase
+      console.log('Creating post with user:', user.id);
+      console.log('Post content:', content);
+      
+      const { data: postData, error } = await supabase
         .from('posts')
-        .insert([postData]);
+        .insert({
+          content,
+          post_type: 'text',
+          author_id: user.id,
+          media_urls: attachments.map(att => att.url),
+          location: location || null,
+          is_public: privacy === 'public',
+          tags: []
+        })
+        .select()
+        .single();
 
       if (error) {
-        console.error('Error creating post:', error);
-        toast.error('Failed to create post: ' + error.message);
-        return;
+        console.error('Database error creating post:', error);
+        throw error;
       }
 
+      console.log('Post created successfully:', postData);
+      onPostCreate?.(postData);
+      
       // Reset form
       setContent('');
-      setTags([]);
-      setTagInput('');
-      setMediaFiles([]);
+      setAttachments([]);
       setLocation('');
-
+      setShowLocationInput(false);
+      setPrivacy('public');
+      
       toast.success('Post created successfully!');
-      onPostCreated();
     } catch (error) {
-      console.error('Post creation error:', error);
-      toast.error('Failed to create post');
+      console.error('Error creating post:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to create post: ${errorMessage}`);
     } finally {
-      setIsSubmitting(false);
+      setIsPosting(false);
     }
-  };
-
-  const generateInitials = () => {
-    if (user?.email) {
-      return user.email.charAt(0).toUpperCase();
-    }
-    return 'U';
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full max-w-2xl mx-auto">
       <CardContent className="p-6">
-        <div className="flex space-x-3">
-          <Avatar>
+        <div className="flex items-start gap-3 mb-4">
+          <Avatar className="h-10 w-10">
             <AvatarImage src={user?.user_metadata?.avatar_url} />
-            <AvatarFallback>{generateInitials()}</AvatarFallback>
+            <AvatarFallback>
+              {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
+            </AvatarFallback>
           </Avatar>
-          
-          <div className="flex-1 space-y-4">
+          <div className="flex-1">
             <Textarea
               placeholder="What's on your mind?"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="min-h-[100px] resize-none border-none shadow-none focus-visible:ring-0 text-lg placeholder:text-gray-500"
+              className="min-h-[120px] resize-none border-0 p-0 text-lg placeholder:text-muted-foreground focus-visible:ring-0"
             />
+          </div>
+        </div>
 
-            {/* Media Preview */}
-            {mediaFiles.length > 0 && (
-              <div className="grid gap-4" style={{
-                gridTemplateColumns: mediaFiles.length === 1 ? '1fr' : 
-                                   mediaFiles.length === 2 ? '1fr 1fr' :
-                                   'repeat(auto-fit, minmax(200px, 1fr))'
-              }}>
-                {mediaFiles.map((url, index) => {
-                  const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
-                  return (
-                    <div key={index} className="relative group">
-                      <AspectRatio ratio={isVideo ? 16/9 : 4/3} className="bg-muted rounded-lg overflow-hidden">
-                        {isVideo ? (
-                          <video 
-                            src={url}
-                            className="w-full h-full object-cover"
-                            controls
-                          />
-                        ) : (
-                          <img 
-                            src={url}
-                            alt={`Media ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                      </AspectRatio>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => removeMedia(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+        {/* Hidden file inputs */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={(e) => handleFileUpload(e.target.files, 'image')}
+          accept="image/*"
+          multiple
+          className="hidden"
+        />
+        <input
+          type="file"
+          ref={videoInputRef}
+          onChange={(e) => handleFileUpload(e.target.files, 'video')}
+          accept="video/*"
+          multiple
+          className="hidden"
+        />
 
-            {/* Tags */}
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {tags.map(tag => (
-                  <Badge key={tag} variant="secondary" className="flex items-center space-x-1">
-                    <span>#{tag}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-4 w-4 p-0 hover:bg-transparent"
-                      onClick={() => removeTag(tag)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
-            )}
-
-            {/* Location */}
-            {location && (
-              <div className="flex items-center space-x-2 text-gray-600">
-                <MapPin className="h-4 w-4" />
-                <span className="text-sm">{location}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-4 w-4 p-0"
-                  onClick={() => setLocation('')}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex items-center justify-between pt-4 border-t">
-              <div className="flex items-center space-x-2">
-                {/* Media Upload */}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  multiple
-                  accept="image/*,video/*"
-                  onChange={handleMediaUpload}
-                  className="hidden"
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="flex items-center space-x-2"
-                >
-                  {isUploading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Camera className="h-4 w-4" />
-                  )}
-                  <span>Media</span>
-                </Button>
-
-                {/* Location */}
-                <div className="flex items-center space-x-2">
-                  <MapPin className="h-4 w-4 text-gray-500" />
-                  <Input
-                    placeholder="Add location"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="w-32 h-8 text-sm"
-                  />
-                </div>
-
-                {/* Tags */}
-                <div className="flex items-center space-x-2">
-                  <Hash className="h-4 w-4 text-gray-500" />
-                  <Input
-                    placeholder="Add tags"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    className="w-32 h-8 text-sm"
-                  />
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <Button
-                onClick={handleSubmit}
-                disabled={!content.trim() || isSubmitting}
-                className="px-6"
+        {/* Location Input */}
+        {showLocationInput && (
+          <div className="mb-4 p-3 border rounded-lg bg-gray-50">
+            <div className="flex items-center gap-2 mb-2">
+              <MapPin className="h-4 w-4 text-gray-600" />
+              <span className="text-sm font-medium">Add Location</span>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Enter location or click to detect"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="flex-1"
+              />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={getCurrentLocation}
+                className="whitespace-nowrap"
               >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Posting...
-                  </>
-                ) : (
-                  'Post'
-                )}
+                Detect
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => {
+                  setShowLocationInput(false);
+                  setLocation('');
+                }}
+              >
+                <X className="h-4 w-4" />
               </Button>
             </div>
+          </div>
+        )}
+
+        {/* Media Preview */}
+        {attachments.length > 0 && (
+          <div className="mb-4">
+            <div className="grid grid-cols-2 gap-2">
+              {attachments.map((attachment) => (
+                <div key={attachment.id} className="relative group">
+                  {attachment.type === 'image' ? (
+                    <img 
+                      src={attachment.url} 
+                      alt={attachment.name}
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                  ) : (
+                    <video 
+                      src={attachment.url}
+                      className="w-full h-32 object-cover rounded-lg"
+                      controls
+                    />
+                  )}
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                    onClick={() => handleRemoveAttachment(attachment.id)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Media and Options */}
+        <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex items-center gap-1" 
+              onClick={handlePhotoClick}
+              disabled={isUploading}
+            >
+              {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+              Photo
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex items-center gap-1"
+              onClick={handleVideoClick}
+              disabled={isUploading}
+            >
+              <Video className="h-4 w-4" />
+              Video
+            </Button>
+            <Button variant="ghost" size="sm" className="flex items-center gap-1" disabled>
+              <Paperclip className="h-4 w-4" />
+              File
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex items-center gap-1"
+              onClick={handleLocationClick}
+            >
+              <MapPin className="h-4 w-4" />
+              Location
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              {privacy === 'public' && <Globe className="h-4 w-4 text-green-600" />}
+              {privacy === 'connections' && <Users className="h-4 w-4 text-blue-600" />}
+              {privacy === 'private' && <Lock className="h-4 w-4 text-gray-600" />}
+              <select 
+                value={privacy} 
+                onChange={(e) => setPrivacy(e.target.value as any)}
+                className="text-sm border-0 bg-transparent"
+              >
+                <option value="public">Public</option>
+                <option value="connections">Connections</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
+
+            <Button 
+              onClick={handleSubmit} 
+              disabled={!content.trim() || isPosting || isUploading}
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {isPosting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                  Posting...
+                </>
+              ) : (
+                'Post'
+              )}
+            </Button>
           </div>
         </div>
       </CardContent>
     </Card>
   );
 };
+
+export default CreatePost;
