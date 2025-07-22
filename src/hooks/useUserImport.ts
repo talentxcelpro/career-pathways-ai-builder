@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -39,7 +38,7 @@ export const useUserImport = () => {
   const [shouldCancel, setShouldCancel] = useState(false);
 
   const testConnectivity = async (): Promise<boolean> => {
-    console.log('Testing connectivity for user import...');
+    console.log('=== Starting Connectivity Test ===');
     
     setProgress(prev => ({ 
       ...prev, 
@@ -48,14 +47,16 @@ export const useUserImport = () => {
 
     try {
       // Test 1: Check authentication session
+      console.log('Testing authentication session...');
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !session) {
         console.error('Authentication test failed:', sessionError);
         throw new Error('Authentication session invalid');
       }
-      console.log('✓ Authentication session valid');
+      console.log('✓ Authentication session valid, user:', session.user?.email);
 
-      // Test 2: Test database connectivity by querying profiles table
+      // Test 2: Test database connectivity
+      console.log('Testing database connectivity...');
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('id')
@@ -67,12 +68,26 @@ export const useUserImport = () => {
       }
       console.log('✓ Database connectivity confirmed');
 
+      // Test 3: Try to reach the edge function
+      console.log('Testing edge function connectivity...');
+      const { error: functionError } = await supabase.functions.invoke('import-users', {
+        body: { users: [] } // Empty test call
+      });
+
+      // Log the function test result
+      if (functionError) {
+        console.warn('Edge function test returned error:', functionError);
+        // Don't fail here as this might be expected for empty users array
+      } else {
+        console.log('✓ Edge function accessible');
+      }
+
       setProgress(prev => ({ 
         ...prev, 
         connectionStatus: 'healthy' 
       }));
 
-      console.log('Connectivity tests passed - admin operations will be tested during actual import');
+      console.log('✓ All connectivity tests passed');
       return true;
 
     } catch (error) {
@@ -90,26 +105,60 @@ export const useUserImport = () => {
 
   const createUsersBatch = async (users: UserImportData[]): Promise<ImportResult> => {
     try {
+      console.log(`=== Calling Edge Function ===`);
       console.log(`Sending ${users.length} users to edge function for import`);
+      
+      // Get current session for debugging
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('Current user:', session?.user?.email);
+      console.log('Session valid:', !!session?.access_token);
       
       const { data, error } = await supabase.functions.invoke('import-users', {
         body: { users }
       });
 
+      console.log('Edge function call completed');
+      console.log('Response data:', data);
+      console.log('Response error:', error);
+
       if (error) {
-        console.error('Edge function error:', error);
-        throw new Error(error.message || 'Edge function call failed');
+        console.error('Edge function error details:', {
+          message: error.message,
+          context: error.context,
+          details: error.details
+        });
+        
+        // Provide more specific error messages based on the error
+        if (error.message?.includes('Failed to fetch')) {
+          throw new Error('Network error: Unable to reach the server. Please check your internet connection and try again.');
+        } else if (error.message?.includes('403') || error.message?.includes('Admin privileges required')) {
+          throw new Error('Permission denied: You need admin privileges to import users.');
+        } else if (error.message?.includes('401') || error.message?.includes('authentication')) {
+          throw new Error('Authentication error: Please log out and log back in, then try again.');
+        } else {
+          throw new Error(error.message || 'Edge function call failed');
+        }
       }
 
       if (!data) {
         throw new Error('No data returned from edge function');
       }
 
-      console.log('Edge function response:', data);
+      console.log('✓ Edge function response received:', data);
       return data as ImportResult;
 
     } catch (error) {
       console.error('Error calling import-users edge function:', error);
+      
+      // Enhanced error logging
+      if (error instanceof Error) {
+        console.error('Error details:', {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        });
+      }
+      
       throw error;
     }
   };
@@ -118,7 +167,8 @@ export const useUserImport = () => {
     users: UserImportData[],
     speed: 'fast' | 'medium' | 'slow' = 'medium'
   ): Promise<ImportResult> => {
-    console.log(`Starting import of ${users.length} users with ${speed} speed`);
+    console.log(`=== Starting Import Process ===`);
+    console.log(`Importing ${users.length} users with ${speed} speed`);
     
     // Test connectivity first
     const isConnected = await testConnectivity();
@@ -129,13 +179,6 @@ export const useUserImport = () => {
     let errors: string[] = [];
     let successful = 0;
     let failed = 0;
-
-    // Speed settings (delays between requests)
-    const delays = {
-      fast: 1000,   // 1 second
-      medium: 3000, // 3 seconds  
-      slow: 5000    // 5 seconds
-    };
 
     setProgress({
       total: users.length,
@@ -167,7 +210,8 @@ export const useUserImport = () => {
     } catch (error) {
       console.error('Import failed:', error);
       failed = users.length;
-      errors = [`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`];
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      errors = [`Import failed: ${errorMessage}`];
       
       setProgress(prev => ({
         ...prev,
@@ -175,6 +219,9 @@ export const useUserImport = () => {
         successful: 0,
         failed: users.length
       }));
+      
+      // Show user-friendly error message
+      toast.error(`Import failed: ${errorMessage}`);
     }
 
     setProgress(prev => ({
@@ -184,7 +231,7 @@ export const useUserImport = () => {
     }));
 
     const result = { successful, failed, errors };
-    console.log('Import completed:', result);
+    console.log('=== Import Process Complete ===', result);
     
     return result;
   };
