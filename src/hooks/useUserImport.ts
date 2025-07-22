@@ -88,76 +88,37 @@ export const useUserImport = () => {
     }
   };
 
-  const createUserWithProfile = async (userData: UserImportData): Promise<{ success: boolean; error?: string }> => {
+  const createUsersBatch = async (users: UserImportData[]): Promise<ImportResult> => {
     try {
-      console.log(`Creating user: ${userData.email}`);
+      console.log(`Sending ${users.length} users to edge function for import`);
+      
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.access_token) {
+        throw new Error('No authentication session available');
+      }
 
-      // Create user with Supabase Auth Admin API
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: userData.email,
-        password: userData.temporaryPassword || 'TempPass123!',
-        email_confirm: true // Auto-confirm email to avoid verification step
+      const response = await fetch('/functions/v1/import-users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.session.access_token}`,
+        },
+        body: JSON.stringify({ users })
       });
 
-      if (authError || !authData.user) {
-        console.error('User creation failed:', authError);
-        let errorMessage = authError?.message || 'Failed to create user account';
-        
-        // Provide more specific error messages for common issues
-        if (authError?.message?.includes('admin')) {
-          errorMessage = 'Admin privileges required - please check your Supabase configuration';
-        } else if (authError?.message?.includes('auth')) {
-          errorMessage = 'Authentication error - please verify your credentials';
-        }
-        
-        return { 
-          success: false, 
-          error: errorMessage
-        };
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
-      console.log(`✓ User account created: ${userData.email}`);
-
-      // Create user profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          full_name: userData.name,
-          user_role: userData.role as any,
-          is_employer: userData.role === 'employer',
-          employer_status: userData.role === 'employer' ? 'approved' : null,
-          profile_completed: true,
-          onboarding_completed: true,
-          first_login: false
-        });
-
-      if (profileError) {
-        console.error('Profile creation failed:', profileError);
-        
-        // Cleanup: Delete the auth user since profile creation failed
-        try {
-          await supabase.auth.admin.deleteUser(authData.user.id);
-          console.log('Cleaned up auth user after profile creation failure');
-        } catch (cleanupError) {
-          console.error('Failed to cleanup auth user:', cleanupError);
-        }
-        
-        return { 
-          success: false, 
-          error: `Profile creation failed: ${profileError.message}` 
-        };
-      }
-
-      console.log(`✓ User profile created: ${userData.email}`);
-      return { success: true };
+      const result = await response.json();
+      console.log('Edge function response:', result);
+      
+      return result;
 
     } catch (error) {
-      console.error('Unexpected error during user creation:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unexpected error' 
-      };
+      console.error('Error calling import-users edge function:', error);
+      throw error;
     }
   };
 
@@ -173,7 +134,7 @@ export const useUserImport = () => {
       throw new Error('Connection test failed. Please check your internet connection and authentication.');
     }
 
-    const errors: string[] = [];
+    let errors: string[] = [];
     let successful = 0;
     let failed = 0;
 
@@ -196,49 +157,32 @@ export const useUserImport = () => {
     setShouldCancel(false);
     setIsPaused(false);
 
-    for (let i = 0; i < users.length; i++) {
-      // Check for cancellation
-      if (shouldCancel) {
-        console.log('Import cancelled by user');
-        break;
-      }
+    // Process users in batches via edge function
+    try {
+      const result = await createUsersBatch(users);
+      successful = result.successful;
+      failed = result.failed;
+      errors = result.errors;
 
-      // Handle pause
-      while (isPaused && !shouldCancel) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-
-      const user = users[i];
-      
+      // Update progress to show completion
       setProgress(prev => ({
         ...prev,
-        currentUser: user.email,
-        completed: i
-      }));
-
-      const result = await createUserWithProfile(user);
-      
-      if (result.success) {
-        successful++;
-        console.log(`✓ Successfully imported: ${user.email}`);
-      } else {
-        failed++;
-        const errorMsg = `${user.email}: ${result.error}`;
-        errors.push(errorMsg);
-        console.error(`✗ Failed to import: ${errorMsg}`);
-      }
-
-      setProgress(prev => ({
-        ...prev,
-        completed: i + 1,
+        completed: users.length,
         successful,
         failed
       }));
 
-      // Add delay between requests (except for the last one)
-      if (i < users.length - 1 && !shouldCancel) {
-        await new Promise(resolve => setTimeout(resolve, delays[speed]));
-      }
+    } catch (error) {
+      console.error('Import failed:', error);
+      failed = users.length;
+      errors = [`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`];
+      
+      setProgress(prev => ({
+        ...prev,
+        completed: users.length,
+        successful: 0,
+        failed: users.length
+      }));
     }
 
     setProgress(prev => ({
