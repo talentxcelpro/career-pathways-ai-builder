@@ -197,13 +197,24 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     try {
       // Combine content with hashtags
       const fullContent = content + (selectedHashtags.length > 0 ? '\n\n' + selectedHashtags.join(' ') : '');
+      console.log('Creating post with user:', user?.id);
+      console.log('Post content:', content);
+      console.log('Post type:', postType);
+      
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+
+      if (!content.trim()) {
+        throw new Error('Post content is required');
+      }
       
       const { data: postData, error } = await supabase
         .from('posts')
         .insert({
           content: fullContent,
           post_type: postType,
-          author_id: user?.id,
+          author_id: user.id,
           media_urls: mediaFiles.map(file => file.url),
           location: location || null,
           is_public: privacy === 'public',
@@ -213,20 +224,32 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error creating post:', error);
+        throw error;
+      }
+
+      console.log('Post created successfully:', postData);
 
       // Save AI score
-      await supabase
-        .from('posts_ai_scores')
-        .insert({
-          post_id: postData.id,
-          user_id: user?.id,
-          score: aiScore.score,
-          tone: aiScore.tone,
-          cta_strength: aiScore.ctaStrength,
-          hashtag_relevance: aiScore.hashtagRelevance,
-          virality_potential: aiScore.viralityPotential
-        });
+      if (postData?.id) {
+        try {
+          await supabase
+            .from('posts_ai_scores')
+            .insert({
+              post_id: postData.id,
+              user_id: user.id,
+              score: aiScore.score,
+              tone: aiScore.tone,
+              cta_strength: aiScore.ctaStrength,
+              hashtag_relevance: aiScore.hashtagRelevance,
+              virality_potential: aiScore.viralityPotential
+            });
+        } catch (scoreError) {
+          console.warn('Failed to save AI score:', scoreError);
+          // Don't throw here as the post was created successfully
+        }
+      }
 
       onPostCreate?.(postData);
       
@@ -245,7 +268,9 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       
       toast.success('Post created successfully!');
     } catch (error) {
-      toast.error('Failed to create post');
+      console.error('Error creating post:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to create post: ${errorMessage}`);
     } finally {
       setIsPosting(false);
     }

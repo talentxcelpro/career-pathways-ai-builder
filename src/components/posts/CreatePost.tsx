@@ -137,13 +137,21 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
       return;
     }
 
+    if (!user?.id) {
+      toast.error('You must be logged in to create a post');
+      return;
+    }
+
     setIsPosting(true);
     try {
+      console.log('Creating post with user:', user.id);
+      console.log('Post content:', content);
+      
       const { data: postData, error } = await supabase
         .from('posts')
         .insert({
           content,
-          author_id: user?.id,
+          author_id: user.id,
           media_urls: attachments.map(att => att.url),
           location: location || null,
           is_public: privacy === 'public',
@@ -152,8 +160,12 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error creating post:', error);
+        throw error;
+      }
 
+      console.log('Post created successfully:', postData);
       onPostCreate?.(postData);
       
       // Reset form
@@ -168,7 +180,9 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
       
       toast.success('Post created successfully!');
     } catch (error) {
-      toast.error('Failed to create post');
+      console.error('Error creating post:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to create post: ${errorMessage}`);
     } finally {
       setIsPosting(false);
     }
