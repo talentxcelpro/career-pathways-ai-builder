@@ -186,7 +186,7 @@ export const useUserImport = () => {
 
       const requestStart = Date.now();
       
-      // Log the exact payload being sent
+      // Use the same approach as useUserCreation hook
       const payload = {
         userEmail: user.email,
         userName: user.name,
@@ -232,7 +232,7 @@ export const useUserImport = () => {
         return {
           email: user.email,
           success: false,
-          error: error.message || 'Unknown Supabase function error',
+          error: error.message || 'Failed to send a request to the Edge Function',
           retryCount: retryCount + 1,
           errorType
         };
@@ -267,7 +267,7 @@ export const useUserImport = () => {
         return {
           email: user.email,
           success: false,
-          error: data.error || 'Edge Function reported failure',
+          error: data.error || 'Unknown error from Edge Function',
           retryCount: retryCount + 1,
           errorType
         };
