@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
+
+import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Upload, Download, FileText, Users, Clock, TrendingUp } from 'lucide-react';
+import { Upload, Download, FileText, Users, Clock, TrendingUp, Wifi, AlertCircle } from 'lucide-react';
 import { useBulkCSVImport } from '@/hooks/useBulkCSVImport';
 import { toast } from 'sonner';
 
@@ -12,25 +13,54 @@ interface BulkCSVImportProps {
 
 export const BulkCSVImport: React.FC<BulkCSVImportProps> = ({ onImportComplete }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { isImporting, progress, importFromCSV, generateCSVTemplate } = useBulkCSVImport();
+  const { isImporting, progress, importFromCSV, generateCSVTemplate, testConnection } = useBulkCSVImport();
+  const [isTestingConnection, setIsTestingConnection] = useState(false);
+
+  const handleConnectionTest = async () => {
+    setIsTestingConnection(true);
+    try {
+      const result = await testConnection();
+      if (result) {
+        toast.success('Connection test successful! Import service is ready.');
+      } else {
+        toast.error('Connection test failed. Please check the service status.');
+      }
+    } catch (error) {
+      toast.error('Connection test error. Please try again.');
+    } finally {
+      setIsTestingConnection(false);
+    }
+  };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Validate file type
     if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
       toast.error('Please select a CSV file');
       return;
     }
 
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File size too large. Please use a file smaller than 10MB.');
+      return;
+    }
+
     try {
       await importFromCSV(file, {
-        batchSize: 500,
-        maxConcurrent: 10
+        batchSize: 100,
+        maxConcurrent: 5
       });
       onImportComplete();
     } catch (error) {
       console.error('Import error:', error);
+    }
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -53,7 +83,7 @@ export const BulkCSVImport: React.FC<BulkCSVImportProps> = ({ onImportComplete }
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <Button
               onClick={() => fileInputRef.current?.click()}
               disabled={isImporting}
@@ -70,6 +100,16 @@ export const BulkCSVImport: React.FC<BulkCSVImportProps> = ({ onImportComplete }
             >
               <Download className="h-4 w-4" />
               Download Template
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={handleConnectionTest}
+              disabled={isTestingConnection}
+              className="flex items-center gap-2"
+            >
+              <Wifi className="h-4 w-4" />
+              {isTestingConnection ? 'Testing...' : 'Test Connection'}
             </Button>
           </div>
 
@@ -151,7 +191,8 @@ export const BulkCSVImport: React.FC<BulkCSVImportProps> = ({ onImportComplete }
 
             {progress.errors.length > 0 && (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-red-600">
+                <p className="text-sm font-medium text-red-600 flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4" />
                   Errors ({progress.errors.length})
                 </p>
                 <div className="max-h-32 overflow-y-auto space-y-1">
@@ -200,6 +241,7 @@ export const BulkCSVImport: React.FC<BulkCSVImportProps> = ({ onImportComplete }
                 <li>• Duplicate emails are automatically skipped</li>
                 <li>• Users get temporary secure passwords (they can reset)</li>
                 <li>• Batch processing ensures database stability</li>
+                <li>• Test connection before importing large files</li>
               </ul>
             </div>
           </div>

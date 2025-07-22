@@ -1,3 +1,4 @@
+
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.1'
 
 const corsHeaders = {
@@ -26,32 +27,63 @@ interface ImportProgress {
 }
 
 Deno.serve(async (req) => {
+  console.log(`=== BULK CSV IMPORT REQUEST ===`);
+  console.log(`Method: ${req.method}`);
+  console.log(`URL: ${req.url}`);
+  console.log(`Headers:`, Object.fromEntries(req.headers.entries()));
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('=== BULK CSV IMPORT STARTED ===');
     const startTime = Date.now();
+    console.log('=== BULK CSV IMPORT STARTED ===');
 
     // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
-    if (!serviceRoleKey) {
-      throw new Error('SUPABASE_SERVICE_ROLE_KEY not configured');
+    console.log('Environment check:', {
+      hasUrl: !!supabaseUrl,
+      hasKey: !!serviceRoleKey,
+      urlLength: supabaseUrl?.length || 0,
+      keyLength: serviceRoleKey?.length || 0
+    });
+
+    if (!supabaseUrl || !serviceRoleKey) {
+      throw new Error('Missing required environment variables');
     }
 
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
 
-    // Get request body
-    const { csvData, batchSize = 500, maxConcurrent = 10 } = await req.json();
+    // Get and validate request body
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      console.log('Request body received:', {
+        hasCsvData: !!requestBody.csvData,
+        csvDataLength: requestBody.csvData?.length || 0,
+        batchSize: requestBody.batchSize,
+        maxConcurrent: requestBody.maxConcurrent
+      });
+    } catch (error) {
+      console.error('Failed to parse request body:', error);
+      throw new Error('Invalid JSON in request body');
+    }
+
+    const { csvData, batchSize = 100, maxConcurrent = 5 } = requestBody;
     
     if (!csvData || !Array.isArray(csvData)) {
-      throw new Error('Invalid CSV data provided');
+      throw new Error('Invalid CSV data provided - must be an array');
+    }
+
+    if (csvData.length === 0) {
+      throw new Error('No user data provided in CSV');
     }
 
     console.log(`Processing ${csvData.length} users in batches of ${batchSize}`);
@@ -67,55 +99,75 @@ Deno.serve(async (req) => {
       startTime
     };
 
-    // Process in batches with concurrency control
-    const batches: UserRecord[][] = [];
-    for (let i = 0; i < csvData.length; i += batchSize) {
-      batches.push(csvData.slice(i, i + batchSize));
-    }
-
-    console.log(`Created ${batches.length} batches for processing`);
-
-    // Process batches with controlled concurrency
-    const semaphore = new Array(maxConcurrent).fill(null);
-    let batchIndex = 0;
-
-    const processBatch = async (batch: UserRecord[], batchNum: number) => {
-      console.log(`Processing batch ${batchNum + 1}/${batches.length} (${batch.length} users)`);
+    // Process users sequentially in smaller batches for better reliability
+    const processBatch = async (users: UserRecord[], batchIndex: number): Promise<{successful: number, failed: number, errors: string[]}> => {
+      console.log(`\n--- Processing Batch ${batchIndex + 1} (${users.length} users) ---`);
+      
       const batchResults = {
         successful: 0,
         failed: 0,
         errors: [] as string[]
       };
 
-      // Process users in the batch concurrently
-      const userPromises = batch.map(async (userData) => {
+      // Process each user in the batch
+      for (let i = 0; i < users.length; i++) {
+        const userData = users[i];
+        console.log(`Processing user ${i + 1}/${users.length}: ${userData.email}`);
+        
         try {
-          // Validate email
+          // Basic email validation
           if (!userData.email || !userData.email.includes('@')) {
             throw new Error(`Invalid email: ${userData.email}`);
           }
 
-          // Create auth user
-          const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
-            email: userData.email,
-            password: generateSecurePassword(),
-            email_confirm: true,
-            user_metadata: {
-              full_name: userData.full_name || '',
-              user_role: userData.user_role || 'user'
-            }
-          });
+          // Create auth user with retry logic
+          let authUser;
+          let authError;
+          
+          for (let attempt = 1; attempt <= 2; attempt++) {
+            console.log(`Creating auth user for ${userData.email} (attempt ${attempt})`);
+            
+            const { data, error } = await supabase.auth.admin.createUser({
+              email: userData.email,
+              password: generateSecurePassword(),
+              email_confirm: true,
+              user_metadata: {
+                full_name: userData.full_name || '',
+                user_role: userData.user_role || 'user'
+              }
+            });
 
-          if (authError) {
-            // Check if user already exists
-            if (authError.message.includes('already registered')) {
-              console.log(`User already exists: ${userData.email}`);
-              return { success: true, skipped: true };
+            if (!error) {
+              authUser = data;
+              break;
+            } else {
+              authError = error;
+              if (error.message.includes('already registered')) {
+                console.log(`User already exists: ${userData.email}`);
+                batchResults.successful++;
+                break;
+              }
+              
+              if (attempt === 2) {
+                throw error;
+              }
+              
+              // Wait a bit before retry
+              await new Promise(resolve => setTimeout(resolve, 500));
             }
-            throw authError;
           }
 
-          // Create/update profile
+          if (authError?.message.includes('already registered')) {
+            continue;
+          }
+
+          if (!authUser?.user) {
+            throw new Error('Failed to create auth user');
+          }
+
+          console.log(`Auth user created successfully: ${authUser.user.id}`);
+
+          // Create/update profile with retry logic
           const profileData = {
             id: authUser.user.id,
             full_name: userData.full_name || '',
@@ -131,66 +183,88 @@ Deno.serve(async (req) => {
             first_login: false
           };
 
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .upsert(profileData, { onConflict: 'id' });
+          for (let attempt = 1; attempt <= 2; attempt++) {
+            console.log(`Creating profile for ${userData.email} (attempt ${attempt})`);
+            
+            const { error: profileError } = await supabase
+              .from('profiles')
+              .upsert(profileData, { onConflict: 'id' });
 
-          if (profileError) {
-            console.error(`Profile creation failed for ${userData.email}:`, profileError);
-            throw profileError;
+            if (!profileError) {
+              console.log(`Profile created successfully for ${userData.email}`);
+              batchResults.successful++;
+              break;
+            } else {
+              if (attempt === 2) {
+                console.error(`Profile creation failed for ${userData.email}:`, profileError);
+                throw profileError;
+              }
+              
+              // Wait a bit before retry
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
           }
 
-          return { success: true, userId: authUser.user.id };
         } catch (error) {
           const errorMsg = `Failed to create user ${userData.email}: ${error.message}`;
           console.error(errorMsg);
-          return { success: false, error: errorMsg };
-        }
-      });
-
-      // Wait for all users in batch to complete
-      const results = await Promise.all(userPromises);
-      
-      results.forEach(result => {
-        if (result.success) {
-          batchResults.successful++;
-        } else {
           batchResults.failed++;
-          batchResults.errors.push(result.error);
+          batchResults.errors.push(errorMsg);
         }
-      });
 
-      console.log(`Batch ${batchNum + 1} completed: ${batchResults.successful} successful, ${batchResults.failed} failed`);
+        // Small delay between users to avoid overwhelming the system
+        if (i < users.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+
+      console.log(`Batch ${batchIndex + 1} completed: ${batchResults.successful} successful, ${batchResults.failed} failed`);
       return batchResults;
     };
 
-    // Process all batches with concurrency control
-    const batchPromises = [];
-    for (let i = 0; i < Math.min(maxConcurrent, batches.length); i++) {
-      if (batches[batchIndex]) {
-        batchPromises.push(processBatch(batches[batchIndex], batchIndex));
-        batchIndex++;
-      }
+    // Split data into batches
+    const batches: UserRecord[][] = [];
+    for (let i = 0; i < csvData.length; i += batchSize) {
+      batches.push(csvData.slice(i, i + batchSize));
     }
 
-    // Process remaining batches as others complete
-    while (batchPromises.length > 0) {
-      const result = await Promise.race(batchPromises);
-      
-      // Update progress
-      progress.successful += result.successful;
-      progress.failed += result.failed;
-      progress.errors.push(...result.errors);
-      progress.processed += result.successful + result.failed;
-      progress.batchNumber++;
+    console.log(`Created ${batches.length} batches for processing`);
 
-      // Remove completed promise and add new one if available
-      const completedIndex = batchPromises.findIndex(p => p === result);
-      batchPromises.splice(completedIndex, 1);
+    // Process batches with controlled concurrency
+    let currentBatch = 0;
+    const activeBatches = new Set<Promise<any>>();
 
-      if (batchIndex < batches.length) {
-        batchPromises.push(processBatch(batches[batchIndex], batchIndex));
-        batchIndex++;
+    while (currentBatch < batches.length || activeBatches.size > 0) {
+      // Start new batches up to the concurrency limit
+      while (activeBatches.size < maxConcurrent && currentBatch < batches.length) {
+        const batchIndex = currentBatch;
+        const batch = batches[batchIndex];
+        
+        const batchPromise = processBatch(batch, batchIndex).then(result => {
+          // Update progress
+          progress.successful += result.successful;
+          progress.failed += result.failed;
+          progress.errors.push(...result.errors);
+          progress.processed += result.successful + result.failed;
+          progress.batchNumber++;
+          
+          return result;
+        });
+
+        activeBatches.add(batchPromise);
+        currentBatch++;
+      }
+
+      // Wait for at least one batch to complete
+      if (activeBatches.size > 0) {
+        const completed = await Promise.race(activeBatches);
+        
+        // Remove completed batches
+        for (const batchPromise of activeBatches) {
+          if (await Promise.race([batchPromise, Promise.resolve('pending')]) !== 'pending') {
+            activeBatches.delete(batchPromise);
+          }
+        }
       }
     }
 
@@ -202,6 +276,9 @@ Deno.serve(async (req) => {
     console.log(`Total time: ${totalTime}ms`);
     console.log(`Users per second: ${usersPerSecond}`);
     console.log(`Success rate: ${((progress.successful / progress.total) * 100).toFixed(2)}%`);
+    console.log(`Total processed: ${progress.processed}/${progress.total}`);
+    console.log(`Successful: ${progress.successful}`);
+    console.log(`Failed: ${progress.failed}`);
 
     return new Response(JSON.stringify({
       success: true,
@@ -217,11 +294,15 @@ Deno.serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('Bulk import error:', error);
+    console.error('=== BULK IMPORT ERROR ===');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
     return new Response(JSON.stringify({
       success: false,
       error: error.message,
-      details: error.stack
+      details: error.stack,
+      timestamp: new Date().toISOString()
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500
