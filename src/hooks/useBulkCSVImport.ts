@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import Papa from 'papaparse';
 
 export interface ImportProgress {
   total: number;
@@ -13,6 +14,13 @@ export interface ImportProgress {
   totalTime?: number;
   usersPerSecond?: number;
   successRate?: number;
+}
+
+interface UserRecord {
+  email: string;
+  full_name?: string;
+  user_role?: 'job_seeker' | 'employer';
+  password?: string;
 }
 
 export const useBulkCSVImport = () => {
@@ -33,14 +41,14 @@ export const useBulkCSVImport = () => {
       setConnectionStatus('testing');
       console.log('Testing connection to bulk-csv-import function...');
       
-      // Use direct fetch with hardcoded values since we know they work
       const SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
       const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc";
       const functionUrl = `${SUPABASE_URL}/functions/v1/bulk-csv-import`;
       
       console.log('Function URL:', functionUrl);
 
-      const testPayload = { isTest: true };
+      // Fix: Send test: true instead of isTest: true
+      const testPayload = { test: true };
       console.log('Sending test payload:', testPayload);
 
       const response = await fetch(functionUrl, {
@@ -74,6 +82,46 @@ export const useBulkCSVImport = () => {
     }
   };
 
+  const parseCSV = (csvData: string): Promise<UserRecord[]> => {
+    return new Promise((resolve, reject) => {
+      Papa.parse(csvData, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          console.log('CSV parsing results:', results);
+          
+          if (results.errors.length > 0) {
+            console.error('CSV parsing errors:', results.errors);
+            reject(new Error(`CSV parsing failed: ${results.errors[0].message}`));
+            return;
+          }
+
+          const users: UserRecord[] = results.data.map((row: any) => ({
+            email: row.email || row.Email || '',
+            full_name: row.full_name || row.name || row.Name || row.full_name || '',
+            user_role: (row.user_role || row.role || 'job_seeker') as 'job_seeker' | 'employer',
+            password: row.password || row.Password || undefined
+          }));
+
+          // Filter out rows with missing email
+          const validUsers = users.filter(user => user.email && user.email.trim());
+          
+          if (validUsers.length === 0) {
+            reject(new Error('No valid users found in CSV. Make sure email column is present and populated.'));
+            return;
+          }
+
+          console.log(`Parsed ${validUsers.length} valid users from CSV`);
+          resolve(validUsers);
+        },
+        error: (error) => {
+          console.error('CSV parsing error:', error);
+          reject(new Error(`CSV parsing failed: ${error.message}`));
+        }
+      });
+    });
+  };
+
   const importFromCSV = async (
     csvData: string,
     options: {
@@ -99,20 +147,32 @@ export const useBulkCSVImport = () => {
       console.log('Starting CSV import with options:', options);
       console.log('CSV data length:', csvData.length);
 
-      // Use direct fetch instead of supabase.functions.invoke
+      // Parse CSV data first
+      const users = await parseCSV(csvData);
+      console.log('Parsed users:', users.length);
+
+      // Update progress with total count
+      setProgress(prev => ({ ...prev, total: users.length }));
+
       const SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
       const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc";
       const functionUrl = `${SUPABASE_URL}/functions/v1/bulk-csv-import`;
 
+      // Fix: Send users array instead of raw CSV data
       const payload = {
-        csvData,
+        users,
         batchSize: options.batchSize || 50,
         maxConcurrent: options.maxConcurrent || 3,
         speed: options.speed || 'medium'
       };
 
       console.log('Sending import request to:', functionUrl);
-      console.log('Payload:', { ...payload, csvData: `${csvData.substring(0, 100)}...` });
+      console.log('Payload summary:', { 
+        userCount: users.length, 
+        batchSize: payload.batchSize, 
+        maxConcurrent: payload.maxConcurrent,
+        speed: payload.speed 
+      });
 
       const response = await fetch(functionUrl, {
         method: 'POST',
