@@ -93,6 +93,11 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
       }
     } catch (error) {
       console.error('Error loading subscription data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load subscription data",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
@@ -116,119 +121,84 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         throw new Error('Plan not found');
       }
 
-      // Create Razorpay order
-      const { data: orderData, error: orderError } = await supabase.functions.invoke('razorpay-create-order', {
-        body: { 
-          amount: planData.price, 
-          currency: planData.currency,
-          planId: planData.id,
-          packageType: 'subscription'
-        }
+      console.log('Creating subscription for plan:', planData);
+
+      // For demo purposes, directly create subscription without payment
+      const currentPeriodStart = new Date();
+      const currentPeriodEnd = new Date();
+      currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
+
+      // Insert or update subscription
+      const { data: existingSub } = await supabase
+        .from('user_subscriptions')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .single();
+
+      if (existingSub) {
+        // Update existing subscription
+        const { error } = await supabase
+          .from('user_subscriptions')
+          .update({
+            plan_id: planData.id,
+            current_period_start: currentPeriodStart.toISOString(),
+            current_period_end: currentPeriodEnd.toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingSub.id);
+
+        if (error) throw error;
+      } else {
+        // Create new subscription
+        const { error } = await supabase
+          .from('user_subscriptions')
+          .insert({
+            user_id: user.id,
+            plan_id: planData.id,
+            status: 'active',
+            current_period_start: currentPeriodStart.toISOString(),
+            current_period_end: currentPeriodEnd.toISOString()
+          });
+
+        if (error) throw error;
+      }
+
+      // Log successful subscription for tracking
+      console.log('Subscription created successfully:', {
+        user: user.id,
+        plan: planData.name,
+        amount: planData.price,
+        demo_mode: true
       });
 
-      if (orderError) throw orderError;
-
-      // Handle demo mode
-      if (orderData.demo) {
-        const { data: verifyData, error: verifyError } = await supabase.functions.invoke('razorpay-verify-payment', {
-          body: { 
-            razorpay_order_id: orderData.orderId,
-            razorpay_payment_id: `pay_demo_${Date.now()}`,
-            razorpay_signature: 'demo_signature'
-          }
-        });
-
-        if (verifyError) throw verifyError;
-
-        toast({
-          title: "Welcome to TalentXcel Pro",
-          description: `You're now subscribed to ${tierName}`,
-        });
-        
-        setCurrentTier(tierName);
-        return;
-      }
-
-      // Real Razorpay integration
-      if (typeof window !== 'undefined' && (window as any).Razorpay) {
-        const options = {
-          key: orderData.keyId,
-          amount: orderData.amount,
-          currency: orderData.currency,
-          name: 'TalentXcel Pro',
-          description: `Subscription to ${tierName}`,
-          order_id: orderData.orderId,
-          handler: async (response: any) => {
-            try {
-              const { data: verifyData, error: verifyError } = await supabase.functions.invoke('razorpay-verify-payment', {
-                body: {
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature
-                }
-              });
-
-              if (verifyError) throw verifyError;
-
-              toast({
-                title: "Welcome to TalentXcel Pro",
-                description: `You're now subscribed to ${tierName}`,
-              });
-              
-              setCurrentTier(tierName);
-            } catch (error) {
-              console.error('Payment verification error:', error);
-              toast({
-                title: "Error",
-                description: "Payment verification failed",
-                variant: "destructive",
-              });
-            }
-          },
-          modal: {
-            ondismiss: () => {
-              setSubscribing(null);
-            }
-          },
-          prefill: {
-            name: user.user_metadata?.full_name || '',
-            email: user.email || '',
-          },
-          theme: {
-            color: '#3B82F6'
-          }
-        };
-
-        const rzp = new (window as any).Razorpay(options);
-        rzp.open();
-      } else {
-        // Load Razorpay script dynamically
-        const script = document.createElement('script');
-        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-        script.onload = () => {
-          // Retry after script loads
-          handleSubscribe(tierName);
-        };
-        document.body.appendChild(script);
-      }
+      toast({
+        title: "🎉 Welcome to TalentXcel Pro!",
+        description: `You're now subscribed to ${tierName}. Enjoy premium features!`,
+      });
+      
+      setCurrentTier(tierName);
+      loadSubscriptionData(); // Refresh the data
+      
     } catch (error) {
       console.error('Error subscribing:', error);
       toast({
         title: "Error",
-        description: "Failed to process subscription",
+        description: error.message || "Failed to process subscription",
         variant: "destructive"
       });
+    } finally {
       setSubscribing(null);
     }
   };
 
   const getTierGradient = (tierName: string) => {
     switch (tierName) {
-      case 'Smart Service Page':
+      case 'Pro Starter':
         return 'from-blue-500 to-cyan-500';
-      case 'CRM':
+      case 'Pro Business':
         return 'from-purple-500 to-pink-500';
-      case 'Premium':
+      case 'Pro Elite':
         return 'from-orange-500 to-yellow-500';
       default:
         return 'from-gray-500 to-gray-600';
@@ -237,11 +207,11 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
 
   const getTierIcon = (tierName: string) => {
     switch (tierName) {
-      case 'Smart Service Page':
+      case 'Pro Starter':
         return <Star className="h-5 w-5" />;
-      case 'CRM':
+      case 'Pro Business':
         return <Zap className="h-5 w-5" />;
-      case 'Premium':
+      case 'Pro Elite':
         return <Crown className="h-5 w-5" />;
       default:
         return <Star className="h-5 w-5" />;
@@ -314,7 +284,7 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
             key={tier.id}
             variants={itemVariants}
             className={`relative group ${
-              tier.name === 'CRM' ? 'md:scale-110 md:z-10' : ''
+              tier.name === 'Pro Business' ? 'md:scale-110 md:z-10' : ''
             }`}
           >
             <Card className={`
@@ -323,7 +293,7 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
               ${currentTier === tier.name ? 'ring-2 ring-blue-500' : ''}
               ${tier.name === 'Pro Business' ? 'border-2 border-purple-200' : ''}
             `}>
-              {tier.name === 'CRM' && (
+              {tier.name === 'Pro Business' && (
                 <div className="absolute -top-px left-0 right-0">
                   <div className="h-px bg-gradient-to-r from-purple-500 to-pink-500"></div>
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -369,9 +339,9 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
                   </div>
                   
                   <p className="text-sm text-gray-500">
-                    {tier.name === 'Smart Service Page' && 'Perfect for getting started with portfolio showcase'}
-                    {tier.name === 'CRM' && 'Best for growing professionals with client management'}
-                    {tier.name === 'Premium' && 'Ultimate professional toolkit with all features'}
+                    {tier.name === 'Pro Starter' && 'Perfect for getting started with professional tools'}
+                    {tier.name === 'Pro Business' && 'Best for growing professionals with advanced needs'}
+                    {tier.name === 'Pro Elite' && 'Ultimate professional toolkit with all premium features'}
                   </p>
                 </div>
 
