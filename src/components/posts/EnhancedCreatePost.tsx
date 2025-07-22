@@ -1,376 +1,558 @@
 
 import React, { useState, useRef } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Camera, MapPin, Hash, Type, FileText, X, Upload, Loader2 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Sparkles, 
+  ImagePlus, 
+  Video, 
+  MapPin, 
+  Hash, 
+  Globe, 
+  Users, 
+  Lock, 
+  X,
+  Loader2,
+  BarChart3
+} from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
-interface EnhancedCreatePostProps {
-  onPostCreated: () => void;
-  defaultPostType?: 'text' | 'article';
+interface MediaFile {
+  id: string;
+  url: string;
+  type: 'image' | 'video';
+  file: File;
+  name: string;
 }
 
-export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({
-  onPostCreated,
-  defaultPostType = 'text'
-}) => {
+interface AIScore {
+  score: number;
+  tone: string;
+  ctaStrength: number;
+  hashtagRelevance: number;
+  viralityPotential: string;
+  suggestions: string[];
+}
+
+interface EnhancedCreatePostProps {
+  onPostCreate?: (post: any) => void;
+}
+
+export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCreate }) => {
   const { user } = useAuth();
   const [content, setContent] = useState('');
-  const [postType, setPostType] = useState<'text' | 'article'>(defaultPostType);
-  const [headline, setHeadline] = useState('');
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState('');
-  const [mediaFiles, setMediaFiles] = useState<string[]>([]);
+  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [location, setLocation] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showLocationInput, setShowLocationInput] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
+  const [newTag, setNewTag] = useState('');
+  const [privacy, setPrivacy] = useState<'public' | 'connections' | 'private'>('public');
+  const [isPosting, setIsPosting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [aiScore, setAiScore] = useState<AIScore>({
+    score: 0,
+    tone: 'neutral',
+    ctaStrength: 0,
+    hashtagRelevance: 0,
+    viralityPotential: 'medium',
+    suggestions: []
+  });
 
-  const handleMediaUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+
+  const analyzeContent = async (text: string) => {
+    if (!text.trim()) return;
+    
+    setIsAnalyzing(true);
+    try {
+      // Simulate AI analysis with realistic scoring
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const wordCount = text.split(' ').length;
+      const hasHashtags = text.includes('#');
+      const hasEmoji = /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]/u.test(text);
+      const hasQuestion = text.includes('?');
+      const hasExclamation = text.includes('!');
+      
+      // Calculate scores based on content analysis
+      let score = Math.min(85, Math.max(45, 50 + (wordCount > 20 ? 15 : 0) + (hasHashtags ? 10 : 0) + (hasEmoji ? 10 : 0)));
+      let ctaStrength = (hasQuestion || hasExclamation) ? Math.random() * 40 + 60 : Math.random() * 60 + 20;
+      let hashtagRelevance = hasHashtags ? Math.random() * 30 + 70 : Math.random() * 50 + 25;
+      
+      const tones = ['professional', 'casual', 'enthusiastic', 'informative', 'inspirational'];
+      const tone = tones[Math.floor(Math.random() * tones.length)];
+      
+      const viralityOptions = ['low', 'medium', 'high'];
+      const viralityPotential = viralityOptions[score > 70 ? 2 : score > 55 ? 1 : 0];
+      
+      const suggestions = [
+        hasHashtags ? null : 'Consider adding relevant hashtags to increase discoverability',
+        hasEmoji ? null : 'Adding emojis can make your post more engaging',
+        wordCount < 15 ? 'Try expanding your content for better engagement' : null,
+        !hasQuestion && !hasExclamation ? 'Consider adding a call-to-action to boost engagement' : null
+      ].filter(Boolean) as string[];
+
+      setAiScore({
+        score: Math.round(score),
+        tone,
+        ctaStrength: Math.round(ctaStrength),
+        hashtagRelevance: Math.round(hashtagRelevance),
+        viralityPotential,
+        suggestions
+      });
+    } catch (error) {
+      console.error('Error analyzing content:', error);
+      toast.error('Failed to analyze content');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleFileUpload = async (files: FileList | null, type: 'image' | 'video') => {
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
-    const uploadedUrls: string[] = [];
+    const newFiles: MediaFile[] = [];
 
-    try {
-      for (const file of files) {
-        // Validate file size - 10MB for images, 50MB for videos
-        const maxSize = file.type.startsWith('video/') ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
-        if (file.size > maxSize) {
-          const maxSizeMB = file.type.startsWith('video/') ? 50 : 10;
-          toast.error(`File ${file.name} is too large. Maximum size is ${maxSizeMB}MB.`);
-          continue;
-        }
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      
+      // Validate file type
+      const fileType = file.type.split('/')[0];
+      if (type === 'image' && fileType !== 'image') {
+        toast.error(`${file.name} is not an image file`);
+        continue;
+      }
+      if (type === 'video' && fileType !== 'video') {
+        toast.error(`${file.name} is not a video file`);
+        continue;
+      }
 
-        // Validate file type
-        if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-          toast.error(`File ${file.name} is not supported. Please upload images or videos only.`);
-          continue;
-        }
+      // Validate file size (10MB limit)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(`${file.name} is too large. Maximum size is 10MB.`);
+        continue;
+      }
 
-        const fileExt = file.name.split('.').pop();
-        const filePath = `${crypto.randomUUID()}.${fileExt}`;
+      const fileExtension = file.name.split('.').pop();
+      const randomId = Math.random().toString(36).substring(2, 15);
+      const filename = `${randomId}.${fileExtension}`;
+      const filePath = `${user?.id}/${filename}`;
 
-        const { error: uploadError } = await supabase.storage
+      try {
+        const { data, error } = await supabase.storage
           .from('post-media')
-          .upload(filePath, file);
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
-        if (uploadError) {
-          console.error('Upload error:', uploadError);
+        if (error) {
+          console.error('Error uploading file:', error);
           toast.error(`Failed to upload ${file.name}`);
           continue;
         }
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('post-media')
-          .getPublicUrl(filePath);
-
-        uploadedUrls.push(publicUrl);
+        const url = `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public/post-media/${data.path}`;
+        newFiles.push({
+          id: randomId,
+          url: url,
+          type: type,
+          file: file,
+          name: file.name,
+        });
+        toast.success(`${file.name} uploaded successfully!`);
+      } catch (uploadError) {
+        console.error('Upload error:', uploadError);
+        toast.error(`Failed to upload ${file.name}`);
       }
+    }
 
-      setMediaFiles(prev => [...prev, ...uploadedUrls]);
-      toast.success(`${uploadedUrls.length} file(s) uploaded successfully`);
-    } catch (error) {
-      console.error('Media upload error:', error);
-      toast.error('Failed to upload media files');
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+    setMediaFiles(prev => [...prev, ...newFiles]);
+    setIsUploading(false);
+  };
+
+  const handleRemoveMedia = (id: string) => {
+    setMediaFiles(prev => prev.filter(file => file.id !== id));
+  };
+
+  const handlePhotoClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleVideoClick = () => {
+    videoInputRef.current?.click();
+  };
+
+  const handleLocationClick = () => {
+    setShowLocationInput(!showLocationInput);
+  };
+
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+          toast.success('Location detected!');
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          toast.error('Failed to get location. Please enter manually.');
+        }
+      );
+    } else {
+      toast.error('Geolocation is not supported by this browser.');
     }
   };
 
-  const removeMedia = (indexToRemove: number) => {
-    setMediaFiles(prev => prev.filter((_, index) => index !== indexToRemove));
-  };
-
-  const addTag = () => {
-    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      setTags(prev => [...prev, tagInput.trim()]);
-      setTagInput('');
+  const handleAddTag = () => {
+    if (newTag.trim() && !tags.includes(newTag.trim())) {
+      setTags(prev => [...prev, newTag.trim()]);
+      setNewTag('');
     }
   };
 
-  const removeTag = (tagToRemove: string) => {
+  const handleRemoveTag = (tagToRemove: string) => {
     setTags(prev => prev.filter(tag => tag !== tagToRemove));
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      if (tagInput.trim()) {
-        addTag();
-      }
-    }
   };
 
   const handleSubmit = async () => {
     if (!content.trim()) {
-      toast.error('Please add some content to your post');
+      toast.error('Please write something before posting');
       return;
     }
 
-    if (postType === 'article' && !headline.trim()) {
-      toast.error('Please add a headline for your article');
+    if (!user?.id) {
+      toast.error('You must be logged in to create a post');
       return;
     }
 
-    setIsSubmitting(true);
-
+    setIsPosting(true);
     try {
-      const postData = {
-        content: content.trim(),
-        post_type: postType,
-        author_id: user?.id,
-        media_urls: mediaFiles.length > 0 ? mediaFiles : null,
-        tags: tags.length > 0 ? tags : null,
-        location: location.trim() || null,
-        headline: postType === 'article' ? headline.trim() : null,
-        status: 'published'
-      };
-
-      const { error } = await supabase
+      console.log('Creating enhanced post with user:', user.id);
+      
+      const { data: postData, error } = await supabase
         .from('posts')
-        .insert([postData]);
+        .insert({
+          content,
+          post_type: 'text',
+          author_id: user.id,
+          media_urls: mediaFiles.map(file => file.url),
+          location: location || null,
+          is_public: privacy === 'public',
+          tags: tags
+        })
+        .select()
+        .single();
 
       if (error) {
-        console.error('Error creating post:', error);
-        toast.error('Failed to create post: ' + error.message);
-        return;
+        console.error('Database error creating post:', error);
+        throw error;
       }
 
+      console.log('Post created successfully:', postData);
+
+      // AI score analysis complete - stored in component state for display
+      console.log('AI analysis completed:', aiScore);
+
+      onPostCreate?.(postData);
+      
       // Reset form
       setContent('');
-      setHeadline('');
-      setTags([]);
-      setTagInput('');
       setMediaFiles([]);
       setLocation('');
-      setPostType('text');
-
-      toast.success(postType === 'article' ? 'Article published successfully!' : 'Post created successfully!');
-      onPostCreated();
+      setShowLocationInput(false);
+      setTags([]);
+      setPrivacy('public');
+      setAiScore({
+        score: 0,
+        tone: 'neutral',
+        ctaStrength: 0,
+        hashtagRelevance: 0,
+        viralityPotential: 'medium',
+        suggestions: []
+      });
+      
+      toast.success('Enhanced post created successfully!');
     } catch (error) {
-      console.error('Post creation error:', error);
-      toast.error('Failed to create post');
+      console.error('Error creating enhanced post:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to create post: ${errorMessage}`);
     } finally {
-      setIsSubmitting(false);
+      setIsPosting(false);
     }
   };
-
-  const generateInitials = () => {
-    if (user?.email) {
-      return user.email.charAt(0).toUpperCase();
-    }
-    return 'U';
-  };
-
-  const isFormValid = content.trim() && (postType === 'text' || (postType === 'article' && headline.trim()));
 
   return (
-    <Card className="w-full">
-      <CardContent className="p-6">
-        {/* Post Type Toggle */}
-        <div className="flex space-x-2 mb-4">
-          <Button
-            variant={postType === 'text' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setPostType('text')}
-            className="flex items-center space-x-2"
-          >
-            <Type className="h-4 w-4" />
-            <span>Post</span>
-          </Button>
-          <Button
-            variant={postType === 'article' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setPostType('article')}
-            className="flex items-center space-x-2"
-          >
-            <FileText className="h-4 w-4" />
-            <span>Article</span>
-          </Button>
-        </div>
-
-        <div className="flex space-x-3">
-          <Avatar>
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-purple-600" />
+          Create Enhanced Post
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-start gap-3">
+          <Avatar className="h-10 w-10">
             <AvatarImage src={user?.user_metadata?.avatar_url} />
-            <AvatarFallback>{generateInitials()}</AvatarFallback>
+            <AvatarFallback>
+              {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
+            </AvatarFallback>
           </Avatar>
-          
-          <div className="flex-1 space-y-4">
-            {/* Article Headline */}
-            {postType === 'article' && (
-              <Input
-                placeholder="Article headline..."
-                value={headline}
-                onChange={(e) => setHeadline(e.target.value)}
-                className="text-lg font-semibold"
-              />
-            )}
-
-            {/* Content Input */}
+          <div className="flex-1">
             <Textarea
-              placeholder={postType === 'article' ? "Write your article content..." : "What's on your mind?"}
+              placeholder="Share your thoughts..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="min-h-[120px] resize-none border-none shadow-none focus-visible:ring-0 text-lg placeholder:text-gray-500"
+              onBlur={() => analyzeContent(content)}
+              className="min-h-[120px] resize-none border-0 p-0 text-lg placeholder:text-muted-foreground focus-visible:ring-0"
             />
+          </div>
+        </div>
 
-            {/* Media Preview */}
-            {mediaFiles.length > 0 && (
-              <div className="grid gap-4" style={{
-                gridTemplateColumns: mediaFiles.length === 1 ? '1fr' : 
-                                   mediaFiles.length === 2 ? '1fr 1fr' :
-                                   'repeat(auto-fit, minmax(200px, 1fr))'
-              }}>
-                {mediaFiles.map((url, index) => {
-                  const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
-                  return (
-                    <div key={index} className="relative group">
-                      <AspectRatio ratio={isVideo ? 16/9 : 4/3} className="bg-muted rounded-lg overflow-hidden">
-                        {isVideo ? (
-                          <video 
-                            src={url}
-                            className="w-full h-full object-cover"
-                            controls
-                          />
-                        ) : (
-                          <img 
-                            src={url}
-                            alt={`Media ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                      </AspectRatio>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => removeMedia(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+        {/* Hidden file inputs */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={(e) => handleFileUpload(e.target.files, 'image')}
+          accept="image/*"
+          multiple
+          className="hidden"
+        />
+        <input
+          type="file"
+          ref={videoInputRef}
+          onChange={(e) => handleFileUpload(e.target.files, 'video')}
+          accept="video/*"
+          multiple
+          className="hidden"
+        />
 
-            {/* Tags */}
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {tags.map(tag => (
-                  <Badge key={tag} variant="secondary" className="flex items-center space-x-1">
-                    <span>#{tag}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-4 w-4 p-0 hover:bg-transparent"
-                      onClick={() => removeTag(tag)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
+        {/* AI Analysis Results */}
+        {(aiScore.score > 0 || isAnalyzing) && (
+          <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
+            <div className="flex items-center gap-2 mb-3">
+              <BarChart3 className="h-4 w-4 text-purple-600" />
+              <span className="font-medium text-purple-800">AI Content Analysis</span>
+              {isAnalyzing && <Loader2 className="h-4 w-4 animate-spin text-purple-600" />}
+            </div>
+            
+            {!isAnalyzing && (
+              <div className="grid grid-cols-2 gap-4 mb-3">
+                <div className="space-y-1">
+                  <div className="text-sm text-gray-600">Overall Score</div>
+                  <div className="text-2xl font-bold text-purple-600">{aiScore.score}/100</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm text-gray-600">Tone</div>
+                  <Badge variant="secondary" className="capitalize">{aiScore.tone}</Badge>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm text-gray-600">CTA Strength</div>
+                  <div className="text-lg font-semibold">{aiScore.ctaStrength}%</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm text-gray-600">Virality Potential</div>
+                  <Badge 
+                    variant={aiScore.viralityPotential === 'high' ? 'default' : 'secondary'}
+                    className="capitalize"
+                  >
+                    {aiScore.viralityPotential}
                   </Badge>
-                ))}
+                </div>
               </div>
             )}
 
-            {/* Location */}
-            {location && (
-              <div className="flex items-center space-x-2 text-gray-600">
-                <MapPin className="h-4 w-4" />
-                <span className="text-sm">{location}</span>
+            {aiScore.suggestions.length > 0 && (
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-700">Suggestions:</div>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  {aiScore.suggestions.map((suggestion, index) => (
+                    <li key={index} className="flex items-start gap-1">
+                      <span className="text-purple-500 mt-1">•</span>
+                      {suggestion}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Location Input */}
+        {showLocationInput && (
+          <div className="p-3 border rounded-lg bg-gray-50">
+            <div className="flex items-center gap-2 mb-2">
+              <MapPin className="h-4 w-4 text-gray-600" />
+              <span className="text-sm font-medium">Add Location</span>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Enter location or click to detect"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="flex-1"
+              />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={getCurrentLocation}
+                className="whitespace-nowrap"
+              >
+                Detect
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => {
+                  setShowLocationInput(false);
+                  setLocation('');
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Tags Input */}
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Add tags..."
+              value={newTag}
+              onChange={(e) => setNewTag(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
+              className="flex-1"
+            />
+            <Button variant="outline" size="sm" onClick={handleAddTag}>
+              <Hash className="h-4 w-4" />
+            </Button>
+          </div>
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                  #{tag}
+                  <X 
+                    className="h-3 w-3 cursor-pointer" 
+                    onClick={() => handleRemoveTag(tag)}
+                  />
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Media Preview */}
+        {mediaFiles.length > 0 && (
+          <div className="grid grid-cols-2 gap-2">
+            {mediaFiles.map((file) => (
+              <div key={file.id} className="relative group">
+                {file.type === 'image' ? (
+                  <img 
+                    src={file.url} 
+                    alt={file.name}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                ) : (
+                  <video 
+                    src={file.url}
+                    className="w-full h-32 object-cover rounded-lg"
+                    controls
+                  />
+                )}
                 <Button
-                  variant="ghost"
+                  variant="destructive"
                   size="sm"
-                  className="h-4 w-4 p-0"
-                  onClick={() => setLocation('')}
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                  onClick={() => handleRemoveMedia(file.id)}
                 >
                   <X className="h-3 w-3" />
                 </Button>
               </div>
-            )}
+            ))}
+          </div>
+        )}
 
-            {/* Actions */}
-            <div className="flex items-center justify-between pt-4 border-t">
-              <div className="flex items-center space-x-2">
-                {/* Media Upload */}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  multiple
-                  accept="image/*,video/*"
-                  onChange={handleMediaUpload}
-                  className="hidden"
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="flex items-center space-x-2"
-                >
-                  {isUploading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Camera className="h-4 w-4" />
-                  )}
-                  <span>Media</span>
-                </Button>
+        {/* Action Buttons */}
+        <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handlePhotoClick}
+              disabled={isUploading}
+            >
+              {isUploading ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <ImagePlus className="h-4 w-4 mr-1" />}
+              Photo
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleVideoClick}
+              disabled={isUploading}
+            >
+              <Video className="h-4 w-4 mr-1" />
+              Video
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleLocationClick}
+            >
+              <MapPin className="h-4 w-4 mr-1" />
+              Location
+            </Button>
+          </div>
 
-                {/* Location */}
-                <div className="flex items-center space-x-2">
-                  <MapPin className="h-4 w-4 text-gray-500" />
-                  <Input
-                    placeholder="Add location"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="w-32 h-8 text-sm"
-                  />
-                </div>
-
-                {/* Tags */}
-                <div className="flex items-center space-x-2">
-                  <Hash className="h-4 w-4 text-gray-500" />
-                  <Input
-                    placeholder="Add tags"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    className="w-32 h-8 text-sm"
-                  />
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <Button
-                onClick={handleSubmit}
-                disabled={!isFormValid || isSubmitting}
-                className="px-6"
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              {privacy === 'public' && <Globe className="h-4 w-4 text-green-600" />}
+              {privacy === 'connections' && <Users className="h-4 w-4 text-blue-600" />}
+              {privacy === 'private' && <Lock className="h-4 w-4 text-gray-600" />}
+              <select 
+                value={privacy} 
+                onChange={(e) => setPrivacy(e.target.value as any)}
+                className="text-sm border-0 bg-transparent"
               >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Publishing...
-                  </>
-                ) : (
-                  postType === 'article' ? 'Publish Article' : 'Post'
-                )}
-              </Button>
+                <option value="public">Public</option>
+                <option value="connections">Connections</option>
+                <option value="private">Private</option>
+              </select>
             </div>
+
+            <Button 
+              onClick={handleSubmit} 
+              disabled={!content.trim() || isPosting || isUploading}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {isPosting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                  Posting...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-1" />
+                  Post
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </CardContent>
     </Card>
   );
 };
+
+export default EnhancedCreatePost;

@@ -278,7 +278,7 @@ const Posts = () => {
     }
   });
 
-  const handlePostCreate = () => {
+  const handlePostCreate = (post: any) => {
     queryClient.invalidateQueries({ queryKey: ['posts'] });
   };
 
@@ -570,7 +570,7 @@ const Posts = () => {
           {/* Middle Column - Posts Feed */}
           <div className="lg:col-span-6 space-y-6">
             {/* Enhanced Create Post with AI Features */}
-            <EnhancedCreatePost onPostCreated={handlePostCreate} />
+            <EnhancedCreatePost onPostCreate={handlePostCreate} />
 
             {/* AI Assistant */}
             {showAIAssistant && (
