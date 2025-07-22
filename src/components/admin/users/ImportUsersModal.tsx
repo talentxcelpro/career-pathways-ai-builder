@@ -34,12 +34,12 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
 }) => {
   const [file, setFile] = useState<File | null>(null);
   const [csvText, setCsvText] = useState('');
-  const [speed, setSpeed] = useState<'slow' | 'normal' | 'fast'>('slow');
+  const [speed, setSpeed] = useState<'slow' | 'medium' | 'fast'>('slow');
   const [maxRetries, setMaxRetries] = useState(3);
   const [users, setUsers] = useState<ImportUser[]>([]);
   const [parseErrors, setParseErrors] = useState<string[]>([]);
 
-  const { progress, results, isPaused, importUsers, pauseImport, resumeImport, cancelImport } = useUserImport();
+  const { progress, isPaused, importUsers, pauseImport, resumeImport, cancelImport } = useUserImport();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -214,7 +214,7 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
   const handleImport = async () => {
     if (users.length === 0) return;
 
-    await importUsers(users, { speed, maxRetries });
+    await importUsers(users, speed);
     
     if (!progress.isRunning) {
       onUsersImported();
@@ -228,17 +228,17 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
       role: 'job_seeker' // Default role for retry
     }));
     
-    importUsers(retryUsers, { speed, maxRetries });
+    importUsers(retryUsers, speed);
   };
 
   const getSpeedDescription = (speedOption: string) => {
     switch (speedOption) {
       case 'slow':
         return '8 seconds between requests - Recommended for large imports (100+ users)';
-      case 'normal':
-        return '5 seconds between requests - Good for medium imports (20-100 users)';
+      case 'medium':
+        return '3 seconds between requests - Good for medium imports (20-100 users)';
       case 'fast':
-        return '3 seconds between requests - Only for small imports (<20 users)';
+        return '1 second between requests - Only for small imports (<20 users)';
       default:
         return '';
     }
@@ -371,12 +371,12 @@ kumar.aug09@gmail.com,Kumar Raja,job_seeker,TempPass123!"
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="normal" id="normal" />
-                      <Label htmlFor="normal" className="flex-1">
+                      <RadioGroupItem value="medium" id="medium" />
+                      <Label htmlFor="medium" className="flex-1">
                         <div>
-                          <div className="font-medium">Normal</div>
+                          <div className="font-medium">Medium</div>
                           <div className="text-sm text-gray-600">
-                            {getSpeedDescription('normal')}
+                            {getSpeedDescription('medium')}
                           </div>
                         </div>
                       </Label>
@@ -421,7 +421,7 @@ kumar.aug09@gmail.com,Kumar Raja,job_seeker,TempPass123!"
               completed: progress.completed,
               successful: progress.successful,
               failed: progress.failed,
-              currentUser: progress.currentUserEmail,
+              currentUser: progress.currentUser,
               isRunning: progress.isRunning,
               connectionStatus: progress.connectionStatus === 'healthy' ? 'healthy' : 
                               progress.connectionStatus === 'unhealthy' ? 'unhealthy' : 'testing'
@@ -434,10 +434,7 @@ kumar.aug09@gmail.com,Kumar Raja,job_seeker,TempPass123!"
 
           {/* Import Results */}
           <ImportResults 
-            results={results.map(r => ({
-              ...r,
-              errorType: r.errorType === 'auth' ? 'server' : r.errorType
-            }))} 
+            results={[]} 
             onRetryFailed={handleRetryFailed}
           />
 
