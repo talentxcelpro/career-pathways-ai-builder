@@ -15,7 +15,7 @@ interface CreatePostProps {
 }
 
 export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [content, setContent] = useState('');
   const [mediaFiles, setMediaFiles] = useState<string[]>([]);
   const [location, setLocation] = useState('');
@@ -154,12 +154,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
   };
 
   const generateInitials = () => {
-    if (profile?.full_name) {
-      const names = profile.full_name.split(' ');
-      if (names.length === 1) {
-        return names[0].charAt(0).toUpperCase();
-      }
-      return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
+    if (user?.email) {
+      return user.email.charAt(0).toUpperCase();
     }
     return 'U';
   };
@@ -169,7 +165,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
       <CardContent className="p-6">
         <div className="flex space-x-3">
           <Avatar>
-            <AvatarImage src={profile?.profile_picture_url} />
+            <AvatarImage src={user?.user_metadata?.avatar_url} />
             <AvatarFallback>{generateInitials()}</AvatarFallback>
           </Avatar>
           

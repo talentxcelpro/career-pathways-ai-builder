@@ -20,7 +20,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({
   onPostCreated,
   defaultPostType = 'post'
 }) => {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [content, setContent] = useState('');
   const [postType, setPostType] = useState<'post' | 'article'>(defaultPostType);
   const [headline, setHeadline] = useState('');
@@ -193,12 +193,8 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({
   };
 
   const generateInitials = () => {
-    if (profile?.full_name) {
-      const names = profile.full_name.split(' ');
-      if (names.length === 1) {
-        return names[0].charAt(0).toUpperCase();
-      }
-      return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
+    if (user?.email) {
+      return user.email.charAt(0).toUpperCase();
     }
     return 'U';
   };
@@ -226,7 +222,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({
 
         <div className="flex space-x-3">
           <Avatar>
-            <AvatarImage src={profile?.profile_picture_url} />
+            <AvatarImage src={user?.user_metadata?.avatar_url} />
             <AvatarFallback>{generateInitials()}</AvatarFallback>
           </Avatar>
           
