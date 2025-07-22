@@ -51,7 +51,7 @@ export const ImportResults: React.FC<ImportResultsProps> = ({
         <div className="text-sm text-gray-600">
           Import Complete: {successful.length} successful, {failed.length} failed
         </div>
-      </CardContent>
+      </CardHeader>
       <CardContent className="space-y-4">
         {/* Successful Results */}
         {successful.length > 0 && (
