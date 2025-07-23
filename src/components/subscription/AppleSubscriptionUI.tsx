@@ -118,58 +118,158 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         return;
       }
 
-      console.log('Starting subscription process for:', tierName, 'User:', user.id);
-      
-      // Create subscription record with proper data
-      const subscriptionData = {
-        user_id: user.id,
-        email: user.email || '',
-        subscribed: true,
-        subscription_plan: tierName,
-        subscription_tier: tierName,
-        status: 'active',
-        subscription_start: new Date().toISOString(),
-        subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        last_payment_date: new Date().toISOString(),
-        amount: tiers.find(t => t.name === tierName)?.price_monthly || 999,
-        currency: 'INR',
-        updated_at: new Date().toISOString(),
-      };
-
-      console.log('Creating subscription with data:', subscriptionData);
-
-      const { data, error } = await supabase
-        .from('subscribers')
-        .upsert(subscriptionData, { 
-          onConflict: 'user_id'
-        })
-        .select();
-
-      if (error) {
-        console.error('Database error:', error);
-        throw new Error(`Failed to create subscription: ${error.message}`);
+      const selectedTier = tiers.find(t => t.name === tierName);
+      if (!selectedTier) {
+        throw new Error('Selected plan not found');
       }
 
-      console.log('Subscription created successfully:', data);
+      console.log('Starting Razorpay payment for:', tierName, 'Amount:', selectedTier.price_monthly);
 
-      toast({
-        title: "🎉 Subscription Activated!",
-        description: `Welcome to ${tierName}! Your pro features are now active.`,
+      // Create Razorpay order
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+
+      if (!token) {
+        throw new Error('No valid session found');
+      }
+
+      const orderResponse = await fetch('/api/functions/razorpay-create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          amount: selectedTier.price_monthly,
+          currency: 'INR',
+          planId: selectedTier.id,
+          serviceId: `subscription_${Date.now()}`,
+          packageType: tierName
+        }),
       });
-      
-      setCurrentTier(tierName);
-      await loadSubscriptionData(); // Refresh the data
-      
-      // Navigate to pro dashboard
-      setTimeout(() => {
-        navigate('/pro');
-      }, 1000);
-          
+
+      if (!orderResponse.ok) {
+        const errorData = await orderResponse.json();
+        throw new Error(errorData.error || 'Failed to create payment order');
+      }
+
+      const orderData = await orderResponse.json();
+      console.log('Razorpay order created:', orderData.orderId);
+
+      // Check if it's demo mode
+      if (orderData.demo) {
+        console.log('Running in demo mode');
+        toast({
+          title: "Demo Mode",
+          description: "Payment gateway is in demo mode. Subscription activated for testing.",
+        });
+        
+        // In demo mode, activate subscription directly
+        const subscriptionData = {
+          user_id: user.id,
+          email: user.email || '',
+          subscribed: true,
+          subscription_plan: tierName,
+          subscription_tier: tierName,
+          status: 'active',
+          subscription_start: new Date().toISOString(),
+          subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          last_payment_date: new Date().toISOString(),
+          amount: selectedTier.price_monthly,
+          currency: 'INR',
+          updated_at: new Date().toISOString(),
+        };
+
+        const { error } = await supabase
+          .from('subscribers')
+          .upsert(subscriptionData, { onConflict: 'user_id' });
+
+        if (error) throw error;
+
+        setCurrentTier(tierName);
+        await loadSubscriptionData();
+        setTimeout(() => navigate('/pro'), 1000);
+        return;
+      }
+
+      // Initialize Razorpay for live payments
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'TalentXcel',
+        description: `${tierName} Subscription`,
+        order_id: orderData.orderId,
+        handler: async function (response: any) {
+          try {
+            console.log('Payment successful, verifying:', response);
+
+            // Verify payment
+            const verifyResponse = await fetch('/api/functions/razorpay-verify-payment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                planId: selectedTier.id,
+                packageType: tierName
+              }),
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.success) {
+              toast({
+                title: "🎉 Payment Successful!",
+                description: `Welcome to ${tierName}! Your subscription is now active.`,
+              });
+              
+              setCurrentTier(tierName);
+              await loadSubscriptionData();
+              setTimeout(() => navigate('/pro'), 1000);
+            } else {
+              throw new Error('Payment verification failed');
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            toast({
+              title: "Payment Verification Failed",
+              description: "Please contact support if your payment was deducted.",
+              variant: "destructive"
+            });
+          }
+        },
+        prefill: {
+          name: user.user_metadata?.full_name || user.email,
+          email: user.email,
+        },
+        theme: {
+          color: '#3B82F6',
+        },
+        modal: {
+          ondismiss: function() {
+            console.log('Payment cancelled by user');
+            toast({
+              title: "Payment Cancelled",
+              description: "You can try again anytime.",
+            });
+          }
+        }
+      };
+
+      // Open Razorpay checkout
+      const razorpay = new (window as any).Razorpay(options);
+      razorpay.open();
+
     } catch (error) {
       console.error('Subscription error:', error);
       toast({
-        title: "Subscription Failed", 
-        description: error instanceof Error ? error.message : "There was an error processing your subscription. Please try again.",
+        title: "Payment Failed", 
+        description: error instanceof Error ? error.message : "There was an error processing your payment. Please try again.",
         variant: "destructive",
       });
     } finally {
