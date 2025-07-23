@@ -8,28 +8,7 @@ import { ArrowLeft, Users, Check, X } from "lucide-react";
 
 const MessageRequests = () => {
   // Mock data - replace with real data later
-  const requests = [
-    {
-      id: '1',
-      sender: {
-        name: 'John Smith',
-        title: 'Software Engineer at TechCorp',
-        avatar: null
-      },
-      message: 'Hi! I saw your profile and would love to connect. I work in similar field.',
-      timestamp: '2 hours ago'
-    },
-    {
-      id: '2',
-      sender: {
-        name: 'Sarah Johnson',
-        title: 'Product Manager at StartupXYZ',
-        avatar: null
-      },
-      message: 'Hello! I came across your profile and was impressed by your experience.',
-      timestamp: '1 day ago'
-    }
-  ];
+  const requests: any[] = [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -46,51 +25,14 @@ const MessageRequests = () => {
         </div>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Users className="h-5 w-5 mr-2" />
-              Pending Requests ({requests.length})
-            </CardTitle>
-          </CardHeader>
-          
-          <CardContent className="p-0">
-            <div className="divide-y">
-              {requests.map((request) => (
-                <div key={request.id} className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={request.sender.avatar} />
-                      <AvatarFallback>
-                        {request.sender.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <h3 className="font-semibold text-gray-900">{request.sender.name}</h3>
-                          <p className="text-sm text-gray-600">{request.sender.title}</p>
-                        </div>
-                        <span className="text-xs text-gray-500">{request.timestamp}</span>
-                      </div>
-                      
-                      <p className="text-gray-700 mb-4">{request.message}</p>
-                      
-                      <div className="flex space-x-3">
-                        <Button size="sm" className="flex items-center">
-                          <Check className="h-4 w-4 mr-2" />
-                          Accept
-                        </Button>
-                        <Button variant="outline" size="sm" className="flex items-center">
-                          <X className="h-4 w-4 mr-2" />
-                          Decline
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <CardContent className="p-12 text-center">
+            <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No pending requests
+            </h3>
+            <p className="text-gray-600">
+              You're all caught up with message requests!
+            </p>
           </CardContent>
         </Card>
       </div>

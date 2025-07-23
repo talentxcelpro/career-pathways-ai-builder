@@ -47,12 +47,6 @@ const Messages = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <Link to="/network/messages/ai">
-              <Button variant="outline" className="flex items-center">
-                <Bot className="h-4 w-4 mr-2" />
-                AI Assistant
-              </Button>
-            </Link>
             <Link to="/network/messages/new">
               <Button className="flex items-center">
                 <Plus className="h-4 w-4 mr-2" />
@@ -75,13 +69,6 @@ const Messages = () => {
           </div>
           
           <div className="flex space-x-2">
-            <Link to="/network/messages/requests">
-              <Button variant="outline" size="sm">
-                <Users className="h-4 w-4 mr-2" />
-                Requests
-                <Badge variant="secondary" className="ml-2">2</Badge>
-              </Button>
-            </Link>
             <Link to="/network/messages/archived">
               <Button variant="outline" size="sm">
                 <Archive className="h-4 w-4 mr-2" />
@@ -182,38 +169,7 @@ const Messages = () => {
         </Card>
 
         {/* Quick Access Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <Link to="/network/messages/ai">
-            <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl">
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <Bot className="h-8 w-8 text-blue-600 mr-4" />
-                  <div>
-                    <h3 className="font-semibold text-slate-900 tracking-tight">AI Career Assistant</h3>
-                    <p className="text-sm text-slate-600 font-medium">Get career advice and tips</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link to="/network/messages/requests">
-            <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Users className="h-8 w-8 text-green-600 mr-4" />
-                    <div>
-                      <h3 className="font-semibold text-slate-900 tracking-tight">Connection Requests</h3>
-                      <p className="text-sm text-slate-600 font-medium">Pending messages</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">2</Badge>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           <Link to="/network/messages/archived">
             <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer bg-white/95 backdrop-blur-sm border-slate-200/60 rounded-2xl">
               <CardContent className="p-6">
