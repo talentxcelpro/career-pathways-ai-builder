@@ -254,29 +254,34 @@ const Jobs = () => {
     <div className="min-h-screen bg-background">
       <OfflineIndicator />
       
-      {/* Compact Header */}
-      <div className="bg-gradient-to-r from-primary/5 to-brand-green/5 border-b sticky top-0 z-40">
+      {/* Header with TalentXcel branding */}
+      <div className="bg-gradient-to-r from-[#1E2A78]/10 to-[#28C76F]/10 border-b sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
+              <img 
+                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                alt="TalentXcel" 
+                className="h-8 w-8 rounded-lg"
+              />
               <div className="flex items-center gap-2">
-                <Brain className="h-5 w-5 text-primary" />
-                <h1 className="text-xl font-bold text-foreground font-display">
-                  Find Jobs Faster
+                <Brain className="h-5 w-5 text-[#1E2A78]" />
+                <h1 className="text-xl font-bold text-[#1E2A78] font-display">
+                  Find Jobs Faster – Powered by TalentXcel AI Matching
                 </h1>
               </div>
-              <div className="hidden md:flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="hidden md:flex items-center gap-4 text-sm text-gray-600">
                 <div className="flex items-center gap-1">
-                  <Filter className="h-4 w-4 text-primary" />
-                  <span>Smart Filters</span>
+                  <Filter className="h-4 w-4 text-[#28C76F]" />
+                  <span>AI Filters</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Building className="h-4 w-4 text-primary" />
+                  <Building className="h-4 w-4 text-[#28C76F]" />
                   <span>Top Companies</span>
                 </div>
               </div>
             </div>
-            <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+            <div className="bg-[#28C76F]/10 text-[#28C76F] px-3 py-1 rounded-full text-sm font-medium">
               {allJobs.length} Jobs
             </div>
           </div>
@@ -335,7 +340,7 @@ const Jobs = () => {
             
             <Button 
               size="sm" 
-              className="h-9 px-4 bg-primary hover:bg-primary/90 text-sm whitespace-nowrap"
+              className="h-9 px-4 bg-[#1E2A78] hover:bg-[#1E2A78]/90 text-white text-sm whitespace-nowrap"
               onClick={() => refetch()}
             >
               <Search className="h-4 w-4 mr-1" />
@@ -348,7 +353,7 @@ const Jobs = () => {
             <Button 
               size="sm" 
               variant="outline"
-              className="text-sm font-medium border-primary text-primary hover:bg-primary hover:text-white"
+              className="text-sm font-medium border-[#28C76F] text-[#28C76F] hover:bg-[#28C76F] hover:text-white"
               onClick={() => handleUniversalSearch("Ask AI to suggest best jobs for me")}
             >
               <Brain className="h-4 w-4 mr-1" />
@@ -461,9 +466,16 @@ const Jobs = () => {
       {/* Trust & FOMO Section */}
       <TrustSection />
 
-      {/* Floating Apply Widget (Mobile) */}
+          {/* Footer Note */}
+          <div className="text-center py-8 mt-12">
+            <p className="text-sm text-gray-600">
+              Powered by TalentXcel AI – India's Intelligent Career Platform
+            </p>
+          </div>
+
+          {/* Floating Apply Widget (Mobile) */}
       <div className="fixed bottom-4 left-4 right-4 lg:hidden z-50">
-        <div className="bg-primary text-white rounded-2xl p-4 shadow-2xl">
+        <div className="bg-[#1E2A78] text-white rounded-2xl p-4 shadow-2xl">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-semibold">🔎 {allJobs.length} Jobs Matched</p>
