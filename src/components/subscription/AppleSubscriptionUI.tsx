@@ -133,27 +133,20 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         throw new Error('No valid session found');
       }
 
-      const orderResponse = await fetch('/api/functions/razorpay-create-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      const { data: orderData, error: orderError } = await supabase.functions.invoke('razorpay-create-order', {
+        body: {
           amount: selectedTier.price_monthly,
           currency: 'INR',
           planId: selectedTier.id,
           serviceId: `subscription_${Date.now()}`,
           packageType: tierName
-        }),
+        }
       });
 
-      if (!orderResponse.ok) {
-        const errorData = await orderResponse.json();
-        throw new Error(errorData.error || 'Failed to create payment order');
+      if (orderError) {
+        throw new Error(orderError.message || 'Failed to create payment order');
       }
 
-      const orderData = await orderResponse.json();
       console.log('Razorpay order created:', orderData.orderId);
 
       // Check if it's demo mode
@@ -205,22 +198,19 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
             console.log('Payment successful, verifying:', response);
 
             // Verify payment
-            const verifyResponse = await fetch('/api/functions/razorpay-verify-payment', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-              },
-              body: JSON.stringify({
+            const { data: verifyData, error: verifyError } = await supabase.functions.invoke('razorpay-verify-payment', {
+              body: {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
                 planId: selectedTier.id,
                 packageType: tierName
-              }),
+              }
             });
 
-            const verifyData = await verifyResponse.json();
+            if (verifyError) {
+              throw new Error('Payment verification failed');
+            }
 
             if (verifyData.success) {
               toast({
