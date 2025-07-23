@@ -169,11 +169,12 @@ export class AISearchService {
     
     let dbQuery = supabase
       .from('profiles')
-      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_position')
-      .eq('profile_completed', true);
+      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company')
+      .not('full_name', 'is', null)
+      .neq('full_name', '');
 
     if (filters.query) {
-      dbQuery = dbQuery.or(`full_name.ilike.%${filters.query}%,about.ilike.%${filters.query}%,current_position.ilike.%${filters.query}%`);
+      dbQuery = dbQuery.or(`full_name.ilike.%${filters.query}%,about.ilike.%${filters.query}%,current_company.ilike.%${filters.query}%`);
     }
     
     if (filters.location) {
@@ -195,9 +196,10 @@ export class AISearchService {
   static async searchPeopleBasic(query: string) {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_position')
-      .eq('profile_completed', true)
-      .or(`full_name.ilike.%${query}%,about.ilike.%${query}%,current_position.ilike.%${query}%`)
+      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company')
+      .not('full_name', 'is', null)
+      .neq('full_name', '')
+      .or(`full_name.ilike.%${query}%,about.ilike.%${query}%,current_company.ilike.%${query}%`)
       .order('created_at', { ascending: false })
       .limit(50);
 
@@ -207,8 +209,9 @@ export class AISearchService {
   static async getAllPeople() {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_position')
-      .eq('profile_completed', true)
+      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company')
+      .not('full_name', 'is', null)
+      .neq('full_name', '')
       .order('created_at', { ascending: false })
       .limit(50);
 
