@@ -217,23 +217,31 @@ const People = () => {
                         )}
 
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            {person.current_company && (
-                              <div className="flex items-center text-xs text-muted-foreground">
-                                <Briefcase className="w-3 h-3 mr-1" />
-                                <span className="truncate">{person.current_company}</span>
-                              </div>
-                            )}
+                          <div className="flex space-x-2">
+                            <Button 
+                              size="sm" 
+                              className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-4"
+                              onClick={() => handleProfileView(person.id)}
+                            >
+                              <Users className="w-4 h-4 mr-1" />
+                              Connect
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="border-muted-foreground/20 hover:bg-muted/50"
+                              onClick={() => handleProfileView(person.id)}
+                            >
+                              <MessageSquare className="w-4 h-4" />
+                            </Button>
                           </div>
                           
-                          <Button 
-                            size="sm" 
-                            variant="ghost"
-                            className="text-muted-foreground hover:text-primary hover:bg-muted/20 px-2"
-                            onClick={() => handleProfileView(person.id)}
-                          >
-                            <MessageSquare className="w-4 h-4" />
-                          </Button>
+                          {person.current_company && (
+                            <div className="flex items-center text-xs text-muted-foreground">
+                              <Briefcase className="w-3 h-3 mr-1" />
+                              <span className="truncate">{person.current_company}</span>
+                            </div>
+                          )}
                         </div>
                       </>
                     )}
