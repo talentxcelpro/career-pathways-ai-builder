@@ -1,13 +1,15 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
-import { SimpleSearchBar } from '@/components/network/SimpleSearchBar';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SocialSearchBar } from '@/components/network/SocialSearchBar';
+import { SocialPagination } from '@/components/ui/social-pagination';
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Briefcase, Users, MessageSquare } from "lucide-react";
+import { MapPin, Briefcase, Users, MessageSquare, Star, Clock } from "lucide-react";
 import { usePeopleSearch } from '@/hooks/usePeopleSearch';
 import { useProfileViews } from '@/hooks/useProfileViews';
 
@@ -85,173 +87,188 @@ const People = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Connect with People</h1>
-        <p className="text-gray-600">
-          {hasSearch 
-            ? `Found ${results.length} people matching your search`
-            : `Showing ${results.length} of ${totalCount || 0} professionals`
-          }
-        </p>
-      </div>
-
-      <SimpleSearchBar
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        locationFilter={locationFilter}
-        onLocationChange={setLocationFilter}
-        industryFilter={industryFilter}
-        onIndustryChange={setIndustryFilter}
-        locations={locations}
-        industries={industries}
-        isLoading={isLoading}
-      />
-
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <Card key={index} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                  <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-3 bg-gray-200 rounded"></div>
-                  <div className="h-3 bg-gray-200 rounded w-5/6"></div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : results.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {hasSearch ? 'No people found' : 'No people available'}
-            </h2>
-            <p className="text-gray-600">
-              {hasSearch 
-                ? 'Try adjusting your search terms or filters'
-                : 'Be the first to create a profile and connect with others'
-              }
+    <>
+      <Helmet>
+        <title>Connect with Professionals | TalentXcel People Network</title>
+        <meta name="description" content="Discover and connect with talented professionals across various industries. Find software engineers, product managers, designers, and more on TalentXcel." />
+        <meta name="keywords" content="professionals, networking, talent, career, connect, people, jobs, skills" />
+        <link rel="canonical" href="https://talentxcel.in/network/people" />
+        <meta property="og:title" content="Connect with Professionals | TalentXcel People Network" />
+        <meta property="og:description" content="Discover and connect with talented professionals across various industries." />
+        <meta property="og:url" content="https://talentxcel.in/network/people" />
+        <meta property="og:type" content="website" />
+      </Helmet>
+      
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+        <div className="container mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-4">
+              Connect with Professionals
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Discover talented professionals, build your network, and grow your career with TalentXcel's community.
             </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {results.map((person) => (
-            <Card key={person.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4 mb-4">
-                  <Avatar className="w-12 h-12">
-                    <AvatarImage src={person.profile_photo_url} alt={person.full_name} />
-                    <AvatarFallback>
-                      {person.full_name?.split(' ').map(n => n[0]).join('') || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">
-                      {person.full_name || 'Anonymous User'}
-                    </h3>
-                    <p className="text-sm text-gray-600 truncate">
-                      {person.headline || person.title || person.current_company || person.user_role || 'Professional'}
-                    </p>
-                  </div>
-                </div>
+          </div>
 
-                {person.about && (
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                    {person.about}
-                  </p>
-                )}
+          <SocialSearchBar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            locationFilter={locationFilter}
+            onLocationChange={setLocationFilter}
+            industryFilter={industryFilter}
+            onIndustryChange={setIndustryFilter}
+            locations={locations}
+            industries={industries}
+            isLoading={isLoading}
+            totalCount={totalCount}
+            hasResults={results.length > 0}
+          />
 
-                <div className="space-y-2 mb-4">
-                  {person.location && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      <span className="truncate">{person.location}</span>
-                    </div>
-                  )}
-                  
-                  {person.user_role && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Briefcase className="w-4 h-4 mr-1" />
-                      <span className="truncate capitalize">{person.user_role}</span>
-                    </div>
-                  )}
-                </div>
+          {/* Results Grid */}
+          {results.length === 0 && !isLoading ? (
+            <div className="text-center py-16">
+              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted/20 flex items-center justify-center">
+                <Users className="w-12 h-12 text-muted-foreground" />
+              </div>
+              <h2 className="text-2xl font-semibold mb-2">
+                {hasSearch ? 'No people found' : 'No professionals available'}
+              </h2>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                {hasSearch 
+                  ? 'Try adjusting your search terms or filters to find the right professionals.'
+                  : 'Be the first to create a profile and start building your network.'
+                }
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {(isLoading ? Array.from({ length: 8 }) : results).map((person, index) => (
+                <Card 
+                  key={person?.id || index} 
+                  className={`group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 bg-white/70 backdrop-blur-sm ${
+                    isLoading ? 'animate-pulse' : 'cursor-pointer'
+                  }`}
+                >
+                  <CardContent className="p-6">
+                    {isLoading ? (
+                      // Loading skeleton
+                      <>
+                        <div className="flex items-center space-x-4 mb-4">
+                          <div className="w-16 h-16 bg-muted rounded-full"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-muted rounded mb-2"></div>
+                            <div className="h-3 bg-muted rounded w-3/4"></div>
+                          </div>
+                        </div>
+                        <div className="space-y-3 mb-4">
+                          <div className="h-3 bg-muted rounded"></div>
+                          <div className="h-3 bg-muted rounded w-5/6"></div>
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="h-8 bg-muted rounded flex-1"></div>
+                          <div className="h-8 w-8 bg-muted rounded"></div>
+                        </div>
+                      </>
+                    ) : (
+                      // Actual content
+                      <>
+                        <div className="flex items-start space-x-4 mb-4">
+                          <div className="relative">
+                            <Avatar className="w-16 h-16 ring-2 ring-background group-hover:ring-primary/20 transition-all">
+                              <AvatarImage src={person.profile_photo_url} alt={person.full_name} />
+                              <AvatarFallback className="text-lg font-semibold bg-gradient-to-br from-primary/10 to-primary/5">
+                                {person.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'UN'}
+                              </AvatarFallback>
+                            </Avatar>
+                            {/* Online indicator (mock) */}
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-background"></div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-foreground truncate text-lg group-hover:text-primary transition-colors">
+                              {person.full_name || 'Professional'}
+                            </h3>
+                            <p className="text-sm text-muted-foreground truncate font-medium">
+                              {person.headline || person.title || person.current_company || 'Experienced Professional'}
+                            </p>
+                            {person.location && (
+                              <div className="flex items-center text-xs text-muted-foreground mt-1">
+                                <MapPin className="w-3 h-3 mr-1" />
+                                <span>{person.location}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
 
-                {person.skills && person.skills.length > 0 && (
-                  <div className="mb-4">
-                    <div className="flex flex-wrap gap-1">
-                      {person.skills.slice(0, 3).map((skill, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {skill}
-                        </Badge>
-                      ))}
-                      {person.skills.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{person.skills.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                )}
+                        {person.about && (
+                          <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                            {person.about}
+                          </p>
+                        )}
 
-                <div className="flex space-x-2">
-                  <Button 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => handleProfileView(person.id)}
-                  >
-                    <Users className="w-4 h-4 mr-1" />
-                    Connect
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => handleProfileView(person.id)}
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                        {person.skills && person.skills.length > 0 && (
+                          <div className="mb-4">
+                            <div className="flex flex-wrap gap-1">
+                              {person.skills.slice(0, 2).map((skill, skillIndex) => (
+                                <Badge key={skillIndex} variant="secondary" className="text-xs px-2 py-1">
+                                  {skill}
+                                </Badge>
+                              ))}
+                              {person.skills.length > 2 && (
+                                <Badge variant="outline" className="text-xs px-2 py-1">
+                                  +{person.skills.length - 2}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex space-x-2">
+                            <Button 
+                              size="sm" 
+                              className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-4"
+                              onClick={() => handleProfileView(person.id)}
+                            >
+                              <Users className="w-4 h-4 mr-1" />
+                              Connect
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="border-muted-foreground/20 hover:bg-muted/50"
+                              onClick={() => handleProfileView(person.id)}
+                            >
+                              <MessageSquare className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          
+                          {/* Profile completion indicator */}
+                          <div className="flex items-center text-xs text-muted-foreground">
+                            <Star className="w-3 h-3 mr-1 fill-yellow-400 text-yellow-400" />
+                            4.8
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {!isLoading && results.length > 0 && totalPages > 1 && (
+            <SocialPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              onPageChange={setCurrentPage}
+            />
+          )}
         </div>
-      )}
-
-      {/* Pagination */}
-      {!isLoading && results.length > 0 && (
-        <div className="flex justify-center items-center space-x-4 mt-8">
-          <button
-            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
-          >
-            Previous
-          </button>
-          
-          <span className="text-sm text-gray-600">
-            Page {currentPage} of {totalPages} ({totalCount} people)
-          </span>
-          
-          <button
-            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
-          >
-            Next
-          </button>
-        </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 

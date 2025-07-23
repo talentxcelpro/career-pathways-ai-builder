@@ -11,7 +11,7 @@ export const usePeopleSearch = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(100);
   
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const debouncedSearchTerm = useDebounce(searchTerm, 150);
   const hasSearch = debouncedSearchTerm.trim().length > 0;
 
   // Get all people when no search is active
@@ -19,30 +19,27 @@ export const usePeopleSearch = () => {
     queryKey: ['all-people', currentPage],
     queryFn: () => AISearchService.getAllPeople(currentPage, itemsPerPage),
     enabled: !hasSearch,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
-  // Search people when search term is provided
+  // Search people when search term is provided  
   const { data: searchData, isLoading: searchLoading, error: searchError } = useQuery({
     queryKey: ['search-people', debouncedSearchTerm, currentPage],
     queryFn: async () => {
       try {
-        // Try AI search first
-        const aiResult = await AISearchService.searchPeople(debouncedSearchTerm, currentPage, itemsPerPage);
-        if (aiResult.data && aiResult.data.length > 0) {
-          return aiResult;
-        }
-        
-        // Fallback to basic search
+        // Always use basic search first for better performance
         const basicResult = await AISearchService.searchPeopleBasic(debouncedSearchTerm, currentPage, itemsPerPage);
         return basicResult;
       } catch (error) {
         console.error('Search failed:', error);
-        // Final fallback to basic search
-        const basicResult = await AISearchService.searchPeopleBasic(debouncedSearchTerm, currentPage, itemsPerPage);
-        return basicResult;
+        // Return empty result on error
+        return { data: [], error, count: 0, page: currentPage, limit: itemsPerPage };
       }
     },
-    enabled: hasSearch,
+    enabled: hasSearch && debouncedSearchTerm.length > 0,
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
 
   // Apply additional filters
