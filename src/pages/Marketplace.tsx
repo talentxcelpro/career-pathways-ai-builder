@@ -181,7 +181,7 @@ const Marketplace = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header with TalentXcel branding */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-4 mb-6">
+          <div className="flex flex-col items-center gap-4 mb-6">
             <img 
               src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
               alt="TalentXcel" 

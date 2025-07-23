@@ -240,7 +240,7 @@ const EmployerLanding = () => {
                 />
                 <div>
                   <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-                    Become an Employer on{' '}
+                    Become an Employer with{' '}
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
                       TalentXcel AI
                     </span>

@@ -303,7 +303,7 @@ const Tools = () => {
               />
               <div>
                 <h1 className="text-2xl font-bold">TalentXcel AI-Powered Career Tools</h1>
-                <p className="text-blue-100 text-sm max-w-2xl">Supercharge your career with intelligent TalentXcel AI tools – where every decision drives success</p>
+                <p className="text-blue-100 text-sm max-w-2xl">Empowering professionals with AI-powered tools for career growth, job discovery, and skill development.</p>
               </div>
             </div>
             <div className="hidden md:flex items-center gap-4 text-sm">
