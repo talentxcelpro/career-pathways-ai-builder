@@ -84,9 +84,9 @@ const CareerMap = () => {
                 </Badge>
               </div>
             </div>
-            <h1 className="text-3xl font-bold mb-3 font-display">AI-Powered Career Roadmaps Designed for You</h1>
+            <h1 className="text-3xl font-bold mb-3 font-display">TalentXcel AI-Powered Career Roadmaps Designed for You</h1>
             <p className="text-base text-purple-100 mb-6">
-              Get personalized career roadmaps with AI-powered insights and smart recommendations
+              Get personalized career roadmaps with TalentXcel AI-powered insights and smart recommendations
             </p>
             
             <div className="flex gap-3 justify-center">
@@ -111,9 +111,9 @@ const CareerMap = () => {
         {/* AI-Powered Career Tools - Ultra-Compact Design */}
         <div className="mb-8">
           <div className="text-center mb-4">
-            <h2 className="text-lg font-bold text-text-primary mb-1 font-display">AI Career Tools</h2>
+            <h2 className="text-lg font-bold text-text-primary mb-1 font-display">TalentXcel AI Career Tools</h2>
             <p className="text-xs text-text-secondary">
-              Leverage AI to make data-driven career decisions
+              Leverage TalentXcel AI to make data-driven career decisions
             </p>
           </div>
           

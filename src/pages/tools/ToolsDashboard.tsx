@@ -87,11 +87,11 @@ const ToolsDashboard = () => {
               <Sparkles className="h-4 w-4 text-primary" />
             </div>
             <h1 className="text-lg font-bold text-slate-900">
-              AI-Powered Career Tools
+              TalentXcel AI-Powered Career Tools
             </h1>
           </div>
           <p className="text-xs text-slate-600 max-w-lg mx-auto">
-            Transform your career with intelligent tools designed to accelerate professional growth
+            Transform your career with TalentXcel intelligent tools designed to accelerate professional growth
           </p>
         </div>
 

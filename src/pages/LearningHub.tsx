@@ -46,7 +46,7 @@ export default function LearningHub() {
         <div>
           <h1 className="text-3xl font-bold">Accelerate Your Career with TalentXcel Academy</h1>
           <p className="text-lg text-muted-foreground">
-            AI-Powered Career Tools with TalentXcel Careers
+            TalentXcel AI-Powered Career Tools with TalentXcel Careers
           </p>
         </div>
 
