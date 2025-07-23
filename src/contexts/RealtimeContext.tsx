@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNetworkRealtime, useJobsRealtime, useLearningRealtime, useAdminRealtime, useEmployerRealtime } from '@/hooks/useRealtimeData';
 import { useToast } from '@/hooks/use-toast';
+import { useNotificationStore } from '@/stores/useNotificationStore';
 
 interface RealtimeContextType {
   isConnected: boolean;
@@ -35,10 +36,11 @@ export function RealtimeProvider({
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
   const [enableNotifications, setEnableNotifications] = useState(true);
   const { toast } = useToast();
+  const { soundEnabled } = useNotificationStore();
 
   // Global realtime handlers
   const handleNetworkUpdate = (payload: any) => {
-    if (!enableNotifications) return;
+    if (!enableNotifications || !soundEnabled) return;
     
     if (payload.eventType === 'INSERT' && payload.table === 'posts') {
       // New post notification logic can be added here
@@ -46,7 +48,7 @@ export function RealtimeProvider({
   };
 
   const handleJobUpdate = (payload: any) => {
-    if (!enableNotifications) return;
+    if (!enableNotifications || !soundEnabled) return;
     
     if (payload.eventType === 'INSERT' && payload.table === 'jobs') {
       toast({
@@ -57,7 +59,7 @@ export function RealtimeProvider({
   };
 
   const handleApplicationUpdate = (payload: any) => {
-    if (!enableNotifications || !isEmployer) return;
+    if (!enableNotifications || !isEmployer || !soundEnabled) return;
     
     if (payload.eventType === 'INSERT') {
       toast({
@@ -68,12 +70,12 @@ export function RealtimeProvider({
   };
 
   const handleLearningUpdate = (payload: any) => {
-    if (!enableNotifications) return;
+    if (!enableNotifications || !soundEnabled) return;
     // Learning progress notifications
   };
 
   const handleAdminUpdate = (payload: any) => {
-    if (!enableNotifications || !isAdmin) return;
+    if (!enableNotifications || !isAdmin || !soundEnabled) return;
     
     if (payload.table === 'employer_requests' && payload.eventType === 'INSERT') {
       toast({

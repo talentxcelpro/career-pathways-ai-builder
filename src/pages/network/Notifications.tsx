@@ -1,109 +1,45 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell, Calendar, UserPlus, CheckCircle } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { NotificationsList } from "@/components/network/NotificationsList";
+import { useEnhancedNotifications } from "@/hooks/useEnhancedNotifications";
+import { useNotificationStore } from "@/stores/useNotificationStore";
 
 const Notifications = () => {
-  const queryClient = useQueryClient();
+  const [filterType, setFilterType] = useState('all');
+  const { soundEnabled, toggleSound } = useNotificationStore();
 
-  const { data: notifications = [], isLoading, error } = useQuery({
-    queryKey: ['notifications'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.log('No user found for notifications');
-        return [];
-      }
-
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (error) {
-        console.error('Error fetching notifications:', error);
-        throw error;
-      }
-      
-      return data || [];
-    },
-    retry: 1
-  });
-
-  const markAsReadMutation = useMutation({
-    mutationFn: async (notificationId: string) => {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('id', notificationId);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-    },
-    onError: (error) => {
-      console.error('Error marking notification as read:', error);
-      toast.error('Failed to mark notification as read');
-    }
-  });
-
-  const markAllAsReadMutation = useMutation({
-    mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      const { error } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('user_id', user.id)
-        .eq('is_read', false);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      toast.success('All notifications marked as read');
-    },
-    onError: (error) => {
-      console.error('Error marking all notifications as read:', error);
-      toast.error('Failed to mark all notifications as read');
-    }
-  });
-
-  const unreadCount = notifications.filter(n => !n.is_read).length;
-
-  const filterNotifications = (filter: string) => {
-    if (!notifications) return [];
-    
-    switch (filter) {
+  // Get filter object based on current filter type
+  const getFilters = () => {
+    switch (filterType) {
       case 'unread':
-        return notifications.filter(n => !n.is_read);
+        return { is_read: false };
       case 'connections':
-        return notifications.filter(n => ['connection', 'follow'].includes(n.type));
+        return { module: 'network' as const };
       case 'interactions':
-        return notifications.filter(n => ['like', 'comment', 'reaction', 'share'].includes(n.type));
-      case 'all':
+        return { module: 'jobs' as const };
       default:
-        return notifications;
+        return {};
     }
   };
 
-  // Calculate week stats
-  const weekAgo = new Date();
-  weekAgo.setDate(weekAgo.getDate() - 7);
-  const thisWeekCount = notifications.filter(n => 
-    new Date(n.created_at) > weekAgo
-  ).length;
+  const {
+    notifications,
+    isLoading,
+    error,
+    stats,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    isMarkingAsRead,
+    isMarkingAllAsRead,
+    isDeletingNotification
+  } = useEnhancedNotifications(getFilters());
+
+  const filteredNotifications = notifications;
 
   if (error) {
     return (
@@ -125,31 +61,55 @@ const Notifications = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Notifications</h1>
-            <p className="text-gray-600 mt-2">Stay updated with your professional network</p>
-          </div>
-          {unreadCount > 0 && (
-            <Button 
-              variant="outline" 
-              onClick={() => markAllAsReadMutation.mutate()}
-              disabled={markAllAsReadMutation.isPending}
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Notifications</h1>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => toggleSound(!soundEnabled)}
             >
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Mark all as read
+              {soundEnabled ? '🔊' : '🔇'} {soundEnabled ? 'Sound On' : 'Sound Off'}
             </Button>
-          )}
+            <Button 
+              onClick={() => markAllAsRead()}
+              disabled={isMarkingAllAsRead || stats.unread === 0}
+              size="sm"
+            >
+              {isMarkingAllAsRead ? (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2 animate-spin" />
+                  Marking as read...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Mark all as read
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 mt-6">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Total</p>
+                  <div className="text-2xl font-bold text-primary">{stats.total}</div>
+                </div>
+                <Bell className="h-8 w-8 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Unread</p>
-                  <p className="text-2xl font-bold text-blue-600">{unreadCount}</p>
+                  <div className="text-2xl font-bold text-blue-600">{stats.unread}</div>
                 </div>
                 <Bell className="h-8 w-8 text-blue-600" />
               </div>
@@ -160,20 +120,9 @@ const Notifications = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">This Week</p>
-                  <p className="text-2xl font-bold text-green-600">{thisWeekCount}</p>
+                  <div className="text-2xl font-bold text-green-600">{stats.thisWeek}</div>
                 </div>
                 <Calendar className="h-8 w-8 text-green-600" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-gray-900">{notifications.length}</p>
-                </div>
-                <UserPlus className="h-8 w-8 text-gray-600" />
               </div>
             </CardContent>
           </Card>
@@ -182,28 +131,26 @@ const Notifications = () => {
         {/* Notifications */}
         <Card>
           <CardHeader>
-            <CardTitle>Activity Feed</CardTitle>
+            <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="all" className="space-y-4">
+            <Tabs value={filterType} onValueChange={setFilterType} className="space-y-4">
               <TabsList>
                 <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value="unread">
-                  Unread {unreadCount > 0 && <Badge className="ml-2">{unreadCount}</Badge>}
+                  Unread {stats.unread > 0 && <Badge className="ml-2">{stats.unread}</Badge>}
                 </TabsTrigger>
-                <TabsTrigger value="connections">Connections</TabsTrigger>
-                <TabsTrigger value="interactions">Interactions</TabsTrigger>
+                <TabsTrigger value="connections">Network</TabsTrigger>
+                <TabsTrigger value="interactions">Jobs</TabsTrigger>
               </TabsList>
 
-              {['all', 'unread', 'connections', 'interactions'].map((filter) => (
-                <TabsContent key={filter} value={filter} className="space-y-4">
-                  <NotificationsList
-                    notifications={filterNotifications(filter)}
-                    onMarkAsRead={markAsReadMutation.mutate}
-                    isLoading={isLoading}
-                  />
-                </TabsContent>
-              ))}
+              <TabsContent value={filterType} className="space-y-4">
+                <NotificationsList 
+                  notifications={filteredNotifications}
+                  onMarkAsRead={markAsRead}
+                  isLoading={isLoading}
+                />
+              </TabsContent>
             </Tabs>
           </CardContent>
         </Card>

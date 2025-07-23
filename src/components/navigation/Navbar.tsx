@@ -37,6 +37,8 @@ import {
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { useEmployerAccess } from '@/hooks/useEmployerAccess';
 import { AuthDialog } from '@/components/auth/AuthDialog';
+import { useUnreadNotificationCount } from '@/hooks/useEnhancedNotifications';
+import { NotificationBadge } from '@/components/ui/NotificationBadge';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -63,23 +65,8 @@ export const Navbar = () => {
     enabled: !!user?.id
   });
 
-  // Get unread notifications count
-  const { data: unreadCount = 0 } = useQuery({
-    queryKey: ['notifications-count', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return 0;
-      
-      const { count, error } = await supabase
-        .from('notifications')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('is_read', false);
-      
-      if (error) throw error;
-      return count || 0;
-    },
-    enabled: !!user?.id
-  });
+  // Get unread notifications count using enhanced hook
+  const { unreadCount } = useUnreadNotificationCount();
 
   // Check if user has company access
   const { data: hasCompanyAccess = false } = useQuery({
@@ -217,11 +204,7 @@ export const Navbar = () => {
                 <Link to="/network/notifications">
                   <Button variant="ghost" size="icon" className="relative">
                     <Bell className="h-5 w-5" />
-                    {unreadCount > 0 && (
-                      <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                      </Badge>
-                    )}
+                    <NotificationBadge count={unreadCount} />
                   </Button>
                 </Link>
 
