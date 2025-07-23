@@ -232,14 +232,23 @@ const EmployerLanding = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Become an Employer on{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                  TalentXcel
-                </span>
-              </h1>
+              <div className="flex items-center gap-4 mb-6">
+                <img 
+                  src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                  alt="TalentXcel" 
+                  className="h-12 w-12 rounded-lg"
+                />
+                <div>
+                  <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+                    Become an Employer on{' '}
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                      TalentXcel AI
+                    </span>
+                  </h1>
+                </div>
+              </div>
               <p className="text-xl text-gray-600 mb-8">
-                Reach top talent, post jobs easily, and manage hiring in one place — trusted by India's growing professional network.
+                AI-powered hiring that connects you with top talent instantly — Driven by TalentXcel AI intelligence
               </p>
               
               {/* Features Grid */}
