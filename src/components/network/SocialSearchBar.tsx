@@ -151,21 +151,9 @@ export const SocialSearchBar: React.FC<SocialSearchBarProps> = ({
             )}
           </div>
 
-          {/* Results count */}
-          {(searchTerm || locationFilter !== 'all' || industryFilter !== 'all') && (
-            <div className="flex items-center justify-between mt-4">
-              <p className="text-sm text-muted-foreground">
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-full bg-muted animate-pulse" />
-                    Searching...
-                  </span>
-                ) : (
-                  `${totalCount.toLocaleString()} people found`
-                )}
-              </p>
-              
-              {/* Active filters */}
+          {/* Active filters */}
+          {(locationFilter !== 'all' || industryFilter !== 'all') && (
+            <div className="flex items-center justify-end mt-4">
               <div className="flex items-center gap-2">
                 {locationFilter !== 'all' && (
                   <Badge variant="secondary" className="flex items-center gap-1">

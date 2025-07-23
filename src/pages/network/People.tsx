@@ -9,11 +9,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Briefcase, Users, MessageSquare, Star, Clock } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 import { usePeopleSearch } from '@/hooks/usePeopleSearch';
 import { useProfileViews } from '@/hooks/useProfileViews';
 
 const People = () => {
   const { trackProfileView } = useProfileViews();
+  const navigate = useNavigate();
   
   const {
     searchTerm,
@@ -68,6 +70,7 @@ const People = () => {
 
   const handleProfileView = (profileId: string) => {
     trackProfileView(profileId);
+    navigate(`/profile/${profileId}`);
   };
 
   if (error) {
@@ -172,7 +175,10 @@ const People = () => {
                             <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-background"></div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-foreground truncate text-lg group-hover:text-primary transition-colors">
+                            <h3 
+                              className="font-semibold text-foreground truncate text-lg group-hover:text-primary transition-colors cursor-pointer hover:underline"
+                              onClick={() => handleProfileView(person.id)}
+                            >
                               {person.full_name || 'Professional'}
                             </h3>
                             <p className="text-sm text-muted-foreground truncate font-medium">
@@ -211,30 +217,23 @@ const People = () => {
                         )}
 
                         <div className="flex items-center justify-between">
-                          <div className="flex space-x-2">
-                            <Button 
-                              size="sm" 
-                              className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-4"
-                              onClick={() => handleProfileView(person.id)}
-                            >
-                              <Users className="w-4 h-4 mr-1" />
-                              Connect
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              className="border-muted-foreground/20 hover:bg-muted/50"
-                              onClick={() => handleProfileView(person.id)}
-                            >
-                              <MessageSquare className="w-4 h-4" />
-                            </Button>
+                          <div className="flex items-center space-x-3">
+                            {person.current_company && (
+                              <div className="flex items-center text-xs text-muted-foreground">
+                                <Briefcase className="w-3 h-3 mr-1" />
+                                <span className="truncate">{person.current_company}</span>
+                              </div>
+                            )}
                           </div>
                           
-                          {/* Profile completion indicator */}
-                          <div className="flex items-center text-xs text-muted-foreground">
-                            <Star className="w-3 h-3 mr-1 fill-yellow-400 text-yellow-400" />
-                            4.8
-                          </div>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            className="text-muted-foreground hover:text-primary hover:bg-muted/20 px-2"
+                            onClick={() => handleProfileView(person.id)}
+                          >
+                            <MessageSquare className="w-4 h-4" />
+                          </Button>
                         </div>
                       </>
                     )}

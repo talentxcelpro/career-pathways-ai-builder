@@ -9,7 +9,7 @@ export const usePeopleSearch = () => {
   const [locationFilter, setLocationFilter] = useState('all');
   const [industryFilter, setIndustryFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(100);
+  const [itemsPerPage] = useState(25);
   
   const debouncedSearchTerm = useDebounce(searchTerm, 150);
   const hasSearch = debouncedSearchTerm.trim().length > 0;
