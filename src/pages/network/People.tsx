@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { SmartSearchBar } from '@/components/network/SmartSearchBar';
@@ -60,7 +60,7 @@ const People = () => {
   });
 
   // Apply additional filters to AI search results
-  const filteredResults = React.useMemo(() => {
+  const filteredResults = useMemo(() => {
     let filtered = results;
 
     if (locationFilter !== 'all') {
