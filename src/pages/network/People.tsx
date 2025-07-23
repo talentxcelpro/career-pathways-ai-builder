@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { SocialSearchBar } from '@/components/network/SocialSearchBar';
 import { SocialPagination } from '@/components/ui/social-pagination';
@@ -87,29 +86,17 @@ const People = () => {
   }
 
   return (
-    <>
-      <Helmet>
-        <title>Connect with Professionals | TalentXcel People Network</title>
-        <meta name="description" content="Discover and connect with talented professionals across various industries. Find software engineers, product managers, designers, and more on TalentXcel." />
-        <meta name="keywords" content="professionals, networking, talent, career, connect, people, jobs, skills" />
-        <link rel="canonical" href="https://talentxcel.in/network/people" />
-        <meta property="og:title" content="Connect with Professionals | TalentXcel People Network" />
-        <meta property="og:description" content="Discover and connect with talented professionals across various industries." />
-        <meta property="og:url" content="https://talentxcel.in/network/people" />
-        <meta property="og:type" content="website" />
-      </Helmet>
-      
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-        <div className="container mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-4">
-              Connect with Professionals
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover talented professionals, build your network, and grow your career with TalentXcel's community.
-            </p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-4">
+            Connect with Professionals
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Discover talented professionals, build your network, and grow your career with TalentXcel's community.
+          </p>
+        </div>
 
           <SocialSearchBar
             searchTerm={searchTerm}
@@ -268,8 +255,7 @@ const People = () => {
           )}
         </div>
       </div>
-    </>
-  );
+    );
 };
 
 export default People;
