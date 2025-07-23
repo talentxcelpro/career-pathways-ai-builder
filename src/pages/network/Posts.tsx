@@ -19,6 +19,7 @@ import { AIPostAssistant } from "@/components/network/AIPostAssistant";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
 import { CompanyNetworkActivity } from "@/components/network/CompanyNetworkActivity";
+import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
 import { useNetworkRealtime, useAutoRefreshPosts } from "@/hooks/useRealtimeData";
@@ -840,6 +841,9 @@ const Posts = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Connection Requests */}
             <ConnectionRequests />
+            
+            {/* Connection Suggestions */}
+            <ConnectionSuggestions />
 
             {/* Quick Actions */}
             <Card className="bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-2xl overflow-hidden">
