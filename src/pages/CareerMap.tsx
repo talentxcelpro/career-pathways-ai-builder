@@ -63,36 +63,43 @@ const CareerMap = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Ultra-Compact Hero Section with Apple-inspired design */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">
+      {/* Hero Section with TalentXcel branding */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#1E2A78] via-purple-500 to-pink-500 text-white">
         <div className="absolute inset-0 bg-black/5"></div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center max-w-lg mx-auto">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
-                <Brain className="h-3 w-3 text-white" />
+          <div className="text-center max-w-2xl mx-auto">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <img 
+                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                alt="TalentXcel" 
+                className="h-12 w-12 rounded-lg bg-white/10 p-2"
+              />
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <Brain className="h-4 w-4 text-white" />
+                </div>
+                <Badge className="bg-white/20 text-white border-white/30 px-3 py-1 text-sm rounded-md backdrop-blur-sm">
+                  AI Intelligence
+                </Badge>
               </div>
-              <Badge className="bg-white/20 text-white border-white/30 px-2 py-0.5 text-xs rounded-md backdrop-blur-sm">
-                AI Intelligence
-              </Badge>
             </div>
-            <h1 className="text-xl font-bold mb-1 font-display">AI Career Roadmap</h1>
-            <p className="text-xs text-purple-100 mb-4">
-              AI-powered career insights and personalized roadmaps
+            <h1 className="text-3xl font-bold mb-3 font-display">AI-Powered Career Roadmaps Designed for You</h1>
+            <p className="text-base text-purple-100 mb-6">
+              Get personalized career roadmaps with AI-powered insights and smart recommendations
             </p>
             
-            <div className="flex gap-2 justify-center">
+            <div className="flex gap-3 justify-center">
               <Link to="/career-map/ai-roadmap-builder">
-                <Button size="sm" className="bg-white text-indigo-600 hover:bg-white/90 px-3 py-1.5 text-xs font-semibold rounded-lg shadow-apple-light">
-                  <Rocket className="h-3 w-3 mr-1" />
-                  Build
+                <Button size="lg" className="bg-[#28C76F] text-white hover:bg-[#28C76F]/90 px-4 py-2 text-sm font-semibold rounded-lg shadow-apple-light">
+                  <Rocket className="h-4 w-4 mr-2" />
+                  Build Roadmap
                 </Button>
               </Link>
               <Link to="/career-map/skills-gap">
-                <Button size="sm" className="bg-blue-600 text-white hover:bg-blue-700 px-3 py-1.5 text-xs font-semibold rounded-lg shadow-apple-light">
-                  <Target className="h-3 w-3 mr-1" />
-                  Analyze
+                <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 text-sm font-semibold rounded-lg shadow-apple-light">
+                  <Target className="h-4 w-4 mr-2" />
+                  Analyze Skills
                 </Button>
               </Link>
             </div>
@@ -195,6 +202,13 @@ const CareerMap = () => {
             </CardContent>
           </Card>
         )}
+        
+        {/* Footer Note */}
+        <div className="text-center py-8 mt-12">
+          <p className="text-sm text-text-secondary">
+            Powered by TalentXcel AI – India's Intelligent Career Platform
+          </p>
+        </div>
       </div>
     </div>
   );

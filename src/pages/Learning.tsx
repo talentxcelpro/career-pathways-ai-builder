@@ -123,26 +123,33 @@ const Learning = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white">
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#1E2A78] via-purple-600 to-indigo-700 text-white">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="absolute inset-0">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-48 translate-x-48"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-32 -translate-x-32"></div>
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center max-w-lg mx-auto">
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <Sparkles className="h-3 w-3 text-yellow-300" />
-              <Badge className="bg-white/20 text-white border-white/30 px-1.5 py-0.5 text-xs">
-                AI Learning
-              </Badge>
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <img 
+                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                alt="TalentXcel" 
+                className="h-10 w-10 rounded-lg bg-white/10 p-2"
+              />
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-yellow-300" />
+                <Badge className="bg-white/20 text-white border-white/30 px-2 py-1 text-xs">
+                  AI Learning
+                </Badge>
+              </div>
             </div>
-            <h1 className="text-base font-bold mb-1 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-              Accelerate Your Career
+            <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+              Accelerate Your Career with Smart Learning
             </h1>
-            <p className="text-xs text-blue-100 mb-1.5 max-w-xs mx-auto">
-              Master skills with AI recommendations.
+            <p className="text-sm text-blue-100 mb-4 max-w-md mx-auto">
+              Master skills with AI recommendations, personalized paths, and industry insights.
             </p>
           </div>
         </div>
@@ -275,6 +282,13 @@ const Learning = () => {
             />
           </CardContent>
         </Card>
+        
+        {/* Footer Note */}
+        <div className="text-center py-8 mt-12">
+          <p className="text-sm text-text-secondary">
+            Powered by TalentXcel AI – India's Intelligent Career Platform
+          </p>
+        </div>
       </div>
     </div>
   );

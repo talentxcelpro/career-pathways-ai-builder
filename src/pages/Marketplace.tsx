@@ -179,12 +179,21 @@ const Marketplace = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
+        {/* Header with TalentXcel branding */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Professional Services Marketplace</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Connect with expert mentors, coaches, writers, and trainers to accelerate your career growth.
-          </p>
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <img 
+              src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+              alt="TalentXcel" 
+              className="h-16 w-16 rounded-lg"
+            />
+            <div>
+              <h1 className="text-4xl font-bold text-[#1E2A78] mb-2 font-display">Professional Services Backed by Experts</h1>
+              <p className="text-xl text-text-secondary max-w-3xl">
+                Connect with verified professionals and get expert guidance to accelerate your career growth
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Stats */}
@@ -243,7 +252,7 @@ const Marketplace = () => {
                 {filteredServices.length} services found
               </div>
               <Link to="/marketplace/post-service">
-                <Button>
+                <Button className="bg-[#28C76F] hover:bg-[#28C76F]/90 text-white">
                   Offer Your Services
                 </Button>
               </Link>
@@ -329,7 +338,7 @@ const Marketplace = () => {
                         {service.price_range}
                       </div>
                       <Link to={`/marketplace/${service.id}`}>
-                        <Button size="sm">
+                        <Button size="sm" className="bg-[#28C76F] hover:bg-[#28C76F]/90 text-white">
                           View Details
                         </Button>
                       </Link>
@@ -351,19 +360,26 @@ const Marketplace = () => {
 
         {/* CTA Section */}
         <div className="mt-16">
-          <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+          <Card className="bg-gradient-to-r from-[#1E2A78] to-indigo-600 text-white">
             <CardContent className="p-12 text-center">
               <h2 className="text-3xl font-bold mb-4">Ready to Share Your Expertise?</h2>
               <p className="text-xl mb-6 opacity-90">
                 Join thousands of professionals offering their services and helping others grow their careers.
               </p>
               <Link to="/marketplace/post-service">
-                <Button size="lg" variant="secondary">
+                <Button size="lg" className="bg-[#28C76F] hover:bg-[#28C76F]/90 text-white">
                   Start Offering Services
                 </Button>
               </Link>
             </CardContent>
           </Card>
+        </div>
+        
+        {/* Footer Note */}
+        <div className="text-center py-8 mt-12">
+          <p className="text-sm text-text-secondary">
+            Powered by TalentXcel AI – India's Intelligent Career Platform
+          </p>
         </div>
       </div>
     </div>

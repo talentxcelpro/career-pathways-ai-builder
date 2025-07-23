@@ -49,14 +49,23 @@ const Companies = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header with Apple-inspired styling - left-aligned and compact */}
+        {/* Header with TalentXcel branding */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-text-primary mb-1 font-display">
-            Discover Top Companies
-          </h1>
-          <p className="text-sm text-text-secondary">
-            Find your next opportunity with amazing companies
-          </p>
+          <div className="flex items-center gap-3 mb-4">
+            <img 
+              src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+              alt="TalentXcel" 
+              className="h-10 w-10 rounded-lg"
+            />
+            <div>
+              <h1 className="text-3xl font-bold text-[#1E2A78] mb-1 font-display">
+                Discover Top Companies Hiring Now
+              </h1>
+              <p className="text-text-secondary">
+                Find your next opportunity with amazing companies - Powered by TalentXcel AI
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* AI-Powered Company Search with glassmorphism - more compact */}
@@ -188,7 +197,7 @@ const Companies = () => {
                         </Button>
                       </Link>
                       <Link to={`/jobs?company=${company.id}`}>
-                        <Button size="sm" className="rounded-xl shadow-apple-light">
+                        <Button size="sm" className="rounded-xl bg-[#28C76F] hover:bg-[#28C76F]/90 text-white shadow-apple-light">
                           View Jobs
                         </Button>
                       </Link>
@@ -205,6 +214,13 @@ const Companies = () => {
             <p className="text-xl text-text-secondary">Try adjusting your search criteria</p>
           </div>
         )}
+        
+        {/* Footer Note */}
+        <div className="text-center py-8 mt-12">
+          <p className="text-sm text-text-secondary">
+            Powered by TalentXcel AI – India's Intelligent Career Platform
+          </p>
+        </div>
       </div>
     </div>
   );

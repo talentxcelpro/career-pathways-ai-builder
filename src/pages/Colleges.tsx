@@ -144,17 +144,26 @@ const Colleges = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header with Apple-inspired styling - more compact and engaging */}
+        {/* Header with TalentXcel branding */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-text-primary mb-2 font-display">
-            Discover Your Perfect College
-          </h1>
-          <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-            AI-powered discovery with comprehensive data on programs, placements, and smart guidance.
-          </p>
-          <div className="flex justify-center gap-4 mt-4">
-            <Button variant="outline" size="sm" className="rounded-xl">Add Your College</Button>
-            <Button variant="outline" size="sm" className="rounded-xl">Compare Colleges</Button>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <img 
+              src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+              alt="TalentXcel" 
+              className="h-12 w-12 rounded-lg"
+            />
+            <div>
+              <h1 className="text-4xl font-bold text-[#1E2A78] mb-2 font-display">
+                Discover Your Perfect College with TalentXcel AI
+              </h1>
+              <p className="text-lg text-text-secondary max-w-2xl">
+                AI-powered discovery with comprehensive data on programs, placements, and smart guidance.
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-center gap-4 mt-6">
+            <Button variant="outline" size="sm" className="rounded-xl border-[#28C76F] text-[#28C76F] hover:bg-[#28C76F] hover:text-white">Add Your College</Button>
+            <Button variant="outline" size="sm" className="rounded-xl border-[#28C76F] text-[#28C76F] hover:bg-[#28C76F] hover:text-white">Compare Colleges</Button>
           </div>
         </div>
 
@@ -296,7 +305,7 @@ const Colleges = () => {
                   <div className="space-y-2 pt-2">
                     {/* Primary Apply Button */}
                     <Button 
-                      className="w-full rounded-xl text-xs h-8 bg-primary hover:bg-primary/90 font-semibold"
+                      className="w-full rounded-xl text-xs h-8 bg-[#28C76F] hover:bg-[#28C76F]/90 text-white font-semibold"
                     >
                       Apply Now
                       <ArrowRight className="h-3 w-3 ml-2" />
@@ -344,6 +353,13 @@ const Colleges = () => {
             <p className="text-xl text-text-secondary">Try adjusting your search criteria or filters.</p>
           </div>
         )}
+        
+        {/* Footer Note */}
+        <div className="text-center py-8 mt-12">
+          <p className="text-sm text-text-secondary">
+            Powered by TalentXcel AI – India's Intelligent Career Platform
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -292,15 +292,17 @@ const Tools = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="bg-gradient-to-r from-[#1E2A78] via-[#1E2A78] to-indigo-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                <Brain className="h-6 w-6" />
-              </div>
+            <div className="flex items-center gap-4">
+              <img 
+                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                alt="TalentXcel" 
+                className="h-12 w-12 rounded-lg bg-white/10 p-2"
+              />
               <div>
-                <h1 className="text-xl font-bold">AI-Powered Career Tools by TalentXcel</h1>
+                <h1 className="text-2xl font-bold">AI-Powered Career Tools by TalentXcel</h1>
                 <p className="text-blue-100 text-sm max-w-2xl">Transform your career with intelligent tools built to accelerate growth, enhance decisions, and guide you every step of the way.</p>
               </div>
             </div>
@@ -358,10 +360,10 @@ const Tools = () => {
                     key={key}
                     variant={selectedCategory === key ? "default" : "ghost"}
                     className={`w-full justify-start gap-3 rounded-lg transition-all duration-200 ${
-                      selectedCategory === key 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
-                        : 'hover:bg-gray-50 text-gray-700'
-                    }`}
+                        selectedCategory === key 
+                          ? 'bg-gradient-to-r from-[#1E2A78] to-[#28C76F] text-white shadow-lg' 
+                          : 'hover:bg-gray-50 text-gray-700'
+                      }`}
                     onClick={() => handleCategorySelect(key)}
                   >
                     {config.icon}
@@ -550,6 +552,13 @@ const Tools = () => {
               </div>
             )}
           </div>
+        </div>
+        
+        {/* Footer Note */}
+        <div className="text-center py-8 mt-12">
+          <p className="text-sm text-text-secondary">
+            Powered by TalentXcel AI – India's Intelligent Career Platform
+          </p>
         </div>
       </div>
 
