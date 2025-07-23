@@ -135,14 +135,14 @@ export function EnhancedAIInterface() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">AI Career Assistant</h1>
-        <p className="text-muted-foreground">Supercharge your career with AI-powered tools and insights</p>
+        <h1 className="text-3xl font-bold">TalentXcel AI Career Assistant</h1>
+        <p className="text-muted-foreground">Supercharge your career with TalentXcel AI-powered tools and insights</p>
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="tools">AI Tools</TabsTrigger>
+          <TabsTrigger value="tools">TalentXcel AI Tools</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>

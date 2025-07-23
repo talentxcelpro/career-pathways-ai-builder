@@ -90,7 +90,7 @@ export const AICareerInsights: React.FC<AICareerInsightsProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-blue-600" />
-            AI Career Insights
+            TalentXcel AI Career Insights
           </CardTitle>
           <CardDescription>
             Powered by real-world market data and predictive analytics
@@ -148,7 +148,7 @@ export const AICareerInsights: React.FC<AICareerInsightsProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Star className="h-5 w-5 text-yellow-500" />
-            AI-Powered Insights
+            TalentXcel AI Insights
           </CardTitle>
           <CardDescription>
             Personalized recommendations based on your profile and market analysis

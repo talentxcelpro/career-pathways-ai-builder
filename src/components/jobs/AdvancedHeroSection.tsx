@@ -18,7 +18,7 @@ export const AdvancedHeroSection: React.FC = () => {
 
   const heroTexts = [
     "Find your dream job now",
-    "AI-powered career matching",
+    "TalentXcel AI-powered career matching",
     "Join top companies hiring",
     "Accelerate your career growth"
   ];
@@ -90,7 +90,7 @@ export const AdvancedHeroSection: React.FC = () => {
   ];
 
   const features = [
-    { icon: Brain, text: "AI-Powered Matching", desc: "Get 90%+ accurate job matches" },
+    { icon: Brain, text: "TalentXcel AI Matching", desc: "Get 90%+ accurate job matches" },
     { icon: Shield, text: "Verified Companies", desc: "Only genuine, verified employers" },
     { icon: Rocket, text: "Fast Track Apply", desc: "Apply to multiple jobs in seconds" },
     { icon: Award, text: "Skill Certification", desc: "Get certified and stand out" }
@@ -145,7 +145,7 @@ export const AdvancedHeroSection: React.FC = () => {
             </h1>
             
             <p className="text-xl md:text-3xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-              Experience the future of job search with <span className="text-primary font-semibold">AI-powered matching</span>, 
+              Experience the future of job search with <span className="text-primary font-semibold">TalentXcel AI matching</span>, 
               <span className="text-secondary font-semibold"> real-time insights</span>, and 
               <span className="text-accent font-semibold"> instant applications</span>
             </p>
@@ -155,7 +155,7 @@ export const AdvancedHeroSection: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-10">
             <Button size="lg" className="px-12 py-8 text-xl font-bold group bg-gradient-to-r from-primary via-secondary to-accent hover:scale-105 transition-all duration-300 shadow-2xl">
               <Brain className="mr-3 h-6 w-6 group-hover:animate-pulse" />
-              Launch AI Job Discovery
+              Launch TalentXcel AI Job Discovery
               <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
             </Button>
             
@@ -221,7 +221,7 @@ export const AdvancedHeroSection: React.FC = () => {
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
                 <Brain className="h-5 w-5 text-blue-600" />
-                <span className="font-semibold">🧠 AI-Powered Matching</span>
+                <span className="font-semibold">🧠 TalentXcel AI Matching</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>

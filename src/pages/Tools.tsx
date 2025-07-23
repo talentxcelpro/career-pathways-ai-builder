@@ -82,8 +82,8 @@ const Tools = () => {
   const featuredTools: FeaturedTool[] = [
     {
       id: 'ai-career-pathfinder',
-      name: 'AI Career Pathfinder',
-      description: 'Discover your ideal career path with AI-powered insights and personalized recommendations',
+      name: 'TalentXcel AI Career Pathfinder',
+      description: 'Discover your ideal career path with TalentXcel AI-powered insights and personalized recommendations',
       icon: <Target className="h-6 w-6" />,
       category: 'career',
       isPremium: true,
@@ -95,8 +95,8 @@ const Tools = () => {
     },
     {
       id: 'ai-resume-builder',
-      name: 'AI Resume Builder',
-      description: 'Create professional resumes with AI assistance and ATS optimization',
+      name: 'TalentXcel AI Resume Builder',
+      description: 'Create professional resumes with TalentXcel AI assistance and ATS optimization',
       icon: <FileText className="h-6 w-6" />,
       category: 'resume',
       isPremium: false,
@@ -108,21 +108,21 @@ const Tools = () => {
     },
     {
       id: 'ai-job-match-gpt',
-      name: 'AI Job Match GPT',
-      description: 'Find perfect job matches using advanced AI matching algorithms',
+      name: 'TalentXcel AI Job Match',
+      description: 'Find perfect job matches using TalentXcel AI matching algorithms',
       icon: <Briefcase className="h-6 w-6" />,
       category: 'job-search',
       isPremium: true,
       isFeatured: true,
       estimatedTime: '5-10 min',
       path: '/tools/ai-job-match-gpt',
-      features: ['Smart Matching', 'Salary Insights', 'Application Tracking'],
+      features: ['TalentXcel Smart Match', 'Salary Insights', 'Application Tracking'],
       popularity: 88
     },
     {
       id: 'cover-letter-generator',
-      name: 'Cover Letter Generator',
-      description: 'Generate compelling cover letters tailored to specific job applications',
+      name: 'TalentXcel Cover Letter AI',
+      description: 'Generate compelling cover letters with TalentXcel AI tailored to specific job applications',
       icon: <Edit3 className="h-6 w-6" />,
       category: 'profile',
       isPremium: false,
@@ -147,21 +147,21 @@ const Tools = () => {
     },
     {
       id: 'mock-interview-simulator',
-      name: 'Mock Interview Simulator',
-      description: 'Practice interviews with AI-powered simulation and feedback',
+      name: 'TalentXcel AI Interview Coach',
+      description: 'Practice interviews with TalentXcel AI-powered simulation and feedback',
       icon: <Video className="h-6 w-6" />,
       category: 'interview',
       isPremium: true,
       isFeatured: false,
       estimatedTime: '20-30 min',
       path: '/tools/mock-interview-simulator',
-      features: ['Video Practice', 'AI Feedback', 'Industry-specific Questions'],
+      features: ['Video Practice', 'TalentXcel AI Feedback', 'Industry-specific Questions'],
       popularity: 78
     },
     {
       id: 'ai-learning-path-generator',
-      name: 'AI Learning Path Generator',
-      description: 'Create personalized learning paths to advance your skills and career',
+      name: 'TalentXcel Learning AI',
+      description: 'Create personalized learning paths with TalentXcel AI to advance your skills and career',
       icon: <BookOpen className="h-6 w-6" />,
       category: 'skills',
       isPremium: false,
@@ -214,32 +214,32 @@ const Tools = () => {
     'job-search': [
       { name: 'Smart Apply Tool', isPremium: true, path: '/tools/smart-apply-tool' },
       { name: 'Salary Benchmark Tool', isPremium: false, path: '/tools/salary-benchmark-tool' },
-      { name: 'AI Job Match GPT', isPremium: true, path: '/tools/ai-job-match-gpt' }
+      { name: 'TalentXcel AI Job Match', isPremium: true, path: '/tools/ai-job-match-gpt' }
     ],
     interview: [
       { name: 'STAR Answer Generator', isPremium: false, path: '/tools/star-answer-generator' },
       { name: 'Interview Readiness Score', isPremium: false, path: '/tools/interview-readiness-score' },
-      { name: 'Mock Interview Simulator', isPremium: true, path: '/tools/mock-interview-simulator' }
+      { name: 'TalentXcel AI Interview Coach', isPremium: true, path: '/tools/mock-interview-simulator' }
     ],
     resume: [
       { name: 'Resume Tailor Tool', isPremium: false, path: '/tools/resume-tailor-tool' },
       { name: 'Resume Gap Analyzer', isPremium: false, path: '/tools/resume-gap-analyzer' },
-      { name: 'AI Resume Builder', isPremium: false, path: '/tools/ai-resume-builder' }
+      { name: 'TalentXcel AI Resume Builder', isPremium: false, path: '/tools/ai-resume-builder' }
     ],
     networking: [
       { name: 'Network Growth Tracker', isPremium: false, path: '/tools/network-growth-tracker' },
-      { name: 'AI Outreach Generator', isPremium: true, path: '/tools/ai-outreach-generator' },
+      { name: 'TalentXcel AI Outreach Generator', isPremium: true, path: '/tools/ai-outreach-generator' },
       { name: 'Mentor Connect Tool', isPremium: false, path: '/tools/mentor-connect-tool' }
     ],
     profile: [
       { name: 'AI Profile Optimizer', isPremium: false, path: '/tools/ai-profile-optimizer' },
       { name: 'Professional Bio Writer', isPremium: false, path: '/tools/professional-bio-writer' },
-      { name: 'Cover Letter Generator', isPremium: false, path: '/tools/cover-letter-generator' }
+      { name: 'TalentXcel Cover Letter AI', isPremium: false, path: '/tools/cover-letter-generator' }
     ],
     skills: [
       { name: 'Skill Gap Analyzer', isPremium: false, path: '/tools/skill-gap-analyzer' },
       { name: 'Skill Assessment Engine', isPremium: false, path: '/tools/skill-assessment-engine' },
-      { name: 'AI Learning Path Generator', isPremium: false, path: '/tools/ai-learning-path-generator' }
+      { name: 'TalentXcel Learning AI', isPremium: false, path: '/tools/ai-learning-path-generator' }
     ]
   };
 

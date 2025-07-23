@@ -194,8 +194,8 @@ export const AICareerCoach: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">AI Career Coach</h1>
-          <p className="text-gray-600">Personalized career guidance powered by AI</p>
+          <h1 className="text-3xl font-bold text-gray-900">TalentXcel AI Career Coach</h1>
+          <p className="text-gray-600">Personalized career guidance powered by TalentXcel AI</p>
         </div>
         <Button 
           onClick={handleAnalyzeCareer}
@@ -479,7 +479,7 @@ export const AICareerCoach: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="h-5 w-5" />
-                  Chat with AI Coach
+                  Chat with TalentXcel AI Coach
                 </CardTitle>
                 <CardDescription>
                   Get personalized career advice and guidance
@@ -493,7 +493,7 @@ export const AICareerCoach: React.FC = () => {
                         <AvatarFallback>AI</AvatarFallback>
                       </Avatar>
                       <div className="bg-muted p-3 rounded-lg flex-1">
-                        <p className="text-sm">Hello! I'm your AI Career Coach. How can I help you today?</p>
+                        <p className="text-sm">Hello! I'm your TalentXcel AI Career Coach. How can I help you today?</p>
                       </div>
                     </div>
                   </div>

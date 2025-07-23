@@ -166,8 +166,8 @@ export function AIToolsInterface() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">AI Career Tools</h2>
-        <p className="text-muted-foreground">Enhance your career with AI-powered tools</p>
+        <h2 className="text-2xl font-bold">TalentXcel AI Career Tools</h2>
+        <p className="text-muted-foreground">Enhance your career with TalentXcel AI-powered tools</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

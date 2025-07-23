@@ -43,7 +43,7 @@ export const HeroSection: React.FC = () => {
             <div className="flex items-center justify-center gap-2 mb-4">
               <Sparkles className="h-6 w-6 text-primary animate-pulse" />
               <Badge variant="secondary" className="px-4 py-1 text-sm font-medium">
-                AI-Powered Job Matching
+                TalentXcel AI Job Matching
               </Badge>
               <Sparkles className="h-6 w-6 text-primary animate-pulse" />
             </div>
