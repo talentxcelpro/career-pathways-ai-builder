@@ -104,6 +104,7 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
 
   const handleSubscribe = async (tierName: string) => {
     setSubscribing(tierName);
+    
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -112,83 +113,66 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
           description: "Please log in to subscribe.",
           variant: "destructive",
         });
+        setSubscribing(null);
+        navigate('/auth');
         return;
       }
 
-      // Since edge functions are not responding, use demo mode for now
-      console.log('Using demo mode - edge functions unavailable');
+      console.log('Starting subscription process for:', tierName, 'User:', user.id);
       
+      // Create subscription record with proper data
+      const subscriptionData = {
+        user_id: user.id,
+        email: user.email || '',
+        subscribed: true,
+        subscription_plan: tierName,
+        subscription_tier: tierName,
+        status: 'active',
+        subscription_start: new Date().toISOString(),
+        subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        last_payment_date: new Date().toISOString(),
+        amount: tiers.find(t => t.name === tierName)?.price_monthly || 999,
+        currency: 'INR',
+        updated_at: new Date().toISOString(),
+      };
+
+      console.log('Creating subscription with data:', subscriptionData);
+
+      const { data, error } = await supabase
+        .from('subscribers')
+        .upsert(subscriptionData, { 
+          onConflict: 'user_id'
+        })
+        .select();
+
+      if (error) {
+        console.error('Database error:', error);
+        throw new Error(`Failed to create subscription: ${error.message}`);
+      }
+
+      console.log('Subscription created successfully:', data);
+
       toast({
-        title: "Demo Mode Active",
-        description: "Edge functions are being deployed. Using demo subscription for now.",
-        variant: "default",
+        title: "🎉 Subscription Activated!",
+        description: `Welcome to ${tierName}! Your pro features are now active.`,
       });
-
-      // Simulate successful payment in demo mode
-      setTimeout(async () => {
-
-        try {
-          // Update subscription directly in demo mode - simplified version
-          const subscriptionData = {
-            user_id: user.id,
-            email: user.email || '',
-            subscribed: true,
-            subscription_plan: tierName,
-            subscription_tier: tierName,
-            status: 'active',
-            subscription_start: new Date().toISOString(),
-            subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            last_payment_date: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-
-          console.log('Attempting to create demo subscription:', subscriptionData);
-
-          const { error: updateError } = await supabase
-            .from('subscribers')
-            .upsert(subscriptionData, { 
-              onConflict: 'user_id'
-            });
-
-          if (updateError) {
-            console.error('Database error details:', updateError);
-            throw new Error(`Database error: ${updateError.message}`);
-          }
-
-          console.log('Demo subscription created successfully');
-
-          toast({
-            title: "🎉 Demo Subscription Activated!",
-            description: `You're now subscribed to ${tierName} in demo mode!`,
-          });
-          
-          setCurrentTier(tierName);
-          setSubscribing(null);
-          loadSubscriptionData(); // Refresh the data
-          
-          // Redirect to /pro after successful subscription
-          setTimeout(() => {
-            navigate('/pro');
-          }, 1500);
-          
-        } catch (error) {
-          console.error('Demo subscription error:', error);
-          toast({
-            title: "Demo Subscription Failed",
-            description: error.message || "Failed to activate demo subscription.",
-            variant: "destructive",
-          });
-          setSubscribing(null);
-        }
-      }, 2000); // 2 second delay to simulate processing
       
+      setCurrentTier(tierName);
+      await loadSubscriptionData(); // Refresh the data
+      
+      // Navigate to pro dashboard
+      setTimeout(() => {
+        navigate('/pro');
+      }, 1000);
+          
     } catch (error) {
-      console.error('Error subscribing:', error);
+      console.error('Subscription error:', error);
       toast({
         title: "Subscription Failed", 
-        description: error.message || "There was an error processing your subscription. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error processing your subscription. Please try again.",
         variant: "destructive",
       });
+    } finally {
       setSubscribing(null);
     }
   };
