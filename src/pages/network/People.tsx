@@ -24,7 +24,11 @@ const People = () => {
     results,
     isLoading,
     error,
-    hasSearch
+    hasSearch,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    totalCount
   } = usePeopleSearch();
 
   // Fetch unique locations
@@ -87,7 +91,7 @@ const People = () => {
         <p className="text-gray-600">
           {hasSearch 
             ? `Found ${results.length} people matching your search`
-            : `Discover and connect with ${results.length} professionals`
+            : `Showing ${results.length} of ${totalCount || 0} professionals`
           }
         </p>
       </div>
@@ -156,7 +160,7 @@ const People = () => {
                       {person.full_name || 'Anonymous User'}
                     </h3>
                     <p className="text-sm text-gray-600 truncate">
-                      {person.current_position || person.user_role || 'Professional'}
+                      {person.headline || person.title || person.current_company || person.user_role || 'Professional'}
                     </p>
                   </div>
                 </div>
@@ -220,6 +224,31 @@ const People = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!isLoading && results.length > 0 && (
+        <div className="flex justify-center items-center space-x-4 mt-8">
+          <button
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
+          >
+            Previous
+          </button>
+          
+          <span className="text-sm text-gray-600">
+            Page {currentPage} of {totalPages} ({totalCount} people)
+          </span>
+          
+          <button
+            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
+          >
+            Next
+          </button>
         </div>
       )}
     </div>

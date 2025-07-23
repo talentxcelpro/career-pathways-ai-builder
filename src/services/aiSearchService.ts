@@ -164,17 +164,18 @@ export class AISearchService {
     return { data: data || [], error, filters };
   }
 
-  static async searchPeople(query: string) {
+  static async searchPeople(query: string, page: number = 1, limit: number = 100) {
     const filters = await this.parseQuery(query, 'people');
+    const offset = (page - 1) * limit;
     
     let dbQuery = supabase
       .from('profiles')
-      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company')
+      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' })
       .not('full_name', 'is', null)
       .neq('full_name', '');
 
     if (filters.query) {
-      dbQuery = dbQuery.or(`full_name.ilike.%${filters.query}%,about.ilike.%${filters.query}%,current_company.ilike.%${filters.query}%`);
+      dbQuery = dbQuery.or(`full_name.ilike.%${filters.query}%,about.ilike.%${filters.query}%,current_company.ilike.%${filters.query}%,headline.ilike.%${filters.query}%,title.ilike.%${filters.query}%`);
     }
     
     if (filters.location) {
@@ -186,36 +187,40 @@ export class AISearchService {
       dbQuery = dbQuery.or(skillFilters.join(','));
     }
 
-    const { data, error } = await dbQuery
+    const { data, error, count } = await dbQuery
       .order('created_at', { ascending: false })
-      .limit(50);
+      .range(offset, offset + limit - 1);
 
-    return { data: data || [], error, filters };
+    return { data: data || [], error, filters, count, page, limit };
   }
 
-  static async searchPeopleBasic(query: string) {
-    const { data, error } = await supabase
+  static async searchPeopleBasic(query: string, page: number = 1, limit: number = 100) {
+    const offset = (page - 1) * limit;
+    
+    const { data, error, count } = await supabase
       .from('profiles')
-      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company')
+      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' })
       .not('full_name', 'is', null)
       .neq('full_name', '')
-      .or(`full_name.ilike.%${query}%,about.ilike.%${query}%,current_company.ilike.%${query}%`)
+      .or(`full_name.ilike.%${query}%,about.ilike.%${query}%,current_company.ilike.%${query}%,headline.ilike.%${query}%,title.ilike.%${query}%`)
       .order('created_at', { ascending: false })
-      .limit(50);
+      .range(offset, offset + limit - 1);
 
-    return { data: data || [], error };
+    return { data: data || [], error, count, page, limit };
   }
 
-  static async getAllPeople() {
-    const { data, error } = await supabase
+  static async getAllPeople(page: number = 1, limit: number = 100) {
+    const offset = (page - 1) * limit;
+    
+    const { data, error, count } = await supabase
       .from('profiles')
-      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company')
+      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' })
       .not('full_name', 'is', null)
       .neq('full_name', '')
       .order('created_at', { ascending: false })
-      .limit(50);
+      .range(offset, offset + limit - 1);
 
-    return { data: data || [], error };
+    return { data: data || [], error, count, page, limit };
   }
 
   static async searchPosts(query: string) {

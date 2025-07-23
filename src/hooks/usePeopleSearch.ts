@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AISearchService } from '@/services/aiSearchService';
 import { useDebounce } from './useDebounce';
@@ -8,37 +8,38 @@ export const usePeopleSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState('all');
   const [industryFilter, setIndustryFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(100);
   
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const hasSearch = debouncedSearchTerm.trim().length > 0;
 
   // Get all people when no search is active
-  const { data: allPeople, isLoading: allPeopleLoading, error: allPeopleError } = useQuery({
-    queryKey: ['all-people'],
-    queryFn: () => AISearchService.getAllPeople(),
+  const { data: allPeopleData, isLoading: allPeopleLoading, error: allPeopleError } = useQuery({
+    queryKey: ['all-people', currentPage],
+    queryFn: () => AISearchService.getAllPeople(currentPage, itemsPerPage),
     enabled: !hasSearch,
-    select: (data) => data.data || []
   });
 
   // Search people when search term is provided
-  const { data: searchResults, isLoading: searchLoading, error: searchError } = useQuery({
-    queryKey: ['search-people', debouncedSearchTerm],
+  const { data: searchData, isLoading: searchLoading, error: searchError } = useQuery({
+    queryKey: ['search-people', debouncedSearchTerm, currentPage],
     queryFn: async () => {
       try {
         // Try AI search first
-        const aiResult = await AISearchService.searchPeople(debouncedSearchTerm);
+        const aiResult = await AISearchService.searchPeople(debouncedSearchTerm, currentPage, itemsPerPage);
         if (aiResult.data && aiResult.data.length > 0) {
-          return aiResult.data;
+          return aiResult;
         }
         
         // Fallback to basic search
-        const basicResult = await AISearchService.searchPeopleBasic(debouncedSearchTerm);
-        return basicResult.data || [];
+        const basicResult = await AISearchService.searchPeopleBasic(debouncedSearchTerm, currentPage, itemsPerPage);
+        return basicResult;
       } catch (error) {
         console.error('Search failed:', error);
         // Final fallback to basic search
-        const basicResult = await AISearchService.searchPeopleBasic(debouncedSearchTerm);
-        return basicResult.data || [];
+        const basicResult = await AISearchService.searchPeopleBasic(debouncedSearchTerm, currentPage, itemsPerPage);
+        return basicResult;
       }
     },
     enabled: hasSearch,
@@ -59,20 +60,34 @@ export const usePeopleSearch = () => {
     return filtered;
   }, [locationFilter, industryFilter]);
 
-  const results = hasSearch ? searchResults : allPeople;
+  const currentData = hasSearch ? searchData : allPeopleData;
+  const results = currentData?.data ? filteredResults(currentData.data) : [];
   const isLoading = hasSearch ? searchLoading : allPeopleLoading;
   const error = hasSearch ? searchError : allPeopleError;
+  const totalCount = currentData?.count || 0;
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+  // Reset to page 1 when search changes
+  const handleSearchChange = (newSearchTerm: string) => {
+    setSearchTerm(newSearchTerm);
+    setCurrentPage(1);
+  };
 
   return {
     searchTerm,
-    setSearchTerm,
+    setSearchTerm: handleSearchChange,
     locationFilter,
     setLocationFilter,
     industryFilter,
     setIndustryFilter,
-    results: results ? filteredResults(results) : [],
+    results,
     isLoading,
     error,
-    hasSearch
+    hasSearch,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    totalCount,
+    itemsPerPage
   };
 };
