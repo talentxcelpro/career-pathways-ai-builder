@@ -108,7 +108,7 @@ export const PostCard: React.FC<PostCardProps> = ({
               <p className="text-sm text-gray-600">
                 {post.profiles?.title || 'Professional'}
               </p>
-              <p className="text-xs text-gray-500">{formatTimeAgo(post.created_at)}</p>
+              <p className="text-xs text-muted-foreground">{formatTimeAgo(post.created_at)}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">

@@ -167,7 +167,7 @@ export const ConnectionRequests: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-500 text-center py-4">No pending requests</p>
+          <p className="text-sm text-muted-foreground text-center py-4">No pending requests</p>
         </CardContent>
       </Card>
     );
@@ -195,7 +195,7 @@ export const ConnectionRequests: React.FC = () => {
                 <p className="font-medium text-gray-900 text-sm truncate">
                   {formatDisplayName(request.requesterProfile)}
                 </p>
-                <p className="text-xs text-gray-500 truncate">
+                <p className="text-xs text-muted-foreground truncate">
                   {request.requesterProfile?.title || 'Professional'}
                 </p>
                 {request.message && (

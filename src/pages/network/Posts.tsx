@@ -626,7 +626,7 @@ const Posts = () => {
                                 {formatDisplayName(post.profiles)}
                                 {post.profiles?.title && (
                                   <>
-                                    <span className="text-gray-400 mx-2">|</span>
+                                    <span className="text-muted-foreground mx-2">|</span>
                                     <span className="text-sm font-normal text-gray-600">{post.profiles.title}</span>
                                   </>
                                 )}
@@ -760,7 +760,7 @@ const Posts = () => {
                         
                         {/* Location */}
                         {post.location && (
-                          <div className="flex items-center gap-1 mt-3 text-sm text-gray-500">
+                          <div className="flex items-center gap-1 mt-3 text-sm text-muted-foreground">
                             <MapPin className="h-4 w-4" />
                             <span>{post.location}</span>
                           </div>
@@ -985,12 +985,12 @@ const Posts = () => {
                         <p className="text-xs">
                           <span className="font-medium">{activity.user}</span> {activity.action}
                         </p>
-                        <p className="text-xs text-gray-500">{formatTimeAgo(activity.time)}</p>
+                        <p className="text-xs text-muted-foreground">{formatTimeAgo(activity.time)}</p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-gray-500 text-center py-2">No recent activity</p>
+                  <p className="text-xs text-muted-foreground text-center py-2">No recent activity</p>
                 )}
               </div>
               <Link to="/network/notifications" className="block mt-2">
