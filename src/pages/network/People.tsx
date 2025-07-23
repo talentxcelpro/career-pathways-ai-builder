@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,16 +18,20 @@ import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 
 const People = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState('all');
   const [industryFilter, setIndustryFilter] = useState('all');
   const navigate = useNavigate();
   const { findOrCreateConversation } = useConversations();
   const { triggerConnectionEmail } = useEmailAutomation();
 
-  const handleUniversalSearch = (query: string, aiFilters?: SearchFilters) => {
-    setSearchTerm(query);
-    if (aiFilters?.location) setLocationFilter(aiFilters.location);
-  };
+  // Debounce search term to prevent excessive queries
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Get current user
   const { data: currentUser } = useQuery({
@@ -39,7 +43,7 @@ const People = () => {
   });
 
   const { data: profiles, isLoading } = useQuery({
-    queryKey: ['profiles', searchTerm, locationFilter, industryFilter],
+    queryKey: ['profiles', debouncedSearchTerm, locationFilter, industryFilter],
     queryFn: async () => {
       let query = supabase
         .from('profiles')
@@ -51,8 +55,8 @@ const People = () => {
         query = query.neq('id', currentUser.id);
       }
 
-      if (searchTerm) {
-        query = query.or(`full_name.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%,skills.cs.{${searchTerm}}`);
+      if (debouncedSearchTerm) {
+        query = query.or(`full_name.ilike.%${debouncedSearchTerm}%,title.ilike.%${debouncedSearchTerm}%,skills.cs.{${debouncedSearchTerm}}`);
       }
       if (locationFilter && locationFilter !== 'all') {
         query = query.ilike('location', `%${locationFilter}%`);
