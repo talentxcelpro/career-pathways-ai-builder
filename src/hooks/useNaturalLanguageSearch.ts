@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useDebounce } from './useDebounce';
 import { AISearchService } from '@/services/aiSearchService';
 import { supabase } from '@/integrations/supabase/client';
@@ -93,7 +93,7 @@ export const useNaturalLanguageSearch = () => {
   }, []);
 
   // Perform search when debounced term changes
-  React.useEffect(() => {
+  useEffect(() => {
     performSearch(debouncedSearchTerm);
   }, [debouncedSearchTerm, performSearch]);
 
