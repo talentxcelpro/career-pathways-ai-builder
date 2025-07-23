@@ -1,21 +1,22 @@
 <svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#0891B2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0E7490;stop-opacity:1" />
     </linearGradient>
   </defs>
   
-  <!-- Logo icon/symbol -->
-  <circle cx="20" cy="30" r="15" fill="url(#logoGradient)"/>
-  <path d="M15 25 L20 30 L25 25" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M15 35 L20 30 L25 35" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Curved arrow logo icon -->
+  <g transform="translate(10, 15)">
+    <path d="M5 20 Q15 5 25 20" stroke="url(#logoGradient)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M20 15 L25 20 L20 25" stroke="url(#logoGradient)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
   
   <!-- Text "talentXcel" -->
-  <text x="45" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#1F2937">
+  <text x="50" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#1F2937">
     talent
   </text>
-  <text x="45" y="42" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="url(#logoGradient)">
+  <text x="50" y="42" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="url(#logoGradient)">
     Xcel
   </text>
 </svg>
