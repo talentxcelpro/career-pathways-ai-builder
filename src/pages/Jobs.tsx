@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { Search, Brain, Filter, TrendingUp, Building, MapPin } from 'lucide-react';
+import { HeroSection } from '@/components/branded/HeroSection';
+import { SectionHighlights } from '@/components/branded/SectionHighlights';
+import { BenefitsSection } from '@/components/branded/BenefitsSection';
+import { BrandedFooter } from '@/components/branded/BrandedFooter';
 import { JobsBanner } from '@/components/jobs/JobsBanner';
 import { TopCompaniesHiring } from '@/components/jobs/TopCompaniesHiring';
 import { JobCategories } from '@/components/jobs/JobCategories';
@@ -14,7 +20,6 @@ import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
 import { updateMetaTags } from '@/utils/metaTags';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Search, MapPin, Filter, Brain } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +28,67 @@ import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
 
 const Jobs = () => {
+  const navigate = useNavigate();
+
+  // Branded content data
+  const highlights = [
+    {
+      icon: Brain,
+      title: "AI Job Matching",
+      description: "Get personalized job recommendations based on your skills, experience, and career goals using advanced AI algorithms.",
+      aiPowered: true
+    },
+    {
+      icon: Filter,
+      title: "Smart Filters",
+      description: "Find exactly what you're looking for with intelligent filters for location, salary, company size, and remote options.",
+      aiPowered: true
+    },
+    {
+      icon: Building,
+      title: "Company Insights",
+      description: "Access detailed company profiles, culture insights, salary ranges, and employee reviews before applying."
+    },
+    {
+      icon: TrendingUp,
+      title: "Application Tracking",
+      description: "Keep track of all your applications with real-time status updates and interview scheduling."
+    },
+    {
+      icon: MapPin,
+      title: "Salary Insights",
+      description: "Get accurate salary data and market insights to negotiate better offers with confidence.",
+      aiPowered: true
+    }
+  ];
+
+  const benefits = [
+    {
+      title: "85% Faster Job Discovery",
+      description: "AI-powered matching helps you find relevant opportunities 85% faster than traditional job boards."
+    },
+    {
+      title: "Higher Success Rate",
+      description: "Our smart matching increases your application success rate by 60% through better job-candidate alignment."
+    },
+    {
+      title: "Real-Time Market Data",
+      description: "Access live salary data, hiring trends, and company insights to make informed career decisions."
+    },
+    {
+      title: "Personalized Experience",
+      description: "Every job recommendation is tailored to your unique profile, preferences, and career aspirations."
+    }
+  ];
+
+  const userTypes = [
+    "Recent Graduates",
+    "Career Changers", 
+    "Remote Workers",
+    "Senior Professionals",
+    "Freelancers",
+    "Industry Specialists"
+  ];
   const [filters, setFilters] = useState({
     search: '',
     location: '',
@@ -245,9 +311,36 @@ const Jobs = () => {
     'Product Manager'
   ];
 
+  const handleGetStarted = () => {
+    navigate('/jobs');
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-background">
       <OfflineIndicator />
+      
+      {/* TalentXcel Branded Hero Section */}
+      <HeroSection
+        title="Find Jobs Faster – Powered by AI Matching"
+        subtitle="Discover opportunities that perfectly match your skills and career goals. Our AI technology connects you with the right employers faster than ever before."
+        ctaText="Explore Jobs"
+        ctaAction={handleGetStarted}
+        showAIBadge={true}
+      />
+
+      {/* Section Highlights */}
+      <SectionHighlights
+        title="Why Choose TalentXcel Jobs?"
+        highlights={highlights}
+      />
+
+      {/* Benefits Section */}
+      <BenefitsSection
+        title="Accelerate Your Career Journey"
+        subtitle="Join thousands of professionals who found their dream jobs through our AI-powered platform"
+        benefits={benefits}
+        userTypes={userTypes}
+      />
       
       {/* 1. Minimalist Header (1/8th size) */}
       <div className="bg-white border-b sticky top-0 z-40">
@@ -461,6 +554,9 @@ const Jobs = () => {
           </div>
         </div>
       </div>
+
+      {/* TalentXcel Branded Footer */}
+      <BrandedFooter />
     </div>
   );
 };

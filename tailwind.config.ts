@@ -12,7 +12,7 @@ export default {
 	theme: {
 		fontFamily: {
 			sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-			display: ['Plus Jakarta Sans', 'Inter', 'ui-sans-serif', 'system-ui'],
+			display: ['Poppins', 'Inter', 'ui-sans-serif', 'system-ui'],
 		},
 		container: {
 			center: true,
@@ -29,7 +29,11 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(220, 91%, 60%)', // #3478F6 - Job Blue
+					DEFAULT: 'hsl(228, 63%, 29%)', // #1E2A78 - TalentXcel Deep Blue
+					foreground: 'hsl(0, 0%, 100%)'
+				},
+				'brand-green': {
+					DEFAULT: 'hsl(142, 64%, 48%)', // #28C76F - TalentXcel Emerald Green
 					foreground: 'hsl(0, 0%, 100%)'
 				},
 				secondary: {
