@@ -112,12 +112,19 @@ function DashboardContent() {
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Employer Dashboard</h1>
-          <p className="text-gray-600 mt-1">Manage your job postings and track applications</p>
-          <div className="flex items-center gap-2 mt-2">
-            <Badge variant="outline">Role: {role?.toUpperCase()}</Badge>
-            {companyId && <Badge variant="secondary">Company Access Active</Badge>}
+        <div className="flex items-center gap-4">
+          <img 
+            src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+            alt="TalentXcel" 
+            className="h-12 w-12 rounded-lg"
+          />
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Employer Dashboard</h1>
+            <p className="text-gray-600 mt-1">Manage your job postings and track applications</p>
+            <div className="flex items-center gap-2 mt-2">
+              <Badge variant="outline">Role: {role?.toUpperCase()}</Badge>
+              {companyId && <Badge variant="secondary">Company Access Active</Badge>}
+            </div>
           </div>
         </div>
         <RoleBasedAccess 

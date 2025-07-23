@@ -37,6 +37,13 @@ const About = () => {
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white py-20">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <img 
+              src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+              alt="TalentXcel" 
+              className="h-12 w-12 rounded-lg"
+            />
+          </div>
           <h1 className="text-5xl font-bold mb-6">Empowering Talent. Elevating Careers.</h1>
           <p className="text-xl text-blue-100 max-w-2xl mx-auto">
             Transforming the way professionals connect, learn, and grow with AI-powered career solutions.
