@@ -133,6 +133,14 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         throw new Error('No valid session found');
       }
 
+      console.log('Invoking razorpay-create-order with:', {
+        amount: selectedTier.price_monthly,
+        currency: 'INR',
+        planId: selectedTier.id,
+        serviceId: `subscription_${Date.now()}`,
+        packageType: tierName
+      });
+
       const { data: orderData, error: orderError } = await supabase.functions.invoke('razorpay-create-order', {
         body: {
           amount: selectedTier.price_monthly,
@@ -143,8 +151,15 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         }
       });
 
+      console.log('Razorpay create order response:', { orderData, orderError });
+
       if (orderError) {
+        console.error('Order creation error:', orderError);
         throw new Error(orderError.message || 'Failed to create payment order');
+      }
+
+      if (!orderData) {
+        throw new Error('No order data received from payment service');
       }
 
       console.log('Razorpay order created:', orderData.orderId);
