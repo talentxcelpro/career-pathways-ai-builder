@@ -185,7 +185,7 @@ const Marketplace = () => {
             <img 
               src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
               alt="TalentXcel" 
-              className="h-16 w-16 rounded-lg"
+              className="h-12 w-12 rounded-lg"
             />
             <div>
               <h1 className="text-4xl font-bold text-[#1E2A78] mb-2 font-display">Professional Services Backed by Experts</h1>

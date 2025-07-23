@@ -73,7 +73,7 @@ const CareerMap = () => {
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                 alt="TalentXcel" 
-                className="h-12 w-12 rounded-lg bg-white/10 p-2"
+                className="h-12 w-12 rounded-lg"
               />
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">

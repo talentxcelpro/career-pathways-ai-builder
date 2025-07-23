@@ -55,7 +55,7 @@ const Companies = () => {
             <img 
               src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
               alt="TalentXcel" 
-              className="h-10 w-10 rounded-lg"
+              className="h-12 w-12 rounded-lg"
             />
             <div>
               <h1 className="text-3xl font-bold text-[#1E2A78] mb-1 font-display">

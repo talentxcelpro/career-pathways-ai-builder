@@ -262,7 +262,7 @@ const Jobs = () => {
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                 alt="TalentXcel" 
-                className="h-8 w-8 rounded-lg"
+                className="h-12 w-12 rounded-lg"
               />
               <div className="flex items-center gap-2">
                 <Brain className="h-5 w-5 text-[#1E2A78]" />

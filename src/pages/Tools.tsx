@@ -299,7 +299,7 @@ const Tools = () => {
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                 alt="TalentXcel" 
-                className="h-12 w-12 rounded-lg bg-white/10 p-2"
+                className="h-12 w-12 rounded-lg"
               />
               <div>
                 <h1 className="text-2xl font-bold">TalentXcel AI-Powered Career Tools</h1>

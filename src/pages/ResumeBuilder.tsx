@@ -62,12 +62,19 @@ const ResumeBuilder = () => {
       <div className="relative overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <img 
+                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                alt="TalentXcel" 
+                className="h-12 w-12 rounded-lg"
+              />
+            </div>
             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
               Build Your Dream Resume with
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> TalentXcel</span>
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> TalentXcel AI</span>
             </h1>
             <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
-              Create a professional resume with our AI-powered tools and beautiful TalentXcel templates.
+              Create a professional resume with TalentXcel AI-powered tools and beautiful TalentXcel templates.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">

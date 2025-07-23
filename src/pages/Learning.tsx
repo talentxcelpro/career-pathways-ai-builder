@@ -136,7 +136,7 @@ const Learning = () => {
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                 alt="TalentXcel" 
-                className="h-10 w-10 rounded-lg bg-white/10 p-2"
+                className="h-12 w-12 rounded-lg"
               />
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-yellow-300" />
