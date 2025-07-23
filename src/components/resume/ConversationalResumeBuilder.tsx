@@ -519,12 +519,14 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <Sparkles className="h-6 w-6 text-white" />
-              </div>
+              <img 
+                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                alt="TalentXcel" 
+                className="h-12 w-12 rounded-lg"
+              />
               <div>
-                <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">TalentXcel Resume Builder</h1>
-                <p className="text-sm text-gray-500 mt-0.5">Create professional resumes with AI enhancement</p>
+                <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">TalentXcel AI Resume Builder</h1>
+                <p className="text-sm text-gray-500 mt-0.5">AI-powered resume creation that lands you interviews – Powered by TalentXcel AI</p>
               </div>
             </div>
             
@@ -1157,7 +1159,7 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
               <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-lg">
                   <Sparkles className="h-5 w-5 text-purple-600" />
-                  TalentXcel Tools
+                  TalentXcel AI Tools
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">

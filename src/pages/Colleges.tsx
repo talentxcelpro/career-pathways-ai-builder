@@ -157,7 +157,7 @@ const Colleges = () => {
                 Discover Your Perfect College with TalentXcel AI
               </h1>
               <p className="text-lg text-text-secondary max-w-2xl">
-                AI-powered discovery with comprehensive data on programs, placements, and smart guidance.
+                AI-powered discovery with comprehensive data on programs, placements, and smart guidance – Driven by TalentXcel AI
               </p>
             </div>
           </div>

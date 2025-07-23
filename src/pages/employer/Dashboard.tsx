@@ -119,8 +119,8 @@ function DashboardContent() {
             className="h-12 w-12 rounded-lg"
           />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Employer Dashboard</h1>
-            <p className="text-gray-600 mt-1">Manage your job postings and track applications</p>
+            <h1 className="text-3xl font-bold text-gray-900">TalentXcel AI Employer Dashboard</h1>
+            <p className="text-gray-600 mt-1">AI-powered hiring management that finds the perfect candidates – Driven by TalentXcel AI</p>
             <div className="flex items-center gap-2 mt-2">
               <Badge variant="outline">Role: {role?.toUpperCase()}</Badge>
               {companyId && <Badge variant="secondary">Company Access Active</Badge>}
