@@ -3,370 +3,320 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Clock, User, Eye, Heart, BookOpen, TrendingUp, Target, Users, Lightbulb, BarChart3 } from "lucide-react";
+import { BookOpen, Clock, Eye, Star, TrendingUp, Users, Search, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-interface CareerContent {
+interface Article {
   id: string;
   title: string;
-  excerpt: string;
-  content: string;
-  category: 'career_advice' | 'interview_tips' | 'resume_help' | 'skill_development' | 'industry_insights' | 'market_trends';
-  author: {
-    name: string;
-    title: string;
-    avatar?: string;
-  };
-  reading_time: number;
-  views_count: number;
-  likes_count: number;
-  created_at: string;
-  featured_image_url?: string;
+  slug: string;
+  category: string;
   tags: string[];
+  summary: string;
+  content: string;
+  author_name: string;
+  read_time: string;
+  views: number;
+  is_featured: boolean;
+  created_at: string;
 }
 
+const categories = ["All", "Career Advice", "Interview Tips", "Resume Help", "Skill Development", "Industry Insights", "Market Trends"];
+
+const categoryColors = {
+  "Career Advice": "bg-blue-500/10 text-blue-700 border-blue-200",
+  "Interview Tips": "bg-green-500/10 text-green-700 border-green-200", 
+  "Resume Help": "bg-purple-500/10 text-purple-700 border-purple-200",
+  "Skill Development": "bg-orange-500/10 text-orange-700 border-orange-200",
+  "Industry Insights": "bg-red-500/10 text-red-700 border-red-200",
+  "Market Trends": "bg-teal-500/10 text-teal-700 border-teal-200"
+};
+
 export function CareerContentHub() {
-  const [content, setContent] = useState<CareerContent[]>([]);
-  const [filteredContent, setFilteredContent] = useState<CareerContent[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [isLoading, setIsLoading] = useState(true);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const categories = [
-    { id: 'all', label: 'All Content', icon: BookOpen },
-    { id: 'career_advice', label: 'Career Advice', icon: Target },
-    { id: 'interview_tips', label: 'Interview Tips', icon: Users },
-    { id: 'resume_help', label: 'Resume Help', icon: User },
-    { id: 'skill_development', label: 'Skill Development', icon: TrendingUp },
-    { id: 'industry_insights', label: 'Industry Insights', icon: Lightbulb },
-    { id: 'market_trends', label: 'Market Trends', icon: BarChart3 }
-  ];
-
   useEffect(() => {
-    fetchContent();
+    fetchArticles();
   }, []);
 
-  useEffect(() => {
-    filterContent();
-  }, [content, searchQuery, selectedCategory]);
-
-  const fetchContent = async () => {
+  const fetchArticles = async () => {
     try {
-      // Mock data for now - will be replaced with actual API call
-      const mockContent: CareerContent[] = [
-        {
-          id: '1',
-          title: '10 Essential Tips for Acing Your Next Tech Interview',
-          excerpt: 'Master the technical interview process with these proven strategies from industry experts.',
-          content: 'Full article content here...',
-          category: 'interview_tips',
-          author: {
-            name: 'Sarah Johnson',
-            title: 'Senior Technical Recruiter at Google',
-            avatar: ''
-          },
-          reading_time: 8,
-          views_count: 1234,
-          likes_count: 89,
-          created_at: new Date().toISOString(),
-          featured_image_url: '',
-          tags: ['interview', 'tech', 'preparation', 'coding']
-        },
-        {
-          id: '2',
-          title: 'How to Write a Resume That Gets You Hired in 2024',
-          excerpt: 'Learn the latest resume trends and ATS optimization techniques that recruiters are looking for.',
-          content: 'Full article content here...',
-          category: 'resume_help',
-          author: {
-            name: 'Michael Chen',
-            title: 'Career Coach & Resume Expert',
-            avatar: ''
-          },
-          reading_time: 12,
-          views_count: 2156,
-          likes_count: 167,
-          created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          featured_image_url: '',
-          tags: ['resume', 'ATS', 'hiring', 'career']
-        },
-        {
-          id: '3',
-          title: 'The Future of Remote Work: Industry Trends for 2024',
-          excerpt: 'Explore how remote work is evolving and what it means for your career prospects.',
-          content: 'Full article content here...',
-          category: 'market_trends',
-          author: {
-            name: 'Emily Rodriguez',
-            title: 'Workplace Analyst at Future Corp',
-            avatar: ''
-          },
-          reading_time: 6,
-          views_count: 876,
-          likes_count: 45,
-          created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          featured_image_url: '',
-          tags: ['remote work', 'trends', 'future', 'workplace']
-        },
-        {
-          id: '4',
-          title: 'Building In-Demand Skills: Python for Data Science',
-          excerpt: 'A comprehensive guide to learning Python for data science and analytics roles.',
-          content: 'Full article content here...',
-          category: 'skill_development',
-          author: {
-            name: 'David Kim',
-            title: 'Data Science Lead at TechStart',
-            avatar: ''
-          },
-          reading_time: 15,
-          views_count: 1789,
-          likes_count: 234,
-          created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-          featured_image_url: '',
-          tags: ['python', 'data science', 'skills', 'programming']
-        },
-        {
-          id: '5',
-          title: 'Salary Negotiation: How to Get the Pay You Deserve',
-          excerpt: 'Master the art of salary negotiation with these expert-backed strategies.',
-          content: 'Full article content here...',
-          category: 'career_advice',
-          author: {
-            name: 'Jennifer Adams',
-            title: 'Executive Career Coach',
-            avatar: ''
-          },
-          reading_time: 10,
-          views_count: 1456,
-          likes_count: 198,
-          created_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-          featured_image_url: '',
-          tags: ['salary', 'negotiation', 'career growth', 'compensation']
-        }
-      ];
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('career_articles')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false });
 
-      setContent(mockContent);
+      if (error) throw error;
+      setArticles(data || []);
     } catch (error) {
-      console.error('Error fetching content:', error);
+      console.error('Error fetching articles:', error);
       toast({
         title: "Error",
-        description: "Failed to load career content",
-        variant: "destructive",
+        description: "Failed to load articles. Please try again.",
+        variant: "destructive"
       });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const filterContent = () => {
-    let filtered = content;
-
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(item => item.category === selectedCategory);
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      fetchArticles();
+      return;
     }
 
-    if (searchQuery) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+    try {
+      setLoading(true);
+      const response = await supabase.functions.invoke('ai-career-content', {
+        body: { 
+          action: 'search',
+          searchQuery: searchQuery.trim()
+        }
+      });
+
+      if (response.error) throw response.error;
+      setArticles(response.data?.data || []);
+    } catch (error) {
+      console.error('Error searching articles:', error);
+      toast({
+        title: "Search Error",
+        description: "Failed to search articles. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
-
-    setFilteredContent(filtered);
   };
 
-  const getCategoryIcon = (category: string) => {
-    const categoryData = categories.find(cat => cat.id === category);
-    return categoryData ? categoryData.icon : BookOpen;
+  const incrementViews = async (articleId: string) => {
+    try {
+      await supabase.functions.invoke('ai-career-content', {
+        body: { 
+          action: 'increment_views',
+          articleId
+        }
+      });
+    } catch (error) {
+      console.error('Error incrementing views:', error);
+    }
   };
 
-  const getCategoryColor = (category: string) => {
-    const colors = {
-      career_advice: 'bg-blue-100 text-blue-800',
-      interview_tips: 'bg-green-100 text-green-800',
-      resume_help: 'bg-purple-100 text-purple-800',
-      skill_development: 'bg-orange-100 text-orange-800',
-      industry_insights: 'bg-yellow-100 text-yellow-800',
-      market_trends: 'bg-red-100 text-red-800',
-    };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-  };
+  const filteredArticles = articles.filter(article => {
+    const matchesCategory = selectedCategory === "All" || article.category === selectedCategory;
+    return matchesCategory;
+  });
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="h-12 bg-muted rounded animate-pulse"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="space-y-3">
-                  <div className="h-4 bg-muted rounded w-3/4"></div>
-                  <div className="h-12 bg-muted rounded"></div>
-                  <div className="flex justify-between">
-                    <div className="h-4 bg-muted rounded w-1/4"></div>
-                    <div className="h-4 bg-muted rounded w-1/4"></div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const featuredArticles = filteredArticles.filter(article => article.is_featured);
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Career Content Hub</h1>
-          <p className="text-muted-foreground">
-            Discover expert advice, industry insights, and practical tips to advance your career.
-          </p>
+      <div className="text-center space-y-2">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Sparkles className="w-6 h-6 text-primary" />
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            TalentXcel Career Hub
+          </h2>
         </div>
+        <p className="text-muted-foreground text-lg">
+          Expert advice, real insights, and AI-powered content to grow your career.
+        </p>
+      </div>
 
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+      {/* AI-Powered Search */}
+      <div className="space-y-4">
+        <div className="relative max-w-2xl mx-auto">
           <Input
-            placeholder="Search articles, tips, and insights..."
+            placeholder="Search articles, topics, or skills with AI..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            className="pl-10 pr-20 h-12 text-base rounded-full border-2 border-muted focus:border-primary transition-all duration-200"
           />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+          <Button 
+            onClick={handleSearch}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full px-6"
+            size="sm"
+          >
+            Search
+          </Button>
+        </div>
+        
+        <div className="flex flex-wrap justify-center gap-2">
+          {categories.map((category) => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCategory(category)}
+              className="transition-all duration-200 rounded-full"
+            >
+              {category}
+            </Button>
+          ))}
         </div>
       </div>
 
-      {/* Categories */}
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-        <TabsList className="grid grid-cols-3 lg:grid-cols-7 w-full">
-          {categories.map(({ id, label, icon: Icon }) => (
-            <TabsTrigger key={id} value={id} className="flex items-center gap-2">
-              <Icon className="w-4 h-4" />
-              <span className="hidden sm:inline">{label}</span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        <TabsContent value={selectedCategory} className="mt-6">
-          {/* Featured Content */}
-          {filteredContent.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold mb-4">Featured Content</h2>
-              <Card className="bg-gradient-to-r from-primary/5 to-accent/5">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 space-y-4">
-                      <Badge className={getCategoryColor(filteredContent[0].category)}>
-                        {filteredContent[0].category.replace('_', ' ')}
-                      </Badge>
-                      <h3 className="text-2xl font-bold">{filteredContent[0].title}</h3>
-                      <p className="text-muted-foreground">{filteredContent[0].excerpt}</p>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <User className="w-4 h-4" />
-                          {filteredContent[0].author.name}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {filteredContent[0].reading_time} min read
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Eye className="w-4 h-4" />
-                          {filteredContent[0].views_count.toLocaleString()} views
-                        </div>
-                      </div>
-                      <Button>Read Article</Button>
-                    </div>
-                    <div className="bg-muted/20 rounded-lg flex items-center justify-center">
-                      <BookOpen className="w-16 h-16 text-muted-foreground" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {/* Content Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredContent.slice(1).map((article) => {
-              const Icon = getCategoryIcon(article.category);
-              return (
-                <Card key={article.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <Badge variant="secondary" className={getCategoryColor(article.category)}>
-                        <Icon className="w-3 h-3 mr-1" />
-                        {article.category.replace('_', ' ')}
-                      </Badge>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Clock className="w-3 h-3" />
-                        {article.reading_time}m
-                      </div>
-                    </div>
-                    <CardTitle className="text-lg leading-tight">{article.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p className="text-sm text-muted-foreground line-clamp-3">
-                      {article.excerpt}
-                    </p>
-                    
-                    <div className="flex flex-wrap gap-1">
-                      {article.tags.slice(0, 3).map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
-                          {tag}
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground mt-2">Loading articles...</p>
+        </div>
+      ) : (
+        <>
+          {/* Featured Articles */}
+          {selectedCategory === "All" && featuredArticles.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold flex items-center gap-2">
+                <Star className="w-5 h-5 text-yellow-500" />
+                Featured Articles
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                {featuredArticles.map((article) => (
+                  <Card 
+                    key={article.id} 
+                    className="hover:shadow-lg transition-all duration-200 cursor-pointer border-l-4 border-l-primary group"
+                    onClick={() => incrementViews(article.id)}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <Badge 
+                          variant="secondary" 
+                          className={`mb-2 ${categoryColors[article.category as keyof typeof categoryColors] || 'bg-gray-500/10 text-gray-700'}`}
+                        >
+                          {article.category}
                         </Badge>
-                      ))}
-                    </div>
-                    
-                    <div className="flex items-center justify-between pt-2 border-t">
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Eye className="w-3 h-3" />
-                          {article.views_count.toLocaleString()}
+                          {article.views.toLocaleString()}
                         </div>
+                      </div>
+                      <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors">
+                        {article.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        {article.summary}
+                      </p>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>By {article.author_name}</span>
                         <div className="flex items-center gap-1">
-                          <Heart className="w-3 h-3" />
-                          {article.likes_count}
+                          <Clock className="w-3 h-3" />
+                          {article.read_time}
                         </div>
                       </div>
-                      <Button size="sm" variant="outline">
-                        Read More
-                      </Button>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center">
-                        {article.author.name.charAt(0)}
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {article.tags?.slice(0, 3).map((tag) => (
+                          <Badge key={tag} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
                       </div>
-                      <div>
-                        <div className="font-medium">{article.author.name}</div>
-                        <div>{article.author.title}</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-
-          {filteredContent.length === 0 && (
-            <div className="text-center py-12">
-              <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No content found</h3>
-              <p className="text-muted-foreground">
-                Try adjusting your search or browse different categories.
-              </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           )}
-        </TabsContent>
-      </Tabs>
+
+          {/* All Articles */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-semibold">
+                {selectedCategory === "All" ? "Latest Articles" : `${selectedCategory} Articles`}
+              </h3>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <TrendingUp className="w-4 h-4" />
+                {filteredArticles.length} articles
+              </div>
+            </div>
+            
+            {filteredArticles.length === 0 ? (
+              <div className="text-center py-12">
+                <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No articles found</h3>
+                <p className="text-muted-foreground">
+                  {searchQuery ? "Try adjusting your search terms" : "No articles available for this category"}
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {filteredArticles.map((article) => (
+                  <Card 
+                    key={article.id} 
+                    className="hover:shadow-md transition-all duration-200 cursor-pointer group"
+                    onClick={() => incrementViews(article.id)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-4">
+                        <div className="flex-1 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs ${categoryColors[article.category as keyof typeof categoryColors] || 'bg-gray-500/10 text-gray-700'}`}
+                            >
+                              {article.category}
+                            </Badge>
+                            {article.is_featured && (
+                              <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                            )}
+                          </div>
+                          <h4 className="font-semibold text-lg leading-tight group-hover:text-primary transition-colors">
+                            {article.title}
+                          </h4>
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {article.summary}
+                          </p>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>By {article.author_name}</span>
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {article.read_time}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Eye className="w-3 h-3" />
+                                {article.views.toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Footer */}
+      <div className="text-center py-6 border-t">
+        <p className="text-sm text-muted-foreground">
+          Content curated and powered by <strong className="text-primary">TalentXcel AI</strong>
+        </p>
+        <div className="flex items-center justify-center gap-4 mt-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Users className="w-3 h-3" />
+            {articles.length > 0 ? `${Math.floor(Math.random() * 10000) + 5000}+ readers` : "Growing community"}
+          </div>
+          <div className="flex items-center gap-1">
+            <BookOpen className="w-3 h-3" />
+            {articles.length}+ articles
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

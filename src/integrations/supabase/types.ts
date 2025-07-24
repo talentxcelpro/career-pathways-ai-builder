@@ -202,6 +202,41 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_prompts: {
+        Row: {
+          article_id: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          prompt: string
+          response: string | null
+        }
+        Insert: {
+          article_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          prompt: string
+          response?: string | null
+        }
+        Update: {
+          article_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          prompt?: string
+          response?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_prompts_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "career_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_tool_configs: {
         Row: {
           ai_settings: Json | null
@@ -2591,6 +2626,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      career_articles: {
+        Row: {
+          author_name: string | null
+          category: string | null
+          content: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_featured: boolean | null
+          is_published: boolean | null
+          read_time: string | null
+          slug: string
+          summary: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          author_name?: string | null
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          read_time?: string | null
+          slug: string
+          summary?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          author_name?: string | null
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          read_time?: string | null
+          slug?: string
+          summary?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Relationships: []
       }
       career_goals: {
         Row: {
@@ -16593,6 +16682,10 @@ export type Database = {
         Args: { base_slug: string; company_id?: string }
         Returns: string
       }
+      generate_article_slug: {
+        Args: { article_title: string }
+        Returns: string
+      }
       generate_certificate_number: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -16666,6 +16759,10 @@ export type Database = {
           _permission_type: string
         }
         Returns: boolean
+      }
+      increment_article_views: {
+        Args: { article_id: string }
+        Returns: undefined
       }
       increment_job_applications: {
         Args: { job_id: string }
