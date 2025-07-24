@@ -8,9 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { BookOpen, Clock, Eye, Star, TrendingUp, Users, Search, Sparkles, Plus, PenTool, FileText, Heart, MessageCircle, Share2, Filter } from "lucide-react";
+import { BookOpen, Clock, Eye, Star, TrendingUp, Users, Search, Sparkles, Plus, PenTool, FileText, Heart, MessageCircle, Share2, Filter, Upload, Image as ImageIcon, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useDropzone } from 'react-dropzone';
 
 interface Article {
   id: string;
@@ -24,6 +25,7 @@ interface Article {
   read_time: string;
   views: number;
   is_featured: boolean;
+  featured_image_url?: string;
   created_at: string;
 }
 
@@ -58,6 +60,10 @@ export function CareerContentHub() {
     is_public: true
   });
 
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   useEffect(() => {
     fetchArticles();
     getCurrentUser();
@@ -73,6 +79,64 @@ export function CareerContentHub() {
         .single();
       setCurrentUser({ ...user, profile });
     }
+  };
+
+  const onDrop = (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp']
+    },
+    maxFiles: 1,
+    maxSize: 5 * 1024 * 1024 // 5MB
+  });
+
+  const uploadImage = async (): Promise<string | null> => {
+    if (!selectedImage || !currentUser) return null;
+
+    try {
+      setUploadingImage(true);
+      const fileExt = selectedImage.name.split('.').pop();
+      const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('article-images')
+        .upload(fileName, selectedImage);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('article-images')
+        .getPublicUrl(fileName);
+
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive"
+      });
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
   };
 
   const fetchArticles = async () => {
@@ -161,6 +225,13 @@ export function CareerContentHub() {
 
     try {
       setIsSubmitting(true);
+
+      // Upload image if selected
+      let imageUrl = null;
+      if (selectedImage) {
+        imageUrl = await uploadImage();
+      }
+
       const { error } = await supabase
         .from('career_articles')
         .insert({
@@ -171,6 +242,7 @@ export function CareerContentHub() {
           content: formData.content,
           author_name: currentUser.profile?.full_name || 'Anonymous',
           read_time: `${Math.ceil(formData.content.split(' ').length / 200)} min read`,
+          featured_image_url: imageUrl,
           is_published: false, // User submissions need approval
           is_featured: false,
           views: 0,
@@ -180,8 +252,8 @@ export function CareerContentHub() {
       if (error) throw error;
 
       toast({
-        title: "Article Submitted!",
-        description: "Your article has been submitted for review. It will be published once approved.",
+        title: "Article Submitted Successfully! 🎉",
+        description: "Your article has been submitted for admin review at https://talentxcel.in/admin/home and will be published once approved.",
       });
 
       setIsCreateDialogOpen(false);
@@ -193,6 +265,7 @@ export function CareerContentHub() {
         content: "",
         is_public: true
       });
+      removeImage();
     } catch (error) {
       console.error('Error submitting article:', error);
       toast({
@@ -339,6 +412,50 @@ export function CareerContentHub() {
                   />
                 </div>
 
+                {/* Image Upload Section */}
+                <div>
+                  <Label>Featured Image (Optional)</Label>
+                  <div className="mt-1">
+                    {!imagePreview ? (
+                      <div
+                        {...getRootProps()}
+                        className={`
+                          border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
+                          ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary/50'}
+                        `}
+                      >
+                        <input {...getInputProps()} />
+                        <div className="flex flex-col items-center gap-2">
+                          <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                          <p className="text-sm text-muted-foreground">
+                            {isDragActive ? "Drop image here..." : "Click or drag image to upload"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            PNG, JPG, WEBP up to 5MB
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="w-full h-48 object-cover rounded-lg border"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-2 right-2"
+                          onClick={removeImage}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div>
                   <Label htmlFor="article-content">Content * (Markdown supported)</Label>
                   <Textarea
@@ -350,7 +467,8 @@ export function CareerContentHub() {
                     className="mt-1 font-mono"
                   />
                   <p className="text-sm text-muted-foreground mt-1">
-                    You can use Markdown formatting. Your article will be reviewed before publishing.
+                    You can use Markdown formatting. Your article will be reviewed by admins at{" "}
+                    <span className="font-medium text-primary">https://talentxcel.in/admin/home</span> before publishing.
                   </p>
                 </div>
 
@@ -364,18 +482,18 @@ export function CareerContentHub() {
                   </Button>
                   <Button 
                     onClick={submitArticle}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || uploadingImage}
                     className="bg-gradient-to-r from-primary to-secondary"
                   >
-                    {isSubmitting ? (
+                    {isSubmitting || uploadingImage ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                        Submitting...
+                        {uploadingImage ? 'Uploading...' : 'Submitting...'}
                       </>
                     ) : (
                       <>
                         <Plus className="w-4 h-4 mr-2" />
-                        Submit Article
+                        Submit for Review
                       </>
                     )}
                   </Button>
@@ -424,6 +542,15 @@ export function CareerContentHub() {
                     onClick={() => incrementViews(article.id)}
                   >
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
+                    {article.featured_image_url && (
+                      <div className="relative h-48 mb-4">
+                        <img
+                          src={article.featured_image_url}
+                          alt={article.title}
+                          className="w-full h-full object-cover rounded-t-lg"
+                        />
+                      </div>
+                    )}
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <Badge 
@@ -512,6 +639,15 @@ export function CareerContentHub() {
                   >
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
+                        {article.featured_image_url && (
+                          <div className="w-24 h-24 flex-shrink-0">
+                            <img
+                              src={article.featured_image_url}
+                              alt={article.title}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          </div>
+                        )}
                         <div className="flex-1 space-y-3">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">

@@ -2634,6 +2634,7 @@ export type Database = {
           content: string | null
           created_at: string | null
           created_by: string | null
+          featured_image_url: string | null
           id: string
           is_featured: boolean | null
           is_published: boolean | null
@@ -2651,6 +2652,7 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           created_by?: string | null
+          featured_image_url?: string | null
           id?: string
           is_featured?: boolean | null
           is_published?: boolean | null
@@ -2668,6 +2670,7 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           created_by?: string | null
+          featured_image_url?: string | null
           id?: string
           is_featured?: boolean | null
           is_published?: boolean | null
