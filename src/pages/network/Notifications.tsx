@@ -30,13 +30,13 @@ const Notifications = () => {
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
   const { soundEnabled, toggleSound } = useNotificationStore();
 
-  // Get filter object based on current active pillar
-  const getFilters = () => {
-    const filters: any = {};
+  // Memoized filters to prevent infinite re-renders
+  const filters = useMemo(() => {
+    const result: any = {};
     
     if (activePillar !== 'all') {
       // Map pillar keys to module names
-      const pillarToModule = {
+      const pillarToModule: Record<string, string> = {
         network: 'network',
         jobs: 'jobs', 
         companies: 'companies',
@@ -49,16 +49,16 @@ const Notifications = () => {
       };
       
       if (pillarToModule[activePillar]) {
-        filters.module = pillarToModule[activePillar];
+        result.module = pillarToModule[activePillar];
       }
     }
     
     if (searchQuery.trim()) {
-      filters.search = searchQuery.trim();
+      result.search = searchQuery.trim();
     }
     
-    return filters;
-  };
+    return result;
+  }, [activePillar, searchQuery]);
 
   const {
     notifications,
@@ -71,7 +71,7 @@ const Notifications = () => {
     isMarkingAsRead,
     isMarkingAllAsRead,
     isDeletingNotification
-  } = useEnhancedNotifications(getFilters());
+  } = useEnhancedNotifications(filters);
 
   // Enhanced stats for pillars
   const pillarStats = useMemo(() => {
