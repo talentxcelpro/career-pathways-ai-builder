@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Card } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,10 +12,12 @@ import ConversationNotFound from "@/components/network/ConversationNotFound";
 
 const MessageConversation = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState(true);
+  const [isMinimized, setIsMinimized] = useState(false);
   const queryClient = useQueryClient();
 
   // Auto-refresh interval (every 3 seconds)
@@ -197,13 +199,25 @@ const MessageConversation = () => {
     return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
   };
 
+  const handleMinimize = () => {
+    setIsMinimized(true);
+  };
+
+  const handleMaximize = () => {
+    setIsMinimized(false);
+  };
+
+  const handleClose = () => {
+    navigate('/network/messages');
+  };
+
   if (!conversation) {
     return <ConversationNotFound />;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="max-w-xl mx-auto px-1 py-1">
+      <div className={`mx-auto px-1 py-1 transition-all duration-300 ${isMinimized ? 'max-w-sm' : 'max-w-xl'}`}>
         {/* Header */}
         <div className="flex items-center justify-between mb-1">
           <Link to="/network/messages" className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors group text-xs">
@@ -219,11 +233,17 @@ const MessageConversation = () => {
         </div>
 
         {/* Chat Container */}
-        <Card className="h-[calc(100vh-60px)] flex flex-col shadow-lg border-0 bg-white/90 backdrop-blur-sm">
+        <Card className={`flex flex-col shadow-lg border-0 bg-white/90 backdrop-blur-sm transition-all duration-300 ${
+          isMinimized ? 'h-[400px]' : 'h-[calc(100vh-60px)]'
+        }`}>
           <MessageConversationHeader
             otherUser={otherUser}
             formatDisplayName={formatDisplayName}
             generateInitials={generateInitials}
+            isMinimized={isMinimized}
+            onMinimize={handleMinimize}
+            onMaximize={handleMaximize}
+            onClose={handleClose}
           />
 
           <MessagesList
