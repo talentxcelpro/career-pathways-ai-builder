@@ -25,6 +25,7 @@ import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
 import { useNetworkRealtime, useAutoRefreshPosts } from "@/hooks/useRealtimeData";
 import { useProfileStats } from "@/hooks/useProfileStats";
 import FloatingMessenger from "@/components/network/FloatingMessenger";
+import ModernMessenger from "@/components/network/ModernMessenger";
 import { Link } from 'react-router-dom';
 import { AICommentGenerator } from "@/components/network/AICommentGenerator";
 import ProBanner from "@/components/network/ProBanner";
@@ -41,6 +42,7 @@ const Posts = () => {
   const [showCommentGenerator, setShowCommentGenerator] = useState<string | null>(null);
   const [activePost, setActivePost] = useState<any>(null);
   const [dismissedBanners, setDismissedBanners] = useState<string[]>([]);
+  const [showModernMessenger, setShowModernMessenger] = useState(false);
   const queryClient = useQueryClient();
 
   // Auto-refresh with realtime updates
@@ -471,12 +473,15 @@ const Posts = () => {
                     Jobs
                   </Button>
                 </Link>
-                <Link to="/network/messages" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
-                    <MessageCircle className="h-3.5 w-3.5 mr-3" />
-                    Messaging
-                  </Button>
-                </Link>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200"
+                  onClick={() => setShowModernMessenger(true)}
+                >
+                  <MessageCircle className="h-3.5 w-3.5 mr-3" />
+                  Messages
+                </Button>
                 <Link to="/network/notifications" className="block">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
                     <Bell className="h-3.5 w-3.5 mr-3" />
@@ -1005,6 +1010,12 @@ const Posts = () => {
       
       {/* Floating Messenger */}
       <FloatingMessenger />
+      
+      {/* Modern Messenger */}
+      <ModernMessenger 
+        isOpen={showModernMessenger}
+        onClose={() => setShowModernMessenger(false)}
+      />
     </div>
   );
 };
