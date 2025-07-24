@@ -16817,18 +16817,27 @@ export type Database = {
         Returns: string
       }
       log_security_event: {
-        Args: {
-          p_user_id: string
-          p_event_type: string
-          p_event_category?: string
-          p_severity?: string
-          p_ip_address?: unknown
-          p_user_agent?: string
-          p_location_data?: Json
-          p_device_fingerprint?: string
-          p_session_id?: string
-          p_details?: Json
-        }
+        Args:
+          | {
+              p_user_id: string
+              p_event_type: string
+              p_description: string
+              p_ip_address?: unknown
+              p_user_agent?: string
+              p_metadata?: Json
+            }
+          | {
+              p_user_id: string
+              p_event_type: string
+              p_event_category?: string
+              p_severity?: string
+              p_ip_address?: unknown
+              p_user_agent?: string
+              p_location_data?: Json
+              p_device_fingerprint?: string
+              p_session_id?: string
+              p_details?: Json
+            }
         Returns: string
       }
       log_team_activity: {

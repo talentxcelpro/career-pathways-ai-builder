@@ -16,9 +16,12 @@ additional_redirect_urls = ["https://dthlgsnakhoftinssokm.supabase.co/auth/v1/ca
 jwt_expiry = 3600
 enable_signup = true
 enable_confirmations = false
+password_min_length = 8
+security_password_change_confirm = true
+security_update_password_require_reauthentication = true
 
 [functions.admin-create-user]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-welcome-email]
 verify_jwt = false
@@ -30,7 +33,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.bulk-csv-import]
-verify_jwt = false
+verify_jwt = true
 
 [functions.razorpay-create-order]
 verify_jwt = true

@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { AdminRole, AdminPermissions, ROLE_PERMISSIONS } from '@/types/admin';
 
 export const useAdminPermissions = () => {
@@ -16,23 +17,37 @@ export const useAdminPermissions = () => {
         return;
       }
 
-      // For now, we'll determine role based on email
-      // In a real app, this would come from the database
-      let role: AdminRole = 'moderator';
-      
-      if (user.email === 'talentxcelpro@gmail.com') {
-        role = 'super_admin';
-      } else if (user.email?.includes('admin')) {
-        role = 'content_admin';
-      } else if (user.email?.includes('job')) {
-        role = 'job_admin';
-      } else if (user.email?.includes('support')) {
-        role = 'support_admin';
-      }
+      try {
+        // Fetch user role from database using secure function
+        const { data, error } = await supabase.rpc('get_user_app_role', {
+          _user_id: user.id
+        });
 
-      setAdminRole(role);
-      setPermissions(ROLE_PERMISSIONS[role]);
-      setIsLoading(false);
+        if (error) {
+          console.error('Error fetching user role:', error);
+          setAdminRole('moderator');
+          setPermissions(ROLE_PERMISSIONS.moderator);
+        } else {
+          // Map app_role to AdminRole
+          const roleMapping: Record<string, AdminRole> = {
+            'super_admin': 'super_admin',
+            'admin': 'content_admin',
+            'moderator': 'moderator',
+            'employer': 'job_admin',
+            'user': 'moderator'
+          };
+          
+          const mappedRole = roleMapping[data] || 'moderator';
+          setAdminRole(mappedRole);
+          setPermissions(ROLE_PERMISSIONS[mappedRole]);
+        }
+      } catch (error) {
+        console.error('Error in fetchAdminRole:', error);
+        setAdminRole('moderator');
+        setPermissions(ROLE_PERMISSIONS.moderator);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchAdminRole();
@@ -42,7 +57,7 @@ export const useAdminPermissions = () => {
     return permissions[permission];
   };
 
-  const isAdmin = user?.email === 'talentxcelpro@gmail.com';
+  const isAdmin = adminRole === 'super_admin' || adminRole === 'content_admin';
 
   return {
     adminRole,

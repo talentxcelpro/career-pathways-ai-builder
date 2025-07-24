@@ -13,7 +13,27 @@ serve(async (req) => {
   }
 
   try {
-    const { amount, currency = "INR", planId, serviceId, packageType } = await req.json();
+    const body = await req.json();
+    
+    // Input validation and sanitization
+    const amount = parseFloat(body.amount);
+    const currency = (body.currency || "INR").toUpperCase();
+    const planId = body.planId ? String(body.planId).slice(0, 100) : null;
+    const serviceId = body.serviceId ? String(body.serviceId).slice(0, 100) : null;
+    const packageType = body.packageType ? String(body.packageType).slice(0, 50) : null;
+    
+    // Validate required fields
+    if (!amount || amount <= 0 || amount > 100000) {
+      throw new Error("Invalid amount. Must be between 0 and 100,000");
+    }
+    
+    if (!["INR", "USD", "EUR"].includes(currency)) {
+      throw new Error("Invalid currency");
+    }
+    
+    if (!serviceId) {
+      throw new Error("Service ID is required");
+    }
 
     // Get Razorpay credentials from secrets
     const razorpayKeyId = Deno.env.get("RAZORPAY_KEY_ID");
