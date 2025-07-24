@@ -20,6 +20,7 @@ import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
 import { CompanyNetworkActivity } from "@/components/network/CompanyNetworkActivity";
 import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
+import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
 import { useNetworkRealtime, useAutoRefreshPosts } from "@/hooks/useRealtimeData";
@@ -842,8 +843,11 @@ const Posts = () => {
             )}
           </div>
 
-          {/* Right Sidebar - Network Activity */}
+          {/* Right Sidebar - Network Activity & Advertising */}
           <div className="lg:col-span-3 space-y-6">
+            {/* Advertising Sidebar */}
+            <AdvertisingSidebar maxAds={3} />
+            
             {/* Connection Requests */}
             <ConnectionRequests />
             
