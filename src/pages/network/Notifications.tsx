@@ -25,6 +25,7 @@ import { useEnhancedNotifications } from "@/hooks/useEnhancedNotifications";
 import { useNotificationStore } from "@/stores/useNotificationStore";
 
 const Notifications = () => {
+  console.log('COMPONENT DEBUG: Notifications component rendering');
   const [activePillar, setActivePillar] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');

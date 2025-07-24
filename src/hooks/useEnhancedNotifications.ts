@@ -32,6 +32,7 @@ export const useEnhancedNotifications = (filters: NotificationFilters = {}) => {
   const { data: dbNotifications = [], error } = useQuery({
     queryKey: ['notifications', user?.id, filters],
     queryFn: async () => {
+      console.log('QUERY DEBUG: Running notifications query with user:', user?.id, 'filters:', filters);
       if (!user?.id) return [];
 
       let query = supabase
@@ -74,6 +75,7 @@ export const useEnhancedNotifications = (filters: NotificationFilters = {}) => {
 
   // Handle data updates
   useEffect(() => {
+    console.log('HOOK DEBUG: dbNotifications changed, length:', dbNotifications?.length || 0);
     if (dbNotifications) {
       setNotifications(dbNotifications as any);
       setLoading(false);

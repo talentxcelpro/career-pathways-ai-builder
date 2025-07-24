@@ -54,6 +54,7 @@ export const useNotificationStore = create<NotificationStore>()(
 
     // Actions
     setNotifications: (notifications) => {
+      console.log('STORE DEBUG: setNotifications called with', notifications.length, 'notifications');
       set({
         notifications,
         unreadCount: notifications.filter(n => !n.is_read).length,
