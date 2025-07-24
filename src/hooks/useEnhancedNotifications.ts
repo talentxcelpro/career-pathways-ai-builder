@@ -78,14 +78,14 @@ export const useEnhancedNotifications = (filters: NotificationFilters = {}) => {
       setNotifications(dbNotifications as any);
       setLoading(false);
     }
-  }, [dbNotifications, setNotifications, setLoading]);
+  }, [dbNotifications]); // Removed store functions from deps
 
   // Handle errors
   useEffect(() => {
     if (error) {
       setLoading(false);
     }
-  }, [error, setLoading]);
+  }, [error]); // Removed store functions from deps
 
   // Real-time subscription setup
   useEffect(() => {
