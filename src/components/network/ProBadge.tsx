@@ -27,7 +27,7 @@ const ProBadge: React.FC<ProBadgeProps> = ({ plan, size = 'md', showIcon = true 
         return {
           className: 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-yellow-400',
           icon: <Star className="h-3 w-3" />,
-          text: 'Elite'
+          text: 'Set Up'
         };
       default:
         return {

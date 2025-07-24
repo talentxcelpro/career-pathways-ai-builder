@@ -412,9 +412,9 @@ const Posts = () => {
                     <Sparkles className="h-3 w-3 text-yellow-200" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-xs sm:text-sm text-white tracking-tight truncate">🎉 Welcome to Pro!</h3>
+                    <h3 className="font-semibold text-xs sm:text-sm text-white tracking-tight truncate">Boost your career</h3>
                     <p className="text-white/80 text-[10px] sm:text-xs leading-tight hidden sm:block font-medium">
-                      Set up services to get clients
+                      <a href="https://talentxcel.in/pro/subscription" className="underline hover:no-underline">Get Pro subscription</a>
                     </p>
                   </div>
                 </div>
