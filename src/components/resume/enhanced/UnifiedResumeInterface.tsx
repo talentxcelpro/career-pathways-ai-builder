@@ -15,16 +15,21 @@ import {
   Wand2,
   CheckCircle,
   AlertCircle,
-  TrendingUp
+  TrendingUp,
+  Zap
 } from 'lucide-react';
 import { EnhancedResumeData } from '@/types/enhanced-resume';
 import { useResumeAnalytics } from '@/hooks/useResumeAnalytics';
 import { useAdvancedAIFeatures } from '@/hooks/useAdvancedAIFeatures';
 import { useAIService } from '@/hooks/useAIService';
+import { useRealTimeATS } from '@/hooks/useRealTimeATS';
+import { useSmartSuggestions } from '@/hooks/useSmartSuggestions';
 import { toast } from 'sonner';
 import { ResumeEditor } from './ResumeEditor';
 import { AIInsightsPanel } from './AIInsightsPanel';
 import { ATSScoreCard } from './ATSScoreCard';
+import { RealTimeATSScore } from './RealTimeATSScore';
+import { SmartSuggestionsPanel } from './SmartSuggestionsPanel';
 
 interface UnifiedResumeInterfaceProps {
   mode: 'edit' | 'create';
@@ -40,6 +45,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   const [activeTab, setActiveTab] = useState('editor');
   const [resumeData, setResumeData] = useState<EnhancedResumeData>(initialData);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [jobDescription, setJobDescription] = useState<string>('');
   
   const { 
     overallScore, 
@@ -55,6 +61,21 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   } = useAdvancedAIFeatures();
   
   const { enhanceResume, isProcessing } = useAIService();
+  
+  // Real-time ATS analysis
+  const { 
+    atsAnalysis, 
+    jobAnalysis, 
+    isAnalyzing: isRealTimeAnalyzing 
+  } = useRealTimeATS(resumeData, jobDescription);
+  
+  // Smart suggestions
+  const {
+    suggestions: smartSuggestions,
+    isGenerating: isGeneratingSuggestions,
+    getComprehensiveSuggestions,
+    applySuggestion
+  } = useSmartSuggestions();
 
   useEffect(() => {
     setResumeData(initialData);
@@ -106,6 +127,26 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
     }
   };
 
+  const handleGenerateSmartSuggestions = async () => {
+    try {
+      await getComprehensiveSuggestions(resumeData, {
+        targetRole: jobAnalysis?.role,
+        industry: jobAnalysis?.industry,
+        jobDescription
+      });
+      setActiveTab('suggestions');
+      toast.success('Smart suggestions generated!');
+    } catch (error) {
+      console.error('Failed to generate suggestions:', error);
+      toast.error('Failed to generate suggestions');
+    }
+  };
+
+  const handleApplySmartSuggestion = (suggestion: any) => {
+    const updatedData = applySuggestion(suggestion, resumeData);
+    setResumeData(updatedData);
+  };
+
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
@@ -131,8 +172,8 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
               {/* Score Indicators */}
               <div className="flex items-center gap-4">
                 <div className="text-center">
-                  <div className={`text-lg font-bold ${getScoreColor(overallScore)}`}>
-                    {overallScore}%
+                  <div className={`text-lg font-bold ${getScoreColor(atsAnalysis?.overallScore || overallScore)}`}>
+                    {atsAnalysis?.overallScore || overallScore}%
                   </div>
                   <div className="text-xs text-muted-foreground">Overall</div>
                 </div>
@@ -142,6 +183,15 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                   </div>
                   <div className="text-xs text-muted-foreground">ATS Score</div>
                 </div>
+                {atsAnalysis && (
+                  <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    atsAnalysis.trafficLight === 'green' ? 'bg-green-100 text-green-800' :
+                    atsAnalysis.trafficLight === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {atsAnalysis.trafficLight.toUpperCase()}
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -163,6 +213,15 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                   <Sparkles className="h-4 w-4 mr-1" />
                   AI Enhance
                 </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleGenerateSmartSuggestions}
+                  disabled={isGeneratingSuggestions}
+                >
+                  <Zap className="h-4 w-4 mr-1" />
+                  Smart Tips
+                </Button>
                 <Button variant="outline" size="sm">
                   <Download className="h-4 w-4 mr-1" />
                   Export
@@ -180,10 +239,30 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="editor" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Editor
+            </TabsTrigger>
+            <TabsTrigger value="ats" className="flex items-center gap-2">
+              <Target className="h-4 w-4" />
+              Real-time ATS
+              {atsAnalysis && (
+                <div className={`w-2 h-2 rounded-full ml-1 ${
+                  atsAnalysis.trafficLight === 'green' ? 'bg-green-500' :
+                  atsAnalysis.trafficLight === 'yellow' ? 'bg-yellow-500' :
+                  'bg-red-500'
+                }`} />
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="suggestions" className="flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              Smart Tips
+              {smartSuggestions.length > 0 && (
+                <Badge variant="secondary" className="ml-1 text-xs">
+                  {smartSuggestions.length}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="insights" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
@@ -193,10 +272,6 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                   {suggestions.length}
                 </Badge>
               )}
-            </TabsTrigger>
-            <TabsTrigger value="ats" className="flex items-center gap-2">
-              <Target className="h-4 w-4" />
-              ATS Score
             </TabsTrigger>
             <TabsTrigger value="optimize" className="flex items-center gap-2">
               <Wand2 className="h-4 w-4" />
@@ -226,12 +301,19 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
             </TabsContent>
 
             <TabsContent value="ats" className="mt-0">
-              <ATSScoreCard
-                score={atsScore}
-                overallScore={overallScore}
-                suggestions={suggestions}
+              <RealTimeATSScore
+                analysis={atsAnalysis}
+                isAnalyzing={isRealTimeAnalyzing}
                 onOptimize={handleATSOptimization}
-                isOptimizing={isAnalyzing}
+              />
+            </TabsContent>
+
+            <TabsContent value="suggestions" className="mt-0">
+              <SmartSuggestionsPanel
+                suggestions={smartSuggestions}
+                isGenerating={isGeneratingSuggestions}
+                onApplySuggestion={handleApplySmartSuggestion}
+                onGenerateMore={handleGenerateSmartSuggestions}
               />
             </TabsContent>
 
