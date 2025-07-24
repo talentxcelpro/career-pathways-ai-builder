@@ -127,7 +127,7 @@ export const useEnhancedNotifications = (filters: NotificationFilters = {}) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, queryClient, addNotification, setLoading]);
+  }, [user?.id, queryClient]); // Removed addNotification and setLoading from deps
 
   // Filter notifications from store based on current filters
   const filteredNotifications = useMemo(() => {
