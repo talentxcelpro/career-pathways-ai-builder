@@ -22,7 +22,7 @@ interface ReferralNetworkAdProps {
 export const ReferralNetworkAd: React.FC<ReferralNetworkAdProps> = ({
   variant = 'banner'
 }) => {
-  const { referralData, loading } = useReferralSystem();
+  const { referralData, loading, copyReferralLink } = useReferralSystem();
 
   if (loading) return null;
 
@@ -35,7 +35,11 @@ export const ReferralNetworkAd: React.FC<ReferralNetworkAdProps> = ({
         <CardContent className="p-4">
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center">
-              <TalentXcelNotificationLogo className="h-10 w-10" />
+              <img 
+                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                alt="TalentXcel" 
+                className="h-10 w-10 rounded-sm"
+              />
             </div>
             <div>
               <h3 className="font-bold text-foreground">Earn Pro Access</h3>
@@ -49,11 +53,13 @@ export const ReferralNetworkAd: React.FC<ReferralNetworkAdProps> = ({
                 {currentReferrals} Referred
               </Badge>
             </div>
-            <Button size="sm" className="w-full gradient-primary text-white hover:opacity-90" asChild>
-              <Link to="/refer-and-earn">
-                <Gift className="w-4 h-4 mr-2" />
-                Start Earning
-              </Link>
+            <Button 
+              size="sm" 
+              className="w-full gradient-primary text-white hover:opacity-90"
+              onClick={() => copyReferralLink()}
+            >
+              <Gift className="w-4 h-4 mr-2" />
+              {referralData?.referral_code ? 'Copy Link' : 'Get Code'}
             </Button>
           </div>
         </CardContent>
@@ -68,7 +74,11 @@ export const ReferralNetworkAd: React.FC<ReferralNetworkAdProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="p-2 bg-primary/10 rounded-full">
-                <TalentXcelNotificationLogo className="h-8 w-8" />
+                <img 
+                  src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                  alt="TalentXcel" 
+                  className="h-8 w-8 rounded-sm"
+                />
               </div>
               <div>
                 <h4 className="font-bold text-foreground">
@@ -82,12 +92,13 @@ export const ReferralNetworkAd: React.FC<ReferralNetworkAdProps> = ({
                 </p>
               </div>
             </div>
-            <Button className="gradient-primary text-white hover:opacity-90" asChild>
-              <Link to="/refer-and-earn">
-                <Sparkles className="w-4 h-4 mr-2" />
-                {isNewUser ? 'Get Started' : 'View Progress'}
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
+            <Button 
+              className="gradient-primary text-white hover:opacity-90"
+              onClick={() => copyReferralLink()}
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              {referralData?.referral_code ? 'Copy Link' : 'Get Code'}
+              <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>
         </CardContent>

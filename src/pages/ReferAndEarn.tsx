@@ -24,7 +24,7 @@ import {
 import { TalentXcelNotificationLogo } from '@/assets/talentxcel-notification-logo';
 
 const ReferAndEarn: React.FC = () => {
-  const { referralData, loading } = useReferralSystem();
+  const { referralData, loading, generateReferralLink, copyReferralLink, shareOnPlatform } = useReferralSystem();
 
   useEnhancedSEO({
     title: 'Refer TalentXcel AI – Earn Free Pro Access, Tools & Priority Support',
@@ -104,14 +104,16 @@ const ReferAndEarn: React.FC = () => {
   return (
     <div className="min-h-screen gradient-subtle">
       {/* Hero Section */}
-      <section className="pt-16 pb-8 px-4">
+      <section className="pt-12 pb-8 px-4">
         <div className="max-w-6xl mx-auto text-center">
           {/* Logo and Title */}
           <div className="mb-6">
             <div className="flex justify-center mb-4">
-              <div className="p-2 gradient-primary rounded-xl shadow-elegant">
-                <TalentXcelNotificationLogo className="h-8 w-8" />
-              </div>
+              <img 
+                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                alt="TalentXcel" 
+                className="h-10 w-10 rounded-sm"
+              />
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
               Refer Friends & Unlock <span className="bg-gradient-to-r from-primary to-brand-green bg-clip-text text-transparent">Pro Access</span>
@@ -153,14 +155,16 @@ const ReferAndEarn: React.FC = () => {
               size="default" 
               className="gradient-primary text-white hover:opacity-90 px-6 py-2 shadow-elegant"
               onClick={() => {
-                // Generate or retrieve referral code
-                const referralCode = referralData?.referral_code || 'TALENTXCEL' + Math.random().toString(36).substr(2, 6).toUpperCase();
-                document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' });
-                // Could also trigger referral code generation logic here
+                if (referralData?.referral_code) {
+                  copyReferralLink();
+                } else {
+                  // Scroll to dashboard to set up referral
+                  document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' });
+                }
               }}
             >
               <Zap className="w-4 h-4 mr-2" />
-              Get Started Now
+              {referralData?.referral_code ? 'Copy Referral Link' : 'Get Started Now'}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
             <Button 
@@ -169,7 +173,6 @@ const ReferAndEarn: React.FC = () => {
               className="px-6 py-2 border-primary/20 hover:bg-primary/5"
               onClick={() => {
                 document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' });
-                // Could trigger rewards code verification modal here
               }}
             >
               <Star className="w-4 h-4 mr-2" />
