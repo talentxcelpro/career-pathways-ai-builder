@@ -8,10 +8,16 @@ import { NetworkStats } from "@/components/network/NetworkStats";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
 import Posts from './network/Posts';
+import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 
 const Network = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
+      {/* Referral Ad */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+        <ReferralNetworkAd variant="banner" />
+      </div>
+
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <Tabs defaultValue="feed" className="w-full">
@@ -55,20 +61,26 @@ const Network = () => {
           </TabsContent>
 
           <TabsContent value="connections" className="mt-0">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-gray-900">
-              <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-gray-900">
+              <div className="lg:col-span-2 space-y-6">
                 <ConnectionRequests />
+                <ProfessionalFeed />
               </div>
               <div className="space-y-6">
-                <ProfessionalFeed />
+                <ReferralNetworkAd variant="sidebar" />
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="discover" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <ConnectionSuggestions />
-              <CareerContentHub />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-gray-900">
+              <div className="lg:col-span-2 space-y-6">
+                <ConnectionSuggestions />
+                <CareerContentHub />
+              </div>
+              <div className="space-y-6">
+                <ReferralNetworkAd variant="sidebar" />
+              </div>
             </div>
           </TabsContent>
 

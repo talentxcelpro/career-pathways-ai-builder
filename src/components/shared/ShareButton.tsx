@@ -35,7 +35,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         <Button
           variant={variant}
           size={size}
-          className={`gap-2 ${className}`}
+          className={`gap-2 transition-smooth hover:scale-105 ${className}`}
         >
           <Share2 className="h-4 w-4" />
           {showText && <span>Share</span>}
@@ -43,7 +43,10 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Share Content</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Share2 className="h-5 w-5 text-primary" />
+            Share Content
+          </DialogTitle>
         </DialogHeader>
         <UniversalShare
           content={content}

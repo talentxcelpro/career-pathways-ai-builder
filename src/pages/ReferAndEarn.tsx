@@ -17,8 +17,11 @@ import {
   CheckCircle,
   Zap,
   Crown,
-  Rocket
+  Rocket,
+  ArrowRight,
+  Share2
 } from 'lucide-react';
+import { TalentXcelNotificationLogo } from '@/assets/talentxcel-notification-logo';
 
 const ReferAndEarn: React.FC = () => {
   const { referralData, loading } = useReferralSystem();
@@ -99,41 +102,82 @@ const ReferAndEarn: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+    <div className="min-h-screen gradient-subtle">
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Refer Friends & Unlock <span className="text-primary">Pro Access</span> to TalentXcel AI Career Tools
-          </h1>
-          <h2 className="text-xl md:text-2xl text-muted-foreground mb-8">
-            Invite Your Network. Earn Premium Rewards. Grow With TalentXcel.
-          </h2>
+          {/* Logo and Title */}
+          <div className="mb-8">
+            <div className="flex justify-center mb-6">
+              <div className="p-4 gradient-primary rounded-2xl shadow-glow">
+                <TalentXcelNotificationLogo className="h-16 w-16" />
+              </div>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+              Refer Friends & Unlock <span className="bg-gradient-to-r from-primary to-brand-green bg-clip-text text-transparent">Pro Access</span> to TalentXcel AI
+            </h1>
+            <h2 className="text-xl md:text-2xl text-muted-foreground mb-8">
+              Share TalentXcel with your network and unlock premium AI career tools, advanced analytics, and exclusive features.
+            </h2>
+          </div>
           
+          {/* Stats Card */}
           {referralData && (
-            <div className="mb-8">
-              <Badge variant="secondary" className="text-lg px-4 py-2">
-                <Users className="w-5 h-5 mr-2" />
-                {referralData.successful_referrals} Friends Referred
-              </Badge>
+            <div className="max-w-md mx-auto mb-8">
+              <Card className="gradient-card shadow-elegant border-primary/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-primary">{referralData.successful_referrals}</div>
+                      <div className="text-sm text-muted-foreground">Friends Referred</div>
+                    </div>
+                    <div className="w-px h-12 bg-border"></div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-brand-green">Tier {referralData.current_tier || 1}</div>
+                      <div className="text-sm text-muted-foreground">Current Level</div>
+                    </div>
+                    <div className="w-px h-12 bg-border"></div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange">Pro</div>
+                      <div className="text-sm text-muted-foreground">Benefits</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
 
-          <Button size="lg" className="text-lg px-8 py-4" asChild>
-            <Link to="#dashboard">Get Started</Link>
-          </Button>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button size="lg" className="gradient-primary text-white hover:opacity-90 text-lg px-8 py-4 shadow-elegant" asChild>
+              <Link to="#dashboard">
+                <Zap className="w-5 h-5 mr-2" />
+                Get Started Now
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-primary/20 hover:bg-primary/5" asChild>
+              <Link to="#rewards">
+                <Star className="w-5 h-5 mr-2" />
+                View Rewards
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 
       {/* Reward Tiers Section */}
-      <section className="py-16 px-4 bg-card/50">
+      <section id="rewards" className="py-16 px-4 gradient-hero">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Referral Reward System
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Clear Call-to-Actions for Every Milestone
+            <div className="flex items-center justify-center mb-4">
+              <Trophy className="w-8 h-8 text-primary mr-3" />
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Referral Reward Tiers
+              </h2>
+            </div>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Every friend you refer gets you closer to unlocking premium features and exclusive AI-powered career tools.
             </p>
           </div>
 
@@ -145,20 +189,29 @@ const ReferAndEarn: React.FC = () => {
                   const isUnlocked = referralData && referralData.successful_referrals >= tier.friends;
                   
                   return (
-                    <Card key={index} className={`relative transition-all duration-300 ${isUnlocked ? 'ring-2 ring-primary shadow-lg' : 'opacity-75'}`}>
+                    <Card key={index} className={`relative transition-smooth hover:scale-105 ${
+                      isUnlocked 
+                        ? 'gradient-card shadow-glow ring-2 ring-primary/50' 
+                        : 'bg-card/50 opacity-75 hover:opacity-90'
+                    }`}>
                       <CardHeader className="text-center pb-2">
-                        <div className={`w-12 h-12 rounded-full ${tier.color} flex items-center justify-center mx-auto mb-2`}>
-                          <Icon className="w-6 h-6 text-white" />
+                        <div className={`w-16 h-16 rounded-full ${tier.color} flex items-center justify-center mx-auto mb-3 shadow-elegant`}>
+                          <Icon className="w-8 h-8 text-white" />
                         </div>
-                        <div className="text-2xl font-bold text-primary">{tier.friends}</div>
-                        <div className="text-sm text-muted-foreground">Friends</div>
+                        <div className="text-3xl font-bold text-primary mb-1">{tier.friends}</div>
+                        <div className="text-sm text-muted-foreground font-medium">Friends</div>
                       </CardHeader>
-                      <CardContent className="text-center">
-                        <div className="font-semibold text-foreground mb-2">{tier.reward}</div>
-                        {isUnlocked && (
-                          <Badge variant="default" className="bg-green-500">
+                      <CardContent className="text-center pt-0">
+                        <div className="font-semibold text-foreground mb-3 text-sm leading-tight">{tier.reward}</div>
+                        {isUnlocked ? (
+                          <Badge className="bg-brand-green text-white border-0 shadow-sm">
                             <CheckCircle className="w-3 h-3 mr-1" />
                             Unlocked
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="border-primary/30 text-primary">
+                            <Target className="w-3 h-3 mr-1" />
+                            Locked
                           </Badge>
                         )}
                       </CardContent>
@@ -172,21 +225,32 @@ const ReferAndEarn: React.FC = () => {
       </section>
 
       {/* Pro Features Section */}
-      <section className="py-16 px-4">
+      <section className="py-16 px-4 bg-card/30">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              <Zap className="w-8 h-8 inline-block mr-2 text-primary" />
-              TalentXcel Pro Includes
-            </h2>
+            <div className="flex items-center justify-center mb-4">
+              <Zap className="w-8 h-8 text-primary mr-3" />
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                What You'll Unlock
+              </h2>
+            </div>
+            <p className="text-lg text-muted-foreground">
+              Premium AI-powered features to accelerate your career growth
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {proFeatures.map((feature, index) => (
-              <div key={index} className="flex items-start space-x-3 p-4 rounded-lg bg-card border">
-                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <span className="text-foreground">{feature}</span>
-              </div>
+              <Card key={index} className="gradient-card border-primary/10 hover:shadow-elegant transition-smooth">
+                <CardContent className="p-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="p-1 bg-brand-green/10 rounded-full">
+                      <CheckCircle className="w-4 h-4 text-brand-green flex-shrink-0" />
+                    </div>
+                    <span className="text-foreground font-medium text-sm leading-relaxed">{feature}</span>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -194,8 +258,12 @@ const ReferAndEarn: React.FC = () => {
 
       {/* Referral Dashboard */}
       {referralData && (
-        <section id="dashboard" className="py-16 px-4 bg-card/50">
+        <section id="dashboard" className="py-16 px-4 gradient-hero">
           <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-foreground mb-2">Your Referral Dashboard</h2>
+              <p className="text-muted-foreground">Track your progress and share your referral link</p>
+            </div>
             <ReferralDashboard />
           </div>
         </section>
@@ -204,20 +272,46 @@ const ReferAndEarn: React.FC = () => {
       {/* CTA Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl p-8">
-            <h2 className="text-3xl font-bold text-foreground mb-4">
-              <Sparkles className="w-8 h-8 inline-block mr-2 text-primary" />
-              Start Referring & Earn Your TalentXcel Pro Badge
-            </h2>
-            <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-              TalentXcel AI empowers professionals like you with advanced job tools, personalized resume builders, 
-              and deep analytics. Refer your friends today and unlock early access to AI-powered features, 
-              lead generation tools, and priority support. The more you grow your network, the more you grow your career — it's that simple.
-            </p>
-            <Button size="lg" className="text-lg px-8 py-4" asChild>
-              <Link to="#dashboard">Start Referring Now</Link>
-            </Button>
-          </div>
+          <Card className="gradient-primary shadow-glow border-0 text-white">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-center mb-4">
+                <div className="p-3 bg-white/20 rounded-full mr-4">
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-3xl font-bold text-white">
+                  Ready to Start Earning?
+                </h2>
+              </div>
+              <p className="text-lg text-white/90 mb-8 leading-relaxed max-w-2xl mx-auto">
+                Join thousands of professionals who are already earning Pro access by sharing TalentXcel. 
+                It takes just 30 seconds to get your personalized referral link and start inviting your network.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button 
+                  size="lg" 
+                  variant="secondary" 
+                  className="bg-white text-primary hover:bg-white/90 font-semibold text-lg px-8 py-4"
+                  asChild
+                >
+                  <Link to="#dashboard">
+                    <Share2 className="w-5 h-5 mr-2" />
+                    Start Referring Now
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Link>
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="ghost" 
+                  className="text-white border-white/30 hover:bg-white/10 text-lg px-8 py-4"
+                  asChild
+                >
+                  <Link to="#rewards">
+                    View All Rewards
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
