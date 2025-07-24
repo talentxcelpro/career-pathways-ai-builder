@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Users, Target, BookOpen, Briefcase, TrendingUp, Shield } from 'lucide-react';
 
 const features = [
@@ -6,37 +7,43 @@ const features = [
     icon: Users,
     title: 'Professional Network',
     description: 'Connect with industry leaders, mentors, and peers worldwide',
-    color: 'from-blue-500 to-cyan-500'
+    color: 'from-blue-500 to-cyan-500',
+    link: '/network'
   },
   {
     icon: Target,
     title: 'Personalized Career Paths',
     description: 'AI-driven recommendations tailored to your goals and skills',
-    color: 'from-purple-500 to-pink-500'
+    color: 'from-purple-500 to-pink-500',
+    link: '/tools/career-pathfinder'
   },
   {
     icon: BookOpen,
     title: 'AI-Powered Learning Hub',
     description: 'Upskill with courses designed for your career trajectory',
-    color: 'from-green-500 to-emerald-500'
+    color: 'from-green-500 to-emerald-500',
+    link: '/learning'
   },
   {
     icon: Briefcase,
     title: 'Verified Job & Internship Listings',
     description: 'Access exclusive opportunities from top companies',
-    color: 'from-orange-500 to-red-500'
+    color: 'from-orange-500 to-red-500',
+    link: '/jobs'
   },
   {
     icon: TrendingUp,
     title: 'Career Analytics',
     description: 'Track your progress with detailed insights and metrics',
-    color: 'from-indigo-500 to-purple-500'
+    color: 'from-indigo-500 to-purple-500',
+    link: '/tools'
   },
   {
     icon: Shield,
     title: 'Trusted Platform',
     description: 'Secure, professional environment with verified profiles',
-    color: 'from-teal-500 to-cyan-500'
+    color: 'from-teal-500 to-cyan-500',
+    link: '/about'
   }
 ];
 
@@ -63,9 +70,10 @@ export const WhyTalentXcel = () => {
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <div 
+              <Link 
+                to={feature.link}
                 key={feature.title}
-                className="group relative bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-slate-100 hover:border-slate-200 animate-fade-in"
+                className="group relative bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-slate-100 hover:border-slate-200 animate-fade-in block"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {/* Gradient background on hover */}
@@ -94,7 +102,7 @@ export const WhyTalentXcel = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
