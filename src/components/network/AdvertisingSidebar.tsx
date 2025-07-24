@@ -43,7 +43,7 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = ({
           title: 'Boost Your Career with Pro',
           description: 'Unlock premium features, priority support, and exclusive networking opportunities.',
           image_url: '/lovable-uploads/ec6599d8-d8de-4d2d-a983-5df2b95cddc0.png',
-          link_url: '/upgrade',
+          link_url: '/pro/subscription',
           cta_text: 'Upgrade Now',
           background_color: 'bg-gradient-to-r from-emerald-500 to-green-500',
           text_color: 'text-white',
