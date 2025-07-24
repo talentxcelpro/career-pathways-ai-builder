@@ -188,9 +188,9 @@ const Marketplace = () => {
               className="h-12 w-12 rounded-lg"
             />
             <div>
-              <h1 className="text-4xl font-bold text-[#1E2A78] mb-2 font-display">Professional Services Backed by TalentXcel AI</h1>
+              <h1 className="text-4xl font-bold text-[#1E2A78] mb-2 font-display">TalentXcel Marketplace</h1>
               <p className="text-xl text-text-secondary max-w-3xl">
-                Connect with verified AI-matched professionals and get expert guidance – Powered by TalentXcel AI intelligence
+                Connect with top professionals for your career and business needs
               </p>
             </div>
           </div>

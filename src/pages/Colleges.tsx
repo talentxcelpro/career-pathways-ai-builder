@@ -154,10 +154,10 @@ const Colleges = () => {
             />
             <div>
               <h1 className="text-4xl font-bold text-[#1E2A78] mb-2 font-display">
-                Discover Your Perfect College with TalentXcel AI
+                TalentXcel AI College Finder
               </h1>
               <p className="text-lg text-text-secondary max-w-2xl">
-                AI-powered discovery with comprehensive data on programs, placements, and smart guidance – Driven by TalentXcel AI
+                Your intelligent guide to choosing the perfect college—based on real data and student feedback.
               </p>
             </div>
           </div>
