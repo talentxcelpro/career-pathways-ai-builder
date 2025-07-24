@@ -10967,6 +10967,155 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_events: {
+        Row: {
+          conversion_date: string | null
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          referee_email: string | null
+          referee_id: string | null
+          referee_name: string | null
+          referral_code: string
+          referrer_id: string
+          reward_granted: Json | null
+          reward_tier: number | null
+          source_platform: string | null
+          status: string | null
+          updated_at: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          conversion_date?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          referee_email?: string | null
+          referee_id?: string | null
+          referee_name?: string | null
+          referral_code: string
+          referrer_id: string
+          reward_granted?: Json | null
+          reward_tier?: number | null
+          source_platform?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          conversion_date?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          referee_email?: string | null
+          referee_id?: string | null
+          referee_name?: string | null
+          referral_code?: string
+          referrer_id?: string
+          reward_granted?: Json | null
+          reward_tier?: number | null
+          source_platform?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      referral_programs: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          reward_tiers: Json
+          start_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          reward_tiers?: Json
+          start_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          reward_tiers?: Json
+          start_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      referral_rewards: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          granted_at: string | null
+          id: string
+          redeemed_at: string | null
+          referral_event_id: string | null
+          reward_data: Json | null
+          reward_description: string
+          reward_type: string
+          reward_value: number | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          granted_at?: string | null
+          id?: string
+          redeemed_at?: string | null
+          referral_event_id?: string | null
+          reward_data?: Json | null
+          reward_description: string
+          reward_type: string
+          reward_value?: number | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          granted_at?: string | null
+          id?: string
+          redeemed_at?: string | null
+          referral_event_id?: string | null
+          reward_data?: Json | null
+          reward_description?: string
+          reward_type?: string
+          reward_value?: number | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_rewards_referral_event_id_fkey"
+            columns: ["referral_event_id"]
+            isOneToOne: false
+            referencedRelation: "referral_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reports: {
         Row: {
           created_at: string | null
@@ -16033,6 +16182,51 @@ export type Database = {
         }
         Relationships: []
       }
+      user_referrals: {
+        Row: {
+          created_at: string | null
+          current_tier: number | null
+          id: string
+          is_active: boolean | null
+          referral_code: string
+          referral_slug: string | null
+          referrer_id: string
+          rewards_earned: Json | null
+          successful_referrals: number | null
+          total_referrals: number | null
+          total_rewards_value: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_tier?: number | null
+          id?: string
+          is_active?: boolean | null
+          referral_code: string
+          referral_slug?: string | null
+          referrer_id: string
+          rewards_earned?: Json | null
+          successful_referrals?: number | null
+          total_referrals?: number | null
+          total_rewards_value?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_tier?: number | null
+          id?: string
+          is_active?: boolean | null
+          referral_code?: string
+          referral_slug?: string | null
+          referrer_id?: string
+          rewards_earned?: Json | null
+          successful_referrals?: number | null
+          total_referrals?: number | null
+          total_rewards_value?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           assigned_at: string | null
@@ -16701,6 +16895,14 @@ export type Database = {
         Args: { company_name: string }
         Returns: string
       }
+      generate_referral_code: {
+        Args: { user_uuid: string }
+        Returns: string
+      }
+      generate_referral_slug: {
+        Args: { user_uuid: string }
+        Returns: string
+      }
       generate_resume_slug_enhanced: {
         Args: { resume_title: string; user_uuid: string }
         Returns: string
@@ -16715,6 +16917,10 @@ export type Database = {
       }
       get_email_domain: {
         Args: { email_address: string }
+        Returns: string
+      }
+      get_or_create_user_referral: {
+        Args: { user_uuid: string }
         Returns: string
       }
       get_post_reaction_counts: {
@@ -16851,6 +17057,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      process_successful_referral: {
+        Args: { p_referee_id: string; p_referral_code: string }
+        Returns: undefined
+      }
       queue_automated_email: {
         Args: {
           p_trigger_type: string
@@ -16910,6 +17120,17 @@ export type Database = {
           p_user_agent?: string
           p_referrer?: string
           p_session_id?: string
+        }
+        Returns: string
+      }
+      track_referral_event: {
+        Args: {
+          p_referral_code: string
+          p_referee_email?: string
+          p_referee_name?: string
+          p_source_platform?: string
+          p_ip_address?: string
+          p_user_agent?: string
         }
         Returns: string
       }
