@@ -365,33 +365,7 @@ const Posts = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Compact Header with Tabs */}
-        <div className="mb-3">
-          <div className="flex items-center gap-2 bg-white/95 backdrop-blur-md p-0.5 rounded-lg border border-slate-200/60 shadow-sm w-fit">
-            <Button
-              variant={feedFilter === 'all' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setFeedFilter('all')}
-              className={feedFilter === 'all' 
-                ? "bg-blue-500 text-white font-medium rounded-md text-sm py-1.5 px-3 h-8" 
-                : "text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 font-medium rounded-md text-sm py-1.5 px-3 h-8"
-              }
-            >
-              All Posts
-            </Button>
-            <Button
-              variant={feedFilter === 'smart' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setFeedFilter('smart')}
-              className={feedFilter === 'smart' 
-                ? "bg-blue-500 text-white font-medium rounded-md text-sm py-1.5 px-3 h-8" 
-                : "text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 font-medium rounded-md text-sm py-1.5 px-3 h-8"
-              }
-            >
-              Smart Feed
-            </Button>
-          </div>
-        </div>
+        {/* Feed Content */}
 
         {/* Three Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
