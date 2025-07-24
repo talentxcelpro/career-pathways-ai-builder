@@ -73,10 +73,10 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto">
+    <div className="w-full max-w-xs mx-auto">
       <Card className="overflow-hidden border border-gray-200 shadow-sm bg-white rounded-lg">
-        {/* Banner Image */}
-        <div className="relative h-16 bg-gradient-to-r from-blue-500 to-blue-600 overflow-hidden">
+        {/* Banner Image - Reduced height */}
+        <div className="relative h-12 bg-gradient-to-r from-blue-500 to-blue-600 overflow-hidden">
           {profile?.banner_url ? (
             <img 
               src={profile.banner_url} 
@@ -94,7 +94,7 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className="absolute top-2 right-2 h-6 w-6 p-0 bg-black/20 hover:bg-black/30 rounded-full"
+              className="absolute top-1 right-1 h-5 w-5 p-0 bg-black/20 hover:bg-black/30 rounded-full"
               onClick={() => {
                 const input = document.createElement('input');
                 input.type = 'file';
@@ -107,18 +107,18 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
               }}
               disabled={uploading === 'banner'}
             >
-              <Camera className="h-3 w-3 text-white" />
+              <Camera className="h-2.5 w-2.5 text-white" />
             </Button>
           )}
         </div>
 
-        {/* Profile Content */}
-        <CardContent className="p-4 text-center">
-          {/* Profile Picture */}
-          <div className="relative mb-4 flex justify-center">
-            <Avatar className="w-20 h-20 border-2 border-white shadow-md">
+        {/* Profile Content - Reduced padding */}
+        <CardContent className="p-3 text-center">
+          {/* Profile Picture - Smaller size */}
+          <div className="relative mb-3 flex justify-center">
+            <Avatar className="w-16 h-16 border-2 border-white shadow-md">
               <AvatarImage src={profile?.profile_picture_url} className="object-cover" />
-              <AvatarFallback className="bg-gradient-to-br from-blue-600 to-blue-700 text-white font-bold text-lg">
+              <AvatarFallback className="bg-gradient-to-br from-blue-600 to-blue-700 text-white font-bold text-sm">
                 {generateInitials(profile)}
               </AvatarFallback>
             </Avatar>
@@ -126,7 +126,7 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="absolute -bottom-1 -right-8 h-6 w-6 p-0 bg-gray-100 hover:bg-gray-200 rounded-full shadow-sm"
+                className="absolute -bottom-1 -right-6 h-5 w-5 p-0 bg-gray-100 hover:bg-gray-200 rounded-full shadow-sm"
                 onClick={() => {
                   const input = document.createElement('input');
                   input.type = 'file';
@@ -139,53 +139,60 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
                 }}
                 disabled={uploading === 'avatar'}
               >
-                <Camera className="h-3 w-3 text-gray-600" />
+                <Camera className="h-2.5 w-2.5 text-gray-600" />
               </Button>
             )}
           </div>
 
-          {/* Name */}
+          {/* Name - Smaller text */}
           <div className="mb-2">
-            <h2 className="text-lg font-semibold text-gray-900 truncate">
+            <h2 className="text-base font-semibold text-gray-900 truncate">
               {formatDisplayName(profile)}
             </h2>
           </div>
 
-          {/* Professional headline */}
+          {/* Professional headline - Smaller text */}
           {profile?.headline || profile?.title ? (
-            <p className="text-sm text-gray-700 mb-2 leading-relaxed">
+            <p className="text-xs text-gray-700 mb-2 leading-relaxed truncate">
               {profile.headline || profile.title}
             </p>
           ) : null}
 
-          {/* Company */}
+          {/* Company - Smaller size */}
           {profile?.current_company && (
             <div className="flex items-center justify-center gap-1 mb-2">
-              <Building2 className="h-3 w-3 text-gray-500" />
-              <p className="text-sm font-medium text-gray-800">
+              <Building2 className="h-2.5 w-2.5 text-gray-500" />
+              <p className="text-xs font-medium text-gray-800 truncate">
                 {profile.current_company}
               </p>
             </div>
           )}
 
-          {/* Location */}
+          {/* Location - Smaller text */}
           {profile?.location && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 truncate mb-2">
               {profile.location}
             </p>
           )}
 
-          {/* Edit button for own profile */}
-          {isOwnProfile && (
-            <div className="mt-4">
+          {/* Action buttons - Smaller spacing */}
+          <div className="mt-3 space-y-2">
+            {isOwnProfile && (
               <Link to="/profile/edit">
-                <Button variant="outline" size="sm" className="w-full text-xs">
-                  <Edit className="h-3 w-3 mr-1" />
+                <Button variant="outline" size="sm" className="w-full text-xs h-7">
+                  <Edit className="h-2.5 w-2.5 mr-1" />
                   Edit profile
                 </Button>
               </Link>
-            </div>
-          )}
+            )}
+            
+            {/* Upgrade Now button */}
+            <Link to="/pro/subscription">
+              <Button size="sm" className="w-full text-xs h-7 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+                Upgrade Now
+              </Button>
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>
