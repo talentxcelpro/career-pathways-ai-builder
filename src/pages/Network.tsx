@@ -10,6 +10,7 @@ import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
 import Posts from './network/Posts';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
+import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
 
 const Network = () => {
   return (
@@ -95,6 +96,9 @@ const Network = () => {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Floating Messaging Sidebar */}
+      <NetworkMessagingSidebar />
     </div>
   );
 };

@@ -161,7 +161,8 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
           continue;
         }
 
-        const url = `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public/post-media/${data.path}`;
+        const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(data.path);
+        const url = publicUrl;
         newFiles.push({
           id: randomId,
           url: url,
