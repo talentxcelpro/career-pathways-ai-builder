@@ -36,10 +36,10 @@ import { useEmployerAccess } from "@/hooks/useEmployerAccess";
 import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
 
 
-const Posts = () => {
+const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
   const [openComments, setOpenComments] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
-  const [feedFilter, setFeedFilter] = useState<'all' | 'smart'>('all');
+  const feedFilter = feedType; // Use the prop instead of state
   const [showCommentGenerator, setShowCommentGenerator] = useState<string | null>(null);
   const [activePost, setActivePost] = useState<any>(null);
   const [dismissedBanners, setDismissedBanners] = useState<string[]>([]);
@@ -365,34 +365,6 @@ const Posts = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Sub-tabs for Feed */}
-        <div className="mb-2">
-          <div className="flex items-center gap-1 bg-white/95 backdrop-blur-md p-0.5 rounded-md border border-slate-200/60 shadow-sm w-fit">
-            <Button
-              variant={feedFilter === 'all' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setFeedFilter('all')}
-              className={feedFilter === 'all' 
-                ? "bg-blue-500 text-white font-medium rounded-sm text-xs py-1 px-2 h-6" 
-                : "text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 font-medium rounded-sm text-xs py-1 px-2 h-6"
-              }
-            >
-              All Posts
-            </Button>
-            <Button
-              variant={feedFilter === 'smart' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setFeedFilter('smart')}
-              className={feedFilter === 'smart' 
-                ? "bg-blue-500 text-white font-medium rounded-sm text-xs py-1 px-2 h-6" 
-                : "text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 font-medium rounded-sm text-xs py-1 px-2 h-6"
-              }
-            >
-              Smart Feed
-            </Button>
-          </div>
-        </div>
-
         {/* Feed Content */}
 
         {/* Three Column Layout */}

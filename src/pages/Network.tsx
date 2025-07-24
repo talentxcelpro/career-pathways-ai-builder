@@ -15,10 +15,14 @@ const Network = () => {
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-2 h-8">
+          <TabsList className="grid w-full grid-cols-6 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-2 h-8">
             <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
               <MessageSquare className="w-3 h-3" />
               <span className="hidden sm:inline">Feed</span>
+            </TabsTrigger>
+            <TabsTrigger value="smart-feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <Sparkles className="w-3 h-3" />
+              <span className="hidden sm:inline">Smart Feed</span>
             </TabsTrigger>
             <TabsTrigger value="connections" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
               <Users className="w-3 h-3" />
@@ -40,7 +44,13 @@ const Network = () => {
 
           <TabsContent value="feed" className="mt-0">
             <div className="space-y-6">
-              <Posts />
+              <Posts feedType="all" />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="smart-feed" className="mt-0">
+            <div className="space-y-6">
+              <Posts feedType="smart" />
             </div>
           </TabsContent>
 
