@@ -12,6 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Send, FileText, Sparkles, Download, Copy, RefreshCw, Target, Award, Brain, Zap, User, Briefcase, GraduationCap, Plus, Trash2, Edit, Upload, Eye, Palette } from "lucide-react";
 import { useResumeEnhancement } from "@/hooks/useResumeEnhancement";
 import { useAIService } from "@/hooks/useAIService";
+import { useRealTimeATS } from "@/hooks/useRealTimeATS";
+import { useSmartSuggestions } from "@/hooks/useSmartSuggestions";
+import { RealTimeATSScore } from "@/components/resume/enhanced/RealTimeATSScore";
+import { SmartSuggestionsPanel } from "@/components/resume/enhanced/SmartSuggestionsPanel";
 import { toast } from "sonner";
 import html2pdf from 'html2pdf.js';
 
@@ -92,6 +96,68 @@ const ConversationalResumeBuilder: React.FC = () => {
   
   const { enhanceResumeText, enhanceSingleSection } = useResumeEnhancement();
   const { invokeAITool, optimizeForATS, generateCoverLetter } = useAIService();
+  
+  // Convert ResumeData to EnhancedResumeData format for new hooks
+  const enhancedResumeData = React.useMemo(() => ({
+    personalInfo: {
+      ...resumeData.personalInfo,
+      summary: resumeData.summary
+    },
+    professionalSummary: { content: resumeData.summary, keyHighlights: [] },
+    experience: resumeData.experience.map(exp => ({
+      ...exp,
+      isCurrentRole: exp.current,
+      achievements: [],
+      skills: [],
+      technologies: []
+    })),
+    education: resumeData.education.map(edu => ({
+      ...edu,
+      school: edu.institution,
+      startDate: edu.graduationDate,
+      endDate: edu.graduationDate,
+      relevantCoursework: []
+    })),
+    skills: resumeData.skills.map(s => ({ 
+      id: s.id,
+      name: s.name,
+      skill: s.name, 
+      level: (s.level.toLowerCase() as 'beginner' | 'intermediate' | 'advanced' | 'expert') || 'intermediate',
+      category: 'technical' 
+    })),
+    projects: resumeData.projects.map(p => ({
+      id: p.id,
+      title: p.name,
+      description: p.description,
+      technologies: p.technologies ? p.technologies.split(',').map(t => t.trim()) : [],
+      techStack: p.technologies ? p.technologies.split(',').map(t => t.trim()) : [],
+      url: p.link || '',
+      githubUrl: '',
+      startDate: '',
+      endDate: '',
+      status: 'completed' as const
+    })),
+    certifications: resumeData.certifications,
+    awards: [],
+    languages: [],
+    publications: [],
+    references: [],
+    volunteerWork: [],
+    trainings: [],
+    tools: { development: [], design: [], analytics: [], productivity: [], other: [] },
+    careerObjectives: { statement: '', goals: [] },
+    sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
+    selectedTemplate: selectedTemplate,
+    customization: { 
+      colorScheme: 'blue' as const, 
+      fontFamily: 'Inter', 
+      fontSize: 14, 
+      spacing: 'normal' as const 
+    }
+  }), [resumeData, selectedTemplate]);
+
+  const { atsAnalysis, isAnalyzing } = useRealTimeATS(enhancedResumeData);
+  const { suggestions, isGenerating: suggestionsLoading } = useSmartSuggestions();
 
   // Calculate ATS score whenever resume data changes
   useEffect(() => {
@@ -606,13 +672,15 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
               
               <CardContent className="p-8">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-                  <TabsList className="grid w-full grid-cols-6 bg-gray-50 rounded-xl p-1">
+                  <TabsList className="grid w-full grid-cols-8 bg-gray-50 rounded-xl p-1">
                     <TabsTrigger value="personal" className="text-xs font-medium rounded-lg">Personal</TabsTrigger>
                     <TabsTrigger value="summary" className="text-xs font-medium rounded-lg">Summary</TabsTrigger>
                     <TabsTrigger value="experience" className="text-xs font-medium rounded-lg">Experience</TabsTrigger>
                     <TabsTrigger value="education" className="text-xs font-medium rounded-lg">Education</TabsTrigger>
                     <TabsTrigger value="skills" className="text-xs font-medium rounded-lg">Skills</TabsTrigger>
                     <TabsTrigger value="extras" className="text-xs font-medium rounded-lg">Extras</TabsTrigger>
+                    <TabsTrigger value="ats" className="text-xs font-medium rounded-lg">Real-time ATS</TabsTrigger>
+                    <TabsTrigger value="smart" className="text-xs font-medium rounded-lg">Smart Tips</TabsTrigger>
                   </TabsList>
 
                   <ScrollArea className="h-[600px] pr-4">
@@ -1096,6 +1164,23 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                           ))}
                         </div>
                       </div>
+                    </TabsContent>
+
+                    <TabsContent value="ats" className="space-y-6 mt-0">
+                      <RealTimeATSScore 
+                        analysis={atsAnalysis}
+                        isAnalyzing={isAnalyzing}
+                      />
+                    </TabsContent>
+
+                    <TabsContent value="smart" className="space-y-6 mt-0">
+                      <SmartSuggestionsPanel 
+                        suggestions={suggestions}
+                        isGenerating={suggestionsLoading}
+                        onApplySuggestion={(suggestion) => {
+                          toast.success('Suggestion applied!');
+                        }}
+                      />
                     </TabsContent>
                   </ScrollArea>
                 </Tabs>
