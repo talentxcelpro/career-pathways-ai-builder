@@ -12,6 +12,8 @@ import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import { AIProvider } from "./contexts/AIContext";
+import { SecurityProvider } from "./components/security/SecurityProvider";
+import { ContentSecurityPolicy } from "./components/security/ContentSecurityPolicy";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -58,7 +60,9 @@ const App = () => {
         <TooltipProvider>
           <AnalyticsProvider>
             <AuthProvider>
-              <AIProvider>
+              <SecurityProvider>
+                <AIProvider>
+                  <ContentSecurityPolicy />
                 <Toaster 
                   duration={10000}
                   position="top-center"
@@ -116,8 +120,9 @@ const App = () => {
                   </main>
                   <Footer />
                 </div>
-                <Analytics />
-              </AIProvider>
+                  <Analytics />
+                </AIProvider>
+              </SecurityProvider>
             </AuthProvider>
           </AnalyticsProvider>
         </TooltipProvider>

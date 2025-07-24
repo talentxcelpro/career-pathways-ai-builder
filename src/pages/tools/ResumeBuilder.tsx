@@ -1,5 +1,6 @@
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createSafeHtml } from '@/utils/sanitize';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -522,7 +523,7 @@ const ResumeBuilder = () => {
                   <div className="space-y-4">
                     <div 
                       className="border rounded-lg p-4 bg-white max-h-[600px] overflow-y-auto"
-                      dangerouslySetInnerHTML={{ __html: generatedResume }}
+                      dangerouslySetInnerHTML={createSafeHtml(generatedResume)}
                     />
                     <Button onClick={downloadResume} className="w-full">
                       <Download className="h-4 w-4 mr-2" />

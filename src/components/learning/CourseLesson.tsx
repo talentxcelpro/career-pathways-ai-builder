@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { createSafeHtml } from '@/utils/sanitize';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -117,7 +118,7 @@ export const CourseLessonComponent: React.FC<CourseLessonProps> = ({
             
             {lesson.content && (
               <div className="prose max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: lesson.content }} />
+                <div dangerouslySetInnerHTML={createSafeHtml(lesson.content)} />
               </div>
             )}
             
