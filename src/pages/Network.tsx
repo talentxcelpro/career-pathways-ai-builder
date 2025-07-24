@@ -1,26 +1,17 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HeroSection } from "@/components/branded/HeroSection";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
 import { NetworkStats } from "@/components/network/NetworkStats";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
-import { Users, Network as NetworkIcon, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
+import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
 import Posts from './network/Posts';
 
 const Network = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
-      {/* TalentXcel Hero Section */}
-      <HeroSection
-        title="Professional Network Hub"
-        subtitle="Connect, collaborate, and accelerate your career with TalentXcel's AI-powered networking platform"
-        showAIBadge={true}
-        backgroundGradient={true}
-      />
-
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <Tabs defaultValue="feed" className="w-full">

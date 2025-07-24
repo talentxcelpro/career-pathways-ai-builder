@@ -393,45 +393,6 @@ const Posts = () => {
           </div>
         </div>
 
-        {/* Pro Integration Banners */}
-        {!isProUser && !dismissedBanners.includes('topBanner') && (
-          <ProBanner 
-            variant="top" 
-            onDismiss={() => setDismissedBanners(prev => [...prev, 'topBanner'])}
-          />
-        )}
-
-        {/* Pro Success Banner for New Pro Users */}
-        {isProUser && currentUserProfile?.pro_plan && (
-          <Card className="mb-2 bg-gradient-to-r from-emerald-500/90 via-green-500/90 to-teal-500/90 text-white border-0 shadow-xl rounded-2xl backdrop-blur-md overflow-hidden">
-            <CardContent className="p-2 sm:p-3 relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent pointer-events-none" />
-              <div className="flex items-center justify-between gap-2 relative">
-                <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                  <div className="bg-white/20 backdrop-blur-sm p-1.5 rounded-full border border-white/20">
-                    <Sparkles className="h-3 w-3 text-yellow-200" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-xs sm:text-sm text-white tracking-tight truncate">Boost your career</h3>
-                    <p className="text-white/80 text-[10px] sm:text-xs leading-tight hidden sm:block font-medium">
-                      <a href="https://talentxcel.in/pro/subscription" className="underline hover:no-underline">Get Pro subscription</a>
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <ProBadge plan={currentUserProfile.pro_plan as any} size="sm" />
-                  <Link to="/pro/services">
-                    <Button size="sm" className="bg-white/95 backdrop-blur-sm text-emerald-600 hover:bg-white text-[10px] sm:text-xs px-2 sm:px-3 py-1 h-6 sm:h-7 font-semibold rounded-full shadow-lg border border-white/20 transition-all duration-200">
-                      Set Up
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-
         {/* Three Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Sidebar - Profile Information */}
