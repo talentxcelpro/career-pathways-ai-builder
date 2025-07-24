@@ -128,8 +128,8 @@ const Colleges = () => {
   const filteredColleges = colleges.filter(college => {
     const matchesSearch = college.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          college.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = !selectedType || college.type === selectedType;
-    const matchesLocation = !selectedLocation || college.location.includes(selectedLocation);
+    const matchesType = !selectedType || selectedType === 'all' || college.type === selectedType;
+    const matchesLocation = !selectedLocation || selectedLocation === 'all' || college.location.includes(selectedLocation);
     
     return matchesSearch && matchesType && matchesLocation;
   });
@@ -200,7 +200,7 @@ const Colleges = () => {
                   <SelectValue placeholder="Institution Type" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   {collegeTypes.map(type => (
                     <SelectItem key={type} value={type}>{type}</SelectItem>
                   ))}
@@ -211,7 +211,7 @@ const Colleges = () => {
                   <SelectValue placeholder="Location" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  <SelectItem value="">All Locations</SelectItem>
+                  <SelectItem value="all">All Locations</SelectItem>
                   {locations.map(location => (
                     <SelectItem key={location} value={location}>{location}</SelectItem>
                   ))}

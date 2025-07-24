@@ -145,8 +145,8 @@ const Marketplace = () => {
     const matchesSearch = service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          service.provider_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          service.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !selectedCategory || service.category === selectedCategory;
-    const matchesPrice = !selectedPriceRange; // Simplified for demo
+    const matchesCategory = !selectedCategory || selectedCategory === 'all' || service.category === selectedCategory;
+    const matchesPrice = !selectedPriceRange || selectedPriceRange === 'all'; // Simplified for demo
     
     return matchesSearch && matchesCategory && matchesPrice;
   });
@@ -268,7 +268,7 @@ const Marketplace = () => {
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   {categories.map(category => (
                     <SelectItem key={category} value={category}>{category}</SelectItem>
                   ))}
@@ -279,7 +279,7 @@ const Marketplace = () => {
                   <SelectValue placeholder="Price Range" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Prices</SelectItem>
+                  <SelectItem value="all">All Prices</SelectItem>
                   {priceRanges.map(range => (
                     <SelectItem key={range} value={range}>{range}</SelectItem>
                   ))}
