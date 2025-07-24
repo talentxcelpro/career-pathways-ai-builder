@@ -1847,6 +1847,422 @@ export type Database = {
         }
         Relationships: []
       }
+      assessment_analytics: {
+        Row: {
+          assessment_id: string | null
+          career_matches: Json | null
+          generated_at: string | null
+          id: string
+          industry_percentile: number | null
+          peer_comparison: Json | null
+          recommendations: string[] | null
+          skill_scores: Json | null
+          strengths: string[] | null
+          updated_at: string | null
+          user_id: string
+          weaknesses: string[] | null
+        }
+        Insert: {
+          assessment_id?: string | null
+          career_matches?: Json | null
+          generated_at?: string | null
+          id?: string
+          industry_percentile?: number | null
+          peer_comparison?: Json | null
+          recommendations?: string[] | null
+          skill_scores?: Json | null
+          strengths?: string[] | null
+          updated_at?: string | null
+          user_id: string
+          weaknesses?: string[] | null
+        }
+        Update: {
+          assessment_id?: string | null
+          career_matches?: Json | null
+          generated_at?: string | null
+          id?: string
+          industry_percentile?: number | null
+          peer_comparison?: Json | null
+          recommendations?: string[] | null
+          skill_scores?: Json | null
+          strengths?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+          weaknesses?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_analytics_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_attempts: {
+        Row: {
+          answers: Json | null
+          assessment_id: string | null
+          browser_fingerprint: string | null
+          completed_at: string | null
+          created_at: string | null
+          detailed_results: Json | null
+          id: string
+          ip_address: unknown | null
+          passed: boolean | null
+          percentage_score: number | null
+          proctoring_data: Json | null
+          started_at: string | null
+          status: string | null
+          time_taken_seconds: number | null
+          total_score: number | null
+          updated_at: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          answers?: Json | null
+          assessment_id?: string | null
+          browser_fingerprint?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          detailed_results?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          passed?: boolean | null
+          percentage_score?: number | null
+          proctoring_data?: Json | null
+          started_at?: string | null
+          status?: string | null
+          time_taken_seconds?: number | null
+          total_score?: number | null
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          answers?: Json | null
+          assessment_id?: string | null
+          browser_fingerprint?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          detailed_results?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          passed?: boolean | null
+          percentage_score?: number | null
+          proctoring_data?: Json | null
+          started_at?: string | null
+          status?: string | null
+          time_taken_seconds?: number | null
+          total_score?: number | null
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_attempts_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      assessment_certificates: {
+        Row: {
+          assessment_id: string | null
+          attempt_id: string | null
+          certificate_number: string
+          certificate_type: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_verified: boolean | null
+          issued_at: string | null
+          metadata: Json | null
+          user_id: string
+          verification_hash: string | null
+        }
+        Insert: {
+          assessment_id?: string | null
+          attempt_id?: string | null
+          certificate_number: string
+          certificate_type?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_verified?: boolean | null
+          issued_at?: string | null
+          metadata?: Json | null
+          user_id: string
+          verification_hash?: string | null
+        }
+        Update: {
+          assessment_id?: string | null
+          attempt_id?: string | null
+          certificate_number?: string
+          certificate_type?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_verified?: boolean | null
+          issued_at?: string | null
+          metadata?: Json | null
+          user_id?: string
+          verification_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_certificates_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_certificates_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_attempts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_questions: {
+        Row: {
+          assessment_id: string | null
+          correct_answer: Json | null
+          created_at: string | null
+          difficulty_score: number | null
+          explanation: string | null
+          id: string
+          is_active: boolean | null
+          metadata: Json | null
+          options: Json | null
+          points: number | null
+          question_text: string
+          question_type: string
+          sort_order: number | null
+          time_limit_seconds: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          assessment_id?: string | null
+          correct_answer?: Json | null
+          created_at?: string | null
+          difficulty_score?: number | null
+          explanation?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          options?: Json | null
+          points?: number | null
+          question_text: string
+          question_type: string
+          sort_order?: number | null
+          time_limit_seconds?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          assessment_id?: string | null
+          correct_answer?: Json | null
+          created_at?: string | null
+          difficulty_score?: number | null
+          explanation?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          options?: Json | null
+          points?: number | null
+          question_text?: string
+          question_type?: string
+          sort_order?: number | null
+          time_limit_seconds?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_questions_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_responses: {
+        Row: {
+          answered_at: string | null
+          attempt_id: string | null
+          id: string
+          is_correct: boolean | null
+          metadata: Json | null
+          points_earned: number | null
+          question_id: string | null
+          time_taken_seconds: number | null
+          user_answer: Json | null
+        }
+        Insert: {
+          answered_at?: string | null
+          attempt_id?: string | null
+          id?: string
+          is_correct?: boolean | null
+          metadata?: Json | null
+          points_earned?: number | null
+          question_id?: string | null
+          time_taken_seconds?: number | null
+          user_answer?: Json | null
+        }
+        Update: {
+          answered_at?: string | null
+          attempt_id?: string | null
+          id?: string
+          is_correct?: boolean | null
+          metadata?: Json | null
+          points_earned?: number | null
+          question_id?: string | null
+          time_taken_seconds?: number | null
+          user_answer?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_responses_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessments: {
+        Row: {
+          assessment_type: string
+          category_id: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          difficulty_level: string | null
+          duration_minutes: number | null
+          id: string
+          industry: string | null
+          instructions: string | null
+          is_adaptive: boolean | null
+          is_premium: boolean | null
+          is_proctored: boolean | null
+          is_published: boolean | null
+          job_role: string | null
+          passing_score: number | null
+          settings: Json | null
+          skills_tested: string[] | null
+          tags: string[] | null
+          title: string
+          total_questions: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          assessment_type: string
+          category_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          duration_minutes?: number | null
+          id?: string
+          industry?: string | null
+          instructions?: string | null
+          is_adaptive?: boolean | null
+          is_premium?: boolean | null
+          is_proctored?: boolean | null
+          is_published?: boolean | null
+          job_role?: string | null
+          passing_score?: number | null
+          settings?: Json | null
+          skills_tested?: string[] | null
+          tags?: string[] | null
+          title: string
+          total_questions?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          assessment_type?: string
+          category_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          duration_minutes?: number | null
+          id?: string
+          industry?: string | null
+          instructions?: string | null
+          is_adaptive?: boolean | null
+          is_premium?: boolean | null
+          is_proctored?: boolean | null
+          is_published?: boolean | null
+          job_role?: string | null
+          passing_score?: number | null
+          settings?: Json | null
+          skills_tested?: string[] | null
+          tags?: string[] | null
+          title?: string
+          total_questions?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessments_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       awards: {
         Row: {
           award_date: string | null
@@ -10000,6 +10416,62 @@ export type Database = {
         }
         Relationships: []
       }
+      proctoring_sessions: {
+        Row: {
+          ai_analysis: Json | null
+          attempt_id: string | null
+          browser_events: Json | null
+          created_at: string | null
+          id: string
+          keystroke_patterns: Json | null
+          screen_recordings: string[] | null
+          session_data: Json | null
+          suspicious_activity_score: number | null
+          updated_at: string | null
+          user_id: string
+          violations: Json | null
+          webcam_snapshots: string[] | null
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          attempt_id?: string | null
+          browser_events?: Json | null
+          created_at?: string | null
+          id?: string
+          keystroke_patterns?: Json | null
+          screen_recordings?: string[] | null
+          session_data?: Json | null
+          suspicious_activity_score?: number | null
+          updated_at?: string | null
+          user_id: string
+          violations?: Json | null
+          webcam_snapshots?: string[] | null
+        }
+        Update: {
+          ai_analysis?: Json | null
+          attempt_id?: string | null
+          browser_events?: Json | null
+          created_at?: string | null
+          id?: string
+          keystroke_patterns?: Json | null
+          screen_recordings?: string[] | null
+          session_data?: Json | null
+          suspicious_activity_score?: number | null
+          updated_at?: string | null
+          user_id?: string
+          violations?: Json | null
+          webcam_snapshots?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proctoring_sessions_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_attempts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profile_views: {
         Row: {
           id: string
@@ -16015,6 +16487,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      calculate_assessment_score: {
+        Args: { attempt_uuid: string }
+        Returns: undefined
+      }
       calculate_company_engagement_score: {
         Args: { company_uuid: string }
         Returns: number
@@ -16115,6 +16591,10 @@ export type Database = {
       }
       ensure_unique_slug: {
         Args: { base_slug: string; company_id?: string }
+        Returns: string
+      }
+      generate_certificate_number: {
+        Args: Record<PropertyKey, never>
         Returns: string
       }
       generate_college_slug: {
