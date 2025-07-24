@@ -47,59 +47,64 @@ export function ProfessionalFeed() {
 
   const fetchPosts = async () => {
     try {
-      // Mock data for now - will be replaced with actual posts from database
-      const mockPosts: Post[] = [
-        {
-          id: '1',
-          author_id: 'user1',
-          content: 'Just completed my AWS certification! Excited to apply cloud skills in my next project. Any recommendations for AWS projects that showcase DevOps skills?',
-          post_type: 'achievement',
-          likes_count: 15,
-          comments_count: 3,
-          shares_count: 2,
-          created_at: new Date().toISOString(),
-          author: {
-            full_name: 'Sarah Johnson',
-            avatar_url: '',
-            title: 'Software Engineer at TechCorp',
-            user_role: 'candidate'
-          }
-        },
-        {
-          id: '2',
-          author_id: 'user2',
-          content: 'Looking for advice on transitioning from frontend to full-stack development. What backend technologies should I focus on in 2024?',
-          post_type: 'text',
-          likes_count: 8,
-          comments_count: 12,
-          shares_count: 1,
-          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          author: {
-            full_name: 'Alex Chen',
-            avatar_url: '',
-            title: 'Frontend Developer',
-            user_role: 'candidate'
-          }
-        },
-        {
-          id: '3',
-          author_id: 'user3',
-          content: 'Excited to announce that I\'m starting my new role as Senior Product Manager at InnovateTech! Looking forward to building amazing products with the team.',
-          post_type: 'job_update',
-          likes_count: 23,
-          comments_count: 8,
-          shares_count: 4,
-          created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          author: {
-            full_name: 'Maria Rodriguez',
-            avatar_url: '',
-            title: 'Senior Product Manager at InnovateTech',
-            user_role: 'candidate'
-          }
-        }
-      ];
+      // Fetch real posts from database with author profiles
+      const { data: postsData, error } = await supabase
+        .from('posts')
+        .select(`
+          id,
+          author_id,
+          content,
+          media_urls,
+          post_type,
+          likes_count,
+          comments_count,
+          shares_count,
+          created_at
+        `)
+        .eq('status', 'published')
+        .eq('is_public', true)
+        .order('created_at', { ascending: false })
+        .limit(20);
 
-      setPosts(mockPosts);
+      if (error) throw error;
+
+      if (!postsData || postsData.length === 0) {
+        setPosts([]);
+        return;
+      }
+
+      // Get author profiles
+      const authorIds = [...new Set(postsData.map(post => post.author_id))];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, profile_picture_url, title')
+        .in('id', authorIds);
+
+      const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+      // Get current user to check if they liked posts
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const formattedPosts: Post[] = postsData.map(post => ({
+        id: post.id,
+        author_id: post.author_id,
+        content: post.content,
+        media_url: post.media_urls?.[0] || undefined,
+        post_type: post.post_type as 'text' | 'image' | 'poll' | 'achievement' | 'job_update',
+        likes_count: post.likes_count || 0,
+        comments_count: post.comments_count || 0,
+        shares_count: post.shares_count || 0,
+        created_at: post.created_at,
+        author: {
+          full_name: profilesMap.get(post.author_id)?.full_name || 'Professional User',
+          avatar_url: profilesMap.get(post.author_id)?.profile_picture_url,
+          title: profilesMap.get(post.author_id)?.title || 'Professional',
+          user_role: 'candidate'
+        },
+        liked_by_user: false // We'll implement this with proper post_reactions query later
+      }));
+
+      setPosts(formattedPosts);
     } catch (error) {
       console.error('Error fetching posts:', error);
       toast({
