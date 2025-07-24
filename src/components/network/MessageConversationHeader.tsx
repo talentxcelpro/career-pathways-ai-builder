@@ -105,21 +105,25 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
                 <MoreVertical className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem asChild>
-                <Link to={`/network/people/${otherUser?.id}`} className="flex items-center">
+            <DropdownMenuContent 
+              align="end" 
+              className="w-48 bg-white border border-gray-200 shadow-lg rounded-lg z-50"
+              sideOffset={5}
+            >
+              <DropdownMenuItem asChild className="hover:bg-gray-100 focus:bg-gray-100">
+                <Link to={`/network/people/${otherUser?.id}`} className="flex items-center px-4 py-2 text-sm text-gray-700">
                   <User className="mr-2 h-4 w-4" />
                   <span>View Profile</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/network/messages/settings" className="flex items-center">
+              <DropdownMenuSeparator className="bg-gray-200" />
+              <DropdownMenuItem asChild className="hover:bg-gray-100 focus:bg-gray-100">
+                <Link to="/network/messages/settings" className="flex items-center px-4 py-2 text-sm text-gray-700">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Message Settings</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-gray-100 focus:bg-gray-100 px-4 py-2 text-sm text-gray-700">
                 <Archive className="mr-2 h-4 w-4" />
                 <span>Archive Chat</span>
               </DropdownMenuItem>
