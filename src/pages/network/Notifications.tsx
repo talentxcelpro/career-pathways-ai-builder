@@ -5,15 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { 
   Bell, 
-  Calendar, 
-  UserPlus, 
-  CheckCircle, 
   Search,
   Volume2,
   VolumeX,
-  Zap,
-  TrendingUp,
-  Filter,
+  CheckCircle,
   LayoutGrid,
   LayoutList,
   Sparkles
@@ -21,22 +16,24 @@ import {
 import { TalentXcelNotificationLogo } from "@/assets/talentxcel-notification-logo";
 import { NotificationPillars, NOTIFICATION_PILLARS } from "@/components/notifications/NotificationsPillars";
 import { SmartNotificationCard } from "@/components/notifications/SmartNotificationCard";
-import { useEnhancedNotifications } from "@/hooks/useEnhancedNotifications";
+import { useNotifications } from "@/hooks/useNotifications"; // Using the old, stable hook
 import { useNotificationStore } from "@/stores/useNotificationStore";
 
 const Notifications = () => {
-  console.log('COMPONENT DEBUG: Notifications component rendering');
+  console.log('Notifications component rendering - FIXED VERSION');
+  
   const [activePillar, setActivePillar] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
-  const { soundEnabled, toggleSound } = useNotificationStore();
+  
+  // Use simple state for sound instead of store to avoid store issues
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
-  // Memoized filters to prevent infinite re-renders
+  // Create stable filters object
   const filters = useMemo(() => {
     const result: any = {};
     
     if (activePillar !== 'all') {
-      // Map pillar keys to module names
       const pillarToModule: Record<string, string> = {
         network: 'network',
         jobs: 'jobs', 
@@ -45,8 +42,8 @@ const Notifications = () => {
         tools: 'tools',
         learning: 'learning',
         colleges: 'colleges',
-        career_feed: 'network', // Career feed posts are in network module
-        discover: 'tools' // Discovery insights are in tools module
+        career_feed: 'network',
+        discover: 'tools'
       };
       
       if (pillarToModule[activePillar]) {
@@ -61,6 +58,7 @@ const Notifications = () => {
     return result;
   }, [activePillar, searchQuery]);
 
+  // Use the old stable hook instead of the problematic one
   const {
     notifications,
     isLoading,
@@ -69,10 +67,11 @@ const Notifications = () => {
     markAsRead,
     markAllAsRead,
     deleteNotification,
+    toggleSound,
     isMarkingAsRead,
     isMarkingAllAsRead,
     isDeletingNotification
-  } = useEnhancedNotifications(filters);
+  } = useNotifications(filters);
 
   // Enhanced stats for pillars
   const pillarStats = useMemo(() => {
@@ -86,8 +85,8 @@ const Notifications = () => {
       tools: moduleStats.tools || 0,
       learning: moduleStats.learning || 0,
       colleges: moduleStats.colleges || 0,
-      career_feed: moduleStats.network || 0, // Career feed is part of network
-      discover: moduleStats.tools || 0, // Discovery is part of tools
+      career_feed: moduleStats.network || 0,
+      discover: moduleStats.tools || 0,
       employer: moduleStats.employer || 0
     };
   }, [stats]);
@@ -107,8 +106,6 @@ const Notifications = () => {
       return `📈 ${unreadCount} new notifications. Your career is gaining momentum!`;
     }
   }, [stats]);
-
-  const filteredNotifications = notifications;
 
   if (error) {
     return (
@@ -158,7 +155,10 @@ const Notifications = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => toggleSound(!soundEnabled)}
+                  onClick={() => {
+                    setSoundEnabled(!soundEnabled);
+                    toggleSound(!soundEnabled);
+                  }}
                   className="gap-2"
                 >
                   {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
@@ -176,7 +176,7 @@ const Notifications = () => {
                 </Button>
                 
                 <Button 
-                  onClick={() => markAllAsRead()}
+                  onClick={() => markAllAsRead(undefined)}
                   disabled={isMarkingAllAsRead || stats.unread === 0}
                   size="sm"
                   className="gap-2"
@@ -243,18 +243,6 @@ const Notifications = () => {
                   {stats.unread} Unread
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-green-600" />
-                <span className="text-muted-foreground">
-                  {stats.thisWeek} This Week
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Bell className="h-4 w-4 text-primary" />
-                <span className="text-muted-foreground">
-                  {stats.total} Total
-                </span>
-              </div>
             </div>
           </div>
         </div>
@@ -278,7 +266,7 @@ const Notifications = () => {
                 </Card>
               ))}
             </div>
-          ) : filteredNotifications.length === 0 ? (
+          ) : notifications.length === 0 ? (
             <Card className="shadow-lg border-2 border-dashed border-muted">
               <CardContent className="p-12 text-center">
                 <div className="animate-bounce mb-4">
@@ -293,16 +281,6 @@ const Notifications = () => {
                     : "You're doing great! No new notifications to show."
                   }
                 </p>
-                {searchQuery && (
-                  <Button
-                    variant="outline"
-                    onClick={() => setSearchQuery('')}
-                    className="gap-2"
-                  >
-                    <Filter className="h-4 w-4" />
-                    Clear Search
-                  </Button>
-                )}
               </CardContent>
             </Card>
           ) : (
@@ -310,7 +288,7 @@ const Notifications = () => {
               space-y-4
               ${viewMode === 'card' ? 'grid grid-cols-1 lg:grid-cols-2 gap-6' : 'space-y-3'}
             `}>
-              {filteredNotifications.map((notification) => (
+              {notifications.map((notification) => (
                 <div 
                   key={notification.id} 
                   className={viewMode === 'list' ? 'transform hover:scale-[1.01] transition-transform' : ''}
