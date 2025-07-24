@@ -6,6 +6,7 @@ import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
 import { NetworkStats } from "@/components/network/NetworkStats";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
+import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
 import Posts from './network/Posts';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
@@ -68,6 +69,7 @@ const Network = () => {
               </div>
               <div className="space-y-6">
                 <ReferralNetworkAd variant="sidebar" />
+                <AdvertisingSidebar position="right" maxAds={3} />
               </div>
             </div>
           </TabsContent>
@@ -80,6 +82,7 @@ const Network = () => {
               </div>
               <div className="space-y-6">
                 <ReferralNetworkAd variant="sidebar" />
+                <AdvertisingSidebar position="right" maxAds={3} />
               </div>
             </div>
           </TabsContent>

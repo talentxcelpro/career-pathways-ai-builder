@@ -104,20 +104,20 @@ const ReferAndEarn: React.FC = () => {
   return (
     <div className="min-h-screen gradient-subtle">
       {/* Hero Section */}
-      <section className="pt-24 pb-16 px-4">
+      <section className="pt-16 pb-8 px-4">
         <div className="max-w-6xl mx-auto text-center">
           {/* Logo and Title */}
-          <div className="mb-8">
-            <div className="flex justify-center mb-6">
-              <div className="p-4 gradient-primary rounded-2xl shadow-glow">
-                <TalentXcelNotificationLogo className="h-16 w-16" />
+          <div className="mb-6">
+            <div className="flex justify-center mb-4">
+              <div className="p-2 gradient-primary rounded-xl shadow-elegant">
+                <TalentXcelNotificationLogo className="h-8 w-8" />
               </div>
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-              Refer Friends & Unlock <span className="bg-gradient-to-r from-primary to-brand-green bg-clip-text text-transparent">Pro Access</span> to TalentXcel AI
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+              Refer Friends & Unlock <span className="bg-gradient-to-r from-primary to-brand-green bg-clip-text text-transparent">Pro Access</span>
             </h1>
-            <h2 className="text-xl md:text-2xl text-muted-foreground mb-8">
-              Share TalentXcel with your network and unlock premium AI career tools, advanced analytics, and exclusive features.
+            <h2 className="text-sm md:text-base text-muted-foreground mb-4">
+              Share TalentXcel with your network and unlock premium AI career tools
             </h2>
           </div>
           
@@ -148,18 +148,24 @@ const ReferAndEarn: React.FC = () => {
           )}
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="gradient-primary text-white hover:opacity-90 text-lg px-8 py-4 shadow-elegant" asChild>
-              <Link to="#dashboard">
-                <Zap className="w-5 h-5 mr-2" />
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <Button size="default" className="gradient-primary text-white hover:opacity-90 px-6 py-2 shadow-elegant" asChild>
+              <a href="#dashboard">
+                <Zap className="w-4 h-4 mr-2" />
                 Get Started Now
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Link>
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </a>
             </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-primary/20 hover:bg-primary/5" asChild>
-              <Link to="#rewards">
-                <Star className="w-5 h-5 mr-2" />
+            <Button size="default" variant="outline" className="px-6 py-2 border-primary/20 hover:bg-primary/5" asChild>
+              <a href="#rewards">
+                <Star className="w-4 h-4 mr-2" />
                 View Rewards
+              </a>
+            </Button>
+            <Button size="default" variant="secondary" className="px-6 py-2" asChild>
+              <Link to="/pro/subscription">
+                <Crown className="w-4 h-4 mr-2" />
+                Upgrade to Pro
               </Link>
             </Button>
           </div>
@@ -291,22 +297,29 @@ const ReferAndEarn: React.FC = () => {
                   size="lg" 
                   variant="secondary" 
                   className="bg-white text-primary hover:bg-white/90 font-semibold text-lg px-8 py-4"
-                  asChild
+                  onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                  <Link to="#dashboard">
-                    <Share2 className="w-5 h-5 mr-2" />
-                    Start Referring Now
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Link>
+                  <Share2 className="w-5 h-5 mr-2" />
+                  Start Referring Now
+                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 <Button 
                   size="lg" 
                   variant="ghost" 
                   className="text-white border-white/30 hover:bg-white/10 text-lg px-8 py-4"
+                  onClick={() => document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  View All Rewards
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="text-white border-white/30 hover:bg-white/10 text-lg px-8 py-4"
                   asChild
                 >
-                  <Link to="#rewards">
-                    View All Rewards
+                  <Link to="/pro/subscription">
+                    <Crown className="w-5 h-5 mr-2" />
+                    Go Pro Now
                   </Link>
                 </Button>
               </div>
