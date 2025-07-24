@@ -149,18 +149,31 @@ const ReferAndEarn: React.FC = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-            <Button size="default" className="gradient-primary text-white hover:opacity-90 px-6 py-2 shadow-elegant" asChild>
-              <a href="#dashboard">
-                <Zap className="w-4 h-4 mr-2" />
-                Get Started Now
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </a>
+            <Button 
+              size="default" 
+              className="gradient-primary text-white hover:opacity-90 px-6 py-2 shadow-elegant"
+              onClick={() => {
+                // Generate or retrieve referral code
+                const referralCode = referralData?.referral_code || 'TALENTXCEL' + Math.random().toString(36).substr(2, 6).toUpperCase();
+                document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' });
+                // Could also trigger referral code generation logic here
+              }}
+            >
+              <Zap className="w-4 h-4 mr-2" />
+              Get Started Now
+              <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
-            <Button size="default" variant="outline" className="px-6 py-2 border-primary/20 hover:bg-primary/5" asChild>
-              <a href="#rewards">
-                <Star className="w-4 h-4 mr-2" />
-                View Rewards
-              </a>
+            <Button 
+              size="default" 
+              variant="outline" 
+              className="px-6 py-2 border-primary/20 hover:bg-primary/5"
+              onClick={() => {
+                document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' });
+                // Could trigger rewards code verification modal here
+              }}
+            >
+              <Star className="w-4 h-4 mr-2" />
+              View Rewards
             </Button>
             <Button size="default" variant="secondary" className="px-6 py-2" asChild>
               <Link to="/pro/subscription">
