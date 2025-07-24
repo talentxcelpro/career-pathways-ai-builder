@@ -216,23 +216,6 @@ const Marketplace = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 -mt-8">
-          {stats.map((stat, index) => (
-            <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all hover-scale group">
-              <CardContent className="p-6 text-center">
-                <div className="mb-4 p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl w-fit mx-auto group-hover:scale-110 transition-transform">
-                  <stat.icon className="h-8 w-8 text-white" />
-                </div>
-                <div className="text-3xl font-bold bg-gradient-to-r from-[#1E2A78] to-purple-600 bg-clip-text text-transparent mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
         {/* Search and Filters */}
         <Card className="mb-12 bg-white/90 backdrop-blur-sm border-0 shadow-xl">
           <CardContent className="p-8">
@@ -388,8 +371,7 @@ const Marketplace = () => {
 
                     {/* Price and CTA */}
                     <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                      <div className="flex items-center text-xl font-bold bg-gradient-to-r from-[#1E2A78] to-purple-600 bg-clip-text text-transparent">
-                        <DollarSign className="h-5 w-5 text-green-600 mr-1" />
+                      <div className="text-xl font-bold bg-gradient-to-r from-[#1E2A78] to-purple-600 bg-clip-text text-transparent">
                         {service.price_range}
                       </div>
                       <Link to={`/marketplace/${service.id}`}>
