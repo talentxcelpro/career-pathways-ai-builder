@@ -1,14 +1,15 @@
 
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Loader2, Gift } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
 import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 
@@ -22,6 +23,8 @@ export const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const referralCode = searchParams.get('ref');
   const navigate = useNavigate();
   const { triggerWelcomeEmail } = useEmailAutomation();
 
@@ -65,6 +68,20 @@ export const RegisterForm = () => {
       }
 
       if (data.user) {
+        // Process referral if referral code exists
+        if (referralCode) {
+          try {
+            await supabase.rpc('process_successful_referral', {
+              p_referee_id: data.user.id,
+              p_referral_code: referralCode
+            });
+            console.log('Referral processed successfully');
+          } catch (referralError) {
+            console.error('Failed to process referral:', referralError);
+            // Don't show error to user as registration was successful
+          }
+        }
+
         toast.success('Account created successfully! Please check your email to verify your account.');
         
         // Trigger welcome email
@@ -91,6 +108,12 @@ export const RegisterForm = () => {
         <CardDescription>
           Get started with your free TalentXcel account
         </CardDescription>
+        {referralCode && (
+          <Badge variant="secondary" className="mt-2">
+            <Gift className="w-4 h-4 mr-1" />
+            Referral Code Applied
+          </Badge>
+        )}
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Enhanced Social Registration */}

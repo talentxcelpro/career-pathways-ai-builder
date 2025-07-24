@@ -46,3 +46,6 @@ verify_jwt = true
 
 [functions.test-connection]
 verify_jwt = false
+
+[functions.referral-notifications]
+verify_jwt = false

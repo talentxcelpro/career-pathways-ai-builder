@@ -19,6 +19,7 @@ import { enterpriseRoutes } from "./navigation/enterpriseRoutes";
 import { proRoutes } from "./navigation/proRoutes";
 import { socialRoutes } from "./navigation/socialRoutes";
 import { assessmentRoutes } from "./navigation/assessmentRoutes";
+import { referralRoutes } from "./navigation/referralRoutes";
 
 export const navItems = [
   ...coreRoutes,
@@ -37,6 +38,7 @@ export const navItems = [
   ...socialRoutes,
   ...proRoutes,
   ...assessmentRoutes,
+  ...referralRoutes,
   
   ...seoRoutes,
   ...adminRoutes,
