@@ -87,10 +87,17 @@ const MessageInput: React.FC<MessageInputProps> = ({
           size="sm" 
           className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 h-6 w-6 p-0 transition-colors"
           title="Attach file"
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => {
+            console.log('Attachment clicked');
+            fileInputRef.current?.click();
+          }}
           disabled={uploading}
         >
-          <Paperclip className="h-3 w-3" />
+          {uploading ? (
+            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600"></div>
+          ) : (
+            <Paperclip className="h-3 w-3" />
+          )}
         </Button>
         
         <Button 

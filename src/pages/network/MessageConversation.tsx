@@ -9,6 +9,7 @@ import MessageConversationHeader from "@/components/network/MessageConversationH
 import MessagesList from "@/components/network/MessagesList";
 import MessageInput from "@/components/network/MessageInput";
 import ConversationNotFound from "@/components/network/ConversationNotFound";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const MessageConversation = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +20,9 @@ const MessageConversation = () => {
   const [isOnline, setIsOnline] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
   const queryClient = useQueryClient();
+  
+  // Online status hook
+  const { getUserOnlineStatus } = useOnlineStatus(currentUserId);
 
   // Auto-refresh interval (every 3 seconds)
   const REFRESH_INTERVAL = 3000;
@@ -244,6 +248,7 @@ const MessageConversation = () => {
             onMinimize={handleMinimize}
             onMaximize={handleMaximize}
             onClose={handleClose}
+            isUserOnline={getUserOnlineStatus(otherUser?.id)}
           />
 
           <MessagesList

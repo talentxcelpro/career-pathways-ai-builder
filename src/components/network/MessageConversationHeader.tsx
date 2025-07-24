@@ -20,6 +20,7 @@ interface MessageConversationHeaderProps {
   onMinimize?: () => void;
   onMaximize?: () => void;
   onClose?: () => void;
+  isUserOnline?: boolean;
 }
 
 const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
@@ -29,7 +30,8 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
   isMinimized = false,
   onMinimize,
   onMaximize,
-  onClose
+  onClose,
+  isUserOnline = true
 }) => {
   return (
     <div className="border-b bg-gradient-to-r from-blue-50 to-purple-50 px-3 py-2">
@@ -71,30 +73,57 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
                   {generateInitials(otherUser)}
                 </AvatarFallback>
               </Avatar>
+              {/* Online status indicator - always show green for now */}
               <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-green-500 border border-white rounded-full"></div>
             </div>
           </Link>
           <div className="text-center">
             <Link 
               to={`/network/people/${otherUser?.id}`}
-              className="hover:text-blue-600 transition-colors"
+              className="hover:text-blue-600 transition-colors cursor-pointer"
             >
-              <h3 className="font-medium text-xs cursor-pointer text-gray-900 truncate max-w-32">
+              <h3 className="font-medium text-xs text-gray-900 truncate max-w-32 hover:underline">
                 {formatDisplayName(otherUser)}
               </h3>
             </Link>
-            <p className="text-gray-600 text-xs truncate max-w-32">
-              {otherUser?.title || 'Professional'}
-            </p>
+            <div className="flex items-center justify-center space-x-1">
+              <p className="text-gray-600 text-xs truncate max-w-24">
+                {otherUser?.title || 'Professional'}
+              </p>
+              <div className="flex items-center">
+                <div className={`w-1.5 h-1.5 rounded-full mr-1 ${isUserOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                <span className={`text-xs font-medium ${isUserOnline ? 'text-green-600' : 'text-gray-500'}`}>
+                  {isUserOnline ? 'Online' : 'Offline'}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Action buttons */}
         <div className="flex space-x-0.5">
-          <Button variant="ghost" size="sm" className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 h-6 w-6 p-0 transition-colors">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 h-6 w-6 p-0 transition-colors"
+            onClick={() => {
+              // TODO: Implement voice call functionality
+              alert('Voice call feature coming soon!');
+            }}
+            title="Voice call"
+          >
             <Phone className="h-3 w-3" />
           </Button>
-          <Button variant="ghost" size="sm" className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 h-6 w-6 p-0 transition-colors">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 h-6 w-6 p-0 transition-colors"
+            onClick={() => {
+              // TODO: Implement video call functionality  
+              alert('Video call feature coming soon!');
+            }}
+            title="Video call"
+          >
             <Video className="h-3 w-3" />
           </Button>
           
