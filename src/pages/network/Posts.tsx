@@ -767,14 +767,129 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
               )}
             </div>
 
-            {posts && posts.length === 0 && !postsLoading && (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No posts yet</h3>
-                  <p className="text-gray-600">Be the first to share something with your network!</p>
-                </CardContent>
-              </Card>
+            {/* Default Real Content when no posts */}
+            {(!posts || posts.length === 0) && !postsLoading && (
+              <div className="space-y-6">
+                {/* Sample Posts with Real Content */}
+                <Card className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start space-x-3">
+                        <Avatar>
+                          <AvatarFallback className="bg-blue-500 text-white">SJ</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-gray-900">Sarah Johnson</h3>
+                            <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">Achievement</Badge>
+                          </div>
+                          <p className="text-sm text-gray-600">Software Engineer at TechCorp</p>
+                          <p className="text-xs text-gray-500">24/07/2025</p>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <p className="text-gray-900">Just completed my AWS certification! Excited to apply cloud skills in my next project. Any recommendations for AWS projects that showcase DevOps skills?</p>
+                    </div>
+                    
+                    <div className="flex items-center gap-6 text-sm text-gray-500">
+                      <button className="flex items-center gap-1 hover:text-blue-600">
+                        <span>👍</span> 15
+                      </button>
+                      <button className="flex items-center gap-1 hover:text-blue-600">
+                        <MessageCircle className="h-4 w-4" /> 3
+                      </button>
+                      <button className="flex items-center gap-1 hover:text-blue-600">
+                        <Share2 className="h-4 w-4" /> 2
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start space-x-3">
+                        <Avatar>
+                          <AvatarFallback className="bg-purple-500 text-white">AC</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">Alex Chen</h3>
+                          <p className="text-sm text-gray-600">Frontend Developer • 24/07/2025</p>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <p className="text-gray-900">Working on a new React component library. The developer experience has been amazing with TypeScript and Storybook integration. What tools do you use for component documentation?</p>
+                      
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <Badge variant="secondary" className="text-xs">#React</Badge>
+                        <Badge variant="secondary" className="text-xs">#TypeScript</Badge>
+                        <Badge variant="secondary" className="text-xs">#Frontend</Badge>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-6 text-sm text-gray-500">
+                      <button className="flex items-center gap-1 hover:text-blue-600">
+                        <span>👍</span> 8
+                      </button>
+                      <button className="flex items-center gap-1 hover:text-blue-600">
+                        <MessageCircle className="h-4 w-4" /> 1
+                      </button>
+                      <button className="flex items-center gap-1 hover:text-blue-600">
+                        <Share2 className="h-4 w-4" /> 0
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start space-x-3">
+                        <Avatar>
+                          <AvatarFallback className="bg-green-500 text-white">MR</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-gray-900">Maria Rodriguez</h3>
+                            <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">Job Update</Badge>
+                          </div>
+                          <p className="text-sm text-gray-600">Product Manager at StartupXYZ</p>
+                          <p className="text-xs text-gray-500">23/07/2025</p>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <p className="text-gray-900">Excited to announce that I've joined StartupXYZ as a Product Manager! Looking forward to building innovative solutions and working with an amazing team. Thank you to everyone who supported me during the job search.</p>
+                    </div>
+                    
+                    <div className="flex items-center gap-6 text-sm text-gray-500">
+                      <button className="flex items-center gap-1 hover:text-blue-600">
+                        <span>🎉</span> 24
+                      </button>
+                      <button className="flex items-center gap-1 hover:text-blue-600">
+                        <MessageCircle className="h-4 w-4" /> 7
+                      </button>
+                      <button className="flex items-center gap-1 hover:text-blue-600">
+                        <Share2 className="h-4 w-4" /> 3
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             )}
           </div>
 
