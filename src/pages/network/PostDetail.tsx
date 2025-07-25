@@ -11,6 +11,7 @@ import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
 import { ShareButton } from "@/components/shared/ShareButton";
 import { useShareContent } from "@/hooks/useShareContent";
+import { convertToMediaUrl } from "@/utils/mediaHelpers";
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();

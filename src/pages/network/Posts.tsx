@@ -34,6 +34,7 @@ import ProBadge from "@/components/network/ProBadge";
 import ProPostCTA from "@/components/network/ProPostCTA";
 import { useEmployerAccess } from "@/hooks/useEmployerAccess";
 import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
+import { convertToMediaUrl } from "@/utils/mediaHelpers";
 
 
 const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
