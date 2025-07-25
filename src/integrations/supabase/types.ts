@@ -10631,8 +10631,6 @@ export type Database = {
           location: string | null
           login_count: number | null
           looking_for_job: boolean | null
-          oauth_metadata: Json | null
-          oauth_provider: string | null
           onboarding_completed: boolean | null
           open_to_remote: boolean | null
           phone: string | null
@@ -10647,8 +10645,6 @@ export type Database = {
           pro_plan: string | null
           pro_status: string | null
           profile_completed: boolean | null
-          profile_data_source: Json | null
-          profile_photo_storage_url: string | null
           profile_photo_url: string | null
           profile_picture_url: string | null
           profile_views_count: number | null
@@ -10700,8 +10696,6 @@ export type Database = {
           location?: string | null
           login_count?: number | null
           looking_for_job?: boolean | null
-          oauth_metadata?: Json | null
-          oauth_provider?: string | null
           onboarding_completed?: boolean | null
           open_to_remote?: boolean | null
           phone?: string | null
@@ -10716,8 +10710,6 @@ export type Database = {
           pro_plan?: string | null
           pro_status?: string | null
           profile_completed?: boolean | null
-          profile_data_source?: Json | null
-          profile_photo_storage_url?: string | null
           profile_photo_url?: string | null
           profile_picture_url?: string | null
           profile_views_count?: number | null
@@ -10769,8 +10761,6 @@ export type Database = {
           location?: string | null
           login_count?: number | null
           looking_for_job?: boolean | null
-          oauth_metadata?: Json | null
-          oauth_provider?: string | null
           onboarding_completed?: boolean | null
           open_to_remote?: boolean | null
           phone?: string | null
@@ -10785,8 +10775,6 @@ export type Database = {
           pro_plan?: string | null
           pro_status?: string | null
           profile_completed?: boolean | null
-          profile_data_source?: Json | null
-          profile_photo_storage_url?: string | null
           profile_photo_url?: string | null
           profile_picture_url?: string | null
           profile_views_count?: number | null

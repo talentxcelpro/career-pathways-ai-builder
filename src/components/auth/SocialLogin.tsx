@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { LogIn, Loader2 } from 'lucide-react';
-import { LinkedInLogin } from './LinkedInLogin';
 
 interface SocialLoginProps {
   variant?: 'default' | 'prominent';
@@ -90,8 +89,6 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
           </span>
         )}
       </Button>
-
-      <LinkedInLogin variant={variant} showText={showText} />
 
       {variant === 'prominent' && (
         <p className="text-xs text-gray-500 text-center mt-4">
