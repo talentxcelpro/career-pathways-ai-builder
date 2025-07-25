@@ -624,15 +624,16 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
                                                post.media_urls.length === 3 ? '1fr 1fr 1fr' :
                                                '1fr 1fr'
                           }}>
-                            {post.media_urls.slice(0, 4).map((url: string, index: number) => {
-                              const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('video');
-                              const isDocument = url.includes('.pdf') || url.includes('.doc') || url.includes('document');
-                              
-                              return (
-                                <div key={index} className="relative group">
-                                  {isVideo ? (
-                                    <video 
-                                      src={url}
+                             {post.media_urls.slice(0, 4).map((url: string, index: number) => {
+                               const cleanUrl = convertToMediaUrl(url);
+                               const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('video');
+                               const isDocument = url.includes('.pdf') || url.includes('.doc') || url.includes('document');
+                               
+                               return (
+                                 <div key={index} className="relative group">
+                                   {isVideo ? (
+                                     <video 
+                                       src={cleanUrl}
                                       className="w-full h-64 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
                                       controls
                                       onClick={() => window.open(url, '_blank')}
