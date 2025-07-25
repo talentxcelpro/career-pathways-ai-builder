@@ -125,17 +125,28 @@ const ProfileEdit = () => {
   // Save profile mutation
   const saveProfileMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      console.log('Starting save mutation...');
+      console.log('User ID:', currentUser?.id);
+      
       if (!currentUser?.id) throw new Error('No user ID');
 
-      const { error } = await supabase
+      const updateData = {
+        id: currentUser.id,
+        ...data,
+        updated_at: new Date().toISOString()
+      };
+      
+      console.log('Update data:', updateData);
+
+      const { data: result, error } = await supabase
         .from('profiles')
-        .upsert({
-          id: currentUser.id,
-          ...data,
-          updated_at: new Date().toISOString()
-        });
+        .upsert(updateData)
+        .select();
+
+      console.log('Supabase response:', { result, error });
 
       if (error) throw error;
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile', currentUser?.id] });
@@ -170,6 +181,10 @@ const ProfileEdit = () => {
   };
 
   const handleSave = () => {
+    console.log('Save button clicked');
+    console.log('Form data:', formData);
+    console.log('Current user:', currentUser);
+    
     if (!formData.full_name.trim()) {
       toast({
         title: "Name required",
@@ -179,6 +194,7 @@ const ProfileEdit = () => {
       return;
     }
 
+    console.log('About to save profile...');
     saveProfileMutation.mutate(formData);
   };
 
