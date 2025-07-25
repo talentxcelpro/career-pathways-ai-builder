@@ -121,7 +121,7 @@ export const Navbar = () => {
 
 
   const getEmployerButtonText = () => {
-    if (!user) return 'Sign In';
+    if (!user) return 'Login';
     if (hasEmployerAccess) return 'Employer Dashboard';
     if (employerStatus === 'pending') return 'Access Pending';
     return 'Request Access';

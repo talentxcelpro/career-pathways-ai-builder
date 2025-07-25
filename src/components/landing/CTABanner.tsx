@@ -59,13 +59,15 @@ export const CTABanner = () => {
 
           {/* CTA Button */}
           <div className="pt-8">
-            <Button 
-              size="lg" 
-              className="bg-white text-slate-900 hover:bg-slate-100 rounded-full px-12 py-6 text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 group"
-            >
-              Learn More
-              <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <AuthDialog>
+              <Button 
+                size="lg" 
+                className="bg-white text-slate-900 hover:bg-slate-100 rounded-full px-12 py-6 text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 group"
+              >
+                Create Your Free Profile
+                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </AuthDialog>
           </div>
 
           {/* Subtext */}
