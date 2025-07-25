@@ -31,17 +31,17 @@ export const AuthDialog = ({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-sm p-0 bg-transparent border-0 shadow-none">
+      <DialogContent className="max-w-xs p-0 bg-transparent border-0 shadow-none">
         <div className="relative">
           {/* Simplified background */}
-          <div className="absolute inset-0 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20"></div>
+          <div className="absolute inset-0 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-white/20"></div>
           
           {/* Minimal decorative elements */}
-          <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30"></div>
-          <div className="absolute -bottom-3 -left-3 w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full opacity-20"></div>
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30"></div>
+          <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full opacity-20"></div>
           
           {/* Content */}
-          <div className="relative z-10 p-6">
+          <div className="relative z-10 p-4">
             <UnifiedAuthForm onSuccess={handleSuccess} />
           </div>
         </div>

@@ -10,7 +10,7 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
-  signInWithIdToken: (provider: string, token: string) => Promise<void>;
+  signInWithIdToken: (provider: string, token: string) => Promise<{ user: User; session: Session; } | { user: null; session: null; }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

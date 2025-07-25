@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
 import { useNavigate } from 'react-router-dom';
+import talentxcelLogo from '@/assets/talentxcel-logo.png';
 
 interface UnifiedAuthFormProps {
   onSuccess?: () => void;
@@ -105,9 +106,7 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
         {/* Compact TalentXcel Branding */}
         <div className="text-center space-y-2 pb-3 border-b border-slate-100">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">T</span>
-            </div>
+            <img src={talentxcelLogo} alt="TalentXcel" className="w-8 h-8" />
             <h2 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               TalentXcel
             </h2>
