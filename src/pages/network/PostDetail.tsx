@@ -11,6 +11,7 @@ import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
 import { ShareButton } from "@/components/shared/ShareButton";
 import { useShareContent } from "@/hooks/useShareContent";
+import MediaPreview from "@/components/posts/MediaPreview";
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -166,37 +167,10 @@ const PostDetail = () => {
 
             {/* Post Content */}
             <div className="mb-6">
-              <p className="text-gray-900 whitespace-pre-wrap text-lg leading-relaxed">{post.content}</p>
-              
-              {/* Post Media */}
-              {post.media_urls && post.media_urls.length > 0 && (
-                <div className="mt-6 grid gap-4" style={{
-                  gridTemplateColumns: post.media_urls.length === 1 ? '1fr' : 
-                                     post.media_urls.length === 2 ? '1fr 1fr' :
-                                     'repeat(auto-fit, minmax(300px, 1fr))'
-                }}>
-                  {post.media_urls.map((url: string, index: number) => {
-                    const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
-                    return (
-                      <div key={index} className="relative">
-                        {isVideo ? (
-                          <video 
-                            src={url}
-                            className="w-full h-80 object-cover rounded-lg"
-                            controls
-                          />
-                        ) : (
-                          <img 
-                            src={url}
-                            alt={`Post media ${index + 1}`}
-                            className="w-full h-80 object-cover rounded-lg"
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <MediaPreview 
+                content={post.content} 
+                mediaUrls={post.media_urls || []} 
+              />
               
               {/* Post Tags */}
               {post.tags && post.tags.length > 0 && (

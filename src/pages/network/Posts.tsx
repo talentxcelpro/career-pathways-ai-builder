@@ -29,6 +29,7 @@ import FloatingMessenger from "@/components/network/FloatingMessenger";
 import ModernMessenger from "@/components/network/ModernMessenger";
 import { Link } from 'react-router-dom';
 import { AICommentGenerator } from "@/components/network/AICommentGenerator";
+import MediaPreview from "@/components/posts/MediaPreview";
 import ProBanner from "@/components/network/ProBanner";
 import ProBadge from "@/components/network/ProBadge";
 import ProPostCTA from "@/components/network/ProPostCTA";
@@ -593,7 +594,10 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
 
                       {/* Post Content */}
                       <div className="mb-4">
-                        <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
+                        <MediaPreview 
+                          content={post.content} 
+                          mediaUrls={post.media_urls || []} 
+                        />
                         
                         {/* Career Intent Tags */}
                         {post.intent_tags && post.intent_tags.length > 0 && (
@@ -615,89 +619,6 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
                             </div>
                           );
                         })()}
-                        
-                        {/* Post Media */}
-                        {post.media_urls && post.media_urls.length > 0 && (
-                          <div className="mt-4 grid gap-2" style={{
-                            gridTemplateColumns: post.media_urls.length === 1 ? '1fr' : 
-                                               post.media_urls.length === 2 ? '1fr 1fr' :
-                                               post.media_urls.length === 3 ? '1fr 1fr 1fr' :
-                                               '1fr 1fr'
-                          }}>
-                            {post.media_urls.slice(0, 4).map((url: string, index: number) => {
-                              const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('video');
-                              const isDocument = url.includes('.pdf') || url.includes('.doc') || url.includes('document');
-                              
-                              return (
-                                <div key={index} className="relative group">
-                                  {isVideo ? (
-                                    <video 
-                                      src={url}
-                                      className="w-full h-64 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                                      controls
-                                      onClick={() => window.open(url, '_blank')}
-                                    />
-                                  ) : isDocument ? (
-                                    <div className="flex items-center justify-center h-32 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
-                                      <div className="text-center">
-                                        <FileText className="h-8 w-8 mx-auto mb-2 text-gray-600" />
-                                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
-                                          View Document
-                                        </a>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="relative overflow-hidden rounded-lg cursor-pointer" onClick={() => window.open(url, '_blank')}>
-                                      <img 
-                                        src={url}
-                                        alt={`Shared by ${formatDisplayName(post.profiles)}`}
-                                        className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-                                        onError={(e) => {
-                                          // Silently handle image load errors without console logging
-                                          (e.target as HTMLImageElement).style.display = 'none';
-                                          const parent = (e.target as HTMLImageElement).parentElement;
-                                          if (parent) {
-                                            parent.innerHTML = `
-                                              <div class="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
-                                                <div class="text-center">
-                                                  <div class="w-16 h-16 bg-gray-300 rounded-lg flex items-center justify-center mx-auto mb-2">
-                                                    <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                    </svg>
-                                                  </div>
-                                                  <p class="text-sm text-gray-500">Image unavailable</p>
-                                                  <a href="${url}" target="_blank" class="text-blue-600 hover:underline text-xs">View original</a>
-                                                </div>
-                                              </div>
-                                            `;
-                                          }
-                                        }}
-                                        onLoad={() => {
-                                          console.log('Image loaded successfully:', url);
-                                        }}
-                                      />
-                                      {/* Overlay for hover effect */}
-                                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
-                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                          <div className="bg-white/90 rounded-full p-2">
-                                            <ExternalLink className="h-4 w-4 text-gray-800" />
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-                                  {index === 3 && post.media_urls.length > 4 && (
-                                    <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
-                                      <span className="text-white text-xl font-semibold">
-                                        +{post.media_urls.length - 4}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
                         
                         {/* Location */}
                         {post.location && (

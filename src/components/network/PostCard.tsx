@@ -11,6 +11,7 @@ import { PostMenu } from "@/components/posts/PostMenu";
 import { QuickShareActions } from "@/components/shared/QuickShareActions";
 import { useShareContent } from "@/hooks/useShareContent";
 import ProBadge from "@/components/network/ProBadge";
+import MediaPreview from "@/components/posts/MediaPreview";
 
 interface PostCardProps {
   post: {
@@ -125,45 +126,10 @@ export const PostCard: React.FC<PostCardProps> = ({
 
         {/* Post Content - Make clickable to navigate to detail page */}
         <Link to={`/network/posts/${post.id}`} className="block mb-4 hover:bg-gray-50 -mx-2 px-2 py-2 rounded transition-colors">
-          <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
-          
-          {/* Post Media */}
-          {post.media_urls && post.media_urls.length > 0 && (
-            <div className="mt-4 grid gap-2" style={{
-              gridTemplateColumns: post.media_urls.length === 1 ? '1fr' : 
-                                 post.media_urls.length === 2 ? '1fr 1fr' :
-                                 post.media_urls.length === 3 ? '1fr 1fr 1fr' :
-                                 '1fr 1fr'
-            }}>
-              {post.media_urls.slice(0, 4).map((url: string, index: number) => {
-                const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
-                return (
-                  <div key={index} className="relative">
-                    {isVideo ? (
-                      <video 
-                        src={url}
-                        className="w-full h-64 object-cover rounded-lg"
-                        controls
-                      />
-                    ) : (
-                      <img 
-                        src={url}
-                        alt={`Post media ${index + 1}`}
-                        className="w-full h-64 object-cover rounded-lg"
-                      />
-                    )}
-                    {index === 3 && post.media_urls.length > 4 && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
-                        <span className="text-white text-xl font-semibold">
-                          +{post.media_urls.length - 4}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <MediaPreview 
+            content={post.content} 
+            mediaUrls={post.media_urls || []} 
+          />
           
           {/* Post Tags */}
           {post.tags && post.tags.length > 0 && (
