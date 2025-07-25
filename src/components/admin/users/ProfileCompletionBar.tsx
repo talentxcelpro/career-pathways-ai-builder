@@ -127,6 +127,7 @@ export const ProfileCompletionBar: React.FC<ProfileCompletionBarProps> = ({
               </div>
             </TooltipContent>
           </Tooltip>
+        )}
       </div>
   );
 };
