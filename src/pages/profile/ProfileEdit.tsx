@@ -307,7 +307,13 @@ const ProfileEdit = () => {
           <Button variant="outline" onClick={() => navigate('/profile')}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={saveProfileMutation.isPending}>
+          <Button 
+            onClick={(e) => {
+              console.log('Button clicked event:', e);
+              handleSave();
+            }} 
+            disabled={saveProfileMutation.isPending}
+          >
             {saveProfileMutation.isPending ? (
               <>Saving...</>
             ) : (
