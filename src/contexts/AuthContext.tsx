@@ -10,6 +10,7 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
+  signInWithIdToken: (provider: string, token: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -126,12 +127,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signInWithIdToken = async (provider: string, token: string) => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: provider as any,
+        token,
+      });
+
+      if (error) {
+        console.error('Error signing in with ID token:', error);
+        throw error;
+      }
+
+      // Session will be updated via auth state change
+      return data;
+    } catch (error) {
+      console.error('Error signing in with ID token:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     user,
     session,
     loading,
     signOut,
-    refreshSession
+    refreshSession,
+    signInWithIdToken
   };
 
   return (
