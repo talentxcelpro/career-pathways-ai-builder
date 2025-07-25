@@ -336,10 +336,11 @@ const extractKeywordsFromJobDescription = (jobDescription: string): string[] => 
   );
   
   // Also extract words that appear multiple times (likely important)
-  const words = text.match(/\b[a-z]+\b/g) || [];
+  const matchResult = text.match(/\b[a-z]+\b/g);
+  const words: string[] = matchResult ? matchResult : [];
   const wordCount: Record<string, number> = {};
   
-  words.forEach(word => {
+  words.forEach((word: string) => {
     if (word.length > 3) { // Only consider words longer than 3 characters
       wordCount[word] = (wordCount[word] || 0) + 1;
     }
