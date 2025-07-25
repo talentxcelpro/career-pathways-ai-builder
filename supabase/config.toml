@@ -52,3 +52,6 @@ verify_jwt = false
 
 [functions.auth-service-root]
 verify_jwt = false
+
+[functions.media-handler]
+verify_jwt = false

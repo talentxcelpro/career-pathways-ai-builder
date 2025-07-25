@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { MEDIA_PATHS, getMediaUrl, generateFilePath, uploadFileWithMetadata } from '@/utils/mediaHelpers';
 
 interface UseFileUploadOptions {
   bucket: string;
@@ -106,13 +107,26 @@ export function useFileUpload(options?: UseFileUploadOptions) {
         throw uploadError;
       }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(fileName);
+      // Return clean media URL instead of direct Supabase URL
+      const cleanBucketKey = Object.entries(MEDIA_PATHS).find(([, value]) => {
+        const bucketMapping: Record<string, string> = {
+          'avatars': MEDIA_PATHS.USER_MEDIA,
+          'post-media': MEDIA_PATHS.POST_MEDIA,
+          'documents': MEDIA_PATHS.DOCUMENTS,
+          'resumes': MEDIA_PATHS.RESUMES,
+          'media': MEDIA_PATHS.POST_MEDIA,
+          'portfolio': MEDIA_PATHS.PORTFOLIO,
+          'cover-letters': MEDIA_PATHS.COVER_LETTERS,
+          'preferences': MEDIA_PATHS.PREFERENCES
+        };
+        return bucketMapping[bucket] === value;
+      })?.[1] || bucket;
 
+      const mediaUrl = getMediaUrl(cleanBucketKey, fileName);
+      
       setProgress(100);
       toast.success('File uploaded successfully');
-      return publicUrl;
+      return mediaUrl;
     } catch (error: any) {
       console.error('Upload failed:', error);
       const errorMessage = error.message || 'Upload failed';
@@ -154,8 +168,38 @@ export function useFileUpload(options?: UseFileUploadOptions) {
     }
   };
 
+  // Enhanced upload with metadata support
+  const uploadWithMetadata = async (
+    file: File, 
+    bucketKey: string, 
+    metadata?: {
+      userId?: string;
+      module?: string;
+      category?: string;
+      description?: string;
+      tags?: string[];
+    }
+  ): Promise<string> => {
+    setUploading(true);
+    setProgress(0);
+    
+    try {
+      const result = await uploadFileWithMetadata(file, bucketKey, metadata);
+      setProgress(100);
+      toast.success('File uploaded successfully');
+      return result;
+    } catch (error: any) {
+      console.error('Upload failed:', error);
+      toast.error(error.message || 'Upload failed');
+      throw error;
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return {
     uploadFile,
+    uploadWithMetadata,
     deleteFile,
     uploading,
     isUploading: uploading, // Add alias for backward compatibility

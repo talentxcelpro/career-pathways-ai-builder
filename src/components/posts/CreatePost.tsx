@@ -20,6 +20,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { getMediaUrl, MEDIA_PATHS } from '@/utils/mediaHelpers';
 
 interface Attachment {
   id: string;
@@ -91,8 +92,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
           continue;
         }
 
-        const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(data.path);
-        const url = publicUrl;
+        // Use new media URL helper
+        const url = getMediaUrl(MEDIA_PATHS.POST_MEDIA, data.path);
         newAttachments.push({
           id: randomId,
           url: url,
