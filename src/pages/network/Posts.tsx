@@ -651,7 +651,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
                                   ) : (
                                     <div className="relative overflow-hidden rounded-lg cursor-pointer" onClick={() => window.open(url, '_blank')}>
                                       <img 
-                                        src={url}
+                                        src={cleanUrl}
                                         alt={`Shared by ${formatDisplayName(post.profiles)}`}
                                         className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
                                         onError={(e) => {
