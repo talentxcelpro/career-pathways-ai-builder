@@ -11,7 +11,6 @@ import { PostMenu } from "@/components/posts/PostMenu";
 import { QuickShareActions } from "@/components/shared/QuickShareActions";
 import { useShareContent } from "@/hooks/useShareContent";
 import ProBadge from "@/components/network/ProBadge";
-import { convertToMediaUrl } from "@/utils/mediaHelpers";
 
 interface PostCardProps {
   post: {
@@ -137,19 +136,18 @@ export const PostCard: React.FC<PostCardProps> = ({
                                  '1fr 1fr'
             }}>
               {post.media_urls.slice(0, 4).map((url: string, index: number) => {
-                const cleanUrl = convertToMediaUrl(url);
                 const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
                 return (
                   <div key={index} className="relative">
                     {isVideo ? (
                       <video 
-                        src={cleanUrl}
+                        src={url}
                         className="w-full h-64 object-cover rounded-lg"
                         controls
                       />
                     ) : (
                       <img 
-                        src={cleanUrl}
+                        src={url}
                         alt={`Post media ${index + 1}`}
                         className="w-full h-64 object-cover rounded-lg"
                       />

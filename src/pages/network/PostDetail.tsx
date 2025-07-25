@@ -11,7 +11,6 @@ import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
 import { ShareButton } from "@/components/shared/ShareButton";
 import { useShareContent } from "@/hooks/useShareContent";
-import { convertToMediaUrl } from "@/utils/mediaHelpers";
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -176,14 +175,13 @@ const PostDetail = () => {
                                      post.media_urls.length === 2 ? '1fr 1fr' :
                                      'repeat(auto-fit, minmax(300px, 1fr))'
                 }}>
-                   {post.media_urls.map((url: string, index: number) => {
-                     const cleanUrl = convertToMediaUrl(url);
-                     const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
-                     return (
-                       <div key={index} className="relative">
-                         {isVideo ? (
-                           <video 
-                             src={cleanUrl}
+                  {post.media_urls.map((url: string, index: number) => {
+                    const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
+                    return (
+                      <div key={index} className="relative">
+                        {isVideo ? (
+                          <video 
+                            src={url}
                             className="w-full h-80 object-cover rounded-lg"
                             controls
                           />

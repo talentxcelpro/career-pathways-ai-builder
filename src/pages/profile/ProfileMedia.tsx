@@ -10,12 +10,10 @@ import { VideoResumeUpload } from "@/components/profile/media/VideoResumeUpload"
 import { PortfolioForm } from "@/components/profile/media/PortfolioForm";
 import { PortfolioGrid } from "@/components/profile/media/PortfolioGrid";
 import { useFileUpload } from "@/hooks/useFileUpload";
-import { MediaPreview, MediaGallery } from "@/components/ui/MediaPreview";
-import { MEDIA_PATHS } from "@/utils/mediaHelpers";
 
 const ProfileMedia = () => {
   const { toast } = useToast();
-  const { uploadWithMetadata, uploading } = useFileUpload({
+  const { uploadFile, uploading } = useFileUpload({
     bucket: 'media',
     maxSize: 50 * 1024 * 1024, // 50MB for videos
     allowedTypes: ['image/jpeg', 'image/png', 'video/mp4', 'video/webm']
@@ -33,12 +31,7 @@ const ProfileMedia = () => {
 
   const handleMediaUpload = async (file: File, type: 'photo' | 'video') => {
     try {
-      const bucketKey = type === 'photo' ? MEDIA_PATHS.USER_MEDIA : MEDIA_PATHS.POST_MEDIA;
-      const fileUrl = await uploadWithMetadata(file, bucketKey, {
-        module: 'profile',
-        category: type === 'photo' ? 'avatar' : 'video-resume',
-        description: `User ${type === 'photo' ? 'profile photo' : 'video resume'}`
-      });
+      const fileUrl = await uploadFile(file, `${type}s/${Date.now()}`);
       
       toast({
         title: `${type === 'photo' ? 'Photo' : 'Video'} Uploaded`,

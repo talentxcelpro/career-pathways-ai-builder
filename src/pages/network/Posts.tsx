@@ -34,7 +34,6 @@ import ProBadge from "@/components/network/ProBadge";
 import ProPostCTA from "@/components/network/ProPostCTA";
 import { useEmployerAccess } from "@/hooks/useEmployerAccess";
 import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
-import { convertToMediaUrl } from "@/utils/mediaHelpers";
 
 
 const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
@@ -625,16 +624,15 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
                                                post.media_urls.length === 3 ? '1fr 1fr 1fr' :
                                                '1fr 1fr'
                           }}>
-                             {post.media_urls.slice(0, 4).map((url: string, index: number) => {
-                               const cleanUrl = convertToMediaUrl(url);
-                               const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('video');
-                               const isDocument = url.includes('.pdf') || url.includes('.doc') || url.includes('document');
-                               
-                               return (
-                                 <div key={index} className="relative group">
-                                   {isVideo ? (
-                                     <video 
-                                       src={cleanUrl}
+                            {post.media_urls.slice(0, 4).map((url: string, index: number) => {
+                              const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('video');
+                              const isDocument = url.includes('.pdf') || url.includes('.doc') || url.includes('document');
+                              
+                              return (
+                                <div key={index} className="relative group">
+                                  {isVideo ? (
+                                    <video 
+                                      src={url}
                                       className="w-full h-64 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
                                       controls
                                       onClick={() => window.open(url, '_blank')}
@@ -651,7 +649,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
                                   ) : (
                                     <div className="relative overflow-hidden rounded-lg cursor-pointer" onClick={() => window.open(url, '_blank')}>
                                       <img 
-                                        src={cleanUrl}
+                                        src={url}
                                         alt={`Shared by ${formatDisplayName(post.profiles)}`}
                                         className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
                                         onError={(e) => {

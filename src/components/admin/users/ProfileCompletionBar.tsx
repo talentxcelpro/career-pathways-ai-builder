@@ -59,6 +59,7 @@ export const ProfileCompletionBar: React.FC<ProfileCompletionBarProps> = ({
   }
 
   return (
+    <TooltipProvider>
       <div className="space-y-2 animate-fade-in">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -129,5 +130,6 @@ export const ProfileCompletionBar: React.FC<ProfileCompletionBarProps> = ({
           </Tooltip>
         )}
       </div>
+    </TooltipProvider>
   );
 };
