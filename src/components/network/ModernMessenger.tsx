@@ -24,6 +24,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import MediaPreview from "@/components/posts/MediaPreview";
 
 interface ModernMessengerProps {
   isOpen: boolean;
@@ -395,8 +396,8 @@ const ModernMessenger: React.FC<ModernMessengerProps> = ({ isOpen, onClose }) =>
                                 ? 'bg-blue-500 text-white rounded-br-sm'
                                 : 'bg-white text-slate-900 rounded-bl-sm shadow-sm'
                             }`}
-                          >
-                            <p className="text-sm leading-relaxed">{message.content}</p>
+                           >
+                             <MediaPreview content={message.content} isMessage={true} />
                           </div>
                           <p className={`text-xs text-slate-500 mt-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
                             {formatTime(message.created_at)}

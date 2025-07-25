@@ -9,6 +9,7 @@ import { Phone, Video, MoreVertical, Send, Paperclip, Smile } from "lucide-react
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from 'react-router-dom';
+import MediaPreview from "@/components/posts/MediaPreview";
 
 interface ChatAreaProps {
   selectedConversation: string | null;
@@ -165,8 +166,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-100 text-gray-900'
                     }`}
-                  >
-                    <p className="text-sm">{message.content}</p>
+                   >
+                     <MediaPreview content={message.content} isMessage={true} />
                     <p
                       className={`text-xs mt-1 ${
                         isOwn ? 'text-blue-100' : 'text-gray-500'

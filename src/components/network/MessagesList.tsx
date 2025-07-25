@@ -2,6 +2,7 @@
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import MediaPreview from "@/components/posts/MediaPreview";
 
 interface MessagesListProps {
   messages: any[];
@@ -77,8 +78,8 @@ const MessagesList: React.FC<MessagesListProps> = ({
                             ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-br-sm'
                             : 'bg-white border border-gray-200 text-gray-900 rounded-bl-sm'
                         }`}
-                      >
-                        <p className="text-xs leading-relaxed break-words">{message.content}</p>
+                       >
+                         <MediaPreview content={message.content} isMessage={true} />
                         <p
                           className={`text-xs mt-0.5 ${
                             isOwn ? 'text-blue-100' : 'text-gray-400'

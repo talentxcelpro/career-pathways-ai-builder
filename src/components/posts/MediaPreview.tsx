@@ -3,9 +3,10 @@ import React from 'react';
 interface MediaPreviewProps {
   content: string;
   mediaUrls?: string[];
+  isMessage?: boolean; // For different styling in messages vs posts
 }
 
-const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [] }) => {
+const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], isMessage = false }) => {
   // Extract URLs from content
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const urlsInContent = content.match(urlRegex) || [];
@@ -38,7 +39,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [] }) 
   if (mediaItems.length === 0) {
     return (
       <div>
-        <p className="text-gray-900 whitespace-pre-wrap">{content}</p>
+        <p className={`${isMessage ? 'text-xs' : 'text-gray-900'} whitespace-pre-wrap`}>{content}</p>
       </div>
     );
   }
@@ -46,10 +47,10 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [] }) 
   return (
     <div>
       {finalContent && (
-        <p className="text-gray-900 whitespace-pre-wrap mb-4">{finalContent}</p>
+        <p className={`${isMessage ? 'text-xs' : 'text-gray-900'} whitespace-pre-wrap ${isMessage ? '' : 'mb-4'}`}>{finalContent}</p>
       )}
       
-      <div className="grid gap-2 mt-4" style={{
+      <div className={`grid gap-2 ${isMessage ? 'mt-1' : 'mt-4'}`} style={{
         gridTemplateColumns: mediaItems.length === 1 ? '1fr' : 
                            mediaItems.length === 2 ? '1fr 1fr' :
                            mediaItems.length === 3 ? '1fr 1fr 1fr' :
@@ -60,9 +61,9 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [] }) 
           return (
             <div key={index} className="relative">
               {isVideo ? (
-                <video 
-                  src={url}
-                  className="w-full h-64 object-cover rounded-lg"
+              <video 
+                src={url}
+                className={`w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg`}
                   controls
                   onError={(e) => {
                     console.error('Video failed to load:', url);
@@ -73,7 +74,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [] }) 
                 <img 
                   src={url}
                   alt={`Media ${index + 1}`}
-                  className="w-full h-64 object-cover rounded-lg"
+                  className={`w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg`}
                   onError={(e) => {
                     console.error('Image failed to load:', url);
                     e.currentTarget.style.display = 'none';
