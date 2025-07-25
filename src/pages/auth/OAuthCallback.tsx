@@ -12,29 +12,70 @@ const OAuthCallback = () => {
     const handleAuthCallback = async () => {
       try {
         console.log('Processing OAuth callback...');
+        console.log('Current URL:', window.location.href);
         setStatus('processing');
         
-        // Handle the OAuth callback
-        const { data, error } = await supabase.auth.getSession();
+        // Check for auth code in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const error = urlParams.get('error');
         
         if (error) {
-          console.error('OAuth callback error:', error);
+          console.error('OAuth error from URL:', error);
           setStatus('error');
-          toast.error('Sign in failed. Please try again.');
+          toast.error(`Sign in failed: ${error}`);
           setTimeout(() => navigate('/auth/login'), 2000);
           return;
         }
+        
+        if (code) {
+          console.log('Found auth code, exchanging for session...');
+          // Exchange the code for a session
+          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          
+          if (exchangeError) {
+            console.error('Code exchange error:', exchangeError);
+            setStatus('error');
+            toast.error('Sign in failed. Please try again.');
+            setTimeout(() => navigate('/auth/login'), 2000);
+            return;
+          }
 
-        if (data.session && data.session.user) {
-          console.log('OAuth authentication successful');
-          setStatus('success');
-          toast.success('Successfully signed in!');
-          navigate('/network', { replace: true });
+          if (data.session && data.session.user) {
+            console.log('OAuth authentication successful:', data.user);
+            setStatus('success');
+            toast.success('Successfully signed in!');
+            navigate('/network', { replace: true });
+          } else {
+            console.log('No session after code exchange');
+            setStatus('error');
+            toast.error('Sign in failed. Please try again.');
+            setTimeout(() => navigate('/auth/login'), 2000);
+          }
         } else {
-          console.log('No session found in callback');
-          setStatus('error');
-          toast.error('Sign in failed. Please try again.');
-          setTimeout(() => navigate('/auth/login'), 2000);
+          // Fallback to getting current session
+          console.log('No auth code found, checking current session...');
+          const { data, error: sessionError } = await supabase.auth.getSession();
+          
+          if (sessionError) {
+            console.error('Session error:', sessionError);
+            setStatus('error');
+            toast.error('Sign in failed. Please try again.');
+            setTimeout(() => navigate('/auth/login'), 2000);
+            return;
+          }
+
+          if (data.session && data.session.user) {
+            console.log('Found existing session');
+            setStatus('success');
+            toast.success('Successfully signed in!');
+            navigate('/network', { replace: true });
+          } else {
+            console.log('No session found');
+            setStatus('error');
+            toast.error('Sign in failed. Please try again.');
+            setTimeout(() => navigate('/auth/login'), 2000);
+          }
         }
       } catch (error) {
         console.error('OAuth callback processing error:', error);
