@@ -9,8 +9,6 @@ import { FileUploadStep } from './FileUploadStep';
 import { TemplateSelectionStep } from './TemplateSelectionStep';
 import { ProcessingStep } from './ProcessingStep';
 import { SuccessStep } from './SuccessStep';
-import { EnhancedFileUpload } from './EnhancedFileUpload';
-import { PasteAndParse } from './PasteAndParse';
 
 interface UploadWizardProps {
   onComplete?: (data: any) => void;

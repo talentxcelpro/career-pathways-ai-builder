@@ -20,12 +20,6 @@ password_min_length = 8
 security_password_change_confirm = true
 security_update_password_require_reauthentication = true
 
-[functions.ai-resume-extraction]
-verify_jwt = false
-
-[functions.ai-resume-parser]
-verify_jwt = false
-
 [functions.admin-create-user]
 verify_jwt = true
 
