@@ -47,11 +47,6 @@
     }
   ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
-  ],
-  "functions": {
-    "*.js": {
-      "maxDuration": 30
-    }
-  }
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
