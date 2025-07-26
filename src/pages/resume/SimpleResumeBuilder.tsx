@@ -4,13 +4,33 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ConversationalResumeBuilder from '@/components/resume/ConversationalResumeBuilder';
 import { EnhancedFileUpload } from '@/components/resume/upload/EnhancedFileUpload';
 import { PasteAndParse } from '@/components/resume/upload/PasteAndParse';
+import { TextBasedResumeBuilder } from '@/components/resume/enhanced/TextBasedResumeBuilder';
+import { NetworkErrorFallback } from '@/components/resume/enhanced/NetworkErrorFallback';
 import { FileText, Upload, ClipboardPaste } from "lucide-react";
 
 const SimpleResumeBuilder: React.FC = () => {
   const [resumeData, setResumeData] = useState(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [showFallback, setShowFallback] = useState(false);
 
   const handleDataExtracted = (extractedData: any) => {
     setResumeData(extractedData);
+    setUploadError(null);
+    setShowFallback(false);
+  };
+
+  const handleUploadError = (error: string) => {
+    console.error('Upload error:', error);
+    setUploadError(error);
+    // Show fallback for connection issues
+    if (error.includes('Failed to send') || error.includes('Failed to fetch') || error.includes('connection')) {
+      setShowFallback(true);
+    }
+  };
+
+  const handleRetryUpload = () => {
+    setUploadError(null);
+    setShowFallback(false);
   };
 
   return (
@@ -42,14 +62,24 @@ const SimpleResumeBuilder: React.FC = () => {
           </TabsList>
 
           <TabsContent value="upload" className="space-y-6">
-            <EnhancedFileUpload 
-              onFileProcessed={handleDataExtracted}
-              onError={(error) => console.error('Upload error:', error)}
-            />
+            {showFallback ? (
+              <NetworkErrorFallback 
+                onRetry={handleRetryUpload}
+                onManualEntry={() => {/* User can switch tabs manually */}}
+              />
+            ) : (
+              <EnhancedFileUpload 
+                onFileProcessed={handleDataExtracted}
+                onError={handleUploadError}
+              />
+            )}
           </TabsContent>
 
           <TabsContent value="paste" className="space-y-6">
-            <PasteAndParse onDataExtracted={handleDataExtracted} />
+            <TextBasedResumeBuilder 
+              onDataExtracted={handleDataExtracted}
+              onManualEntry={() => {/* User can switch to builder tab */}}
+            />
           </TabsContent>
 
           <TabsContent value="builder" className="space-y-6">
