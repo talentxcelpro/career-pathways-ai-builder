@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CoreWebVitalsMonitor } from './CoreWebVitalsMonitor';
 import { RSSFeedGenerator } from './RSSFeedGenerator';
+import { PerformanceMonitorDashboard } from './PerformanceMonitorDashboard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Search, Globe, Zap, Download, Settings } from 'lucide-react';
@@ -51,6 +52,9 @@ export const SEOPerformanceDashboard = () => {
           </Card>
         ))}
       </div>
+
+      {/* Performance Monitor Dashboard */}
+      <PerformanceMonitorDashboard />
 
       {/* Core Web Vitals */}
       <CoreWebVitalsMonitor />
