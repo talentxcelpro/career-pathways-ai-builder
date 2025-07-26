@@ -138,4 +138,75 @@ export const analyticsService = {
       };
     }
   },
+
+  getRealTimeUserStats: async () => {
+    try {
+      // Get active users (last 15 minutes)
+      const { count: activeUsers } = await supabase
+        .from('user_sessions')
+        .select('*', { count: 'exact', head: true })
+        .gte('last_activity', new Date(Date.now() - 15 * 60 * 1000).toISOString());
+
+      // Get total users
+      const { count: totalUsers } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+
+      return {
+        activeUsers: activeUsers || 0,
+        totalUsers: totalUsers || 0
+      };
+    } catch (error) {
+      console.error('Error fetching real-time user stats:', error);
+      return {
+        activeUsers: 0,
+        totalUsers: 0
+      };
+    }
+  },
+
+  getSystemHealth: async () => {
+    try {
+      // Calculate system health based on various metrics
+      const startTime = Date.now();
+      
+      // Test database connectivity
+      const { data } = await supabase.from('profiles').select('id').limit(1);
+      const responseTime = Date.now() - startTime;
+
+      // Get error rate from recent logs
+      const { data: errorLogs } = await supabase
+        .from('ai_request_logs')
+        .select('success')
+        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .limit(100);
+
+      const totalRequests = errorLogs?.length || 0;
+      const failedRequests = errorLogs?.filter(log => !log.success).length || 0;
+      const errorRate = totalRequests > 0 ? failedRequests / totalRequests : 0;
+
+      // Determine system health
+      let status: 'healthy' | 'warning' | 'critical' = 'healthy';
+      if (responseTime > 1000 || errorRate > 0.1) {
+        status = 'critical';
+      } else if (responseTime > 500 || errorRate > 0.05) {
+        status = 'warning';
+      }
+
+      return {
+        status,
+        averageResponseTime: responseTime,
+        errorRate,
+        databaseConnections: 5 // Mock value - would need admin access for real metric
+      };
+    } catch (error) {
+      console.error('Error fetching system health:', error);
+      return {
+        status: 'critical' as const,
+        averageResponseTime: 0,
+        errorRate: 1,
+        databaseConnections: 0
+      };
+    }
+  }
 };

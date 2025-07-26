@@ -17037,6 +17037,13 @@ export type Database = {
       log_security_event: {
         Args:
           | {
+              p_event_type: string
+              p_severity?: string
+              p_description?: string
+              p_metadata?: Json
+              p_user_id?: string
+            }
+          | {
               p_user_id: string
               p_event_type: string
               p_description: string

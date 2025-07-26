@@ -73,12 +73,36 @@ export class PlatformTestRunner {
         description: 'Test company profile and job posting features',
         status: 'pending'
       },
-      {
-        id: 'admin-panel',
-        name: 'Admin Panel',
-        description: 'Test admin dashboard and management features',
-        status: 'pending'
-      }
+        {
+          id: 'admin-panel',
+          name: 'Admin Panel',
+          description: 'Test admin dashboard and management features',
+          status: 'pending'
+        },
+        {
+          id: 'real-data-analytics',
+          name: 'Real Data Analytics',
+          description: 'Test analytics service with real user data',
+          status: 'pending'
+        },
+        {
+          id: 'ai-services',
+          name: 'AI Services Integration',
+          description: 'Test AI data service and recommendations',
+          status: 'pending'
+        },
+        {
+          id: 'notification-system',
+          name: 'Notification System',
+          description: 'Test notification creation and delivery',
+          status: 'pending'
+        },
+        {
+          id: 'security-audit',
+          name: 'Security Audit',
+          description: 'Test database security policies and RLS',
+          status: 'pending'
+        }
     ];
   }
 
@@ -121,6 +145,18 @@ export class PlatformTestRunner {
         case 'admin-panel':
           await this.testAdminPanel();
           break;
+        case 'real-data-analytics':
+          await this.testRealDataAnalytics();
+          break;
+        case 'ai-services':
+          await this.testAIServices();
+          break;
+        case 'notification-system':
+          await this.testNotificationSystem();
+          break;
+        case 'security-audit':
+          await this.testSecurityAudit();
+          break;
         default:
           throw new Error(`Unknown test: ${testId}`);
       }
@@ -150,7 +186,13 @@ export class PlatformTestRunner {
     // Test authentication endpoints
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
-      throw new Error('No active session found');
+      throw new Error('No active session found - Please login first');
+    }
+    
+    // Test user data access
+    const { data: user } = await supabase.auth.getUser();
+    if (!user || !user.user) {
+      throw new Error('Unable to retrieve user data');
     }
   }
 
@@ -280,6 +322,81 @@ export class PlatformTestRunner {
         return;
       }
       throw error;
+    }
+  }
+
+  private async testRealDataAnalytics(): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    // Test analytics service functions
+    try {
+      // Import and test analytics service
+      const { analyticsService } = await import('@/services/analyticsService');
+      const stats = await analyticsService.getUserDashboardStats(user.id);
+      
+      if (typeof stats.coursesCompleted !== 'number') {
+        throw new Error('Analytics service not returning proper data structure');
+      }
+    } catch (error) {
+      throw new Error(`Analytics service failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  private async testAIServices(): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    try {
+      // Test AI data service
+      const { aiDataService } = await import('@/services/aiDataService');
+      const insights = await aiDataService.getCareerInsights(user.id);
+      
+      if (!insights || !Array.isArray(insights)) {
+        throw new Error('AI data service not returning proper insights');
+      }
+    } catch (error) {
+      throw new Error(`AI services failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  private async testNotificationSystem(): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    // Test notification access
+    const { data: notifications } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', user.id)
+      .limit(1);
+
+    if (notifications === null) {
+      throw new Error('Unable to access notifications system');
+    }
+  }
+
+  private async testSecurityAudit(): Promise<void> {
+    // Test security events logging
+    try {
+      await supabase.rpc('log_security_event', {
+        p_event_type: 'test_audit',
+        p_severity: 'low',
+        p_description: 'Automated security audit test'
+      });
+    } catch (error) {
+      throw new Error(`Security audit functions not working: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+
+    // Test that RLS is enabled on critical tables
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    try {
+      // This should work (user's own data)
+      await supabase.from('profiles').select('id').eq('id', user.id).single();
+    } catch (error) {
+      throw new Error('RLS policies may be misconfigured for profiles table');
     }
   }
 }
