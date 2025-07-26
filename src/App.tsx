@@ -14,6 +14,7 @@ import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import { AIProvider } from "./contexts/AIContext";
 import { SecurityProvider } from "./components/security/SecurityProvider";
 import { ContentSecurityPolicy } from "./components/security/ContentSecurityPolicy";
+import { AutoRefreshProvider } from "./components/shared/AutoRefreshProvider";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -61,8 +62,9 @@ const App = () => {
           <AnalyticsProvider>
             <AuthProvider>
               <SecurityProvider>
-                <AIProvider>
-                  <ContentSecurityPolicy />
+                <AutoRefreshProvider>
+                  <AIProvider>
+                    <ContentSecurityPolicy />
                 <Toaster 
                   duration={10000}
                   position="top-center"
@@ -120,8 +122,9 @@ const App = () => {
                   </main>
                   <Footer />
                 </div>
-                  <Analytics />
-                </AIProvider>
+                    <Analytics />
+                  </AIProvider>
+                </AutoRefreshProvider>
               </SecurityProvider>
             </AuthProvider>
           </AnalyticsProvider>
