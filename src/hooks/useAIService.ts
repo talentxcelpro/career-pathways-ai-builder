@@ -105,6 +105,19 @@ export const useAIService = () => {
     } catch (error: any) {
       console.error(`❌ AI tool ${options.toolSlug} failed:`, error);
       
+      // Enhanced error handling for different types of failures
+      let errorMessage = 'AI processing failed';
+      
+      if (error.name === 'FunctionsFetchError') {
+        errorMessage = 'Unable to connect to AI service. Please check your connection and try again.';
+      } else if (error.message?.includes('Failed to fetch')) {
+        errorMessage = 'Network connection error. Please try again in a moment.';
+      } else if (error.message?.includes('OpenAI')) {
+        errorMessage = 'AI service temporarily unavailable. Please try again later.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       // Log failed usage
       try {
         const user = await supabase.auth.getUser();
@@ -115,7 +128,7 @@ export const useAIService = () => {
           request_type: 'ai_tool_invocation',
           request_data: options.inputData,
           success: false,
-          error_message: error.message
+          error_message: errorMessage
         });
       } catch (logError) {
         console.warn('⚠️ Failed to log AI usage:', logError);
@@ -123,7 +136,7 @@ export const useAIService = () => {
 
       return {
         success: false,
-        error: error.message
+        error: errorMessage
       };
     } finally {
       setIsProcessing(false);
