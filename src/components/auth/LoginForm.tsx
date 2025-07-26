@@ -53,8 +53,6 @@ const LoginForm = () => {
       }
 
       if (data.user) {
-        toast.success('Welcome back! 🎉');
-        
         // Redirect to return URL or network
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));

@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { analyticsService } from '@/services/analyticsService';
 
 export const realDataService = {
   getDashboardStats: async () => {
@@ -7,30 +8,8 @@ export const realDataService = {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Get user's job applications
-      const { data: applications } = await supabase
-        .from('job_applications')
-        .select('*')
-        .eq('user_id', user.id);
-
-      // Get user's profile views
-      const { data: profileViews } = await supabase
-        .from('profile_views')
-        .select('*')
-        .eq('profile_id', user.id);
-
-      // Mock courses completed (this would come from learning system)
-      const coursesCompleted = Math.floor(Math.random() * 5) + 1;
-
-      // Mock resume views (this would come from resume system)
-      const resumeViews = Math.floor(Math.random() * 50) + 10;
-
-      return {
-        coursesCompleted,
-        resumeViews,
-        appliedJobs: applications?.length || 0,
-        profileViews: profileViews?.length || 0,
-      };
+      // Use the analytics service for real data
+      return await analyticsService.getUserDashboardStats(user.id);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
       return {
