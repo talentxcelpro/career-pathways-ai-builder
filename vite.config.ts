@@ -19,36 +19,34 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // 🔴 Fix #1: Optimize bundle splitting for better caching
+    // 🔴 Memory optimization: Reduce parallel operations and chunk size
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
-          charts: ['recharts'],
-          supabase: ['@supabase/supabase-js'],
-          utils: ['date-fns', 'clsx', 'tailwind-merge'],
-          pdf: ['jspdf', 'html2canvas'],
+        manualChunks: (id) => {
+          // More granular chunking to reduce memory usage
+          if (id.includes('node_modules')) {
+            if (id.includes('react')) return 'react-vendor';
+            if (id.includes('@radix-ui')) return 'radix-ui';
+            if (id.includes('recharts')) return 'charts';
+            if (id.includes('@supabase')) return 'supabase';
+            if (id.includes('jspdf') || id.includes('html2canvas')) return 'pdf-tools';
+            if (id.includes('framer-motion')) return 'animation';
+            return 'vendor';
+          }
         },
       },
-      maxParallelFileOps: 2,
+      // Reduce parallel operations to prevent memory overflow
+      maxParallelFileOps: 1,
     },
-    // Tree-shaking and dead code elimination
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production',
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info'],
-      },
-      mangle: {
-        safari10: true,
-      },
-    },
-    // Optimize chunk size
-    chunkSizeWarningLimit: 600,
-    // Enable source maps only in development
-    sourcemap: mode === 'development',
+    // Use esbuild instead of terser for faster, less memory-intensive minification
+    minify: mode === 'production' ? 'esbuild' : false,
+    // Smaller chunk size to reduce memory usage
+    chunkSizeWarningLimit: 300,
+    // Disable source maps to save memory
+    sourcemap: false,
+    // Additional memory optimizations
+    target: 'esnext',
+    reportCompressedSize: false,
   },
   // 🔴 Fix #2: Enable production optimizations
   define: {
