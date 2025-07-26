@@ -28,8 +28,10 @@ export default defineConfig(({ mode }) => ({
           charts: ['recharts'],
           supabase: ['@supabase/supabase-js'],
           utils: ['date-fns', 'clsx', 'tailwind-merge'],
+          pdf: ['jspdf', 'html2canvas'],
         },
       },
+      maxParallelFileOps: 2,
     },
     // Tree-shaking and dead code elimination
     minify: 'terser',
@@ -38,6 +40,9 @@ export default defineConfig(({ mode }) => ({
         drop_console: mode === 'production',
         drop_debugger: true,
         pure_funcs: ['console.log', 'console.info'],
+      },
+      mangle: {
+        safari10: true,
       },
     },
     // Optimize chunk size
