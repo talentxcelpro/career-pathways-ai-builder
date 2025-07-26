@@ -1082,6 +1082,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_prompt_cache: {
+        Row: {
+          access_count: number | null
+          accessed_at: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          prompt_hash: string
+          prompt_text: string
+          response_data: Json
+          tool_slug: string
+        }
+        Insert: {
+          access_count?: number | null
+          accessed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          prompt_hash: string
+          prompt_text: string
+          response_data: Json
+          tool_slug: string
+        }
+        Update: {
+          access_count?: number | null
+          accessed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          prompt_hash?: string
+          prompt_text?: string
+          response_data?: Json
+          tool_slug?: string
+        }
+        Relationships: []
+      }
       ai_prompt_library: {
         Row: {
           created_at: string | null

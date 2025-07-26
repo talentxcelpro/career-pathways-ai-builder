@@ -22,12 +22,51 @@ export const useAIService = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentOperation, setCurrentOperation] = useState<string | null>(null);
 
+  // Generate cache key for prompt caching
+  const generateCacheKey = (toolSlug: string, inputData: any): string => {
+    const normalizedData = JSON.stringify(inputData, Object.keys(inputData).sort());
+    return btoa(`${toolSlug}:${normalizedData}`).replace(/[/+=]/g, '').substring(0, 50);
+  };
+
   const invokeAITool = useCallback(async (options: AIServiceOptions): Promise<AIServiceResponse> => {
     setIsProcessing(true);
     setCurrentOperation(options.toolSlug);
 
     try {
       console.log(`🚀 Invoking AI tool: ${options.toolSlug}`, options);
+
+      // Check cache first for performance
+      const cacheKey = generateCacheKey(options.toolSlug, options.inputData);
+      
+      const { data: cached } = await supabase
+        .from('ai_prompt_cache')
+        .select('*')
+        .eq('prompt_hash', cacheKey)
+        .gt('expires_at', new Date().toISOString())
+        .maybeSingle();
+
+      if (cached) {
+        console.log(`💾 Cache hit for ${options.toolSlug}`);
+        
+        // Update access stats
+        await supabase
+          .from('ai_prompt_cache')
+          .update({ 
+            accessed_at: new Date().toISOString(), 
+            access_count: cached.access_count + 1 
+          })
+          .eq('id', cached.id);
+
+        return {
+          success: true,
+          data: cached.response_data,
+          cost: 0, // Cached responses are free
+          tokensUsed: 0,
+          responseTime: 50 // Fast cache hit
+        };
+      }
+
+      console.log(`📋 Cache miss for ${options.toolSlug}, calling AI gateway`);
 
       // Direct HTTP call to the edge function
       const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-gateway`;
@@ -73,6 +112,21 @@ export const useAIService = () => {
 
       if (!data.success) {
         throw new Error(data.error || 'AI processing failed');
+      }
+
+      // Cache successful responses
+      if (data.success) {
+        try {
+          await supabase.from('ai_prompt_cache').insert({
+            prompt_hash: cacheKey,
+            prompt_text: JSON.stringify(options.inputData),
+            response_data: data.data,
+            tool_slug: options.toolSlug
+          });
+          console.log(`💾 Cached response for ${options.toolSlug}`);
+        } catch (cacheError) {
+          console.warn('⚠️ Failed to cache response:', cacheError);
+        }
       }
 
       // Log successful usage
