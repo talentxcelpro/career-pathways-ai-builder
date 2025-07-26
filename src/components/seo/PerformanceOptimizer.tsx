@@ -1,14 +1,9 @@
 
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense } from 'react';
 import { useEffect, useState } from 'react';
-
-// Lazy load heavy SEO components
-const LazyJobsByLocation = lazy(() => import('@/pages/seo/JobsByLocation'));
-const LazyJobsByRole = lazy(() => import('@/pages/seo/JobsByRole'));
-const LazyJobsBySkill = lazy(() => import('@/pages/seo/JobsBySkill'));
-const LazyCompaniesByLocation = lazy(() => import('@/pages/seo/CompaniesByLocation'));
-const LazyCoursesByCategory = lazy(() => import('@/pages/seo/CoursesByCategory'));
-const LazySalaryGuide = lazy(() => import('@/pages/seo/SalaryGuide'));
+import { useLazyComponentLoader } from '@/hooks/useDynamicImports';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface PerformanceOptimizerProps {
   component: 'jobs-location' | 'jobs-role' | 'jobs-skill' | 'companies-location' | 'courses-category' | 'salary-guide';
@@ -45,45 +40,80 @@ export const PerformanceOptimizer: React.FC<PerformanceOptimizerProps> = ({
     return () => observer.disconnect();
   }, [component, preload]);
 
+  // Map component types to import paths
+  const getImportPath = (componentType: string): string => {
+    switch (componentType) {
+      case 'jobs-location':
+        return '@/pages/seo/JobsByLocation';
+      case 'jobs-role':
+        return '@/pages/seo/JobsByRole';
+      case 'jobs-skill':
+        return '@/pages/seo/JobsBySkill';
+      case 'companies-location':
+        return '@/pages/seo/CompaniesByLocation';
+      case 'courses-category':
+        return '@/pages/seo/CoursesByCategory';
+      case 'salary-guide':
+        return '@/pages/seo/SalaryGuide';
+      default:
+        return '';
+    }
+  };
+
+  const {
+    component: LazyComponent,
+    isLoading,
+    error,
+    observerRef
+  } = useLazyComponentLoader(getImportPath(component), {
+    threshold: 0.1,
+    rootMargin: '200px',
+    triggerOnce: true
+  });
+
   const renderComponent = () => {
-    if (!isVisible) {
+    if (error) {
       return (
-        <div 
-          id={`seo-component-${component}`}
-          className="min-h-screen flex items-center justify-center bg-gray-50"
-        >
-          <div className="animate-pulse text-gray-500">Loading...</div>
+        <div className="min-h-screen flex items-center justify-center bg-red-50">
+          <div className="text-red-600">
+            Failed to load component: {error.message}
+          </div>
         </div>
       );
     }
 
-    switch (component) {
-      case 'jobs-location':
-        return <LazyJobsByLocation />;
-      case 'jobs-role':
-        return <LazyJobsByRole />;
-      case 'jobs-skill':
-        return <LazyJobsBySkill />;
-      case 'companies-location':
-        return <LazyCompaniesByLocation />;
-      case 'courses-category':
-        return <LazyCoursesByCategory />;
-      case 'salary-guide':
-        return <LazySalaryGuide />;
-      default:
-        return null;
+    if (isLoading || !LazyComponent) {
+      return (
+        <div className="min-h-screen p-6 space-y-4">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-4 w-96" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-32" />
+            ))}
+          </div>
+        </div>
+      );
     }
+
+    return <LazyComponent />;
   };
 
   return (
-    <Suspense 
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-        </div>
-      }
+    <div 
+      ref={observerRef}
+      id={`seo-component-${component}`}
+      className="min-h-screen"
     >
-      {renderComponent()}
-    </Suspense>
+      <Suspense 
+        fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <LoadingSpinner size="lg" />
+          </div>
+        }
+      >
+        {renderComponent()}
+      </Suspense>
+    </div>
   );
 };

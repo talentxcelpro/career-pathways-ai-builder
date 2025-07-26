@@ -7,6 +7,8 @@ import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 import { useBundleAnalysis } from '@/hooks/useBundleAnalysis';
 import { trackWebVitals, optimizeCoreWebVitals } from '@/utils/performanceOptimizer';
 import { TrendingUp, Zap, Clock, Eye, AlertTriangle, CheckCircle, Activity } from 'lucide-react';
+import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
+import { PerformanceBudget } from '@/components/performance/PerformanceBudget';
 
 export const PerformanceMonitorDashboard = () => {
   const { metrics, score, grade, isOptimal } = usePerformanceMonitor();
@@ -73,46 +75,11 @@ export const PerformanceMonitorDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Performance Overview */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5" />
-            Core Web Vitals Monitor
-            <Badge variant={isOptimal ? 'default' : 'secondary'} className="ml-auto">
-              Grade: {grade}
-            </Badge>
-          </CardTitle>
-          <CardDescription>
-            Real-time performance metrics and optimization insights
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {coreWebVitals.map((metric, index) => (
-              <div key={index} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{metric.name}</span>
-                  <Badge className={getStatusColor(metric.status)}>
-                    {metric.status.replace('-', ' ')}
-                  </Badge>
-                </div>
-                <div className="text-2xl font-bold">
-                  {metric.value?.toFixed(metric.unit === 'ms' ? 0 : 2) || 'N/A'}
-                  {metric.value && metric.unit}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Target: {metric.target}
-                </div>
-                <Progress 
-                  value={Math.min(100, ((metric.value || 0) / (metric.unit === 'ms' ? 300 : 4)) * 100)} 
-                  className="h-2"
-                />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Enhanced Performance Monitoring */}
+      <PerformanceMonitor />
+      
+      {/* Performance Budget Monitoring */}
+      <PerformanceBudget />
 
       {/* Bundle Analysis */}
       {analysis && (
