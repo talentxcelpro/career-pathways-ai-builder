@@ -37,67 +37,74 @@ export const usePerformanceMonitor = () => {
   });
 
   useEffect(() => {
-    // Track LCP (Largest Contentful Paint)
-    const lcpObserver = new PerformanceObserver((list) => {
-      const entries = list.getEntries();
-      const lastEntry = entries[entries.length - 1] as any;
-      setMetrics(prev => ({ ...prev, lcp: lastEntry.startTime }));
-    });
+    if (typeof window === 'undefined') return;
 
-    // Track CLS (Cumulative Layout Shift)
-    let clsValue = 0;
-    const clsObserver = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        if (!(entry as any).hadRecentInput) {
-          clsValue += (entry as any).value;
-        }
-      }
-      setMetrics(prev => ({ ...prev, cls: clsValue }));
-    });
-
-    // Track FID (First Input Delay)
-    const fidObserver = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        setMetrics(prev => ({ ...prev, fid: (entry as any).processingStart - entry.startTime }));
-      }
-    });
-
-    // Track FCP (First Contentful Paint)
-    const fcpObserver = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        if (entry.name === 'first-contentful-paint') {
-          setMetrics(prev => ({ ...prev, fcp: entry.startTime }));
-        }
-      }
-    });
-
-    // Track TTFB (Time to First Byte)
-    const navObserver = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        const navEntry = entry as PerformanceNavigationTiming;
-        setMetrics(prev => ({ 
-          ...prev, 
-          ttfb: navEntry.responseStart - navEntry.requestStart 
-        }));
-      }
-    });
+    // Initialize performance observers with error handling
+    const observers: PerformanceObserver[] = [];
 
     try {
+      // Track LCP (Largest Contentful Paint)
+      const lcpObserver = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        const lastEntry = entries[entries.length - 1] as any;
+        if (lastEntry) {
+          setMetrics(prev => ({ ...prev, lcp: lastEntry.startTime }));
+        }
+      });
       lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+      observers.push(lcpObserver);
+
+      // Track CLS (Cumulative Layout Shift)
+      let clsValue = 0;
+      const clsObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (!(entry as any).hadRecentInput) {
+            clsValue += (entry as any).value;
+          }
+        }
+        setMetrics(prev => ({ ...prev, cls: clsValue }));
+      });
       clsObserver.observe({ entryTypes: ['layout-shift'] });
+      observers.push(clsObserver);
+
+      // Track FID (First Input Delay)
+      const fidObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          setMetrics(prev => ({ ...prev, fid: (entry as any).processingStart - entry.startTime }));
+        }
+      });
       fidObserver.observe({ entryTypes: ['first-input'] });
+      observers.push(fidObserver);
+
+      // Track FCP (First Contentful Paint)
+      const fcpObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.name === 'first-contentful-paint') {
+            setMetrics(prev => ({ ...prev, fcp: entry.startTime }));
+          }
+        }
+      });
       fcpObserver.observe({ entryTypes: ['paint'] });
+      observers.push(fcpObserver);
+
+      // Track TTFB (Time to First Byte)
+      const navObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          const navEntry = entry as PerformanceNavigationTiming;
+          setMetrics(prev => ({ 
+            ...prev, 
+            ttfb: navEntry.responseStart - navEntry.requestStart 
+          }));
+        }
+      });
       navObserver.observe({ entryTypes: ['navigation'] });
+      observers.push(navObserver);
     } catch (e) {
-      console.warn('Performance observers not supported');
+      console.warn('Performance observers not supported:', e);
     }
 
     return () => {
-      lcpObserver.disconnect();
-      clsObserver.disconnect();
-      fidObserver.disconnect();
-      fcpObserver.disconnect();
-      navObserver.disconnect();
+      observers.forEach(observer => observer.disconnect());
     };
   }, []);
 

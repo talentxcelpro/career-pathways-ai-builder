@@ -120,17 +120,18 @@ export const findUnusedCSS = () => {
   return Array.from(usedSelectors);
 };
 
-// Performance monitoring
+// 🔴 Fix #2: Core Web Vitals Tracking
 export const trackWebVitals = () => {
-  // Track Core Web Vitals
-  if ('web-vital' in window) {
-    // @ts-ignore
+  // Dynamically import web-vitals to avoid build issues
+  if (typeof window !== 'undefined') {
     import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS(console.log);
-      getFID(console.log);
-      getFCP(console.log);
-      getLCP(console.log);
-      getTTFB(console.log);
+      getCLS((metric) => console.log('CLS:', metric));
+      getFID((metric) => console.log('FID:', metric));
+      getFCP((metric) => console.log('FCP:', metric));
+      getLCP((metric) => console.log('LCP:', metric));
+      getTTFB((metric) => console.log('TTFB:', metric));
+    }).catch(() => {
+      console.log('Web Vitals not available');
     });
   }
 };
