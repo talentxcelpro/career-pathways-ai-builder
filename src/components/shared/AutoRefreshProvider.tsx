@@ -55,32 +55,18 @@ export function AutoRefreshProvider({ children }: AutoRefreshProviderProps) {
     };
   }, [toast]);
 
-  // Set up Supabase realtime subscriptions
+  // Simplified realtime - only essential subscriptions
   useEffect(() => {
-    const channels = [
-      supabase
-        .channel('jobs-changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => {
-          broadcastRefresh('jobs');
-        }),
-      
-      supabase
-        .channel('posts-changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
-          broadcastRefresh('network');
-        }),
-      
-      supabase
-        .channel('applications-changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'job_applications' }, () => {
-          broadcastRefresh('employer');
-        })
-    ];
-
-    channels.forEach(channel => channel.subscribe());
+    // Only subscribe to jobs changes for now to reduce memory usage
+    const channel = supabase
+      .channel('jobs-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => {
+        broadcastRefresh('jobs');
+      })
+      .subscribe();
 
     return () => {
-      channels.forEach(channel => supabase.removeChannel(channel));
+      supabase.removeChannel(channel);
     };
   }, []);
 

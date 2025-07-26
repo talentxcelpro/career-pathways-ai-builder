@@ -19,36 +19,31 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // 🔴 Fix #1: Optimize bundle splitting for better caching
+    // Reduce memory usage during build
     rollupOptions: {
       output: {
+        // Simpler chunking to reduce memory pressure
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
-          charts: ['recharts'],
+          vendor: ['react', 'react-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
           supabase: ['@supabase/supabase-js'],
-          utils: ['date-fns', 'clsx', 'tailwind-merge'],
-          pdf: ['jspdf', 'html2canvas'],
         },
       },
-      maxParallelFileOps: 2,
+      // Reduce parallel operations to save memory
+      maxParallelFileOps: 1,
     },
-    // Tree-shaking and dead code elimination
-    minify: 'terser',
-    terserOptions: {
+    // Disable terser in development to save memory
+    minify: mode === 'production' ? 'terser' : false,
+    terserOptions: mode === 'production' ? {
       compress: {
-        drop_console: mode === 'production',
+        drop_console: true,
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info'],
       },
-      mangle: {
-        safari10: true,
-      },
-    },
-    // Optimize chunk size
-    chunkSizeWarningLimit: 600,
-    // Enable source maps only in development
-    sourcemap: mode === 'development',
+    } : undefined,
+    // Increase chunk size limit to reduce chunks
+    chunkSizeWarningLimit: 1000,
+    // Disable source maps to save memory
+    sourcemap: false,
   },
   // 🔴 Fix #2: Enable production optimizations
   define: {

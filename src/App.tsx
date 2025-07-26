@@ -24,13 +24,14 @@ import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import UserManagement from "@/pages/admin/UserManagement";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
 
-// Create query client with simpler configuration to avoid potential issues
+// Minimal query client to reduce memory usage
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 2,
+      staleTime: 60000, // 1 minute
+      retry: 1,
       refetchOnWindowFocus: false,
+      gcTime: 300000, // 5 minutes
     },
   },
 });
