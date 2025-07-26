@@ -28,7 +28,7 @@ export const useAdvancedResumeAI = () => {
   const { invokeAITool } = useAIService();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Advanced AI prompts for different resume operations
+  // Enhanced AI prompts using the new AI gateway tools
   const AI_PROMPTS: AIPrompts = {
     PARSE_RESUME: `You are an expert resume parser. Extract structured information from the text below into the following JSON format:
 {
@@ -44,30 +44,23 @@ export const useAdvancedResumeAI = () => {
   "languages": []
 }`,
 
-    ENHANCE_CONTENT: `Enhance this resume content to sound more professional, results-driven, and impactful. Use strong action verbs and improve clarity. Do not invent any information. Keep it concise and optimized for hiring managers and ATS.`,
+    ENHANCE_CONTENT: `You are a professional resume writer. Enhance this content to be more professional, results-driven, and ATS-optimized. Use strong action verbs and quantifiable achievements.`,
 
-    CONVERT_TO_ACHIEVEMENTS: `Convert the following responsibilities into measurable, result-oriented achievements. Use action verbs, metrics (if possible), and a professional tone.`,
+    CONVERT_TO_ACHIEVEMENTS: `You are an expert resume coach. Convert these job responsibilities into 3-5 impactful, measurable achievement statements using strong action verbs and quantified results.`,
 
-    TAILOR_TO_JOB: `Tailor this resume to match the following job description. Emphasize relevant experience, align with keywords, and improve the summary accordingly. Keep the format professional.`,
+    TAILOR_TO_JOB: `You are a resume optimization expert. Tailor this resume content to match the job description by emphasizing relevant keywords, skills, and experience.`,
 
-    ATS_OPTIMIZATION: `Evaluate this resume for ATS optimization. Identify any missing fields, keyword gaps, or formatting issues. Provide a version that is optimized for Applicant Tracking Systems (ATS).`,
+    ATS_OPTIMIZATION: `You are an ATS optimization expert. Analyze this resume for ATS compatibility and provide detailed feedback with actionable improvements.`,
 
-    SUGGEST_SKILLS: `Analyze this resume and suggest in-demand skills that the candidate should consider adding to better align with modern job market trends.`,
+    SUGGEST_SKILLS: `You are a career advisor. Based on the resume and target role, suggest relevant technical and soft skills to improve job market competitiveness.`,
 
-    GENERATE_SUMMARY: `Generate a concise, powerful professional summary for the candidate below. Focus on their strengths, industry experience, and career goals.`,
+    GENERATE_SUMMARY: `You are a professional resume writer. Create a compelling 2-4 sentence professional summary highlighting key achievements and career value.`,
 
-    WRITE_COVER_LETTER: `Write a personalized and professional cover letter based on the resume and job description below. Limit to 200–250 words. Keep the tone formal but engaging.`,
+    WRITE_COVER_LETTER: `You are a cover letter specialist. Write a personalized, engaging cover letter that connects the candidate's experience to the job requirements.`,
 
-    SCORE_RESUME: `Score this resume on a scale of 1–10 across:
-- ATS compatibility
-- Keyword match
-- Impact & clarity
-- Grammar & tone
-- Formatting
+    SCORE_RESUME: `You are a resume scoring expert. Evaluate this resume across multiple criteria and provide detailed feedback with specific improvement suggestions.`,
 
-Give short feedback for each.`,
-
-    CAREER_GROWTH: `Based on this resume, suggest 2–3 career progression paths for the candidate. Include potential next roles, required skills or certifications, and projected salary growth.`
+    CAREER_GROWTH: `You are a career counselor. Analyze this resume and suggest 2-3 realistic career progression paths with required skills and salary insights.`
   };
 
   const parseResume = useCallback(async (resumeText: string) => {

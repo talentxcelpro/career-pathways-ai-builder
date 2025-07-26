@@ -3,8 +3,78 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders } from '../_shared/cors.ts'
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
+const deepSeekApiKey = Deno.env.get('DEEPSEEK_API_KEY')
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
+// Enhanced AI prompt templates
+const ENHANCED_PROMPTS = {
+  'professional-summary': `You are a professional resume writer. Write a concise, high-impact professional summary for a resume.
+
+Context:
+- Job Title: {{job_title}}
+- Years of Experience: {{years_experience}}
+- Core Skills: {{skills}}
+- Industry: {{industry}}
+- Career Goal: {{goal}}
+
+Instructions:
+- Keep it 2–4 sentences
+- Focus on achievements and value
+- Use active, confident language
+- Include relevant keywords for ATS optimization
+
+Return response in JSON format: {"summary": "your generated summary"}`,
+
+  'experience-enhancer': `You are an expert resume coach. Convert the following job role into 3–5 impactful resume bullet points.
+
+Job Title: {{job_title}}
+Company: {{company}}
+Duration: {{duration}}
+Key Responsibilities: {{responsibilities}}
+Key Achievements: {{achievements}}
+
+Instructions:
+- Use strong action verbs (Led, Implemented, Optimized, etc.)
+- Quantify results whenever possible (e.g., "Improved X by Y%")
+- Match keywords for {{target_industry}} roles
+- Focus on impact and results
+
+Return response in JSON format: {"bulletPoints": ["bullet 1", "bullet 2", "bullet 3"]}`,
+
+  'skills-optimizer': `You are a resume expert. Based on the following resume and job description, suggest a list of 10–12 hard and soft skills that should be included to maximize job compatibility.
+
+Resume Content: {{resume_text}}
+Job Description: {{job_description}}
+Target Role: {{target_role}}
+
+Instructions:
+- Separate into Technical Skills and Soft Skills
+- Include industry-specific keywords
+- Prioritize skills mentioned in the job description
+- Suggest trending skills in the industry
+
+Return response in JSON format: {"technicalSkills": ["skill1", "skill2"], "softSkills": ["skill1", "skill2"], "recommendations": ["reason1", "reason2"]}`,
+
+  'ats-analyzer': `You are an ATS optimization expert. Compare this resume with the job description and provide detailed analysis.
+
+Resume: {{resume_text}}
+Job Description: {{job_description}}
+
+Analyze and return a detailed compatibility report with:
+- Compatibility score out of 100
+- List of missing keywords
+- Formatting issues
+- 5 actionable suggestions to improve ATS score
+
+Return response in JSON format: {
+  "score": 75,
+  "missingKeywords": ["keyword1", "keyword2"],
+  "suggestions": ["suggestion1", "suggestion2"],
+  "strengths": ["strength1", "strength2"],
+  "improvements": ["improvement1", "improvement2"]
+}`
+}
 
 console.log('🚀 AI Gateway function initializing...')
 console.log('OpenAI API Key configured:', !!openAIApiKey)
@@ -90,11 +160,35 @@ Deno.serve(async (req) => {
 
     console.log(`[${requestId}] ✅ Tool config found: ${toolConfig.tool_name}`)
 
-    // Prepare the prompt based on tool type
+    // Enhanced prompt processing with template substitution
     let prompt = ''
     let systemMessage = toolConfig.system_message || 'You are a helpful AI assistant.'
+    
+    // Helper function to substitute template variables
+    const substituteTemplate = (template: string, data: any): string => {
+      return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+        return data[key] || match;
+      });
+    };
 
+    // Use enhanced prompts for better AI responses
     switch (toolSlug) {
+      case 'professional-summary':
+        prompt = substituteTemplate(ENHANCED_PROMPTS['professional-summary'], inputData);
+        break;
+        
+      case 'experience-enhancer':
+        prompt = substituteTemplate(ENHANCED_PROMPTS['experience-enhancer'], inputData);
+        break;
+        
+      case 'skills-optimizer':
+        prompt = substituteTemplate(ENHANCED_PROMPTS['skills-optimizer'], inputData);
+        break;
+        
+      case 'ats-analyzer':
+        prompt = substituteTemplate(ENHANCED_PROMPTS['ats-analyzer'], inputData);
+        break;
+
       case 'resume-enhancer':
         prompt = `${toolConfig.prompt_template}
 
@@ -182,10 +276,29 @@ Please provide salary analysis and market insights.`
     const tokensUsed = openAIData.usage?.total_tokens || 0
     const estimatedCost = (tokensUsed / 1000) * 0.01 // Rough estimate
 
-    // Prepare response data based on tool type
+    // Enhanced response processing for structured output
     let responseData: any = generatedContent
 
-    if (toolSlug === 'resume-enhancer') {
+    // Parse JSON responses from enhanced prompts
+    const jsonResponseTools = ['professional-summary', 'experience-enhancer', 'skills-optimizer', 'ats-analyzer'];
+    
+    if (jsonResponseTools.includes(toolSlug)) {
+      try {
+        // Extract JSON from AI response (handles cases where AI adds extra text)
+        const jsonMatch = generatedContent.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          responseData = JSON.parse(jsonMatch[0]);
+        } else {
+          responseData = JSON.parse(generatedContent);
+        }
+      } catch (parseError) {
+        console.warn(`[${requestId}] ⚠️ Failed to parse JSON response, using raw content`);
+        responseData = {
+          content: generatedContent,
+          parseError: 'Failed to parse structured response'
+        };
+      }
+    } else if (toolSlug === 'resume-enhancer') {
       try {
         const parsed = JSON.parse(generatedContent)
         responseData = parsed
