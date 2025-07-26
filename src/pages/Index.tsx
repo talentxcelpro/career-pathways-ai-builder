@@ -26,17 +26,14 @@ const Index = () => {
   }, []);
 
   if (isLoading) {
-    console.log('Index: Loading state');
     return <div>Loading...</div>;
   }
 
   // Redirect logged-in users to network page
   if (isLoggedIn) {
-    console.log('Index: User is logged in, redirecting to network');
     return <Navigate to="/network" replace />;
   }
 
-  console.log('Index: Rendering landing page');
   return <LandingPage />;
 };
 
