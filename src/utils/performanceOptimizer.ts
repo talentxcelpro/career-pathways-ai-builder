@@ -120,19 +120,38 @@ export const findUnusedCSS = () => {
   return Array.from(usedSelectors);
 };
 
-// 🔴 Fix #2: Core Web Vitals Tracking
 export const trackWebVitals = () => {
-  // Dynamically import web-vitals to avoid build issues
+  // Simple web vitals tracking without external dependencies
   if (typeof window !== 'undefined') {
-    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS((metric) => console.log('CLS:', metric));
-      getFID((metric) => console.log('FID:', metric));
-      getFCP((metric) => console.log('FCP:', metric));
-      getLCP((metric) => console.log('LCP:', metric));
-      getTTFB((metric) => console.log('TTFB:', metric));
-    }).catch(() => {
-      console.log('Web Vitals not available');
-    });
+    console.log('Web Vitals tracking initialized');
+    
+    // Track LCP using PerformanceObserver
+    try {
+      const lcpObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries();
+        const lastEntry = entries[entries.length - 1];
+        console.log('LCP:', lastEntry.startTime);
+      });
+      lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+    } catch (e) {
+      console.warn('LCP tracking not supported');
+    }
+
+    // Track CLS using PerformanceObserver
+    try {
+      let clsValue = 0;
+      const clsObserver = new PerformanceObserver((entryList) => {
+        for (const entry of entryList.getEntries()) {
+          if (!(entry as any).hadRecentInput) {
+            clsValue += (entry as any).value;
+          }
+        }
+        console.log('CLS:', clsValue);
+      });
+      clsObserver.observe({ entryTypes: ['layout-shift'] });
+    } catch (e) {
+      console.warn('CLS tracking not supported');
+    }
   }
 };
 
