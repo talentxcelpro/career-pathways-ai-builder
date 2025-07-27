@@ -151,27 +151,35 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
       return;
     }
 
-    if (!user?.id) {
+    // Check for authentication
+    const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !currentUser) {
       toast.error('You must be logged in to create a post');
       return;
     }
 
     setIsPosting(true);
     try {
-      console.log('Creating post with user:', user.id);
+      console.log('Creating post with user:', currentUser.id);
       console.log('Post content:', content);
       
-      const { data: postData, error } = await supabase
+      const postData = {
+        content: content.trim(),
+        post_type: 'text' as const,
+        author_id: currentUser.id,
+        media_urls: attachments.map(att => att.url),
+        location: location || null,
+        is_public: privacy === 'public',
+        tags: [],
+        status: 'published' as const
+      };
+
+      console.log('Inserting post data:', postData);
+      
+      const { data, error } = await supabase
         .from('posts')
-        .insert({
-          content,
-          post_type: 'text',
-          author_id: user.id,
-          media_urls: attachments.map(att => att.url),
-          location: location || null,
-          is_public: privacy === 'public',
-          tags: []
-        })
+        .insert(postData)
         .select()
         .single();
 

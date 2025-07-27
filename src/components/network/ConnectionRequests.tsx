@@ -63,15 +63,28 @@ export const ConnectionRequests: React.FC = () => {
   // Accept connection mutation
   const acceptConnectionMutation = useMutation({
     mutationFn: async (connectionId: string) => {
+      // Verify user is authenticated
+      const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !currentUser) {
+        throw new Error('You must be logged in to accept connections');
+      }
+
+      console.log('Accepting connection:', connectionId, 'by user:', currentUser.id);
+      
       const { error } = await supabase
         .from('connections')
         .update({ 
           status: 'accepted',
           connected_at: new Date().toISOString()
         })
-        .eq('id', connectionId);
+        .eq('id', connectionId)
+        .eq('recipient_id', currentUser.id); // Ensure user can only accept their own requests
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error accepting connection:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['connectionRequests'] });

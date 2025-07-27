@@ -12972,6 +12972,7 @@ export type Database = {
       security_events: {
         Row: {
           created_at: string
+          description: string | null
           details: Json | null
           device_fingerprint: string | null
           event_category: string
@@ -12988,6 +12989,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          description?: string | null
           details?: Json | null
           device_fingerprint?: string | null
           event_category?: string
@@ -13004,6 +13006,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          description?: string | null
           details?: Json | null
           device_fingerprint?: string | null
           event_category?: string
