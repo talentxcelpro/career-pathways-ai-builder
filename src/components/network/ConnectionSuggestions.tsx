@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Users, UserPlus, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { toast } from 'sonner';
+import { useConnectionRequests } from '@/hooks/useConnectionRequests';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Connection {
   id: string;
@@ -17,15 +17,13 @@ interface Connection {
 }
 
 export const ConnectionSuggestions: React.FC = () => {
-  const [sendingConnection, setSendingConnection] = useState<string | null>(null);
-
-  const { data: currentUser } = useQuery({
-    queryKey: ['current-user-suggestions'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      return user;
-    }
-  });
+  const {
+    sendConnectionRequest,
+    isProcessing,
+    formatDisplayName,
+    generateInitials,
+    currentUser
+  } = useConnectionRequests();
 
   const { data: suggestions, isLoading } = useQuery({
     queryKey: ['connection-suggestions', currentUser?.id],
@@ -64,43 +62,6 @@ export const ConnectionSuggestions: React.FC = () => {
     enabled: !!currentUser
   });
 
-  const sendConnectionRequest = async (userId: string) => {
-    if (!currentUser) return;
-
-    setSendingConnection(userId);
-    try {
-      const { error } = await supabase
-        .from('connections')
-        .insert({
-          requester_id: currentUser.id,
-          recipient_id: userId,
-          status: 'pending',
-          message: 'Hi! I would love to connect with you.'
-        });
-
-      if (error) throw error;
-      toast.success('Connection request sent!');
-    } catch (error) {
-      toast.error('Failed to send connection request');
-    } finally {
-      setSendingConnection(null);
-    }
-  };
-
-  const formatDisplayName = (profile: Connection) => {
-    return profile.full_name || 'Professional User';
-  };
-
-  const generateInitials = (profile: Connection) => {
-    const displayName = formatDisplayName(profile);
-    if (displayName === 'Professional User') return 'PU';
-    
-    const names = displayName.split(' ');
-    if (names.length === 1) {
-      return names[0].charAt(0).toUpperCase();
-    }
-    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
-  };
 
   if (!currentUser) return null;
 
@@ -158,9 +119,9 @@ export const ConnectionSuggestions: React.FC = () => {
                   variant="outline"
                   className="ml-2 px-2 h-7"
                   onClick={() => sendConnectionRequest(person.id)}
-                  disabled={sendingConnection === person.id}
+                  disabled={isProcessing === person.id}
                 >
-                  {sendingConnection === person.id ? (
+                  {isProcessing === person.id ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
                   ) : (
                     <UserPlus className="h-3 w-3" />
