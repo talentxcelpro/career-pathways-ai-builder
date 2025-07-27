@@ -67,23 +67,45 @@ export const ConnectionRequests: React.FC = () => {
       const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
       
       if (authError || !currentUser) {
+        console.error('Authentication error:', authError);
         throw new Error('You must be logged in to accept connections');
       }
 
       console.log('Accepting connection:', connectionId, 'by user:', currentUser.id);
       
-      const { error } = await supabase
+      // Add detailed logging for debugging
+      console.log('Current user auth context:', {
+        userId: currentUser.id,
+        email: currentUser.email,
+        role: currentUser.role
+      });
+      
+      const { data, error } = await supabase
         .from('connections')
         .update({ 
           status: 'accepted',
           connected_at: new Date().toISOString()
         })
         .eq('id', connectionId)
-        .eq('recipient_id', currentUser.id); // Ensure user can only accept their own requests
+        .eq('recipient_id', currentUser.id) // Ensure user can only accept their own requests
+        .select();
+
+      console.log('Update result:', { data, error });
 
       if (error) {
-        console.error('Error accepting connection:', error);
+        console.error('Supabase error accepting connection:', {
+          error,
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
         throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.error('No rows updated - connection not found or not owned by user');
+        throw new Error('Connection request not found or you are not authorized to accept it');
       }
     },
     onSuccess: () => {

@@ -12980,6 +12980,7 @@ export type Database = {
           id: string
           ip_address: unknown | null
           location_data: Json | null
+          metadata: Json | null
           resolved_at: string | null
           resolved_by: string | null
           session_id: string | null
@@ -12997,6 +12998,7 @@ export type Database = {
           id?: string
           ip_address?: unknown | null
           location_data?: Json | null
+          metadata?: Json | null
           resolved_at?: string | null
           resolved_by?: string | null
           session_id?: string | null
@@ -13014,6 +13016,7 @@ export type Database = {
           id?: string
           ip_address?: unknown | null
           location_data?: Json | null
+          metadata?: Json | null
           resolved_at?: string | null
           resolved_by?: string | null
           session_id?: string | null

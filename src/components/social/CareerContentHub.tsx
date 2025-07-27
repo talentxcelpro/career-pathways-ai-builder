@@ -256,7 +256,16 @@ export function CareerContentHub() {
       if (articleError) throw articleError;
 
       // Create a post in the feed for this shared experience
-      const { error: postError } = await supabase
+      console.log('Creating post with user:', currentUser.id);
+      console.log('Post data:', {
+        content: `🎯 Just shared my experience: "${formData.title}"\n\n${formData.summary || formData.content.substring(0, 200)}...\n\n#${formData.category.replace(/\s+/g, '')} #CareerAdvice #TalentXcel`,
+        author_id: currentUser.id,
+        media_urls: imageUrl ? [imageUrl] : [],
+        post_type: 'career_article',
+        status: 'published'
+      });
+      
+      const { data: postData, error: postError } = await supabase
         .from('posts')
         .insert({
           content: `🎯 Just shared my experience: "${formData.title}"\n\n${formData.summary || formData.content.substring(0, 200)}...\n\n#${formData.category.replace(/\s+/g, '')} #CareerAdvice #TalentXcel`,
@@ -264,10 +273,25 @@ export function CareerContentHub() {
           media_urls: imageUrl ? [imageUrl] : [],
           post_type: 'career_article',
           status: 'published'
-        });
+        })
+        .select();
+
+      console.log('Post creation result:', { postData, postError });
 
       if (postError) {
-        console.error('Error creating feed post:', postError);
+        console.error('Error creating feed post:', {
+          error: postError,
+          code: postError.code,
+          message: postError.message,
+          details: postError.details,
+          hint: postError.hint
+        });
+        toast({
+          title: "Post Creation Failed",
+          description: `Failed to create post: ${postError.message}`,
+          variant: "destructive"
+        });
+        // Don't throw here - let the article creation succeed even if post fails
       }
 
       toast({
