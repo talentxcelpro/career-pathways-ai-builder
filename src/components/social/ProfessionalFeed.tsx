@@ -47,6 +47,8 @@ export function ProfessionalFeed() {
 
   const fetchPosts = async () => {
     try {
+      console.log('Fetching posts...');
+      
       // Fetch real posts from database with author profiles
       const { data: postsData, error } = await supabase
         .from('posts')
@@ -59,27 +61,42 @@ export function ProfessionalFeed() {
           likes_count,
           comments_count,
           shares_count,
-          created_at
+          created_at,
+          status,
+          is_public
         `)
         .eq('status', 'published')
         .eq('is_public', true)
         .order('created_at', { ascending: false })
         .limit(20);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching posts:', error);
+        throw error;
+      }
+
+      console.log('Fetched posts:', postsData?.length || 0);
 
       if (!postsData || postsData.length === 0) {
+        console.log('No posts found');
         setPosts([]);
         return;
       }
 
       // Get author profiles
       const authorIds = [...new Set(postsData.map(post => post.author_id))];
-      const { data: profiles } = await supabase
+      console.log('Fetching profiles for authors:', authorIds);
+      
+      const { data: profiles, error: profileError } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, title')
+        .select('id, full_name, profile_picture_url, title, user_role')
         .in('id', authorIds);
 
+      if (profileError) {
+        console.error('Error fetching profiles:', profileError);
+      }
+
+      console.log('Fetched profiles:', profiles?.length || 0);
       const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
       // Get current user to check if they liked posts
@@ -104,6 +121,7 @@ export function ProfessionalFeed() {
         liked_by_user: false // We'll implement this with proper post_reactions query later
       }));
 
+      console.log('Setting formatted posts:', formattedPosts.length);
       setPosts(formattedPosts);
     } catch (error) {
       console.error('Error fetching posts:', error);

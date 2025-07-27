@@ -54,12 +54,8 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
 
   const getConversationDisplay = (conversation: any) => {
     if (!currentUser) {
-      console.log('No current user for conversation display');
       return { name: 'Loading...', avatar: null, isGroup: false };
     }
-    
-    console.log('Processing conversation:', conversation.id, 'participants:', conversation.participants);
-    console.log('Available user profiles:', userProfiles);
     
     if (conversation.is_group) {
       return {
@@ -71,12 +67,20 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
 
     // For 1:1 conversations, show the other participant
     const otherParticipant = conversation.participants?.find((id: string) => id !== currentUser);
-    console.log('Other participant ID:', otherParticipant);
+    
+    if (!otherParticipant) {
+      return {
+        name: 'Unknown User',
+        avatar: null,
+        title: null,
+        isGroup: false
+      };
+    }
+    
     const profile = userProfiles?.[otherParticipant];
-    console.log('Found profile for participant:', profile);
     
     return {
-      name: profile?.full_name || `Professional User (${otherParticipant?.slice(0, 8) || 'Unknown'})`,
+      name: profile?.full_name || 'Professional User',
       avatar: profile?.profile_picture_url,
       title: profile?.title,
       isGroup: false
