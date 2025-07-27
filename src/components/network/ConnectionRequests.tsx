@@ -14,6 +14,7 @@ export const ConnectionRequests: React.FC = () => {
   // Fetch pending connection requests
   const { data: connectionRequests, isLoading } = useQuery({
     queryKey: ['connectionRequests'],
+    staleTime: 0, // Force fresh data
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
