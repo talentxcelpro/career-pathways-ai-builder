@@ -118,22 +118,43 @@ export function ProfessionalFeed() {
   };
 
   const createPost = async () => {
-    if (!newPost.trim()) return;
+    if (!newPost.trim()) {
+      console.log('Post content is empty, not creating post');
+      return;
+    }
 
+    console.log('Starting post creation with content:', newPost, 'type:', postType);
     setIsPosting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      if (!user) {
+        console.error('User not authenticated');
+        throw new Error('Not authenticated');
+      }
+      
+      console.log('Authenticated user:', user.id);
 
-      const { error } = await supabase
+      const postData = {
+        author_id: user.id,
+        content: newPost,
+        post_type: postType,
+        status: 'published',
+        is_public: true
+      };
+      
+      console.log('Inserting post with data:', postData);
+
+      const { data, error } = await supabase
         .from('posts')
-        .insert({
-          author_id: user.id,
-          content: newPost,
-          post_type: postType
-        });
+        .insert(postData)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error creating post:', error);
+        throw error;
+      }
+      
+      console.log('Post created successfully:', data);
 
       setNewPost("");
       setPostType('text');
@@ -147,7 +168,7 @@ export function ProfessionalFeed() {
       console.error('Error creating post:', error);
       toast({
         title: "Error",
-        description: "Failed to create post",
+        description: error.message || "Failed to create post",
         variant: "destructive",
       });
     } finally {
