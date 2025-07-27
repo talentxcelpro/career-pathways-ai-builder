@@ -260,10 +260,10 @@ export function CareerContentHub() {
         .from('posts')
         .insert({
           content: `🎯 Just shared my experience: "${formData.title}"\n\n${formData.summary || formData.content.substring(0, 200)}...\n\n#${formData.category.replace(/\s+/g, '')} #CareerAdvice #TalentXcel`,
-          user_id: currentUser.id,
-          image_url: imageUrl,
+          author_id: currentUser.id,
+          media_urls: imageUrl ? [imageUrl] : [],
           post_type: 'career_article',
-          article_id: articleData.id
+          status: 'published'
         });
 
       if (postError) {
