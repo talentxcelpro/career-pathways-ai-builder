@@ -93,9 +93,11 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
   const { data: profileStats } = useProfileStats(currentUserProfile?.id);
 
   // Fetch posts with real-time counts
-  const { data: posts, isLoading: postsLoading } = useQuery({
-    queryKey: ['posts', feedFilter],
+  const { data: posts, isLoading: postsLoading, error: postsError } = useQuery({
+    queryKey: ['posts', feedFilter, lastRefresh],
     queryFn: async () => {
+      console.log('Fetching posts for feed:', feedFilter);
+      
       // First get posts with fresh counts
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
@@ -106,10 +108,16 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
           post_shares!left(id)
         `)
         .eq('is_public', true)
+        .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(20);
 
-      if (postsError) throw postsError;
+      if (postsError) {
+        console.error('Error fetching posts:', postsError);
+        throw postsError;
+      }
+
+      console.log('Raw posts data:', postsData?.length || 0, 'posts');
 
       // Get unique author IDs
       const authorIds = [...new Set(postsData.map(post => post.author_id).filter(Boolean))];
@@ -279,8 +287,11 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
         }
       }
 
-      return postsWithProfiles;
-    }
+      console.log('Final posts with profiles:', postsWithProfiles?.length || 0);
+      return postsWithProfiles || [];
+    },
+    staleTime: 30000, // 30 seconds
+    enabled: true
   });
 
   const handlePostCreate = (post: any) => {
