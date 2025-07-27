@@ -91,14 +91,18 @@ export function RealtimeProvider({
   const jobsRealtime = useJobsRealtime(handleJobUpdate, handleApplicationUpdate);
   const learningRealtime = useLearningRealtime(handleLearningUpdate, handleLearningUpdate);
   
-  // Only subscribe to employer/admin realtime if user has those roles
-  const employerRealtime = isEmployer && userId ?
-    useEmployerRealtime(userId, handleApplicationUpdate, handleJobUpdate) : 
-    { isConnected: true };
-    
-  const adminRealtime = isAdmin ? 
-    useAdminRealtime(handleAdminUpdate, handleAdminUpdate, handleAdminUpdate) : 
-    { isConnected: true };
+  // Always call hooks but conditionally enable them
+  const employerRealtime = useEmployerRealtime(
+    userId || '', 
+    isEmployer && userId ? handleApplicationUpdate : () => {}, 
+    isEmployer && userId ? handleJobUpdate : () => {}
+  );
+     
+  const adminRealtime = useAdminRealtime(
+    isAdmin ? handleAdminUpdate : () => {}, 
+    isAdmin ? handleAdminUpdate : () => {}, 
+    isAdmin ? handleAdminUpdate : () => {}
+  );
 
   // Update connection status based on all subscriptions
   useEffect(() => {

@@ -185,25 +185,28 @@ export function useEmployerRealtime(
   onApplicationUpdate: (payload: any) => void,
   onJobStatsUpdate: (payload: any) => void
 ) {
-  return useRealtimeSubscriptions([
+  // If no userId provided, return empty subscriptions but still maintain hook order
+  const subscriptions = userId ? [
     {
       table: 'job_applications',
-      event: '*',
+      event: '*' as RealtimeEvent,
       filter: `job_id=in.(SELECT id FROM jobs WHERE created_by=${userId})`,
       callback: onApplicationUpdate
     },
     {
       table: 'job_views',
-      event: 'INSERT',
+      event: 'INSERT' as RealtimeEvent,
       callback: onJobStatsUpdate
     },
     {
       table: 'jobs',
-      event: 'UPDATE',
+      event: 'UPDATE' as RealtimeEvent,
       filter: `created_by=eq.${userId}`,
       callback: onJobStatsUpdate
     }
-  ]);
+  ] : [];
+
+  return useRealtimeSubscriptions(subscriptions);
 }
 
 /**
@@ -214,28 +217,33 @@ export function useAdminRealtime(
   onRequestUpdate: (payload: any) => void,
   onSystemUpdate: (payload: any) => void
 ) {
-  return useRealtimeSubscriptions([
+  // Check if all callbacks are no-ops (empty functions), if so, return empty subscriptions
+  const isEnabled = onUserUpdate.toString() !== '() => {}';
+  
+  const subscriptions = isEnabled ? [
     {
       table: 'profiles',
-      event: '*',
+      event: '*' as RealtimeEvent,
       callback: onUserUpdate
     },
     {
       table: 'employer_requests',
-      event: '*',
+      event: '*' as RealtimeEvent,
       callback: onRequestUpdate
     },
     {
       table: 'company_access_requests',
-      event: '*',
+      event: '*' as RealtimeEvent,
       callback: onRequestUpdate
     },
     {
       table: 'admin_activity_log',
-      event: 'INSERT',
+      event: 'INSERT' as RealtimeEvent,
       callback: onSystemUpdate
     }
-  ]);
+  ] : [];
+
+  return useRealtimeSubscriptions(subscriptions);
 }
 
 /**
