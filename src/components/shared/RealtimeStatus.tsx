@@ -30,6 +30,8 @@ export function RealtimeStatus() {
         return 'Offline';
       case 'error':
         return 'Error';
+      case 'auth_required':
+        return 'Auth Required';
       default:
         return 'Unknown';
     }
@@ -41,6 +43,8 @@ export function RealtimeStatus() {
         return 'default';
       case 'connecting':
         return 'secondary';
+      case 'auth_required':
+        return 'outline';
       case 'disconnected':
       case 'error':
         return 'destructive';

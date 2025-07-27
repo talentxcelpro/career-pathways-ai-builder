@@ -9,7 +9,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signOut: () => Promise<void>;
-  refreshSession: () => Promise<void>;
+  refreshSession: () => Promise<Session | null>;
   signInWithIdToken: (provider: string, token: string) => Promise<{ user: User; session: Session; } | { user: null; session: null; }>;
 }
 
@@ -29,15 +29,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const refreshSession = async () => {
+  const refreshSession = async (): Promise<Session | null> => {
     try {
       const { data: { session }, error } = await supabase.auth.refreshSession();
       if (error) throw error;
       setSession(session);
       setUser(session?.user ?? null);
+      console.log('Session refreshed successfully');
+      return session;
     } catch (error) {
       console.error('Session refresh error:', error);
+      // If refresh fails, clear the session
+      setSession(null);
+      setUser(null);
+      throw error;
     }
+  };
+
+  // Check if session is expired or about to expire
+  const isSessionExpired = (session: Session | null): boolean => {
+    if (!session?.expires_at) return true;
+    const expirationTime = new Date(session.expires_at * 1000);
+    const now = new Date();
+    const timeUntilExpiry = expirationTime.getTime() - now.getTime();
+    return timeUntilExpiry <= 0;
+  };
+
+  const isSessionExpiringSoon = (session: Session | null): boolean => {
+    if (!session?.expires_at) return true;
+    const expirationTime = new Date(session.expires_at * 1000);
+    const now = new Date();
+    const timeUntilExpiry = expirationTime.getTime() - now.getTime();
+    // Refresh if expiring within 5 minutes
+    return timeUntilExpiry <= 5 * 60 * 1000;
   };
 
   useEffect(() => {
@@ -82,12 +106,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (error) {
           console.error('Error getting session:', error);
         } else if (mounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          
-          // Auto-redirect to network if user is already logged in and on index page
-          if (session?.user && window.location.pathname === '/') {
-            navigate('/network', { replace: true });
+          // Check if session is expired
+          if (session && isSessionExpired(session)) {
+            console.log('Session expired, attempting refresh...');
+            try {
+              const refreshedSession = await refreshSession();
+              if (refreshedSession && window.location.pathname === '/') {
+                navigate('/network', { replace: true });
+              }
+            } catch (refreshError) {
+              console.error('Failed to refresh expired session:', refreshError);
+              setSession(null);
+              setUser(null);
+            }
+          } else {
+            setSession(session);
+            setUser(session?.user ?? null);
+            
+            // Auto-redirect to network if user is already logged in and on index page
+            if (session?.user && window.location.pathname === '/') {
+              navigate('/network', { replace: true });
+            }
           }
         }
       } catch (error) {
@@ -101,11 +140,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initializeAuth();
 
+    // Set up session monitoring for expiry
+    const sessionMonitor = setInterval(() => {
+      if (session && isSessionExpiringSoon(session)) {
+        console.log('Session expiring soon, refreshing...');
+        refreshSession().catch((error) => {
+          console.error('Failed to refresh session:', error);
+        });
+      }
+    }, 60000); // Check every minute
+
     return () => {
       mounted = false;
       subscription.unsubscribe();
+      clearInterval(sessionMonitor);
     };
-  }, [navigate]);
+  }, [navigate, session]);
 
   const signOut = async () => {
     try {
