@@ -57,13 +57,12 @@ export const ConnectionRequests: React.FC = () => {
         <CardContent className="pt-0">
           <div className="text-center py-6 text-muted-foreground">
             <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p className="text-xs">
-              No pending connection requests at the moment. 
-              <br />
-              <span className="text-blue-600 hover:underline cursor-pointer" onClick={() => window.location.reload()}>
-                Refresh to check for new requests
-              </span>
-            </p>
+            <div className="space-y-2">
+              <p className="text-xs">No pending connection requests</p>
+              <p className="text-xs text-muted-foreground">
+                New connection requests will appear here
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

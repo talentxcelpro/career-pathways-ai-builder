@@ -220,13 +220,26 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Processing automated email request...');
+    
     // Initialize Supabase client for logging events
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase environment variables');
+      return new Response(
+        JSON.stringify({ error: 'Supabase configuration missing' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    const { template_name, recipient_email, recipient_name, template_data } = await req.json();
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const requestBody = await req.json();
+    console.log('Request body:', requestBody);
+    
+    const { template_name, recipient_email, recipient_name, template_data } = requestBody;
 
     if (!template_name || !recipient_email) {
       return new Response(
@@ -248,14 +261,25 @@ serve(async (req) => {
 
     // Use SendGrid for email sending
     const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
+    console.log('SendGrid API Key available:', !!SENDGRID_API_KEY);
 
     let emailSent = false;
     let error = null;
     let messageId = crypto.randomUUID();
 
-    if (SENDGRID_API_KEY) {
-      try {
-        // Add tracking pixel and unique ID to HTML content
+    if (!SENDGRID_API_KEY) {
+      console.error('SendGrid API key not configured');
+      return new Response(
+        JSON.stringify({ 
+          error: 'Email service not configured',
+          details: 'SENDGRID_API_KEY is missing'
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    try {
+      // Add tracking pixel and unique ID to HTML content
         const trackingPixel = `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/email-webhook?event=opened&id=${messageId}" width="1" height="1" style="display:none;" />`;
         const htmlWithTracking = emailContent.html + trackingPixel;
 
@@ -323,7 +347,6 @@ serve(async (req) => {
         console.error('SendGrid request failed:', sendGridError);
         error = sendGridError.message;
       }
-    }
 
     if (!emailSent) {
       return new Response(
