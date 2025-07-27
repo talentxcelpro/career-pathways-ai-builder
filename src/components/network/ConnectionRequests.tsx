@@ -73,13 +73,30 @@ export const ConnectionRequests: React.FC = () => {
 
       console.log('Accepting connection:', connectionId, 'by user:', currentUser.id);
       
-      // Add detailed logging for debugging
-      console.log('Current user auth context:', {
-        userId: currentUser.id,
-        email: currentUser.email,
-        role: currentUser.role
-      });
-      
+      // First, let's verify the connection exists and belongs to the current user
+      const { data: connectionCheck, error: checkError } = await supabase
+        .from('connections')
+        .select('*')
+        .eq('id', connectionId)
+        .eq('recipient_id', currentUser.id)
+        .eq('status', 'pending')
+        .single();
+
+      console.log('Connection check result:', { connectionCheck, checkError });
+
+      if (checkError) {
+        console.error('Error checking connection:', checkError);
+        if (checkError.code === 'PGRST116') {
+          throw new Error('Connection request not found or you are not authorized to accept it');
+        }
+        throw new Error(`Failed to verify connection: ${checkError.message}`);
+      }
+
+      if (!connectionCheck) {
+        throw new Error('Connection request not found or already processed');
+      }
+
+      // Now update the connection
       const { data, error } = await supabase
         .from('connections')
         .update({ 
@@ -87,7 +104,8 @@ export const ConnectionRequests: React.FC = () => {
           connected_at: new Date().toISOString()
         })
         .eq('id', connectionId)
-        .eq('recipient_id', currentUser.id) // Ensure user can only accept their own requests
+        .eq('recipient_id', currentUser.id)
+        .eq('status', 'pending') // Extra safety check
         .select();
 
       console.log('Update result:', { data, error });
@@ -100,13 +118,16 @@ export const ConnectionRequests: React.FC = () => {
           details: error.details,
           hint: error.hint
         });
-        throw error;
+        throw new Error(`Failed to accept connection: ${error.message}`);
       }
 
       if (!data || data.length === 0) {
         console.error('No rows updated - connection not found or not owned by user');
         throw new Error('Connection request not found or you are not authorized to accept it');
       }
+
+      console.log('Connection accepted successfully:', data[0]);
+      return data[0];
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['connectionRequests'] });
@@ -159,10 +180,12 @@ export const ConnectionRequests: React.FC = () => {
   };
 
   const handleAccept = (connectionId: string) => {
+    console.log('User clicked accept for connection:', connectionId);
     acceptConnectionMutation.mutate(connectionId);
   };
 
   const handleDecline = (connectionId: string) => {
+    console.log('User clicked decline for connection:', connectionId);
     declineConnectionMutation.mutate(connectionId);
   };
 
