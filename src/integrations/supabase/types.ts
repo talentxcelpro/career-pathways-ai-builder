@@ -4890,8 +4890,8 @@ export type Database = {
           created_at: string | null
           id: string
           message: string | null
-          recipient_id: string | null
-          requester_id: string | null
+          recipient_id: string
+          requester_id: string
           status: string | null
           updated_at: string | null
         }
@@ -4900,8 +4900,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           message?: string | null
-          recipient_id?: string | null
-          requester_id?: string | null
+          recipient_id: string
+          requester_id: string
           status?: string | null
           updated_at?: string | null
         }
@@ -4910,8 +4910,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           message?: string | null
-          recipient_id?: string | null
-          requester_id?: string | null
+          recipient_id?: string
+          requester_id?: string
           status?: string | null
           updated_at?: string | null
         }
@@ -9292,7 +9292,7 @@ export type Database = {
       posts: {
         Row: {
           article_category: string | null
-          author_id: string | null
+          author_id: string
           comments_count: number | null
           content: string
           content_type: string | null
@@ -9317,7 +9317,7 @@ export type Database = {
         }
         Insert: {
           article_category?: string | null
-          author_id?: string | null
+          author_id: string
           comments_count?: number | null
           content: string
           content_type?: string | null
@@ -9342,7 +9342,7 @@ export type Database = {
         }
         Update: {
           article_category?: string | null
-          author_id?: string | null
+          author_id?: string
           comments_count?: number | null
           content?: string
           content_type?: string | null
