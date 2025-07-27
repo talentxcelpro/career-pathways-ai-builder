@@ -57,7 +57,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
 
   // Auto-refresh with realtime updates
   const { lastRefresh } = useAutoRefreshPosts();
-  const { isConnected } = useNetworkRealtime(
+  const { isConnected, connectionStatus } = useNetworkRealtime(
     (payload) => {
       console.log('Post updated:', payload);
       queryClient.invalidateQueries({ queryKey: ['posts'] });
@@ -402,7 +402,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
               <span className="ml-2">Posts: {posts?.length || 0}</span> | 
               <span className="ml-2">Loading: {postsLoading ? 'Yes' : 'No'}</span> |
               <span className="ml-2">Error: {postsError ? 'Yes' : 'No'}</span> |
-              <span className="ml-2">Realtime: {isConnected ? 'Connected' : 'Disconnected'}</span>
+              <span className="ml-2">Realtime: {connectionStatus || 'Unknown'} ({isConnected ? 'Connected' : 'Disconnected'})</span>
             </div>
             <Button 
               onClick={handleManualRefresh} 

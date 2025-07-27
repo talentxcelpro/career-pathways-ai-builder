@@ -15,6 +15,7 @@ import { AIProvider } from "./contexts/AIContext";
 import { SecurityProvider } from "./components/security/SecurityProvider";
 import { ContentSecurityPolicy } from "./components/security/ContentSecurityPolicy";
 import { AutoRefreshProvider } from "./components/shared/AutoRefreshProvider";
+import { RealtimeWrapper } from "./components/shared/RealtimeWrapper";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -64,7 +65,8 @@ const App = () => {
             <AuthProvider>
               <SecurityProvider>
                 <AutoRefreshProvider>
-                  <AIProvider>
+                  <RealtimeWrapper>
+                    <AIProvider>
                     <ContentSecurityPolicy />
                 <Toaster 
                   duration={10000}
@@ -124,7 +126,8 @@ const App = () => {
                   <Footer />
                 </div>
                     <Analytics />
-                  </AIProvider>
+                    </AIProvider>
+                  </RealtimeWrapper>
                 </AutoRefreshProvider>
               </SecurityProvider>
             </AuthProvider>

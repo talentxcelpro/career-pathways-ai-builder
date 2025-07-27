@@ -19,17 +19,29 @@ export interface RealtimeSubscription {
 export function useRealtimeSubscriptions(subscriptions: RealtimeSubscription[]) {
   const channelsRef = useRef<RealtimeChannel[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('disconnected');
 
   useEffect(() => {
+    if (subscriptions.length === 0) {
+      setIsConnected(false);
+      setConnectionStatus('disconnected');
+      return;
+    }
+
+    setConnectionStatus('connecting');
+    
     // Cleanup existing channels
     channelsRef.current.forEach(channel => {
       supabase.removeChannel(channel);
     });
     channelsRef.current = [];
 
+    let connectedCount = 0;
+    const totalSubscriptions = subscriptions.length;
+
     // Create new subscriptions
     subscriptions.forEach((subscription, index) => {
-      const channelName = `realtime-${subscription.table}-${index}`;
+      const channelName = `realtime-${subscription.table}-${Date.now()}-${index}`;
       const channel = supabase.channel(channelName);
 
       const config: any = {
@@ -43,13 +55,27 @@ export function useRealtimeSubscriptions(subscriptions: RealtimeSubscription[]) 
       }
 
       channel
-        .on('postgres_changes', config, subscription.callback)
+        .on('postgres_changes', config, (payload) => {
+          console.log(`📡 Realtime update received for ${subscription.table}:`, payload);
+          subscription.callback(payload);
+        })
         .on('system', {}, (payload) => {
+          console.log(`🔗 Channel ${channelName} status:`, payload);
           if (payload.status === 'ok') {
-            setIsConnected(true);
+            connectedCount++;
+            if (connectedCount === totalSubscriptions) {
+              setIsConnected(true);
+              setConnectionStatus('connected');
+              console.log('✅ All realtime subscriptions connected');
+            }
           }
         })
-        .subscribe();
+        .subscribe((status) => {
+          console.log(`📡 Channel ${channelName} subscription status:`, status);
+          if (status === 'CHANNEL_ERROR') {
+            setConnectionStatus('error');
+          }
+        });
 
       channelsRef.current.push(channel);
     });
@@ -61,10 +87,11 @@ export function useRealtimeSubscriptions(subscriptions: RealtimeSubscription[]) 
       });
       channelsRef.current = [];
       setIsConnected(false);
+      setConnectionStatus('disconnected');
     };
   }, [subscriptions]);
 
-  return { isConnected };
+  return { isConnected, connectionStatus };
 }
 
 /**
