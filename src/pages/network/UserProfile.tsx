@@ -56,8 +56,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
     queryFn: async () => {
       if (!id) return [];
 
-      console.log('Fetching posts for user:', id);
-
       const { data, error } = await supabase
         .from('posts')
         .select(`
@@ -69,16 +67,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
           )
         `)
         .eq('author_id', id)
-        .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(10);
 
-      if (error) {
-        console.error('Error fetching user posts:', error);
-        throw error;
-      }
-      
-      console.log('Fetched user posts:', data);
+      if (error) throw error;
       return data || [];
     },
     enabled: !!id

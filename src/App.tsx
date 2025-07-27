@@ -14,8 +14,6 @@ import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import { AIProvider } from "./contexts/AIContext";
 import { SecurityProvider } from "./components/security/SecurityProvider";
 import { ContentSecurityPolicy } from "./components/security/ContentSecurityPolicy";
-import { AutoRefreshProvider } from "./components/shared/AutoRefreshProvider";
-import { RealtimeWrapper } from "./components/shared/RealtimeWrapper";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -25,14 +23,13 @@ import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import UserManagement from "@/pages/admin/UserManagement";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
 
-// Minimal query client to reduce memory usage
+// Create query client with simpler configuration to avoid potential issues
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60000, // 1 minute
-      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 2,
       refetchOnWindowFocus: false,
-      gcTime: 300000, // 5 minutes
     },
   },
 });
@@ -64,10 +61,8 @@ const App = () => {
           <AnalyticsProvider>
             <AuthProvider>
               <SecurityProvider>
-                <AutoRefreshProvider>
-                  <RealtimeWrapper>
-                    <AIProvider>
-                    <ContentSecurityPolicy />
+                <AIProvider>
+                  <ContentSecurityPolicy />
                 <Toaster 
                   duration={10000}
                   position="top-center"
@@ -125,10 +120,8 @@ const App = () => {
                   </main>
                   <Footer />
                 </div>
-                    <Analytics />
-                    </AIProvider>
-                  </RealtimeWrapper>
-                </AutoRefreshProvider>
+                  <Analytics />
+                </AIProvider>
               </SecurityProvider>
             </AuthProvider>
           </AnalyticsProvider>

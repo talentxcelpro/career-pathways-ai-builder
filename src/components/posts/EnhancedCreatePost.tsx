@@ -232,34 +232,26 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       return;
     }
 
-    // Check for authentication
-    const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !currentUser) {
+    if (!user?.id) {
       toast.error('You must be logged in to create a post');
       return;
     }
 
     setIsPosting(true);
     try {
-      console.log('Creating enhanced post with user:', currentUser.id);
+      console.log('Creating enhanced post with user:', user.id);
       
-      const postData = {
-        content: content.trim(),
-        post_type: 'text' as const,
-        author_id: currentUser.id,
-        media_urls: mediaFiles.map(file => file.url),
-        location: location || null,
-        is_public: privacy === 'public',
-        tags: tags,
-        status: 'published' as const
-      };
-
-      console.log('Inserting post data:', postData);
-      
-      const { data, error } = await supabase
+      const { data: postData, error } = await supabase
         .from('posts')
-        .insert(postData)
+        .insert({
+          content,
+          post_type: 'text',
+          author_id: user.id,
+          media_urls: mediaFiles.map(file => file.url),
+          location: location || null,
+          is_public: privacy === 'public',
+          tags: tags
+        })
         .select()
         .single();
 

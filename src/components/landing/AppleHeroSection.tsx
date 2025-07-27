@@ -3,8 +3,6 @@ import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
 import { GoogleOneTapLogin } from '../auth/GoogleOneTapLogin';
 import { ChevronRight } from 'lucide-react';
-import { OptimizedImage } from '@/components/ui/optimized-image';
-import { LayoutStable } from '@/components/ui/layout-stable';
 
 export const AppleHeroSection = () => {
   return (
@@ -70,71 +68,54 @@ export const AppleHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Side - Dynamic Visual Story with Optimized Images */}
-          <LayoutStable className="relative" minHeight="600px">
+          {/* Right Side - Dynamic Visual Story with More Images */}
+          <div className="relative">
             {/* Multiple hovering images with advanced animations */}
             <div className="relative z-10 grid grid-cols-3 gap-4 h-[600px]">
               {/* Top row - 3 images */}
               <div className="relative group hover:scale-110 transition-all duration-500 hover:-rotate-1">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
-                <OptimizedImage 
+                <img 
                   src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                   alt="Professional woman working"
-                  width={800}
-                  height={180}
                   className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[180px] object-cover"
-                  priority
-                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
 
               <div className="relative group hover:scale-110 transition-all duration-500 hover:rotate-1">
                 <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
-                <OptimizedImage 
+                <img 
                   src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                   alt="Team collaboration"
-                  width={800}
-                  height={180}
                   className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[180px] object-cover"
-                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
 
               <div className="relative group hover:scale-110 transition-all duration-500 hover:-rotate-1">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
-                <OptimizedImage 
+                <img 
                   src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                   alt="Professional presentation"
-                  width={800}
-                  height={180}
                   className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[180px] object-cover"
-                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
 
               {/* Bottom row - 2 larger images */}
               <div className="col-span-2 relative group hover:scale-105 transition-all duration-700 hover:rotate-1">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-3xl blur-2xl group-hover:blur-xl transition-all duration-500 animate-pulse"></div>
-                <OptimizedImage 
+                <img 
                   src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
                   alt="Professionals collaborating"
-                  width={2000}
-                  height={380}
                   className="relative rounded-3xl shadow-2xl group-hover:shadow-3xl transition-all duration-500 w-full h-[380px] object-cover"
-                  priority
-                  sizes="(max-width: 768px) 100vw, 66vw"
                 />
               </div>
 
               <div className="relative group hover:scale-110 transition-all duration-500 hover:rotate-2">
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-amber-400/20 rounded-2xl blur-xl group-hover:blur-lg transition-all duration-300"></div>
-                <OptimizedImage 
+                <img 
                   src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                   alt="Professional at work"
-                  width={800}
-                  height={380}
                   className="relative rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 w-full h-[380px] object-cover"
-                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
             </div>
@@ -195,7 +176,7 @@ export const AppleHeroSection = () => {
               <div className="absolute top-1/2 left-1/8 w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full opacity-50 animate-bounce" style={{ animationDelay: '2s', animationDuration: '5s' }}></div>
               <div className="absolute top-3/4 right-1/3 w-5 h-5 bg-gradient-to-r from-orange-400 to-red-400 rounded-full opacity-40 animate-bounce" style={{ animationDelay: '3s', animationDuration: '6s' }}></div>
             </div>
-          </LayoutStable>
+          </div>
         </div>
       </div>
     </div>

@@ -1,41 +1,153 @@
+
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { UserCheck, UserX, Users, Loader2 } from 'lucide-react';
-import { useConnectionRequests } from '@/hooks/useConnectionRequests';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserPlus, Check, X } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const ConnectionRequests: React.FC = () => {
-  const {
-    pendingRequests,
-    isLoadingPending,
-    isProcessing,
-    acceptConnectionRequest,
-    declineConnectionRequest,
-    formatDisplayName,
-    generateInitials,
-    isAcceptingRequest,
-    isDecliningRequest
-  } = useConnectionRequests();
+  const queryClient = useQueryClient();
 
-  if (isLoadingPending) {
+  // Fetch pending connection requests
+  const { data: connectionRequests, isLoading } = useQuery({
+    queryKey: ['connectionRequests'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      // Get pending connection requests where current user is the recipient
+      const { data: requestsData, error } = await supabase
+        .from('connections')
+        .select('*')
+        .eq('recipient_id', user.id)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching connection requests:', error);
+        return [];
+      }
+
+      if (!requestsData || requestsData.length === 0) return [];
+
+      // Get profiles for requesters
+      const requesterIds = requestsData.map(req => req.requester_id).filter(Boolean);
+      if (requesterIds.length === 0) return [];
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, title, profile_picture_url')
+        .in('id', requesterIds);
+
+      if (profilesError) {
+        console.error('Error fetching requester profiles:', profilesError);
+      }
+
+      const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+      return requestsData.map(request => ({
+        ...request,
+        requesterProfile: profilesMap.get(request.requester_id) || {
+          id: request.requester_id,
+          full_name: 'Unknown User',
+          title: 'Professional',
+          profile_picture_url: null
+        }
+      }));
+    }
+  });
+
+  // Accept connection mutation
+  const acceptConnectionMutation = useMutation({
+    mutationFn: async (connectionId: string) => {
+      const { error } = await supabase
+        .from('connections')
+        .update({ 
+          status: 'accepted',
+          connected_at: new Date().toISOString()
+        })
+        .eq('id', connectionId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['connectionRequests'] });
+      queryClient.invalidateQueries({ queryKey: ['connections'] });
+      queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
+      toast.success('Connection request accepted!');
+    },
+    onError: (error) => {
+      toast.error('Failed to accept connection request');
+      console.error('Accept connection error:', error);
+    }
+  });
+
+  // Decline connection mutation
+  const declineConnectionMutation = useMutation({
+    mutationFn: async (connectionId: string) => {
+      const { error } = await supabase
+        .from('connections')
+        .update({ status: 'declined' })
+        .eq('id', connectionId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['connectionRequests'] });
+      toast.success('Connection request declined');
+    },
+    onError: (error) => {
+      toast.error('Failed to decline connection request');
+      console.error('Decline connection error:', error);
+    }
+  });
+
+  const formatDisplayName = (profile: any) => {
+    if (profile?.full_name && profile.full_name.trim()) {
+      return profile.full_name;
+    }
+    return 'Professional User';
+  };
+
+  const generateInitials = (profile: any) => {
+    const displayName = formatDisplayName(profile);
+    if (displayName === 'Professional User') return 'PU';
+    
+    const names = displayName.split(' ');
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    }
+    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
+  };
+
+  const handleAccept = (connectionId: string) => {
+    acceptConnectionMutation.mutate(connectionId);
+  };
+
+  const handleDecline = (connectionId: string) => {
+    declineConnectionMutation.mutate(connectionId);
+  };
+
+  if (isLoading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-slate-200/60">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-            <Users className="h-4 w-4 text-primary" />
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center text-lg">
+            <UserPlus className="h-5 w-5 mr-2" />
             Connection Requests
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent>
           <div className="space-y-3">
             {[...Array(2)].map((_, index) => (
               <div key={index} className="flex items-center space-x-3 animate-pulse">
-                <div className="w-12 h-12 bg-muted rounded-full"></div>
-                <div className="flex-1 space-y-1">
-                  <div className="h-3 bg-muted rounded w-3/4"></div>
-                  <div className="h-2 bg-muted rounded w-1/2"></div>
+                <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-300 rounded w-3/4 mb-1"></div>
+                  <div className="h-3 bg-gray-300 rounded w-1/2"></div>
                 </div>
               </div>
             ))}
@@ -45,98 +157,73 @@ export const ConnectionRequests: React.FC = () => {
     );
   }
 
-  if (!pendingRequests || pendingRequests.length === 0) {
+  if (!connectionRequests || connectionRequests.length === 0) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-slate-200/60">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-            <Users className="h-4 w-4 text-primary" />
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center text-lg">
+            <UserPlus className="h-5 w-5 mr-2" />
             Connection Requests
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-0">
-          <div className="text-center py-6 text-muted-foreground">
-            <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <div className="space-y-2">
-              <p className="text-xs">No pending connection requests</p>
-              <p className="text-xs text-muted-foreground">
-                New connection requests will appear here
-              </p>
-            </div>
-          </div>
+        <CardContent>
+          <p className="text-sm text-muted-foreground text-center py-4">No pending requests</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-slate-200/60">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-          <Users className="h-4 w-4 text-primary" />
-          Connection Requests ({pendingRequests.length})
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center text-lg">
+          <UserPlus className="h-5 w-5 mr-2" />
+          Connection Requests ({connectionRequests.length})
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent>
         <div className="space-y-4">
-          {pendingRequests.map((request) => (
-            <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg bg-white/50">
-              <div className="flex items-center space-x-3">
-                <Avatar className="w-12 h-12">
-                  <AvatarImage
-                    src={request.requester?.profile_picture_url}
-                    alt={formatDisplayName(request.requester)}
-                  />
-                  <AvatarFallback className="bg-primary/10 text-primary">
-                    {generateInitials(request.requester)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <h4 className="font-medium text-sm">
-                    {formatDisplayName(request.requester)}
-                  </h4>
-                  <p className="text-xs text-muted-foreground">
-                    {request.requester?.title || 'Professional'}
+          {connectionRequests.map((request) => (
+            <div key={request.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+              <Avatar className="w-10 h-10">
+                <AvatarImage src={request.requesterProfile?.profile_picture_url} />
+                <AvatarFallback>
+                  {generateInitials(request.requesterProfile)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-gray-900 text-sm truncate">
+                  {formatDisplayName(request.requesterProfile)}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {request.requesterProfile?.title || 'Professional'}
+                </p>
+                {request.message && (
+                  <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                    "{request.message}"
                   </p>
-                  {request.message && (
-                    <p className="text-xs text-muted-foreground mt-1 italic">
-                      "{request.message}"
-                    </p>
-                  )}
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge variant="secondary" className="text-xs">
-                      Pending
-                    </Badge>
-                  </div>
+                )}
+                <div className="flex space-x-2 mt-2">
+                  <Button
+                    size="sm"
+                    onClick={() => handleAccept(request.id)}
+                    disabled={acceptConnectionMutation.isPending}
+                    className="h-7 px-2 text-xs"
+                  >
+                    <Check className="h-3 w-3 mr-1" />
+                    Accept
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDecline(request.id)}
+                    disabled={declineConnectionMutation.isPending}
+                    className="h-7 px-2 text-xs"
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Decline
+                  </Button>
                 </div>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-green-200 text-green-700 hover:bg-green-50"
-                  onClick={() => acceptConnectionRequest(request.id)}
-                  disabled={isProcessing === request.id || isAcceptingRequest || isDecliningRequest}
-                >
-                  {(isProcessing === request.id && isAcceptingRequest) ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <UserCheck className="h-3 w-3" />
-                  )}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-red-200 text-red-700 hover:bg-red-50"
-                  onClick={() => declineConnectionRequest(request.id)}
-                  disabled={isProcessing === request.id || isAcceptingRequest || isDecliningRequest}
-                >
-                  {(isProcessing === request.id && isDecliningRequest) ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <UserX className="h-3 w-3" />
-                  )}
-                </Button>
               </div>
             </div>
           ))}

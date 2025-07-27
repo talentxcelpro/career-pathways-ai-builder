@@ -47,8 +47,6 @@ export function ProfessionalFeed() {
 
   const fetchPosts = async () => {
     try {
-      console.log('Fetching posts...');
-      
       // Fetch real posts from database with author profiles
       const { data: postsData, error } = await supabase
         .from('posts')
@@ -61,42 +59,27 @@ export function ProfessionalFeed() {
           likes_count,
           comments_count,
           shares_count,
-          created_at,
-          status,
-          is_public
+          created_at
         `)
         .eq('status', 'published')
         .eq('is_public', true)
         .order('created_at', { ascending: false })
         .limit(20);
 
-      if (error) {
-        console.error('Error fetching posts:', error);
-        throw error;
-      }
-
-      console.log('Fetched posts:', postsData?.length || 0);
+      if (error) throw error;
 
       if (!postsData || postsData.length === 0) {
-        console.log('No posts found');
         setPosts([]);
         return;
       }
 
       // Get author profiles
       const authorIds = [...new Set(postsData.map(post => post.author_id))];
-      console.log('Fetching profiles for authors:', authorIds);
-      
-      const { data: profiles, error: profileError } = await supabase
+      const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, title, user_role')
+        .select('id, full_name, profile_picture_url, title')
         .in('id', authorIds);
 
-      if (profileError) {
-        console.error('Error fetching profiles:', profileError);
-      }
-
-      console.log('Fetched profiles:', profiles?.length || 0);
       const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
       // Get current user to check if they liked posts
@@ -121,7 +104,6 @@ export function ProfessionalFeed() {
         liked_by_user: false // We'll implement this with proper post_reactions query later
       }));
 
-      console.log('Setting formatted posts:', formattedPosts.length);
       setPosts(formattedPosts);
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -136,43 +118,22 @@ export function ProfessionalFeed() {
   };
 
   const createPost = async () => {
-    if (!newPost.trim()) {
-      console.log('Post content is empty, not creating post');
-      return;
-    }
+    if (!newPost.trim()) return;
 
-    console.log('Starting post creation with content:', newPost, 'type:', postType);
     setIsPosting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error('User not authenticated');
-        throw new Error('Not authenticated');
-      }
-      
-      console.log('Authenticated user:', user.id);
+      if (!user) throw new Error('Not authenticated');
 
-      const postData = {
-        author_id: user.id,
-        content: newPost,
-        post_type: postType,
-        status: 'published',
-        is_public: true
-      };
-      
-      console.log('Inserting post with data:', postData);
-
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('posts')
-        .insert(postData)
-        .select();
+        .insert({
+          author_id: user.id,
+          content: newPost,
+          post_type: postType
+        });
 
-      if (error) {
-        console.error('Database error creating post:', error);
-        throw error;
-      }
-      
-      console.log('Post created successfully:', data);
+      if (error) throw error;
 
       setNewPost("");
       setPostType('text');
@@ -186,7 +147,7 @@ export function ProfessionalFeed() {
       console.error('Error creating post:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to create post",
+        description: "Failed to create post",
         variant: "destructive",
       });
     } finally {

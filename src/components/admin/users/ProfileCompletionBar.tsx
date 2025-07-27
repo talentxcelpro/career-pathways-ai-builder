@@ -2,7 +2,7 @@ import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Mail, AlertTriangle } from 'lucide-react';
 import { useProfileCompletion, getCompletionColor, getCompletionBgColor } from '@/hooks/useProfileCompletion';
 
@@ -59,7 +59,8 @@ export const ProfileCompletionBar: React.FC<ProfileCompletionBarProps> = ({
   }
 
   return (
-    <div className="space-y-2 animate-fade-in">
+    <TooltipProvider>
+      <div className="space-y-2 animate-fade-in">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium">Profile Completion</span>
@@ -128,6 +129,7 @@ export const ProfileCompletionBar: React.FC<ProfileCompletionBarProps> = ({
             </TooltipContent>
           </Tooltip>
         )}
-    </div>
+      </div>
+    </TooltipProvider>
   );
 };

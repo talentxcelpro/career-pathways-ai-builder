@@ -5,7 +5,7 @@ import { useNotificationStore } from '@/stores/useNotificationStore';
 
 interface RealtimeContextType {
   isConnected: boolean;
-  connectionStatus: 'connecting' | 'connected' | 'disconnected' | 'error' | 'auth_required';
+  connectionStatus: 'connecting' | 'connected' | 'disconnected' | 'error';
   enableNotifications: boolean;
   setEnableNotifications: (enabled: boolean) => void;
 }
@@ -33,21 +33,10 @@ export function RealtimeProvider({
   isAdmin = false, 
   isEmployer = false 
 }: RealtimeProviderProps) {
-  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error' | 'auth_required'>('auth_required');
+  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
   const [enableNotifications, setEnableNotifications] = useState(true);
   const { toast } = useToast();
   const { soundEnabled } = useNotificationStore();
-
-  // Only set up subscriptions if user is authenticated
-  const isAuthenticated = !!userId;
-
-  console.log('RealtimeProvider state:', { 
-    userId, 
-    isAuthenticated, 
-    isAdmin, 
-    isEmployer, 
-    connectionStatus 
-  });
 
   // Global realtime handlers
   const handleNetworkUpdate = (payload: any) => {
@@ -97,77 +86,39 @@ export function RealtimeProvider({
     }
   };
 
-  // Set up realtime subscriptions only when authenticated
-  const networkRealtime = useNetworkRealtime(
-    isAuthenticated ? handleNetworkUpdate : () => {}, 
-    isAuthenticated ? handleNetworkUpdate : () => {}
-  );
-  const jobsRealtime = useJobsRealtime(
-    isAuthenticated ? handleJobUpdate : () => {}, 
-    isAuthenticated ? handleApplicationUpdate : () => {}
-  );
-  const learningRealtime = useLearningRealtime(
-    isAuthenticated ? handleLearningUpdate : () => {}, 
-    isAuthenticated ? handleLearningUpdate : () => {}
-  );
+  // Set up realtime subscriptions
+  const networkRealtime = useNetworkRealtime(handleNetworkUpdate, handleNetworkUpdate);
+  const jobsRealtime = useJobsRealtime(handleJobUpdate, handleApplicationUpdate);
+  const learningRealtime = useLearningRealtime(handleLearningUpdate, handleLearningUpdate);
   
-  // Conditionally enable employer and admin subscriptions
-  const employerRealtime = useEmployerRealtime(
-    userId || '', 
-    isEmployer && isAuthenticated ? handleApplicationUpdate : () => {}, 
-    isEmployer && isAuthenticated ? handleJobUpdate : () => {}
-  );
-     
-  const adminRealtime = useAdminRealtime(
-    isAdmin && isAuthenticated ? handleAdminUpdate : () => {}, 
-    isAdmin && isAuthenticated ? handleAdminUpdate : () => {}, 
-    isAdmin && isAuthenticated ? handleAdminUpdate : () => {}
-  );
+  // Only subscribe to employer/admin realtime if user has those roles
+  const employerRealtime = isEmployer && userId ?
+    useEmployerRealtime(userId, handleApplicationUpdate, handleJobUpdate) : 
+    { isConnected: true };
+    
+  const adminRealtime = isAdmin ? 
+    useAdminRealtime(handleAdminUpdate, handleAdminUpdate, handleAdminUpdate) : 
+    { isConnected: true };
 
-  // Update connection status based on authentication and subscriptions
+  // Update connection status based on all subscriptions
   useEffect(() => {
-    if (!isAuthenticated) {
-      setConnectionStatus('auth_required');
-      console.log('Realtime: Authentication required');
-      return;
-    }
+    const allConnected = networkRealtime.isConnected && 
+                        jobsRealtime.isConnected && 
+                        learningRealtime.isConnected &&
+                        employerRealtime.isConnected &&
+                        adminRealtime.isConnected;
 
-    const allStatuses = [
-      networkRealtime.connectionStatus,
-      jobsRealtime.connectionStatus,
-      learningRealtime.connectionStatus,
-      employerRealtime.connectionStatus,
-      adminRealtime.connectionStatus
-    ];
-
-    const allConnected = allStatuses.every(status => status === 'connected');
-    const anyError = allStatuses.some(status => status === 'error');
-    const anyConnecting = allStatuses.some(status => status === 'connecting');
-
-    console.log('Realtime status update:', {
-      allStatuses,
-      allConnected,
-      anyError,
-      anyConnecting,
-      isAuthenticated
-    });
-
-    if (anyError) {
-      setConnectionStatus('error');
-    } else if (allConnected) {
+    if (allConnected) {
       setConnectionStatus('connected');
-    } else if (anyConnecting) {
-      setConnectionStatus('connecting');
     } else {
-      setConnectionStatus('disconnected');
+      setConnectionStatus('connecting');
     }
   }, [
-    isAuthenticated,
-    networkRealtime.connectionStatus, 
-    jobsRealtime.connectionStatus, 
-    learningRealtime.connectionStatus,
-    employerRealtime.connectionStatus,
-    adminRealtime.connectionStatus
+    networkRealtime.isConnected, 
+    jobsRealtime.isConnected, 
+    learningRealtime.isConnected,
+    employerRealtime.isConnected,
+    adminRealtime.isConnected
   ]);
 
   const value: RealtimeContextType = {

@@ -19,29 +19,17 @@ export interface RealtimeSubscription {
 export function useRealtimeSubscriptions(subscriptions: RealtimeSubscription[]) {
   const channelsRef = useRef<RealtimeChannel[]>([]);
   const [isConnected, setIsConnected] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('disconnected');
 
   useEffect(() => {
-    if (subscriptions.length === 0) {
-      setIsConnected(false);
-      setConnectionStatus('disconnected');
-      return;
-    }
-
-    setConnectionStatus('connecting');
-    
     // Cleanup existing channels
     channelsRef.current.forEach(channel => {
       supabase.removeChannel(channel);
     });
     channelsRef.current = [];
 
-    let connectedCount = 0;
-    const totalSubscriptions = subscriptions.length;
-
     // Create new subscriptions
     subscriptions.forEach((subscription, index) => {
-      const channelName = `realtime-${subscription.table}-${Date.now()}-${index}`;
+      const channelName = `realtime-${subscription.table}-${index}`;
       const channel = supabase.channel(channelName);
 
       const config: any = {
@@ -55,27 +43,13 @@ export function useRealtimeSubscriptions(subscriptions: RealtimeSubscription[]) 
       }
 
       channel
-        .on('postgres_changes', config, (payload) => {
-          console.log(`📡 Realtime update received for ${subscription.table}:`, payload);
-          subscription.callback(payload);
-        })
+        .on('postgres_changes', config, subscription.callback)
         .on('system', {}, (payload) => {
-          console.log(`🔗 Channel ${channelName} status:`, payload);
           if (payload.status === 'ok') {
-            connectedCount++;
-            if (connectedCount === totalSubscriptions) {
-              setIsConnected(true);
-              setConnectionStatus('connected');
-              console.log('✅ All realtime subscriptions connected');
-            }
+            setIsConnected(true);
           }
         })
-        .subscribe((status) => {
-          console.log(`📡 Channel ${channelName} subscription status:`, status);
-          if (status === 'CHANNEL_ERROR') {
-            setConnectionStatus('error');
-          }
-        });
+        .subscribe();
 
       channelsRef.current.push(channel);
     });
@@ -87,11 +61,10 @@ export function useRealtimeSubscriptions(subscriptions: RealtimeSubscription[]) 
       });
       channelsRef.current = [];
       setIsConnected(false);
-      setConnectionStatus('disconnected');
     };
   }, [subscriptions]);
 
-  return { isConnected, connectionStatus };
+  return { isConnected };
 }
 
 /**
@@ -185,28 +158,25 @@ export function useEmployerRealtime(
   onApplicationUpdate: (payload: any) => void,
   onJobStatsUpdate: (payload: any) => void
 ) {
-  // If no userId provided, return empty subscriptions but still maintain hook order
-  const subscriptions = userId ? [
+  return useRealtimeSubscriptions([
     {
       table: 'job_applications',
-      event: '*' as RealtimeEvent,
+      event: '*',
       filter: `job_id=in.(SELECT id FROM jobs WHERE created_by=${userId})`,
       callback: onApplicationUpdate
     },
     {
       table: 'job_views',
-      event: 'INSERT' as RealtimeEvent,
+      event: 'INSERT',
       callback: onJobStatsUpdate
     },
     {
       table: 'jobs',
-      event: 'UPDATE' as RealtimeEvent,
+      event: 'UPDATE',
       filter: `created_by=eq.${userId}`,
       callback: onJobStatsUpdate
     }
-  ] : [];
-
-  return useRealtimeSubscriptions(subscriptions);
+  ]);
 }
 
 /**
@@ -217,33 +187,28 @@ export function useAdminRealtime(
   onRequestUpdate: (payload: any) => void,
   onSystemUpdate: (payload: any) => void
 ) {
-  // Check if all callbacks are no-ops (empty functions), if so, return empty subscriptions
-  const isEnabled = onUserUpdate.toString() !== '() => {}';
-  
-  const subscriptions = isEnabled ? [
+  return useRealtimeSubscriptions([
     {
       table: 'profiles',
-      event: '*' as RealtimeEvent,
+      event: '*',
       callback: onUserUpdate
     },
     {
       table: 'employer_requests',
-      event: '*' as RealtimeEvent,
+      event: '*',
       callback: onRequestUpdate
     },
     {
       table: 'company_access_requests',
-      event: '*' as RealtimeEvent,
+      event: '*',
       callback: onRequestUpdate
     },
     {
       table: 'admin_activity_log',
-      event: 'INSERT' as RealtimeEvent,
+      event: 'INSERT',
       callback: onSystemUpdate
     }
-  ] : [];
-
-  return useRealtimeSubscriptions(subscriptions);
+  ]);
 }
 
 /**

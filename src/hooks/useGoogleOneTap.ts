@@ -49,6 +49,7 @@ export const useGoogleOneTap = ({
 
       if (data.session) {
         console.log('Google One Tap sign-in successful');
+        toast.success('Successfully signed in with Google!');
         onSuccess?.();
       }
     } catch (error: any) {

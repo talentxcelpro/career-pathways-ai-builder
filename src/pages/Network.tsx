@@ -1,3 +1,4 @@
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
@@ -6,110 +7,98 @@ import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestion
 import { NetworkStats } from "@/components/network/NetworkStats";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
 import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
-
-import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles, Home, Search, Zap } from "lucide-react";
+import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
 import Posts from './network/Posts';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
 
 const Network = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system text-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
+      {/* Main Content with Tabs */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <Tabs defaultValue="feed" className="w-full">
-          <div className="border-b border-gray-200/30 mb-8">
-            <TabsList className="grid w-full grid-cols-6 bg-white/50 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg">
-              <TabsTrigger 
-                value="feed" 
-                className="flex items-center gap-2 px-6 py-3 rounded-xl transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm"
-              >
-                <Home className="h-4 w-4" />
-                <span className="font-medium">Feed</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="smart-feed" 
-                className="flex items-center gap-2 px-6 py-3 rounded-xl transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm"
-              >
-                <Sparkles className="h-4 w-4" />
-                <span className="font-medium">Smart Feed</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="connections" 
-                className="flex items-center gap-2 px-6 py-3 rounded-xl transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm"
-              >
-                <Users className="h-4 w-4" />
-                <span className="font-medium">Connections</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="discover" 
-                className="flex items-center gap-2 px-6 py-3 rounded-xl transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm"
-              >
-                <Search className="h-4 w-4" />
-                <span className="font-medium">Discover</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="analytics" 
-                className="flex items-center gap-2 px-6 py-3 rounded-xl transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm"
-              >
-                <TrendingUp className="h-4 w-4" />
-                <span className="font-medium">Analytics</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="ai-connect" 
-                className="flex items-center gap-2 px-6 py-3 rounded-xl transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm"
-              >
-                <Zap className="h-4 w-4" />
-                <span className="font-medium">AI Connect</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
+          <TabsList className="grid w-full grid-cols-6 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
+            <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <MessageSquare className="w-3 h-3" />
+              <span className="hidden sm:inline">Feed</span>
+            </TabsTrigger>
+            <TabsTrigger value="smart-feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <Sparkles className="w-3 h-3" />
+              <span className="hidden sm:inline">Smart Feed</span>
+            </TabsTrigger>
+            <TabsTrigger value="connections" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <Users className="w-3 h-3" />
+              <span className="hidden sm:inline">Connections</span>
+            </TabsTrigger>
+            <TabsTrigger value="discover" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <UserPlus className="w-3 h-3" />
+              <span className="hidden sm:inline">Discover</span>
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <TrendingUp className="w-3 h-3" />
+              <span className="hidden sm:inline">Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger value="ai-connect" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <Sparkles className="w-3 h-3" />
+              <span className="hidden sm:inline">AI Connect</span>
+            </TabsTrigger>
+          </TabsList>
 
           <TabsContent value="feed" className="mt-0">
-            <Posts />
+            <div className="space-y-6 text-gray-900">
+              <Posts feedType="all" />
+            </div>
           </TabsContent>
 
           <TabsContent value="smart-feed" className="mt-0">
-            <CareerContentHub />
+            <div className="space-y-6 text-gray-900">
+              <Posts feedType="smart" />
+            </div>
           </TabsContent>
 
           <TabsContent value="connections" className="mt-0">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div>
-                <h2 className="text-2xl font-bold mb-6">Connection Requests</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-gray-900">
+              <div className="lg:col-span-2 space-y-6">
                 <ConnectionRequests />
+                <ProfessionalFeed />
               </div>
-              <div>
-                <h2 className="text-2xl font-bold mb-6">Discover People</h2>
-                <ConnectionSuggestions />
+              <div className="space-y-6">
+                <ReferralNetworkAd variant="sidebar" />
+                <AdvertisingSidebar position="right" maxAds={3} />
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="discover" className="mt-0">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div>
-                <h2 className="text-2xl font-bold mb-6">Discover People</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-gray-900">
+              <div className="lg:col-span-2 space-y-6">
                 <ConnectionSuggestions />
+                <CareerContentHub />
               </div>
-              <div>
-                <h2 className="text-2xl font-bold mb-6">Advertisement</h2>
-                <AdvertisingSidebar />
+              <div className="space-y-6">
+                <ReferralNetworkAd variant="sidebar" />
+                <AdvertisingSidebar position="right" maxAds={3} />
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-0">
-            <NetworkStats />
+            <div className="space-y-6 text-gray-900">
+              <NetworkStats />
+            </div>
           </TabsContent>
 
           <TabsContent value="ai-connect" className="mt-0">
-            <SmartConnectAI />
+            <div className="space-y-6 text-gray-900">
+              <SmartConnectAI />
+            </div>
           </TabsContent>
         </Tabs>
-
-        {/* Persistent Messaging Sidebar */}
-        <NetworkMessagingSidebar />
       </div>
+      
+      {/* Floating Messaging Sidebar */}
+      <NetworkMessagingSidebar />
     </div>
   );
 };

@@ -53,9 +53,7 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
   });
 
   const getConversationDisplay = (conversation: any) => {
-    if (!currentUser) {
-      return { name: 'Loading...', avatar: null, isGroup: false };
-    }
+    if (!currentUser) return { name: 'Loading...', avatar: null, isGroup: false };
     
     if (conversation.is_group) {
       return {
@@ -67,16 +65,6 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
 
     // For 1:1 conversations, show the other participant
     const otherParticipant = conversation.participants?.find((id: string) => id !== currentUser);
-    
-    if (!otherParticipant) {
-      return {
-        name: 'Unknown User',
-        avatar: null,
-        title: null,
-        isGroup: false
-      };
-    }
-    
     const profile = userProfiles?.[otherParticipant];
     
     return {

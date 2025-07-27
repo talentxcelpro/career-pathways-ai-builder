@@ -47,17 +47,9 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
   const [showModernMessenger, setShowModernMessenger] = useState(false);
   const queryClient = useQueryClient();
 
-  // Manual refresh function
-  const handleManualRefresh = () => {
-    console.log('🔄 Manual refresh triggered');
-    queryClient.invalidateQueries({ queryKey: ['posts'] });
-    queryClient.invalidateQueries({ queryKey: ['connections'] });
-    queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
-  };
-
   // Auto-refresh with realtime updates
   const { lastRefresh } = useAutoRefreshPosts();
-  const { isConnected, connectionStatus } = useNetworkRealtime(
+  const { isConnected } = useNetworkRealtime(
     (payload) => {
       console.log('Post updated:', payload);
       queryClient.invalidateQueries({ queryKey: ['posts'] });
@@ -101,12 +93,9 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
   const { data: profileStats } = useProfileStats(currentUserProfile?.id);
 
   // Fetch posts with real-time counts
-  const { data: posts, isLoading: postsLoading, error: postsError } = useQuery({
-    queryKey: ['posts', feedFilter, lastRefresh],
+  const { data: posts, isLoading: postsLoading } = useQuery({
+    queryKey: ['posts', feedFilter],
     queryFn: async () => {
-      console.log('🔍 Fetching posts for feed:', feedFilter);
-      console.log('📊 Query key:', ['posts', feedFilter, lastRefresh]);
-      
       // First get posts with fresh counts
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
@@ -117,17 +106,10 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
           post_shares!left(id)
         `)
         .eq('is_public', true)
-        .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(20);
 
-      if (postsError) {
-        console.error('Error fetching posts:', postsError);
-        throw postsError;
-      }
-
-      console.log('📈 Raw posts data:', postsData?.length || 0, 'posts');
-      console.log('📝 Post IDs:', postsData?.map(p => p.id).slice(0, 5));
+      if (postsError) throw postsError;
 
       // Get unique author IDs
       const authorIds = [...new Set(postsData.map(post => post.author_id).filter(Boolean))];
@@ -297,16 +279,8 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
         }
       }
 
-      console.log('✅ Final posts with profiles:', postsWithProfiles?.length || 0);
-      console.log('👥 Authors found:', profilesData?.length || 0);
-      console.log('🎯 Feed filter applied:', feedFilter);
-      
-      return postsWithProfiles || [];
-    },
-    staleTime: 30000, // 30 seconds
-    enabled: true,
-    retry: 3,
-    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000)
+      return postsWithProfiles;
+    }
   });
 
   const handlePostCreate = (post: any) => {
@@ -393,33 +367,6 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system text-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         {/* Feed Content */}
-        
-        {/* Debug Info & Manual Refresh */}
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-blue-800">
-              <span className="font-medium">Feed Status:</span> {feedFilter} | 
-              <span className="ml-2">Posts: {posts?.length || 0}</span> | 
-              <span className="ml-2">Loading: {postsLoading ? 'Yes' : 'No'}</span> |
-              <span className="ml-2">Error: {postsError ? 'Yes' : 'No'}</span> |
-              <span className="ml-2">Realtime: {connectionStatus || 'Unknown'} ({isConnected ? 'Connected' : 'Disconnected'})</span>
-            </div>
-            <Button 
-              onClick={handleManualRefresh} 
-              size="sm" 
-              variant="outline"
-              disabled={postsLoading}
-              className="text-xs"
-            >
-              {postsLoading ? 'Refreshing...' : 'Refresh'}
-            </Button>
-          </div>
-          {postsError && (
-            <div className="mt-2 text-sm text-red-600">
-              Error: {postsError.message}
-            </div>
-          )}
-        </div>
 
         {/* Three Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

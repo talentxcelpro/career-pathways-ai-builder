@@ -4,77 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart3, TrendingUp, Eye, Users, MessageSquare, Download, Calendar } from "lucide-react";
 import ProfileLayout from "@/components/profile/ProfileLayout";
-import { MetricsCards } from "@/components/profile/analytics/MetricsCards";
-import { ProfileViewsChart } from "@/components/profile/analytics/ProfileViewsChart";
-import { KeywordsInsight } from "@/components/profile/analytics/KeywordsInsight";
-import { ProfileCompleteness } from "@/components/profile/analytics/ProfileCompleteness";
-import { useProfileStats } from "@/hooks/useProfileStats";
-import { useAuth } from "@/contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 const ProfileAnalytics = () => {
-  const { user } = useAuth();
-  const { data: profileStats } = useProfileStats(user?.id);
-
-  // Fetch additional analytics data
-  const { data: connectionRequests } = useQuery({
-    queryKey: ['connection-requests', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return 0;
-      const { count } = await supabase
-        .from('connections')
-        .select('*', { count: 'exact', head: true })
-        .eq('recipient_id', user.id)
-        .eq('status', 'pending');
-      return count || 0;
-    },
-    enabled: !!user?.id
-  });
-
-  // Fetch resume downloads (mock data for now)
-  const { data: resumeDownloads } = useQuery({
-    queryKey: ['resume-downloads', user?.id],
-    queryFn: async () => {
-      // Mock data - in real implementation this would come from resume analytics
-      return Math.floor(Math.random() * 50) + 10;
-    },
-    enabled: !!user?.id
-  });
-
-  // Fetch weekly views (calculate from profile_views)
-  const { data: weeklyViews } = useQuery({
-    queryKey: ['weekly-views', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return 0;
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      
-      const { count } = await supabase
-        .from('profile_views')
-        .select('*', { count: 'exact', head: true })
-        .eq('profile_id', user.id)
-        .gte('viewed_at', weekAgo.toISOString());
-      return count || 0;
-    },
-    enabled: !!user?.id
-  });
-
   const analyticsData = {
-    totalViews: profileStats?.profileViews || 0,
-    weeklyViews: weeklyViews || 0,
-    connectionRequests: connectionRequests || 0,
-    messagesSent: 0, // Would need to implement messages tracking
-    resumeDownloads: resumeDownloads || 0,
-    searchAppearances: Math.floor((profileStats?.profileViews || 0) * 0.3) // Estimated based on views
+    totalViews: 0,
+    weeklyViews: 0,
+    connectionRequests: 0,
+    messagesSent: 0,
+    resumeDownloads: 0,
+    searchAppearances: 0
   };
 
-  // Generate chart data based on recent views
-  const chartData = Array.from({ length: 12 }, (_, i) => ({
-    month: new Date(Date.now() - (11 - i) * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short' }),
-    views: Math.floor(Math.random() * (profileStats?.profileViews || 10)) + 5,
-    connections: Math.floor(Math.random() * 10) + 2
-  }));
+  const chartData = [];
 
   return (
     <ProfileLayout 
@@ -104,15 +45,130 @@ const ProfileAnalytics = () => {
         </div>
 
         {/* Key Metrics */}
-        <MetricsCards analyticsData={analyticsData} />
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-6 text-center">
+              <Eye className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-gray-900">{analyticsData.totalViews}</div>
+              <div className="text-sm text-gray-600">Total Views</div>
+              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-6 text-center">
+              <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-gray-900">{analyticsData.weeklyViews}</div>
+              <div className="text-sm text-gray-600">Weekly Views</div>
+              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-6 text-center">
+              <Users className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-gray-900">{analyticsData.connectionRequests}</div>
+              <div className="text-sm text-gray-600">Connection Requests</div>
+              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-6 text-center">
+              <MessageSquare className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-gray-900">{analyticsData.messagesSent}</div>
+              <div className="text-sm text-gray-600">Messages Received</div>
+              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-6 text-center">
+              <Download className="h-8 w-8 text-red-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-gray-900">{analyticsData.resumeDownloads}</div>
+              <div className="text-sm text-gray-600">Resume Downloads</div>
+              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-6 text-center">
+              <BarChart3 className="h-8 w-8 text-indigo-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-gray-900">{analyticsData.searchAppearances}</div>
+              <div className="text-sm text-gray-600">Search Appearances</div>
+              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Profile Views Chart */}
-        <ProfileViewsChart chartData={chartData} />
+        <Card className="border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Profile Views Over Time</CardTitle>
+            <CardDescription>Track how your profile visibility changes over time</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 flex items-center justify-center">
+              <div className="text-center">
+                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No Analytics Data Yet</h3>
+                <p className="text-gray-600">Your profile analytics will appear here once you start getting views</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Engagement Insights */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <KeywordsInsight />
-          <ProfileCompleteness />
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Top Keywords</CardTitle>
+              <CardDescription>Keywords that led people to your profile</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <div className="text-gray-500 mb-2">No keyword data available yet</div>
+                <p className="text-sm text-gray-400">Keywords that lead people to your profile will appear here</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Profile Completeness</CardTitle>
+              <CardDescription>Improve your profile to increase visibility</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Overall Completeness</span>
+                  <span className="text-lg font-bold text-orange-600">0%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div className="bg-orange-500 h-3 rounded-full" style={{ width: '0%' }}></div>
+                </div>
+                
+                <div className="space-y-2 mt-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>⚠ Profile Photo</span>
+                    <span className="text-orange-600">Missing</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>⚠ Professional Summary</span>
+                    <span className="text-orange-600">Missing</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>⚠ Video Resume</span>
+                    <span className="text-orange-600">Missing</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>⚠ Portfolio Projects</span>
+                    <span className="text-orange-600">Missing</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Recent Activity */}

@@ -36,15 +36,6 @@ export function TestCaseRunner({ testCases, onRunTest }: TestCaseRunnerProps) {
                 <Badge variant={testCase.status === 'passed' ? 'default' : testCase.status === 'failed' ? 'destructive' : 'outline'}>
                   {testCase.status}
                 </Badge>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => onRunTest(testCase.id)}
-                  disabled={testCase.status === 'running'}
-                >
-                  <Play className="h-3 w-3 mr-1" />
-                  Run
-                </Button>
               </div>
             </div>
           </CardHeader>

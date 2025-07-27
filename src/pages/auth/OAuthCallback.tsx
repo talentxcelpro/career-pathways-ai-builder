@@ -28,6 +28,7 @@ const OAuthCallback = () => {
         if (data.session && data.session.user) {
           console.log('OAuth authentication successful');
           setStatus('success');
+          toast.success('Successfully signed in!');
           navigate('/network', { replace: true });
         } else {
           console.log('No session found in callback');

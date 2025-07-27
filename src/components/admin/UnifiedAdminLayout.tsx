@@ -25,6 +25,7 @@ export const UnifiedAdminLayout: React.FC<UnifiedAdminLayoutProps> = ({
   const handleSignOut = async () => {
     try {
       await signOut();
+      toast.success('Signed out successfully');
     } catch (error) {
       toast.error('Error signing out');
     }

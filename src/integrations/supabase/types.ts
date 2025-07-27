@@ -1082,42 +1082,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ai_prompt_cache: {
-        Row: {
-          access_count: number | null
-          accessed_at: string | null
-          created_at: string | null
-          expires_at: string | null
-          id: string
-          prompt_hash: string
-          prompt_text: string
-          response_data: Json
-          tool_slug: string
-        }
-        Insert: {
-          access_count?: number | null
-          accessed_at?: string | null
-          created_at?: string | null
-          expires_at?: string | null
-          id?: string
-          prompt_hash: string
-          prompt_text: string
-          response_data: Json
-          tool_slug: string
-        }
-        Update: {
-          access_count?: number | null
-          accessed_at?: string | null
-          created_at?: string | null
-          expires_at?: string | null
-          id?: string
-          prompt_hash?: string
-          prompt_text?: string
-          response_data?: Json
-          tool_slug?: string
-        }
-        Relationships: []
-      }
       ai_prompt_library: {
         Row: {
           created_at: string | null
@@ -4890,8 +4854,8 @@ export type Database = {
           created_at: string | null
           id: string
           message: string | null
-          recipient_id: string
-          requester_id: string
+          recipient_id: string | null
+          requester_id: string | null
           status: string | null
           updated_at: string | null
         }
@@ -4900,8 +4864,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           message?: string | null
-          recipient_id: string
-          requester_id: string
+          recipient_id?: string | null
+          requester_id?: string | null
           status?: string | null
           updated_at?: string | null
         }
@@ -4910,8 +4874,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           message?: string | null
-          recipient_id?: string
-          requester_id?: string
+          recipient_id?: string | null
+          requester_id?: string | null
           status?: string | null
           updated_at?: string | null
         }
@@ -9292,7 +9256,7 @@ export type Database = {
       posts: {
         Row: {
           article_category: string | null
-          author_id: string
+          author_id: string | null
           comments_count: number | null
           content: string
           content_type: string | null
@@ -9317,7 +9281,7 @@ export type Database = {
         }
         Insert: {
           article_category?: string | null
-          author_id: string
+          author_id?: string | null
           comments_count?: number | null
           content: string
           content_type?: string | null
@@ -9342,7 +9306,7 @@ export type Database = {
         }
         Update: {
           article_category?: string | null
-          author_id?: string
+          author_id?: string | null
           comments_count?: number | null
           content?: string
           content_type?: string | null
@@ -12972,7 +12936,6 @@ export type Database = {
       security_events: {
         Row: {
           created_at: string
-          description: string | null
           details: Json | null
           device_fingerprint: string | null
           event_category: string
@@ -12980,7 +12943,6 @@ export type Database = {
           id: string
           ip_address: unknown | null
           location_data: Json | null
-          metadata: Json | null
           resolved_at: string | null
           resolved_by: string | null
           session_id: string | null
@@ -12990,7 +12952,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          description?: string | null
           details?: Json | null
           device_fingerprint?: string | null
           event_category?: string
@@ -12998,7 +12959,6 @@ export type Database = {
           id?: string
           ip_address?: unknown | null
           location_data?: Json | null
-          metadata?: Json | null
           resolved_at?: string | null
           resolved_by?: string | null
           session_id?: string | null
@@ -13008,7 +12968,6 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          description?: string | null
           details?: Json | null
           device_fingerprint?: string | null
           event_category?: string
@@ -13016,7 +12975,6 @@ export type Database = {
           id?: string
           ip_address?: unknown | null
           location_data?: Json | null
-          metadata?: Json | null
           resolved_at?: string | null
           resolved_by?: string | null
           session_id?: string | null
@@ -17078,13 +17036,6 @@ export type Database = {
       }
       log_security_event: {
         Args:
-          | {
-              p_event_type: string
-              p_severity?: string
-              p_description?: string
-              p_metadata?: Json
-              p_user_id?: string
-            }
           | {
               p_user_id: string
               p_event_type: string
