@@ -42,7 +42,10 @@ export const useConnectionRequests = () => {
   const { data: pendingRequests, isLoading: isLoadingPending, refetch: refetchPending } = useQuery({
     queryKey: ['connectionRequests', 'pending', currentUser?.id],
     queryFn: async () => {
-      if (!currentUser) return [];
+      if (!currentUser) {
+        console.log('No current user, returning empty array');
+        return [];
+      }
 
       console.log('Fetching pending connection requests for user:', currentUser.id);
 
