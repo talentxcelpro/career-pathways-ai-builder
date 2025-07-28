@@ -256,7 +256,11 @@ serve(async (req) => {
           content: existingContent,
           cached: true 
         }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=86400, stale-while-revalidate=3600', // Cache for 24 hours
+          },
         });
       }
     }
@@ -303,7 +307,11 @@ serve(async (req) => {
       content: savedContent,
       cached: false 
     }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=3600', // Cache for 24 hours
+      },
     });
 
   } catch (error) {

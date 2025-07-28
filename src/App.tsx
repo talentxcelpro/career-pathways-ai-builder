@@ -23,13 +23,14 @@ import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import UserManagement from "@/pages/admin/UserManagement";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
 
-// Create query client with simpler configuration to avoid potential issues
+// Create query client optimized for SEO content caching
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000, // 5 minutes for regular queries
       retry: 2,
       refetchOnWindowFocus: false,
+      gcTime: 30 * 60 * 1000, // 30 minutes garbage collection time
     },
   },
 });

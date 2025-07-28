@@ -5,11 +5,31 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Building, Users } from "lucide-react";
+import { useCachedSEO } from '@/hooks/useCachedSEO';
 
 const JobsByLocation = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  const { data: locationData, isLoading } = useQuery({
+  // Use cached SEO content with 24-hour cache
+  const { 
+    seoContent, 
+    metaTitle, 
+    metaDescription, 
+    h1Title,
+    introContent,
+    faqs,
+    keywords,
+    isLoading: seoLoading 
+  } = useCachedSEO({
+    pageType: 'job_location',
+    primarySlug: slug || '',
+    enabled: !!slug,
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    cacheTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  // Also get location data for display
+  const { data: locationData, isLoading: locationLoading } = useQuery({
     queryKey: ['seo-location', slug],
     queryFn: async () => {
       const { data: location } = await supabase
@@ -18,16 +38,14 @@ const JobsByLocation = () => {
         .eq('slug', slug)
         .single();
 
-      const { data: seoMeta } = await supabase
-        .from('seo_meta_tags')
-        .select('*')
-        .eq('path', `/seo/jobs/location/${slug}`)
-        .single();
-
-      return { location, seoMeta };
+      return { location };
     },
-    enabled: !!slug
+    enabled: !!slug,
+    staleTime: 60 * 60 * 1000, // 1 hour
+    gcTime: 24 * 60 * 60 * 1000, // 24 hours
   });
+
+  const isLoading = seoLoading || locationLoading;
 
   if (isLoading) {
     return <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
@@ -43,14 +61,14 @@ const JobsByLocation = () => {
     </div>;
   }
 
-  const { location, seoMeta } = locationData;
+  const { location } = locationData;
 
   return (
     <>
       <SEOHead
-        title={seoMeta?.title || `Jobs in ${location.name} - TalentXcel`}
-        description={seoMeta?.description || `Find jobs in ${location.name}`}
-        keywords={seoMeta?.keywords ? seoMeta.keywords.split(',').map(k => k.trim()) : undefined}
+        title={metaTitle || `Jobs in ${location.name} - TalentXcel`}
+        description={metaDescription || `Find jobs in ${location.name}`}
+        keywords={keywords}
       />
       
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
