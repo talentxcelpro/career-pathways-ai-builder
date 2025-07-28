@@ -63,15 +63,8 @@ const Network = () => {
           </TabsContent>
 
           <TabsContent value="discover" className="mt-0">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-gray-900">
-              <div className="lg:col-span-2 space-y-6">
-                <ConnectionSuggestions />
-                <CareerContentHub />
-              </div>
-              <div className="space-y-6">
-                <ReferralNetworkAd variant="sidebar" />
-                <AdvertisingSidebar position="right" maxAds={3} />
-              </div>
+            <div className="text-gray-900">
+              <CareerContentHub />
             </div>
           </TabsContent>
 
