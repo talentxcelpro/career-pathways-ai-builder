@@ -13,7 +13,6 @@ import {
   GraduationCap,
   TrendingUp,
   Loader2,
-  Brain,
   Zap,
   Star
 } from 'lucide-react';
@@ -37,14 +36,11 @@ interface SmartMatch {
   current_company?: string;
   matchScore: number;
   matchReasons: string[];
-  aiInsight?: string;
-  insightConfidence?: number;
 }
 
 export const SmartConnectAI: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'mentors' | 'peers' | 'mentees'>('all');
   const [sendingConnection, setSendingConnection] = useState<string | null>(null);
-  const [loadingInsights, setLoadingInsights] = useState<string[]>([]);
   const { triggerConnectionEmail } = useEmailAutomation();
 
   const { data: currentUser } = useQuery({
@@ -157,40 +153,6 @@ export const SmartConnectAI: React.FC = () => {
     const words2 = title2.toLowerCase().split(' ');
     const commonWords = words1.filter(word => words2.includes(word));
     return commonWords.length / Math.max(words1.length, words2.length);
-  };
-
-  const generateAIInsight = async (match: SmartMatch) => {
-    if (!currentUser?.profile || loadingInsights.includes(match.id)) return;
-
-    setLoadingInsights(prev => [...prev, match.id]);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('smart-connect-ai', {
-        body: {
-          currentUser: currentUser.profile,
-          potentialMatch: match
-        }
-      });
-
-      if (error) throw error;
-
-      // Update the match with AI insight
-      const updatedMatches = smartMatches?.map(m => 
-        m.id === match.id 
-          ? { ...m, aiInsight: data.insight, insightConfidence: data.confidence }
-          : m
-      );
-      
-      // This would need to be handled differently in practice
-      // For now, we'll show a toast with the insight
-      toast.success(`AI Insight: ${data.insight}`, { duration: 5000 });
-      
-    } catch (error) {
-      console.error('Failed to generate AI insight:', error);
-      toast.error('Failed to generate AI insight');
-    } finally {
-      setLoadingInsights(prev => prev.filter(id => id !== match.id));
-    }
   };
 
   const sendConnectionRequest = async (userId: string) => {
@@ -389,20 +351,6 @@ export const SmartConnectAI: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => generateAIInsight(match)}
-                        disabled={loadingInsights.includes(match.id)}
-                        className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-                      >
-                        {loadingInsights.includes(match.id) ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Brain className="h-4 w-4" />
-                        )}
-                        <span className="ml-1 text-xs">AI Insight</span>
-                      </Button>
                       <Button
                         variant="outline"
                         size="sm"

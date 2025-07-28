@@ -1,7 +1,8 @@
 import React from 'react';
 import { ConnectionsList } from './ConnectionsList';
 import { ConnectionSuggestions } from './ConnectionSuggestions';
-import { Users, UserPlus } from 'lucide-react';
+import { PeopleToKnow } from './PeopleToKnow';
+import { Users, UserPlus, Star } from 'lucide-react';
 
 export const EnhancedConnections = () => {
   return (
@@ -16,8 +17,8 @@ export const EnhancedConnections = () => {
         </p>
       </div>
 
-      {/* Two Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Three Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - My Connections */}
         <div className="space-y-6">
           <div className="flex items-center gap-3 mb-4">
@@ -33,7 +34,7 @@ export const EnhancedConnections = () => {
           </div>
         </div>
 
-        {/* Right Column - Suggested Connections */}
+        {/* Middle Column - Suggested Connections */}
         <div className="space-y-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-secondary/10 rounded-lg">
@@ -45,6 +46,21 @@ export const EnhancedConnections = () => {
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
             <ConnectionSuggestions />
+          </div>
+        </div>
+
+        {/* Right Column - People to Know */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-accent/10 rounded-lg">
+              <Star className="h-5 w-5 text-accent-foreground" />
+            </div>
+            <h2 className="text-xl font-semibold text-foreground">
+              People to Know
+            </h2>
+          </div>
+          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <PeopleToKnow />
           </div>
         </div>
       </div>
