@@ -13106,6 +13106,69 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_generated_content: {
+        Row: {
+          content_blocks: Json | null
+          created_at: string | null
+          faqs: Json | null
+          h1_title: string
+          id: string
+          intro_content: string
+          is_active: boolean | null
+          keywords: string[] | null
+          last_generated_at: string | null
+          meta_description: string
+          meta_title: string
+          page_type: string
+          primary_slug: string
+          quality_score: number | null
+          secondary_slug: string | null
+          structured_data: Json | null
+          tertiary_slug: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          content_blocks?: Json | null
+          created_at?: string | null
+          faqs?: Json | null
+          h1_title: string
+          id?: string
+          intro_content: string
+          is_active?: boolean | null
+          keywords?: string[] | null
+          last_generated_at?: string | null
+          meta_description: string
+          meta_title: string
+          page_type: string
+          primary_slug: string
+          quality_score?: number | null
+          secondary_slug?: string | null
+          structured_data?: Json | null
+          tertiary_slug?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          content_blocks?: Json | null
+          created_at?: string | null
+          faqs?: Json | null
+          h1_title?: string
+          id?: string
+          intro_content?: string
+          is_active?: boolean | null
+          keywords?: string[] | null
+          last_generated_at?: string | null
+          meta_description?: string
+          meta_title?: string
+          page_type?: string
+          primary_slug?: string
+          quality_score?: number | null
+          secondary_slug?: string | null
+          structured_data?: Json | null
+          tertiary_slug?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       seo_learning_paths: {
         Row: {
           category: string | null
@@ -13358,6 +13421,39 @@ export type Database = {
           search_rankings?: Json | null
           structured_data_errors?: Json | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      seo_page_combinations: {
+        Row: {
+          created_at: string | null
+          estimated_traffic: number | null
+          id: string
+          is_generated: boolean | null
+          page_type: string
+          priority: number | null
+          updated_at: string | null
+          url_pattern: string
+        }
+        Insert: {
+          created_at?: string | null
+          estimated_traffic?: number | null
+          id?: string
+          is_generated?: boolean | null
+          page_type: string
+          priority?: number | null
+          updated_at?: string | null
+          url_pattern: string
+        }
+        Update: {
+          created_at?: string | null
+          estimated_traffic?: number | null
+          id?: string
+          is_generated?: boolean | null
+          page_type?: string
+          priority?: number | null
+          updated_at?: string | null
+          url_pattern?: string
         }
         Relationships: []
       }

@@ -104,6 +104,122 @@ export const generateSitemap = async (): Promise<string> => {
       });
     });
 
+    // SEO Location-based job pages
+    const { data: locations } = await supabase
+      .from('seo_locations')
+      .select('slug, updated_at')
+      .eq('is_active', true)
+      .limit(100);
+
+    locations?.forEach(location => {
+      urls.push({
+        loc: `${baseUrl}/jobs/location/${location.slug}`,
+        lastmod: location.updated_at,
+        changefreq: 'daily',
+        priority: 0.9
+      });
+    });
+
+    // SEO Role-based job pages
+    const { data: roles } = await supabase
+      .from('seo_roles')
+      .select('slug, updated_at')
+      .eq('is_active', true)
+      .limit(100);
+
+    roles?.forEach(role => {
+      urls.push({
+        loc: `${baseUrl}/jobs/role/${role.slug}`,
+        lastmod: role.updated_at,
+        changefreq: 'daily',
+        priority: 0.9
+      });
+    });
+
+    // SEO Skill-based job pages
+    const { data: skills } = await supabase
+      .from('seo_skills')
+      .select('slug, updated_at')
+      .eq('is_active', true)
+      .limit(100);
+
+    skills?.forEach(skill => {
+      urls.push({
+        loc: `${baseUrl}/jobs/skill/${skill.slug}`,
+        lastmod: skill.updated_at,
+        changefreq: 'weekly',
+        priority: 0.8
+      });
+    });
+
+    // Industry pages (using hardcoded list for now)
+    const industries = [
+      'information-technology', 'financial-services', 'healthcare', 'e-commerce',
+      'manufacturing', 'education', 'consulting', 'media-entertainment',
+      'telecommunications', 'automotive', 'real-estate', 'retail'
+    ];
+
+    industries.forEach(industry => {
+      urls.push({
+        loc: `${baseUrl}/industry/${industry}`,
+        changefreq: 'weekly',
+        priority: 0.8
+      });
+    });
+
+    // Salary guide pages - single role
+    roles?.slice(0, 50)?.forEach(role => {
+      urls.push({
+        loc: `${baseUrl}/salary/${role.slug}`,
+        lastmod: role.updated_at,
+        changefreq: 'weekly',
+        priority: 0.8
+      });
+    });
+
+    // High-priority role + location combinations (top 25 roles x top 25 locations = 625 pages)
+    const topRoles = roles?.slice(0, 25) || [];
+    const topLocations = locations?.slice(0, 25) || [];
+
+    topRoles.forEach(role => {
+      topLocations.forEach(location => {
+        urls.push({
+          loc: `${baseUrl}/jobs/${role.slug}/in/${location.slug}`,
+          changefreq: 'daily',
+          priority: 0.9
+        });
+        
+        // Salary guides with location
+        urls.push({
+          loc: `${baseUrl}/salary/${role.slug}/${location.slug}`,
+          changefreq: 'weekly',
+          priority: 0.8
+        });
+      });
+    });
+
+    // Skill + location combinations (top 20 skills x top 20 locations = 400 pages)
+    const topSkills = skills?.slice(0, 20) || [];
+    topLocations.slice(0, 20).forEach(location => {
+      topSkills.forEach(skill => {
+        urls.push({
+          loc: `${baseUrl}/jobs/${skill.slug}/jobs/in/${location.slug}`,
+          changefreq: 'weekly',
+          priority: 0.8
+        });
+      });
+    });
+
+    // Companies by location
+    locations?.slice(0, 50)?.forEach(location => {
+      urls.push({
+        loc: `${baseUrl}/companies/location/${location.slug}`,
+        lastmod: location.updated_at,
+        changefreq: 'weekly',
+        priority: 0.7
+      });
+    });
+
   } catch (error) {
     console.error('Error fetching sitemap data:', error);
   }

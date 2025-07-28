@@ -6,6 +6,8 @@ import JobsBySkill from "../pages/seo/JobsBySkill";
 import CoursesByCategory from "../pages/seo/CoursesByCategory";
 import CompaniesByLocation from "../pages/seo/CompaniesByLocation";
 import SalaryGuide from "../pages/seo/SalaryGuide";
+import SalaryGuidePage from "../pages/seo/SalaryGuidePage";
+import IndustryJobs from "../pages/seo/IndustryJobs";
 
 export const seoRoutes = [
   // Location-based job pages
@@ -54,5 +56,37 @@ export const seoRoutes = [
     to: "/salary/:role",
     icon: <DollarSign className="h-4 w-4" />,
     page: <SalaryGuide />,
+  },
+  
+  // Advanced salary guides with location
+  {
+    title: "Salary Guide by Location",
+    to: "/salary/:role/:location",
+    icon: <DollarSign className="h-4 w-4" />,
+    page: <SalaryGuidePage />,
+  },
+  
+  // Industry-based job pages
+  {
+    title: "Jobs by Industry",
+    to: "/industry/:industry",
+    icon: <Building className="h-4 w-4" />,
+    page: <IndustryJobs />,
+  },
+  
+  // Combined job pages (role + location)
+  {
+    title: "Jobs by Role and Location",
+    to: "/jobs/:role/in/:location",
+    icon: <Briefcase className="h-4 w-4" />,
+    page: <JobsByRole />,
+  },
+  
+  // Skill-based jobs by location
+  {
+    title: "Skill Jobs by Location",
+    to: "/jobs/:skill/jobs/in/:location",
+    icon: <Code className="h-4 w-4" />,
+    page: <JobsBySkill />,
   },
 ];
