@@ -61,3 +61,6 @@ verify_jwt = false
 
 [functions.smart-connect-ai]
 verify_jwt = true
+
+[functions.bot-content-generator]
+verify_jwt = true

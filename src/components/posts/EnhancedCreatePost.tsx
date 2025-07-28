@@ -247,11 +247,12 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
           content,
           post_type: 'text',
           author_id: user.id,
-          user_id: user.id, // For the unified posting system
+          user_id: user.id,
           media_urls: mediaFiles.map(file => file.url),
           location: location || null,
-          visibility: privacy, // Use visibility instead of is_public
-          origin: 'feed', // Track where the post was created from
+          is_public: privacy === 'public',
+          visibility: privacy,
+          origin: 'feed',
           tags: tags
         })
         .select()
