@@ -1,7 +1,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
-import { CareerContentHub } from "@/components/social/CareerContentHub";
+import { SimpleCareerHub } from "@/components/social/SimpleCareerHub";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
 import { NetworkStats } from "@/components/network/NetworkStats";
@@ -74,7 +74,7 @@ const Network = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-gray-900">
               <div className="lg:col-span-2 space-y-6">
                 <ConnectionSuggestions />
-                <CareerContentHub />
+                <SimpleCareerHub />
               </div>
               <div className="space-y-6">
                 <ReferralNetworkAd variant="sidebar" />
