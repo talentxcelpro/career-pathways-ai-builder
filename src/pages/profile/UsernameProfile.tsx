@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useEnhancedSEO } from '@/hooks/useEnhancedSEO';
+import { useSEO } from '@/hooks/useSEO';
 import UserProfile from '@/pages/network/UserProfile';
 import { Loader2 } from 'lucide-react';
 
@@ -23,7 +23,7 @@ const UsernameProfile = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Set up SEO with dynamic data
-  useEnhancedSEO({
+  useSEO({
     title: profile ? `${profile.full_name} (@${profile.username}) - TalentXcel` : 'Profile - TalentXcel',
     description: profile 
       ? `${profile.full_name}'s professional profile on TalentXcel. ${profile.title ? `${profile.title}. ` : ''}${profile.about ? profile.about.substring(0, 150) + '...' : 'Connect and explore their career journey.'}`
@@ -31,25 +31,7 @@ const UsernameProfile = () => {
     keywords: profile 
       ? [`${profile.full_name}`, profile.username, 'professional profile', 'TalentXcel', profile.title, profile.location].filter(Boolean)
       : ['professional profile', 'TalentXcel'],
-    canonical: `https://talentxcel.in/profile/${username}`,
-    // Remove openGraph configuration for now to fix the build error
-    structuredData: profile ? JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": profile.full_name,
-      "alternateName": profile.username,
-      "description": profile.about || profile.title,
-      "url": `https://talentxcel.in/profile/${username}`,
-      "image": profile.profile_picture_url,
-      "jobTitle": profile.title,
-      "workLocation": profile.location,
-      "sameAs": profile.website ? [profile.website] : undefined
-    }) : undefined,
-    breadcrumbs: [
-      { name: 'Home', url: '/' },
-      { name: 'Network', url: '/network' },
-      { name: profile?.full_name || username, url: `/profile/${username}` }
-    ]
+    canonical: `https://talentxcel.in/profile/${username}`
   });
 
   useEffect(() => {
