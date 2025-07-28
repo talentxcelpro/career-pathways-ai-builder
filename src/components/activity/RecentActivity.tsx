@@ -66,57 +66,80 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
     const items: ActivityItem[] = [];
 
     if (profile) {
-      // Profile updates
-      if (profile.updated_at && profile.updated_at !== profile.created_at) {
+      // Profile creation activity
+      if (profile.created_at) {
         items.push({
-          id: `profile-update-${profile.updated_at}`,
+          id: `profile-created-${profile.created_at}`,
           type: 'profile_update',
-          title: 'Updated profile information',
-          description: 'Made changes to profile details',
-          timestamp: profile.updated_at,
+          title: 'Joined the platform',
+          description: 'Created their professional profile',
+          timestamp: profile.created_at,
           icon: User,
-          color: 'text-blue-500',
-          bgColor: 'bg-blue-50'
-        });
-      }
-
-      // Profile views activity
-      if (profile.profile_views_count && profile.profile_views_count > 0) {
-        items.push({
-          id: `profile-views-${profile.profile_views_count}`,
-          type: 'profile_view',
-          title: 'Profile gaining visibility',
-          description: `Profile has been viewed ${profile.profile_views_count} times`,
-          timestamp: profile.updated_at || profile.created_at,
-          icon: Calendar,
           color: 'text-green-500',
           bgColor: 'bg-green-50'
         });
       }
 
-      // Recent login activity
-      if (profile.last_login_at) {
+      // Profile updates (only if actually updated after creation)
+      if (profile.updated_at && profile.updated_at !== profile.created_at) {
+        const updateTime = new Date(profile.updated_at);
+        const createTime = new Date(profile.created_at);
+        // Only show if updated more than 1 minute after creation
+        if (updateTime.getTime() - createTime.getTime() > 60000) {
+          items.push({
+            id: `profile-update-${profile.updated_at}`,
+            type: 'profile_update',
+            title: 'Updated profile information',
+            description: 'Made changes to profile details',
+            timestamp: profile.updated_at,
+            icon: User,
+            color: 'text-blue-500',
+            bgColor: 'bg-blue-50'
+          });
+        }
+      }
+
+      // Profile views activity (only if meaningful number of views)
+      if (profile.profile_views_count && profile.profile_views_count > 0) {
         items.push({
-          id: `login-${profile.last_login_at}`,
+          id: `profile-views-${profile.profile_views_count}`,
           type: 'profile_view',
-          title: 'Active on platform',
-          description: `Last active ${formatDistanceToNow(new Date(profile.last_login_at), { addSuffix: true })}`,
-          timestamp: profile.last_login_at,
+          title: 'Growing professional presence',
+          description: `Profile has attracted ${profile.profile_views_count} ${profile.profile_views_count === 1 ? 'view' : 'views'}`,
+          timestamp: profile.updated_at || profile.created_at,
           icon: Calendar,
           color: 'text-indigo-500',
           bgColor: 'bg-indigo-50'
         });
       }
+
+      // Login activity (only if has logged in)
+      if (profile.last_login_at && profile.login_count > 0) {
+        items.push({
+          id: `login-${profile.last_login_at}`,
+          type: 'profile_view',
+          title: `Active member (${profile.login_count} ${profile.login_count === 1 ? 'session' : 'sessions'})`,
+          description: `Last active ${formatDistanceToNow(new Date(profile.last_login_at), { addSuffix: true })}`,
+          timestamp: profile.last_login_at,
+          icon: Calendar,
+          color: 'text-emerald-500',
+          bgColor: 'bg-emerald-50'
+        });
+      }
     }
 
-    // Recent posts
-    if (posts) {
+    // Real posts activity
+    if (posts && posts.length > 0) {
       posts.forEach(post => {
+        const postTitle = post.headline || 'Shared a post';
+        const engagement = post.likes_count + post.comments_count;
+        const engagementText = engagement > 0 ? ` (${engagement} ${engagement === 1 ? 'interaction' : 'interactions'})` : '';
+        
         items.push({
           id: `post-${post.id}`,
           type: 'post',
-          title: 'Published a new post',
-          description: post.headline || post.content?.substring(0, 100) + '...',
+          title: postTitle,
+          description: (post.content?.substring(0, 120) || 'Shared content on the platform') + engagementText,
           timestamp: post.created_at,
           icon: FileText,
           color: 'text-purple-500',
