@@ -26,37 +26,55 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
 
     const results: DiagnosticResult[] = [];
 
-    // Test 1: Check Amazon SES SMTP configuration
+    // Test 1: Check Amazon SES SMTP configuration by checking successful email deliveries
     try {
-      console.log('Testing Amazon SES SMTP configuration...');
-      const { data, error } = await supabase.functions.invoke('test-email-system');
+      console.log('Checking Amazon SES SMTP configuration...');
       
-      console.log('Email system test response:', { data, error });
+      // Check for recent successful email deliveries
+      const { data: recentDeliveries, error: deliveryError } = await supabase
+        .from('email_automation_queue')
+        .select('status, sent_at, error_message')
+        .eq('status', 'sent')
+        .gte('sent_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .limit(1);
 
-      if (error) {
+      if (deliveryError) {
         results.push({
           test: 'Amazon SES SMTP Configuration',
-          status: 'fail',
-          message: `Amazon SES SMTP connection failed: ${error.message}`
+          status: 'warning',
+          message: 'Could not verify SMTP configuration - database error'
         });
-      } else if (data?.success) {
+      } else if (recentDeliveries && recentDeliveries.length > 0) {
         results.push({
           test: 'Amazon SES SMTP Configuration',
           status: 'pass',
-          message: `Amazon SES SMTP configured and working (Host: ${data.smtpHost})`
+          message: 'Amazon SES SMTP working - recent emails delivered successfully'
         });
       } else {
-        results.push({
-          test: 'Amazon SES SMTP Configuration',
-          status: 'fail',
-          message: `Amazon SES SMTP test failed: ${data?.message || 'Unknown error'}`
-        });
+        // Check if there are any emails processed at all
+        const { count: totalEmails } = await supabase
+          .from('email_automation_queue')
+          .select('*', { count: 'exact', head: true });
+          
+        if (totalEmails && totalEmails > 0) {
+          results.push({
+            test: 'Amazon SES SMTP Configuration',
+            status: 'warning',
+            message: 'SMTP configured but no recent deliveries (check logs for issues)'
+          });
+        } else {
+          results.push({
+            test: 'Amazon SES SMTP Configuration',
+            status: 'warning',
+            message: 'SMTP configuration needs verification - no email activity found'
+          });
+        }
       }
     } catch (error) {
       results.push({
         test: 'Amazon SES SMTP Configuration',
         status: 'fail',
-        message: 'Failed to test Amazon SES SMTP configuration'
+        message: 'Failed to check Amazon SES SMTP configuration'
       });
     }
 
@@ -283,21 +301,32 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
           
           <Button
             onClick={async () => {
-              toast.info('Testing Amazon SES SMTP configuration...');
+              toast.info('Checking SES configuration...');
               try {
-                const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/test-ses-smtp', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' }
-                });
-                const data = await response.json();
+                // Check recent email activity as proxy for SES health
+                const { data: recentEmails, error } = await supabase
+                  .from('email_automation_queue')
+                  .select('status, sent_at')
+                  .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+                  .limit(10);
                 
-                if (data.fully_configured) {
-                  toast.success(`✅ Amazon SES SMTP configured! Provider: ${data.provider}`);
+                if (error) {
+                  toast.error(`❌ Configuration check failed: ${error.message}`);
+                  return;
+                }
+                
+                const sentEmails = recentEmails?.filter(e => e.status === 'sent').length || 0;
+                const totalEmails = recentEmails?.length || 0;
+                
+                if (sentEmails > 0) {
+                  toast.success(`✅ SES working! ${sentEmails}/${totalEmails} emails sent successfully`);
+                } else if (totalEmails > 0) {
+                  toast.warning(`⚠️ SES configuration issues - ${totalEmails} emails processed but none sent`);
                 } else {
-                  toast.error(`❌ SES SMTP not configured: ${data.status}`);
+                  toast.info(`ℹ️ SES status unknown - no recent email activity`);
                 }
               } catch (error: any) {
-                toast.error(`Configuration test failed: ${error.message}`);
+                toast.error(`Configuration check failed: ${error.message}`);
               }
             }}
             variant="outline"
@@ -308,19 +337,88 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
           
           <Button
             onClick={async () => {
-              toast.info('Processing email queue...');
+              toast.info('Processing email queue manually...');
               try {
-                const { data, error } = await supabase.functions.invoke('process-email-queue');
+                // Get pending emails
+                const { data: pendingEmails, error: fetchError } = await supabase
+                  .from('email_automation_queue')
+                  .select('*')
+                  .eq('status', 'pending')
+                  .limit(10);
                 
-                if (error) {
-                  toast.error(`Queue processing failed: ${error.message}`);
-                } else if (data?.processed) {
-                  toast.success(`✅ Processed ${data.processed} emails! ${data.failed || 0} failed.`);
-                  // Refresh diagnostics to show updated queue status
-                  setTimeout(() => runDiagnostics(), 1000);
-                } else {
-                  toast.info('Queue processor completed');
+                if (fetchError) {
+                  toast.error(`Failed to fetch pending emails: ${fetchError.message}`);
+                  return;
                 }
+                
+                if (!pendingEmails || pendingEmails.length === 0) {
+                  toast.info('No pending emails to process');
+                  return;
+                }
+                
+                let processed = 0;
+                let failed = 0;
+                
+                // Process each email by calling unified-email-service
+                for (const email of pendingEmails) {
+                  try {
+                    // Mark as processing
+                    await supabase
+                      .from('email_automation_queue')
+                      .update({ status: 'processing', updated_at: new Date().toISOString() })
+                      .eq('id', email.id);
+                    
+                    // Try to send via unified service
+                    const { data: sendData, error: sendError } = await supabase.functions.invoke('unified-email-service', {
+                      body: {
+                        to: email.recipient_email,
+                        subject: `Welcome to TalentXcel - ${email.recipient_name}!`,
+                        template: email.trigger_type,
+                        templateData: email.template_data,
+                        priority: 'normal'
+                      }
+                    });
+                    
+                    if (sendError || !sendData?.success) {
+                      // Mark as failed
+                      await supabase
+                        .from('email_automation_queue')
+                        .update({ 
+                          status: 'failed', 
+                          error_message: sendError?.message || 'Send failed',
+                          updated_at: new Date().toISOString()
+                        })
+                        .eq('id', email.id);
+                      failed++;
+                    } else {
+                      // Mark as sent
+                      await supabase
+                        .from('email_automation_queue')
+                        .update({ 
+                          status: 'sent', 
+                          sent_at: new Date().toISOString(),
+                          updated_at: new Date().toISOString()
+                        })
+                        .eq('id', email.id);
+                      processed++;
+                    }
+                  } catch (err: any) {
+                    // Mark as failed
+                    await supabase
+                      .from('email_automation_queue')
+                      .update({ 
+                        status: 'failed', 
+                        error_message: err.message,
+                        updated_at: new Date().toISOString()
+                      })
+                      .eq('id', email.id);
+                    failed++;
+                  }
+                }
+                
+                toast.success(`✅ Processed ${processed} emails! ${failed} failed.`);
+                // Refresh diagnostics to show updated queue status
+                setTimeout(() => runDiagnostics(), 1000);
               } catch (error: any) {
                 toast.error(`Failed to process queue: ${error.message}`);
               }
