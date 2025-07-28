@@ -426,36 +426,64 @@ const TalentXcelResumeBuilder: React.FC = () => {
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-2">
-                      <Button variant="outline" onClick={() => {
-                        const resumeContent = { sections, title: resumeTitle };
-                        exportResume(resumeContent, {
-                          format: 'pdf',
-                          template: selectedTemplate || 'default',
-                          colorScheme: 'default',
-                          fontSize: 'medium',
-                          fontFamily: 'sans',
-                          showBranding: false,
-                          includePhoto: false,
-                          pageMargins: 'normal',
-                          sectionOrder: sections.map(s => s.type)
-                        });
+                      <Button variant="outline" onClick={async () => {
+                        try {
+                          const resumeContent = { sections, title: resumeTitle };
+                          const result = await exportResume(resumeContent, {
+                            format: 'pdf',
+                            template: selectedTemplate || 'default',
+                            colorScheme: 'default',
+                            fontSize: 'medium',
+                            fontFamily: 'sans',
+                            showBranding: false,
+                            includePhoto: false,
+                            pageMargins: 'normal',
+                            sectionOrder: sections.map(s => s.type)
+                          });
+                          
+                          if (result.success && result.downloadUrl) {
+                            const link = document.createElement('a');
+                            link.href = result.downloadUrl;
+                            link.download = result.filename || 'resume.pdf';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }
+                        } catch (error) {
+                          console.error('Export failed:', error);
+                          toast.error('Failed to export resume');
+                        }
                       }}>
                         <FileText className="h-4 w-4 mr-2" />
                         PDF
                       </Button>
-                      <Button variant="outline" onClick={() => {
-                        const resumeContent = { sections, title: resumeTitle };
-                        exportResume(resumeContent, {
-                          format: 'docx',
-                          template: selectedTemplate || 'default',
-                          colorScheme: 'default',
-                          fontSize: 'medium',
-                          fontFamily: 'sans',
-                          showBranding: false,
-                          includePhoto: false,
-                          pageMargins: 'normal',
-                          sectionOrder: sections.map(s => s.type)
-                        });
+                      <Button variant="outline" onClick={async () => {
+                        try {
+                          const resumeContent = { sections, title: resumeTitle };
+                          const result = await exportResume(resumeContent, {
+                            format: 'docx',
+                            template: selectedTemplate || 'default',
+                            colorScheme: 'default',
+                            fontSize: 'medium',
+                            fontFamily: 'sans',
+                            showBranding: false,
+                            includePhoto: false,
+                            pageMargins: 'normal',
+                            sectionOrder: sections.map(s => s.type)
+                          });
+                          
+                          if (result.success && result.downloadUrl) {
+                            const link = document.createElement('a');
+                            link.href = result.downloadUrl;
+                            link.download = result.filename || 'resume.docx';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }
+                        } catch (error) {
+                          console.error('Export failed:', error);
+                          toast.error('Failed to export resume');
+                        }
                       }}>
                         <FileText className="h-4 w-4 mr-2" />
                         Word
