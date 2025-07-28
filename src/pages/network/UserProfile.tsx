@@ -14,7 +14,7 @@ import { useConversations } from "@/hooks/useConversations";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import ProBadge from "@/components/network/ProBadge";
-import { ActivityTimeline } from "@/components/activity/ActivityTimeline";
+import { RecentActivity } from "@/components/activity/RecentActivity";
 
 interface UserProfileProps {
   profileIdOverride?: string;
@@ -429,10 +429,9 @@ const UserProfile: React.FC<UserProfileProps> = ({
           </TabsContent>
 
           <TabsContent value="activity" className="space-y-6">
-            <ActivityTimeline 
+            <RecentActivity 
               userId={profile.id} 
               isOwnProfile={isOwnProfile}
-              limit={20}
             />
           </TabsContent>
         </Tabs>
