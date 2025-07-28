@@ -24,6 +24,7 @@ import PublicUserProfile from "../pages/network/PublicUserProfile";
 import Articles from "../pages/network/Articles";
 import ArticleDetail from "../pages/network/ArticleDetail";
 import MyNetwork from "../pages/network/MyNetwork";
+import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
 
 export const networkRoutes = [
   {
@@ -43,9 +44,9 @@ export const networkRoutes = [
     page: <MyNetwork />,
   },
   {
-    title: "User Profile",
+    title: "User Profile (Redirect to Username)",
     to: "/network/people/:id",
-    page: <UserProfile />,
+    page: <ProfileUrlRedirect />, // This will redirect to /profile/:username
   },
   {
     title: "Public User Profile",
