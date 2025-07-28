@@ -67,10 +67,22 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
     const otherParticipant = conversation.participants?.find((id: string) => id !== currentUser);
     const profile = userProfiles?.[otherParticipant];
     
+    console.log('Conversation display:', {
+      conversationId: conversation.id,
+      participants: conversation.participants,
+      currentUser,
+      otherParticipant,
+      profile,
+      userProfiles
+    });
+    
     // Better fallback name generation
-    const fallbackName = profile?.email ? 
-      profile.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 
-      `User ${otherParticipant?.slice(-4)}`;
+    let fallbackName = 'Unknown User';
+    if (profile?.email) {
+      fallbackName = profile.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    } else if (otherParticipant) {
+      fallbackName = `User ${otherParticipant.slice(-4)}`;
+    }
     
     return {
       name: profile?.full_name || fallbackName,

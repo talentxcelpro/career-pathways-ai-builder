@@ -73,8 +73,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
 
       if (error) {
         console.error('Error fetching user posts:', error);
-        throw error;
+        return [];
       }
+      
+      console.log('Posts fetched for profile:', id, 'Posts:', data);
       return data || [];
     },
     enabled: !!id
