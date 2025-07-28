@@ -62,34 +62,96 @@ export const BulkWelcomeEmailSender = () => {
         return;
       }
 
-      console.log('User authenticated, calling function...');
+      console.log('Getting all users...');
       
-      const { data, error } = await supabase.functions.invoke('send-bulk-welcome-emails', {
-        body: {}
-      });
-      
-      console.log('Function invoke result:', { data, error });
-      
-      if (error) {
-        console.error('Error invoking welcome email function:', error);
-        toast.error(`Failed to send welcome emails: ${error.message}`);
+      // Get all users with email addresses
+      const { data: users, error: usersError } = await supabase
+        .from('profiles')
+        .select('id, email, full_name')
+        .not('email', 'is', null);
+
+      if (usersError) {
+        console.error('Error fetching users:', usersError);
+        toast.error('Failed to fetch users');
         return;
       }
 
-      console.log('Welcome email campaign response:', data);
-      
-      if (!data) {
-        toast.error('No response received from email service');
+      if (!users || users.length === 0) {
+        toast.success('No users found to send emails to');
         return;
       }
-      
-      setResults(data);
-      
-      if (data.success) {
-        toast.success(`Welcome emails sent! ${data.emailsSent} sent, ${data.emailsFailed} failed`);
-      } else {
-        toast.error(data.message || 'Failed to send welcome emails');
+
+      console.log(`Found ${users.length} users, sending welcome emails...`);
+
+      const results: EmailResult[] = [];
+      let emailsSent = 0;
+      let emailsFailed = 0;
+
+      // Send emails to all users using the existing automation system
+      for (const user of users) {
+        try {
+          const { error } = await supabase
+            .from('email_automation_queue')
+            .insert({
+              trigger_type: 'welcome',
+              recipient_email: user.email,
+              recipient_name: user.full_name || 'there',
+              template_data: {
+                name: user.full_name || 'there',
+                first_name: user.full_name || 'there'
+              },
+              scheduled_at: new Date().toISOString()
+            });
+
+          if (error) {
+            console.error(`Failed to queue welcome email for ${user.email}:`, error);
+            results.push({
+              email: user.email,
+              status: 'failed',
+              error: error.message
+            });
+            emailsFailed++;
+          } else {
+            console.log(`Welcome email queued for: ${user.email}`);
+            results.push({
+              email: user.email,
+              status: 'sent'
+            });
+            emailsSent++;
+          }
+
+          // Small delay to avoid overwhelming the database
+          await new Promise(resolve => setTimeout(resolve, 50));
+
+        } catch (error) {
+          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          results.push({
+            email: user.email,
+            status: 'failed',
+            error: errorMsg
+          });
+          emailsFailed++;
+          console.error(`Error queuing welcome email for ${user.email}:`, error);
+        }
       }
+
+      const response: SendWelcomeEmailResponse = {
+        success: true,
+        message: `Welcome email campaign completed. ${emailsSent} queued, ${emailsFailed} failed.`,
+        totalUsers: users.length,
+        emailsSent,
+        emailsFailed,
+        results
+      };
+
+      setResults(response);
+      
+      if (emailsSent > 0) {
+        toast.success(`Welcome emails queued! ${emailsSent} queued, ${emailsFailed} failed. Check the email queue for delivery status.`);
+      } else {
+        toast.error('Failed to queue any welcome emails');
+      }
+
     } catch (error) {
       console.error('Error sending welcome emails:', error);
       toast.error(`An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`);
