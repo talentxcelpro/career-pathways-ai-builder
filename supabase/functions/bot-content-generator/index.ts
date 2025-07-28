@@ -92,7 +92,7 @@ async function handleSingleGeneration(
       },
       seo_keywords: content.keywords || [],
       status: 'draft',
-            ai_model_used: 'gpt-4o-mini',
+            ai_model_used: 'gpt-4.1-2025-04-14',
       generation_cost: 0.002 // Estimated cost
     })
     .select()
@@ -175,7 +175,7 @@ async function handleBulkGeneration(supabase: any, count: number) {
             },
             seo_keywords: content.keywords || [],
             status: 'draft',
-            ai_model_used: 'gpt-4o-mini',
+            ai_model_used: 'gpt-4.1-2025-04-14',
             generation_cost: 0.002
           })
           .select()
@@ -248,7 +248,7 @@ Please format your response as follows:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-2025-04-14',
         messages: [
           { role: 'system', content: systemMessage },
           { role: 'user', content: enhancedPrompt }
