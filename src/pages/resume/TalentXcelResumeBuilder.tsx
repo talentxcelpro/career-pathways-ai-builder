@@ -29,7 +29,8 @@ import {
   Lightbulb,
   Globe,
   Target,
-  BarChart3
+  BarChart3,
+  Upload
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -38,6 +39,10 @@ import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { SectionEditor } from '@/components/resume/SectionEditor';
 import { useResumeExport } from '@/hooks/useResumeExport';
+import { ATSScorer } from '@/components/resume/enhanced/ATSScorer';
+import { AIContentSuggester } from '@/components/resume/enhanced/AIContentSuggester';
+import { TemplatePreview } from '@/components/resume/enhanced/TemplatePreview';
+import { ResumeUploader } from '@/components/resume/enhanced/ResumeUploader';
 
 interface ResumeSection {
   id: string;
@@ -69,6 +74,8 @@ const TalentXcelResumeBuilder: React.FC = () => {
   const [sections, setSections] = useState<ResumeSection[]>([]);
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const [showUploader, setShowUploader] = useState(false);
+  const [atsScore, setAtsScore] = useState(0);
   
   // Export functionality
   const { exportResume } = useResumeExport();
@@ -275,6 +282,45 @@ const TalentXcelResumeBuilder: React.FC = () => {
     return icons[type] || <FileText className="h-4 w-4" />;
   };
 
+  const handleResumeExtracted = (extractedData: any) => {
+    // Apply extracted data to sections
+    const newSections = [...sections];
+    
+    if (extractedData.personal) {
+      const personalSection = newSections.find(s => s.type === 'personal');
+      if (personalSection) {
+        personalSection.content = extractedData.personal;
+      }
+    }
+    
+    if (extractedData.summary) {
+      const summarySection = newSections.find(s => s.type === 'summary');
+      if (summarySection) {
+        summarySection.content = { text: extractedData.summary };
+      }
+    }
+    
+    if (extractedData.experience && Array.isArray(extractedData.experience)) {
+      const experienceSection = newSections.find(s => s.type === 'experience');
+      if (experienceSection) {
+        experienceSection.content = { items: extractedData.experience };
+      }
+    }
+    
+    if (extractedData.skills && Array.isArray(extractedData.skills)) {
+      const skillsSection = newSections.find(s => s.type === 'skills');
+      if (skillsSection) {
+        skillsSection.content = { items: extractedData.skills };
+      }
+    }
+    
+    setSections(newSections);
+  };
+
+  const handleATSScoreUpdate = (score: number, feedback: any) => {
+    setAtsScore(score);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -314,6 +360,12 @@ const TalentXcelResumeBuilder: React.FC = () => {
                 <Sparkles className="h-3 w-3 mr-1" />
                 AI-Enhanced
               </Badge>
+              {atsScore > 0 && (
+                <Badge variant={atsScore >= 80 ? 'default' : atsScore >= 60 ? 'secondary' : 'destructive'}>
+                  <BarChart3 className="h-3 w-3 mr-1" />
+                  ATS: {atsScore}/100
+                </Badge>
+              )}
               <Progress value={calculateCompletion()} className="w-24" />
               <span className="text-sm text-muted-foreground">{calculateCompletion()}%</span>
               
@@ -513,23 +565,50 @@ const TalentXcelResumeBuilder: React.FC = () => {
               </CardContent>
             </Card>
 
+            {/* Upload Resume */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload Resume
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowUploader(true)}
+                  className="w-full"
+                >
+                  Parse Existing Resume
+                </Button>
+              </CardContent>
+            </Card>
+
             {/* Analytics */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center">
                   <BarChart3 className="h-4 w-4 mr-2" />
-                  Resume Analytics
+                  Analytics
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="grid grid-cols-2 gap-3 text-center">
-                  <div className="p-2 bg-muted rounded">
-                    <div className="text-lg font-semibold">0</div>
-                    <div className="text-xs text-muted-foreground">Views</div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Completion</span>
+                    <span>{calculateCompletion()}%</span>
                   </div>
-                  <div className="p-2 bg-muted rounded">
-                    <div className="text-lg font-semibold">0</div>
-                    <div className="text-xs text-muted-foreground">Downloads</div>
+                  {atsScore > 0 && (
+                    <div className="flex justify-between">
+                      <span>ATS Score</span>
+                      <span className={atsScore >= 80 ? 'text-green-600' : atsScore >= 60 ? 'text-yellow-600' : 'text-red-600'}>
+                        {atsScore}/100
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span>Sections</span>
+                    <span>{sections.length}</span>
                   </div>
                 </div>
               </CardContent>
@@ -555,30 +634,59 @@ const TalentXcelResumeBuilder: React.FC = () => {
                       ))}
                     </div>
                   </div>
-                ) : (
-                  <div className="h-full">
-                    {currentSection ? (
-                      <SectionEditor 
-                        section={sections.find(s => s.type === currentSection)}
-                        onUpdate={(content) => {
-                          const section = sections.find(s => s.type === currentSection);
-                          if (section) {
-                            updateSectionContent(section.id, content);
-                          }
-                        }}
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full">
-                        <h2 className="text-2xl font-semibold mb-4">Edit Your Resume</h2>
-                        <p className="text-muted-foreground mb-6">Use the sections panel to build your professional resume</p>
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground">
-                            Select a section from the left panel to start editing
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                 ) : (
+                   <Tabs defaultValue="edit" className="h-full">
+                     <TabsList>
+                       <TabsTrigger value="edit">Edit</TabsTrigger>
+                       <TabsTrigger value="ai">AI Assist</TabsTrigger>
+                       <TabsTrigger value="ats">ATS Score</TabsTrigger>
+                     </TabsList>
+                     
+                     <TabsContent value="edit" className="mt-4">
+                       {currentSection ? (
+                         <SectionEditor 
+                           section={sections.find(s => s.type === currentSection)}
+                           onUpdate={(content) => {
+                             const section = sections.find(s => s.type === currentSection);
+                             if (section) {
+                               updateSectionContent(section.id, content);
+                             }
+                           }}
+                         />
+                       ) : (
+                         <div className="flex flex-col items-center justify-center h-full">
+                           <h2 className="text-2xl font-semibold mb-4">Edit Your Resume</h2>
+                           <p className="text-muted-foreground">Select a section from the left panel to start editing</p>
+                         </div>
+                       )}
+                     </TabsContent>
+                     
+                     <TabsContent value="ai" className="mt-4">
+                       {currentSection && sections.find(s => s.type === currentSection) ? (
+                         <AIContentSuggester
+                           sectionType={currentSection}
+                           currentContent={sections.find(s => s.type === currentSection)?.content}
+                           onApplySuggestion={(content) => {
+                             const section = sections.find(s => s.type === currentSection);
+                             if (section) {
+                               updateSectionContent(section.id, content);
+                             }
+                           }}
+                         />
+                       ) : (
+                         <div className="text-center text-muted-foreground py-8">
+                           Select a section to get AI-powered content suggestions
+                         </div>
+                       )}
+                     </TabsContent>
+                     
+                     <TabsContent value="ats" className="mt-4">
+                       <ATSScorer
+                         resumeContent={{ sections }}
+                         onScoreUpdate={handleATSScoreUpdate}
+                       />
+                     </TabsContent>
+                   </Tabs>
                 )}
               </CardContent>
             </Card>
@@ -587,43 +695,41 @@ const TalentXcelResumeBuilder: React.FC = () => {
       </div>
 
       {/* Template Selector Dialog */}
-      <Dialog open={showTemplateSelector} onOpenChange={setShowTemplateSelector}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Choose a TalentXcel Template</DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto">
-            {templates?.map((template) => (
-              <Card
-                key={template.id}
-                className={`cursor-pointer transition-all hover:shadow-lg ${
-                  selectedTemplate === template.id ? 'ring-2 ring-primary' : ''
-                }`}
-                onClick={() => {
-                  setSelectedTemplate(template.id);
+      {showTemplateSelector && (
+        <Dialog open={showTemplateSelector} onOpenChange={setShowTemplateSelector}>
+          <DialogContent className="max-w-6xl max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle>Choose Template</DialogTitle>
+            </DialogHeader>
+            <ScrollArea className="max-h-[80vh]">
+              <TemplatePreview
+                templates={templates || []}
+                selectedTemplate={selectedTemplate}
+                onSelectTemplate={(templateId) => {
+                  setSelectedTemplate(templateId);
                   setShowTemplateSelector(false);
                 }}
-              >
-                <CardContent className="p-4">
-                  <div className="aspect-[8.5/11] bg-gradient-to-br from-muted to-muted/50 rounded mb-3 flex items-center justify-center">
-                    <FileText className="h-12 w-12 text-muted-foreground" />
-                  </div>
-                  <h3 className="font-semibold mb-1">{template.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-2">{template.description}</p>
-                  <div className="flex items-center justify-between">
-                    <Badge variant="secondary">{template.category}</Badge>
-                    {template.is_premium && (
-                      <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white">
-                        Premium
-                      </Badge>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
+                resumeContent={{ sections }}
+              />
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Resume Uploader Dialog */}
+      {showUploader && (
+        <Dialog open={showUploader} onOpenChange={setShowUploader}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Upload Existing Resume</DialogTitle>
+            </DialogHeader>
+            <ResumeUploader
+              onResumeExtracted={handleResumeExtracted}
+              onClose={() => setShowUploader(false)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
