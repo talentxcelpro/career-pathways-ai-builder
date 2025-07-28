@@ -43,6 +43,10 @@ import { ATSScorer } from '@/components/resume/enhanced/ATSScorer';
 import { AIContentSuggester } from '@/components/resume/enhanced/AIContentSuggester';
 import { TemplatePreview } from '@/components/resume/enhanced/TemplatePreview';
 import { ResumeUploader } from '@/components/resume/enhanced/ResumeUploader';
+import { RealTimePreview } from '@/components/resume/enhanced/RealTimePreview';
+import { JobDescriptionMatcher } from '@/components/resume/enhanced/JobDescriptionMatcher';
+import { ResumeAnalytics } from '@/components/resume/enhanced/ResumeAnalytics';
+import { MultiLanguageSupport } from '@/components/resume/enhanced/MultiLanguageSupport';
 
 interface ResumeSection {
   id: string;
@@ -76,6 +80,10 @@ const TalentXcelResumeBuilder: React.FC = () => {
   const [previewMode, setPreviewMode] = useState(false);
   const [showUploader, setShowUploader] = useState(false);
   const [atsScore, setAtsScore] = useState(0);
+  const [showJobMatcher, setShowJobMatcher] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showLanguageSupport, setShowLanguageSupport] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<any>(null);
   
   // Export functionality
   const { exportResume } = useResumeExport();
@@ -372,6 +380,24 @@ const TalentXcelResumeBuilder: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
+                onClick={() => setShowJobMatcher(!showJobMatcher)}
+              >
+                <Target className="h-4 w-4 mr-2" />
+                Job Match
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAnalytics(!showAnalytics)}
+              >
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Analytics
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPreviewMode(!previewMode)}
               >
                 <Eye className="h-4 w-4 mr-2" />
@@ -444,9 +470,9 @@ const TalentXcelResumeBuilder: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           {/* Left Sidebar - Controls */}
-          <div className="lg:col-span-1 space-y-4">
+          <div className="xl:col-span-1 space-y-4">
             {/* Resume Title */}
             <Card>
               <CardHeader className="pb-3">
@@ -615,8 +641,8 @@ const TalentXcelResumeBuilder: React.FC = () => {
             </Card>
           </div>
 
-          {/* Main Content Area */}
-          <div className="lg:col-span-2">
+          {/* Center - Main Editor */}
+          <div className="xl:col-span-2">
             <Card className="min-h-[800px]">
               <CardContent className="p-6">
                 {previewMode ? (
@@ -690,6 +716,42 @@ const TalentXcelResumeBuilder: React.FC = () => {
                 )}
               </CardContent>
             </Card>
+          </div>
+
+          {/* Right Sidebar - Preview & Advanced Features */}
+          <div className="xl:col-span-1 space-y-4">
+            {/* Real-time Preview */}
+            <RealTimePreview
+              resumeData={{ sections }}
+              selectedTemplate={selectedTemplate}
+              onTemplateChange={setSelectedTemplate}
+            />
+
+            {/* Job Description Matcher */}
+            {showJobMatcher && (
+              <JobDescriptionMatcher
+                resumeData={{ sections }}
+                onSuggestionsGenerated={setAiSuggestions}
+              />
+            )}
+
+            {/* Resume Analytics */}
+            {showAnalytics && (
+              <ResumeAnalytics
+                resumeId={id || 'new'}
+                resumeData={{ sections }}
+              />
+            )}
+
+            {/* Multi-language Support */}
+            {showLanguageSupport && (
+              <MultiLanguageSupport
+                resumeData={{ sections }}
+                onLanguageChange={(lang, data) => {
+                  console.log('Language changed:', lang, data);
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
