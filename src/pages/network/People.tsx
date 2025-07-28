@@ -94,12 +94,12 @@ const People = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-4">
-            Connect with Professionals
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold text-foreground mb-2">
+            🤝 Find Your Next Connection
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover talented professionals, build your network, and grow your career with TalentXcel's community.
+          <p className="text-sm text-muted-foreground">
+            Build meaningful professional relationships
           </p>
         </div>
 
