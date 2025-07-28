@@ -31,7 +31,7 @@ export const useUserActivities = (userId: string, limit: number = 20) => {
         .from('user_activities')
         .select(`
           *,
-          profiles!inner(
+          profiles (
             full_name,
             username,
             profile_photo_url
@@ -81,7 +81,7 @@ export const useUserActivities = (userId: string, limit: number = 20) => {
             .from('user_activities')
             .select(`
               *,
-              profiles!inner(
+              profiles (
                 full_name,
                 username,
                 profile_photo_url
