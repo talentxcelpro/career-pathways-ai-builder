@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, BookOpen, Users, TrendingUp, Award } from 'lucide-react';
+import { Search, Filter, BookOpen, Users, TrendingUp, Award, Briefcase, FileText, Brain, BarChart3, Bot, Home, Heart, Crown, Sparkles, Plus } from 'lucide-react';
 
 export const CareerHub = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,10 +13,14 @@ export const CareerHub = () => {
     { label: 'All', icon: Filter },
     { label: 'Career Advice', icon: BookOpen },
     { label: 'Interview Tips', icon: Users },
-    { label: 'Resume Help', icon: Award },
+    { label: 'Resume Help', icon: FileText },
     { label: 'Skill Development', icon: TrendingUp },
-    { label: 'Industry Insights', icon: TrendingUp },
+    { label: 'Industry Insights', icon: BarChart3 },
     { label: 'Market Trends', icon: TrendingUp },
+    { label: 'AI Tools for Professionals', icon: Bot },
+    { label: 'Remote Work & Freelancing', icon: Home },
+    { label: 'Work-Life Balance', icon: Heart },
+    { label: 'Leadership & Management', icon: Crown },
   ];
 
   const stats = [
@@ -100,6 +104,89 @@ export const CareerHub = () => {
             {filter.label}
           </Badge>
         ))}
+      </div>
+
+      {/* AI Spotlight */}
+      <Card className="bg-gradient-to-br from-primary/10 to-accent/20 border border-primary/20">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-primary" />
+            </div>
+            <h2 className="text-xl font-bold text-foreground">AI Spotlight</h2>
+            <Badge variant="secondary" className="ml-auto">Top 3 Trending</Badge>
+          </div>
+          <p className="text-muted-foreground mb-4">AI-powered trending articles based on community engagement</p>
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="p-3 bg-background/60 rounded-lg border border-border/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/15 rounded-lg flex items-center justify-center">
+                    <span className="text-sm font-bold text-primary">#{i}</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">AI Article Placeholder {i}</p>
+                    <p className="text-xs text-muted-foreground">Trending in {filters[i + 1]?.label}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Share Your Expertise Button */}
+      <Card className="bg-gradient-to-br from-accent/30 to-primary/10 border border-primary/30">
+        <CardContent className="p-6 text-center">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Sparkles className="w-6 h-6 text-primary" />
+            <h3 className="text-lg font-bold text-foreground">Share Your Expertise</h3>
+          </div>
+          <p className="text-muted-foreground mb-4">
+            Have valuable insights to share? Help grow the community by contributing your knowledge.
+          </p>
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Article
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Features Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Recommended for You */}
+        <Card>
+          <CardContent className="p-6">
+            <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              Recommended for You
+            </h3>
+            <p className="text-muted-foreground text-sm mb-4">Personalized article feed based on your interests</p>
+            <div className="space-y-2">
+              <div className="p-2 bg-accent/30 rounded border-l-2 border-primary">
+                <p className="text-sm font-medium">Coming Soon</p>
+                <p className="text-xs text-muted-foreground">AI-curated content for you</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Top Authors This Week */}
+        <Card>
+          <CardContent className="p-6">
+            <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+              <Award className="w-5 h-5 text-primary" />
+              Top Authors This Week
+            </h3>
+            <p className="text-muted-foreground text-sm mb-4">Most active and engaging contributors</p>
+            <div className="space-y-2">
+              <div className="p-2 bg-accent/30 rounded border-l-2 border-primary">
+                <p className="text-sm font-medium">Coming Soon</p>
+                <p className="text-xs text-muted-foreground">Community leaders showcase</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Latest Articles */}
