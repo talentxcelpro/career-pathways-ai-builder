@@ -105,7 +105,8 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
           post_comments!left(id),
           post_shares!left(id)
         `)
-        .eq('is_public', true)
+        .eq('visibility', 'public')
+        .eq('is_deleted', false)
         .order('created_at', { ascending: false })
         .limit(20);
 

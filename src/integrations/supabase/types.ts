@@ -9301,10 +9301,14 @@ export type Database = {
           headline: string | null
           id: string
           intent_tags: string[] | null
+          is_deleted: boolean | null
+          is_featured: boolean | null
+          is_pinned: boolean | null
           is_public: boolean | null
           likes_count: number | null
           location: string | null
           media_urls: string[] | null
+          origin: string | null
           post_type: string | null
           preview_url: string | null
           reading_time: number | null
@@ -9313,6 +9317,9 @@ export type Database = {
           tagline: string | null
           tags: string[] | null
           updated_at: string | null
+          user_id: string | null
+          views_count: number | null
+          visibility: string | null
           word_count: number | null
         }
         Insert: {
@@ -9326,10 +9333,14 @@ export type Database = {
           headline?: string | null
           id?: string
           intent_tags?: string[] | null
+          is_deleted?: boolean | null
+          is_featured?: boolean | null
+          is_pinned?: boolean | null
           is_public?: boolean | null
           likes_count?: number | null
           location?: string | null
           media_urls?: string[] | null
+          origin?: string | null
           post_type?: string | null
           preview_url?: string | null
           reading_time?: number | null
@@ -9338,6 +9349,9 @@ export type Database = {
           tagline?: string | null
           tags?: string[] | null
           updated_at?: string | null
+          user_id?: string | null
+          views_count?: number | null
+          visibility?: string | null
           word_count?: number | null
         }
         Update: {
@@ -9351,10 +9365,14 @@ export type Database = {
           headline?: string | null
           id?: string
           intent_tags?: string[] | null
+          is_deleted?: boolean | null
+          is_featured?: boolean | null
+          is_pinned?: boolean | null
           is_public?: boolean | null
           likes_count?: number | null
           location?: string | null
           media_urls?: string[] | null
+          origin?: string | null
           post_type?: string | null
           preview_url?: string | null
           reading_time?: number | null
@@ -9363,9 +9381,20 @@ export type Database = {
           tagline?: string | null
           tags?: string[] | null
           updated_at?: string | null
+          user_id?: string | null
+          views_count?: number | null
+          visibility?: string | null
           word_count?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       posts_ai_scores: {
         Row: {
