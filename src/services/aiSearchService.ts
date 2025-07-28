@@ -170,7 +170,7 @@ export class AISearchService {
     
     let dbQuery = supabase
       .from('profiles')
-      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' })
+      .select('id, full_name, username, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' })
       .not('full_name', 'is', null)
       .neq('full_name', '');
 
@@ -199,7 +199,7 @@ export class AISearchService {
     
     const { data, error, count } = await supabase
       .from('profiles')
-      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' })
+      .select('id, full_name, username, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' })
       .not('full_name', 'is', null)
       .neq('full_name', '')
       .or(`full_name.ilike.%${query}%,about.ilike.%${query}%,current_company.ilike.%${query}%,headline.ilike.%${query}%,title.ilike.%${query}%`)
@@ -214,7 +214,7 @@ export class AISearchService {
     
     const { data, error, count } = await supabase
       .from('profiles')
-      .select('id, full_name, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' })
+      .select('id, full_name, username, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' })
       .not('full_name', 'is', null)
       .neq('full_name', '')
       .order('created_at', { ascending: false })

@@ -70,7 +70,7 @@ const People = () => {
 
   const handleProfileView = (person: any) => {
     trackProfileView(person.id);
-    // Use username if available, fallback to ID
+    // Always use username if available, fallback to ID route
     const profilePath = person.username ? `/profile/${person.username}` : `/p/${person.id}`;
     navigate(profilePath);
   };
