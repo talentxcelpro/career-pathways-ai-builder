@@ -36,7 +36,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Dynamic import of nodemailer
     const { default: nodemailer } = await import("npm:nodemailer@6.9.1");
 
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
       port: parseInt(SMTP_PORT),
       secure: false, // true for 465, false for other ports
