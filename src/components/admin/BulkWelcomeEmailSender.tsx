@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Mail, Send, Users } from 'lucide-react';
+import { Mail, Send, Users, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface EmailResult {
@@ -26,6 +26,27 @@ interface SendWelcomeEmailResponse {
 export const BulkWelcomeEmailSender = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<SendWelcomeEmailResponse | null>(null);
+  const [userCount, setUserCount] = useState<number>(0);
+
+  useEffect(() => {
+    // Get user count for display
+    const getUserCount = async () => {
+      try {
+        const { count, error } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .not('email', 'is', null);
+        
+        if (!error && count !== null) {
+          setUserCount(count);
+        }
+      } catch (error) {
+        console.error('Error getting user count:', error);
+      }
+    };
+    
+    getUserCount();
+  }, []);
 
   const sendWelcomeEmails = async () => {
     setIsLoading(true);
@@ -34,15 +55,34 @@ export const BulkWelcomeEmailSender = () => {
     try {
       console.log('Starting bulk welcome email campaign...');
       
-      const { data, error } = await supabase.functions.invoke('send-bulk-welcome-emails');
+      // First check if user has admin permissions
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('You must be logged in to send emails');
+        return;
+      }
+
+      console.log('User authenticated, calling function...');
+      
+      const { data, error } = await supabase.functions.invoke('send-bulk-welcome-emails', {
+        body: {}
+      });
+      
+      console.log('Function invoke result:', { data, error });
       
       if (error) {
         console.error('Error invoking welcome email function:', error);
-        toast.error('Failed to send welcome emails');
+        toast.error(`Failed to send welcome emails: ${error.message}`);
         return;
       }
 
       console.log('Welcome email campaign response:', data);
+      
+      if (!data) {
+        toast.error('No response received from email service');
+        return;
+      }
+      
       setResults(data);
       
       if (data.success) {
@@ -52,7 +92,7 @@ export const BulkWelcomeEmailSender = () => {
       }
     } catch (error) {
       console.error('Error sending welcome emails:', error);
-      toast.error('An unexpected error occurred');
+      toast.error(`An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -70,10 +110,12 @@ export const BulkWelcomeEmailSender = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Alert>
-          <Users className="h-4 w-4" />
+        <Alert className="mb-4">
+          <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            This will send welcome emails to all registered users who haven't received one yet.
+            This will send welcome emails to all {userCount} registered users who have email addresses.
+            <br />
+            <strong>Note:</strong> You must be on the Admin → Email Automation page to access this feature.
           </AlertDescription>
         </Alert>
 
