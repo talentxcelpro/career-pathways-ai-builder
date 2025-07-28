@@ -1,0 +1,273 @@
+-- Phase 1: Expand SEO locations to 100 Indian cities
+INSERT INTO seo_locations (name, slug, state, country, type, is_active, job_count, company_count) VALUES
+-- Tier 2 cities
+('Kanpur', 'kanpur', 'Uttar Pradesh', 'India', 'city', true, 3000, 800),
+('Lucknow', 'lucknow', 'Uttar Pradesh', 'India', 'city', true, 4000, 1000),
+('Nagpur', 'nagpur', 'Maharashtra', 'India', 'city', true, 2500, 600),
+('Indore', 'indore', 'Madhya Pradesh', 'India', 'city', true, 3500, 900),
+('Thane', 'thane', 'Maharashtra', 'India', 'city', true, 2800, 700),
+('Bhopal', 'bhopal', 'Madhya Pradesh', 'India', 'city', true, 2000, 500),
+('Visakhapatnam', 'visakhapatnam', 'Andhra Pradesh', 'India', 'city', true, 2200, 550),
+('Pimpri Chinchwad', 'pimpri-chinchwad', 'Maharashtra', 'India', 'city', true, 1800, 450),
+('Patna', 'patna', 'Bihar', 'India', 'city', true, 1500, 400),
+('Vadodara', 'vadodara', 'Gujarat', 'India', 'city', true, 3000, 750),
+('Ghaziabad', 'ghaziabad', 'Uttar Pradesh', 'India', 'city', true, 2500, 600),
+('Ludhiana', 'ludhiana', 'Punjab', 'India', 'city', true, 1800, 450),
+('Agra', 'agra', 'Uttar Pradesh', 'India', 'city', true, 1200, 300),
+('Nashik', 'nashik', 'Maharashtra', 'India', 'city', true, 2000, 500),
+('Faridabad', 'faridabad', 'Haryana', 'India', 'city', true, 2200, 550),
+('Meerut', 'meerut', 'Uttar Pradesh', 'India', 'city', true, 1500, 400),
+('Rajkot', 'rajkot', 'Gujarat', 'India', 'city', true, 1800, 450),
+('Kalyan Dombivali', 'kalyan-dombivali', 'Maharashtra', 'India', 'city', true, 1600, 400),
+('Vasai Virar', 'vasai-virar', 'Maharashtra', 'India', 'city', true, 1400, 350),
+('Varanasi', 'varanasi', 'Uttar Pradesh', 'India', 'city', true, 1200, 300),
+('Srinagar', 'srinagar', 'Jammu and Kashmir', 'India', 'city', true, 800, 200),
+('Aurangabad', 'aurangabad', 'Maharashtra', 'India', 'city', true, 1800, 450),
+('Dhanbad', 'dhanbad', 'Jharkhand', 'India', 'city', true, 1000, 250),
+('Amritsar', 'amritsar', 'Punjab', 'India', 'city', true, 1200, 300),
+('Navi Mumbai', 'navi-mumbai', 'Maharashtra', 'India', 'city', true, 3500, 900),
+('Allahabad', 'allahabad', 'Uttar Pradesh', 'India', 'city', true, 1500, 400),
+('Ranchi', 'ranchi', 'Jharkhand', 'India', 'city', true, 1800, 450),
+('Howrah', 'howrah', 'West Bengal', 'India', 'city', true, 1200, 300),
+('Coimbatore', 'coimbatore', 'Tamil Nadu', 'India', 'city', true, 2500, 600),
+('Jabalpur', 'jabalpur', 'Madhya Pradesh', 'India', 'city', true, 1000, 250),
+('Gwalior', 'gwalior', 'Madhya Pradesh', 'India', 'city', true, 800, 200),
+('Vijayawada', 'vijayawada', 'Andhra Pradesh', 'India', 'city', true, 1500, 400),
+('Jodhpur', 'jodhpur', 'Rajasthan', 'India', 'city', true, 1200, 300),
+('Madurai', 'madurai', 'Tamil Nadu', 'India', 'city', true, 1400, 350),
+('Raipur', 'raipur', 'Chhattisgarh', 'India', 'city', true, 1200, 300),
+('Kota', 'kota', 'Rajasthan', 'India', 'city', true, 1000, 250),
+('Chandigarh', 'chandigarh', 'Chandigarh', 'India', 'city', true, 2800, 700),
+('Guwahati', 'guwahati', 'Assam', 'India', 'city', true, 1500, 400),
+('Solapur', 'solapur', 'Maharashtra', 'India', 'city', true, 800, 200),
+('Hubli Dharwad', 'hubli-dharwad', 'Karnataka', 'India', 'city', true, 1200, 300),
+('Mysore', 'mysore', 'Karnataka', 'India', 'city', true, 1500, 400),
+('Tiruchirappalli', 'tiruchirappalli', 'Tamil Nadu', 'India', 'city', true, 1000, 250),
+('Bareilly', 'bareilly', 'Uttar Pradesh', 'India', 'city', true, 800, 200),
+('Aligarh', 'aligarh', 'Uttar Pradesh', 'India', 'city', true, 600, 150),
+('Salem', 'salem', 'Tamil Nadu', 'India', 'city', true, 1200, 300),
+('Moradabad', 'moradabad', 'Uttar Pradesh', 'India', 'city', true, 600, 150),
+('Warangal', 'warangal', 'Telangana', 'India', 'city', true, 800, 200),
+('Guntur', 'guntur', 'Andhra Pradesh', 'India', 'city', true, 1000, 250),
+('Bhiwandi', 'bhiwandi', 'Maharashtra', 'India', 'city', true, 800, 200),
+('Saharanpur', 'saharanpur', 'Uttar Pradesh', 'India', 'city', true, 500, 125),
+('Gorakhpur', 'gorakhpur', 'Uttar Pradesh', 'India', 'city', true, 600, 150);
+
+-- Add more specialized roles including seniority levels
+INSERT INTO seo_roles (name, slug, category, description, avg_salary, job_count, is_active) VALUES
+-- Engineering roles with seniority
+('Junior Software Engineer', 'junior-software-engineer', 'Engineering', 'Entry-level software development', 400000.00, 8000, true),
+('Senior Software Engineer', 'senior-software-engineer', 'Engineering', 'Experienced software development', 1200000.00, 6000, true),
+('Staff Software Engineer', 'staff-software-engineer', 'Engineering', 'Senior technical leadership', 2000000.00, 1500, true),
+('Principal Software Engineer', 'principal-software-engineer', 'Engineering', 'Technical architect and leader', 3000000.00, 800, true),
+('Junior Frontend Developer', 'junior-frontend-developer', 'Engineering', 'Entry-level frontend development', 350000.00, 4000, true),
+('Senior Frontend Developer', 'senior-frontend-developer', 'Engineering', 'Experienced frontend development', 1000000.00, 3000, true),
+('Junior Backend Developer', 'junior-backend-developer', 'Engineering', 'Entry-level backend development', 400000.00, 4500, true),
+('Senior Backend Developer', 'senior-backend-developer', 'Engineering', 'Experienced backend development', 1100000.00, 3500, true),
+('Mobile App Developer', 'mobile-app-developer', 'Engineering', 'Native and cross-platform mobile apps', 800000.00, 3000, true),
+('React Native Developer', 'react-native-developer', 'Engineering', 'Cross-platform mobile development', 750000.00, 2000, true),
+('Flutter Developer', 'flutter-developer', 'Engineering', 'Cross-platform mobile with Flutter', 700000.00, 1800, true),
+('iOS Developer', 'ios-developer', 'Engineering', 'Native iOS application development', 900000.00, 1500, true),
+('Android Developer', 'android-developer', 'Engineering', 'Native Android application development', 850000.00, 2200, true),
+('QA Engineer', 'qa-engineer', 'Engineering', 'Quality assurance and testing', 600000.00, 4000, true),
+('Test Automation Engineer', 'test-automation-engineer', 'Engineering', 'Automated testing frameworks', 800000.00, 2500, true),
+('Site Reliability Engineer', 'site-reliability-engineer', 'Engineering', 'Infrastructure reliability and operations', 1400000.00, 1200, true),
+('Cloud Engineer', 'cloud-engineer', 'Engineering', 'Cloud infrastructure and services', 1100000.00, 3000, true),
+('Security Engineer', 'security-engineer', 'Engineering', 'Cybersecurity and application security', 1300000.00, 1800, true),
+('Database Administrator', 'database-administrator', 'Engineering', 'Database design and management', 900000.00, 2000, true),
+-- Data roles with seniority
+('Junior Data Scientist', 'junior-data-scientist', 'Data', 'Entry-level data analysis and ML', 600000.00, 2000, true),
+('Senior Data Scientist', 'senior-data-scientist', 'Data', 'Advanced analytics and ML models', 1600000.00, 1500, true),
+('Data Engineer', 'data-engineer', 'Data', 'Data pipeline and infrastructure', 1100000.00, 2500, true),
+('Senior Data Engineer', 'senior-data-engineer', 'Data', 'Complex data architecture', 1500000.00, 1200, true),
+('Data Analyst', 'data-analyst', 'Data', 'Business intelligence and reporting', 650000.00, 3500, true),
+('Business Intelligence Analyst', 'business-intelligence-analyst', 'Data', 'BI tools and dashboard creation', 700000.00, 2000, true),
+('AI Engineer', 'ai-engineer', 'Data', 'Artificial intelligence development', 1400000.00, 1500, true),
+('ML Ops Engineer', 'ml-ops-engineer', 'Data', 'Machine learning operations', 1300000.00, 800, true),
+-- Product and Management
+('Junior Product Manager', 'junior-product-manager', 'Management', 'Entry-level product management', 800000.00, 1000, true),
+('Senior Product Manager', 'senior-product-manager', 'Management', 'Experienced product strategy', 1800000.00, 800, true),
+('Product Owner', 'product-owner', 'Management', 'Agile product ownership', 1200000.00, 1500, true),
+('Technical Product Manager', 'technical-product-manager', 'Management', 'Technical product strategy', 1600000.00, 600, true),
+('Engineering Manager', 'engineering-manager', 'Management', 'Engineering team leadership', 1800000.00, 1200, true),
+('Technical Lead', 'technical-lead', 'Management', 'Technical team guidance', 1400000.00, 2000, true),
+('Project Manager', 'project-manager', 'Management', 'Project planning and execution', 900000.00, 3000, true),
+('Scrum Master', 'scrum-master', 'Management', 'Agile methodology facilitation', 800000.00, 1500, true),
+-- Design roles
+('Junior UI/UX Designer', 'junior-ui-ux-designer', 'Design', 'Entry-level design', 400000.00, 1500, true),
+('Senior UI/UX Designer', 'senior-ui-ux-designer', 'Design', 'Experienced design leadership', 1000000.00, 1000, true),
+('Product Designer', 'product-designer', 'Design', 'End-to-end product design', 900000.00, 1200, true),
+('Graphic Designer', 'graphic-designer', 'Design', 'Visual design and branding', 500000.00, 2000, true),
+('Web Designer', 'web-designer', 'Design', 'Website design and development', 600000.00, 1800, true),
+('Interaction Designer', 'interaction-designer', 'Design', 'User interaction and experience', 800000.00, 600, true),
+-- Marketing and Sales
+('Digital Marketing Manager', 'digital-marketing-manager', 'Marketing', 'Online marketing strategy', 800000.00, 2500, true),
+('SEO Specialist', 'seo-specialist', 'Marketing', 'Search engine optimization', 600000.00, 1500, true),
+('Content Marketing Manager', 'content-marketing-manager', 'Marketing', 'Content strategy and creation', 700000.00, 1200, true),
+('Social Media Manager', 'social-media-manager', 'Marketing', 'Social media strategy', 500000.00, 2000, true),
+('Sales Executive', 'sales-executive', 'Sales', 'Direct sales and client relations', 600000.00, 5000, true),
+('Sales Manager', 'sales-manager', 'Sales', 'Sales team leadership', 1200000.00, 2000, true),
+('Business Development Manager', 'business-development-manager', 'Sales', 'New business growth', 1000000.00, 1800, true);
+
+-- Add 100 technical skills with categories
+INSERT INTO seo_skills (name, slug, category, demand_level, job_count, is_active) VALUES
+-- Frontend Technologies
+('Angular', 'angular', 'Frontend', 'high', 5000, true),
+('Vue.js', 'vuejs', 'Frontend', 'medium', 3000, true),
+('TypeScript', 'typescript', 'Frontend', 'high', 7000, true),
+('HTML5', 'html5', 'Frontend', 'high', 8000, true),
+('CSS3', 'css3', 'Frontend', 'high', 8000, true),
+('Sass', 'sass', 'Frontend', 'medium', 3000, true),
+('Tailwind CSS', 'tailwind-css', 'Frontend', 'high', 4000, true),
+('Bootstrap', 'bootstrap', 'Frontend', 'medium', 3500, true),
+('jQuery', 'jquery', 'Frontend', 'medium', 4000, true),
+('Redux', 'redux', 'Frontend', 'high', 4500, true),
+('Next.js', 'nextjs', 'Frontend', 'high', 3500, true),
+('Nuxt.js', 'nuxtjs', 'Frontend', 'medium', 1500, true),
+('Gatsby', 'gatsby', 'Frontend', 'low', 800, true),
+('Svelte', 'svelte', 'Frontend', 'low', 600, true),
+-- Backend Technologies
+('Express.js', 'expressjs', 'Backend', 'high', 5000, true),
+('Django', 'django', 'Backend', 'high', 4000, true),
+('Flask', 'flask', 'Backend', 'medium', 2500, true),
+('FastAPI', 'fastapi', 'Backend', 'high', 2000, true),
+('Spring Boot', 'spring-boot', 'Backend', 'high', 4500, true),
+('Laravel', 'laravel', 'Backend', 'medium', 3000, true),
+('Ruby on Rails', 'ruby-on-rails', 'Backend', 'medium', 1500, true),
+('ASP.NET', 'aspnet', 'Backend', 'medium', 2000, true),
+('PHP', 'php', 'Backend', 'medium', 4000, true),
+('C#', 'csharp', 'Backend', 'medium', 3000, true),
+('Go', 'go', 'Backend', 'medium', 2000, true),
+('Rust', 'rust', 'Backend', 'low', 800, true),
+('Scala', 'scala', 'Backend', 'low', 1000, true),
+-- Databases
+('MongoDB', 'mongodb', 'Database', 'high', 6000, true),
+('PostgreSQL', 'postgresql', 'Database', 'high', 5000, true),
+('MySQL', 'mysql', 'Database', 'high', 7000, true),
+('Redis', 'redis', 'Database', 'medium', 3000, true),
+('Elasticsearch', 'elasticsearch', 'Database', 'medium', 2000, true),
+('Cassandra', 'cassandra', 'Database', 'low', 800, true),
+('DynamoDB', 'dynamodb', 'Database', 'medium', 1500, true),
+('Oracle', 'oracle', 'Database', 'medium', 2500, true),
+('SQLite', 'sqlite', 'Database', 'low', 1000, true),
+-- Cloud Platforms
+('Azure', 'azure', 'Cloud', 'high', 5000, true),
+('Google Cloud Platform', 'google-cloud-platform', 'Cloud', 'high', 4000, true),
+('Heroku', 'heroku', 'Cloud', 'medium', 2000, true),
+('DigitalOcean', 'digitalocean', 'Cloud', 'medium', 1500, true),
+('IBM Cloud', 'ibm-cloud', 'Cloud', 'low', 800, true),
+('Alibaba Cloud', 'alibaba-cloud', 'Cloud', 'low', 600, true),
+-- DevOps & Tools
+('Jenkins', 'jenkins', 'DevOps', 'medium', 3000, true),
+('GitLab CI', 'gitlab-ci', 'DevOps', 'medium', 2000, true),
+('GitHub Actions', 'github-actions', 'DevOps', 'high', 2500, true),
+('Terraform', 'terraform', 'DevOps', 'high', 2000, true),
+('Ansible', 'ansible', 'DevOps', 'medium', 1500, true),
+('Prometheus', 'prometheus', 'DevOps', 'medium', 1200, true),
+('Grafana', 'grafana', 'DevOps', 'medium', 1000, true),
+('Apache Kafka', 'apache-kafka', 'DevOps', 'medium', 1800, true),
+('RabbitMQ', 'rabbitmq', 'DevOps', 'low', 800, true),
+('Nginx', 'nginx', 'DevOps', 'medium', 2500, true),
+-- Mobile Development
+('React Native', 'react-native', 'Mobile', 'high', 3000, true),
+('Flutter', 'flutter', 'Mobile', 'high', 2500, true),
+('Swift', 'swift', 'Mobile', 'medium', 1500, true),
+('Kotlin', 'kotlin', 'Mobile', 'medium', 2000, true),
+('Xamarin', 'xamarin', 'Mobile', 'low', 800, true),
+('Ionic', 'ionic', 'Mobile', 'medium', 1200, true),
+('Cordova', 'cordova', 'Mobile', 'low', 600, true),
+-- Data Science & AI
+('TensorFlow', 'tensorflow', 'AI/ML', 'high', 3000, true),
+('PyTorch', 'pytorch', 'AI/ML', 'high', 2500, true),
+('Scikit-learn', 'scikit-learn', 'AI/ML', 'medium', 2000, true),
+('Pandas', 'pandas', 'AI/ML', 'high', 3500, true),
+('NumPy', 'numpy', 'AI/ML', 'high', 3000, true),
+('Jupyter', 'jupyter', 'AI/ML', 'medium', 2000, true),
+('R', 'r', 'AI/ML', 'medium', 1500, true),
+('Apache Spark', 'apache-spark', 'AI/ML', 'medium', 1800, true),
+('Hadoop', 'hadoop', 'AI/ML', 'low', 1000, true),
+('Tableau', 'tableau', 'Analytics', 'medium', 2000, true),
+('Power BI', 'power-bi', 'Analytics', 'medium', 2500, true),
+('Looker', 'looker', 'Analytics', 'low', 800, true),
+-- Testing
+('Selenium', 'selenium', 'Testing', 'medium', 3000, true),
+('Cypress', 'cypress', 'Testing', 'high', 2000, true),
+('Jest', 'jest', 'Testing', 'medium', 2500, true),
+('Puppeteer', 'puppeteer', 'Testing', 'low', 800, true),
+('TestNG', 'testng', 'Testing', 'medium', 1500, true),
+('JUnit', 'junit', 'Testing', 'medium', 2000, true),
+-- Version Control & Collaboration
+('Git', 'git', 'Tools', 'high', 9000, true),
+('GitHub', 'github', 'Tools', 'high', 8000, true),
+('GitLab', 'gitlab', 'Tools', 'medium', 3000, true),
+('Bitbucket', 'bitbucket', 'Tools', 'medium', 2000, true),
+('Jira', 'jira', 'Tools', 'high', 5000, true),
+('Confluence', 'confluence', 'Tools', 'medium', 2000, true),
+('Slack', 'slack', 'Tools', 'medium', 3000, true),
+('Microsoft Teams', 'microsoft-teams', 'Tools', 'medium', 2500, true),
+-- Emerging Technologies
+('Blockchain', 'blockchain', 'Emerging', 'medium', 1500, true),
+('Web3', 'web3', 'Emerging', 'low', 800, true),
+('GraphQL', 'graphql', 'API', 'high', 2500, true),
+('REST API', 'rest-api', 'API', 'high', 6000, true),
+('gRPC', 'grpc', 'API', 'low', 600, true),
+('WebRTC', 'webrtc', 'Communication', 'low', 500, true),
+('Socket.io', 'socketio', 'Communication', 'medium', 1500, true),
+('Microservices', 'microservices', 'Architecture', 'high', 3000, true),
+('Serverless', 'serverless', 'Architecture', 'medium', 2000, true),
+('Event-Driven Architecture', 'event-driven-architecture', 'Architecture', 'medium', 1200, true);
+
+-- Create industries table for industry-specific pages
+CREATE TABLE IF NOT EXISTS seo_industries (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    slug TEXT NOT NULL UNIQUE,
+    description TEXT,
+    company_count INTEGER DEFAULT 0,
+    job_count INTEGER DEFAULT 0,
+    avg_salary DECIMAL(10,2),
+    growth_rate DECIMAL(5,2),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Add major industries
+INSERT INTO seo_industries (name, slug, description, company_count, job_count, avg_salary, growth_rate, is_active) VALUES
+('Information Technology', 'information-technology', 'Software development, IT services, and technology solutions', 15000, 180000, 900000.00, 12.5, true),
+('Financial Services', 'financial-services', 'Banking, insurance, fintech, and financial consulting', 8000, 85000, 1100000.00, 8.2, true),
+('Healthcare', 'healthcare', 'Medical services, pharmaceuticals, and health technology', 6000, 75000, 850000.00, 9.8, true),
+('E-commerce', 'e-commerce', 'Online retail, marketplace platforms, and digital commerce', 4500, 65000, 800000.00, 15.3, true),
+('Manufacturing', 'manufacturing', 'Industrial production, automotive, and consumer goods', 12000, 95000, 750000.00, 6.5, true),
+('Education', 'education', 'Educational institutions, EdTech, and online learning', 8000, 55000, 600000.00, 11.2, true),
+('Consulting', 'consulting', 'Management consulting, strategy, and professional services', 3500, 45000, 1200000.00, 7.8, true),
+('Media & Entertainment', 'media-entertainment', 'Digital media, gaming, streaming, and content creation', 2800, 35000, 700000.00, 10.5, true),
+('Telecommunications', 'telecommunications', 'Telecom services, networking, and communication technology', 2500, 40000, 950000.00, 5.2, true),
+('Automotive', 'automotive', 'Vehicle manufacturing, auto tech, and mobility solutions', 3000, 50000, 800000.00, 8.7, true),
+('Real Estate', 'real-estate', 'Property development, PropTech, and real estate services', 4000, 35000, 750000.00, 9.1, true),
+('Retail', 'retail', 'Traditional retail, fashion, and consumer products', 6000, 60000, 550000.00, 4.8, true),
+('Energy', 'energy', 'Renewable energy, oil & gas, and energy technology', 2000, 25000, 1000000.00, 6.9, true),
+('Travel & Tourism', 'travel-tourism', 'Hospitality, travel services, and tourism technology', 3500, 40000, 600000.00, 12.8, true),
+('Food & Beverage', 'food-beverage', 'Food processing, restaurants, and food technology', 4500, 45000, 550000.00, 7.3, true),
+('Government', 'government', 'Public sector, defense, and government technology', 1500, 30000, 700000.00, 3.5, true),
+('Non-Profit', 'non-profit', 'NGOs, social organizations, and charitable institutions', 2000, 20000, 500000.00, 5.1, true),
+('Agriculture', 'agriculture', 'Farming, AgTech, and agricultural services', 3000, 25000, 450000.00, 8.9, true),
+('Logistics', 'logistics', 'Supply chain, shipping, and logistics technology', 3500, 55000, 650000.00, 11.7, true),
+('Sports & Fitness', 'sports-fitness', 'Sports industry, fitness tech, and wellness', 1200, 15000, 600000.00, 13.4, true);
+
+-- Enable RLS on new table
+ALTER TABLE seo_industries ENABLE ROW LEVEL SECURITY;
+
+-- Create policy for public read access
+CREATE POLICY "Anyone can view industries" ON seo_industries
+FOR SELECT USING (is_active = true);
+
+-- Create policy for admin management
+CREATE POLICY "Admins can manage industries" ON seo_industries
+FOR ALL USING (is_app_admin(auth.uid()));
+
+-- Add trigger for updated_at
+CREATE TRIGGER update_seo_industries_updated_at
+    BEFORE UPDATE ON seo_industries
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
