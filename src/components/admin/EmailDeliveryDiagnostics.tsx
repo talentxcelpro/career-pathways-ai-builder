@@ -26,35 +26,35 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
 
     const results: DiagnosticResult[] = [];
 
-    // Test 1: Check SendGrid configuration using our working test
+    // Test 1: Check Amazon SES SMTP configuration
     try {
-      console.log('Testing SendGrid configuration...');
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/simple-email-test', {
+      console.log('Testing Amazon SES SMTP configuration...');
+      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/test-ses-smtp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
       const data = await response.json();
       
-      console.log('SendGrid test response:', { data });
+      console.log('Amazon SES test response:', { data });
 
-      if (data.success) {
+      if (data.fully_configured && data.status === 'configured') {
         results.push({
-          test: 'SendGrid Configuration',
+          test: 'Amazon SES SMTP Configuration',
           status: 'pass',
-          message: 'SendGrid API key is properly configured and working'
+          message: 'Amazon SES SMTP credentials are properly configured'
         });
       } else {
         results.push({
-          test: 'SendGrid Configuration',
+          test: 'Amazon SES SMTP Configuration',
           status: 'fail',
-          message: `SendGrid test failed: ${data.error}`
+          message: `Amazon SES SMTP not configured: ${data.status}`
         });
       }
     } catch (error) {
       results.push({
-        test: 'SendGrid Configuration',
+        test: 'Amazon SES SMTP Configuration',
         status: 'fail',
-        message: 'Failed to test SendGrid configuration'
+        message: 'Failed to test Amazon SES SMTP configuration'
       });
     }
 
@@ -156,41 +156,19 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
 
   const sendTestEmail = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('unified-email-service', {
-        body: {
-          to: 'talentxcelpro@gmail.com',
-          subject: 'TalentXcel Email Test - ' + new Date().toLocaleTimeString(),
-          html: `
-            <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-              <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 20px; border-radius: 8px; color: white; text-align: center; margin-bottom: 20px;">
-                <h2 style="margin: 0; font-size: 24px;">Email Test Successful! ✅</h2>
-              </div>
-              <p>This is a test email sent from TalentXcel email diagnostics system.</p>
-              <p><strong>Sent at:</strong> ${new Date().toLocaleString()}</p>
-              <p><strong>Test ID:</strong> ${crypto.randomUUID()}</p>
-              <p>If you received this email, your email delivery system is working correctly!</p>
-              <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">
-                <p style="margin: 0; color: #6c757d; font-size: 14px;">This email was sent to verify the TalentXcel email automation system.</p>
-              </div>
-            </div>
-          `,
-          template: 'test',
-          templateData: { name: 'Admin' },
-          priority: 'high'
-        }
+      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/test-email-send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
       });
+      const data = await response.json();
 
-      console.log('Test email response:', { data, error });
+      console.log('Test email response:', { data });
 
-      if (error) {
-        toast.error(`Test email failed: ${error.message || error}`);
-      } else if (data && data.error) {
-        toast.error(`Test email failed: ${data.error}`);
-      } else if (data && data.success) {
-        toast.success(`Test email sent via ${data.provider}! Check your inbox.`);
+      if (data.success) {
+        toast.success(`Test email sent successfully via ${data.provider}! Message ID: ${data.messageId}`);
         setTestEmailSent(true);
       } else {
-        toast.error('Unexpected response from email service');
+        toast.error(`Test email failed: ${data.error}`);
       }
     } catch (error: any) {
       toast.error(`Failed to send test email: ${error.message}`);
@@ -253,57 +231,37 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
             )}
           </Button>
           <Button
-            onClick={() => {
-              toast.info('Testing with simplified function...');
-              fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/simple-email-test', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                }
-              })
-              .then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                  toast.success('🎉 SUCCESS! Email sent to talentxcelpro@gmail.com - Check your inbox!');
-                  setTestEmailSent(true);
-                } else {
-                  toast.error(`Failed: ${data.error}`);
-                }
-              })
-              .catch(error => {
-                toast.error(`Network error: ${error.message}`);
-              });
-            }}
+            onClick={sendTestEmail}
             variant="default"
             className="bg-green-600 hover:bg-green-700"
           >
             <Send className="h-4 w-4 mr-2" />
-            SIMPLE TEST
+            Send Test Email
           </Button>
           
           <Button
-            onClick={() => {
-              toast.info('Processing email queue...');
-              fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/working-email-processor', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-              })
-              .then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                  toast.success(`Queue processed! ${data.processed} emails sent, ${data.errors} errors`);
+            onClick={async () => {
+              toast.info('Testing Amazon SES SMTP configuration...');
+              try {
+                const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/test-ses-smtp', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                
+                if (data.fully_configured) {
+                  toast.success(`✅ Amazon SES SMTP configured! Provider: ${data.provider}`);
                 } else {
-                  toast.error(`Queue processing failed: ${data.error}`);
+                  toast.error(`❌ SES SMTP not configured: ${data.status}`);
                 }
-              })
-              .catch(error => {
-                toast.error(`Error: ${error.message}`);
-              });
+              } catch (error: any) {
+                toast.error(`Configuration test failed: ${error.message}`);
+              }
             }}
             variant="outline"
           >
             <Clock className="h-4 w-4 mr-2" />
-            Process Queue
+            Test SES Config
           </Button>
         </div>
 
@@ -443,10 +401,10 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h4 className="font-semibold text-blue-900 mb-2">Quick Fix Guide:</h4>
           <ul className="text-sm text-blue-800 space-y-1">
-            <li>• <strong>SendGrid Not Configured:</strong> Add SENDGRID_API_KEY to Supabase Edge Function secrets</li>
-            <li>• <strong>High Failure Rate:</strong> Check SendGrid dashboard for bounces/spam reports</li>
-            <li>• <strong>Pending Queue:</strong> Manually trigger process-email-queue function</li>
-            <li>• <strong>No Recent Emails:</strong> Check if email automation triggers are working</li>
+            <li>• <strong>SES Not Configured:</strong> Add SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS to Supabase Edge Function secrets</li>
+            <li>• <strong>High Failure Rate:</strong> Check AWS SES reputation and bounce/complaint rates</li>
+            <li>• <strong>Pending Queue:</strong> Check Amazon SES sending limits and verify domain</li>
+            <li>• <strong>No Recent Emails:</strong> Verify Amazon SES is out of sandbox mode</li>
           </ul>
         </div>
       </CardContent>

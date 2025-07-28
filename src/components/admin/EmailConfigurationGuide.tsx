@@ -28,15 +28,16 @@ export const EmailConfigurationGuide: React.FC = () => {
   const configSteps = [
     {
       id: 1,
-      title: 'Get SendGrid API Key',
-      description: 'Sign up for SendGrid and create an API key',
-      action: 'Go to SendGrid',
-      url: 'https://sendgrid.com/pricing/',
+      title: 'Get Amazon SES SMTP Credentials',
+      description: 'Set up Amazon SES and create SMTP credentials',
+      action: 'Go to AWS SES',
+      url: 'https://console.aws.amazon.com/ses/',
       copyText: null,
       details: [
-        'Sign up for a free SendGrid account',
-        'Verify your sender identity/domain',
-        'Create an API key with Mail Send permissions'
+        'Sign up for AWS account or login to AWS Console',
+        'Navigate to Amazon SES service',
+        'Verify your sender domain (admin@talentxcel.in)',
+        'Create SMTP credentials in "Account Dashboard"'
       ]
     },
     {
@@ -54,16 +55,16 @@ export const EmailConfigurationGuide: React.FC = () => {
     },
     {
       id: 3,
-      title: 'Add SendGrid Secret',
-      description: 'Add your SendGrid API key as an edge function secret',
-      action: 'Copy Secret Name',
+      title: 'Add SES SMTP Secrets',
+      description: 'Add your Amazon SES SMTP credentials as edge function secrets',
+      action: 'Copy Secret Names',
       url: null,
-      copyText: 'SENDGRID_API_KEY',
+      copyText: 'SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS',
       details: [
-        'Click "Add new secret"',
-        'Use "SENDGRID_API_KEY" as the name',
-        'Paste your SendGrid API key as the value',
-        'Save the secret'
+        'Add "SMTP_HOST": email-smtp.eu-north-1.amazonaws.com',
+        'Add "SMTP_PORT": 587',
+        'Add "SMTP_USER": Your SMTP username from AWS',
+        'Add "SMTP_PASS": Your SMTP password from AWS'
       ]
     },
     {
@@ -95,8 +96,8 @@ export const EmailConfigurationGuide: React.FC = () => {
         <Alert>
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            <strong>Email delivery is currently not working</strong> because SendGrid API key is not configured. 
-            Follow the steps below to fix this issue.
+            <strong>Email delivery has been migrated to Amazon SES (SMTP)</strong>. 
+            Verify the configuration below to ensure proper email delivery.
           </AlertDescription>
         </Alert>
 
@@ -112,9 +113,9 @@ export const EmailConfigurationGuide: React.FC = () => {
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <h3 className="font-semibold">{step.title}</h3>
-                  {step.id === 1 && <Badge variant="outline">External</Badge>}
+                  {step.id === 1 && <Badge variant="outline">AWS SES</Badge>}
                   {step.id === 2 && <Badge variant="outline">Supabase</Badge>}
-                  {step.id === 3 && <Badge variant="outline">Configuration</Badge>}
+                  {step.id === 3 && <Badge variant="outline">SMTP Config</Badge>}
                   {step.id === 4 && <Badge variant="outline">Testing</Badge>}
                 </div>
                 
@@ -167,12 +168,12 @@ export const EmailConfigurationGuide: React.FC = () => {
           <div className="flex items-start gap-3">
             <Mail className="h-5 w-5 text-green-600 mt-0.5" />
             <div>
-              <h4 className="font-semibold text-green-900 mb-2">Why SendGrid?</h4>
+              <h4 className="font-semibold text-green-900 mb-2">Why Amazon SES?</h4>
               <ul className="text-sm text-green-800 space-y-1">
-                <li>• <strong>Reliable delivery:</strong> 99%+ delivery rates with excellent reputation</li>
-                <li>• <strong>Free tier:</strong> 100 emails/day forever, no credit card required</li>
-                <li>• <strong>Professional features:</strong> Email tracking, analytics, and templates</li>
-                <li>• <strong>Easy setup:</strong> Industry-standard email service integration</li>
+                <li>• <strong>Enterprise-grade:</strong> Highly scalable and reliable email delivery</li>
+                <li>• <strong>Cost-effective:</strong> $0.10 per 1,000 emails, first 200 emails/day free</li>
+                <li>• <strong>Advanced features:</strong> Deliverability insights, reputation monitoring</li>
+                <li>• <strong>AWS integration:</strong> Seamless integration with other AWS services</li>
               </ul>
             </div>
           </div>
@@ -184,8 +185,8 @@ export const EmailConfigurationGuide: React.FC = () => {
             <div>
               <h4 className="font-semibold text-blue-900 mb-2">Security Note</h4>
               <p className="text-sm text-blue-800">
-                Your SendGrid API key is stored securely in Supabase Edge Function secrets and is never exposed to the client-side code. 
-                Make sure to use a restricted API key with only Mail Send permissions for maximum security.
+                Your Amazon SES SMTP credentials are stored securely in Supabase Edge Function secrets and are never exposed to the client-side code. 
+                Use dedicated SMTP credentials (not root AWS credentials) for maximum security.
               </p>
             </div>
           </div>
