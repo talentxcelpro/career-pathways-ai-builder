@@ -156,23 +156,30 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
 
   const sendTestEmail = async () => {
     try {
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/test-email-send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+      console.log('Attempting to send test email...');
+      
+      // Use Supabase client instead of direct fetch to avoid FunctionsHttpError
+      const { data, error } = await supabase.functions.invoke('send-test-email', {
+        body: {},
       });
-      const data = await response.json();
 
-      console.log('Test email response:', { data });
+      console.log('Test email response:', { data, error });
 
-      if (data.success) {
-        toast.success(`Test email sent successfully via ${data.provider}! Message ID: ${data.messageId}`);
+      if (error) {
+        console.error('Supabase functions error:', error);
+        toast.error(`Test email failed: ${error.message || 'Unknown error'}`);
+        return;
+      }
+
+      if (data?.success) {
+        toast.success(`Test email sent successfully! Message ID: ${data.messageId}`);
         setTestEmailSent(true);
       } else {
-        toast.error(`Test email failed: ${data.error}`);
+        toast.error(`Test email failed: ${data?.error || 'Unknown error'}`);
       }
     } catch (error: any) {
-      toast.error(`Failed to send test email: ${error.message}`);
       console.error('Test email error:', error);
+      toast.error(`Failed to send test email: ${error.message}`);
     }
   };
 
