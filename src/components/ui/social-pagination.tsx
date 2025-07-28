@@ -64,28 +64,27 @@ export const SocialPagination: React.FC<SocialPaginationProps> = ({
         </Button>
 
         <div className="flex items-center gap-1 mx-2">
-          {visiblePages.map((page, index) => (
-            <React.Fragment key={index}>
-              {page === '...' ? (
-                <Button variant="ghost" size="icon" disabled className="w-8 h-8">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button
-                  variant={page === currentPage ? "default" : "ghost"}
-                  size="icon"
-                  onClick={() => onPageChange(page as number)}
-                  className={`w-8 h-8 ${
-                    page === currentPage 
-                      ? 'bg-primary text-primary-foreground shadow-sm' 
-                      : 'hover:bg-muted/40'
-                  }`}
-                >
-                  {page}
-                </Button>
-              )}
-            </React.Fragment>
-          ))}
+          {visiblePages.map((page, index) => 
+            page === '...' ? (
+              <Button key={index} variant="ghost" size="icon" disabled className="w-8 h-8">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button
+                key={index}
+                variant={page === currentPage ? "default" : "ghost"}
+                size="icon"
+                onClick={() => onPageChange(page as number)}
+                className={`w-8 h-8 ${
+                  page === currentPage 
+                    ? 'bg-primary text-primary-foreground shadow-sm' 
+                    : 'hover:bg-muted/40'
+                }`}
+              >
+                {page}
+              </Button>
+            )
+          )}
         </div>
 
         <Button

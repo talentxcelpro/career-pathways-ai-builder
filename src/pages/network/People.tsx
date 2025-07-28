@@ -68,9 +68,11 @@ const People = () => {
     }
   });
 
-  const handleProfileView = (profileId: string) => {
-    trackProfileView(profileId);
-    navigate(`/profile/${profileId}`);
+  const handleProfileView = (person: any) => {
+    trackProfileView(person.id);
+    // Use username if available, fallback to ID
+    const profilePath = person.username ? `/profile/${person.username}` : `/p/${person.id}`;
+    navigate(profilePath);
   };
 
   if (error) {
@@ -177,7 +179,7 @@ const People = () => {
                           <div className="flex-1 min-w-0">
                             <h3 
                               className="font-semibold text-foreground truncate text-lg group-hover:text-primary transition-colors cursor-pointer hover:underline"
-                              onClick={() => handleProfileView(person.id)}
+                              onClick={() => handleProfileView(person)}
                             >
                               {person.full_name || 'Professional'}
                             </h3>
@@ -221,7 +223,7 @@ const People = () => {
                             <Button 
                               size="sm" 
                               className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-4"
-                              onClick={() => handleProfileView(person.id)}
+                              onClick={() => handleProfileView(person)}
                             >
                               <Users className="w-4 h-4 mr-1" />
                               Connect
@@ -230,7 +232,7 @@ const People = () => {
                               size="sm" 
                               variant="outline"
                               className="border-muted-foreground/20 hover:bg-muted/50"
-                              onClick={() => handleProfileView(person.id)}
+                              onClick={() => handleProfileView(person)}
                             >
                               <MessageSquare className="w-4 h-4" />
                             </Button>
