@@ -133,6 +133,7 @@ const ProfileEdit = () => {
       const updateData = {
         id: currentUser.id,
         ...data,
+        username: profile?.username || `user${currentUser.id.slice(0, 8)}`, // Preserve existing username
         updated_at: new Date().toISOString()
       };
       

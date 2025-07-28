@@ -17,12 +17,19 @@ import ProBadge from "@/components/network/ProBadge";
 
 interface UserProfileProps {
   profileIdOverride?: string;
+  profileId?: string;
   isPublicView?: boolean;
+  isUsernameRoute?: boolean;
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicView = false }) => {
+const UserProfile: React.FC<UserProfileProps> = ({ 
+  profileIdOverride, 
+  profileId, 
+  isPublicView = false, 
+  isUsernameRoute = false 
+}) => {
   const { id: paramId } = useParams<{ id: string }>();
-  const id = profileIdOverride || paramId;
+  const id = profileId || profileIdOverride || paramId;
   const navigate = useNavigate();
   const { findOrCreateConversation } = useConversations();
   const { user: currentUser } = useAuth();

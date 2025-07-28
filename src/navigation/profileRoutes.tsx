@@ -11,6 +11,7 @@ import ProfileAnalytics from "../pages/profile/ProfileAnalytics";
 import ProfileDocuments from "../pages/profile/ProfileDocuments";
 import ProfileBranding from "../pages/profile/ProfileBranding";
 import PublicUserProfile from "../pages/network/PublicUserProfile";
+import UsernameProfile from "../pages/profile/UsernameProfile";
 
 export const profileRoutes = [
   {
@@ -21,10 +22,16 @@ export const profileRoutes = [
     requiresAuth: true,
   },
   {
-    title: "Public Profile",
-    to: "/profile/:id",
+    title: "Public Profile by Username",
+    to: "/profile/:username",
+    page: <UsernameProfile />,
+    requiresAuth: false, // SEO-friendly username route
+  },
+  {
+    title: "Public Profile by ID",
+    to: "/profile/id/:id", 
     page: <PublicUserProfile />,
-    requiresAuth: false, // This route should be publicly accessible
+    requiresAuth: false, // Backward compatibility
   },
   {
     title: "Profile Edit",

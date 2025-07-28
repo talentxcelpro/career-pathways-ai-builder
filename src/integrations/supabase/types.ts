@@ -10726,6 +10726,7 @@ export type Database = {
           title: string | null
           updated_at: string | null
           user_role: Database["public"]["Enums"]["user_role"] | null
+          username: string
           vanity_url: string | null
           verification_badges: Json | null
           verification_status: string | null
@@ -10795,6 +10796,7 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
+          username: string
           vanity_url?: string | null
           verification_badges?: Json | null
           verification_status?: string | null
@@ -10864,6 +10866,7 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
+          username?: string
           vanity_url?: string | null
           verification_badges?: Json | null
           verification_status?: string | null
@@ -16992,6 +16995,10 @@ export type Database = {
       }
       generate_service_slug: {
         Args: { service_title: string; provider_id: string }
+        Returns: string
+      }
+      generate_username: {
+        Args: { full_name_input: string; user_id_input: string }
         Returns: string
       }
       generate_vanity_url_suggestions: {
