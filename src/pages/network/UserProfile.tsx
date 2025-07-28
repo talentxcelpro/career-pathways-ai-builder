@@ -60,7 +60,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
         .from('posts')
         .select(`
           *,
-          profiles!posts_author_id_fkey (
+          profiles!posts_user_id_fkey (
             id,
             full_name,
             title,
