@@ -19,6 +19,7 @@ export const BotContentGenerator: React.FC = () => {
   const [category, setCategory] = useState<string>('');
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [lastGenerated, setLastGenerated] = useState<any>(null);
 
   const activeBots = bots.filter(bot => bot.is_active);
   const recentContent = generatedContent.slice(0, 10);
@@ -54,6 +55,7 @@ export const BotContentGenerator: React.FC = () => {
 
       if (error) throw error;
 
+      setLastGenerated(data.content);
       toast.success('Content generated successfully!');
       setCustomPrompt('');
     } catch (error) {
@@ -236,6 +238,53 @@ export const BotContentGenerator: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Last Generated Content Preview */}
+      {lastGenerated && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <FileText className="mr-2 h-5 w-5" />
+              Latest Generated Content
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Badge className={getStatusColor(lastGenerated.status)}>
+                  {lastGenerated.status}
+                </Badge>
+                <Badge variant="outline">
+                  {lastGenerated.content_type}
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  Generated {new Date(lastGenerated.created_at).toLocaleString()}
+                </span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">{lastGenerated.title}</h3>
+                <div className="prose max-w-none">
+                  <p className="text-muted-foreground whitespace-pre-line">
+                    {lastGenerated.content}
+                  </p>
+                </div>
+              </div>
+              {lastGenerated.seo_keywords && lastGenerated.seo_keywords.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium mb-2">SEO Keywords:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {lastGenerated.seo_keywords.map((keyword: string, index: number) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        {keyword}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Recent Generated Content */}
       <Card>

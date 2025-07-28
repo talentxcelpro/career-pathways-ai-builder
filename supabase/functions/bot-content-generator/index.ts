@@ -77,7 +77,7 @@ async function handleSingleGeneration(
       },
       seo_keywords: content.keywords || [],
       status: 'draft',
-      ai_model_used: 'gpt-4o-mini',
+      ai_model_used: 'gpt-4.1-2025-04-14',
       generation_cost: 0.002 // Estimated cost
     })
     .select()
@@ -160,7 +160,7 @@ async function handleBulkGeneration(supabase: any, count: number) {
             },
             seo_keywords: content.keywords || [],
             status: 'draft',
-            ai_model_used: 'gpt-4o-mini',
+            ai_model_used: 'gpt-4.1-2025-04-14',
             generation_cost: 0.002
           })
           .select()
@@ -215,7 +215,15 @@ async function generateAIContent(bot: any, contentType: string, category: string
 Your personality is ${bot.bot_config?.personality || 'professional'} and your tone is ${bot.tone_style}.
 You create engaging content for the TalentXcel platform to help users with their career development.`;
 
-  const basePrompt = customPrompt || generateCategoryPrompt(category, contentType, bot);
+  const enhancedPrompt = `${customPrompt || generateCategoryPrompt(category, contentType, bot)}
+
+Please format your response as follows:
+- Start with a compelling title on the first line
+- Provide engaging, detailed content in the body
+- Use professional language with a ${bot.tone_style} tone
+- Make it practical and actionable for TalentXcel users
+- Include specific examples and insights where possible
+- Keep the content relevant to ${bot.content_domains.join(', ')} expertise`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -225,12 +233,12 @@ You create engaging content for the TalentXcel platform to help users with their
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-2025-04-14',
         messages: [
           { role: 'system', content: systemMessage },
-          { role: 'user', content: basePrompt }
+          { role: 'user', content: enhancedPrompt }
         ],
-        max_tokens: 1000,
+        max_tokens: 1500,
         temperature: 0.7,
       }),
     });
