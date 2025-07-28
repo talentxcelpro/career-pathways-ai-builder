@@ -19,7 +19,8 @@ import {
   ExternalLink,
   Star,
   Clock,
-  Building
+  Building,
+  Camera
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -52,81 +53,6 @@ interface CampusRecruiter {
   rating: number;
 }
 
-const MOCK_COLLEGE_EVENTS: CollegeEvent[] = [
-  {
-    id: '1',
-    title: 'Tech Giants Placement Drive',
-    description: 'Exclusive placement opportunity with leading tech companies',
-    event_type: 'placement_drive',
-    college_name: 'IIT Delhi',
-    date: '2024-02-15',
-    location: 'Main Auditorium',
-    is_virtual: false,
-    companies_participating: ['Google', 'Microsoft', 'Amazon', 'Meta'],
-    current_participants: 245,
-    max_participants: 500
-  },
-  {
-    id: '2',
-    title: 'Virtual Job Fair - Startups',
-    description: 'Connect with innovative startups looking for fresh talent',
-    event_type: 'job_fair',
-    college_name: 'BITS Pilani',
-    date: '2024-02-20',
-    location: 'Online',
-    is_virtual: true,
-    companies_participating: ['Zomato', 'Paytm', 'Razorpay', 'Flipkart'],
-    current_participants: 189,
-    max_participants: 300
-  },
-  {
-    id: '3',
-    title: 'AI & ML Workshop',
-    description: 'Hands-on workshop on artificial intelligence and machine learning',
-    event_type: 'workshop',
-    college_name: 'NIT Trichy',
-    date: '2024-02-18',
-    location: 'Computer Science Block',
-    is_virtual: false,
-    companies_participating: ['NVIDIA', 'Intel', 'IBM'],
-    current_participants: 78,
-    max_participants: 100
-  }
-];
-
-const MOCK_CAMPUS_RECRUITERS: CampusRecruiter[] = [
-  {
-    id: '1',
-    name: 'Priya Sharma',
-    company: 'Google',
-    role: 'Senior Technical Recruiter',
-    specialization: ['Software Engineering', 'Data Science', 'Product Management'],
-    colleges_visiting: ['IIT Delhi', 'IIT Bombay', 'IIIT Hyderabad'],
-    upcoming_visits: 3,
-    rating: 4.8
-  },
-  {
-    id: '2',
-    name: 'Rahul Gupta',
-    company: 'Microsoft',
-    role: 'Campus Hiring Manager',
-    specialization: ['Cloud Computing', 'AI/ML', 'Cybersecurity'],
-    colleges_visiting: ['BITS Pilani', 'NIT Delhi', 'VIT Vellore'],
-    upcoming_visits: 2,
-    rating: 4.9
-  },
-  {
-    id: '3',
-    name: 'Sneha Patel',
-    company: 'Amazon',
-    role: 'University Recruiter',
-    specialization: ['Operations', 'Supply Chain', 'Business Analytics'],
-    colleges_visiting: ['IIM Bangalore', 'ISB Hyderabad', 'XLRI Jamshedpur'],
-    upcoming_visits: 4,
-    rating: 4.7
-  }
-];
-
 export const CollegeConnect: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'events' | 'recruiters' | 'resources'>('events');
   const [searchQuery, setSearchQuery] = useState('');
@@ -145,6 +71,26 @@ export const CollegeConnect: React.FC = () => {
         .single();
 
       return { ...user, profile };
+    }
+  });
+
+  // Fetch real college events from database
+  const { data: collegeEvents = [], isLoading: eventsLoading } = useQuery({
+    queryKey: ['college-events', searchQuery, filterType],
+    queryFn: async () => {
+      // Note: This would require a college_events table in your database
+      // For now, return empty array until table is created
+      return [];
+    }
+  });
+
+  // Fetch real campus recruiters from database  
+  const { data: campusRecruiters = [], isLoading: recruitersLoading } = useQuery({
+    queryKey: ['campus-recruiters', searchQuery],
+    queryFn: async () => {
+      // Note: This would require a campus_recruiters table in your database
+      // For now, return empty array until table is created
+      return [];
     }
   });
 
@@ -180,16 +126,16 @@ export const CollegeConnect: React.FC = () => {
     return 'Past event';
   };
 
-  const filteredEvents = MOCK_COLLEGE_EVENTS.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         event.college_name.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredEvents = collegeEvents.filter(event => {
+    const matchesSearch = event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         event.college_name?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = filterType === 'all' || event.event_type === filterType;
     return matchesSearch && matchesFilter;
   });
 
-  const filteredRecruiters = MOCK_CAMPUS_RECRUITERS.filter(recruiter => {
-    return recruiter.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           recruiter.company.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredRecruiters = campusRecruiters.filter(recruiter => {
+    return recruiter.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           recruiter.company?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
   return (
@@ -273,152 +219,193 @@ export const CollegeConnect: React.FC = () => {
           {/* Events Tab */}
           {activeTab === 'events' && (
             <div className="space-y-4">
-              {filteredEvents.map((event) => {
-                const eventInfo = getEventTypeInfo(event.event_type);
-                const EventIcon = eventInfo.icon;
-                const daysUntil = getDaysUntil(event.date);
-                
-                return (
-                  <div key={event.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-start gap-3 flex-1">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                          <EventIcon className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h4 className="font-semibold text-gray-900">{event.title}</h4>
-                            <Badge className={eventInfo.color}>
-                              {eventInfo.label}
-                            </Badge>
-                            {event.is_virtual && (
-                              <Badge variant="outline">
-                                <Video className="h-3 w-3 mr-1" />
-                                Virtual
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-600 mb-2">{event.description}</p>
-                          <div className="flex items-center gap-4 text-xs text-gray-500">
-                            <div className="flex items-center gap-1">
-                              <GraduationCap className="h-3 w-3" />
-                              {event.college_name}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              {formatDate(event.date)}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3" />
-                              {event.location}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Users className="h-3 w-3" />
-                              {event.current_participants}/{event.max_participants || '∞'} registered
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-gray-900 mb-1">{daysUntil}</div>
-                        <Button size="sm">
-                          Register
-                          <ExternalLink className="h-4 w-4 ml-1" />
-                        </Button>
-                      </div>
+              {eventsLoading ? (
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="border rounded-lg p-4 animate-pulse">
+                      <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
+                      <div className="h-4 bg-muted rounded w-1/2 mb-2"></div>
+                      <div className="h-4 bg-muted rounded w-full"></div>
                     </div>
-
-                    {/* Participating Companies */}
-                    {event.companies_participating.length > 0 && (
-                      <div className="mt-3 pt-3 border-t">
-                        <p className="text-sm font-medium text-gray-900 mb-2">Participating Companies</p>
-                        <div className="flex flex-wrap gap-2">
-                          {event.companies_participating.map((company) => (
-                            <Badge key={company} variant="outline" className="text-xs">
-                              <Building className="h-3 w-3 mr-1" />
-                              {company}
-                            </Badge>
-                          ))}
+                  ))}
+                </div>
+              ) : filteredEvents.length > 0 ? (
+                filteredEvents.map((event) => {
+                  const eventInfo = getEventTypeInfo(event.event_type);
+                  const EventIcon = eventInfo.icon;
+                  const daysUntil = getDaysUntil(event.date);
+                  
+                  return (
+                    <div key={event.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-start gap-3 flex-1">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <EventIcon className="h-5 w-5 text-blue-600" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-semibold text-gray-900">{event.title}</h4>
+                              <Badge className={eventInfo.color}>
+                                {eventInfo.label}
+                              </Badge>
+                              {event.is_virtual && (
+                                <Badge variant="outline">
+                                  <Camera className="h-3 w-3 mr-1" />
+                                  Virtual
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{event.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-gray-500">
+                              <div className="flex items-center gap-1">
+                                <GraduationCap className="h-3 w-3" />
+                                {event.college_name}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {formatDate(event.date)}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <MapPin className="h-3 w-3" />
+                                {event.location}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Users className="h-3 w-3" />
+                                {event.current_participants}/{event.max_participants || '∞'} registered
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="text-right">
+                          <div className="text-sm font-medium text-gray-900 mb-1">{daysUntil}</div>
+                          <Button size="sm">
+                            Register
+                            <ExternalLink className="h-4 w-4 ml-1" />
+                          </Button>
                         </div>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+
+                      {/* Participating Companies */}
+                      {event.companies_participating && event.companies_participating.length > 0 && (
+                        <div className="mt-3 pt-3 border-t">
+                          <p className="text-sm font-medium text-gray-900 mb-2">Participating Companies</p>
+                          <div className="flex flex-wrap gap-2">
+                            {event.companies_participating.map((company) => (
+                              <Badge key={company} variant="outline" className="text-xs">
+                                <Building className="h-3 w-3 mr-1" />
+                                {company}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No college events found.</p>
+                  <p className="text-sm mt-1">Check back later for upcoming events.</p>
+                </div>
+              )}
             </div>
           )}
 
           {/* Recruiters Tab */}
           {activeTab === 'recruiters' && (
             <div className="space-y-4">
-              {filteredRecruiters.map((recruiter) => (
-                <div key={recruiter.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-3">
-                      <Avatar className="w-12 h-12">
-                        <AvatarImage src={recruiter.avatar_url} />
-                        <AvatarFallback>
-                          {recruiter.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h4 className="font-semibold text-gray-900">{recruiter.name}</h4>
-                        <p className="text-sm text-gray-600">{recruiter.role} at {recruiter.company}</p>
-                        <div className="flex items-center gap-1 mt-1">
-                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                          <span className="text-sm text-gray-600">{recruiter.rating}</span>
+              {recruitersLoading ? (
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="border rounded-lg p-4 animate-pulse">
+                      <div className="flex items-start gap-3">
+                        <div className="w-12 h-12 bg-muted rounded-full"></div>
+                        <div className="flex-1 space-y-2">
+                          <div className="h-5 bg-muted rounded w-3/4"></div>
+                          <div className="h-4 bg-muted rounded w-1/2"></div>
+                          <div className="h-4 bg-muted rounded w-2/3"></div>
                         </div>
                       </div>
                     </div>
-                    
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        Connect
-                      </Button>
-                      <Button size="sm">
-                        Schedule Meet
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 space-y-3">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 mb-1">Specialization</p>
-                      <div className="flex flex-wrap gap-1">
-                        {recruiter.specialization.map((spec) => (
-                          <Badge key={spec} variant="secondary" className="text-xs">
-                            {spec}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 mb-1">Visiting Colleges</p>
-                      <div className="flex flex-wrap gap-1">
-                        {recruiter.colleges_visiting.slice(0, 3).map((college) => (
-                          <Badge key={college} variant="outline" className="text-xs">
-                            {college}
-                          </Badge>
-                        ))}
-                        {recruiter.colleges_visiting.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{recruiter.colleges_visiting.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {recruiter.upcoming_visits} upcoming visits
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
+              ) : filteredRecruiters.length > 0 ? (
+                filteredRecruiters.map((recruiter) => (
+                  <div key={recruiter.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3">
+                        <Avatar className="w-12 h-12">
+                          <AvatarImage src={recruiter.avatar_url} />
+                          <AvatarFallback>
+                            {recruiter.name?.split(' ').map(n => n[0]).join('').toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h4 className="font-semibold text-gray-900">{recruiter.name}</h4>
+                          <p className="text-sm text-gray-600">{recruiter.role} at {recruiter.company}</p>
+                          <div className="flex items-center gap-1 mt-1">
+                            <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                            <span className="text-sm text-gray-600">{recruiter.rating}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm">
+                          Connect
+                        </Button>
+                        <Button size="sm">
+                          Schedule Meet
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 space-y-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 mb-1">Specialization</p>
+                        <div className="flex flex-wrap gap-1">
+                          {recruiter.specialization?.map((spec) => (
+                            <Badge key={spec} variant="secondary" className="text-xs">
+                              {spec}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 mb-1">Visiting Colleges</p>
+                        <div className="flex flex-wrap gap-1">
+                          {recruiter.colleges_visiting?.slice(0, 3).map((college) => (
+                            <Badge key={college} variant="outline" className="text-xs">
+                              {college}
+                            </Badge>
+                          ))}
+                          {recruiter.colleges_visiting && recruiter.colleges_visiting.length > 3 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{recruiter.colleges_visiting.length - 3} more
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {recruiter.upcoming_visits} upcoming visits
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No campus recruiters found.</p>
+                  <p className="text-sm mt-1">Check back later for recruiter visits.</p>
+                </div>
+              )}
             </div>
           )}
 

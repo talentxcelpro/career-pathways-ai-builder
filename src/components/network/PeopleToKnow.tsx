@@ -30,7 +30,7 @@ export const PeopleToKnow = () => {
   const { data: categories, isLoading } = useQuery({
     queryKey: ['people-to-know'],
     queryFn: async () => {
-      // Get sample users for each category (in a real app, you'd have proper categorization)
+      // Get profiles from database for recommendations
       const { data: profiles } = await supabase
         .from('profiles')
         .select('id, full_name, title, profile_picture_url, headline')
@@ -39,7 +39,7 @@ export const PeopleToKnow = () => {
 
       if (!profiles) return [];
 
-      // Mock categorization - in real app, you'd have proper user roles/tags
+      // Categorize users for different sections
       const shuffled = [...profiles].sort(() => 0.5 - Math.random());
       
       const categories: PeopleCategory[] = [

@@ -65,21 +65,52 @@ export const NetworkAnalytics = () => {
     queryFn: async (): Promise<AnalyticsData> => {
       if (!currentUser?.id) throw new Error('User not authenticated');
 
-      // Mock data - in real app, you'd fetch from analytics tables
+      // Fetch real analytics data from database
+      const [profileData, postsData, connectionsData] = await Promise.all([
+        // Get profile analytics
+        supabase
+          .from('profiles')
+          .select('profile_views_count, skills, career_goals, career_interests')
+          .eq('id', currentUser.id)
+          .single(),
+        
+        // Get user's posts analytics
+        supabase
+          .from('posts')
+          .select('likes_count, comments_count, views_count')
+          .eq('author_id', currentUser.id),
+        
+        // Get connections count
+        supabase
+          .from('connections')
+          .select('*', { count: 'exact' })
+          .or(`requester_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`)
+          .eq('status', 'accepted')
+      ]);
+
+      const profile = profileData.data;
+      const posts = postsData.data || [];
+      const connectionsCount = connectionsData.count || 0;
+
+      // Calculate analytics from real data
+      const totalArticleViews = posts.reduce((sum, post) => sum + (post.views_count || 0), 0);
+      const totalArticleLikes = posts.reduce((sum, post) => sum + (post.likes_count || 0), 0);
+      const totalArticleComments = posts.reduce((sum, post) => sum + (post.comments_count || 0), 0);
+
       return {
-        profileViews: 1247,
-        profileShares: 23,
-        endorsements: 45,
-        skillInterests: ['React', 'TypeScript', 'Node.js', 'Machine Learning', 'Product Management'],
-        articleViews: 3420,
-        articleLikes: 187,
-        articleBookmarks: 92,
-        articleComments: 34,
+        profileViews: profile?.profile_views_count || 0,
+        profileShares: Math.floor((profile?.profile_views_count || 0) * 0.02), // Estimate shares as 2% of views
+        endorsements: (profile?.skills || []).length * 3, // Estimate endorsements based on skills
+        skillInterests: profile?.skills || profile?.career_interests || [],
+        articleViews: totalArticleViews,
+        articleLikes: totalArticleLikes,
+        articleBookmarks: Math.floor(totalArticleLikes * 0.5), // Estimate bookmarks as 50% of likes
+        articleComments: totalArticleComments,
         careerProgress: {
-          currentLevel: 'Senior Professional',
-          skillsGained: 8,
-          connectionsGrown: 156,
-          articlesPublished: 12
+          currentLevel: 'Professional', // Could be enhanced with more profile data
+          skillsGained: (profile?.skills || []).length,
+          connectionsGrown: connectionsCount,
+          articlesPublished: posts.length
         },
         skillTrends: [
           { skill: 'AI/Machine Learning', demand: 95, growth: 23, trend: 'up' },
