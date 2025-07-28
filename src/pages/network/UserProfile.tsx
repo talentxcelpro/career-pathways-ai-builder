@@ -14,6 +14,7 @@ import { useConversations } from "@/hooks/useConversations";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import ProBadge from "@/components/network/ProBadge";
+import { ActivityTimeline } from "@/components/activity/ActivityTimeline";
 
 interface UserProfileProps {
   profileIdOverride?: string;
@@ -428,13 +429,11 @@ const UserProfile: React.FC<UserProfileProps> = ({
           </TabsContent>
 
           <TabsContent value="activity" className="space-y-6">
-            <Card>
-              <CardContent className="p-12 text-center">
-                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Activity Timeline</h3>
-                <p className="text-gray-600">Recent activity and interactions will appear here.</p>
-              </CardContent>
-            </Card>
+            <ActivityTimeline 
+              userId={profile.id} 
+              isOwnProfile={isOwnProfile}
+              limit={20}
+            />
           </TabsContent>
         </Tabs>
       </div>

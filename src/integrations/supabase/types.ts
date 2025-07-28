@@ -15615,6 +15615,45 @@ export type Database = {
           },
         ]
       }
+      user_activities: {
+        Row: {
+          activity_description: string | null
+          activity_title: string
+          activity_type: string
+          created_at: string | null
+          id: string
+          is_public: boolean | null
+          metadata: Json | null
+          related_entity_id: string | null
+          related_entity_type: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_description?: string | null
+          activity_title: string
+          activity_type: string
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          metadata?: Json | null
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_description?: string | null
+          activity_title?: string
+          activity_type?: string
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          metadata?: Json | null
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_analytics: {
         Row: {
           created_at: string | null
@@ -17153,6 +17192,19 @@ export type Database = {
           _details?: Json
         }
         Returns: undefined
+      }
+      log_user_activity: {
+        Args: {
+          p_user_id: string
+          p_activity_type: string
+          p_activity_title: string
+          p_activity_description?: string
+          p_metadata?: Json
+          p_related_entity_type?: string
+          p_related_entity_id?: string
+          p_is_public?: boolean
+        }
+        Returns: string
       }
       process_successful_referral: {
         Args: { p_referee_id: string; p_referral_code: string }
