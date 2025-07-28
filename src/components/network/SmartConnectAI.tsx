@@ -260,30 +260,29 @@ export const SmartConnectAI: React.FC = () => {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Zap className="h-6 w-6 text-purple-600" />
-                <h2 className="text-2xl font-bold text-gray-900">Smart Connect AI</h2>
+                <h2 className="text-2xl font-bold text-gray-900">AI Connect</h2>
                 <Badge variant="secondary" className="bg-purple-100 text-purple-700">
                   <Star className="h-3 w-3 mr-1" />
                   Powered by AI
                 </Badge>
               </div>
               <p className="text-gray-700 text-sm">
-                Discover meaningful connections based on your career goals, interests, and AI-powered insights
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-600">
-                {smartMatches?.length || 0} potential matches found
-              </p>
-              <p className="text-xs text-gray-500">
-                Updated with AI analysis
+                Use AI to discover new connections, mentors, and collaborators.
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
+      {/* Suggested Connections */}
       <Card>
-        <CardContent className="pt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Suggested Connections
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
           {/* Filter Buttons */}
           <div className="flex flex-wrap gap-2 mb-6">
             {[
@@ -418,6 +417,86 @@ export const SmartConnectAI: React.FC = () => {
               </Link>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Mentor Matches */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Mentor Matches
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            AI recommends industry mentors based on your profile & goals
+          </p>
+          <div className="text-center py-8 text-muted-foreground">
+            <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p className="text-sm">AI-powered mentor recommendations coming soon</p>
+            <p className="text-xs mt-1">We're analyzing industry expertise and career paths</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Collaboration Opportunities */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Briefcase className="h-5 w-5" />
+            Collaboration Opportunities
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Discover projects, startups, and content creation opportunities
+          </p>
+          <div className="text-center py-8 text-muted-foreground">
+            <Briefcase className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p className="text-sm">Collaboration matching coming soon</p>
+            <p className="text-xs mt-1">Connect with entrepreneurs, content creators, and project teams</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* People Like You */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            People Like You
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Similar interests, roles, and companies
+          </p>
+          <div className="text-center py-8 text-muted-foreground">
+            <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p className="text-sm">AI similarity matching coming soon</p>
+            <p className="text-xs mt-1">Find professionals with similar career trajectories</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Alumni Connect */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <GraduationCap className="h-5 w-5" />
+            Alumni Connect
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Connect with people from your school/university
+          </p>
+          <div className="text-center py-8 text-muted-foreground">
+            <GraduationCap className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p className="text-sm">Alumni network coming soon</p>
+            <p className="text-xs mt-1">Reconnect with classmates and fellow alumni</p>
+          </div>
         </CardContent>
       </Card>
     </div>
