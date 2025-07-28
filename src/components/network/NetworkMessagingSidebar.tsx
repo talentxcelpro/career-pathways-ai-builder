@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export const NetworkMessagingSidebar = () => {
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(true); // Start minimized
   const [isVisible, setIsVisible] = useState(true);
   const { user } = useAuth();
   const { conversations, isLoading } = useConversations();
@@ -28,43 +28,56 @@ export const NetworkMessagingSidebar = () => {
   const recentConversations = conversations?.slice(0, 5) || [];
 
   return (
-    <Card className={`fixed right-4 bottom-4 shadow-lg border-0 bg-white/95 backdrop-blur-sm transition-all duration-300 z-50 ${
-      isMinimized ? 'w-16 h-16' : 'w-80 h-96'
-    }`}>
+    <Card className={`fixed right-4 bottom-4 shadow-lg border-0 bg-gradient-to-r from-primary to-primary/80 backdrop-blur-sm transition-all duration-300 z-50 cursor-pointer ${
+      isMinimized ? 'w-32 h-12' : 'w-80 h-96'
+    }`} onClick={isMinimized ? () => setIsMinimized(false) : undefined}>
       {/* Header */}
-      <CardHeader className="p-3 border-b">
+      <CardHeader className={`p-3 ${isMinimized ? 'border-none' : 'border-b'}`}>
         <div className="flex items-center justify-between">
-          {!isMinimized && (
+          {isMinimized ? (
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-white">
+              <MessageSquare className="w-4 h-4" />
+              Messages
+            </CardTitle>
+          ) : (
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-primary" />
               Messages
             </CardTitle>
           )}
-          <div className="flex items-center space-x-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0"
-              onClick={() => setIsMinimized(!isMinimized)}
-            >
-              {isMinimized ? <Maximize2 className="h-3 w-3" /> : <Minimize2 className="h-3 w-3" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0"
-              onClick={() => setIsVisible(false)}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
+          {!isMinimized && (
+            <div className="flex items-center space-x-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMinimized(!isMinimized);
+                }}
+              >
+                <Minimize2 className="h-3 w-3" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsVisible(false);
+                }}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
         </div>
       </CardHeader>
 
       {/* Content - only show when not minimized */}
       {!isMinimized && (
         <>
-          <CardContent className="p-3 flex-1 overflow-auto">
+          <CardContent className="p-3 flex-1 overflow-auto bg-white" onClick={(e) => e.stopPropagation()}>
             {isLoading ? (
               <div className="flex items-center justify-center h-full">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
@@ -109,7 +122,7 @@ export const NetworkMessagingSidebar = () => {
           </CardContent>
 
           {/* Footer */}
-          <div className="p-3 border-t bg-gray-50/50">
+          <div className="p-3 border-t bg-gray-50/50" onClick={(e) => e.stopPropagation()}>
             <div className="flex space-x-2">
               <Button size="sm" variant="outline" className="flex-1" asChild>
                 <Link to="/network/messages/new">
