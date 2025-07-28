@@ -29,11 +29,11 @@ Deno.serve(async (req) => {
     const result = {
       timestamp: new Date().toISOString(),
       smtp_host: SES_CONFIG.host || 'Not configured',
-      smtp_port: SES_CONFIG.port || 'Not configured',
+      smtp_port: SES_CONFIG.port || 'Not configured', 
       smtp_user_configured: !!SES_CONFIG.user,
       smtp_pass_configured: !!SES_CONFIG.pass,
       fully_configured: isFullyConfigured,
-      status: isFullyConfigured ? 'configured' : 'incomplete',
+      status: isFullyConfigured ? 'configured' : 'undefined',
       provider: 'Amazon SES SMTP'
     };
 

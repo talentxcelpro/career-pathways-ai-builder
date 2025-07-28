@@ -29,25 +29,27 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
     // Test 1: Check Amazon SES SMTP configuration
     try {
       console.log('Testing Amazon SES SMTP configuration...');
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/test-ses-smtp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const data = await response.json();
+      const { data, error } = await supabase.functions.invoke('test-email-system');
       
-      console.log('Amazon SES test response:', { data });
+      console.log('Email system test response:', { data, error });
 
-      if (data.fully_configured && data.status === 'configured') {
+      if (error) {
+        results.push({
+          test: 'Amazon SES SMTP Configuration',
+          status: 'fail',
+          message: `Amazon SES SMTP connection failed: ${error.message}`
+        });
+      } else if (data?.success) {
         results.push({
           test: 'Amazon SES SMTP Configuration',
           status: 'pass',
-          message: 'Amazon SES SMTP credentials are properly configured'
+          message: `Amazon SES SMTP configured and working (Host: ${data.smtpHost})`
         });
       } else {
         results.push({
           test: 'Amazon SES SMTP Configuration',
           status: 'fail',
-          message: `Amazon SES SMTP not configured: ${data.status}`
+          message: `Amazon SES SMTP test failed: ${data?.message || 'Unknown error'}`
         });
       }
     } catch (error) {
