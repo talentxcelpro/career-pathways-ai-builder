@@ -7,6 +7,7 @@ import { NetworkStats } from "@/components/network/NetworkStats";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
 import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { EnhancedConnections } from "@/components/network/EnhancedConnections";
+import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EmailTestButton } from "@/components/EmailTestButton";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
 import Posts from './network/Posts';
@@ -70,7 +71,7 @@ const Network = () => {
 
           <TabsContent value="analytics" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <NetworkStats />
+              <NetworkAnalytics />
             </div>
           </TabsContent>
 
