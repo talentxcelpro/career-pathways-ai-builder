@@ -47,9 +47,6 @@ export const SocialPagination: React.FC<SocialPaginationProps> = ({
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
-      <p className="text-sm text-muted-foreground">
-        Showing page {currentPage} of {totalPages} ({totalCount.toLocaleString()} people)
-      </p>
       
       <div className="flex items-center gap-1">
         <Button
