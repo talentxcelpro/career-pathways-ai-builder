@@ -1,4 +1,4 @@
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot } from "lucide-react";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
 import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
@@ -21,6 +21,7 @@ import CreatePlan from "../pages/admin/pricing/CreatePlan";
 import EmailAutomationPage from "../pages/admin/EmailAutomation";
 import AIMLTrainingCenter from "../pages/admin/AIMLTrainingCenter";
 import AdminAIManagement from "../pages/AdminAIManagement";
+import BotManagement from "../pages/admin/BotManagement";
 import CollegesManagement from "../pages/admin/CollegesManagement";
 import { ProUsersPage } from "../components/admin/ProUsersPage";
 import SEOManagement from "../pages/admin/SEOManagement";
@@ -223,6 +224,15 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessReports" as const,
     description: "Monitor and manage AI features across the platform"
+  },
+  {
+    title: "Bot Management",
+    to: "/admin/bots",
+    icon: <Bot className="h-4 w-4" />,
+    page: <BotManagement />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "AI content generation bots"
   },
   {
     title: "Admin Management",
