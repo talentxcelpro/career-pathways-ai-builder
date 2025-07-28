@@ -17,8 +17,21 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Received request:', req.method, req.url);
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Missing Supabase configuration');
+    }
+    
+    if (!openAIApiKey) {
+      console.log('Warning: OpenAI API key not configured, using mock responses');
+    }
+    
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const { botId, contentType = 'post', category, customPrompt, bulkGenerate, count = 50 } = await req.json();
+    const requestBody = await req.json();
+    console.log('Request body:', requestBody);
+    
+    const { botId, contentType = 'post', category, customPrompt, bulkGenerate, count = 50 } = requestBody;
 
     console.log(`Bot content generation request: ${bulkGenerate ? 'bulk' : 'single'}`, {
       botId, contentType, category, customPrompt: !!customPrompt, bulkGenerate, count
@@ -79,7 +92,7 @@ async function handleSingleGeneration(
       },
       seo_keywords: content.keywords || [],
       status: 'draft',
-      ai_model_used: 'gpt-4.1-2025-04-14',
+            ai_model_used: 'gpt-4o-mini',
       generation_cost: 0.002 // Estimated cost
     })
     .select()
@@ -162,7 +175,7 @@ async function handleBulkGeneration(supabase: any, count: number) {
             },
             seo_keywords: content.keywords || [],
             status: 'draft',
-            ai_model_used: 'gpt-4.1-2025-04-14',
+            ai_model_used: 'gpt-4o-mini',
             generation_cost: 0.002
           })
           .select()
@@ -235,7 +248,7 @@ Please format your response as follows:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemMessage },
           { role: 'user', content: enhancedPrompt }
