@@ -1,12 +1,12 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
-import { SimpleCareerHub } from "@/components/social/SimpleCareerHub";
-import { ConnectionRequests } from "@/components/network/ConnectionRequests";
+import { CareerContentHub } from "@/components/social/CareerContentHub";
 import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
 import { NetworkStats } from "@/components/network/NetworkStats";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
 import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
+import { EnhancedConnections } from "@/components/network/EnhancedConnections";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
 import Posts from './network/Posts';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
@@ -58,23 +58,14 @@ const Network = () => {
           </TabsContent>
 
           <TabsContent value="connections" className="mt-0">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-gray-900">
-              <div className="lg:col-span-2 space-y-6">
-                <ConnectionRequests />
-                <ProfessionalFeed />
-              </div>
-              <div className="space-y-6">
-                <ReferralNetworkAd variant="sidebar" />
-                <AdvertisingSidebar position="right" maxAds={3} />
-              </div>
-            </div>
+            <EnhancedConnections />
           </TabsContent>
 
           <TabsContent value="discover" className="mt-0">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-gray-900">
               <div className="lg:col-span-2 space-y-6">
                 <ConnectionSuggestions />
-                <SimpleCareerHub />
+                <CareerContentHub />
               </div>
               <div className="space-y-6">
                 <ReferralNetworkAd variant="sidebar" />
