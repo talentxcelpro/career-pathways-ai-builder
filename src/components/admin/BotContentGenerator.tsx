@@ -21,8 +21,8 @@ export const BotContentGenerator: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [lastGenerated, setLastGenerated] = useState<any>(null);
 
-  const activeBots = bots.filter(bot => bot.is_active);
-  const recentContent = generatedContent.slice(0, 10);
+  const activeBots = bots?.filter(bot => bot.is_active) || [];
+  const recentContent = generatedContent?.slice(0, 10) || [];
 
   const categories = [
     'Job Alerts',
@@ -43,6 +43,8 @@ export const BotContentGenerator: React.FC = () => {
 
     setIsGenerating(true);
     try {
+      console.log('Generating content with:', { selectedBot, contentType, category, customPrompt });
+      
       // Call the bot content generator edge function
       const { data, error } = await supabase.functions.invoke('bot-content-generator', {
         body: {
@@ -53,14 +55,23 @@ export const BotContentGenerator: React.FC = () => {
         }
       });
 
-      if (error) throw error;
+      console.log('Edge function response:', { data, error });
 
-      setLastGenerated(data.content);
-      toast.success('Content generated successfully!');
-      setCustomPrompt('');
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+
+      if (data?.content) {
+        setLastGenerated(data.content);
+        toast.success('Content generated successfully!');
+        setCustomPrompt('');
+      } else {
+        throw new Error('No content returned from generator');
+      }
     } catch (error) {
       console.error('Error generating content:', error);
-      toast.error('Failed to generate content');
+      toast.error(`Failed to generate content: ${error.message}`);
     } finally {
       setIsGenerating(false);
     }

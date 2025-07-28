@@ -20,7 +20,9 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { botId, contentType = 'post', category, customPrompt, bulkGenerate, count = 50 } = await req.json();
 
-    console.log(`Bot content generation request: ${bulkGenerate ? 'bulk' : 'single'}`);
+    console.log(`Bot content generation request: ${bulkGenerate ? 'bulk' : 'single'}`, {
+      botId, contentType, category, customPrompt: !!customPrompt, bulkGenerate, count
+    });
 
     if (bulkGenerate) {
       return await handleBulkGeneration(supabase, count);
@@ -30,7 +32,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in bot content generator:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message, details: error.stack }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
