@@ -36,6 +36,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { SectionEditor } from '@/components/resume/SectionEditor';
+import { useResumeExport } from '@/hooks/useResumeExport';
 
 interface ResumeSection {
   id: string;
@@ -67,6 +69,9 @@ const TalentXcelResumeBuilder: React.FC = () => {
   const [sections, setSections] = useState<ResumeSection[]>([]);
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  
+  // Export functionality
+  const { exportResume } = useResumeExport();
 
   // Fetch resume templates
   const { data: templates } = useQuery({
@@ -109,6 +114,8 @@ const TalentXcelResumeBuilder: React.FC = () => {
     mutationFn: async (resumeData: any) => {
       if (!user) throw new Error('User not authenticated');
 
+      const templateId = selectedTemplate || null; // Use null instead of empty string
+
       if (id === 'new') {
         // Create new resume using ai_resumes table
         const { data: newResume, error: resumeError } = await supabase
@@ -116,7 +123,7 @@ const TalentXcelResumeBuilder: React.FC = () => {
           .insert({
             user_id: user.id,
             title: resumeTitle,
-            template_id: selectedTemplate,
+            template_id: templateId,
             content: JSON.stringify({
               sections,
               customization: {}
@@ -133,7 +140,7 @@ const TalentXcelResumeBuilder: React.FC = () => {
           .from('ai_resumes')
           .update({
             title: resumeTitle,
-            template_id: selectedTemplate,
+            template_id: templateId,
             content: JSON.stringify({
               sections,
               customization: {}
@@ -328,10 +335,57 @@ const TalentXcelResumeBuilder: React.FC = () => {
                 {saveResumeMutation.isPending ? 'Saving...' : 'Save'}
               </Button>
               
-              <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Export Resume</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button variant="outline" onClick={() => {
+                        const resumeContent = { sections, title: resumeTitle };
+                        exportResume(resumeContent, {
+                          format: 'pdf',
+                          template: selectedTemplate || 'default',
+                          colorScheme: 'default',
+                          fontSize: 'medium',
+                          fontFamily: 'sans',
+                          showBranding: false,
+                          includePhoto: false,
+                          pageMargins: 'normal',
+                          sectionOrder: sections.map(s => s.type)
+                        });
+                      }}>
+                        <FileText className="h-4 w-4 mr-2" />
+                        PDF
+                      </Button>
+                      <Button variant="outline" onClick={() => {
+                        const resumeContent = { sections, title: resumeTitle };
+                        exportResume(resumeContent, {
+                          format: 'docx',
+                          template: selectedTemplate || 'default',
+                          colorScheme: 'default',
+                          fontSize: 'medium',
+                          fontFamily: 'sans',
+                          showBranding: false,
+                          includePhoto: false,
+                          pageMargins: 'normal',
+                          sectionOrder: sections.map(s => s.type)
+                        });
+                      }}>
+                        <FileText className="h-4 w-4 mr-2" />
+                        Word
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </div>
@@ -425,15 +479,36 @@ const TalentXcelResumeBuilder: React.FC = () => {
                 </DragDropContext>
                 
                 <div className="mt-3 pt-3 border-t">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {}} // We'll implement section addition later
-                    className="w-full"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Section
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Section
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Resume Section</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid grid-cols-2 gap-2">
+                        {['projects', 'certifications', 'awards', 'languages', 'interests'].map(type => (
+                          <Button
+                            key={type}
+                            variant="outline"
+                            onClick={() => addSection(type)}
+                            className="justify-start"
+                          >
+                            {getSectionIcon(type)}
+                            <span className="ml-2">{getSectionTitle(type)}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardContent>
             </Card>
@@ -481,18 +556,28 @@ const TalentXcelResumeBuilder: React.FC = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-6">
-                    <div className="text-center">
-                      <h2 className="text-2xl font-bold mb-2">Edit Your Resume</h2>
-                      <p className="text-muted-foreground">
-                        Use the sections panel to build your professional resume
-                      </p>
-                    </div>
-                    
-                    {/* Section editor will be implemented here */}
-                    <div className="text-center text-muted-foreground">
-                      Select a section from the left panel to start editing
-                    </div>
+                  <div className="h-full">
+                    {currentSection ? (
+                      <SectionEditor 
+                        section={sections.find(s => s.type === currentSection)}
+                        onUpdate={(content) => {
+                          const section = sections.find(s => s.type === currentSection);
+                          if (section) {
+                            updateSectionContent(section.id, content);
+                          }
+                        }}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full">
+                        <h2 className="text-2xl font-semibold mb-4">Edit Your Resume</h2>
+                        <p className="text-muted-foreground mb-6">Use the sections panel to build your professional resume</p>
+                        <div className="text-center">
+                          <p className="text-sm text-muted-foreground">
+                            Select a section from the left panel to start editing
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
