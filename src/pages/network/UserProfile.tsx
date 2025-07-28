@@ -51,7 +51,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
     enabled: !!id
   });
 
-  const { data: userPosts } = useQuery({
+  const { data: userPosts, isLoading: postsLoading } = useQuery({
     queryKey: ['user-posts', id],
     queryFn: async () => {
       if (!id) return [];
@@ -60,7 +60,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
         .from('posts')
         .select(`
           *,
-          profiles (
+          profiles!author_id (
+            id,
             full_name,
             title,
             profile_picture_url
@@ -70,7 +71,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
         .order('created_at', { ascending: false })
         .limit(10);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching user posts:', error);
+        throw error;
+      }
       return data || [];
     },
     enabled: !!id
@@ -368,7 +372,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
           </TabsList>
 
           <TabsContent value="posts" className="space-y-6">
-            {userPosts && userPosts.length > 0 ? (
+            {postsLoading ? (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading posts...</p>
+                </CardContent>
+              </Card>
+            ) : userPosts && userPosts.length > 0 ? (
               userPosts.map((post: any) => (
                 <PostCard key={post.id} post={post} />
               ))

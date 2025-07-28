@@ -4,18 +4,110 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart3, TrendingUp, Eye, Users, MessageSquare, Download, Calendar } from "lucide-react";
 import ProfileLayout from "@/components/profile/ProfileLayout";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
 
 const ProfileAnalytics = () => {
-  const analyticsData = {
-    totalViews: 0,
-    weeklyViews: 0,
-    connectionRequests: 0,
-    messagesSent: 0,
-    resumeDownloads: 0,
-    searchAppearances: 0
-  };
+  const { user } = useAuth();
+  const [timePeriod, setTimePeriod] = useState("30");
 
-  const chartData = [];
+  // Fetch real-time analytics data
+  const { data: analyticsData, isLoading } = useQuery({
+    queryKey: ['profile-analytics', user?.id, timePeriod],
+    queryFn: async () => {
+      if (!user?.id) return null;
+
+      const periodDays = parseInt(timePeriod);
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - periodDays);
+
+      // Fetch profile views
+      const { data: profileViews } = await supabase
+        .from('profile_views')
+        .select('*')
+        .eq('profile_id', user.id)
+        .gte('viewed_at', startDate.toISOString());
+
+      // Fetch connections
+      const { data: connections } = await supabase
+        .from('connections')
+        .select('*')
+        .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+        .gte('created_at', startDate.toISOString());
+
+      // Fetch messages received
+      const { data: messages } = await supabase
+        .from('messages')
+        .select('conversation_id, conversations!inner(participants)')
+        .contains('conversations.participants', [user.id])
+        .neq('sender_id', user.id)
+        .gte('created_at', startDate.toISOString());
+
+      // Get total profile views count from profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('profile_views_count')
+        .eq('id', user.id)
+        .single();
+
+      // Calculate weekly views (last 7 days)
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - 7);
+      const weeklyViews = profileViews?.filter(view => 
+        new Date(view.viewed_at) >= weekStart
+      ).length || 0;
+
+      return {
+        totalViews: profile?.profile_views_count || 0,
+        weeklyViews,
+        connectionRequests: connections?.filter(conn => 
+          conn.recipient_id === user.id && conn.status === 'pending'
+        ).length || 0,
+        messagesSent: messages?.length || 0,
+        resumeDownloads: 0, // This would need a separate table to track
+        searchAppearances: 0, // This would need search analytics
+        recentViews: profileViews || [],
+        recentConnections: connections || []
+      };
+    },
+    enabled: !!user?.id,
+    refetchInterval: 30000 // Refresh every 30 seconds for real-time data
+  });
+
+  // Get chart data for views over time
+  const { data: chartData } = useQuery({
+    queryKey: ['profile-views-chart', user?.id, timePeriod],
+    queryFn: async () => {
+      if (!user?.id) return [];
+
+      const periodDays = parseInt(timePeriod);
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - periodDays);
+
+      const { data: views } = await supabase
+        .from('profile_views')
+        .select('viewed_at')
+        .eq('profile_id', user.id)
+        .gte('viewed_at', startDate.toISOString())
+        .order('viewed_at', { ascending: true });
+
+      // Group views by date
+      const viewsByDate = views?.reduce((acc, view) => {
+        const date = new Date(view.viewed_at).toDateString();
+        acc[date] = (acc[date] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>) || {};
+
+      // Convert to chart format
+      return Object.entries(viewsByDate).map(([date, count]) => ({
+        date: new Date(date).toLocaleDateString(),
+        views: count
+      }));
+    },
+    enabled: !!user?.id
+  });
 
   return (
     <ProfileLayout 
@@ -26,7 +118,7 @@ const ProfileAnalytics = () => {
         {/* Time Period Filter */}
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <Select defaultValue="30">
+            <Select value={timePeriod} onValueChange={setTimePeriod}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Select time period" />
               </SelectTrigger>
@@ -49,54 +141,74 @@ const ProfileAnalytics = () => {
           <Card className="border-0 shadow-lg">
             <CardContent className="p-6 text-center">
               <Eye className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{analyticsData.totalViews}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {isLoading ? "..." : analyticsData?.totalViews || 0}
+              </div>
               <div className="text-sm text-gray-600">Total Views</div>
-              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+              <div className="text-xs text-gray-500 mt-1">
+                {analyticsData?.totalViews > 0 ? "All time" : "No data yet"}
+              </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg">
             <CardContent className="p-6 text-center">
               <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{analyticsData.weeklyViews}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {isLoading ? "..." : analyticsData?.weeklyViews || 0}
+              </div>
               <div className="text-sm text-gray-600">Weekly Views</div>
-              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+              <div className="text-xs text-gray-500 mt-1">
+                {analyticsData?.weeklyViews > 0 ? "Last 7 days" : "No data yet"}
+              </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg">
             <CardContent className="p-6 text-center">
               <Users className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{analyticsData.connectionRequests}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {isLoading ? "..." : analyticsData?.connectionRequests || 0}
+              </div>
               <div className="text-sm text-gray-600">Connection Requests</div>
-              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+              <div className="text-xs text-gray-500 mt-1">
+                {analyticsData?.connectionRequests > 0 ? "Pending" : "No data yet"}
+              </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg">
             <CardContent className="p-6 text-center">
               <MessageSquare className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{analyticsData.messagesSent}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {isLoading ? "..." : analyticsData?.messagesSent || 0}
+              </div>
               <div className="text-sm text-gray-600">Messages Received</div>
-              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+              <div className="text-xs text-gray-500 mt-1">
+                {analyticsData?.messagesSent > 0 ? `Last ${timePeriod} days` : "No data yet"}
+              </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg">
             <CardContent className="p-6 text-center">
               <Download className="h-8 w-8 text-red-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{analyticsData.resumeDownloads}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {isLoading ? "..." : analyticsData?.resumeDownloads || 0}
+              </div>
               <div className="text-sm text-gray-600">Resume Downloads</div>
-              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+              <div className="text-xs text-gray-500 mt-1">Coming soon</div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg">
             <CardContent className="p-6 text-center">
               <BarChart3 className="h-8 w-8 text-indigo-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{analyticsData.searchAppearances}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {isLoading ? "..." : analyticsData?.searchAppearances || 0}
+              </div>
               <div className="text-sm text-gray-600">Search Appearances</div>
-              <div className="text-xs text-gray-500 mt-1">No data yet</div>
+              <div className="text-xs text-gray-500 mt-1">Coming soon</div>
             </CardContent>
           </Card>
         </div>
@@ -108,12 +220,45 @@ const ProfileAnalytics = () => {
             <CardDescription>Track how your profile visibility changes over time</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-64 flex items-center justify-center">
-              <div className="text-center">
-                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Analytics Data Yet</h3>
-                <p className="text-gray-600">Your profile analytics will appear here once you start getting views</p>
-              </div>
+            <div className="h-64">
+              {isLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
+              ) : chartData && chartData.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="text-sm text-gray-600 mb-4">
+                    Views per day in the last {timePeriod} days
+                  </div>
+                  <div className="grid grid-cols-7 gap-2">
+                    {chartData.slice(-7).map((item, index) => (
+                      <div key={index} className="text-center">
+                        <div className="text-xs text-gray-500 mb-1">
+                          {item.date}
+                        </div>
+                        <div 
+                          className="bg-blue-500 rounded-t"
+                          style={{ 
+                            height: `${Math.max(item.views * 10, 4)}px`,
+                            minHeight: '4px'
+                          }}
+                        ></div>
+                        <div className="text-xs text-gray-700 mt-1">
+                          {item.views}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Analytics Data Yet</h3>
+                    <p className="text-gray-600">Your profile analytics will appear here once you start getting views</p>
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

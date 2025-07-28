@@ -30,13 +30,13 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
       if (!conversations || conversations.length === 0) return {};
 
       const allParticipantIds = conversations.flatMap(conv => conv.participants || []);
-      const uniqueIds = [...new Set(allParticipantIds)];
+      const uniqueIds = [...new Set(allParticipantIds)].filter(id => id !== currentUser);
       
       if (uniqueIds.length === 0) return {};
 
       const { data: profiles, error } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, title')
+        .select('id, full_name, profile_picture_url, title, email')
         .in('id', uniqueIds);
 
       if (error) {
@@ -49,7 +49,7 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
         return acc;
       }, {} as Record<string, any>);
     },
-    enabled: conversations && conversations.length > 0
+    enabled: conversations && conversations.length > 0 && !!currentUser
   });
 
   const getConversationDisplay = (conversation: any) => {
@@ -67,8 +67,13 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
     const otherParticipant = conversation.participants?.find((id: string) => id !== currentUser);
     const profile = userProfiles?.[otherParticipant];
     
+    // Better fallback name generation
+    const fallbackName = profile?.email ? 
+      profile.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 
+      `User ${otherParticipant?.slice(-4)}`;
+    
     return {
-      name: profile?.full_name || 'Professional User',
+      name: profile?.full_name || fallbackName,
       avatar: profile?.profile_picture_url,
       title: profile?.title,
       isGroup: false
