@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, UserMinus, Users } from "lucide-react";
+import { MessageCircle, UserMinus, Users, UserPlus } from "lucide-react";
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { Link } from 'react-router-dom';
 
@@ -29,93 +29,119 @@ export const ConnectionsList = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        {[...Array(6)].map((_, i) => (
-          <Card key={i} className="animate-pulse">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-4">
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-background to-muted/20">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Your Connections</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex items-center space-x-4 p-4 rounded-lg border animate-pulse">
                 <div className="w-12 h-12 bg-muted rounded-full"></div>
                 <div className="flex-1 space-y-2">
                   <div className="h-4 bg-muted rounded w-3/4"></div>
                   <div className="h-3 bg-muted rounded w-1/2"></div>
                 </div>
+                <div className="flex gap-2">
+                  <div className="h-8 w-16 bg-muted rounded"></div>
+                  <div className="h-8 w-8 bg-muted rounded"></div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   if (!connections || connections.length === 0) {
     return (
-      <Card>
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-background to-muted/20">
         <CardContent className="p-8 text-center">
-          <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No connections yet</h3>
-          <p className="text-muted-foreground mb-4">
-            Start building your professional network by connecting with colleagues and industry professionals.
+          <div className="mx-auto mb-4 p-3 bg-muted/50 rounded-full w-fit">
+            <Users className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-medium text-foreground mb-2">No connections yet</h3>
+          <p className="text-muted-foreground text-sm mb-4 max-w-md mx-auto">
+            Start building your professional network by connecting with colleagues, 
+            industry professionals, and potential collaborators.
           </p>
-          <Button asChild>
-            <Link to="/network/people">Find People to Connect</Link>
-          </Button>
+          <Link 
+            to="/network/discover" 
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            <UserPlus className="h-4 w-4" />
+            Find People to Connect
+          </Link>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Your Connections</h2>
-        <p className="text-sm text-muted-foreground">
-          {connections.length} connection{connections.length !== 1 ? 's' : ''}
-        </p>
-      </div>
-      
-      <div className="grid gap-4">
-        {connections.map((connection) => {
-          const otherUser = connection.otherUser;
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-background to-muted/20">
+      <CardContent className="p-6">
+        <div className="space-y-3">
+          {connections.map((connection, index) => {
+            const otherUser = connection.otherUser;
             
-          return (
-            <Card key={connection.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
+            return (
+              <div 
+                key={connection.id} 
+                className="group p-4 rounded-lg border hover:border-primary/20 hover:bg-muted/30 transition-all duration-200 animate-fade-in hover-scale"
+                style={{ animationDelay: `${index * 0.05}s` }}
+              >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={otherUser?.profile_picture_url} />
-                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                        {generateInitials(otherUser)}
-                      </AvatarFallback>
-                    </Avatar>
-                    
+                  <div className="flex items-center space-x-3">
+                    <Link to={`/network/people/${otherUser?.id}`}>
+                      <Avatar className="w-12 h-12 ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
+                        <AvatarImage src={otherUser?.profile_picture_url} />
+                        <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-foreground font-semibold">
+                          {generateInitials(otherUser)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Link>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-foreground">
+                      <Link 
+                        to={`/network/people/${otherUser?.id}`}
+                        className="font-semibold text-foreground hover:text-primary transition-colors story-link"
+                      >
                         {formatDisplayName(otherUser)}
-                      </h3>
-                      {otherUser?.title && (
-                        <p className="text-sm text-muted-foreground">
-                          {otherUser.title}
+                      </Link>
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {otherUser?.title || 'Professional'}
+                      </p>
+                      {(otherUser as any)?.current_company && (
+                        <p className="text-xs text-muted-foreground/80">
+                          at {(otherUser as any).current_company}
                         </p>
                       )}
                     </div>
                   </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Button variant="outline" size="sm">
-                      <MessageCircle className="h-4 w-4 mr-1" />
-                      Message
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-muted-foreground">
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Link to={`/network/messages/new?userId=${otherUser?.id}`}>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-primary/10">
+                        <MessageCircle className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0 hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+                      onClick={() => {
+                        // Handle remove connection
+                        console.log('Remove connection:', connection.id);
+                      }}
+                    >
                       <UserMinus className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
   );
 };

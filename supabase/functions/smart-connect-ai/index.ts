@@ -14,48 +14,65 @@ const corsHeaders = {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { currentUser, potentialMatch } = await req.json();
-
+    console.log('Smart Connect AI function called');
+    
     if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+      console.error('OpenAI API key not found');
+      return new Response(
+        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
-    const systemPrompt = `You are an AI career networking advisor. Analyze two professional profiles and provide intelligent connection insights. Focus on:
+    const { currentUser, potentialMatch } = await req.json();
+    
+    if (!currentUser || !potentialMatch) {
+      return new Response(
+        JSON.stringify({ error: 'Missing required data' }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
 
-1. Professional synergies and collaboration opportunities
-2. Knowledge exchange potential 
-3. Career advancement possibilities
-4. Industry insights they could share
-5. Mutual benefit opportunities
+    console.log('Generating AI insight for connection');
 
-Provide a concise, actionable insight in 1-2 sentences that explains why this connection would be valuable for both parties.`;
+    const systemPrompt = `You are a professional networking AI assistant. Analyze two professional profiles and provide a concise, actionable insight about why they should connect and how they could benefit each other professionally.
+
+Focus on:
+- Shared interests or goals
+- Complementary skills or experience  
+- Potential collaboration opportunities
+- Career advancement possibilities
+- Industry insights they could exchange
+
+Keep the response under 100 words and make it personalized and engaging.`;
 
     const userPrompt = `Current User Profile:
-Name: ${currentUser.full_name}
-Title: ${currentUser.title}
-Career Stage: ${currentUser.career_stage}
-Career Goals: ${currentUser.career_goals?.join(', ') || 'Not specified'}
-Career Interests: ${currentUser.career_interests?.join(', ') || 'Not specified'}
-Skills: ${currentUser.skills?.join(', ') || 'Not specified'}
-Industry: ${currentUser.industry || 'Not specified'}
-Company: ${currentUser.current_company || 'Not specified'}
+Name: ${currentUser.full_name || 'Professional'}
+Title: ${currentUser.title || 'N/A'}
+Career Goals: ${currentUser.career_goals?.join(', ') || 'N/A'}
+Interests: ${currentUser.career_interests?.join(', ') || 'N/A'}
+Career Stage: ${currentUser.career_stage || 'N/A'}
 
-Potential Connection Profile:
-Name: ${potentialMatch.full_name}
-Title: ${potentialMatch.title}
-Career Stage: ${potentialMatch.career_stage}
-Career Goals: ${potentialMatch.career_goals?.join(', ') || 'Not specified'}
-Career Interests: ${potentialMatch.career_interests?.join(', ') || 'Not specified'}
-Skills: ${potentialMatch.skills?.join(', ') || 'Not specified'}
-Industry: ${potentialMatch.industry || 'Not specified'}
-Company: ${potentialMatch.current_company || 'Not specified'}
+Potential Connection:
+Name: ${potentialMatch.full_name || 'Professional'}  
+Title: ${potentialMatch.title || 'N/A'}
+Career Goals: ${potentialMatch.career_goals?.join(', ') || 'N/A'}
+Interests: ${potentialMatch.career_interests?.join(', ') || 'N/A'}
+Career Stage: ${potentialMatch.career_stage || 'N/A'}
 
-Generate a smart connection insight that explains the mutual value of this connection.`;
+Provide a compelling insight about why these two professionals should connect.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -64,7 +81,7 @@ Generate a smart connection insight that explains the mutual value of this conne
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-2025-04-14',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -74,29 +91,42 @@ Generate a smart connection insight that explains the mutual value of this conne
       }),
     });
 
-    const data = await response.json();
-    
-    if (!data.choices || data.choices.length === 0) {
-      throw new Error('No response from AI');
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('OpenAI API error:', response.status, errorData);
+      throw new Error(`OpenAI API error: ${response.status}`);
     }
 
-    const aiInsight = data.choices[0].message.content.trim();
+    const data = await response.json();
+    const insight = data.choices[0]?.message?.content;
 
-    return new Response(JSON.stringify({ 
-      insight: aiInsight,
-      confidence: Math.floor(Math.random() * 20 + 80) // Mock confidence score 80-100%
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    if (!insight) {
+      throw new Error('No insight generated from OpenAI');
+    }
+
+    console.log('AI insight generated successfully');
+
+    return new Response(
+      JSON.stringify({ 
+        insight,
+        confidence: 85 // Mock confidence score
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
 
   } catch (error) {
     console.error('Error in smart-connect-ai function:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message,
-      fallbackInsight: "This connection could provide valuable networking opportunities and knowledge exchange in your industry."
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ 
+        error: 'Failed to generate AI insight',
+        details: error.message 
+      }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
   }
 });

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, UserPlus, Loader2 } from 'lucide-react';
+import { Sparkles, UserPlus, Loader2, Users, ArrowRight, Settings } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
@@ -54,10 +54,10 @@ export const ConnectionSuggestions: React.FC = () => {
 
       if (error) throw error;
 
-      // Filter out existing connections and return first 4
+      // Filter out existing connections and return first 8
       const filteredProfiles = profiles
         .filter(profile => !connectedUserIds.has(profile.id))
-        .slice(0, 4);
+        .slice(0, 8);
 
       return filteredProfiles;
     },
@@ -105,83 +105,102 @@ export const ConnectionSuggestions: React.FC = () => {
   if (!currentUser) return null;
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-slate-200/60">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-          <Users className="h-4 w-4 text-primary" />
-          Suggested Connections
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          {isLoading ? (
-            [...Array(3)].map((_, i) => (
-              <div key={i} className="flex items-center space-x-3 animate-pulse">
-                <div className="w-10 h-10 bg-muted rounded-full"></div>
-                <div className="flex-1 space-y-1">
-                  <div className="h-3 bg-muted rounded w-3/4"></div>
-                  <div className="h-2 bg-muted rounded w-1/2"></div>
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-background to-secondary/5">
+      <CardContent className="p-6">
+        {isLoading ? (
+          <div className="space-y-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex items-center space-x-4 p-4 rounded-lg border animate-pulse">
+                <div className="w-12 h-12 bg-muted rounded-full"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
                 </div>
+                <div className="h-8 w-20 bg-muted rounded"></div>
               </div>
-            ))
-          ) : suggestions && suggestions.length > 0 ? (
-            suggestions.map((person) => (
-              <div key={person.id} className="flex items-center justify-between">
-                <div className="flex items-center space-x-3 min-w-0 flex-1">
-                  <Link to={`/network/people/${person.id}`}>
-                    <Avatar className="w-10 h-10 cursor-pointer hover:scale-105 transition-transform">
-                      <AvatarImage 
-                        src={person.profile_picture_url} 
-                        alt={formatDisplayName(person)}
-                      />
-                      <AvatarFallback className="text-xs bg-slate-100">
-                        {generateInitials(person)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Link>
-                  <div className="min-w-0 flex-1">
-                    <Link 
-                      to={`/network/people/${person.id}`}
-                      className="hover:text-primary transition-colors"
-                    >
-                      <p className="font-medium text-sm truncate">
-                        {formatDisplayName(person)}
-                      </p>
+            ))}
+          </div>
+        ) : suggestions && suggestions.length > 0 ? (
+          <div className="space-y-3">
+            {suggestions.slice(0, 6).map((suggestion, index) => (
+              <div 
+                key={suggestion.id} 
+                className="group p-4 rounded-lg border hover:border-secondary/30 hover:bg-secondary/5 transition-all duration-200 animate-fade-in hover-scale"
+                style={{ animationDelay: `${index * 0.07}s` }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Link to={`/network/people/${suggestion.id}`}>
+                      <Avatar className="w-12 h-12 ring-2 ring-transparent group-hover:ring-secondary/20 transition-all">
+                        <AvatarImage src={suggestion.profile_picture_url} />
+                        <AvatarFallback className="bg-gradient-to-br from-secondary/20 to-primary/20 text-foreground font-semibold">
+                          {generateInitials(suggestion)}
+                        </AvatarFallback>
+                      </Avatar>
                     </Link>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {person.title || person.current_company || 'Professional'}
-                    </p>
+                    <div className="flex-1">
+                      <Link 
+                        to={`/network/people/${suggestion.id}`}
+                        className="font-semibold text-foreground hover:text-secondary transition-colors story-link"
+                      >
+                        {formatDisplayName(suggestion)}
+                      </Link>
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        {suggestion.title && (
+                          <p className="line-clamp-1">{suggestion.title}</p>
+                        )}
+                        {suggestion.current_company && (
+                          <p className="text-xs text-muted-foreground/80">
+                            at {suggestion.current_company}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
+                  <Button
+                    onClick={() => sendConnectionRequest(suggestion.id)}
+                    disabled={sendingConnection === suggestion.id}
+                    size="sm"
+                    className="shrink-0 bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+                  >
+                    {sendingConnection === suggestion.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <UserPlus className="h-4 w-4 mr-1" />
+                        Connect
+                      </>
+                    )}
+                  </Button>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="ml-2 px-2 h-7"
-                  onClick={() => sendConnectionRequest(person.id)}
-                  disabled={sendingConnection === person.id}
-                >
-                  {sendingConnection === person.id ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <UserPlus className="h-3 w-3" />
-                  )}
-                </Button>
               </div>
-            ))
-          ) : (
-            <div className="text-center py-4 text-muted-foreground">
-              <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-xs">No suggestions available</p>
+            ))}
+            
+            {/* View More Button */}
+            <div className="pt-4 border-t">
+              <Link to="/network/discover">
+                <Button variant="outline" className="w-full hover:bg-secondary/10">
+                  <Users className="h-4 w-4 mr-2" />
+                  Discover More People
+                </Button>
+              </Link>
             </div>
-          )}
-        </div>
-
-        {suggestions && suggestions.length > 0 && (
-          <div className="mt-4 pt-3 border-t text-center">
-            <Link to="/network/suggestions">
-              <Button variant="ghost" size="sm" className="text-xs">
-                View All Suggestions
-              </Button>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="mx-auto mb-4 p-3 bg-muted/50 rounded-full w-fit">
+              <Sparkles className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-medium text-foreground mb-2">No suggestions available</h3>
+            <p className="text-muted-foreground text-sm mb-4 max-w-md mx-auto">
+              Complete your profile to get personalized connection suggestions based on your interests and career goals.
+            </p>
+            <Link 
+              to="/profile/edit" 
+              className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors"
+            >
+              <Settings className="h-4 w-4" />
+              Complete Profile
             </Link>
           </div>
         )}
