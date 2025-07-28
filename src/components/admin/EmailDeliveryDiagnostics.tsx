@@ -62,30 +62,44 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
 
     // Test 2: Check email queue processing
     try {
-      const { data: queueData, error } = await supabase
+      const { count: pendingCount, error: pendingError } = await supabase
         .from('email_automation_queue')
-        .select('status')
-        .eq('status', 'pending')
-        .limit(1);
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending');
 
-      if (error) {
+      const { count: totalCount, error: totalError } = await supabase
+        .from('email_automation_queue')
+        .select('*', { count: 'exact', head: true });
+
+      if (pendingError || totalError) {
         results.push({
           test: 'Email Queue Health',
           status: 'warning',
           message: 'Could not check email queue status'
         });
-      } else if (queueData && queueData.length > 0) {
-        results.push({
-          test: 'Email Queue Health',
-          status: 'warning',
-          message: `${queueData.length} emails pending in queue - check queue processor`
-        });
       } else {
-        results.push({
-          test: 'Email Queue Health',
-          status: 'pass',
-          message: 'No pending emails in queue'
-        });
+        const pending = pendingCount || 0;
+        const total = totalCount || 0;
+        
+        if (pending === 0) {
+          results.push({
+            test: 'Email Queue Health',
+            status: 'pass',
+            message: `Queue healthy - ${pending} pending emails (${total} total)`
+          });
+        } else if (pending < 10) {
+          results.push({
+            test: 'Email Queue Health',
+            status: 'warning',
+            message: `${pending} emails pending in queue - processing normally`
+          });
+        } else {
+          results.push({
+            test: 'Email Queue Health',
+            status: 'fail',
+            message: `${pending} emails pending in queue - check queue processor`
+          });
+        }
       }
     } catch (error) {
       results.push({
@@ -95,51 +109,70 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
       });
     }
 
-    // Test 3: Check recent email delivery stats
+    // Test 3: Check recent email delivery stats using both queue and delivery events
     try {
-      const { data: recentEmails, error } = await supabase
+      // Check queue data
+      const { data: queueEmails, error: queueError } = await supabase
         .from('email_automation_queue')
         .select('status, sent_at, error_message')
         .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-        .order('created_at', { ascending: false })
-        .limit(50);
+        .order('created_at', { ascending: false });
 
-      if (error) {
+      // Check delivery events
+      const { data: deliveryEvents, error: eventsError } = await supabase
+        .from('email_delivery_events')
+        .select('event_type, created_at')
+        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+      if (queueError && eventsError) {
         results.push({
           test: 'Recent Delivery Rate',
           status: 'warning',
           message: 'Could not check recent email delivery stats'
         });
-      } else if (recentEmails) {
-        const sentCount = recentEmails.filter(e => e.status === 'sent').length;
-        const failedCount = recentEmails.filter(e => e.status === 'failed').length;
-        const total = recentEmails.length;
+      } else {
+        // Combine data from both sources
+        const queueSent = queueEmails?.filter(e => e.status === 'sent').length || 0;
+        const queueFailed = queueEmails?.filter(e => e.status === 'failed').length || 0;
+        const queueTotal = queueEmails?.length || 0;
         
-        if (total === 0) {
+        const eventsSent = deliveryEvents?.filter(e => e.event_type === 'sent').length || 0;
+        const eventsDelivered = deliveryEvents?.filter(e => e.event_type === 'delivered').length || 0;
+        const eventsBounced = deliveryEvents?.filter(e => e.event_type === 'bounced').length || 0;
+        const eventsFailed = deliveryEvents?.filter(e => e.event_type === 'failed').length || 0;
+        
+        // Use the more comprehensive data source
+        const totalSent = Math.max(queueSent, eventsSent);
+        const totalFailed = Math.max(queueFailed, eventsFailed + eventsBounced);
+        const totalProcessed = Math.max(queueTotal, totalSent + totalFailed);
+        
+        if (totalProcessed === 0) {
           results.push({
             test: 'Recent Delivery Rate',
             status: 'warning',
-            message: 'No emails sent in the last 24 hours'
+            message: 'No emails processed in the last 24 hours'
           });
         } else {
-          const successRate = (sentCount / total) * 100;
+          const successRate = (totalSent / totalProcessed) * 100;
+          const deliveryBonus = eventsDelivered > 0 ? ` (${eventsDelivered} delivered)` : '';
+          
           if (successRate >= 95) {
             results.push({
               test: 'Recent Delivery Rate',
               status: 'pass',
-              message: `${successRate.toFixed(1)}% success rate (${sentCount}/${total} emails)`
+              message: `${successRate.toFixed(1)}% success rate (${totalSent}/${totalProcessed} emails)${deliveryBonus}`
             });
           } else if (successRate >= 80) {
             results.push({
               test: 'Recent Delivery Rate',
               status: 'warning',
-              message: `${successRate.toFixed(1)}% success rate (${sentCount}/${total} emails) - ${failedCount} failed`
+              message: `${successRate.toFixed(1)}% success rate (${totalSent}/${totalProcessed} emails) - ${totalFailed} failed${deliveryBonus}`
             });
           } else {
             results.push({
               test: 'Recent Delivery Rate',
               status: 'fail',
-              message: `${successRate.toFixed(1)}% success rate (${sentCount}/${total} emails) - ${failedCount} failed`
+              message: `${successRate.toFixed(1)}% success rate (${totalSent}/${totalProcessed} emails) - ${totalFailed} failed${deliveryBonus}`
             });
           }
         }
@@ -271,6 +304,32 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
           >
             <Clock className="h-4 w-4 mr-2" />
             Test SES Config
+          </Button>
+          
+          <Button
+            onClick={async () => {
+              toast.info('Processing email queue...');
+              try {
+                const { data, error } = await supabase.functions.invoke('process-email-queue');
+                
+                if (error) {
+                  toast.error(`Queue processing failed: ${error.message}`);
+                } else if (data?.processed) {
+                  toast.success(`✅ Processed ${data.processed} emails! ${data.failed || 0} failed.`);
+                  // Refresh diagnostics to show updated queue status
+                  setTimeout(() => runDiagnostics(), 1000);
+                } else {
+                  toast.info('Queue processor completed');
+                }
+              } catch (error: any) {
+                toast.error(`Failed to process queue: ${error.message}`);
+              }
+            }}
+            variant="default"
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <Send className="h-4 w-4 mr-2" />
+            Process Queue
           </Button>
         </div>
 
