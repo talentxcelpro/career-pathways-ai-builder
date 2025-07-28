@@ -12,7 +12,10 @@ import {
   Briefcase,
   GraduationCap,
   TrendingUp,
-  Loader2
+  Loader2,
+  Brain,
+  Zap,
+  Star
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -29,13 +32,19 @@ interface SmartMatch {
   career_goals: string[];
   career_interests: string[];
   career_stage: string;
+  skills?: string[];
+  industry?: string;
+  current_company?: string;
   matchScore: number;
   matchReasons: string[];
+  aiInsight?: string;
+  insightConfidence?: number;
 }
 
 export const SmartConnectAI: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'mentors' | 'peers' | 'mentees'>('all');
   const [sendingConnection, setSendingConnection] = useState<string | null>(null);
+  const [loadingInsights, setLoadingInsights] = useState<string[]>([]);
   const { triggerConnectionEmail } = useEmailAutomation();
 
   const { data: currentUser } = useQuery({
@@ -150,6 +159,40 @@ export const SmartConnectAI: React.FC = () => {
     return commonWords.length / Math.max(words1.length, words2.length);
   };
 
+  const generateAIInsight = async (match: SmartMatch) => {
+    if (!currentUser?.profile || loadingInsights.includes(match.id)) return;
+
+    setLoadingInsights(prev => [...prev, match.id]);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('smart-connect-ai', {
+        body: {
+          currentUser: currentUser.profile,
+          potentialMatch: match
+        }
+      });
+
+      if (error) throw error;
+
+      // Update the match with AI insight
+      const updatedMatches = smartMatches?.map(m => 
+        m.id === match.id 
+          ? { ...m, aiInsight: data.insight, insightConfidence: data.confidence }
+          : m
+      );
+      
+      // This would need to be handled differently in practice
+      // For now, we'll show a toast with the insight
+      toast.success(`AI Insight: ${data.insight}`, { duration: 5000 });
+      
+    } catch (error) {
+      console.error('Failed to generate AI insight:', error);
+      toast.error('Failed to generate AI insight');
+    } finally {
+      setLoadingInsights(prev => prev.filter(id => id !== match.id));
+    }
+  };
+
   const sendConnectionRequest = async (userId: string) => {
     if (!currentUser) return;
 
@@ -247,152 +290,188 @@ export const SmartConnectAI: React.FC = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-purple-600" />
-          Smart Connect AI
-        </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          AI-powered connections based on your career goals and interests
-        </p>
-      </CardHeader>
-      <CardContent>
-        {/* Filter Buttons */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {[
-            { key: 'all', label: 'All Matches', icon: Users },
-            { key: 'mentors', label: 'Mentors', icon: TrendingUp },
-            { key: 'peers', label: 'Peers', icon: Users },
-            { key: 'mentees', label: 'Mentees', icon: GraduationCap }
-          ].map(({ key, label, icon: Icon }) => (
-            <Button
-              key={key}
-              variant={selectedFilter === key ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedFilter(key as any)}
-              className="flex items-center gap-1"
-            >
-              <Icon className="h-4 w-4" />
-              {label}
-            </Button>
-          ))}
-        </div>
-
-        {/* Smart Matches */}
-        <div className="space-y-4">
-          {isLoading ? (
-            [...Array(3)].map((_, i) => (
-              <div key={i} className="flex items-start space-x-3 p-4 border rounded-lg animate-pulse">
-                <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-300 rounded w-1/2"></div>
-                  <div className="h-3 bg-gray-300 rounded w-2/3"></div>
-                </div>
+    <div className="space-y-6">
+      {/* Enhanced Header */}
+      <Card className="bg-gradient-to-r from-purple-50 via-blue-50 to-indigo-50 border-purple-200">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="h-6 w-6 text-purple-600" />
+                <h2 className="text-2xl font-bold text-gray-900">Smart Connect AI</h2>
+                <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                  <Star className="h-3 w-3 mr-1" />
+                  Powered by AI
+                </Badge>
               </div>
-            ))
-          ) : smartMatches && smartMatches.length > 0 ? (
-            smartMatches.map((match) => (
-              <div key={match.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-start space-x-3">
-                    <Link to={`/network/people/${match.id}`}>
-                      <Avatar className="w-12 h-12 cursor-pointer hover:scale-105 transition-transform">
-                        <AvatarImage src={match.profile_picture_url} />
-                        <AvatarFallback>
-                          {match.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Link>
-                    <div>
-                      <Link 
-                        to={`/network/people/${match.id}`}
-                        className="hover:text-primary transition-colors"
-                      >
-                        <h4 className="font-semibold">{match.full_name}</h4>
+              <p className="text-gray-700 text-sm">
+                Discover meaningful connections based on your career goals, interests, and AI-powered insights
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-600">
+                {smartMatches?.length || 0} potential matches found
+              </p>
+              <p className="text-xs text-gray-500">
+                Updated with AI analysis
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-6">
+          {/* Filter Buttons */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {[
+              { key: 'all', label: 'All Matches', icon: Users },
+              { key: 'mentors', label: 'Mentors', icon: TrendingUp },
+              { key: 'peers', label: 'Peers', icon: Users },
+              { key: 'mentees', label: 'Mentees', icon: GraduationCap }
+            ].map(({ key, label, icon: Icon }) => (
+              <Button
+                key={key}
+                variant={selectedFilter === key ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedFilter(key as any)}
+                className="flex items-center gap-1"
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </Button>
+            ))}
+          </div>
+
+          {/* Smart Matches */}
+          <div className="space-y-4">
+            {isLoading ? (
+              [...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-start space-x-3 p-4 border rounded-lg animate-pulse">
+                  <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                    <div className="h-3 bg-gray-300 rounded w-2/3"></div>
+                  </div>
+                </div>
+              ))
+            ) : smartMatches && smartMatches.length > 0 ? (
+              smartMatches.map((match) => (
+                <div key={match.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start space-x-3">
+                      <Link to={`/network/people/${match.id}`}>
+                        <Avatar className="w-12 h-12 cursor-pointer hover:scale-105 transition-transform">
+                          <AvatarImage src={match.profile_picture_url} />
+                          <AvatarFallback>
+                            {match.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
                       </Link>
-                      <p className="text-sm text-muted-foreground">{match.title}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        {getStageIcon(match.career_stage)}
-                        <span className="text-xs text-muted-foreground">
-                          {getStageLabel(match.career_stage)}
-                        </span>
-                        <Badge variant="secondary" className="ml-2 text-xs">
-                          {match.matchScore}% match
-                        </Badge>
+                      <div>
+                        <Link 
+                          to={`/network/people/${match.id}`}
+                          className="hover:text-primary transition-colors"
+                        >
+                          <h4 className="font-semibold">{match.full_name}</h4>
+                        </Link>
+                        <p className="text-sm text-muted-foreground">{match.title}</p>
+                        <div className="flex items-center gap-1 mt-1">
+                          {getStageIcon(match.career_stage)}
+                          <span className="text-xs text-muted-foreground">
+                            {getStageLabel(match.career_stage)}
+                          </span>
+                          <Badge variant="secondary" className="ml-2 text-xs">
+                            {match.matchScore}% match
+                          </Badge>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => sendConnectionRequest(match.id)}
-                      disabled={sendingConnection === match.id}
-                    >
-                      {sendingConnection === match.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <UserPlus className="h-4 w-4" />
-                      )}
-                    </Button>
-                    <Link to={`/network/messages/new?userId=${match.id}`}>
-                      <Button variant="outline" size="sm">
-                        <MessageCircle className="h-4 w-4" />
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => generateAIInsight(match)}
+                        disabled={loadingInsights.includes(match.id)}
+                        className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                      >
+                        {loadingInsights.includes(match.id) ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Brain className="h-4 w-4" />
+                        )}
+                        <span className="ml-1 text-xs">AI Insight</span>
                       </Button>
-                    </Link>
-                  </div>
-                </div>
-
-                {/* Match Reasons */}
-                {match.matchReasons.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-xs text-muted-foreground mb-1">Why we matched you:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {match.matchReasons.map((reason, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {reason}
-                        </Badge>
-                      ))}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => sendConnectionRequest(match.id)}
+                        disabled={sendingConnection === match.id}
+                      >
+                        {sendingConnection === match.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <UserPlus className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Link to={`/network/messages/new?userId=${match.id}`}>
+                        <Button variant="outline" size="sm">
+                          <MessageCircle className="h-4 w-4" />
+                        </Button>
+                      </Link>
                     </div>
                   </div>
-                )}
 
-                {/* Career Interests */}
-                {match.career_interests && match.career_interests.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {match.career_interests.slice(0, 3).map((interest) => (
-                      <CareerIntentBadge key={interest} intentId={interest} size="sm" />
-                    ))}
-                    {match.career_interests.length > 3 && (
-                      <Badge variant="outline" className="text-xs">
-                        +{match.career_interests.length - 3} more
-                      </Badge>
-                    )}
-                  </div>
-                )}
+                  {/* Match Reasons */}
+                  {match.matchReasons.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs text-muted-foreground mb-1">Why we matched you:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {match.matchReasons.map((reason, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {reason}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Career Interests */}
+                  {match.career_interests && match.career_interests.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {match.career_interests.slice(0, 3).map((interest) => (
+                        <CareerIntentBadge key={interest} intentId={interest} size="sm" />
+                      ))}
+                      {match.career_interests.length > 3 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{match.career_interests.length - 3} more
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-sm">No matches found for your current filter.</p>
+                <p className="text-xs mt-1">Try selecting a different category or updating your profile.</p>
               </div>
-            ))
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-sm">No matches found for your current filter.</p>
-              <p className="text-xs mt-1">Try selecting a different category or updating your profile.</p>
+            )}
+          </div>
+
+          {smartMatches && smartMatches.length > 0 && (
+            <div className="mt-6 pt-4 border-t text-center">
+              <Link to="/network/people">
+                <Button variant="ghost" size="sm">
+                  View All People
+                </Button>
+              </Link>
             </div>
           )}
-        </div>
-
-        {smartMatches && smartMatches.length > 0 && (
-          <div className="mt-6 pt-4 border-t text-center">
-            <Link to="/network/people">
-              <Button variant="ghost" size="sm">
-                View All People
-              </Button>
-            </Link>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
