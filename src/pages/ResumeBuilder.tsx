@@ -31,8 +31,8 @@ const ResumeBuilder = () => {
   ];
 
   const createNewResume = () => {
-    const newResumeId = `new-${Date.now()}`;
-    navigate(`/resume-builder/edit/${newResumeId}`);
+    // Navigate to TalentXcel Resume Builder instead
+    navigate('/resume-builder/enhanced/new');
   };
 
   const handleEnhancementApplied = (enhancedData: any) => {
@@ -78,8 +78,16 @@ const ResumeBuilder = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl"
+                onClick={createNewResume}
+              >
+                <Sparkles className="w-5 h-5 mr-2" />
+                Start Building with TalentXcel AI
+              </Button>
               <Link to="/resume-builder/upload">
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl">
+                <Button size="lg" variant="outline" className="px-8 py-4 text-lg font-semibold rounded-xl border-2">
                   <Upload className="w-5 h-5 mr-2" />
                   Upload Existing Resume
                 </Button>
@@ -163,7 +171,8 @@ const ResumeBuilder = () => {
 
           <div className="text-center">
             <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-4 text-lg font-semibold rounded-xl" onClick={createNewResume}>
-              Start Building with TalentXcel
+              <Sparkles className="w-5 h-5 mr-2" />
+              Start Building with TalentXcel AI
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>

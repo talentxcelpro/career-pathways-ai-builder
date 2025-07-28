@@ -1,7 +1,8 @@
 
-import { FileText } from "lucide-react";
+import { FileText, Sparkles } from "lucide-react";
 import SimpleResumeBuilder from "@/pages/resume/SimpleResumeBuilder";
 import EditResume from "@/pages/resume/EditResume";
+import TalentXcelResumeBuilder from "@/pages/resume/TalentXcelResumeBuilder";
 
 export const resumeRoutes = [
   {
@@ -9,6 +10,13 @@ export const resumeRoutes = [
     to: "/resume/new",
     icon: <FileText className="h-4 w-4" />,
     page: <SimpleResumeBuilder />,
+    requiresAuth: true,
+  },
+  {
+    title: "TalentXcel Resume Builder",
+    to: "/resume-builder/enhanced/:id",
+    icon: <Sparkles className="h-4 w-4" />,
+    page: <TalentXcelResumeBuilder />,
     requiresAuth: true,
   },
   {
