@@ -13,7 +13,7 @@ interface EmailRequest {
   template?: string;
   templateData?: Record<string, any>;
   priority?: 'low' | 'medium' | 'high';
-  provider?: 'sendgrid' | 'resend' | 'auto';
+  provider?: 'ses' | 'resend' | 'auto';
 }
 
 interface EmailResponse {
@@ -44,11 +44,16 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
     // Get API keys
-    const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
+    const SES_CONFIG = {
+      host: Deno.env.get('SMTP_HOST'),
+      port: Deno.env.get('SMTP_PORT'),
+      user: Deno.env.get('SMTP_USER'),
+      pass: Deno.env.get('SMTP_PASS'),
+    };
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
-    if (!SENDGRID_API_KEY && !RESEND_API_KEY) {
-      throw new Error('No email service providers configured. Please set SENDGRID_API_KEY or RESEND_API_KEY');
+    if (!SES_CONFIG.host && !RESEND_API_KEY) {
+      throw new Error('No email service providers configured. Please set Amazon SES SMTP credentials or RESEND_API_KEY');
     }
 
     // Determine which provider to use
@@ -57,14 +62,14 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (provider === 'auto') {
       // Intelligent provider selection based on availability and priority
-      if (RESEND_API_KEY && SENDGRID_API_KEY) {
-        // Use Resend for high priority, SendGrid for others
-        primaryProvider = priority === 'high' ? 'resend' : 'sendgrid';
-        fallbackProvider = primaryProvider === 'resend' ? 'sendgrid' : 'resend';
+      if (RESEND_API_KEY && SES_CONFIG.host) {
+        // Use Resend for high priority, SES for others
+        primaryProvider = priority === 'high' ? 'resend' : 'ses';
+        fallbackProvider = primaryProvider === 'resend' ? 'ses' : 'resend';
       } else if (RESEND_API_KEY) {
         primaryProvider = 'resend';
       } else {
-        primaryProvider = 'sendgrid';
+        primaryProvider = 'ses';
       }
     }
 
@@ -131,8 +136,8 @@ const handler = async (req: Request): Promise<Response> => {
 async function sendWithProvider(provider: string, { to, subject, html, template, templateData }: any): Promise<EmailResponse> {
   if (provider === 'resend') {
     return await sendWithResend(to, subject, html, template, templateData);
-  } else if (provider === 'sendgrid') {
-    return await sendWithSendGrid(to, subject, html, template, templateData);
+  } else if (provider === 'ses') {
+    return await sendWithSES(to, subject, html, template, templateData);
   } else {
     throw new Error(`Unsupported provider: ${provider}`);
   }
@@ -181,10 +186,16 @@ async function sendWithResend(to: string, subject: string, html: string, templat
   };
 }
 
-async function sendWithSendGrid(to: string, subject: string, html: string, template?: string, templateData?: any): Promise<EmailResponse> {
-  const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
-  if (!SENDGRID_API_KEY) {
-    throw new Error('SENDGRID_API_KEY not configured');
+async function sendWithSES(to: string, subject: string, html: string, template?: string, templateData?: any): Promise<EmailResponse> {
+  const SES_CONFIG = {
+    host: Deno.env.get('SMTP_HOST'),
+    port: Deno.env.get('SMTP_PORT'),
+    user: Deno.env.get('SMTP_USER'),
+    pass: Deno.env.get('SMTP_PASS'),
+  };
+  
+  if (!SES_CONFIG.host || !SES_CONFIG.user || !SES_CONFIG.pass) {
+    throw new Error('Amazon SES SMTP configuration not complete');
   }
 
   // Add tracking pixel for open tracking
@@ -192,46 +203,45 @@ async function sendWithSendGrid(to: string, subject: string, html: string, templ
   const trackingPixel = `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/email-webhook?event=opened&id=${messageId}" width="1" height="1" style="display:none;" />`;
   const htmlWithTracking = html + trackingPixel;
 
-  const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${SENDGRID_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      personalizations: [{ 
-        to: [{ email: to }],
-        custom_args: {
-          message_id: messageId,
-          template: template || 'default'
-        }
-      }],
-      from: { email: 'noreply@talentxcel.in', name: "TalentXcel" },
-      subject,
-      content: [{ type: 'text/html', value: htmlWithTracking }],
-      tracking_settings: {
-        click_tracking: { enable: true },
-        open_tracking: { enable: true },
-        subscription_tracking: { enable: false }
-      },
-      custom_args: {
-        message_id: messageId,
-        template: template || 'default',
-        provider: 'sendgrid'
-      }
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`SendGrid Error: ${error}`);
-  }
-
-  return {
-    success: true,
+  // Use nodemailer-compatible SMTP via fetch for Deno
+  const emailData = {
+    from: 'TalentXcel <admin@talentxcel.in>',
+    to: to,
+    subject: subject,
+    html: htmlWithTracking,
     messageId: messageId,
-    provider: 'sendgrid'
+    headers: {
+      'X-Template': template || 'default',
+      'X-Provider': 'ses'
+    }
   };
+
+  // For Deno environment, we'll use a simple SMTP implementation
+  try {
+    // Use native Deno SMTP (simplified approach for SES)
+    const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/send-email-smtp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...emailData,
+        smtp: SES_CONFIG
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Amazon SES Error: ${error}`);
+    }
+
+    return {
+      success: true,
+      messageId: messageId,
+      provider: 'ses'
+    };
+  } catch (error) {
+    console.error('SES SMTP Error:', error);
+    throw error;
+  }
 }
 
 serve(handler);

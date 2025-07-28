@@ -1,13 +1,26 @@
-import sgMail from '@sendgrid/mail';
+import nodemailer from 'nodemailer';
 import { supabase } from '@/integrations/supabase/client';
 
-// Initialize SendGrid with API key
-const initializeSendGrid = () => {
-  const apiKey = process.env.SENDGRID_API_KEY;
-  if (!apiKey) {
-    throw new Error('SENDGRID_API_KEY environment variable is required');
+// Initialize SMTP transporter for Amazon SES
+const createTransporter = () => {
+  const host = process.env.SMTP_HOST;
+  const port = process.env.SMTP_PORT;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  
+  if (!host || !port || !user || !pass) {
+    throw new Error('SMTP configuration environment variables are required: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS');
   }
-  sgMail.setApiKey(apiKey);
+  
+  return nodemailer.createTransport({
+    host,
+    port: parseInt(port),
+    secure: false, // Use TLS
+    auth: {
+      user,
+      pass,
+    },
+  });
 };
 
 interface EmailOptions {
@@ -27,23 +40,23 @@ interface QueueEmailOptions {
 
 export async function sendEmail({ to, subject, html, from, replyTo }: EmailOptions): Promise<boolean> {
   try {
-    initializeSendGrid();
+    const transporter = createTransporter();
     
-    const fromEmail = from || process.env.FROM_EMAIL || 'noreply@talentxcel.in';
+    const fromEmail = from || process.env.SMTP_FROM || 'admin@talentxcel.in';
     
-    const msg = {
-      to,
+    const mailOptions = {
       from: fromEmail,
+      to,
       subject,
       html,
       replyTo: replyTo || fromEmail,
     };
 
-    await sgMail.send(msg);
-    console.log('Email sent successfully to:', to);
+    await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully via Amazon SES to:', to);
     return true;
   } catch (error: any) {
-    console.error('SendGrid error:', error.response?.body || error.message);
+    console.error('Amazon SES SMTP error:', error.message);
     throw error;
   }
 }

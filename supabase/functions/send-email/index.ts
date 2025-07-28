@@ -1,4 +1,4 @@
-console.log('🚀 Enhanced Send-Email Function Starting...');
+console.log('🚀 Enhanced Send-Email Function Starting (SES-enabled)...');
 
 Deno.serve(async (req) => {
   console.log('📧 Email request received:', req.method, req.url);
@@ -35,67 +35,60 @@ Deno.serve(async (req) => {
         });
       }
       
-      const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
-      console.log('🔑 SendGrid API key present:', !!SENDGRID_API_KEY);
+      // Check for Amazon SES SMTP configuration
+      const SES_CONFIG = {
+        host: Deno.env.get('SMTP_HOST'),
+        port: Deno.env.get('SMTP_PORT'),
+        user: Deno.env.get('SMTP_USER'),
+        pass: Deno.env.get('SMTP_PASS'),
+      };
+      console.log('🔑 Amazon SES SMTP configured:', !!SES_CONFIG.host);
       
-      if (!SENDGRID_API_KEY) {
-        console.log('❌ SendGrid API key not configured');
-        return new Response(JSON.stringify({ error: 'SendGrid API key not configured' }), { 
+      if (!SES_CONFIG.host || !SES_CONFIG.user || !SES_CONFIG.pass) {
+        console.log('❌ Amazon SES SMTP not fully configured');
+        return new Response(JSON.stringify({ error: 'Amazon SES SMTP configuration incomplete' }), { 
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
 
-      console.log('📤 Sending email via SendGrid...');
+      console.log('📤 Sending email via Amazon SES SMTP...');
       const messageId = crypto.randomUUID();
       const trackingPixel = `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/email-webhook?event=opened&id=${messageId}" width="1" height="1" style="display:none;" />`;
       const htmlWithTracking = (html || '<p>Email from TalentXcel</p>') + trackingPixel;
 
-      const emailPayload = {
-        personalizations: [{ 
-          to: [{ email: to }],
-          custom_args: {
-            message_id: messageId,
-            template: template || 'generic',
-            source: 'automation'
-          }
-        }],
-        from: { email: 'noreply@talentxcel.in', name: "TalentXcel" },
-        subject,
-        content: [{ type: 'text/html', value: htmlWithTracking }],
-        tracking_settings: {
-          click_tracking: { enable: true },
-          open_tracking: { enable: true },
-          subscription_tracking: { enable: false }
-        },
-        custom_args: {
-          message_id: messageId,
-          template: template || 'generic',
-          timestamp: new Date().toISOString()
-        }
-      };
-
-      console.log('📋 Email payload prepared, sending to SendGrid...');
+      console.log('📋 Email payload prepared, sending via Amazon SES SMTP...');
       
-      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+      // Use our SMTP edge function to send the email
+      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/send-email-smtp', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${SENDGRID_API_KEY}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(emailPayload),
+        body: JSON.stringify({
+          to: to,
+          from: 'TalentXcel <admin@talentxcel.in>',
+          subject: subject,
+          html: htmlWithTracking,
+          messageId: messageId,
+          headers: {
+            'X-Template': template || 'generic',
+            'X-Source': 'automation'
+          },
+          smtp: SES_CONFIG
+        }),
         signal: controller.signal
       });
 
       clearTimeout(timeoutId);
       const processingTime = Date.now() - startTime;
-      console.log(`⚡ SendGrid response received in ${processingTime}ms, status:`, response.status);
+      console.log(`⚡ Amazon SES response received in ${processingTime}ms, status:`, response.status);
       
       if (!response.ok) {
-        const error = await response.text();
-        console.log('❌ SendGrid error:', error);
+        const errorText = await response.text();
+        console.log('❌ Amazon SES error:', errorText);
         return new Response(JSON.stringify({ 
-          error: `SendGrid Error: ${error}`,
+          error: `Amazon SES Error: ${errorText}`,
           status: response.status,
           processingTime
         }), { 
