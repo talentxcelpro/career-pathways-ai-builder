@@ -58,3 +58,6 @@ verify_jwt = false
 
 [functions.resume-export]
 verify_jwt = false
+
+[functions.smart-connect-ai]
+verify_jwt = true
