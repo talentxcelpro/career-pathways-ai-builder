@@ -2,6 +2,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SitemapManager } from '@/components/seo/SitemapManager';
+import { SEOCronManager } from '@/components/seo/SEOCronManager';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Search, Globe, Bot, TrendingUp } from 'lucide-react';
 
@@ -56,7 +57,10 @@ const SEOManagement = () => {
         </Card>
       </div>
 
-      <SitemapManager />
+      <div className="space-y-8">
+        <SEOCronManager />
+        <SitemapManager />
+      </div>
 
       <Card>
         <CardHeader>
