@@ -21,7 +21,8 @@ import {
   ChevronRight,
   Mail,
   Brain,
-  Crown
+  Crown,
+  Bot
 } from 'lucide-react';
 import {
   Sidebar,
@@ -160,6 +161,12 @@ const adminMenuItems = [
     url: '/admin/ai-management',
     icon: Brain,
     description: 'Monitor and manage AI features across the platform'
+  },
+  {
+    title: 'Bot Management',
+    url: '/admin/bots',
+    icon: Bot,
+    description: 'AI content generation bots'
   },
   {
     title: 'Admin Management',

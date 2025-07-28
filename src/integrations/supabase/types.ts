@@ -323,6 +323,60 @@ export type Database = {
           },
         ]
       }
+      ai_bots: {
+        Row: {
+          bot_config: Json | null
+          content_domains: string[]
+          created_at: string | null
+          department: string[]
+          distribution_channels: string[]
+          email: string
+          frequency: string
+          id: string
+          is_active: boolean
+          name: string
+          profile_picture_url: string | null
+          role: string
+          tone_style: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          bot_config?: Json | null
+          content_domains?: string[]
+          created_at?: string | null
+          department?: string[]
+          distribution_channels?: string[]
+          email: string
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          profile_picture_url?: string | null
+          role: string
+          tone_style?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          bot_config?: Json | null
+          content_domains?: string[]
+          created_at?: string | null
+          department?: string[]
+          distribution_channels?: string[]
+          email?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          profile_picture_url?: string | null
+          role?: string
+          tone_style?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_career_insights: {
         Row: {
           confidence_level: string | null
@@ -2363,6 +2417,178 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      bot_activity_schedule: {
+        Row: {
+          bot_id: string | null
+          content_categories: string[] | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          last_run_at: string | null
+          next_run_at: string | null
+          schedule_config: Json
+          schedule_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          bot_id?: string | null
+          content_categories?: string[] | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          schedule_config: Json
+          schedule_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          bot_id?: string | null
+          content_categories?: string[] | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          schedule_config?: Json
+          schedule_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bot_activity_schedule_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bot_content_templates: {
+        Row: {
+          bot_id: string | null
+          category: string
+          content_type: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          prompt_template: string
+          seo_keywords: string[] | null
+          system_message: string | null
+          template_name: string
+          updated_at: string | null
+          variables: Json | null
+        }
+        Insert: {
+          bot_id?: string | null
+          category: string
+          content_type: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          prompt_template: string
+          seo_keywords?: string[] | null
+          system_message?: string | null
+          template_name: string
+          updated_at?: string | null
+          variables?: Json | null
+        }
+        Update: {
+          bot_id?: string | null
+          category?: string
+          content_type?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          prompt_template?: string
+          seo_keywords?: string[] | null
+          system_message?: string | null
+          template_name?: string
+          updated_at?: string | null
+          variables?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bot_content_templates_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bot_generated_content: {
+        Row: {
+          ai_model_used: string | null
+          bot_id: string | null
+          content: string
+          content_type: string
+          created_at: string | null
+          engagement_metrics: Json | null
+          generation_cost: number | null
+          id: string
+          meta_data: Json | null
+          published_at: string | null
+          scheduled_at: string | null
+          seo_keywords: string[] | null
+          status: string | null
+          template_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          ai_model_used?: string | null
+          bot_id?: string | null
+          content: string
+          content_type: string
+          created_at?: string | null
+          engagement_metrics?: Json | null
+          generation_cost?: number | null
+          id?: string
+          meta_data?: Json | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          seo_keywords?: string[] | null
+          status?: string | null
+          template_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          ai_model_used?: string | null
+          bot_id?: string | null
+          content?: string
+          content_type?: string
+          created_at?: string | null
+          engagement_metrics?: Json | null
+          generation_cost?: number | null
+          id?: string
+          meta_data?: Json | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          seo_keywords?: string[] | null
+          status?: string | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bot_generated_content_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bot_generated_content_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "bot_content_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       breadcrumb_configs: {
         Row: {
@@ -17434,7 +17660,13 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "super_admin" | "admin" | "moderator" | "employer" | "user"
+      app_role:
+        | "super_admin"
+        | "admin"
+        | "moderator"
+        | "employer"
+        | "user"
+        | "ai_bot"
       application_status:
         | "applied"
         | "reviewing"
@@ -17583,7 +17815,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["super_admin", "admin", "moderator", "employer", "user"],
+      app_role: [
+        "super_admin",
+        "admin",
+        "moderator",
+        "employer",
+        "user",
+        "ai_bot",
+      ],
       application_status: [
         "applied",
         "reviewing",
