@@ -77,13 +77,6 @@ const Network = () => {
 
           <TabsContent value="analytics" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <div className="bg-card p-4 rounded-lg border">
-                <h3 className="text-lg font-semibold mb-4">Email System Testing</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Test your email configuration to ensure all automated emails are working properly.
-                </p>
-                <EmailTestButton />
-              </div>
               <NetworkStats />
             </div>
           </TabsContent>
