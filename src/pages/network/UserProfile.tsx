@@ -67,7 +67,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ profileIdOverride, isPublicVi
             profile_picture_url
           )
         `)
-        .eq('author_id', id)
+        .eq('user_id', id)
+        .eq('is_deleted', false)
         .order('created_at', { ascending: false })
         .limit(10);
 
