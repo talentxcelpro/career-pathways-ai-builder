@@ -4,18 +4,15 @@ import { toast } from 'sonner';
 
 export interface AIBot {
   id: string;
-  name: string;
+  full_name: string;
   email: string;
-  role: string;
+  role?: string;
   profile_picture_url?: string;
-  department: string[];
+  departments: string[];
   content_domains: string[];
-  tone_style: string;
-  frequency: string;
-  distribution_channels: string[];
-  is_active: boolean;
-  user_id?: string;
-  bot_config: any;
+  bot_tone: string;
+  content_frequency: string;
+  is_ai_bot: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -59,8 +56,9 @@ export const useBots = () => {
     queryKey: ['ai-bots'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('ai_bots')
+        .from('profiles')
         .select('*')
+        .eq('is_ai_bot', true)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -74,14 +72,21 @@ export const useCreateBot = () => {
   
   return useMutation({
     mutationFn: async (bot: Omit<AIBot, 'id' | 'created_at' | 'updated_at'>) => {
-      const { data, error } = await supabase
-        .from('ai_bots')
-        .insert(bot)
-        .select()
-        .single();
+      // Call edge function to create bot user
+      const { data, error } = await supabase.functions.invoke('create-bot-user', {
+        body: {
+          full_name: bot.full_name,
+          email: bot.email,
+          departments: bot.departments,
+          content_domains: bot.content_domains,
+          bot_tone: bot.bot_tone,
+          content_frequency: bot.content_frequency,
+          profile_picture_url: bot.profile_picture_url
+        }
+      });
       
       if (error) throw error;
-      return data;
+      return data.user;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ai-bots'] });
@@ -99,7 +104,7 @@ export const useUpdateBot = () => {
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<AIBot> & { id: string }) => {
       const { data, error } = await supabase
-        .from('ai_bots')
+        .from('profiles')
         .update(updates)
         .eq('id', id)
         .select()
@@ -123,10 +128,10 @@ export const useDeleteBot = () => {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('ai_bots')
-        .delete()
-        .eq('id', id);
+      // Call edge function to delete bot user
+      const { error } = await supabase.functions.invoke('delete-bot-user', {
+        body: { botId: id }
+      });
       
       if (error) throw error;
     },
@@ -183,12 +188,12 @@ export const useBotStats = () => {
     queryKey: ['bot-stats'],
     queryFn: async () => {
       const [botsResult, contentResult, templatesResult] = await Promise.all([
-        supabase.from('ai_bots').select('id, is_active'),
+        supabase.from('profiles').select('id, is_ai_bot').eq('is_ai_bot', true),
         supabase.from('bot_generated_content').select('id, status, generation_cost'),
         supabase.from('bot_content_templates').select('id, is_active')
       ]);
 
-      const activeBots = botsResult.data?.filter(bot => bot.is_active).length || 0;
+      const activeBots = botsResult.data?.length || 0;
       const totalBots = botsResult.data?.length || 0;
       const totalContent = contentResult.data?.length || 0;
       const publishedContent = contentResult.data?.filter(content => content.status === 'published').length || 0;

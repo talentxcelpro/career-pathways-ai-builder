@@ -55,7 +55,7 @@ export const BotAnalytics: React.FC = () => {
           <CardContent>
             <div className="text-2xl font-bold">{bots.length}</div>
             <p className="text-xs text-muted-foreground">
-              {bots.filter(b => b.is_active).length} active
+              {bots.filter(b => b.is_ai_bot).length} active
             </p>
           </CardContent>
         </Card>
@@ -130,7 +130,7 @@ export const BotAnalytics: React.FC = () => {
                         {index + 1}
                       </div>
                       <div>
-                        <p className="font-medium">{bot!.name}</p>
+                        <p className="font-medium">{bot!.full_name}</p>
                         <p className="text-sm text-muted-foreground">{bot!.role}</p>
                       </div>
                     </div>
@@ -199,16 +199,16 @@ export const BotAnalytics: React.FC = () => {
                 <div key={bot.id} className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      {bot.name.slice(0, 2).toUpperCase()}
+                      {bot.full_name.slice(0, 2).toUpperCase()}
                     </div>
                     <div>
-                      <h4 className="font-medium">{bot.name}</h4>
+                      <h4 className="font-medium">{bot.full_name}</h4>
                       <p className="text-sm text-muted-foreground">{bot.role}</p>
                       <div className="flex items-center space-x-2 mt-1">
-                        <Badge variant={bot.is_active ? 'default' : 'secondary'}>
-                          {bot.is_active ? 'Active' : 'Inactive'}
+                        <Badge variant={bot.is_ai_bot ? 'default' : 'secondary'}>
+                          {bot.is_ai_bot ? 'Active' : 'Inactive'}
                         </Badge>
-                        <Badge variant="outline">{bot.frequency}</Badge>
+                        <Badge variant="outline">{bot.content_frequency}</Badge>
                       </div>
                     </div>
                   </div>

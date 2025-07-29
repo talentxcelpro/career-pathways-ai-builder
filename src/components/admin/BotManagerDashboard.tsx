@@ -25,30 +25,28 @@ export const BotManagerDashboard: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: '',
+    full_name: '',
     email: '',
     role: '',
-    department: [] as string[],
+    departments: [] as string[],
     content_domains: [] as string[],
-    tone_style: 'professional',
-    frequency: 'daily',
-    distribution_channels: [] as string[],
-    is_active: true,
-    bot_config: {}
+    bot_tone: 'professional',
+    content_frequency: 'daily',
+    is_ai_bot: true,
+    profile_picture_url: ''
   });
 
   const resetForm = () => {
     setFormData({
-      name: '',
+      full_name: '',
       email: '',
       role: '',
-      department: [],
+      departments: [],
       content_domains: [],
-      tone_style: 'professional',
-      frequency: 'daily',
-      distribution_channels: [],
-      is_active: true,
-      bot_config: {}
+      bot_tone: 'professional',
+      content_frequency: 'daily',
+      is_ai_bot: true,
+      profile_picture_url: ''
     });
   };
 
@@ -62,16 +60,15 @@ export const BotManagerDashboard: React.FC = () => {
     setIsEditing(true);
     setSelectedBot(bot);
     setFormData({
-      name: bot.name,
+      full_name: bot.full_name,
       email: bot.email,
-      role: bot.role,
-      department: bot.department,
+      role: bot.role || '',
+      departments: bot.departments,
       content_domains: bot.content_domains,
-      tone_style: bot.tone_style,
-      frequency: bot.frequency,
-      distribution_channels: bot.distribution_channels,
-      is_active: bot.is_active,
-      bot_config: bot.bot_config
+      bot_tone: bot.bot_tone,
+      content_frequency: bot.content_frequency,
+      is_ai_bot: bot.is_ai_bot,
+      profile_picture_url: bot.profile_picture_url || ''
     });
     setIsDialogOpen(true);
   };
@@ -96,7 +93,7 @@ export const BotManagerDashboard: React.FC = () => {
     try {
       await updateBot.mutateAsync({ 
         id: bot.id, 
-        is_active: !bot.is_active 
+        is_ai_bot: bot.is_ai_bot // Note: We can't toggle active status directly in profiles, bots are always active when they exist
       });
     } catch (error) {
       console.error('Error toggling bot status:', error);
@@ -104,7 +101,7 @@ export const BotManagerDashboard: React.FC = () => {
   };
 
   const handleDeleteBot = async (bot: AIBot) => {
-    if (window.confirm(`Are you sure you want to delete ${bot.name}?`)) {
+    if (window.confirm(`Are you sure you want to delete ${bot.full_name}?`)) {
       try {
         await deleteBot.mutateAsync(bot.id);
       } catch (error) {
@@ -198,16 +195,16 @@ export const BotManagerDashboard: React.FC = () => {
                   <Avatar>
                     <AvatarImage src={bot.profile_picture_url} />
                     <AvatarFallback>
-                      {bot.name.slice(0, 2).toUpperCase()}
+                      {bot.full_name.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <CardTitle className="text-lg">{bot.name}</CardTitle>
+                    <CardTitle className="text-lg">{bot.full_name}</CardTitle>
                     <p className="text-sm text-muted-foreground">{bot.role}</p>
                   </div>
                 </div>
                 <Switch
-                  checked={bot.is_active}
+                  checked={bot.is_ai_bot}
                   onCheckedChange={() => handleToggleActive(bot)}
                 />
               </div>
@@ -217,7 +214,7 @@ export const BotManagerDashboard: React.FC = () => {
               <div>
                 <p className="text-sm font-medium mb-2">Departments</p>
                 <div className="flex flex-wrap gap-1">
-                  {bot.department.map((dept) => (
+                  {bot.departments.map((dept) => (
                     <Badge key={dept} variant="secondary" className="text-xs">
                       {dept}
                     </Badge>
@@ -238,12 +235,12 @@ export const BotManagerDashboard: React.FC = () => {
 
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Tone:</span>
-                <Badge variant="secondary">{bot.tone_style}</Badge>
+                <Badge variant="secondary">{bot.bot_tone}</Badge>
               </div>
 
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Frequency:</span>
-                <Badge variant="secondary">{bot.frequency}</Badge>
+                <Badge variant="secondary">{bot.content_frequency}</Badge>
               </div>
 
               <div className="flex space-x-2 pt-2">
@@ -282,11 +279,11 @@ export const BotManagerDashboard: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="name">Bot Name</Label>
+                <Label htmlFor="full_name">Bot Name</Label>
                 <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  id="full_name"
+                  value={formData.full_name}
+                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                   required
                 />
               </div>
@@ -314,8 +311,8 @@ export const BotManagerDashboard: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="tone_style">Tone Style</Label>
-                <Select value={formData.tone_style} onValueChange={(value) => setFormData({ ...formData, tone_style: value })}>
+                <Label htmlFor="bot_tone">Tone Style</Label>
+                <Select value={formData.bot_tone} onValueChange={(value) => setFormData({ ...formData, bot_tone: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -334,8 +331,8 @@ export const BotManagerDashboard: React.FC = () => {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="frequency">Frequency</Label>
-                <Select value={formData.frequency} onValueChange={(value) => setFormData({ ...formData, frequency: value })}>
+                <Label htmlFor="content_frequency">Frequency</Label>
+                <Select value={formData.content_frequency} onValueChange={(value) => setFormData({ ...formData, content_frequency: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -350,13 +347,13 @@ export const BotManagerDashboard: React.FC = () => {
             </div>
 
             <div>
-              <Label htmlFor="department">Departments (comma-separated)</Label>
+              <Label htmlFor="departments">Departments (comma-separated)</Label>
               <Input
-                id="department"
-                value={formData.department.join(', ')}
+                id="departments"
+                value={formData.departments.join(', ')}
                 onChange={(e) => setFormData({ 
                   ...formData, 
-                  department: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
+                  departments: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
                 })}
                 placeholder="Network, Community, Jobs"
               />
@@ -375,18 +372,6 @@ export const BotManagerDashboard: React.FC = () => {
               />
             </div>
 
-            <div>
-              <Label htmlFor="distribution_channels">Distribution Channels (comma-separated)</Label>
-              <Input
-                id="distribution_channels"
-                value={formData.distribution_channels.join(', ')}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  distribution_channels: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
-                })}
-                placeholder="Feed, Blog, Newsletter"
-              />
-            </div>
 
             <div className="flex justify-end space-x-2 pt-4">
               <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>

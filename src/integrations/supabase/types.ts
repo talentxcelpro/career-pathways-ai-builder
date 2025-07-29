@@ -10895,15 +10895,19 @@ export type Database = {
           about: string | null
           allow_profile_sharing: boolean | null
           banner_url: string | null
+          bot_tone: string | null
           career_goals: string[] | null
           career_interests: string[] | null
           career_stage: string | null
+          content_domains: string[] | null
+          content_frequency: string | null
           cover_image_url: string | null
           created_at: string | null
           current_company: string | null
           custom_logo_url: string | null
           custom_profile_url: string | null
           custom_theme: Json | null
+          departments: string[] | null
           email: string | null
           employer_status: string | null
           experience_years: number | null
@@ -10913,6 +10917,7 @@ export type Database = {
           headline: string | null
           id: string
           industry: string | null
+          is_ai_bot: boolean | null
           is_employer: boolean | null
           is_profile_public: boolean | null
           is_viewing_private: boolean | null
@@ -10965,15 +10970,19 @@ export type Database = {
           about?: string | null
           allow_profile_sharing?: boolean | null
           banner_url?: string | null
+          bot_tone?: string | null
           career_goals?: string[] | null
           career_interests?: string[] | null
           career_stage?: string | null
+          content_domains?: string[] | null
+          content_frequency?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           current_company?: string | null
           custom_logo_url?: string | null
           custom_profile_url?: string | null
           custom_theme?: Json | null
+          departments?: string[] | null
           email?: string | null
           employer_status?: string | null
           experience_years?: number | null
@@ -10983,6 +10992,7 @@ export type Database = {
           headline?: string | null
           id: string
           industry?: string | null
+          is_ai_bot?: boolean | null
           is_employer?: boolean | null
           is_profile_public?: boolean | null
           is_viewing_private?: boolean | null
@@ -11035,15 +11045,19 @@ export type Database = {
           about?: string | null
           allow_profile_sharing?: boolean | null
           banner_url?: string | null
+          bot_tone?: string | null
           career_goals?: string[] | null
           career_interests?: string[] | null
           career_stage?: string | null
+          content_domains?: string[] | null
+          content_frequency?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           current_company?: string | null
           custom_logo_url?: string | null
           custom_profile_url?: string | null
           custom_theme?: Json | null
+          departments?: string[] | null
           email?: string | null
           employer_status?: string | null
           experience_years?: number | null
@@ -11053,6 +11067,7 @@ export type Database = {
           headline?: string | null
           id?: string
           industry?: string | null
+          is_ai_bot?: boolean | null
           is_employer?: boolean | null
           is_profile_public?: boolean | null
           is_viewing_private?: boolean | null
