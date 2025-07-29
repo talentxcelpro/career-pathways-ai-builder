@@ -900,7 +900,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
                     ))
                   ) : connections && connections.length > 0 ? (
                     connections.slice(0, 2).map((connection, index) => (
-                      <div key={`connection-${connection.id}-${index}`} className="flex items-center space-x-3">
+                      <div key={`connection-${connection.id}-${connection.connected_at || connection.created_at}-${index}`} className="flex items-center space-x-3">
                         <Avatar className="w-8 h-8">
                           <AvatarImage src={connection.otherUser?.profile_picture_url} />
                           <AvatarFallback className="text-xs bg-gray-100 text-gray-800 font-medium">
