@@ -12,8 +12,8 @@ import { Play, Clock, Eye, TrendingUp, FileText, Bot } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const BotContentGenerator: React.FC = () => {
-  const { data: bots = [] } = useBots();
-  const { data: generatedContent = [] } = useBotGeneratedContent();
+  const { data: bots = [], refetch } = useBots();
+  const { data: generatedContent = [], refetch: refetchContent } = useBotGeneratedContent();
   const [selectedBot, setSelectedBot] = useState<string>('');
   const [contentType, setContentType] = useState<string>('post');
   const [category, setCategory] = useState<string>('');
@@ -43,23 +43,34 @@ export const BotContentGenerator: React.FC = () => {
 
     setIsGenerating(true);
     try {
-      console.log('Generating content with:', { selectedBot, contentType, category, customPrompt });
+      console.log('=== Starting Content Generation ===');
+      console.log('Request parameters:', { selectedBot, contentType, category, customPrompt });
       
       // Check if user is authenticated
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('User not authenticated');
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw new Error('Failed to verify authentication');
       }
       
-      console.log('User authenticated, calling edge function...');
+      if (!session?.access_token) {
+        console.error('No valid session found');
+        throw new Error('Please log in to generate content');
+      }
       
-      // Call the bot content generator edge function
+      console.log('User authenticated, session valid');
+      
+      // Call the bot content generator edge function with proper error handling
+      console.log('Calling edge function...');
       const { data, error } = await supabase.functions.invoke('bot-content-generator', {
         body: {
           botId: selectedBot,
           contentType,
           category,
           customPrompt: customPrompt || undefined
+        },
+        headers: {
+          'Content-Type': 'application/json'
         }
       });
 
@@ -67,21 +78,46 @@ export const BotContentGenerator: React.FC = () => {
 
       if (error) {
         console.error('Edge function error:', error);
-        throw new Error(error.message || 'Edge function failed');
+        throw new Error(`Edge function error: ${error.message}`);
       }
 
-      if (data?.success && data?.content) {
+      if (!data) {
+        throw new Error('No response from edge function');
+      }
+
+      if (data.success && data.content) {
+        console.log('Content generated successfully:', data.content);
         setLastGenerated(data.content);
         toast.success('Content generated successfully!');
         setCustomPrompt('');
-      } else if (data?.error) {
+        
+        // Refresh the generated content list
+        await refetchContent();
+      } else if (data.error) {
+        console.error('Generation error:', data.error);
         throw new Error(data.error);
       } else {
-        throw new Error('No content returned from generator');
+        console.error('Unexpected response format:', data);
+        throw new Error('Unexpected response format from generator');
       }
     } catch (error) {
-      console.error('Error generating content:', error);
-      toast.error(`Failed to generate content: ${error.message}`);
+      console.error('=== Content Generation Failed ===');
+      console.error('Error details:', error);
+      console.error('Error message:', error.message);
+      
+      // Provide more specific error messages based on error type
+      let errorMessage = 'Failed to generate content';
+      if (error.message.includes('Authentication')) {
+        errorMessage = 'Authentication required. Please refresh the page and try again.';
+      } else if (error.message.includes('Edge function')) {
+        errorMessage = 'Service temporarily unavailable. Please try again in a moment.';
+      } else if (error.message.includes('Bot not found')) {
+        errorMessage = 'Selected bot is not available. Please choose a different bot.';
+      } else {
+        errorMessage = `Failed to generate content: ${error.message}`;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsGenerating(false);
     }
@@ -90,6 +126,14 @@ export const BotContentGenerator: React.FC = () => {
   const handleBulkGenerate = async () => {
     setIsGenerating(true);
     try {
+      console.log('=== Starting Bulk Generation ===');
+      
+      // Check authentication
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('Please log in to generate content');
+      }
+      
       // Generate content for all active bots
       const { data, error } = await supabase.functions.invoke('bot-content-generator', {
         body: {
@@ -98,12 +142,21 @@ export const BotContentGenerator: React.FC = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Bulk generation error:', error);
+        throw new Error(error.message || 'Bulk generation failed');
+      }
 
-      toast.success('Bulk content generation started!');
+      if (data?.success) {
+        toast.success(`Bulk generation completed! Generated ${data.generated}/${data.total} content pieces.`);
+        // Refresh the content list
+        await refetchContent();
+      } else {
+        throw new Error(data?.error || 'Bulk generation failed');
+      }
     } catch (error) {
       console.error('Error with bulk generation:', error);
-      toast.error('Failed to start bulk generation');
+      toast.error(`Failed to start bulk generation: ${error.message}`);
     } finally {
       setIsGenerating(false);
     }

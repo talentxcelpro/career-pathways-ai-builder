@@ -5,13 +5,22 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 };
 
+// Configuration and environment variables
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
 
+// Function configuration
+export const config = {
+  maxDuration: 30, // 30 seconds timeout
+};
+
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -20,12 +29,64 @@ serve(async (req) => {
     console.log('=== Bot Content Generator Request ===');
     console.log('Method:', req.method);
     console.log('URL:', req.url);
-    console.log('Headers:', Object.fromEntries(req.headers.entries()));
+    console.log('Timestamp:', new Date().toISOString());
     
-    if (!supabaseUrl || !supabaseServiceKey) {
+    // Validate environment variables
+    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
       console.error('Missing Supabase configuration');
-      throw new Error('Missing Supabase configuration');
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Server configuration error',
+          details: 'Missing Supabase configuration'
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
+    
+    // Check authentication
+    const authHeader = req.headers.get('Authorization');
+    console.log('Auth header present:', !!authHeader);
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('Missing or invalid authorization header');
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Authentication required',
+          details: 'Missing or invalid authorization header'
+        }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const jwt = authHeader.split(' ')[1];
+    console.log('JWT token present:', !!jwt);
+    
+    // Create authenticated Supabase client
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: {
+          Authorization: authHeader,
+        },
+      },
+    });
+    
+    // Verify user authentication
+    const { data: { user }, error: authError } = await supabase.auth.getUser(jwt);
+    if (authError || !user) {
+      console.error('Authentication verification failed:', authError);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Authentication failed',
+          details: authError?.message || 'Invalid or expired token'
+        }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    console.log('User authenticated successfully:', user.id);
     
     if (!deepseekApiKey) {
       console.log('Warning: DeepSeek API key not configured, using mock responses');
@@ -33,15 +94,23 @@ serve(async (req) => {
       console.log('DeepSeek API key is configured');
     }
     
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    
+    // Parse request body
     let requestBody;
     try {
-      requestBody = await req.json();
+      const bodyText = await req.text();
+      console.log('Raw request body:', bodyText);
+      requestBody = JSON.parse(bodyText);
       console.log('Request body parsed successfully:', requestBody);
     } catch (parseError) {
       console.error('Failed to parse request body:', parseError);
-      throw new Error('Invalid JSON in request body');
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid request format',
+          details: 'Request body must be valid JSON'
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
     
     const { botId, contentType = 'post', category, customPrompt, bulkGenerate, count = 50 } = requestBody;
@@ -50,15 +119,27 @@ serve(async (req) => {
       botId, contentType, category, customPrompt: !!customPrompt, bulkGenerate, count
     });
 
+    // Create service role client for database operations
+    const serviceSupabase = createClient(supabaseUrl, supabaseServiceKey);
+
     if (bulkGenerate) {
-      return await handleBulkGeneration(supabase, count);
+      return await handleBulkGeneration(serviceSupabase, count);
     } else {
-      return await handleSingleGeneration(supabase, botId, contentType, category, customPrompt);
+      return await handleSingleGeneration(serviceSupabase, botId, contentType, category, customPrompt);
     }
   } catch (error) {
-    console.error('Error in bot content generator:', error);
+    console.error('=== Error in bot content generator ===');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Timestamp:', new Date().toISOString());
+    
     return new Response(
-      JSON.stringify({ error: error.message, details: error.stack }),
+      JSON.stringify({ 
+        success: false, 
+        error: error.message || 'Internal server error',
+        details: error.stack,
+        timestamp: new Date().toISOString()
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
@@ -71,11 +152,15 @@ async function handleSingleGeneration(
   category: string,
   customPrompt?: string
 ) {
+  console.log('=== Single Content Generation ===');
+  console.log('Parameters:', { botId, contentType, category, hasCustomPrompt: !!customPrompt });
+  
   if (!botId || !category) {
     throw new Error('Bot ID and category are required');
   }
 
   // Get bot details
+  console.log('Fetching bot details for ID:', botId);
   const { data: bot, error: botError } = await supabase
     .from('ai_bots')
     .select('*')
@@ -83,14 +168,25 @@ async function handleSingleGeneration(
     .eq('is_active', true)
     .single();
 
-  if (botError || !bot) {
+  if (botError) {
+    console.error('Bot fetch error:', botError);
+    throw new Error(`Failed to fetch bot: ${botError.message}`);
+  }
+
+  if (!bot) {
+    console.error('Bot not found or inactive');
     throw new Error('Bot not found or inactive');
   }
 
+  console.log('Bot found:', { name: bot.name, role: bot.role, domains: bot.content_domains });
+
   // Generate content using AI
+  console.log('Generating AI content...');
   const content = await generateAIContent(bot, contentType, category, customPrompt);
+  console.log('Content generated:', { title: content.title, bodyLength: content.body?.length });
 
   // Store generated content
+  console.log('Storing generated content in database...');
   const { data: generatedContent, error: insertError } = await supabase
     .from('bot_generated_content')
     .insert({
@@ -105,15 +201,18 @@ async function handleSingleGeneration(
       },
       seo_keywords: content.keywords || [],
       status: 'draft',
-            ai_model_used: 'deepseek-chat',
+      ai_model_used: 'deepseek-chat',
       generation_cost: 0.002 // Estimated cost
     })
     .select()
     .single();
 
   if (insertError) {
+    console.error('Database insert error:', insertError);
     throw new Error(`Failed to save content: ${insertError.message}`);
   }
+
+  console.log('Content stored successfully with ID:', generatedContent.id);
 
   return new Response(
     JSON.stringify({ 
