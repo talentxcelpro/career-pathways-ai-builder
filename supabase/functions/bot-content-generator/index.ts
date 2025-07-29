@@ -9,7 +9,7 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -23,8 +23,8 @@ serve(async (req) => {
       throw new Error('Missing Supabase configuration');
     }
     
-    if (!openAIApiKey) {
-      console.log('Warning: OpenAI API key not configured, using mock responses');
+    if (!deepseekApiKey) {
+      console.log('Warning: DeepSeek API key not configured, using mock responses');
     }
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -92,7 +92,7 @@ async function handleSingleGeneration(
       },
       seo_keywords: content.keywords || [],
       status: 'draft',
-            ai_model_used: 'gpt-4.1-2025-04-14',
+            ai_model_used: 'deepseek-chat',
       generation_cost: 0.002 // Estimated cost
     })
     .select()
@@ -175,7 +175,7 @@ async function handleBulkGeneration(supabase: any, count: number) {
             },
             seo_keywords: content.keywords || [],
             status: 'draft',
-            ai_model_used: 'gpt-4.1-2025-04-14',
+            ai_model_used: 'deepseek-chat',
             generation_cost: 0.002
           })
           .select()
@@ -217,7 +217,7 @@ async function handleBulkGeneration(supabase: any, count: number) {
 }
 
 async function generateAIContent(bot: any, contentType: string, category: string, customPrompt?: string) {
-  if (!openAIApiKey) {
+  if (!deepseekApiKey) {
     // Mock content generation for demo purposes
     return {
       title: `${category} - ${bot.name}'s Insights`,
@@ -241,14 +241,14 @@ Please format your response as follows:
 - Keep the content relevant to ${bot.content_domains.join(', ')} expertise`;
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${deepseekApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: 'deepseek-chat',
         messages: [
           { role: 'system', content: systemMessage },
           { role: 'user', content: enhancedPrompt }
@@ -259,7 +259,7 @@ Please format your response as follows:
     });
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.statusText}`);
+      throw new Error(`DeepSeek API error: ${response.statusText}`);
     }
 
     const data = await response.json();
@@ -279,11 +279,11 @@ Please format your response as follows:
 
     return { title, body, keywords };
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    console.error('DeepSeek API error:', error);
     // Fallback to mock content
     return {
       title: `${category} - Expert Insights from ${bot.name}`,
-      body: `This ${contentType} provides valuable insights about ${category}. As a ${bot.role}, I believe this is crucial for career development. [Content would be AI-generated with proper OpenAI integration]`,
+      body: `This ${contentType} provides valuable insights about ${category}. As a ${bot.role}, I believe this is crucial for career development. [Content would be AI-generated with proper DeepSeek integration]`,
       keywords: [category.toLowerCase().replace(/\s+/g, '-'), bot.role.toLowerCase().replace(/\s+/g, '-')]
     };
   }
