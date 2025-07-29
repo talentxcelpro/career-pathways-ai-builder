@@ -225,7 +225,7 @@ export const BotAnalytics: React.FC = () => {
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Domains</p>
-                        <p className="font-medium">{bot.content_domains.length}</p>
+                        <p className="font-medium">{(bot.content_domains || []).length}</p>
                       </div>
                     </div>
                   </div>
