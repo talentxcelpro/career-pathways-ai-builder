@@ -2593,6 +2593,54 @@ export type Database = {
           },
         ]
       }
+      bot_scraping_assignments: {
+        Row: {
+          bot_id: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          keywords: string[]
+          location_preferences: string[] | null
+          max_jobs_per_scrape: number | null
+          source_id: string
+        }
+        Insert: {
+          bot_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          keywords?: string[]
+          location_preferences?: string[] | null
+          max_jobs_per_scrape?: number | null
+          source_id: string
+        }
+        Update: {
+          bot_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          keywords?: string[]
+          location_preferences?: string[] | null
+          max_jobs_per_scrape?: number | null
+          source_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bot_scraping_assignments_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bot_scraping_assignments_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "job_scraping_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       breadcrumb_configs: {
         Row: {
           breadcrumb_structure: Json
@@ -7867,6 +7915,54 @@ export type Database = {
           },
         ]
       }
+      job_scraping_sources: {
+        Row: {
+          base_url: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          jobs_scraped_count: number | null
+          last_scraped_at: string | null
+          location_filters: string[] | null
+          scraping_config: Json
+          scraping_frequency: string | null
+          search_keywords: string[] | null
+          source_name: string
+          success_rate: number | null
+          updated_at: string
+        }
+        Insert: {
+          base_url: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          jobs_scraped_count?: number | null
+          last_scraped_at?: string | null
+          location_filters?: string[] | null
+          scraping_config?: Json
+          scraping_frequency?: string | null
+          search_keywords?: string[] | null
+          source_name: string
+          success_rate?: number | null
+          updated_at?: string
+        }
+        Update: {
+          base_url?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          jobs_scraped_count?: number | null
+          last_scraped_at?: string | null
+          location_filters?: string[] | null
+          scraping_config?: Json
+          scraping_frequency?: string | null
+          search_keywords?: string[] | null
+          source_name?: string
+          success_rate?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       job_skills_required: {
         Row: {
           created_at: string | null
@@ -13051,6 +13147,83 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      scraped_jobs: {
+        Row: {
+          bot_id: string
+          company: string
+          created_at: string
+          enhanced_description: string | null
+          enhanced_title: string | null
+          error_message: string | null
+          id: string
+          job_description: string
+          job_title: string
+          location: string | null
+          posted_at: string | null
+          processing_status: string | null
+          published_job_id: string | null
+          salary: string | null
+          scraped_at: string
+          seo_keywords: string[] | null
+          source_platform: string
+          source_url: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          bot_id: string
+          company: string
+          created_at?: string
+          enhanced_description?: string | null
+          enhanced_title?: string | null
+          error_message?: string | null
+          id?: string
+          job_description: string
+          job_title: string
+          location?: string | null
+          posted_at?: string | null
+          processing_status?: string | null
+          published_job_id?: string | null
+          salary?: string | null
+          scraped_at?: string
+          seo_keywords?: string[] | null
+          source_platform: string
+          source_url: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          bot_id?: string
+          company?: string
+          created_at?: string
+          enhanced_description?: string | null
+          enhanced_title?: string | null
+          error_message?: string | null
+          id?: string
+          job_description?: string
+          job_title?: string
+          location?: string | null
+          posted_at?: string | null
+          processing_status?: string | null
+          published_job_id?: string | null
+          salary?: string | null
+          scraped_at?: string
+          seo_keywords?: string[] | null
+          source_platform?: string
+          source_url?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scraped_jobs_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       search_engine_submissions: {
         Row: {
