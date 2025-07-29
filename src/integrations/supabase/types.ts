@@ -13225,6 +13225,51 @@ export type Database = {
           },
         ]
       }
+      scraping_jobs_queue: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          jobs_found: number | null
+          last_error: string | null
+          max_retries: number | null
+          retry_count: number | null
+          scrape_at: string | null
+          source_id: string | null
+          source_url: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          jobs_found?: number | null
+          last_error?: string | null
+          max_retries?: number | null
+          retry_count?: number | null
+          scrape_at?: string | null
+          source_id?: string | null
+          source_url: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          jobs_found?: number | null
+          last_error?: string | null
+          max_retries?: number | null
+          retry_count?: number | null
+          scrape_at?: string | null
+          source_id?: string | null
+          source_url?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       search_engine_submissions: {
         Row: {
           created_at: string
