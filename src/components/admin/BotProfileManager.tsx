@@ -789,26 +789,8 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                         // Update the AI bot
                         await onUpdate(bot.id, { bot_config: updatedConfig });
                         
-                        // Create bot account using Edge Function
-                        const { data: botAccountData, error: botAccountError } = await supabase.functions.invoke('create-bot-account', {
-                          body: {
-                            botId: bot.id,
-                            name: bot.name,
-                            email: bot.email,
-                            role: bot.role,
-                            contentDomains: bot.content_domains || [],
-                            profilePictureUrl: bot.profile_picture_url,
-                            bannerPictureUrl: bot.banner_picture_url,
-                            socialLinks: socialLinks
-                          }
-                        });
-                        
-                        if (botAccountError || !botAccountData?.success) {
-                          console.error('Bot account creation error:', botAccountError || botAccountData);
-                          throw new Error(botAccountData?.error || 'Failed to create bot account');
-                        }
-                        
-                        toast.success(`Bot account created! Login: ${botAccountData.email} | Password: ${botAccountData.password} | Profile: ${botAccountData.profileUrl}`);
+                        // Bot configuration updated successfully
+                        toast.success('Bot settings saved successfully!');
                       } catch (error) {
                         console.error('Save error:', error);
                         console.error('Full error details:', JSON.stringify(error, null, 2));
