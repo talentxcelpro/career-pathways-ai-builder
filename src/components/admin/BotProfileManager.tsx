@@ -811,7 +811,8 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                         toast.success(`Bot account created! Login: ${botAccountData.email} | Password: ${botAccountData.password} | Profile: ${botAccountData.profileUrl}`);
                       } catch (error) {
                         console.error('Save error:', error);
-                        toast.error('Failed to save settings. Please try again.');
+                        console.error('Full error details:', JSON.stringify(error, null, 2));
+                        toast.error(`Failed to save settings: ${error.message || 'Please try again.'}`);
                       } finally {
                         setIsUpdating(false);
                       }
