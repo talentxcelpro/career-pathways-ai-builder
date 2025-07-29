@@ -10,6 +10,7 @@ import { TestCaseRunner } from "./TestCaseRunner";
 import { BiasDetector } from "./BiasDetector";
 import { GrammarValidator } from "./GrammarValidator";
 import { TestResults } from "./TestResults";
+import { JobScrapingTester } from "./JobScrapingTester";
 import { useTestEngine } from "../../hooks/useTestEngine";
 
 export function PromptTestingEngine() {
@@ -109,11 +110,12 @@ export function PromptTestingEngine() {
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="suites">Test Suites</TabsTrigger>
           <TabsTrigger value="results">Results</TabsTrigger>
           <TabsTrigger value="analysis">Analysis</TabsTrigger>
+          <TabsTrigger value="workflow">Job Workflow</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -232,6 +234,10 @@ export function PromptTestingEngine() {
             <BiasDetector />
             <GrammarValidator />
           </div>
+        </TabsContent>
+
+        <TabsContent value="workflow">
+          <JobScrapingTester />
         </TabsContent>
       </Tabs>
     </div>
