@@ -34,10 +34,23 @@ const AdminManagement = () => {
   const { data: adminUsers } = useQuery({
     queryKey: ['admin-users', searchTerm],
     queryFn: async () => {
+      // Get admin user IDs from user_roles table
+      const { data: adminRoles } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .in('role', ['super_admin', 'admin', 'moderator'])
+        .eq('is_active', true);
+
+      if (!adminRoles || adminRoles.length === 0) {
+        return [];
+      }
+
+      const adminUserIds = adminRoles.map(role => role.user_id);
+
       let query = supabase
         .from('profiles')
         .select('*')
-        .eq('user_role', 'admin')
+        .in('id', adminUserIds)
         .order('created_at', { ascending: false });
 
       if (searchTerm) {
@@ -53,21 +66,37 @@ const AdminManagement = () => {
   const { data: adminStats } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
+      // Get admin counts from user_roles table
       const [
         { count: totalAdmins },
+        { count: superAdmins }
+      ] = await Promise.all([
+        supabase.from('user_roles').select('*', { count: 'exact', head: true }).in('role', ['super_admin', 'admin', 'moderator']).eq('is_active', true),
+        supabase.from('user_roles').select('*', { count: 'exact', head: true }).eq('role', 'super_admin').eq('is_active', true)
+      ]);
+
+      // Get admin user IDs for activity checks
+      const { data: adminRoles } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .in('role', ['super_admin', 'admin', 'moderator'])
+        .eq('is_active', true);
+
+      const adminUserIds = adminRoles?.map(role => role.user_id) || [];
+
+      const [
         { count: activeAdmins },
         { count: recentLogins }
       ] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'admin'),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'admin').gt('last_login_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'admin').gt('last_login_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        adminUserIds.length > 0 ? supabase.from('profiles').select('*', { count: 'exact', head: true }).in('id', adminUserIds).gt('last_login_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()) : Promise.resolve({ count: 0 }),
+        adminUserIds.length > 0 ? supabase.from('profiles').select('*', { count: 'exact', head: true }).in('id', adminUserIds).gt('last_login_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) : Promise.resolve({ count: 0 })
       ]);
 
       return {
         totalAdmins: totalAdmins || 0,
         activeAdmins: activeAdmins || 0,
         recentLogins: recentLogins || 0,
-        superAdmins: 1 // Hardcoded as we don't have role hierarchy
+        superAdmins: superAdmins || 0
       };
     }
   });
