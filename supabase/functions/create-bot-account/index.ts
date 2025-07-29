@@ -62,6 +62,10 @@ serve(async (req) => {
       user_metadata: {
         full_name: name,
         is_ai_bot: true
+      },
+      app_metadata: {
+        provider: 'email',
+        providers: ['email']
       }
     });
 
