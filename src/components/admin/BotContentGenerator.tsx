@@ -48,18 +48,19 @@ export const BotContentGenerator: React.FC = () => {
       console.log('Category:', category);
       console.log('Content type:', contentType);
       
-      const requestBody = {
-        botId: selectedBot,
-        category,
-        contentType,
-        prompt: customPrompt || undefined
-      };
+      // Add explicit headers and logging
+      console.log('Invoking function with explicit config...');
       
-      console.log('Request body:', requestBody);
-      
-      // Call the edge function directly
       const { data, error } = await supabase.functions.invoke('bot-content-generator', {
-        body: requestBody
+        body: {
+          botId: selectedBot,
+          category,
+          contentType,
+          prompt: customPrompt || undefined
+        },
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
       console.log('Function response:', { data, error });
