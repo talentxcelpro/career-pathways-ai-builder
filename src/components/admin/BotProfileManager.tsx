@@ -789,6 +789,17 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                         // Update the AI bot
                         await onUpdate(bot.id, { bot_config: updatedConfig });
                         
+                        // Also update the profiles table to sync the profile picture
+                        if (bot.user_id) {
+                          await supabase
+                            .from('profiles')
+                            .update({
+                              profile_picture_url: bot.profile_picture_url,
+                              banner_url: bot.banner_picture_url
+                            })
+                            .eq('id', bot.user_id);
+                        }
+                        
                         // Bot configuration updated successfully
                         toast.success('Bot settings saved successfully!');
                       } catch (error) {
