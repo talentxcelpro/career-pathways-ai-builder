@@ -676,71 +676,207 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
               <CardHeader>
                 <CardTitle>Account Settings</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Bot Status</Label>
-                    <p className="text-sm text-muted-foreground">Enable or disable this bot</p>
+              <CardContent className="space-y-6">
+                <div>
+                  <Label className="text-base font-medium">Bot Status</Label>
+                  <p className="text-sm text-muted-foreground mb-3">Enable or disable this bot</p>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="bot-active"
+                      checked={bot.is_active}
+                      onChange={(e) => {
+                        onUpdate(bot.id, { is_active: e.target.checked });
+                      }}
+                      className="rounded"
+                    />
+                    <Label htmlFor="bot-active">Active</Label>
                   </div>
-                  <Badge variant={bot.is_active ? 'default' : 'secondary'}>
-                    {bot.is_active ? 'Active' : 'Inactive'}
-                  </Badge>
                 </div>
 
                 <div>
-                  <Label>Content Generation Frequency</Label>
-                  <select className="w-full p-2 border rounded-md mt-1" defaultValue={bot.frequency}>
-                    <option value="hourly">Hourly</option>
+                  <Label className="text-base font-medium">Content Generation Frequency</Label>
+                  <select 
+                    value={bot.frequency} 
+                    onChange={(e) => onUpdate(bot.id, { frequency: e.target.value })}
+                    className="w-full p-2 border rounded-md mt-2"
+                  >
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
                     <option value="monthly">Monthly</option>
+                    <option value="as_needed">As Needed</option>
                   </select>
                 </div>
 
                 <div>
-                  <Label>Communication Tone</Label>
-                  <select className="w-full p-2 border rounded-md mt-1" defaultValue={bot.tone_style}>
+                  <Label className="text-base font-medium">Communication Tone</Label>
+                  <select 
+                    value={bot.tone_style} 
+                    onChange={(e) => onUpdate(bot.id, { tone_style: e.target.value })}
+                    className="w-full p-2 border rounded-md mt-2"
+                  >
                     <option value="professional">Professional</option>
-                    <option value="casual">Casual</option>
                     <option value="friendly">Friendly</option>
-                    <option value="authoritative">Authoritative</option>
+                    <option value="casual">Casual</option>
+                    <option value="formal">Formal</option>
+                    <option value="enthusiastic">Enthusiastic</option>
                   </select>
                 </div>
 
                 <div>
-                  <Label>Distribution Channels</Label>
-                  <div className="space-y-2 mt-2">
-                    {['LinkedIn', 'Email', 'Blog', 'Newsletter'].map((channel) => (
+                  <Label className="text-base font-medium">Distribution Channels</Label>
+                  <div className="grid grid-cols-2 gap-3 mt-3">
+                    {['LinkedIn', 'Email', 'Blog', 'Newsletter', 'Social Media', 'Website'].map((channel) => (
                       <div key={channel} className="flex items-center space-x-2">
-                        <input 
-                          type="checkbox" 
-                          id={channel} 
-                          defaultChecked={bot.distribution_channels?.includes(channel.toLowerCase())}
+                        <input
+                          type="checkbox"
+                          id={`channel-${channel.toLowerCase()}`}
+                          checked={bot.distribution_channels?.includes(channel.toLowerCase()) || false}
+                          onChange={(e) => {
+                            const currentChannels = bot.distribution_channels || [];
+                            const newChannels = e.target.checked
+                              ? [...currentChannels, channel.toLowerCase()]
+                              : currentChannels.filter(c => c !== channel.toLowerCase());
+                            onUpdate(bot.id, { distribution_channels: newChannels });
+                          }}
                           className="rounded"
                         />
-                        <label htmlFor={channel} className="text-sm">{channel}</label>
+                        <Label htmlFor={`channel-${channel.toLowerCase()}`}>{channel}</Label>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="pt-4 border-t">
-                  <h4 className="font-medium mb-2">Privacy Settings</h4>
-                  <div className="space-y-2">
+                <div>
+                  <Label className="text-base font-medium">Privacy Settings</Label>
+                  <div className="space-y-3 mt-3">
                     <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="public-profile" className="rounded" />
-                      <label htmlFor="public-profile" className="text-sm">Make profile publicly visible</label>
+                      <input
+                        type="checkbox"
+                        id="profile-public"
+                        defaultChecked={true}
+                        className="rounded"
+                      />
+                      <Label htmlFor="profile-public">Make profile publicly visible</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="search-indexing" className="rounded" />
-                      <label htmlFor="search-indexing" className="text-sm">Allow search engine indexing</label>
+                      <input
+                        type="checkbox"
+                        id="search-indexing"
+                        defaultChecked={true}
+                        className="rounded"
+                      />
+                      <Label htmlFor="search-indexing">Allow search engine indexing</Label>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-2 pt-4">
-                  <Button>Save Changes</Button>
-                  <Button variant="outline">Reset to Defaults</Button>
+                <div className="flex gap-3 pt-4">
+                  <Button 
+                    onClick={async () => {
+                      setIsUpdating(true);
+                      try {
+                        // Update bot configuration
+                        const updatedConfig = {
+                          ...bot.bot_config,
+                          social_links: socialLinks,
+                          privacy_settings: {
+                            public_profile: true,
+                            search_indexing: true
+                          }
+                        };
+                        
+                        // Update the AI bot
+                        await onUpdate(bot.id, { bot_config: updatedConfig });
+                        
+                        // Create/update profile for the bot to appear as real user
+                        const username = bot.name.toLowerCase().replace(/\s+/g, '').slice(0, 15) + Math.random().toString(36).substr(2, 4);
+                        
+                        const { error: profileError } = await supabase
+                          .from('profiles')
+                          .upsert({
+                            id: bot.id,
+                            full_name: bot.name,
+                            username: username,
+                            email: bot.email,
+                            profile_picture_url: bot.profile_picture_url,
+                            banner_picture_url: bot.banner_picture_url,
+                            headline: bot.role,
+                            about: `AI Bot specializing in ${bot.content_domains?.join(', ')}`,
+                            location: 'TalentXcel Network',
+                            is_ai_bot: true,
+                            social_links: socialLinks,
+                            is_profile_public: true
+                          });
+                        
+                        if (profileError) {
+                          console.error('Profile update error:', profileError);
+                          throw profileError;
+                        }
+                        
+                        toast.success('All settings saved successfully! Bot profile is now live on the site.');
+                      } catch (error) {
+                        console.error('Save error:', error);
+                        toast.error('Failed to save settings. Please try again.');
+                      } finally {
+                        setIsUpdating(false);
+                      }
+                    }}
+                    disabled={isUpdating}
+                    className="flex-1"
+                  >
+                    {isUpdating ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      // Reset to defaults
+                      onUpdate(bot.id, {
+                        is_active: true,
+                        frequency: 'daily',
+                        tone_style: 'professional',
+                        distribution_channels: ['email', 'notification', 'post']
+                      });
+                      setSocialLinks({
+                        talentxcel_network: '',
+                        posts: '',
+                        jobs: '',
+                        articles: '',
+                        blogs: '',
+                        facebook: '',
+                        instagram: '',
+                        twitter: ''
+                      });
+                      toast.success('Settings reset to defaults');
+                    }}
+                  >
+                    Reset to Defaults
+                  </Button>
+                </div>
+                
+                {/* Profile Link Preview */}
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <Label className="text-sm font-medium text-blue-900">Bot Profile URL</Label>
+                  <div className="mt-2 flex items-center space-x-2">
+                    <code className="text-sm bg-white px-2 py-1 rounded border">
+                      https://talentxcel.in/profile/{bot.name.toLowerCase().replace(/\s+/g, '')}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const url = `https://talentxcel.in/profile/${bot.name.toLowerCase().replace(/\s+/g, '')}`;
+                        window.open(url, '_blank');
+                      }}
+                    >
+                      <ExternalLink className="h-3 w-3 mr-1" />
+                      View Live
+                    </Button>
+                  </div>
+                  <p className="text-xs text-blue-700 mt-1">
+                    This is where the bot profile will appear as a real user
+                  </p>
                 </div>
               </CardContent>
             </Card>
