@@ -3,6 +3,7 @@ import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
 import { BotManagerDashboard } from '@/components/admin/BotManagerDashboard';
 import { BotContentGenerator } from '@/components/admin/BotContentGenerator';
 import { BotAnalytics } from '@/components/admin/BotAnalytics';
+import { BotAuthFixer } from '@/components/admin/BotAuthFixer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const BotManagement: React.FC = () => {
@@ -19,7 +20,10 @@ const BotManagement: React.FC = () => {
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
-          <BotManagerDashboard />
+          <div className="grid gap-6">
+            <BotAuthFixer />
+            <BotManagerDashboard />
+          </div>
         </TabsContent>
 
         <TabsContent value="generator" className="space-y-6">

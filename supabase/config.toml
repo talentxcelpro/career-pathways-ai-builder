@@ -64,3 +64,6 @@ verify_jwt = true
 
 [functions.bot-content-generator]
 verify_jwt = false
+
+[functions.fix-bot-auth]
+verify_jwt = false
