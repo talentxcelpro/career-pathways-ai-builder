@@ -4,16 +4,19 @@ import { toast } from 'sonner';
 
 export interface AIBot {
   id: string;
-  full_name: string;
+  name: string;
   email: string;
-  role?: string;
+  role: string;
   profile_picture_url?: string;
   banner_picture_url?: string;
-  departments: string[];
+  department: string[];
   content_domains: string[];
-  bot_tone: string;
-  content_frequency: string;
-  is_ai_bot: boolean;
+  tone_style: string;
+  frequency: string;
+  distribution_channels: string[];
+  is_active: boolean;
+  bot_config?: any;
+  user_id?: string;
   created_at: string;
   updated_at: string;
 }
@@ -57,9 +60,9 @@ export const useBots = () => {
     queryKey: ['ai-bots'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('ai_bots')
         .select('*')
-        .eq('is_ai_bot', true)
+        .eq('is_active', true)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -76,12 +79,12 @@ export const useCreateBot = () => {
       // Call edge function to create bot user
       const { data, error } = await supabase.functions.invoke('create-bot-user', {
         body: {
-          full_name: bot.full_name,
+          name: bot.name,
           email: bot.email,
-          departments: bot.departments,
+          department: bot.department,
           content_domains: bot.content_domains,
-          bot_tone: bot.bot_tone,
-          content_frequency: bot.content_frequency,
+          tone_style: bot.tone_style,
+          frequency: bot.frequency,
           profile_picture_url: bot.profile_picture_url
         }
       });
@@ -105,7 +108,7 @@ export const useUpdateBot = () => {
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<AIBot> & { id: string }) => {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('ai_bots')
         .update(updates)
         .eq('id', id)
         .select()
@@ -189,7 +192,7 @@ export const useBotStats = () => {
     queryKey: ['bot-stats'],
     queryFn: async () => {
       const [botsResult, contentResult, templatesResult] = await Promise.all([
-        supabase.from('profiles').select('id, is_ai_bot').eq('is_ai_bot', true),
+        supabase.from('ai_bots').select('id, is_active').eq('is_active', true),
         supabase.from('bot_generated_content').select('id, status, generation_cost'),
         supabase.from('bot_content_templates').select('id, is_active')
       ]);

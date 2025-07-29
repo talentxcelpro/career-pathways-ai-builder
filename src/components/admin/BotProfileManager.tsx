@@ -103,7 +103,7 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
               <Avatar className="h-24 w-24">
                 <AvatarImage src={currentImage} />
                 <AvatarFallback>
-                  {bot?.full_name.slice(0, 2).toUpperCase()}
+                  {bot?.name?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             ) : (
@@ -155,10 +155,10 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
             <Avatar className="h-8 w-8">
               <AvatarImage src={bot.profile_picture_url} />
               <AvatarFallback>
-                {bot.full_name.slice(0, 2).toUpperCase()}
+                {bot.name?.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span>Manage {bot.full_name}</span>
+            <span>Manage {bot.name}</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -204,11 +204,11 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Full Name</Label>
-                    <Input value={bot.full_name} readOnly />
+                    <Input value={bot.name || ''} readOnly />
                   </div>
                   <div>
                     <Label>Email</Label>
-                    <Input value={bot.email} readOnly />
+                    <Input value={bot.email || ''} readOnly />
                   </div>
                 </div>
 
@@ -220,7 +220,7 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                 <div>
                   <Label>Departments</Label>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {(bot.departments || []).map((dept) => (
+                    {(bot.department || []).map((dept) => (
                       <Badge key={dept} variant="secondary">
                         {dept}
                       </Badge>
@@ -335,8 +335,8 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                 <div>
                   <Label>Bot Status</Label>
                   <div className="mt-2">
-                    <Badge variant={bot.is_ai_bot ? 'default' : 'secondary'}>
-                      {bot.is_ai_bot ? 'Active' : 'Inactive'}
+                    <Badge variant={bot.is_active ? 'default' : 'secondary'}>
+                      {bot.is_active ? 'Active' : 'Inactive'}
                     </Badge>
                   </div>
                 </div>
@@ -344,14 +344,14 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                 <div>
                   <Label>Content Generation Frequency</Label>
                   <div className="mt-2">
-                    <Badge variant="outline">{bot.content_frequency}</Badge>
+                    <Badge variant="outline">{bot.frequency || 'daily'}</Badge>
                   </div>
                 </div>
 
                 <div>
                   <Label>Bot Tone</Label>
                   <div className="mt-2">
-                    <Badge variant="outline">{bot.bot_tone}</Badge>
+                    <Badge variant="outline">{bot.tone_style || 'professional'}</Badge>
                   </div>
                 </div>
 

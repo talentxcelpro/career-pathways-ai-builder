@@ -21,7 +21,7 @@ export const BotContentGenerator: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [lastGenerated, setLastGenerated] = useState<any>(null);
 
-  const activeBots = bots?.filter(bot => bot.is_ai_bot) || [];
+  const activeBots = bots?.filter(bot => bot.is_active) || [];
   const recentContent = generatedContent?.slice(0, 10) || [];
 
   const categories = [
@@ -267,7 +267,7 @@ export const BotContentGenerator: React.FC = () => {
                   <SelectContent>
                     {activeBots.map((bot) => (
                       <SelectItem key={bot.id} value={bot.id}>
-                        {bot.full_name} - {bot.role}
+                        {bot.name} - {bot.role}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -464,7 +464,7 @@ export const BotContentGenerator: React.FC = () => {
                         </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        By {bot?.full_name} • {new Date(content.created_at).toLocaleDateString()}
+                        By {bot?.name} • {new Date(content.created_at).toLocaleDateString()}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         {content.content.substring(0, 100)}...
