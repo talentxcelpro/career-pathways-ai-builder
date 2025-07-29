@@ -20,7 +20,13 @@ import {
   Briefcase, 
   Camera,
   Image as ImageIcon,
-  Download
+  Download,
+  Globe,
+  Facebook,
+  Instagram,
+  Twitter,
+  Save,
+  ExternalLink
 } from 'lucide-react';
 import type { AIBot } from '@/hooks/useBotManagement';
 
@@ -39,6 +45,17 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
+  const [socialLinks, setSocialLinks] = useState({
+    talentxcel_network: '',
+    posts: '',
+    jobs: '',
+    articles: '',
+    blogs: '',
+    facebook: '',
+    instagram: '',
+    twitter: ''
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const uploadFile = async (file: File, type: 'profile' | 'banner') => {
     if (!bot) return null;
@@ -239,6 +256,186 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                     ))}
                   </div>
                 </div>
+
+                {/* Social Media Links Section */}
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Globe className="h-5 w-5" />
+                      <span>Social Media & Links</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="flex items-center space-x-2">
+                          <Globe className="h-4 w-4" />
+                          <span>TalentXcel Network</span>
+                        </Label>
+                        <Input 
+                          value={socialLinks.talentxcel_network}
+                          onChange={(e) => setSocialLinks({...socialLinks, talentxcel_network: e.target.value})}
+                          placeholder="https://talentxcel.in/profile/username"
+                        />
+                      </div>
+                      <div>
+                        <Label className="flex items-center space-x-2">
+                          <FileText className="h-4 w-4" />
+                          <span>Posts</span>
+                        </Label>
+                        <Input 
+                          value={socialLinks.posts}
+                          onChange={(e) => setSocialLinks({...socialLinks, posts: e.target.value})}
+                          placeholder="https://talentxcel.in/posts"
+                        />
+                      </div>
+                      <div>
+                        <Label className="flex items-center space-x-2">
+                          <Briefcase className="h-4 w-4" />
+                          <span>Jobs</span>
+                        </Label>
+                        <Input 
+                          value={socialLinks.jobs}
+                          onChange={(e) => setSocialLinks({...socialLinks, jobs: e.target.value})}
+                          placeholder="https://talentxcel.in/jobs"
+                        />
+                      </div>
+                      <div>
+                        <Label className="flex items-center space-x-2">
+                          <FileText className="h-4 w-4" />
+                          <span>Articles</span>
+                        </Label>
+                        <Input 
+                          value={socialLinks.articles}
+                          onChange={(e) => setSocialLinks({...socialLinks, articles: e.target.value})}
+                          placeholder="https://talentxcel.in/articles"
+                        />
+                      </div>
+                      <div>
+                        <Label className="flex items-center space-x-2">
+                          <FileText className="h-4 w-4" />
+                          <span>Blogs</span>
+                        </Label>
+                        <Input 
+                          value={socialLinks.blogs}
+                          onChange={(e) => setSocialLinks({...socialLinks, blogs: e.target.value})}
+                          placeholder="https://talentxcel.in/blogs"
+                        />
+                      </div>
+                      <div>
+                        <Label className="flex items-center space-x-2">
+                          <Facebook className="h-4 w-4" />
+                          <span>Facebook</span>
+                        </Label>
+                        <Input 
+                          value={socialLinks.facebook}
+                          onChange={(e) => setSocialLinks({...socialLinks, facebook: e.target.value})}
+                          placeholder="https://facebook.com/username"
+                        />
+                      </div>
+                      <div>
+                        <Label className="flex items-center space-x-2">
+                          <Instagram className="h-4 w-4" />
+                          <span>Instagram</span>
+                        </Label>
+                        <Input 
+                          value={socialLinks.instagram}
+                          onChange={(e) => setSocialLinks({...socialLinks, instagram: e.target.value})}
+                          placeholder="https://instagram.com/username"
+                        />
+                      </div>
+                      <div>
+                        <Label className="flex items-center space-x-2">
+                          <Twitter className="h-4 w-4" />
+                          <span>X (Twitter)</span>
+                        </Label>
+                        <Input 
+                          value={socialLinks.twitter}
+                          onChange={(e) => setSocialLinks({...socialLinks, twitter: e.target.value})}
+                          placeholder="https://x.com/username"
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      onClick={async () => {
+                        setIsUpdating(true);
+                        try {
+                          // Update the bot configuration with social links
+                          const updatedConfig = {
+                            ...bot.bot_config,
+                            social_links: socialLinks
+                          };
+                          
+                          await onUpdate(bot.id, { bot_config: updatedConfig });
+                          
+                          // Also create/update a profiles entry for this bot to make it appear as a real user
+                          const username = bot.name.toLowerCase().replace(/\s+/g, '').slice(0, 15) + Math.random().toString(36).substr(2, 4);
+                          
+                          const { error: profileError } = await supabase
+                            .from('profiles')
+                            .upsert({
+                              id: bot.id,
+                              full_name: bot.name,
+                              username: username,
+                              email: bot.email,
+                              profile_picture_url: bot.profile_picture_url,
+                              banner_picture_url: bot.banner_picture_url,
+                              headline: bot.role,
+                              about: `AI Bot specializing in ${bot.content_domains?.join(', ')}`,
+                              location: 'TalentXcel Network',
+                              is_ai_bot: true,
+                              social_links: socialLinks,
+                              is_profile_public: true
+                            });
+                          
+                          if (profileError) {
+                            console.error('Profile update error:', profileError);
+                          }
+                          
+                          toast.success('Bot profile updated successfully! Changes will appear across the site.');
+                        } catch (error) {
+                          console.error('Update error:', error);
+                          toast.error('Failed to update bot profile');
+                        } finally {
+                          setIsUpdating(false);
+                        }
+                      }}
+                      disabled={isUpdating}
+                      className="w-full"
+                    >
+                      {isUpdating ? (
+                        'Updating...'
+                      ) : (
+                        <>
+                          <Save className="mr-2 h-4 w-4" />
+                          Save Social Links
+                        </>
+                      )}
+                    </Button>
+                    
+                    {/* Preview Links */}
+                    <div className="mt-4 space-y-2">
+                      <Label>Link Preview</Label>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {Object.entries(socialLinks).map(([key, url]) => 
+                          url && (
+                            <a
+                              key={key}
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-800"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              <span className="capitalize">{key.replace('_', ' ')}</span>
+                            </a>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </CardContent>
             </Card>
           </TabsContent>
