@@ -6,6 +6,7 @@ import { ABTestingDashboard } from "@/components/marketplace/testing/ABTestingDa
 import { PerformanceMonitoring } from "@/components/marketplace/testing/PerformanceMonitoring";
 import { UserFeedbackSystem } from "@/components/marketplace/testing/UserFeedbackSystem";
 import { SecurityAuditDashboard } from "@/components/marketplace/testing/SecurityAuditDashboard";
+import { JobScrapingTester } from "@/components/testing/JobScrapingTester";
 import { 
   Target, 
   Activity, 
@@ -201,11 +202,12 @@ export default function TestingOptimization() {
 
       {/* Detailed Tabs */}
       <Tabs defaultValue="ab-testing" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="ab-testing">A/B Testing</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="feedback">User Feedback</TabsTrigger>
           <TabsTrigger value="security">Security Audit</TabsTrigger>
+          <TabsTrigger value="job-workflow">Job Workflow</TabsTrigger>
         </TabsList>
 
         <TabsContent value="ab-testing">
@@ -222,6 +224,10 @@ export default function TestingOptimization() {
 
         <TabsContent value="security">
           <SecurityAuditDashboard />
+        </TabsContent>
+
+        <TabsContent value="job-workflow">
+          <JobScrapingTester />
         </TabsContent>
       </Tabs>
     </div>
