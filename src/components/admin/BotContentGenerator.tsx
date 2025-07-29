@@ -35,6 +35,93 @@ export const BotContentGenerator: React.FC = () => {
     'Tools/Tutorials'
   ];
 
+  // Network connectivity check
+  const checkConnectivity = async () => {
+    try {
+      console.log('🔍 Checking function connectivity...');
+      const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/bot-content-generator/health`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Function health check passed:', data);
+        return true;
+      } else {
+        console.log('❌ Function health check failed:', response.status);
+        return false;
+      }
+    } catch (error) {
+      console.log('❌ Function connectivity failed:', error);
+      return false;
+    }
+  };
+
+  // Enhanced function invocation with retry logic
+  const invokeWithRetry = async (payload: any, maxRetries = 3) => {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`🔄 Attempt ${attempt}/${maxRetries} - Invoking function...`);
+        
+        // Method 1: Use Supabase client
+        const { data, error } = await supabase.functions.invoke('bot-content-generator', {
+          body: payload,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!error && data) {
+          console.log('✅ Supabase client method successful');
+          return { data, error: null };
+        }
+
+        console.log(`❌ Attempt ${attempt} failed with Supabase client:`, error);
+
+        // Method 2: Direct fetch as fallback
+        if (attempt === maxRetries) {
+          console.log('🔄 Trying direct fetch as fallback...');
+          
+          const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/bot-content-generator`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          console.log('✅ Direct fetch method successful');
+          return { data, error: null };
+        }
+
+        // Wait before retry (exponential backoff)
+        if (attempt < maxRetries) {
+          const delay = Math.pow(2, attempt) * 1000;
+          console.log(`⏳ Waiting ${delay}ms before retry...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+      } catch (error) {
+        console.error(`❌ Attempt ${attempt} failed:`, error);
+        
+        if (attempt === maxRetries) {
+          throw error;
+        }
+      }
+    }
+  };
+
   const handleGenerateContent = async () => {
     if (!selectedBot || !category) {
       toast.error('Please select a bot and category');
@@ -48,22 +135,22 @@ export const BotContentGenerator: React.FC = () => {
       console.log('Category:', category);
       console.log('Content type:', contentType);
       
-      // Add explicit headers and logging
-      console.log('Invoking function with explicit config...');
-      
-      const { data, error } = await supabase.functions.invoke('bot-content-generator', {
-        body: {
-          botId: selectedBot,
-          category,
-          contentType,
-          prompt: customPrompt || undefined
-        },
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      // Check connectivity first
+      const isConnected = await checkConnectivity();
+      if (!isConnected) {
+        console.log('⚠️ Function connectivity issues detected, but proceeding anyway...');
+      }
 
-      console.log('Function response:', { data, error });
+      const payload = {
+        botId: selectedBot,
+        category,
+        contentType,
+        prompt: customPrompt || undefined
+      };
+
+      console.log('📦 Sending payload:', payload);
+
+      const { data, error } = await invokeWithRetry(payload);
 
       if (error) {
         console.error('Function invocation error:', error);
@@ -78,7 +165,7 @@ export const BotContentGenerator: React.FC = () => {
         throw new Error(data.error || 'Generation failed');
       }
 
-      console.log('Content generated successfully:', data.content);
+      console.log('✅ Content generated successfully:', data.content);
       setLastGenerated(data.content);
       toast.success('Content generated successfully!');
       setCustomPrompt('');
@@ -87,13 +174,19 @@ export const BotContentGenerator: React.FC = () => {
       await refetchContent();
       
     } catch (error) {
-      console.error('Generation error:', error);
+      console.error('❌ Generation error:', error);
       
       let message = 'Failed to generate content';
       if (error.message.includes('DeepSeek API key')) {
         message = 'AI service not configured. Please contact administrator.';
       } else if (error.message.includes('Missing required fields')) {
         message = 'Please select both a bot and category.';
+      } else if (error.message.includes('timeout')) {
+        message = 'Request timed out. Please try again.';
+      } else if (error.message.includes('HTTP 404')) {
+        message = 'Function not found. Please check deployment.';
+      } else if (error.message.includes('HTTP 500')) {
+        message = 'Server error. Please try again later.';
       } else {
         message = `Generation failed: ${error.message}`;
       }
