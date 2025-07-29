@@ -44,49 +44,8 @@ serve(async (req) => {
       );
     }
     
-    // Check authentication
-    const authHeader = req.headers.get('Authorization');
-    console.log('Auth header present:', !!authHeader);
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.error('Missing or invalid authorization header');
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: 'Authentication required',
-          details: 'Missing or invalid authorization header'
-        }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-    
-    const jwt = authHeader.split(' ')[1];
-    console.log('JWT token present:', !!jwt);
-    
-    // Create authenticated Supabase client
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        headers: {
-          Authorization: authHeader,
-        },
-      },
-    });
-    
-    // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser(jwt);
-    if (authError || !user) {
-      console.error('Authentication verification failed:', authError);
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: 'Authentication failed',
-          details: authError?.message || 'Invalid or expired token'
-        }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-    
-    console.log('User authenticated successfully:', user.id);
+    // No authentication required for this function
+    console.log('Processing bot content generation request');
     
     if (!deepseekApiKey) {
       console.log('Warning: DeepSeek API key not configured, using mock responses');
