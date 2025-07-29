@@ -88,19 +88,16 @@ serve(async (req) => {
       .upsert({
         id: userId,
         full_name: name,
-        username: username,
         email: botEmail,
         profile_picture_url: profilePictureUrl,
-        banner_picture_url: bannerPictureUrl,
+        banner_url: bannerPictureUrl,
         headline: role,
         about: `AI Bot specializing in ${contentDomains?.join(', ')}`,
         location: 'TalentXcel Network',
-        is_ai_bot: true,
         social_links: socialLinks,
         is_profile_public: true,
         last_login_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        is_ai_bot: true
       });
 
     if (profileError) {
