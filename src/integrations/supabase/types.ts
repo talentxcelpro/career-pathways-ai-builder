@@ -325,6 +325,7 @@ export type Database = {
       }
       ai_bots: {
         Row: {
+          banner_picture_url: string | null
           bot_config: Json | null
           content_domains: string[]
           created_at: string | null
@@ -342,6 +343,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          banner_picture_url?: string | null
           bot_config?: Json | null
           content_domains?: string[]
           created_at?: string | null
@@ -359,6 +361,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          banner_picture_url?: string | null
           bot_config?: Json | null
           content_domains?: string[]
           created_at?: string | null
@@ -10894,6 +10897,7 @@ export type Database = {
         Row: {
           about: string | null
           allow_profile_sharing: boolean | null
+          banner_picture_url: string | null
           banner_url: string | null
           bot_tone: string | null
           career_goals: string[] | null
@@ -10969,6 +10973,7 @@ export type Database = {
         Insert: {
           about?: string | null
           allow_profile_sharing?: boolean | null
+          banner_picture_url?: string | null
           banner_url?: string | null
           bot_tone?: string | null
           career_goals?: string[] | null
@@ -11044,6 +11049,7 @@ export type Database = {
         Update: {
           about?: string | null
           allow_profile_sharing?: boolean | null
+          banner_picture_url?: string | null
           banner_url?: string | null
           bot_tone?: string | null
           career_goals?: string[] | null

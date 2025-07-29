@@ -8,6 +8,7 @@ export interface AIBot {
   email: string;
   role?: string;
   profile_picture_url?: string;
+  banner_picture_url?: string;
   departments: string[];
   content_domains: string[];
   bot_tone: string;

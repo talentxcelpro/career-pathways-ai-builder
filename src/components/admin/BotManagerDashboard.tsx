@@ -10,8 +10,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useBots, useCreateBot, useUpdateBot, useDeleteBot, useBotStats, type AIBot } from '@/hooks/useBotManagement';
-import { Plus, Edit, Trash2, Bot, Activity, FileText, Zap } from 'lucide-react';
+import { Plus, Edit, Trash2, Bot, Activity, FileText, Zap, User } from 'lucide-react';
 import { toast } from 'sonner';
+import { BotProfileManager } from './BotProfileManager';
 
 export const BotManagerDashboard: React.FC = () => {
   const { data: bots = [], isLoading } = useBots();
@@ -23,6 +24,8 @@ export const BotManagerDashboard: React.FC = () => {
   const [selectedBot, setSelectedBot] = useState<AIBot | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isProfileManagerOpen, setIsProfileManagerOpen] = useState(false);
+  const [profileBot, setProfileBot] = useState<AIBot | null>(null);
 
   const [formData, setFormData] = useState({
     full_name: '',
@@ -107,6 +110,21 @@ export const BotManagerDashboard: React.FC = () => {
       } catch (error) {
         console.error('Error deleting bot:', error);
       }
+    }
+  };
+
+  const handleManageProfile = (bot: AIBot) => {
+    setProfileBot(bot);
+    setIsProfileManagerOpen(true);
+  };
+
+  const handleProfileUpdate = async (botId: string, updates: Partial<AIBot>) => {
+    try {
+      await updateBot.mutateAsync({ id: botId, ...updates });
+      toast.success('Bot profile updated successfully');
+    } catch (error) {
+      console.error('Error updating bot profile:', error);
+      toast.error('Failed to update bot profile');
     }
   };
 
@@ -247,8 +265,16 @@ export const BotManagerDashboard: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleEditBot(bot)}
+                  onClick={() => handleManageProfile(bot)}
                   className="flex-1"
+                >
+                  <User className="mr-1 h-3 w-3" />
+                  Manage
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleEditBot(bot)}
                 >
                   <Edit className="mr-1 h-3 w-3" />
                   Edit
@@ -384,6 +410,14 @@ export const BotManagerDashboard: React.FC = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Bot Profile Manager */}
+      <BotProfileManager
+        bot={profileBot}
+        isOpen={isProfileManagerOpen}
+        onClose={() => setIsProfileManagerOpen(false)}
+        onUpdate={handleProfileUpdate}
+      />
     </div>
   );
 };
