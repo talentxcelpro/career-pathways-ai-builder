@@ -789,32 +789,26 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                         // Update the AI bot
                         await onUpdate(bot.id, { bot_config: updatedConfig });
                         
-                        // Create/update profile for the bot to appear as real user
-                        const username = bot.name.toLowerCase().replace(/\s+/g, '').slice(0, 15) + Math.random().toString(36).substr(2, 4);
-                        
-                        const { error: profileError } = await supabase
-                          .from('profiles')
-                          .upsert({
-                            id: bot.id,
-                            full_name: bot.name,
-                            username: username,
+                        // Create bot account using Edge Function
+                        const { data: botAccountData, error: botAccountError } = await supabase.functions.invoke('create-bot-account', {
+                          body: {
+                            botId: bot.id,
+                            name: bot.name,
                             email: bot.email,
-                            profile_picture_url: bot.profile_picture_url,
-                            banner_picture_url: bot.banner_picture_url,
-                            headline: bot.role,
-                            about: `AI Bot specializing in ${bot.content_domains?.join(', ')}`,
-                            location: 'TalentXcel Network',
-                            is_ai_bot: true,
-                            social_links: socialLinks,
-                            is_profile_public: true
-                          });
+                            role: bot.role,
+                            contentDomains: bot.content_domains || [],
+                            profilePictureUrl: bot.profile_picture_url,
+                            bannerPictureUrl: bot.banner_picture_url,
+                            socialLinks: socialLinks
+                          }
+                        });
                         
-                        if (profileError) {
-                          console.error('Profile update error:', profileError);
-                          throw profileError;
+                        if (botAccountError || !botAccountData?.success) {
+                          console.error('Bot account creation error:', botAccountError || botAccountData);
+                          throw new Error(botAccountData?.error || 'Failed to create bot account');
                         }
                         
-                        toast.success('All settings saved successfully! Bot profile is now live on the site.');
+                        toast.success(`Bot account created! Login: ${botAccountData.email} | Password: ${botAccountData.password} | Profile: ${botAccountData.profileUrl}`);
                       } catch (error) {
                         console.error('Save error:', error);
                         toast.error('Failed to save settings. Please try again.');
