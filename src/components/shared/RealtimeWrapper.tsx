@@ -18,7 +18,7 @@ export function RealtimeWrapper({ children }: RealtimeWrapperProps) {
       if (!user?.id) return null;
       const { data } = await supabase
         .from('profiles')
-        .select('user_role, is_employer')
+        .select('primary_role, is_employer')
         .eq('id', user.id)
         .single();
       return data;
@@ -26,7 +26,7 @@ export function RealtimeWrapper({ children }: RealtimeWrapperProps) {
     enabled: !!user?.id
   });
   
-  const isAdmin = profile?.user_role === 'admin';
+  const isAdmin = profile?.primary_role === 'admin';
   const isEmployer = profile?.is_employer || false;
 
   return (
