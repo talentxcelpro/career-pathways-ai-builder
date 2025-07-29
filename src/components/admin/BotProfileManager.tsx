@@ -19,7 +19,8 @@ import {
   BarChart3, 
   Briefcase, 
   Camera,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Download
 } from 'lucide-react';
 import type { AIBot } from '@/hooks/useBotManagement';
 
@@ -247,16 +248,46 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
               <CardHeader>
                 <CardTitle>Resume Management</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Resume Builder</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Create and manage AI-generated resumes for this bot
-                  </p>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label>Resume Template</Label>
+                  <select className="w-full p-2 border rounded-md">
+                    <option>Professional Template</option>
+                    <option>Creative Template</option>
+                    <option>Technical Template</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <Label>Work Experience</Label>
+                  <div className="space-y-2">
+                    <div className="p-3 border rounded-md">
+                      <h4 className="font-medium">{bot.role}</h4>
+                      <p className="text-sm text-muted-foreground">TalentXcel</p>
+                      <p className="text-sm">AI-powered professional working in {bot.department?.join(', ')}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Skills & Expertise</Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {(bot.content_domains || []).map((domain) => (
+                      <Badge key={domain} variant="outline">
+                        {domain}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex gap-2">
                   <Button>
                     <FileText className="mr-2 h-4 w-4" />
-                    Create Resume
+                    Generate Resume
+                  </Button>
+                  <Button variant="outline">
+                    <Download className="mr-2 h-4 w-4" />
+                    Download PDF
                   </Button>
                 </div>
               </CardContent>
@@ -268,18 +299,52 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
               <CardHeader>
                 <CardTitle>Job Preferences</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Briefcase className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Job Preferences</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Configure job preferences and requirements for this bot
-                  </p>
-                  <Button>
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    Set Preferences
-                  </Button>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label>Preferred Roles</Label>
+                  <Input value={bot.role} readOnly />
                 </div>
+                
+                <div>
+                  <Label>Department Focus</Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {(bot.department || []).map((dept) => (
+                      <Badge key={dept} variant="secondary">
+                        {dept}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Content Creation Frequency</Label>
+                  <div className="mt-2">
+                    <Badge variant="outline">{bot.frequency}</Badge>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Communication Style</Label>
+                  <div className="mt-2">
+                    <Badge variant="outline">{bot.tone_style}</Badge>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Distribution Channels</Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {(bot.distribution_channels || []).map((channel) => (
+                      <Badge key={channel} variant="outline">
+                        {channel}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                
+                <Button className="w-full">
+                  <Briefcase className="mr-2 h-4 w-4" />
+                  Update Job Preferences
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -289,16 +354,63 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
               <CardHeader>
                 <CardTitle>Media & Portfolio</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Portfolio Management</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Upload and manage portfolio items, certificates, and media
-                  </p>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Profile Picture</Label>
+                    <div className="mt-2 text-center">
+                      <Avatar className="h-20 w-20 mx-auto">
+                        <AvatarImage src={bot.profile_picture_url} />
+                        <AvatarFallback className="text-lg">
+                          {bot.name?.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {bot.profile_picture_url ? 'Current profile picture' : 'No profile picture set'}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label>Banner Image</Label>
+                    <div className="mt-2">
+                      {bot.banner_picture_url ? (
+                        <img 
+                          src={bot.banner_picture_url} 
+                          alt="Banner" 
+                          className="w-full h-20 object-cover rounded-md"
+                        />
+                      ) : (
+                        <div className="w-full h-20 bg-muted rounded-md flex items-center justify-center">
+                          <span className="text-sm text-muted-foreground">No banner set</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Portfolio Items</Label>
+                  <div className="space-y-2 mt-2">
+                    <div className="p-3 border rounded-md">
+                      <h4 className="font-medium">AI Content Creation</h4>
+                      <p className="text-sm text-muted-foreground">Specialized in creating engaging professional content</p>
+                    </div>
+                    <div className="p-3 border rounded-md">
+                      <h4 className="font-medium">Department Expertise</h4>
+                      <p className="text-sm text-muted-foreground">Working across {bot.department?.join(', ')} departments</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex gap-2">
                   <Button>
                     <Upload className="mr-2 h-4 w-4" />
-                    Upload Media
+                    Add Portfolio Item
+                  </Button>
+                  <Button variant="outline">
+                    <Camera className="mr-2 h-4 w-4" />
+                    Update Photos
                   </Button>
                 </div>
               </CardContent>
@@ -310,17 +422,53 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
               <CardHeader>
                 <CardTitle>Profile Analytics</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Performance Analytics</h3>
-                  <p className="text-muted-foreground mb-4">
-                    View profile views, engagement metrics, and performance data
-                  </p>
-                  <Button>
-                    <BarChart3 className="mr-2 h-4 w-4" />
-                    View Analytics
-                  </Button>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 border rounded-md">
+                    <div className="text-2xl font-bold text-primary">152</div>
+                    <div className="text-sm text-muted-foreground">Profile Views</div>
+                  </div>
+                  <div className="text-center p-4 border rounded-md">
+                    <div className="text-2xl font-bold text-primary">23</div>
+                    <div className="text-sm text-muted-foreground">Content Generated</div>
+                  </div>
+                  <div className="text-center p-4 border rounded-md">
+                    <div className="text-2xl font-bold text-primary">4.8</div>
+                    <div className="text-sm text-muted-foreground">Engagement Rate</div>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Content Performance</Label>
+                  <div className="space-y-2 mt-2">
+                    <div className="flex justify-between items-center p-2 border rounded">
+                      <span className="text-sm">LinkedIn Posts</span>
+                      <Badge variant="secondary">85% Engagement</Badge>
+                    </div>
+                    <div className="flex justify-between items-center p-2 border rounded">
+                      <span className="text-sm">Blog Articles</span>
+                      <Badge variant="secondary">92% Quality Score</Badge>
+                    </div>
+                    <div className="flex justify-between items-center p-2 border rounded">
+                      <span className="text-sm">Email Campaigns</span>
+                      <Badge variant="secondary">78% Open Rate</Badge>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Recent Activity</Label>
+                  <div className="space-y-2 mt-2">
+                    <div className="text-sm p-2 bg-muted rounded">
+                      Generated content for {bot.department?.[0]} department - 2 hours ago
+                    </div>
+                    <div className="text-sm p-2 bg-muted rounded">
+                      Profile viewed by 12 team members - 5 hours ago
+                    </div>
+                    <div className="text-sm p-2 bg-muted rounded">
+                      Updated content strategy - 1 day ago
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -332,34 +480,70 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                 <CardTitle>Account Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label>Bot Status</Label>
-                  <div className="mt-2">
-                    <Badge variant={bot.is_active ? 'default' : 'secondary'}>
-                      {bot.is_active ? 'Active' : 'Inactive'}
-                    </Badge>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Bot Status</Label>
+                    <p className="text-sm text-muted-foreground">Enable or disable this bot</p>
                   </div>
+                  <Badge variant={bot.is_active ? 'default' : 'secondary'}>
+                    {bot.is_active ? 'Active' : 'Inactive'}
+                  </Badge>
                 </div>
 
                 <div>
                   <Label>Content Generation Frequency</Label>
-                  <div className="mt-2">
-                    <Badge variant="outline">{bot.frequency || 'daily'}</Badge>
-                  </div>
+                  <select className="w-full p-2 border rounded-md mt-1" defaultValue={bot.frequency}>
+                    <option value="hourly">Hourly</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
                 </div>
 
                 <div>
-                  <Label>Bot Tone</Label>
-                  <div className="mt-2">
-                    <Badge variant="outline">{bot.tone_style || 'professional'}</Badge>
+                  <Label>Communication Tone</Label>
+                  <select className="w-full p-2 border rounded-md mt-1" defaultValue={bot.tone_style}>
+                    <option value="professional">Professional</option>
+                    <option value="casual">Casual</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="authoritative">Authoritative</option>
+                  </select>
+                </div>
+
+                <div>
+                  <Label>Distribution Channels</Label>
+                  <div className="space-y-2 mt-2">
+                    {['LinkedIn', 'Email', 'Blog', 'Newsletter'].map((channel) => (
+                      <div key={channel} className="flex items-center space-x-2">
+                        <input 
+                          type="checkbox" 
+                          id={channel} 
+                          defaultChecked={bot.distribution_channels?.includes(channel.toLowerCase())}
+                          className="rounded"
+                        />
+                        <label htmlFor={channel} className="text-sm">{channel}</label>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
                 <div className="pt-4 border-t">
                   <h4 className="font-medium mb-2">Privacy Settings</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Configure visibility and privacy settings for this bot profile
-                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="public-profile" className="rounded" />
+                      <label htmlFor="public-profile" className="text-sm">Make profile publicly visible</label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="search-indexing" className="rounded" />
+                      <label htmlFor="search-indexing" className="text-sm">Allow search engine indexing</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button>Save Changes</Button>
+                  <Button variant="outline">Reset to Defaults</Button>
                 </div>
               </CardContent>
             </Card>
