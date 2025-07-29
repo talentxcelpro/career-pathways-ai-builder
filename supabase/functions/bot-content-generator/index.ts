@@ -17,19 +17,32 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Received request:', req.method, req.url);
+    console.log('=== Bot Content Generator Request ===');
+    console.log('Method:', req.method);
+    console.log('URL:', req.url);
+    console.log('Headers:', Object.fromEntries(req.headers.entries()));
     
     if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Missing Supabase configuration');
       throw new Error('Missing Supabase configuration');
     }
     
     if (!deepseekApiKey) {
       console.log('Warning: DeepSeek API key not configured, using mock responses');
+    } else {
+      console.log('DeepSeek API key is configured');
     }
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const requestBody = await req.json();
-    console.log('Request body:', requestBody);
+    
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      console.log('Request body parsed successfully:', requestBody);
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      throw new Error('Invalid JSON in request body');
+    }
     
     const { botId, contentType = 'post', category, customPrompt, bulkGenerate, count = 50 } = requestBody;
 
