@@ -45,6 +45,14 @@ export const BotContentGenerator: React.FC = () => {
     try {
       console.log('Generating content with:', { selectedBot, contentType, category, customPrompt });
       
+      // Check if user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('User not authenticated');
+      }
+      
+      console.log('User authenticated, calling edge function...');
+      
       // Call the bot content generator edge function
       const { data, error } = await supabase.functions.invoke('bot-content-generator', {
         body: {
@@ -59,13 +67,15 @@ export const BotContentGenerator: React.FC = () => {
 
       if (error) {
         console.error('Edge function error:', error);
-        throw error;
+        throw new Error(error.message || 'Edge function failed');
       }
 
-      if (data?.content) {
+      if (data?.success && data?.content) {
         setLastGenerated(data.content);
         toast.success('Content generated successfully!');
         setCustomPrompt('');
+      } else if (data?.error) {
+        throw new Error(data.error);
       } else {
         throw new Error('No content returned from generator');
       }
