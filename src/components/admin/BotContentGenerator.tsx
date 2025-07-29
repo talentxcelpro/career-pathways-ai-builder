@@ -46,91 +46,67 @@ export const BotContentGenerator: React.FC = () => {
       console.log('=== Starting Content Generation ===');
       console.log('Request parameters:', { selectedBot, contentType, category, customPrompt });
       
-      // Check if user is authenticated
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) {
-        console.error('Session error:', sessionError);
-        throw new Error('Failed to verify authentication');
+      // Verify session
+      const { data: { session }, error: authError } = await supabase.auth.getSession();
+      if (authError) {
+        console.error('Auth error:', authError);
+        throw new Error('Authentication failed');
       }
       
-      if (!session?.access_token) {
-        console.error('No valid session found');
-        throw new Error('Please log in to generate content');
-      }
+      console.log('Session verified, calling edge function...');
       
-      console.log('User authenticated, session valid');
-      
-      // Call the bot content generator edge function with proper error handling
-      console.log('Calling edge function...');
-      const { data, error } = await supabase.functions.invoke('bot-content-generator', {
-        body: {
-          botId: selectedBot,
-          contentType,
-          category,
-          customPrompt: customPrompt || undefined
-        },
-        headers: {
-          'Content-Type': 'application/json'
+      // Call the bot content generator edge function
+      const { data, error } = await supabase.functions.invoke(
+        'bot-content-generator', 
+        {
+          body: { 
+            botId: selectedBot,
+            contentType,
+            category,
+            prompt: customPrompt || undefined
+          },
+          headers: {
+            "Content-Type": "application/json"
+          }
         }
-      });
+      );
 
       console.log('Edge function response:', { data, error });
 
       if (error) {
-        console.error('Edge function error:', error);
-        
-        // Check for specific error types and provide better user feedback
-        if (error.message?.includes('Configuration Error')) {
-          toast.error('The DeepSeek API key needs to be configured. Please contact your administrator.');
-        } else if (error.message?.includes('Service temporarily unavailable')) {
-          toast.error('The AI service is temporarily unavailable. Please try again in a moment.');
-        } else {
-          toast.error(`Generation failed: ${error.message}`);
-        }
+        console.error("Edge Function Error:", error);
         throw new Error(error.message);
       }
 
-      if (!data) {
-        throw new Error('No response from edge function');
+      if (data?.error) {
+        throw new Error(data.error);
       }
 
-      if (data.success && data.content) {
-        console.log('Content generated successfully:', data.content);
-        setLastGenerated(data.content);
-        toast.success('Content generated successfully!');
-        setCustomPrompt('');
-        
-        // Refresh the generated content list
-        await refetchContent();
-      } else if (data.error) {
-        console.error('Generation error:', data.error);
-        
-        // Provide specific error feedback based on error type
-        if (data.details?.includes('DeepSeek API key')) {
-          toast.error('DeepSeek API key configuration required. Please contact your administrator.');
-        } else {
-          toast.error(`Generation failed: ${data.error}`);
-        }
-        throw new Error(data.error);
-      } else {
-        console.error('Unexpected response format:', data);
-        throw new Error('Unexpected response format from generator');
+      if (!data?.success) {
+        throw new Error('Content generation failed');
       }
-    } catch (error) {
-      console.error('=== Content Generation Failed ===');
-      console.error('Error details:', error);
-      console.error('Error message:', error.message);
+
+      console.log('Content generated successfully:', data);
+      setLastGenerated(data.content);
+      toast.success('Content generated successfully!');
+      setCustomPrompt('');
       
-      // Provide more specific error messages based on error type
+      // Refresh the generated content list
+      await refetchContent();
+      
+    } catch (error) {
+      console.error("=== Content Generation Failed ===");
+      console.error("Error details:", error);
+      
       let errorMessage = 'Failed to generate content';
-      if (error.message.includes('Authentication')) {
-        errorMessage = 'Authentication required. Please refresh the page and try again.';
-      } else if (error.message.includes('Edge function')) {
-        errorMessage = 'Service temporarily unavailable. Please try again in a moment.';
-      } else if (error.message.includes('Bot not found')) {
-        errorMessage = 'Selected bot is not available. Please choose a different bot.';
+      if (error.message.includes('DeepSeek API key')) {
+        errorMessage = 'DeepSeek API key not configured. Please contact administrator.';
+      } else if (error.message.includes('Invalid content type')) {
+        errorMessage = 'Request format error. Please try again.';
+      } else if (error.message.includes('Missing required fields')) {
+        errorMessage = 'Please select both a bot and category.';
       } else {
-        errorMessage = `Failed to generate content: ${error.message}`;
+        errorMessage = `Generation failed: ${error.message}`;
       }
       
       toast.error(errorMessage);
