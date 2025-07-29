@@ -63,8 +63,8 @@ export const BotManagerDashboard: React.FC = () => {
       full_name: bot.full_name,
       email: bot.email,
       role: bot.role || '',
-      departments: bot.departments,
-      content_domains: bot.content_domains,
+      departments: bot.departments || [],
+      content_domains: bot.content_domains || [],
       bot_tone: bot.bot_tone,
       content_frequency: bot.content_frequency,
       is_ai_bot: bot.is_ai_bot,
@@ -214,7 +214,7 @@ export const BotManagerDashboard: React.FC = () => {
               <div>
                 <p className="text-sm font-medium mb-2">Departments</p>
                 <div className="flex flex-wrap gap-1">
-                  {bot.departments.map((dept) => (
+                  {(bot.departments || []).map((dept) => (
                     <Badge key={dept} variant="secondary" className="text-xs">
                       {dept}
                     </Badge>
@@ -225,7 +225,7 @@ export const BotManagerDashboard: React.FC = () => {
               <div>
                 <p className="text-sm font-medium mb-2">Content Domains</p>
                 <div className="flex flex-wrap gap-1">
-                  {bot.content_domains.map((domain) => (
+                  {(bot.content_domains || []).map((domain) => (
                     <Badge key={domain} variant="outline" className="text-xs">
                       {domain}
                     </Badge>
@@ -350,7 +350,7 @@ export const BotManagerDashboard: React.FC = () => {
               <Label htmlFor="departments">Departments (comma-separated)</Label>
               <Input
                 id="departments"
-                value={formData.departments.join(', ')}
+                value={(formData.departments || []).join(', ')}
                 onChange={(e) => setFormData({ 
                   ...formData, 
                   departments: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
@@ -363,7 +363,7 @@ export const BotManagerDashboard: React.FC = () => {
               <Label htmlFor="content_domains">Content Domains (comma-separated)</Label>
               <Input
                 id="content_domains"
-                value={formData.content_domains.join(', ')}
+                value={(formData.content_domains || []).join(', ')}
                 onChange={(e) => setFormData({ 
                   ...formData, 
                   content_domains: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
