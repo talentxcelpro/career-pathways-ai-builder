@@ -78,7 +78,16 @@ export const BotContentGenerator: React.FC = () => {
 
       if (error) {
         console.error('Edge function error:', error);
-        throw new Error(`Edge function error: ${error.message}`);
+        
+        // Check for specific error types and provide better user feedback
+        if (error.message?.includes('Configuration Error')) {
+          toast.error('The DeepSeek API key needs to be configured. Please contact your administrator.');
+        } else if (error.message?.includes('Service temporarily unavailable')) {
+          toast.error('The AI service is temporarily unavailable. Please try again in a moment.');
+        } else {
+          toast.error(`Generation failed: ${error.message}`);
+        }
+        throw new Error(error.message);
       }
 
       if (!data) {
@@ -95,6 +104,13 @@ export const BotContentGenerator: React.FC = () => {
         await refetchContent();
       } else if (data.error) {
         console.error('Generation error:', data.error);
+        
+        // Provide specific error feedback based on error type
+        if (data.details?.includes('DeepSeek API key')) {
+          toast.error('DeepSeek API key configuration required. Please contact your administrator.');
+        } else {
+          toast.error(`Generation failed: ${data.error}`);
+        }
         throw new Error(data.error);
       } else {
         console.error('Unexpected response format:', data);

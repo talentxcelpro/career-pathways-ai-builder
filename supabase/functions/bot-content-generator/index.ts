@@ -48,10 +48,21 @@ serve(async (req) => {
     console.log('Processing bot content generation request');
     
     if (!deepseekApiKey) {
-      console.log('Warning: DeepSeek API key not configured, using mock responses');
-    } else {
-      console.log('DeepSeek API key is configured');
+      console.error('DeepSeek API key not configured');
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Configuration Error',
+          details: 'DeepSeek API key is not configured. Please configure DEEPSEEK_API_KEY in your Supabase project settings.'
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
+    
+    console.log('DeepSeek API key is configured');
     
     // Parse request body
     let requestBody;
