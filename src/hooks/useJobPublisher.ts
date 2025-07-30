@@ -11,11 +11,13 @@ export const usePublishScrapedJobs = () => {
       maxJobs?: number;
       autoPublish?: boolean;
     }) => {
+      console.log('Calling job-publisher function...');
       const { data, error } = await supabase.functions.invoke('job-publisher', {
         body: params
       });
 
       if (error) {
+        console.error('Job publisher error:', error);
         throw new Error(error.message);
       }
 
@@ -80,6 +82,7 @@ export const useTriggerDailyJobScraping = () => {
           bots.find(b => b.email === 'shelly@talentxcel.in')?.id;
 
         try {
+          console.log(`Calling job-scraper function for ${source.source_name}...`);
           const { data, error } = await supabase.functions.invoke('job-scraper', {
             body: {
               sourceId: source.id,
