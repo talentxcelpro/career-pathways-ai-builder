@@ -82,15 +82,18 @@ serve(async (req) => {
               const { data: publishedJob, error: publishError } = await supabase
                 .from('jobs')
                 .insert({
+                  job_title: job.title,
                   title: job.title,
                   company_name: job.company,
                   location: job.location || 'Remote',
-                  salary_range: job.salary,
+                  job_description: job.description,
                   description: job.description,
                   employment_type: job.job_type || 'full_time',
                   experience_level: job.experience_level?.toLowerCase() || 'mid',
-                  application_url: job.url,
-                  is_active: true
+                  external_url: job.url,
+                  is_active: true,
+                  posted_at: new Date().toISOString(),
+                  expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
                 })
                 .select()
                 .single();
