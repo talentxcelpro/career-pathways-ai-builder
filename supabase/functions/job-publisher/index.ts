@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
+console.log("🚀 Job Publisher function starting up...");
+
 serve(async (req) => {
   try {
     // ✅ CORS Preflight
@@ -29,15 +31,17 @@ serve(async (req) => {
     const body = await req.json();
 
     // ✅ Deep logging for debugging
-    console.log("📦 Received in job-publisher:", JSON.stringify(body, null, 2));
+    console.log("📦 Job Publisher received body:", JSON.stringify(body, null, 2));
     console.log("📦 Body type:", typeof body);
     console.log("📦 Body keys:", Object.keys(body));
+    console.log("📦 Function is working and deployed!");
 
     // ✅ Simulate working logic - just echo back safely
     const response = {
       success: true,
       received: body,
-      message: "Job publisher function is working!"
+      message: "Job publisher function is working and deployed!",
+      timestamp: new Date().toISOString()
     };
 
     return new Response(JSON.stringify(response), {
