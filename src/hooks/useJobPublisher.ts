@@ -22,6 +22,33 @@ export const usePublishScrapedJobs = () => {
       console.log('🔗 Calling function URL: https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher');
       console.log('Calling job-publisher function...');
       
+      // TEMPORARY: Direct fetch to bypass any local development overrides
+      try {
+        console.log('🧪 Testing direct fetch to cloud function...');
+        const directResponse = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+          },
+          body: JSON.stringify(params)
+        });
+        
+        const directResponseText = await directResponse.text();
+        console.log('🧪 Direct fetch status:', directResponse.status);
+        console.log('🧪 Direct fetch response:', directResponseText);
+        
+        if (directResponse.ok) {
+          const directData = JSON.parse(directResponseText);
+          console.log('✅ Direct fetch worked! Using direct response.');
+          return directData;
+        }
+      } catch (directError) {
+        console.error('❌ Direct fetch failed:', directError);
+      }
+      
+      // Fallback to supabase client
       const { data, error } = await supabase.functions.invoke('job-publisher', {
         body: params
       });
