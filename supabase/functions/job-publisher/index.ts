@@ -52,6 +52,10 @@ serve(async (req) => {
       throw new Error("Service role key not configured");
     }
 
+    console.log("📦 Checking if results exist:", !!body.results);
+    console.log("📦 Results type:", typeof body.results);
+    console.log("📦 Results length:", body.results ? body.results.length : 0);
+    
     // Check if this is a job publishing request (has scraped jobs data)
     if (body.results && Array.isArray(body.results)) {
       console.log("📝 Publishing scraped jobs to database...");
