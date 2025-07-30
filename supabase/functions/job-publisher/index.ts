@@ -29,7 +29,7 @@ serve(async (req) => {
     const body = await req.json();
 
     // ✅ Safe log (won't crash anything)
-    console.log("Received body:", body);
+    console.log("Job publisher received body:", body);
 
     // ✅ Simulate working logic
     const response = {
