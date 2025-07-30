@@ -107,6 +107,9 @@ export const useTriggerDailyJobScraping = () => {
 
   return useMutation({
     mutationFn: async () => {
+      // Get current session and token
+      const session = await supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
       // Get all active scraping sources
       const { data: sources, error: sourcesError } = await supabase
         .from('job_scraping_sources')
@@ -150,14 +153,30 @@ export const useTriggerDailyJobScraping = () => {
 
         try {
           console.log(`Calling job-scraper function for ${source.source_name}...`);
-          const { data, error } = await supabase.functions.invoke('job-scraper', {
-            body: {
+          
+          // Use direct fetch for job-scraper to avoid localhost routing
+          const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-scraper', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            },
+            body: JSON.stringify({
               sourceId: source.id,
               botId,
               maxJobs: maxJobsForSource,
               keywords: source.search_keywords || []
-            }
+            })
           });
+
+          let data, error;
+          if (response.ok) {
+            data = await response.json();
+          } else {
+            const errorText = await response.text();
+            error = { message: `HTTP ${response.status}: ${errorText}` };
+          }
 
           console.log(`Job-scraper response for ${source.source_name}:`, { data, error });
           if (error) {
