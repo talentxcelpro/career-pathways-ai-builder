@@ -47,41 +47,60 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
   useEffect(() => {
     if (!user) return;
 
-    // Monitor for suspicious activities
+    // Check session age
+    const sessionAge = Date.now() - (user.created_at ? new Date(user.created_at).getTime() : 0);
+    const isOldSession = sessionAge > 24 * 60 * 60 * 1000; // 24 hours
+
+    // Basic risk assessment
+    if (isOldSession) {
+      setSessionRisk('medium');
+      logSecurityEvent('session_age_warning', 'Long-running session detected');
+    }
+
+    // Monitor fetch requests with proper cleanup
     const monitorSecurity = () => {
-      // Check session age
-      const sessionAge = Date.now() - (user.created_at ? new Date(user.created_at).getTime() : 0);
-      const isOldSession = sessionAge > 24 * 60 * 60 * 1000; // 24 hours
-
-      // Basic risk assessment
-      if (isOldSession) {
-        setSessionRisk('medium');
-        logSecurityEvent('session_age_warning', 'Long-running session detected');
-      }
-
-      // Check for multiple rapid requests (simplified)
       const startTime = Date.now();
       let requestCount = 0;
-      
+
       const originalFetch = window.fetch;
-      window.fetch = async (...args) => {
-        requestCount++;
-        if (requestCount > 50 && Date.now() - startTime < 60000) { // 50 requests in 1 minute
-          setSessionRisk('high');
-          logSecurityEvent('suspicious_activity', 'High request rate detected', {
-            requests: requestCount,
-            timeframe: '1 minute'
-          });
+
+      const secureFetch: typeof window.fetch = async (...args) => {
+        // Skip monitoring for Supabase Edge Function calls to prevent blocking
+        const url = args[0]?.toString() || '';
+        if (!url.includes('supabase.co/functions')) {
+          requestCount++;
+          
+          if (requestCount > 50 && Date.now() - startTime < 60000) {
+            setSessionRisk('high');
+            logSecurityEvent('suspicious_activity', 'High request rate detected', {
+              requests: requestCount,
+              timeframe: '1 minute'
+            });
+          }
         }
-        return originalFetch(...args);
+
+        try {
+          return await originalFetch(...args);
+        } catch (error) {
+          console.error('🔐 SecurityProvider fetch error:', error);
+          throw error;
+        }
+      };
+
+      // Apply override
+      window.fetch = secureFetch;
+
+      // Return cleanup function
+      return () => {
+        window.fetch = originalFetch;
       };
     };
 
-    monitorSecurity();
+    const cleanup = monitorSecurity();
 
     // Cleanup
     return () => {
-      // Restore original fetch if needed
+      if (cleanup) cleanup();
     };
   }, [user]);
 
