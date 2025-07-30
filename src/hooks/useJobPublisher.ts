@@ -19,51 +19,32 @@ export const usePublishScrapedJobs = () => {
       console.log('🔐 Auth token available:', !!token);
       console.log('🔐 Token length:', token?.length || 0);
       
-      console.log('🔗 Calling function URL: https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher');
+      console.log('🔗 Using direct cloud URL: https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher');
       console.log('Calling job-publisher function...');
       
-      // TEMPORARY: Direct fetch to bypass any local development overrides
-      try {
-        console.log('🧪 Testing direct fetch to cloud function...');
-        const directResponse = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-          },
-          body: JSON.stringify(params)
-        });
-        
-        const directResponseText = await directResponse.text();
-        console.log('🧪 Direct fetch status:', directResponse.status);
-        console.log('🧪 Direct fetch response:', directResponseText);
-        
-        if (directResponse.ok) {
-          const directData = JSON.parse(directResponseText);
-          console.log('✅ Direct fetch worked! Using direct response.');
-          return directData;
-        }
-      } catch (directError) {
-        console.error('❌ Direct fetch failed:', directError);
+      // Use direct fetch to cloud function (no localhost fallback)
+      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+        },
+        body: JSON.stringify(params)
+      });
+      
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response ok:', response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Function call failed:', response.status, errorText);
+        throw new Error(`Function call failed: ${response.status} ${errorText}`);
       }
       
-      // Fallback to supabase client
-      const { data, error } = await supabase.functions.invoke('job-publisher', {
-        body: params
-      });
-
-      console.log('📥 Job-publisher supabase client response:', { data, error });
-      console.log('Job-publisher response:', { data, error });
-      if (error) {
-        console.error('Job publisher error details:', {
-          message: error.message,
-          details: error,
-          url: 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher'
-        });
-        throw new Error(error.message);
-      }
-
+      const data = await response.json();
+      console.log('📥 Function response:', data);
+      
       return data;
     },
     onSuccess: (data) => {
