@@ -190,16 +190,27 @@ export const useTriggerDailyJobScraping = () => {
 
       // Now send all scraped jobs to the publisher
       console.log("📤 Sending scraped jobs to job-publisher...");
-      const publishResponse = await supabase.functions.invoke('job-publisher', {
-        body: {
-          results,
-          totalJobs,
-          maxJobs: 10,
-          autoPublish: true
-        }
-      });
+      console.log("📤 Results data:", JSON.stringify(results, null, 2));
+      console.log("📤 Total jobs:", totalJobs);
+      
+      let publishResponse;
+      try {
+        publishResponse = await supabase.functions.invoke('job-publisher', {
+          body: {
+            results,
+            totalJobs,
+            maxJobs: 10,
+            autoPublish: true
+          }
+        });
 
-      console.log("📥 Job publisher response:", publishResponse);
+        console.log("📥 Job publisher response:", publishResponse);
+        console.log("📥 Publisher data:", publishResponse.data);
+        console.log("📥 Publisher error:", publishResponse.error);
+      } catch (publishError) {
+        console.error("❌ Publisher call failed:", publishError);
+        throw publishError;
+      }
 
       return {
         totalJobs,
