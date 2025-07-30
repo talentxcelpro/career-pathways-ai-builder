@@ -1,36 +1,62 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { corsHeaders } from '../_shared/cors.ts';
-
-interface JobPublishRequest {
-  botId?: string;
-  maxJobs?: number;
-  autoPublish?: boolean;
-}
-
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', {
-      status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-      },
-    });
-  }
-
   try {
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // ✅ Handle preflight
+    if (req.method === "OPTIONS") {
+      return new Response("ok", {
+        status: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization, x-client-info, apikey",
+        },
+      });
+    }
+
+    // ✅ Validate method
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Method Not Allowed" }), {
+        status: 405,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
 
     console.log('🚀 Job publisher function started');
 
-    const requestBody = await req.json() as JobPublishRequest;
-    const { botId, maxJobs = 100, autoPublish = true } = requestBody;
+    // ✅ Safely parse body
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch (e) {
+      return new Response(JSON.stringify({ 
+        error: "Invalid JSON body", 
+        detail: e.message 
+      }), {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
+    console.log('Request body:', requestBody);
+
+    const { botId, maxJobs = 100, autoPublish = true } = requestBody || {};
+
+    // ✅ Initialize Supabase safely
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Missing Supabase environment variables');
+    }
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get Raj and Shelly bot IDs
     const { data: bots, error: botsError } = await supabase
@@ -40,7 +66,7 @@ Deno.serve(async (req) => {
       .eq('is_active', true);
 
     if (botsError || !bots?.length) {
-      throw new Error('Raj and Shelly bots not found');
+      throw new Error(`Bots not found: ${botsError?.message || 'No active bots'}`);
     }
 
     const rajBot = bots.find(bot => bot.email === 'raj@talentxcel.in');
@@ -78,9 +104,9 @@ Deno.serve(async (req) => {
         published: 0
       }), {
         status: 200,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
       });
     }
@@ -92,96 +118,105 @@ Deno.serve(async (req) => {
     let counter = 0;
 
     for (const scrapedJob of scrapedJobs) {
-      const assignedBot = counter % 2 === 0 ? rajBot : shellyBot;
-      
-      // Generate SEO-optimized data
-      const seoKeywords = generateSEOKeywords(scrapedJob.job_title, scrapedJob.location);
-      const country = scrapedJob.location?.includes('India') || 
-                     scrapedJob.location?.includes('Bangalore') ||
-                     scrapedJob.location?.includes('Mumbai') ||
-                     scrapedJob.location?.includes('Delhi') ||
-                     scrapedJob.location?.includes('Chennai') ||
-                     scrapedJob.location?.includes('Hyderabad') ||
-                     scrapedJob.location?.includes('Pune') ? 'India' : 'Global';
+      try {
+        const assignedBot = counter % 2 === 0 ? rajBot : shellyBot;
+        
+        // Generate SEO-optimized data
+        const seoKeywords = generateSEOKeywords(scrapedJob.job_title || '', scrapedJob.location || '');
+        const country = scrapedJob.location?.includes('India') || 
+                        scrapedJob.location?.includes('Bangalore') ||
+                        scrapedJob.location?.includes('Mumbai') ||
+                        scrapedJob.location?.includes('Delhi') ||
+                        scrapedJob.location?.includes('Chennai') ||
+                        scrapedJob.location?.includes('Hyderabad') ||
+                        scrapedJob.location?.includes('Pune') ? 'India' : 'Global';
 
-      // Create job posting
-      const jobData = {
-        title: scrapedJob.job_title,
-        description: scrapedJob.job_description,
-        location: scrapedJob.location,
-        salary_range: scrapedJob.salary,
-        company_id: null, // Posted by bots, not companies
-        posted_by_bot: assignedBot.id,
-        source_url: scrapedJob.source_url,
-        seo_keywords: seoKeywords,
-        country: country,
-        original_post_date: scrapedJob.posted_at,
-        job_type: 'full_time',
-        work_mode: scrapedJob.location?.toLowerCase().includes('remote') ? 'remote' : 'office',
-        experience_level: extractExperienceLevel(scrapedJob.job_title),
-        is_active: autoPublish,
-        skills_required: extractSkills(scrapedJob.job_description),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
+        // Create job posting
+        const jobData = {
+          title: scrapedJob.job_title,
+          description: scrapedJob.job_description,
+          location: scrapedJob.location,
+          salary_range: scrapedJob.salary,
+          company_id: null, // Posted by bots, not companies
+          posted_by_bot: assignedBot.id,
+          source_url: scrapedJob.source_url,
+          seo_keywords: seoKeywords,
+          country: country,
+          original_post_date: scrapedJob.posted_at,
+          job_type: 'full_time',
+          work_mode: scrapedJob.location?.toLowerCase().includes('remote') ? 'remote' : 'office',
+          experience_level: extractExperienceLevel(scrapedJob.job_title || ''),
+          is_active: autoPublish,
+          skills_required: extractSkills(scrapedJob.job_description || ''),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
 
-      const { data: publishedJob, error: publishError } = await supabase
-        .from('jobs')
-        .insert(jobData)
-        .select()
-        .single();
+        const { data: publishedJob, error: publishError } = await supabase
+          .from('jobs')
+          .insert(jobData)
+          .select()
+          .single();
 
-      if (publishError) {
-        console.error(`Failed to publish job: ${publishError.message}`);
+        if (publishError) {
+          console.error(`Failed to publish job: ${publishError.message}`);
+          continue;
+        }
+
+        // Update scraped job status
+        await supabase
+          .from('scraped_jobs')
+          .update({
+            status: autoPublish ? 'published' : 'ready'
+          })
+          .eq('id', scrapedJob.id);
+
+        publishedJobs.push({
+          ...publishedJob,
+          assignedBot: assignedBot.name,
+          originalScrapedJob: scrapedJob.id
+        });
+
+        counter++;
+      } catch (jobError) {
+        console.error(`Error processing job ${scrapedJob.id}:`, jobError);
         continue;
       }
-
-      // Update scraped job status
-      await supabase
-        .from('scraped_jobs')
-        .update({
-          status: autoPublish ? 'published' : 'ready'
-        })
-        .eq('id', scrapedJob.id);
-
-      publishedJobs.push({
-        ...publishedJob,
-        assignedBot: assignedBot.name,
-        originalScrapedJob: scrapedJob.id
-      });
-
-      counter++;
     }
 
     console.log(`✅ Successfully published ${publishedJobs.length} jobs`);
 
-    return new Response(JSON.stringify({
+    const result = {
       success: true,
       published: publishedJobs.length,
       jobs: publishedJobs,
       botAssignments: {
-        raj: publishedJobs.filter(job => job.assignedBot === 'Raj Kumar').length,
-        shelly: publishedJobs.filter(job => job.assignedBot === 'Shelly Sharma').length
+        raj: publishedJobs.filter(job => job.assignedBot === 'Raj').length,
+        shelly: publishedJobs.filter(job => job.assignedBot === 'Shelly Kappor').length
       },
       message: `Successfully published ${publishedJobs.length} jobs`
-    }), {
+    };
+
+    return new Response(JSON.stringify(result), {
       status: 200,
-      headers: { 
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
       },
     });
 
   } catch (error) {
     console.error('❌ Error in job publisher:', error);
+    
     return new Response(JSON.stringify({
       success: false,
-      error: error.message
+      error: "Function execution failed",
+      detail: error.message
     }), {
       status: 500,
-      headers: { 
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
       },
     });
   }
