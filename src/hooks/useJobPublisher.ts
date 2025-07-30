@@ -188,28 +188,50 @@ export const useTriggerDailyJobScraping = () => {
         }
       }
 
-      // Now send all scraped jobs to the publisher
+      // Now send all scraped jobs to the publisher in smaller batches
       console.log("📤 Sending scraped jobs to job-publisher...");
-      console.log("📤 Results data:", JSON.stringify(results, null, 2));
       console.log("📤 Total jobs:", totalJobs);
       
       let publishResponse;
+      let totalPublished = 0;
+      
       try {
-        publishResponse = await supabase.functions.invoke('job-publisher', {
-          body: {
-            results,
-            totalJobs,
-            maxJobs: 10,
-            autoPublish: true
-          }
-        });
+        // Split results into smaller batches to avoid payload size issues
+        const batchSize = 1; // Process one source at a time
+        for (let i = 0; i < results.length; i += batchSize) {
+          const batch = results.slice(i, i + batchSize);
+          console.log(`📤 Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(results.length/batchSize)}`);
+          console.log(`📤 Batch contains ${batch.reduce((sum, r) => sum + (r.jobs?.length || 0), 0)} jobs`);
+          
+          const batchResponse = await supabase.functions.invoke('job-publisher', {
+            body: {
+              results: batch,
+              totalJobs: batch.reduce((sum, r) => sum + (r.jobs?.length || 0), 0),
+              maxJobs: 50, // Increase from 10 to allow more jobs
+              autoPublish: true
+            }
+          });
 
-        console.log("📥 Job publisher response:", publishResponse);
-        console.log("📥 Publisher data:", publishResponse.data);
-        console.log("📥 Publisher error:", publishResponse.error);
+          console.log(`📥 Batch ${Math.floor(i/batchSize) + 1} response:`, batchResponse);
+          
+          if (batchResponse.data?.jobsPublished) {
+            totalPublished += batchResponse.data.jobsPublished;
+          }
+          
+          if (batchResponse.error) {
+            console.error(`❌ Batch ${Math.floor(i/batchSize) + 1} failed:`, batchResponse.error);
+          }
+        }
+        
+        publishResponse = {
+          data: { jobsPublished: totalPublished },
+          error: null
+        };
+
+        console.log("📥 Total jobs published across all batches:", totalPublished);
       } catch (publishError) {
         console.error("❌ Publisher call failed:", publishError);
-        throw publishError;
+        publishResponse = { data: null, error: publishError };
       }
 
       return {
