@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, supabaseFunctions } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export const usePublishScrapedJobs = () => {
@@ -11,7 +11,7 @@ export const usePublishScrapedJobs = () => {
       maxJobs?: number;
       autoPublish?: boolean;
     }) => {
-      const { data, error } = await supabase.functions.invoke('job-publisher', {
+      const { data, error } = await supabaseFunctions.functions.invoke('job-publisher', {
         body: params
       });
 
@@ -80,7 +80,7 @@ export const useTriggerDailyJobScraping = () => {
           bots.find(b => b.email === 'shelly@talentxcel.in')?.id;
 
         try {
-          const { data, error } = await supabase.functions.invoke('job-scraper', {
+          const { data, error } = await supabaseFunctions.functions.invoke('job-scraper', {
             body: {
               sourceId: source.id,
               botId,

@@ -20,14 +20,6 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   global: {
     headers: {
       'cache-control': 'no-cache'
-    },
-    fetch: (url, options = {}) => {
-      // Redirect edge function calls to custom domain
-      if (url.includes('/functions/v1/')) {
-        const functionPath = url.split('/functions/v1/')[1];
-        url = `https://auth.talentxcel.in/functions/v1/${functionPath}`;
-      }
-      return fetch(url, options);
     }
   },
   // Add retry configuration for better reliability
@@ -41,3 +33,23 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     }
   }
 });
+
+// Create a separate client for functions with custom URL
+export const supabaseFunctions = createClient<Database>(
+  "https://auth.talentxcel.in", 
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      storage: window.localStorage,
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce'
+    },
+    global: {
+      headers: {
+        'cache-control': 'no-cache'
+      }
+    }
+  }
+);
