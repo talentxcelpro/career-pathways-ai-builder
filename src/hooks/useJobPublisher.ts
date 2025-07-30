@@ -11,6 +11,7 @@ export const usePublishScrapedJobs = () => {
       maxJobs?: number;
       autoPublish?: boolean;
     }) => {
+      console.log('📤 Sending to job-publisher:', JSON.stringify(params, null, 2));
       console.log('Calling job-publisher function...');
       const { data, error } = await supabase.functions.invoke('job-publisher', {
         body: params

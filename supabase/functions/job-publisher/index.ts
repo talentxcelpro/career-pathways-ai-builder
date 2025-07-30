@@ -28,13 +28,16 @@ serve(async (req) => {
     // ✅ Try parsing the JSON body
     const body = await req.json();
 
-    // ✅ Safe log (won't crash anything)
-    console.log("Job publisher received body:", body);
+    // ✅ Deep logging for debugging
+    console.log("📦 Received in job-publisher:", JSON.stringify(body, null, 2));
+    console.log("📦 Body type:", typeof body);
+    console.log("📦 Body keys:", Object.keys(body));
 
-    // ✅ Simulate working logic
+    // ✅ Simulate working logic - just echo back safely
     const response = {
       success: true,
       received: body,
+      message: "Job publisher function is working!"
     };
 
     return new Response(JSON.stringify(response), {
@@ -45,8 +48,9 @@ serve(async (req) => {
       },
     });
   } catch (err) {
-    // ✅ Catch and return all errors
-    console.error("Function Error:", err);
+    // ✅ Catch and return all errors with detailed logging
+    console.error("❌ job-publisher error:", err.message);
+    console.error("❌ job-publisher full error:", err);
 
     return new Response(JSON.stringify({
       success: false,
