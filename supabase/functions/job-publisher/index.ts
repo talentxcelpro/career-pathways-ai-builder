@@ -29,9 +29,15 @@ serve(async (req) => {
     }
 
     // ✅ Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    console.log("🔑 Supabase URL:", supabaseUrl ? "✅ Available" : "❌ Missing");
+    console.log("🔑 Service Role Key:", serviceRoleKey ? "✅ Available" : "❌ Missing");
+    
     const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      supabaseUrl ?? '',
+      serviceRoleKey ?? ''
     );
 
     // ✅ Try parsing the JSON body
@@ -41,6 +47,10 @@ serve(async (req) => {
     console.log("📦 Job Publisher received body:", JSON.stringify(body, null, 2));
     console.log("📦 Body type:", typeof body);
     console.log("📦 Body keys:", Object.keys(body));
+    
+    if (!serviceRoleKey) {
+      throw new Error("Service role key not configured");
+    }
 
     // Check if this is a job publishing request (has scraped jobs data)
     if (body.results && Array.isArray(body.results)) {
