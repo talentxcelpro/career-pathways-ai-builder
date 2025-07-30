@@ -16,8 +16,13 @@ export const usePublishScrapedJobs = () => {
         body: params
       });
 
+      console.log('Job-publisher response:', { data, error });
       if (error) {
-        console.error('Job publisher error:', error);
+        console.error('Job publisher error details:', {
+          message: error.message,
+          details: error,
+          url: 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher'
+        });
         throw new Error(error.message);
       }
 
@@ -92,8 +97,13 @@ export const useTriggerDailyJobScraping = () => {
             }
           });
 
+          console.log(`Job-scraper response for ${source.source_name}:`, { data, error });
           if (error) {
-            console.error(`Failed to scrape from ${source.source_name}:`, error);
+            console.error(`Job scraper error for ${source.source_name}:`, {
+              message: error.message,
+              details: error,
+              url: `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-scraper`
+            });
             continue;
           }
 
