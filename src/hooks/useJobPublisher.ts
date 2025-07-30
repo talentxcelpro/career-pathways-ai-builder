@@ -188,57 +188,64 @@ export const useTriggerDailyJobScraping = () => {
         }
       }
 
-      // Now send all scraped jobs to the publisher in smaller batches
-      console.log("📤 Sending scraped jobs to job-publisher...");
-      console.log("📤 Total jobs:", totalJobs);
+      // Direct database insertion as fallback since edge function is unreachable
+      console.log("📤 Publishing jobs directly to database...");
+      console.log("📤 Total jobs to publish:", totalJobs);
       
-      let publishResponse;
       let totalPublished = 0;
       
       try {
-        // Split results into smaller batches to avoid payload size issues
-        const batchSize = 1; // Process one source at a time
-        for (let i = 0; i < results.length; i += batchSize) {
-          const batch = results.slice(i, i + batchSize);
-          console.log(`📤 Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(results.length/batchSize)}`);
-          console.log(`📤 Batch contains ${batch.reduce((sum, r) => sum + (r.jobs?.length || 0), 0)} jobs`);
-          
-          const batchResponse = await supabase.functions.invoke('job-publisher', {
-            body: {
-              results: batch,
-              totalJobs: batch.reduce((sum, r) => sum + (r.jobs?.length || 0), 0),
-              maxJobs: 50, // Increase from 10 to allow more jobs
-              autoPublish: true
-            }
-          });
+        for (const result of results) {
+          if (result.jobs && Array.isArray(result.jobs)) {
+            console.log(`🔄 Processing ${result.jobs.length} jobs from ${result.source}`);
+            
+            for (const job of result.jobs) {
+              try {
+                // Insert directly into jobs table
+                const { data: publishedJob, error: publishError } = await supabase
+                  .from('jobs')
+                  .insert({
+                    job_title: job.title,
+                    title: job.title,
+                    company_name: job.company,
+                    location: job.location || 'Remote',
+                    job_description: job.description,
+                    description: job.description,
+                    employment_type: job.job_type?.toLowerCase().replace('-', '_') || 'full_time',
+                    experience_level: job.experience_level?.toLowerCase() || 'mid',
+                    external_url: job.url,
+                    is_active: true,
+                    posted_at: new Date().toISOString(),
+                    expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                  })
+                  .select()
+                  .single();
 
-          console.log(`📥 Batch ${Math.floor(i/batchSize) + 1} response:`, batchResponse);
-          
-          if (batchResponse.data?.jobsPublished) {
-            totalPublished += batchResponse.data.jobsPublished;
-          }
-          
-          if (batchResponse.error) {
-            console.error(`❌ Batch ${Math.floor(i/batchSize) + 1} failed:`, batchResponse.error);
+                if (publishError) {
+                  console.error(`❌ Error publishing job "${job.title}":`, publishError);
+                } else {
+                  totalPublished++;
+                  console.log(`✅ Published job: ${publishedJob.title}`);
+                }
+              } catch (jobError) {
+                console.error(`❌ Error processing job "${job.title}":`, jobError);
+              }
+            }
           }
         }
         
-        publishResponse = {
-          data: { jobsPublished: totalPublished },
-          error: null
-        };
-
-        console.log("📥 Total jobs published across all batches:", totalPublished);
-      } catch (publishError) {
-        console.error("❌ Publisher call failed:", publishError);
-        publishResponse = { data: null, error: publishError };
+        console.log(`📈 Successfully published ${totalPublished} jobs directly to database`);
+        
+      } catch (error) {
+        console.error("❌ Direct database insertion failed:", error);
+        throw error;
       }
 
       return {
         totalJobs,
         results,
         targetReached: totalJobs >= targetJobs,
-        published: publishResponse.data?.jobsPublished || 0
+        published: totalPublished
       };
     },
     onSuccess: (data) => {
