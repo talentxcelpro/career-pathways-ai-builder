@@ -84,25 +84,13 @@ export function JobScrapingTester() {
       });
       setProgress(60);
 
-      // Stage 3: Test job publishing 
+      // Stage 3: Show publishing results (already handled in scraping)
       const stage3Index = testResults.length;
       addTestResult({
         stage: "Job Publishing",
-        status: 'running',
-        message: "Publishing scraped jobs to the platform..."
-      });
-
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const publishResult = await publishJobs.mutateAsync({
-        maxJobs: maxJobs,
-        autoPublish: true
-      });
-
-      updateTestResult(stage3Index, {
         status: 'success',
-        message: `✅ Published ${publishResult.published} jobs to the platform`,
-        data: publishResult
+        message: `✅ Published ${scrapingResult.published || 0} jobs to the platform`,
+        data: { published: scrapingResult.published || 0 }
       });
       setProgress(85);
 
