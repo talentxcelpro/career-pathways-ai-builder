@@ -35,6 +35,9 @@ export const usePublishScrapedJobs = () => {
       
       try {
         console.log('🚀 Starting fetch request...');
+        console.log('🌐 User Agent:', navigator.userAgent);
+        console.log('🔗 Request URL:', 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher');
+        console.log('📤 Request body:', JSON.stringify(params));
         
         // Use direct fetch to cloud function (no localhost fallback)
         const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher', {
@@ -43,8 +46,9 @@ export const usePublishScrapedJobs = () => {
           body: JSON.stringify(params)
         });
         
-        console.log('📥 Fetch completed!');
+        console.log('📥 Fetch completed successfully!');
         console.log('📥 Response status:', response.status);
+        console.log('📥 Response statusText:', response.statusText);
         console.log('📥 Response ok:', response.ok);
         console.log('📥 Response type:', response.type);
         console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
@@ -60,11 +64,29 @@ export const usePublishScrapedJobs = () => {
         console.log('📥 Function response:', data);
         
         return data;
-      } catch (fetchError) {
+      } catch (fetchError: any) {
         console.error('❌ Fetch error caught:', fetchError);
         console.error('❌ Error name:', fetchError.name);
         console.error('❌ Error message:', fetchError.message);
         console.error('❌ Error stack:', fetchError.stack);
+        console.error('❌ Error cause:', fetchError.cause);
+        console.error('❌ Error toString:', fetchError.toString());
+        
+        // Additional diagnostics
+        if (fetchError.name === 'TypeError' && fetchError.message === 'Failed to fetch') {
+          console.error('🔍 This is a network-level error. Possible causes:');
+          console.error('   - CORS blocking the request');
+          console.error('   - Network connectivity issues');
+          console.error('   - Browser security policies');
+          console.error('   - Ad blockers or extensions');
+          console.error('   - Mixed content (HTTP/HTTPS) issues');
+        }
+        
+        // Check if we're in a secure context
+        console.log('🔒 Is secure context:', window.isSecureContext);
+        console.log('🌐 Protocol:', window.location.protocol);
+        console.log('🏠 Origin:', window.location.origin);
+        
         throw fetchError;
       }
     },
