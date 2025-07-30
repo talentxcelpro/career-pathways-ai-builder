@@ -34,12 +34,12 @@ Deno.serve(async (req) => {
     // Mock job scraping for now - in production this would scrape actual job sites
     const mockJobs = Array.from({ length: Math.min(maxJobs, 10) }, (_, i) => ({
       source_id: sourceId || 'mock-source',
-      title: `Software Developer ${i + 1}`,
+      job_title: `Software Developer ${i + 1}`,
       company: `Company ${i + 1}`,
       location: location,
-      description: `Job description for Software Developer position ${i + 1}. We are looking for a talented developer to join our team.`,
-      url: `https://example.com/job/${i + 1}`,
-      salary_range: '₹5,00,000 - ₹8,00,000',
+      job_description: `Job description for Software Developer position ${i + 1}. We are looking for a talented developer to join our team.`,
+      source_url: `https://example.com/job/${i + 1}`,
+      salary: '₹5,00,000 - ₹8,00,000',
       employment_type: 'full_time',
       experience_level: i % 3 === 0 ? 'entry' : i % 3 === 1 ? 'mid' : 'senior',
       scraped_at: new Date().toISOString(),
