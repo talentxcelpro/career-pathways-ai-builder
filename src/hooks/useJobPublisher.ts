@@ -16,36 +16,57 @@ export const usePublishScrapedJobs = () => {
       // Get current session and token for debugging
       const session = await supabase.auth.getSession();
       const token = session?.data?.session?.access_token;
+      const apikey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+      
       console.log('🔐 Auth token available:', !!token);
       console.log('🔐 Token length:', token?.length || 0);
-      
+      console.log('🔐 Token preview:', token ? token.substring(0, 20) + '...' : 'None');
+      console.log('🔐 Apikey available:', !!apikey);
       console.log('🔗 Using direct cloud URL: https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher');
-      console.log('Calling job-publisher function...');
       
-      // Use direct fetch to cloud function (no localhost fallback)
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-        },
-        body: JSON.stringify(params)
-      });
+      const headers = {
+        'Content-Type': 'application/json',
+        'apikey': apikey,
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      };
       
-      console.log('📥 Response status:', response.status);
-      console.log('📥 Response ok:', response.ok);
+      console.log('📋 Request headers:', Object.keys(headers));
+      console.log('📋 Headers detail:', headers);
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ Function call failed:', response.status, errorText);
-        throw new Error(`Function call failed: ${response.status} ${errorText}`);
+      try {
+        console.log('🚀 Starting fetch request...');
+        
+        // Use direct fetch to cloud function (no localhost fallback)
+        const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(params)
+        });
+        
+        console.log('📥 Fetch completed!');
+        console.log('📥 Response status:', response.status);
+        console.log('📥 Response ok:', response.ok);
+        console.log('📥 Response type:', response.type);
+        console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ Function call failed:', response.status, response.statusText);
+          console.error('❌ Error response body:', errorText);
+          throw new Error(`Function call failed: ${response.status} ${response.statusText} - ${errorText}`);
+        }
+        
+        const data = await response.json();
+        console.log('📥 Function response:', data);
+        
+        return data;
+      } catch (fetchError) {
+        console.error('❌ Fetch error caught:', fetchError);
+        console.error('❌ Error name:', fetchError.name);
+        console.error('❌ Error message:', fetchError.message);
+        console.error('❌ Error stack:', fetchError.stack);
+        throw fetchError;
       }
-      
-      const data = await response.json();
-      console.log('📥 Function response:', data);
-      
-      return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
