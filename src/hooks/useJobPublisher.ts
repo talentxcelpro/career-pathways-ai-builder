@@ -12,11 +12,21 @@ export const usePublishScrapedJobs = () => {
       autoPublish?: boolean;
     }) => {
       console.log('📤 Sending to job-publisher:', JSON.stringify(params, null, 2));
+      
+      // Get current session and token for debugging
+      const session = await supabase.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      console.log('🔐 Auth token available:', !!token);
+      console.log('🔐 Token length:', token?.length || 0);
+      
+      console.log('🔗 Calling function URL: https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher');
       console.log('Calling job-publisher function...');
+      
       const { data, error } = await supabase.functions.invoke('job-publisher', {
         body: params
       });
 
+      console.log('📥 Job-publisher supabase client response:', { data, error });
       console.log('Job-publisher response:', { data, error });
       if (error) {
         console.error('Job publisher error details:', {
