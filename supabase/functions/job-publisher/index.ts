@@ -50,8 +50,7 @@ Deno.serve(async (req) => {
     let query = supabase
       .from('scraped_jobs')
       .select('*')
-      .eq('status', 'draft')
-      .eq('processing_status', 'pending')
+      .in('status', ['draft', 'pending'])
       .order('scraped_at', { ascending: false });
 
     if (botId) {
@@ -133,10 +132,7 @@ Deno.serve(async (req) => {
       await supabase
         .from('scraped_jobs')
         .update({
-          status: autoPublish ? 'published' : 'ready',
-          processing_status: 'completed',
-          published_job_id: publishedJob.id,
-          updated_at: new Date().toISOString()
+          status: autoPublish ? 'published' : 'ready'
         })
         .eq('id', scrapedJob.id);
 

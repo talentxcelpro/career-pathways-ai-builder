@@ -13153,9 +13153,11 @@ export type Database = {
           bot_id: string
           company: string
           created_at: string
+          employment_type: string | null
           enhanced_description: string | null
           enhanced_title: string | null
           error_message: string | null
+          experience_level: string | null
           id: string
           job_description: string
           job_title: string
@@ -13166,6 +13168,7 @@ export type Database = {
           salary: string | null
           scraped_at: string
           seo_keywords: string[] | null
+          skills: Json | null
           source_platform: string
           source_url: string
           status: string
@@ -13175,9 +13178,11 @@ export type Database = {
           bot_id: string
           company: string
           created_at?: string
+          employment_type?: string | null
           enhanced_description?: string | null
           enhanced_title?: string | null
           error_message?: string | null
+          experience_level?: string | null
           id?: string
           job_description: string
           job_title: string
@@ -13188,6 +13193,7 @@ export type Database = {
           salary?: string | null
           scraped_at?: string
           seo_keywords?: string[] | null
+          skills?: Json | null
           source_platform: string
           source_url: string
           status?: string
@@ -13197,9 +13203,11 @@ export type Database = {
           bot_id?: string
           company?: string
           created_at?: string
+          employment_type?: string | null
           enhanced_description?: string | null
           enhanced_title?: string | null
           error_message?: string | null
+          experience_level?: string | null
           id?: string
           job_description?: string
           job_title?: string
@@ -13210,6 +13218,7 @@ export type Database = {
           salary?: string | null
           scraped_at?: string
           seo_keywords?: string[] | null
+          skills?: Json | null
           source_platform?: string
           source_url?: string
           status?: string

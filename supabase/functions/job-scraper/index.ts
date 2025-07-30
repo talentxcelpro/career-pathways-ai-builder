@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
 
     // Mock job scraping for now - in production this would scrape actual job sites
     const mockJobs = Array.from({ length: Math.min(maxJobs, 10) }, (_, i) => ({
-      source_id: sourceId || 'mock-source',
+      source_platform: sourceId || 'mock-source',
       job_title: `Software Developer ${i + 1}`,
       company: `Company ${i + 1}`,
       location: location,
@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
       status: 'draft',
       bot_id: botId,
       skills: ['JavaScript', 'React', 'Node.js'],
-      posted_date: new Date().toISOString(),
+      posted_at: new Date().toISOString(),
     }));
 
     // Insert scraped jobs into the database
