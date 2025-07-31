@@ -61,6 +61,9 @@ serve(async (req) => {
     const salaries = ['₹3-6 LPA', '₹6-10 LPA', '₹10-15 LPA', '₹15-25 LPA'];
     const employmentTypes = ['full-time', 'part-time', 'contract', 'freelance', 'internship'];
     const experienceLevels = ['entry-level', 'mid-level', 'senior-level', 'executive'];
+    
+    console.log('✅ Using employment types:', employmentTypes);
+    console.log('✅ Using experience levels:', experienceLevels);
 
     const jobsToInsert = [];
     let duplicates = 0;
