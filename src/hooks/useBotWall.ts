@@ -82,7 +82,7 @@ export const useCreateWallPost = () => {
             content: postData.content,
             headline: postData.title,
             is_public: true,
-            post_type: 'bot_content',
+            post_type: 'text', // Use 'text' instead of 'bot_content'
             tags: postData.tags,
             status: 'published',
             visibility: 'public',
