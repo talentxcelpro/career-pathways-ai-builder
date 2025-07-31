@@ -120,14 +120,28 @@ serve(async (req) => {
       });
     }
 
+    // Deduplicate jobs before upserting to avoid "ON CONFLICT DO UPDATE command cannot affect row a second time" error
+    console.log(`Generated ${jobsToInsert.length} jobs before deduplication`);
+    
+    const deduplicatedJobs = Object.values(
+      jobsToInsert.reduce((acc, job) => {
+        // Use combination of job_title, company_name, and location as unique key
+        const uniqueKey = `${job.job_title}-${job.company_name}-${job.location}`.toLowerCase();
+        acc[uniqueKey] = job; // If duplicate, last one wins
+        return acc;
+      }, {} as Record<string, any>)
+    );
+    
+    console.log(`After deduplication: ${deduplicatedJobs.length} unique jobs`);
+
     // Use upsert instead of insert to handle duplicates
     let insertedCount = 0;
-    if (jobsToInsert.length > 0) {
-      console.log(`Attempting to upsert ${jobsToInsert.length} jobs`);
+    if (deduplicatedJobs.length > 0) {
+      console.log(`Attempting to upsert ${deduplicatedJobs.length} jobs`);
       
       const { data: upserted, error } = await supabase
         .from('jobs')
-        .upsert(jobsToInsert, { 
+        .upsert(deduplicatedJobs, { 
           onConflict: 'job_title,company_name,location'
         })
         .select('id, job_title, company_name');
