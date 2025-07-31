@@ -112,7 +112,7 @@ serve(async (req) => {
         skills_required: ['JavaScript', 'React', 'Node.js'],
         source: 'Generated API',
         status: 'active',
-        posted_at: new Date().toISOString(),
+        date_posted: new Date().toISOString(),
         is_active: true,
         expires_at: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
         created_at: new Date().toISOString(),

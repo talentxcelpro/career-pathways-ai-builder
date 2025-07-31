@@ -8487,6 +8487,7 @@ export type Database = {
           contact_person_name: string | null
           contact_person_phone: string | null
           created_at: string | null
+          date_posted: string | null
           description: string
           detailed_description: string | null
           education_level: string | null
@@ -8584,6 +8585,7 @@ export type Database = {
           contact_person_name?: string | null
           contact_person_phone?: string | null
           created_at?: string | null
+          date_posted?: string | null
           description: string
           detailed_description?: string | null
           education_level?: string | null
@@ -8681,6 +8683,7 @@ export type Database = {
           contact_person_name?: string | null
           contact_person_phone?: string | null
           created_at?: string | null
+          date_posted?: string | null
           description?: string
           detailed_description?: string | null
           education_level?: string | null
