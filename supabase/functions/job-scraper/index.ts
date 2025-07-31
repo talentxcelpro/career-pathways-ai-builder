@@ -60,7 +60,7 @@ serve(async (req) => {
     const locations = ['Mumbai, India', 'Bangalore, India', 'Delhi, India', 'Remote'];
     const salaries = ['₹3-6 LPA', '₹6-10 LPA', '₹10-15 LPA', '₹15-25 LPA'];
     const employmentTypes = ['full-time', 'part-time', 'contract', 'freelance', 'internship'];
-    const experienceLevels = ['entry-level', 'mid-level', 'senior-level', 'executive'];
+    const experienceLevels = ['fresher', 'mid-level', 'senior-level', 'executive'];
     
     console.log('✅ Using employment types:', employmentTypes);
     console.log('✅ Using experience levels:', experienceLevels);
@@ -73,11 +73,11 @@ serve(async (req) => {
       const title = titles[Math.floor(Math.random() * titles.length)];
       const location = locations[Math.floor(Math.random() * locations.length)];
       
-      // Check for existing job
+      // Check for existing job using correct column names from unique constraint
       const { data: existing } = await supabase
         .from('jobs')
         .select('id')
-        .eq('title', title)
+        .eq('job_title', title)
         .eq('company_name', company)
         .eq('location', location)
         .maybeSingle();
@@ -100,11 +100,11 @@ serve(async (req) => {
       
       const normalizeExperienceLevel = (level) => {
         const map = {
-          'entry-level': 'entry-level', 'mid-level': 'mid-level', 'senior-level': 'senior-level', 'executive': 'executive',
-          'Entry-Level': 'entry-level', 'Mid-Level': 'mid-level', 'Senior-Level': 'senior-level', 'Executive': 'executive',
-          'Mid Level': 'mid-level', 'Senior Level': 'senior-level', 'Entry Level': 'entry-level'
+          'fresher': 'fresher', 'mid-level': 'mid-level', 'senior-level': 'senior-level', 'executive': 'executive',
+          'Fresher': 'fresher', 'Mid-Level': 'mid-level', 'Senior-Level': 'senior-level', 'Executive': 'executive',
+          'Mid Level': 'mid-level', 'Senior Level': 'senior-level', 'Entry Level': 'fresher', 'entry-level': 'fresher'
         };
-        return map[level] || 'mid-level';
+        return map[level] || 'fresher';
       };
 
       const rawEmploymentType = employmentTypes[Math.floor(Math.random() * employmentTypes.length)];
@@ -116,7 +116,7 @@ serve(async (req) => {
       console.log(`✅ Normalized job values: employment_type="${selectedEmploymentType}", experience_level="${selectedExperienceLevel}"`);
 
       jobsToInsert.push({
-        title,
+        job_title: title,
         company_name: company,
         description: `We are looking for a talented ${title} to join our team at ${company}. This is an excellent opportunity to work with cutting-edge technologies.`,
         location,
@@ -137,7 +137,7 @@ serve(async (req) => {
       const { data: inserted, error } = await supabase
         .from('jobs')
         .insert(jobsToInsert)
-        .select('id, title, company_name');
+        .select('id, job_title, company_name');
 
       if (error) {
         console.error('Insert error:', error);
