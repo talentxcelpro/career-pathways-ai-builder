@@ -78,11 +78,15 @@ export const useCreateWallPost = () => {
         try {
           await supabase.from('posts').insert({
             author_id: userId,
+            user_id: userId,
             content: postData.content,
             headline: postData.title,
             is_public: true,
             post_type: 'bot_content',
             tags: postData.tags,
+            status: 'published',
+            visibility: 'public',
+            origin: 'bot_wall',
             created_at: new Date().toISOString()
           });
         } catch (postError) {
