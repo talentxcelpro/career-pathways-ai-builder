@@ -129,14 +129,15 @@ serve(async (req) => {
       });
     }
 
-    console.log(`Generated ${jobsToInsert.length} jobs (${duplicates} duplicates skipped)`);
-
-    // Insert jobs
+    // Use upsert instead of insert to handle duplicates
     let insertedCount = 0;
     if (jobsToInsert.length > 0) {
-      const { data: inserted, error } = await supabase
+      const { data: upserted, error } = await supabase
         .from('jobs')
-        .insert(jobsToInsert)
+        .upsert(jobsToInsert, { 
+          onConflict: 'job_title,company_name,location',
+          ignoreDuplicates: false 
+        })
         .select('id, job_title, company_name');
 
       if (error) {
@@ -144,8 +145,8 @@ serve(async (req) => {
         throw error;
       }
 
-      insertedCount = inserted?.length || 0;
-      console.log(`✅ Successfully inserted ${insertedCount} jobs`);
+      insertedCount = upserted?.length || 0;
+      console.log(`✅ Successfully upserted ${insertedCount} jobs`);
     }
 
     const response = {
