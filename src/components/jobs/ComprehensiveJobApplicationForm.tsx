@@ -11,7 +11,6 @@ import DeclarationStep from './application-form/DeclarationStep';
 import { FormData, JobInfo, Resume } from './application-form/types';
 import { validateStep, validateFileUpload } from './application-form/validation';
 import { useEmailAutomation } from '@/hooks/useEmailAutomation';
-import { incrementJobApplications } from '@/utils/supabaseHelpers';
 
 interface ComprehensiveJobApplicationFormProps {
   open: boolean;
@@ -275,14 +274,6 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       }
 
       toast.success('Application submitted successfully!');
-      
-      // Increment job applications count
-      try {
-        await incrementJobApplications(job.id);
-      } catch (incrementError) {
-        console.error('Failed to increment application count:', incrementError);
-        // Don't show error to user as application was successful
-      }
       
       // Trigger application confirmation email
       try {
