@@ -4396,6 +4396,47 @@ export type Database = {
           },
         ]
       }
+      company_analytics: {
+        Row: {
+          applications_received: number
+          company_id: string
+          created_at: string
+          date: string
+          follower_count: number
+          id: string
+          job_views: number
+          profile_views: number
+        }
+        Insert: {
+          applications_received?: number
+          company_id: string
+          created_at?: string
+          date?: string
+          follower_count?: number
+          id?: string
+          job_views?: number
+          profile_views?: number
+        }
+        Update: {
+          applications_received?: number
+          company_id?: string
+          created_at?: string
+          date?: string
+          follower_count?: number
+          id?: string
+          job_views?: number
+          profile_views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_analytics_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_analytics_sessions: {
         Row: {
           application_completions: number | null
@@ -7637,6 +7678,54 @@ export type Database = {
         }
         Relationships: []
       }
+      job_alert_notifications: {
+        Row: {
+          alert_id: string
+          clicked_at: string | null
+          id: string
+          job_id: string
+          notification_type: string
+          opened_at: string | null
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_id: string
+          clicked_at?: string | null
+          id?: string
+          job_id: string
+          notification_type?: string
+          opened_at?: string | null
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_id?: string
+          clicked_at?: string | null
+          id?: string
+          job_id?: string
+          notification_type?: string
+          opened_at?: string | null
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_alert_notifications_alert_id_fkey"
+            columns: ["alert_id"]
+            isOneToOne: false
+            referencedRelation: "job_alerts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_alert_notifications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_alerts: {
         Row: {
           created_at: string | null
@@ -8090,6 +8179,88 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "job_recommendations_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_referrals: {
+        Row: {
+          created_at: string
+          id: string
+          job_id: string
+          referral_code: string | null
+          referred_email: string | null
+          referred_user_id: string | null
+          referrer_user_id: string
+          reward_amount: number | null
+          reward_paid: boolean | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          job_id: string
+          referral_code?: string | null
+          referred_email?: string | null
+          referred_user_id?: string | null
+          referrer_user_id: string
+          reward_amount?: number | null
+          reward_paid?: boolean | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          job_id?: string
+          referral_code?: string | null
+          referred_email?: string | null
+          referred_user_id?: string | null
+          referrer_user_id?: string
+          reward_amount?: number | null
+          reward_paid?: boolean | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_referrals_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_saves: {
+        Row: {
+          id: string
+          job_id: string
+          notes: string | null
+          saved_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          job_id: string
+          notes?: string | null
+          saved_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          job_id?: string
+          notes?: string | null
+          saved_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_saves_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
