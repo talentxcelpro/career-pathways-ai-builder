@@ -88,7 +88,7 @@ serve(async (req) => {
         description: `We are looking for a talented ${title} to join our team at ${company}. This is an excellent opportunity to work with cutting-edge technologies.`,
         location,
         salary_range: salaries[Math.floor(Math.random() * salaries.length)],
-        employment_type: 'Full-time',
+        employment_type: 'full_time',
         experience_level: 'Mid Level',
         skills_required: ['JavaScript', 'React', 'Node.js'],
         source: 'Generated API',
