@@ -61,7 +61,21 @@ export const JobScraperControl = () => {
 
     } catch (error) {
       console.error('Scraper error:', error);
-      toast.error(`❌ Scraper failed: ${error.message}`, { id: 'scraper' });
+      
+      // Enhanced error handling with specific error types
+      let errorMessage = 'Unknown error occurred';
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error.details) {
+        errorMessage = error.details;
+      }
+      
+      toast.error(`❌ Scraper failed: ${errorMessage}`, { 
+        id: 'scraper',
+        duration: 5000 
+      });
     } finally {
       setIsRunning(false);
     }

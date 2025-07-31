@@ -16,7 +16,7 @@ export const useJobsManagement = () => {
         .select(`
           *,
           companies(name, logo_url),
-          profiles!jobs_posted_by_fkey(full_name)
+          profiles(full_name)
         `)
         .order('created_at', { ascending: false });
 

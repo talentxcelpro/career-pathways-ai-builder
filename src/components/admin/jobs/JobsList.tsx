@@ -71,7 +71,7 @@ export const JobsList: React.FC<JobsListProps> = ({ jobs, isLoading }) => {
                       <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
                         <div className="flex items-center gap-1">
                           <Building2 className="h-4 w-4" />
-                          {job.companies?.name || 'Unknown Company'}
+                          {job.companies?.name || job.company_name || 'Unknown Company'}
                         </div>
                         {job.location && (
                           <div className="flex items-center gap-1">
@@ -81,7 +81,7 @@ export const JobsList: React.FC<JobsListProps> = ({ jobs, isLoading }) => {
                         )}
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          Posted {new Date(job.created_at).toLocaleDateString()}
+                          Posted {job.date_posted ? new Date(job.date_posted).toLocaleDateString() : new Date(job.created_at).toLocaleDateString()}
                         </div>
                         <div className="flex items-center gap-1">
                           <Users className="h-4 w-4" />

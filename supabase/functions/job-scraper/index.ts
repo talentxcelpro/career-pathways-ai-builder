@@ -111,7 +111,12 @@ serve(async (req) => {
         experience_level: selectedExperienceLevel,
         skills_required: ['JavaScript', 'React', 'Node.js'],
         source: 'Generated API',
-        status: 'active'
+        status: 'active',
+        date_posted: new Date().toISOString(),
+        is_active: true,
+        expires_at: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       });
     }
 
