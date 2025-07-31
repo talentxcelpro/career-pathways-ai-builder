@@ -66,26 +66,11 @@ serve(async (req) => {
     console.log('✅ Using experience levels:', experienceLevels);
 
     const jobsToInsert = [];
-    let duplicates = 0;
 
     for (let i = 0; i < Math.min(limit, 50); i++) {
       const company = companies[Math.floor(Math.random() * companies.length)];
       const title = titles[Math.floor(Math.random() * titles.length)];
       const location = locations[Math.floor(Math.random() * locations.length)];
-      
-      // Check for existing job using correct column names from unique constraint
-      const { data: existing } = await supabase
-        .from('jobs')
-        .select('id')
-        .eq('job_title', title)
-        .eq('company_name', company)
-        .eq('location', location)
-        .maybeSingle();
-
-      if (existing) {
-        duplicates++;
-        continue;
-      }
 
       // Force normalize to ensure DB constraint compliance
       const normalizeEmploymentType = (type) => {
@@ -132,11 +117,12 @@ serve(async (req) => {
     // Use upsert instead of insert to handle duplicates
     let insertedCount = 0;
     if (jobsToInsert.length > 0) {
+      console.log(`Attempting to upsert ${jobsToInsert.length} jobs`);
+      
       const { data: upserted, error } = await supabase
         .from('jobs')
         .upsert(jobsToInsert, { 
-          onConflict: 'job_title,company_name,location',
-          ignoreDuplicates: false 
+          onConflict: 'job_title,company_name,location'
         })
         .select('id, job_title, company_name');
 
@@ -153,10 +139,10 @@ serve(async (req) => {
       success: true,
       message: `Successfully processed ${insertedCount} jobs`,
       stats: {
-        total_scraped: jobsToInsert.length + duplicates,
+        total_scraped: jobsToInsert.length,
         valid_jobs: jobsToInsert.length,
         published_jobs: insertedCount,
-        duplicates_skipped: duplicates,
+        duplicates_skipped: 0,
         next_run: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString()
       },
       jobs: jobsToInsert.slice(0, 5)
