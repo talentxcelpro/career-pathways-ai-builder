@@ -192,7 +192,71 @@ export const useTriggerDailyJobScraping = () => {
       console.log("📤 Publishing jobs directly to database...");
       console.log("📤 Total jobs to publish:", totalJobs);
       
+      // Helper functions to map scraped values to database enum values
+      const mapEmploymentType = (jobType: string | undefined): string => {
+        if (!jobType) return 'full-time';
+        const type = jobType.toLowerCase().trim();
+        switch (type) {
+          case 'full_time':
+          case 'fulltime':
+          case 'full time':
+            return 'full-time';
+          case 'part_time':
+          case 'parttime':
+          case 'part time':
+            return 'part-time';
+          case 'contract':
+          case 'contractual':
+            return 'contract';
+          case 'freelance':
+          case 'temporary':
+          case 'temp':
+            return 'freelance';
+          case 'internship':
+          case 'intern':
+            return 'internship';
+          default:
+            console.warn(`⚠️ Unknown employment type: "${jobType}", defaulting to full-time`);
+            return 'full-time';
+        }
+      };
+
+      const mapExperienceLevel = (experience: string | undefined): string => {
+        if (!experience) return 'mid-level';
+        const exp = experience.toLowerCase().trim();
+        switch (exp) {
+          case 'entry':
+          case 'entry_level':
+          case 'entry level':
+          case 'fresher':
+          case 'fresh':
+          case 'junior':
+          case '0-1':
+          case '0-2':
+            return 'fresher';
+          case 'mid':
+          case 'mid_level':
+          case 'mid level':
+          case 'intermediate':
+          case '2-5':
+          case '3-5':
+            return 'mid-level';
+          case 'senior':
+          case 'senior_level':
+          case 'senior level':
+          case 'lead':
+          case 'expert':
+          case '5+':
+          case '7+':
+            return 'senior-level';
+          default:
+            console.warn(`⚠️ Unknown experience level: "${experience}", defaulting to mid-level`);
+            return 'mid-level';
+        }
+      };
+      
       let totalPublished = 0;
+      let totalErrors = 0;
       
       try {
         for (const result of results) {
@@ -201,34 +265,53 @@ export const useTriggerDailyJobScraping = () => {
             
             for (const job of result.jobs) {
               try {
-                // Insert directly into jobs table
+                // Validate required fields
+                if (!job.title || !job.description) {
+                  console.warn(`⚠️ Skipping job with missing required fields:`, { title: job.title, hasDescription: !!job.description });
+                  continue;
+                }
+
+                const mappedEmploymentType = mapEmploymentType(job.job_type);
+                const mappedExperienceLevel = mapExperienceLevel(job.experience_level);
+
+                console.log(`📝 Mapping job: "${job.title}" - Type: ${job.job_type} → ${mappedEmploymentType}, Experience: ${job.experience_level} → ${mappedExperienceLevel}`);
+
+                // Insert directly into jobs table with proper field mapping
                 const { data: publishedJob, error: publishError } = await supabase
                   .from('jobs')
                   .insert({
-                    job_title: job.title,
                     title: job.title,
-                    company_name: job.company,
-                    location: job.location || 'Remote',
-                    job_description: job.description,
                     description: job.description,
-                    employment_type: job.job_type?.toLowerCase().replace('-', '_') || 'full_time',
-                    experience_level: job.experience_level?.toLowerCase() || 'mid',
+                    location: job.location || 'Remote',
+                    employment_type: mappedEmploymentType,
+                    experience_level: mappedExperienceLevel,
                     external_url: job.url,
                     is_active: true,
                     posted_at: new Date().toISOString(),
                     expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
                   })
-                  .select()
+                  .select('id, title')
                   .single();
 
                 if (publishError) {
-                  console.error(`❌ Error publishing job "${job.title}":`, publishError);
+                  console.error(`❌ Error publishing job "${job.title}":`, {
+                    error: publishError,
+                    jobData: {
+                      title: job.title,
+                      employment_type: mappedEmploymentType,
+                      experience_level: mappedExperienceLevel,
+                      original_job_type: job.job_type,
+                      original_experience: job.experience_level
+                    }
+                  });
+                  totalErrors++;
                 } else {
                   totalPublished++;
-                  console.log(`✅ Published job: ${publishedJob.title}`);
+                  console.log(`✅ Published job: ${publishedJob.title} (ID: ${publishedJob.id})`);
                 }
               } catch (jobError) {
                 console.error(`❌ Error processing job "${job.title}":`, jobError);
+                totalErrors++;
               }
             }
           }
