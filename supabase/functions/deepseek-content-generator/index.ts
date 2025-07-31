@@ -34,13 +34,17 @@ serve(async (req) => {
 
     const { templateId, botId, contentType, prompt, category, seoKeywords }: ContentRequest = await req.json();
 
-    // Get word count based on content type
+    // Get word count based on content type per specifications
     const getWordCount = (type: string): string => {
       switch (type.toLowerCase()) {
         case 'post':
           return '150-200 words';
         case 'article':
-          return '500 words';
+          return '500-700 words';
+        case 'seo_page':
+          return '500-700 words';
+        case 'newsletter':
+          return '1000-1500 words';
         case 'guide':
           return '300-400 words';
         case 'tip':
@@ -103,7 +107,7 @@ Write the content now:
             content: enhancedPrompt
           }
         ],
-        max_tokens: contentType === 'article' ? 800 : 400,
+        max_tokens: contentType === 'newsletter' ? 2000 : contentType === 'article' || contentType === 'seo_page' ? 1000 : 400,
         temperature: 0.7,
         top_p: 0.9,
       }),

@@ -2476,10 +2476,14 @@ export type Database = {
           created_at: string | null
           id: string
           is_active: boolean | null
+          max_words: number | null
+          min_words: number | null
+          priority: number | null
           prompt_template: string
           seo_keywords: string[] | null
           system_message: string | null
           template_name: string
+          tone: string | null
           updated_at: string | null
           variables: Json | null
         }
@@ -2490,10 +2494,14 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          max_words?: number | null
+          min_words?: number | null
+          priority?: number | null
           prompt_template: string
           seo_keywords?: string[] | null
           system_message?: string | null
           template_name: string
+          tone?: string | null
           updated_at?: string | null
           variables?: Json | null
         }
@@ -2504,10 +2512,14 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          max_words?: number | null
+          min_words?: number | null
+          priority?: number | null
           prompt_template?: string
           seo_keywords?: string[] | null
           system_message?: string | null
           template_name?: string
+          tone?: string | null
           updated_at?: string | null
           variables?: Json | null
         }
@@ -5248,6 +5260,143 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      content_analytics: {
+        Row: {
+          content_id: string | null
+          created_at: string | null
+          date: string | null
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number | null
+        }
+        Insert: {
+          content_id?: string | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value?: number | null
+        }
+        Update: {
+          content_id?: string | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_analytics_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "bot_generated_content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_automation_schedule: {
+        Row: {
+          bot_weights: Json | null
+          content_types: string[]
+          created_at: string | null
+          distribution_rules: Json | null
+          id: string
+          is_active: boolean | null
+          schedule_name: string
+          target_count_per_day: number | null
+          time_slots: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          bot_weights?: Json | null
+          content_types: string[]
+          created_at?: string | null
+          distribution_rules?: Json | null
+          id?: string
+          is_active?: boolean | null
+          schedule_name: string
+          target_count_per_day?: number | null
+          time_slots?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          bot_weights?: Json | null
+          content_types?: string[]
+          created_at?: string | null
+          distribution_rules?: Json | null
+          id?: string
+          is_active?: boolean | null
+          schedule_name?: string
+          target_count_per_day?: number | null
+          time_slots?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      content_generation_queue: {
+        Row: {
+          attempts: number | null
+          bot_id: string | null
+          content_type: string
+          created_at: string | null
+          error_message: string | null
+          id: string
+          max_attempts: number | null
+          priority: number | null
+          scheduled_for: string | null
+          status: string | null
+          template_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          attempts?: number | null
+          bot_id?: string | null
+          content_type: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_attempts?: number | null
+          priority?: number | null
+          scheduled_for?: string | null
+          status?: string | null
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          attempts?: number | null
+          bot_id?: string | null
+          content_type?: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_attempts?: number | null
+          priority?: number | null
+          scheduled_for?: string | null
+          status?: string | null
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_generation_queue_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_generation_queue_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "bot_content_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       content_hub: {
         Row: {
@@ -11921,6 +12070,60 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      published_content: {
+        Row: {
+          bot_id: string | null
+          content_id: string | null
+          created_at: string | null
+          engagement_metrics: Json | null
+          id: string
+          publication_type: string
+          published_at: string | null
+          seo_metadata: Json | null
+          slug: string | null
+          url: string | null
+        }
+        Insert: {
+          bot_id?: string | null
+          content_id?: string | null
+          created_at?: string | null
+          engagement_metrics?: Json | null
+          id?: string
+          publication_type: string
+          published_at?: string | null
+          seo_metadata?: Json | null
+          slug?: string | null
+          url?: string | null
+        }
+        Update: {
+          bot_id?: string | null
+          content_id?: string | null
+          created_at?: string | null
+          engagement_metrics?: Json | null
+          id?: string
+          publication_type?: string
+          published_at?: string | null
+          seo_metadata?: Json | null
+          slug?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "published_content_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "published_content_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "bot_generated_content"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       push_notification_history: {
         Row: {
