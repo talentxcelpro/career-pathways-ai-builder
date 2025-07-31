@@ -23,6 +23,7 @@ import { MobileVideoInterview } from "../components/mobile/MobileVideoInterview"
 import { MobileAnalytics } from "../components/mobile/MobileAnalytics";
 import { MobileSocialNetwork } from "../components/mobile/MobileSocialNetwork";
 import PublicServiceProfile from "../pages/PublicServiceProfile";
+import MyApplications from "../pages/MyApplications";
 
 export const coreRoutes = [
   {
@@ -37,6 +38,11 @@ export const coreRoutes = [
     to: "/dashboard",
     icon: <BarChart3 className="h-4 w-4" />,
     page: <Dashboard />,
+  },
+  {
+    title: "My Applications",
+    to: "/my-applications",
+    page: <MyApplications />,
   },
   {
     title: "Admin Dashboard",

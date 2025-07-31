@@ -145,6 +145,12 @@ const adminMenuItems = [
     description: 'Logs & security'
   },
   {
+    title: 'Scraped Job CVs',
+    url: '/admin/scraped-applications',
+    icon: FileText,
+    description: 'View scraped job applications and CVs'
+  },
+  {
     title: 'Email Automation',
     url: '/admin/email-automation',
     icon: Mail,
