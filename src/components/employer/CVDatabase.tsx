@@ -22,25 +22,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 
 interface CVRecord {
-  profile_id: string;
+  application_id: string;
+  job_id: string;
+  job_title: string;
+  company_name: string;
+  location: string;
   full_name: string;
   email: string;
   phone: string;
-  current_title: string;
-  current_company: string;
-  location: string;
-  linkedin_url: string;
-  profile_picture_url: string;
   resume_url: string;
-  skills: string[];
-  experience_years: number;
-  application_id: string;
-  job_id: string;
-  applied_job_title: string;
-  applied_company: string;
-  external_url: string;
   applied_at: string;
-  application_status: string;
+  status: string;
+  application_source: string;
 }
 
 export const CVDatabase: React.FC = () => {
@@ -49,15 +42,15 @@ export const CVDatabase: React.FC = () => {
   const [showOutreachModal, setShowOutreachModal] = useState(false);
 
   const { data: cvData, isLoading } = useQuery({
-    queryKey: ['employer_cv_database'],
+    queryKey: ['employer_cv_database_secure'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('employer_cv_database')
+        .from('employer_cv_database_secure')
         .select('*')
         .order('applied_at', { ascending: false });
 
       if (error) throw error;
-      return data as CVRecord[];
+      return data;
     }
   });
 
@@ -78,16 +71,15 @@ export const CVDatabase: React.FC = () => {
 
   const filteredCVs = cvData?.filter(cv =>
     cv.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cv.current_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cv.current_company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cv.skills?.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+    cv.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cv.company_name?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  const handleSelectCV = (profileId: string) => {
+  const handleSelectCV = (applicationId: string) => {
     setSelectedCVs(prev => 
-      prev.includes(profileId) 
-        ? prev.filter(id => id !== profileId)
-        : [...prev, profileId]
+      prev.includes(applicationId) 
+        ? prev.filter(id => id !== applicationId)
+        : [...prev, applicationId]
     );
   };
 
@@ -95,7 +87,7 @@ export const CVDatabase: React.FC = () => {
     if (selectedCVs.length === filteredCVs.length) {
       setSelectedCVs([]);
     } else {
-      setSelectedCVs(filteredCVs.map(cv => cv.profile_id));
+      setSelectedCVs(filteredCVs.map(cv => cv.application_id));
     }
   };
 
@@ -175,12 +167,12 @@ export const CVDatabase: React.FC = () => {
       {/* CV Cards */}
       <div className="grid gap-4">
         {filteredCVs.map((cv) => (
-          <Card key={cv.profile_id} className="hover:shadow-md transition-shadow">
+          <Card key={cv.application_id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <Checkbox
-                  checked={selectedCVs.includes(cv.profile_id)}
-                  onCheckedChange={() => handleSelectCV(cv.profile_id)}
+                  checked={selectedCVs.includes(cv.application_id)}
+                  onCheckedChange={() => handleSelectCV(cv.application_id)}
                 />
                 
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
@@ -193,7 +185,7 @@ export const CVDatabase: React.FC = () => {
                       <h3 className="text-xl font-semibold">{cv.full_name}</h3>
                       <p className="text-gray-600 flex items-center gap-1">
                         <Briefcase className="h-4 w-4" />
-                        {cv.current_title} {cv.current_company && `at ${cv.current_company}`}
+                        Applied to: {cv.job_title} {cv.company_name && `at ${cv.company_name}`}
                       </p>
                       {cv.location && (
                         <p className="text-gray-500 flex items-center gap-1 text-sm">
@@ -211,22 +203,11 @@ export const CVDatabase: React.FC = () => {
                           </a>
                         </Button>
                       )}
-                      {cv.linkedin_url && (
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={cv.linkedin_url} target="_blank" rel="noopener noreferrer">
-                            <LinkedinIcon className="h-4 w-4" />
-                          </a>
-                        </Button>
-                      )}
                     </div>
                   </div>
 
                   <div className="mt-4 space-y-2">
                     <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span className="flex items-center gap-1">
-                        <User className="h-4 w-4" />
-                        {cv.experience_years} years exp
-                      </span>
                       <span className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
                         Applied: {format(new Date(cv.applied_at), 'MMM dd, yyyy')}
@@ -244,31 +225,14 @@ export const CVDatabase: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">Applied for:</span>
-                      <span className="text-sm">{cv.applied_job_title}</span>
-                      <Badge variant="outline">{cv.application_status}</Badge>
-                      {cv.external_url && (
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          <ExternalLink className="h-3 w-3" />
-                          External Job
-                        </Badge>
-                      )}
+                      <span className="text-sm font-medium">Job:</span>
+                      <span className="text-sm">{cv.job_title}</span>
+                      <Badge variant="outline">{cv.status}</Badge>
+                      <Badge variant={cv.application_source === 'scraped' ? 'secondary' : 'default'} className="flex items-center gap-1">
+                        {cv.application_source === 'scraped' && <ExternalLink className="h-3 w-3" />}
+                        {cv.application_source === 'scraped' ? 'External' : 'Platform'}
+                      </Badge>
                     </div>
-
-                    {cv.skills && cv.skills.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {cv.skills.slice(0, 6).map((skill) => (
-                          <Badge key={skill} variant="outline" className="text-xs">
-                            {skill}
-                          </Badge>
-                        ))}
-                        {cv.skills.length > 6 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{cv.skills.length - 6} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>

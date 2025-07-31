@@ -37,9 +37,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Processing outreach email request:', { campaign_id, recipient_count: recipient_ids.length });
 
-    // Check outreach limits
+    // Check outreach limits using secure function
     const { data: canSend, error: limitError } = await supabaseClient
-      .rpc('check_outreach_limit', {
+      .rpc('check_outreach_limit_secure', {
         employer_uuid: user.user.id,
         recipient_count: recipient_ids.length
       });

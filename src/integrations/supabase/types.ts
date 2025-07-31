@@ -5831,6 +5831,39 @@ export type Database = {
         }
         Relationships: []
       }
+      cv_access_logs: {
+        Row: {
+          access_type: string
+          applicant_id: string
+          created_at: string | null
+          employer_id: string
+          id: string
+          ip_address: unknown | null
+          job_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          access_type: string
+          applicant_id: string
+          created_at?: string | null
+          employer_id: string
+          id?: string
+          ip_address?: unknown | null
+          job_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          access_type?: string
+          applicant_id?: string
+          created_at?: string | null
+          employer_id?: string
+          id?: string
+          ip_address?: unknown | null
+          job_id?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       dashboard_widgets: {
         Row: {
           configuration: Json
@@ -7444,6 +7477,13 @@ export type Database = {
             foreignKeyName: "interview_schedules_application_id_fkey"
             columns: ["application_id"]
             isOneToOne: false
+            referencedRelation: "employer_cv_database_secure"
+            referencedColumns: ["application_id"]
+          },
+          {
+            foreignKeyName: "interview_schedules_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
             referencedRelation: "job_applications"
             referencedColumns: ["id"]
           },
@@ -7543,6 +7583,13 @@ export type Database = {
             columns: ["application_id"]
             isOneToOne: false
             referencedRelation: "employer_cv_database"
+            referencedColumns: ["application_id"]
+          },
+          {
+            foreignKeyName: "interviews_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database_secure"
             referencedColumns: ["application_id"]
           },
           {
@@ -7719,6 +7766,13 @@ export type Database = {
             columns: ["application_id"]
             isOneToOne: false
             referencedRelation: "employer_cv_database"
+            referencedColumns: ["application_id"]
+          },
+          {
+            foreignKeyName: "job_application_stages_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database_secure"
             referencedColumns: ["application_id"]
           },
           {
@@ -17673,6 +17727,38 @@ export type Database = {
           },
         ]
       }
+      employer_cv_database_secure: {
+        Row: {
+          application_id: string | null
+          application_source: string | null
+          applied_at: string | null
+          company_name: string | null
+          email: string | null
+          full_name: string | null
+          job_id: string | null
+          job_title: string | null
+          location: string | null
+          phone: string | null
+          resume_url: string | null
+          status: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_job_applications_job_id"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       accept_team_invitation: {
@@ -17743,6 +17829,10 @@ export type Database = {
         Returns: boolean
       }
       check_outreach_limit: {
+        Args: { employer_uuid: string; recipient_count: number }
+        Returns: boolean
+      }
+      check_outreach_limit_secure: {
         Args: { employer_uuid: string; recipient_count: number }
         Returns: boolean
       }
@@ -17957,6 +18047,10 @@ export type Database = {
       }
       is_company_admin_or_owner: {
         Args: { company_uuid: string }
+        Returns: boolean
+      }
+      is_current_user_admin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       is_ip_blocked: {
