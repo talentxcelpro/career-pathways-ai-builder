@@ -56,12 +56,17 @@ export const useCreateWallPost = () => {
   
   return useMutation({
     mutationFn: async (postData: CreateWallPostData) => {
+      const user = await supabase.auth.getUser();
+      const userId = user.data.user?.id;
+      
+      if (!userId) throw new Error('User not authenticated');
+
       const { data, error } = await supabase
         .from('bot_wall')
         .insert({
           ...postData,
           published_at: postData.is_draft ? null : new Date().toISOString(),
-          created_by: (await supabase.auth.getUser()).data.user?.id
+          created_by: userId
         })
         .select()
         .single();
@@ -70,15 +75,20 @@ export const useCreateWallPost = () => {
       
       // Also insert into posts table for network feed visibility
       if (!postData.is_draft) {
-        await supabase.from('posts').insert({
-          author_id: (await supabase.auth.getUser()).data.user?.id,
-          content: postData.content,
-          headline: postData.title,
-          visibility: 'public',
-          post_type: 'bot_content',
-          tags: postData.tags,
-          is_ai_generated: false
-        });
+        try {
+          await supabase.from('posts').insert({
+            author_id: userId,
+            content: postData.content,
+            headline: postData.title,
+            is_public: true,
+            post_type: 'bot_content',
+            tags: postData.tags,
+            created_at: new Date().toISOString()
+          });
+        } catch (postError) {
+          console.error('Failed to sync to posts table:', postError);
+          // Don't fail the wall post creation if posts sync fails
+        }
       }
       
       return data;
