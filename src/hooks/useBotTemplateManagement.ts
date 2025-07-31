@@ -269,33 +269,71 @@ export const useUpdateGenerationSchedule = () => {
   });
 };
 
-// Trigger manual content generation
+// Trigger manual content generation using templates
 export const useTriggerContentGeneration = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (config: {
       botIds?: string[];
-      templateCount?: number;
-      scheduleId?: string;
+      templateIds?: string[];
+      count?: number;
     }) => {
-      const { data, error } = await supabase.functions.invoke('bot-content-generator', {
-        body: {
-          type: 'manual_generation',
-          ...config
-        }
-      });
+      // Get templates to generate content from
+      let query = supabase
+        .from('ai_content_library')
+        .select('*, ai_bots!inner(id, bot_name)')
+        .eq('is_approved', true);
 
-      if (error) {
-        console.error('Error triggering content generation:', error);
-        throw error;
+      if (config.botIds?.length) {
+        query = query.in('created_by', config.botIds);
       }
 
-      return data;
+      if (config.templateIds?.length) {
+        query = query.in('id', config.templateIds);
+      }
+
+      const { data: templates, error: templateError } = await query.limit(config.count || 10);
+
+      if (templateError) {
+        throw templateError;
+      }
+
+      if (!templates || templates.length === 0) {
+        throw new Error('No templates found for content generation');
+      }
+
+      // Generate content for each template
+      const generationPromises = templates.map(async (template) => {
+        return await supabase.functions.invoke('deepseek-content-generator', {
+          body: {
+            templateId: template.id,
+            botId: template.created_by,
+            contentType: template.template_type,
+            prompt: template.content,
+            category: template.category,
+            seoKeywords: template.tags || [],
+          }
+        });
+      });
+
+      const results = await Promise.allSettled(generationPromises);
+      
+      const successful = results.filter(r => r.status === 'fulfilled').length;
+      const failed = results.filter(r => r.status === 'rejected').length;
+
+      return {
+        total: templates.length,
+        successful,
+        failed,
+        message: `Generated ${successful} pieces of content${failed > 0 ? `, ${failed} failed` : ''}`
+      };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['bot-generated-content'] });
-      toast.success(`Content generation triggered! ${data?.message || ''}`);
+      queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
+      queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });
+      toast.success(data.message);
     },
     onError: (error) => {
       console.error('Error triggering generation:', error);

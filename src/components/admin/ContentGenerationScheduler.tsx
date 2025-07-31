@@ -58,7 +58,7 @@ export const ContentGenerationScheduler: React.FC = () => {
     try {
       await triggerGeneration.mutateAsync({
         botIds: manualConfig.botIds.length > 0 ? manualConfig.botIds : undefined,
-        templateCount: manualConfig.templateCount
+        count: manualConfig.templateCount
       });
     } catch (error) {
       console.error('Error triggering manual generation:', error);
