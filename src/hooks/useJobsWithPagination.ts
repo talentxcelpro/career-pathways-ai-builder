@@ -96,6 +96,8 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
         throw error;
       }
 
+      console.log('Jobs fetched:', data?.length, 'Total count:', count, 'Page:', page);
+      
       return {
         jobs: data || [],
         totalCount: count || 0,
