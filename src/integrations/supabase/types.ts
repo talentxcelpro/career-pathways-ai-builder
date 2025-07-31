@@ -8501,6 +8501,7 @@ export type Database = {
           external_url: string | null
           field_of_study: string[] | null
           id: string
+          industry: string | null
           industry_domain: string | null
           is_active: boolean | null
           is_draft: boolean | null
@@ -8600,6 +8601,7 @@ export type Database = {
           external_url?: string | null
           field_of_study?: string[] | null
           id?: string
+          industry?: string | null
           industry_domain?: string | null
           is_active?: boolean | null
           is_draft?: boolean | null
@@ -8699,6 +8701,7 @@ export type Database = {
           external_url?: string | null
           field_of_study?: string[] | null
           id?: string
+          industry?: string | null
           industry_domain?: string | null
           is_active?: boolean | null
           is_draft?: boolean | null
