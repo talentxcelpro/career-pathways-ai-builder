@@ -4,6 +4,7 @@ import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
 import { JobStatsCards } from '@/components/admin/jobs/JobStatsCards';
 import { JobFilters } from '@/components/admin/jobs/JobFilters';
 import { JobsList } from '@/components/admin/jobs/JobsList';
+import { JobScraperControl } from '@/components/admin/JobScraperControl';
 import { useJobsManagement } from '@/hooks/useJobsManagement';
 
 const JobsManagement = () => {
@@ -25,6 +26,8 @@ const JobsManagement = () => {
       description="Manage job postings and categories"
     >
       <div className="space-y-8">
+        <JobScraperControl />
+        
         <JobStatsCards jobStats={jobStats} />
         
         <JobFilters
