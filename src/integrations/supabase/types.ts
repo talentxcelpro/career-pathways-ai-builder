@@ -18957,6 +18957,13 @@ export type Database = {
         Args: { p_user_id: string; p_reason: string; p_duration_hours?: number }
         Returns: undefined
       }
+      sync_bot_wall_to_posts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          synced_count: number
+          error_message: string
+        }[]
+      }
       track_outreach_usage: {
         Args: { employer_uuid: string; email_count: number }
         Returns: undefined
