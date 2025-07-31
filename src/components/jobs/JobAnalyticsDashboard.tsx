@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { useUser } from '@supabase/auth-helpers-react';
+
 import { toast } from 'sonner';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -36,17 +36,24 @@ interface JobAnalytics {
 }
 
 export const JobAnalyticsDashboard = () => {
-  const user = useUser();
+  const [user, setUser] = useState<any>(null);
   const [analytics, setAnalytics] = useState<JobAnalytics[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState('7d');
 
   useEffect(() => {
-    if (user) {
-      fetchJobAnalytics();
-    }
-  }, [user, dateRange]);
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      if (user) {
+        fetchJobAnalytics();
+      } else {
+        setLoading(false);
+      }
+    };
+    getCurrentUser();
+  }, [dateRange]);
 
   const fetchJobAnalytics = async () => {
     try {
@@ -60,16 +67,12 @@ export const JobAnalyticsDashboard = () => {
           created_at,
           job_analytics (
             views_count,
-            unique_views_count,
             applications_count,
-            saves_count,
-            shares_count,
-            avg_time_on_page,
-            bounce_rate,
+            unique_visitors,
             date
           )
         `)
-        .eq('is_active', true)
+        .eq('posted_by', user?.id)
         .order('created_at', { ascending: false });
 
       if (jobsError) throw jobsError;
@@ -78,10 +81,8 @@ export const JobAnalyticsDashboard = () => {
       const processedAnalytics = jobs?.map(job => {
         const analytics = job.job_analytics || [];
         const totalViews = analytics.reduce((sum, a) => sum + (a.views_count || 0), 0);
-        const totalUniqueViews = analytics.reduce((sum, a) => sum + (a.unique_views_count || 0), 0);
+        const totalUniqueViews = analytics.reduce((sum, a) => sum + (a.unique_visitors || 0), 0);
         const totalApplications = analytics.reduce((sum, a) => sum + (a.applications_count || 0), 0);
-        const totalSaves = analytics.reduce((sum, a) => sum + (a.saves_count || 0), 0);
-        const totalShares = analytics.reduce((sum, a) => sum + (a.shares_count || 0), 0);
         
         return {
           job_id: job.id,
@@ -90,10 +91,10 @@ export const JobAnalyticsDashboard = () => {
           total_views: totalViews,
           unique_views: totalUniqueViews,
           applications: totalApplications,
-          saves: totalSaves,
-          shares: totalShares,
-          avg_time_on_page: analytics.reduce((sum, a) => sum + (a.avg_time_on_page || 0), 0) / analytics.length || 0,
-          bounce_rate: analytics.reduce((sum, a) => sum + (a.bounce_rate || 0), 0) / analytics.length || 0,
+          saves: 0, // Not available in current schema
+          shares: 0, // Not available in current schema
+          avg_time_on_page: 0, // Not available in current schema
+          bounce_rate: 0, // Not available in current schema
           conversion_rate: totalViews > 0 ? (totalApplications / totalViews) * 100 : 0,
           daily_stats: analytics.map(a => ({
             date: a.date,

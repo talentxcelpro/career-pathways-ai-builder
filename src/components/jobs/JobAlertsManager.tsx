@@ -16,29 +16,30 @@ import {
 
 interface JobAlert {
   id: string;
-  alert_name: string;
+  title: string;
   keywords: string[];
-  locations: string[];
-  employment_types: string[];
-  experience_levels: string[];
+  location: string;
+  employment_type: string[];
+  experience_level: string[];
   salary_min: number | null;
   salary_max: number | null;
-  companies: string[];
+  is_remote: boolean;
   is_active: boolean;
   frequency: 'immediate' | 'daily' | 'weekly';
-  last_sent_at: string | null;
+  last_sent: string | null;
   created_at: string;
+  updated_at: string;
 }
 
 interface JobAlertFormData {
-  alert_name: string;
+  title: string;
   keywords: string;
-  locations: string;
-  employment_types: string[];
-  experience_levels: string[];
+  location: string;
+  employment_type: string[];
+  experience_level: string[];
   salary_min: string;
   salary_max: string;
-  companies: string;
+  is_remote: boolean;
   frequency: 'immediate' | 'daily' | 'weekly';
 }
 
@@ -49,14 +50,14 @@ export const JobAlertsManager = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingAlert, setEditingAlert] = useState<JobAlert | null>(null);
   const [formData, setFormData] = useState<JobAlertFormData>({
-    alert_name: '',
+    title: '',
     keywords: '',
-    locations: '',
-    employment_types: [],
-    experience_levels: [],
+    location: '',
+    employment_type: [],
+    experience_level: [],
     salary_min: '',
     salary_max: '',
-    companies: '',
+    is_remote: false,
     frequency: 'daily'
   });
 
@@ -83,7 +84,10 @@ export const JobAlertsManager = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setAlerts(data || []);
+      setAlerts((data || []).map(alert => ({
+        ...alert,
+        frequency: alert.frequency as 'immediate' | 'daily' | 'weekly'
+      })));
     } catch (error) {
       console.error('Error fetching job alerts:', error);
       toast.error('Failed to fetch job alerts');
@@ -93,22 +97,22 @@ export const JobAlertsManager = () => {
   };
 
   const handleCreateAlert = async () => {
-    if (!user || !formData.alert_name.trim()) {
-      toast.error('Please provide an alert name');
+    if (!user || !formData.title.trim()) {
+      toast.error('Please provide an alert title');
       return;
     }
 
     try {
       const alertData = {
         user_id: user.id,
-        alert_name: formData.alert_name.trim(),
+        title: formData.title.trim(),
         keywords: formData.keywords ? formData.keywords.split(',').map(k => k.trim()) : [],
-        locations: formData.locations ? formData.locations.split(',').map(l => l.trim()) : [],
-        employment_types: formData.employment_types,
-        experience_levels: formData.experience_levels,
+        location: formData.location.trim() || null,
+        employment_type: formData.employment_type,
+        experience_level: formData.experience_level,
         salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
         salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
-        companies: formData.companies ? formData.companies.split(',').map(c => c.trim()) : [],
+        is_remote: formData.is_remote,
         frequency: formData.frequency,
         is_active: true
       };
@@ -130,21 +134,21 @@ export const JobAlertsManager = () => {
   };
 
   const handleUpdateAlert = async () => {
-    if (!editingAlert || !formData.alert_name.trim()) {
-      toast.error('Please provide an alert name');
+    if (!editingAlert || !formData.title.trim()) {
+      toast.error('Please provide an alert title');
       return;
     }
 
     try {
       const alertData = {
-        alert_name: formData.alert_name.trim(),
+        title: formData.title.trim(),
         keywords: formData.keywords ? formData.keywords.split(',').map(k => k.trim()) : [],
-        locations: formData.locations ? formData.locations.split(',').map(l => l.trim()) : [],
-        employment_types: formData.employment_types,
-        experience_levels: formData.experience_levels,
+        location: formData.location.trim() || null,
+        employment_type: formData.employment_type,
+        experience_level: formData.experience_level,
         salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
         salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
-        companies: formData.companies ? formData.companies.split(',').map(c => c.trim()) : [],
+        is_remote: formData.is_remote,
         frequency: formData.frequency
       };
 
@@ -203,28 +207,28 @@ export const JobAlertsManager = () => {
 
   const resetForm = () => {
     setFormData({
-      alert_name: '',
+      title: '',
       keywords: '',
-      locations: '',
-      employment_types: [],
-      experience_levels: [],
+      location: '',
+      employment_type: [],
+      experience_level: [],
       salary_min: '',
       salary_max: '',
-      companies: '',
+      is_remote: false,
       frequency: 'daily'
     });
   };
 
   const populateFormForEdit = (alert: JobAlert) => {
     setFormData({
-      alert_name: alert.alert_name,
+      title: alert.title,
       keywords: alert.keywords.join(', '),
-      locations: alert.locations.join(', '),
-      employment_types: alert.employment_types,
-      experience_levels: alert.experience_levels,
+      location: alert.location || '',
+      employment_type: alert.employment_type,
+      experience_level: alert.experience_level,
       salary_min: alert.salary_min?.toString() || '',
       salary_max: alert.salary_max?.toString() || '',
-      companies: alert.companies.join(', '),
+      is_remote: alert.is_remote,
       frequency: alert.frequency
     });
     setEditingAlert(alert);
@@ -307,11 +311,11 @@ export const JobAlertsManager = () => {
             
             <div className="space-y-4 py-4">
               <div>
-                <Label htmlFor="alert_name">Alert Name *</Label>
+                <Label htmlFor="title">Alert Title *</Label>
                 <Input
-                  id="alert_name"
-                  value={formData.alert_name}
-                  onChange={(e) => setFormData({ ...formData, alert_name: e.target.value })}
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g., Senior React Developer Jobs"
                 />
               </div>
@@ -330,10 +334,10 @@ export const JobAlertsManager = () => {
                 <div>
                   <Label htmlFor="employment_types">Employment Types</Label>
                   <Select onValueChange={(value) => {
-                    if (!formData.employment_types.includes(value)) {
+                    if (!formData.employment_type.includes(value)) {
                       setFormData({ 
                         ...formData, 
-                        employment_types: [...formData.employment_types, value]
+                        employment_type: [...formData.employment_type, value]
                       });
                     }
                   }}>
@@ -349,13 +353,13 @@ export const JobAlertsManager = () => {
                     </SelectContent>
                   </Select>
                   <div className="flex flex-wrap gap-1 mt-2">
-                    {formData.employment_types.map((type) => (
+                    {formData.employment_type.map((type) => (
                       <Badge key={type} variant="secondary" className="text-xs">
                         {type}
                         <button
                           onClick={() => setFormData({
                             ...formData,
-                            employment_types: formData.employment_types.filter(t => t !== type)
+                            employment_type: formData.employment_type.filter(t => t !== type)
                           })}
                           className="ml-1 text-xs"
                         >
@@ -369,10 +373,10 @@ export const JobAlertsManager = () => {
                 <div>
                   <Label htmlFor="experience_levels">Experience Levels</Label>
                   <Select onValueChange={(value) => {
-                    if (!formData.experience_levels.includes(value)) {
+                    if (!formData.experience_level.includes(value)) {
                       setFormData({ 
                         ...formData, 
-                        experience_levels: [...formData.experience_levels, value]
+                        experience_level: [...formData.experience_level, value]
                       });
                     }
                   }}>
@@ -387,13 +391,13 @@ export const JobAlertsManager = () => {
                     </SelectContent>
                   </Select>
                   <div className="flex flex-wrap gap-1 mt-2">
-                    {formData.experience_levels.map((level) => (
+                    {formData.experience_level.map((level) => (
                       <Badge key={level} variant="secondary" className="text-xs">
                         {level}
                         <button
                           onClick={() => setFormData({
                             ...formData,
-                            experience_levels: formData.experience_levels.filter(l => l !== level)
+                            experience_level: formData.experience_level.filter(l => l !== level)
                           })}
                           className="ml-1 text-xs"
                         >
@@ -406,12 +410,12 @@ export const JobAlertsManager = () => {
               </div>
 
               <div>
-                <Label htmlFor="locations">Locations</Label>
+                <Label htmlFor="location">Location</Label>
                 <Input
-                  id="locations"
-                  value={formData.locations}
-                  onChange={(e) => setFormData({ ...formData, locations: e.target.value })}
-                  placeholder="e.g., Mumbai, Bangalore, Remote (comma-separated)"
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="e.g., Mumbai, Bangalore, Remote"
                 />
               </div>
 
@@ -438,14 +442,13 @@ export const JobAlertsManager = () => {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="companies">Preferred Companies</Label>
-                <Input
-                  id="companies"
-                  value={formData.companies}
-                  onChange={(e) => setFormData({ ...formData, companies: e.target.value })}
-                  placeholder="e.g., Google, Microsoft, Apple (comma-separated)"
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="is_remote"
+                  checked={formData.is_remote}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_remote: checked })}
                 />
+                <Label htmlFor="is_remote">Remote Work Only</Label>
               </div>
 
               <div>
@@ -501,15 +504,15 @@ export const JobAlertsManager = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="flex items-center gap-2">
-                      {alert.alert_name}
+                      {alert.title}
                       <Badge className={`${getFrequencyColor(alert.frequency)} flex items-center gap-1`}>
                         {getFrequencyIcon(alert.frequency)}
                         {alert.frequency}
                       </Badge>
                     </CardTitle>
                     <CardDescription>
-                      {alert.last_sent_at 
-                        ? `Last sent: ${new Date(alert.last_sent_at).toLocaleDateString()}`
+                      {alert.last_sent 
+                        ? `Last sent: ${new Date(alert.last_sent).toLocaleDateString()}`
                         : 'Never sent'
                       }
                     </CardDescription>
@@ -552,17 +555,13 @@ export const JobAlertsManager = () => {
                     </div>
                   )}
 
-                  {alert.locations.length > 0 && (
+                  {alert.location && (
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">Locations:</span>
-                      <div className="flex flex-wrap gap-1">
-                        {alert.locations.map((location) => (
-                          <Badge key={location} variant="outline" className="text-xs">
-                            {location}
-                          </Badge>
-                        ))}
-                      </div>
+                      <span className="text-sm font-medium">Location:</span>
+                      <Badge variant="outline" className="text-xs">
+                        {alert.location}
+                      </Badge>
                     </div>
                   )}
 
@@ -576,12 +575,12 @@ export const JobAlertsManager = () => {
                     </div>
                   )}
 
-                  {alert.employment_types.length > 0 && (
+                  {alert.employment_type.length > 0 && (
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-medium">Types:</span>
                       <div className="flex flex-wrap gap-1">
-                        {alert.employment_types.map((type) => (
+                        {alert.employment_type.map((type) => (
                           <Badge key={type} variant="outline" className="text-xs">
                             {type}
                           </Badge>
@@ -590,16 +589,12 @@ export const JobAlertsManager = () => {
                     </div>
                   )}
 
-                  {alert.companies.length > 0 && (
+                  {alert.is_remote && (
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">Companies:</span>
-                      <div className="flex flex-wrap gap-1">
-                        {alert.companies.map((company) => (
-                          <Badge key={company} variant="outline" className="text-xs">
-                            {company}
-                          </Badge>
-                        ))}
-                      </div>
+                      <span className="text-sm font-medium">Remote Work Only</span>
+                      <Badge variant="outline" className="text-xs">
+                        Remote
+                      </Badge>
                     </div>
                   )}
                 </div>
