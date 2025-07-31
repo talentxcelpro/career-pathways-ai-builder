@@ -4,6 +4,7 @@ import { BotManagerDashboard } from '@/components/admin/BotManagerDashboard';
 import { BotContentGenerator } from '@/components/admin/BotContentGenerator';
 import { BotAnalytics } from '@/components/admin/BotAnalytics';
 import { BotAuthFixer } from '@/components/admin/BotAuthFixer';
+import { BotTemplateManager } from '@/components/admin/BotTemplateManager';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const BotManagement: React.FC = () => {
@@ -36,14 +37,7 @@ const BotManagement: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="sources" className="space-y-6">
-          <div className="space-y-6">
-            <h3 className="text-xl font-semibold">Job Scraping Sources</h3>
-            <div className="grid gap-4">
-              <div className="text-sm text-muted-foreground">
-                Manage job scraping sources and bot assignments. Configure where your bots should scrape jobs from.
-              </div>
-            </div>
-          </div>
+          <BotTemplateManager />
         </TabsContent>
       </Tabs>
     </UnifiedAdminLayout>
