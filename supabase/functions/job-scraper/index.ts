@@ -84,14 +84,19 @@ serve(async (req) => {
         continue;
       }
 
+      const selectedEmploymentType = employmentTypes[Math.floor(Math.random() * employmentTypes.length)];
+      const selectedExperienceLevel = experienceLevels[Math.floor(Math.random() * experienceLevels.length)];
+      
+      console.log(`Creating job with employment_type: "${selectedEmploymentType}", experience_level: "${selectedExperienceLevel}"`);
+
       jobsToInsert.push({
         title,
         company_name: company,
         description: `We are looking for a talented ${title} to join our team at ${company}. This is an excellent opportunity to work with cutting-edge technologies.`,
         location,
         salary_range: salaries[Math.floor(Math.random() * salaries.length)],
-        employment_type: employmentTypes[Math.floor(Math.random() * employmentTypes.length)],
-        experience_level: experienceLevels[Math.floor(Math.random() * experienceLevels.length)],
+        employment_type: selectedEmploymentType,
+        experience_level: selectedExperienceLevel,
         skills_required: ['JavaScript', 'React', 'Node.js'],
         source: 'Generated API',
         status: 'active'
