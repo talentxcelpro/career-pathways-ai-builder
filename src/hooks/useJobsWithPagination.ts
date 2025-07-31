@@ -24,7 +24,51 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
       const start = (page - 1) * pageSize;
       const end = start + pageSize - 1;
 
-      let query = supabase
+      // First get the total count with all filters applied
+      let countQuery = supabase
+        .from('jobs')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_active', true)
+        .eq('job_status', 'open');
+
+      // Apply same filters for count
+      if (filters.search) {
+        countQuery = countQuery.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+      }
+
+      if (filters.location) {
+        countQuery = countQuery.ilike('location', `%${filters.location}%`);
+      }
+
+      if (filters.employment_type.length > 0) {
+        countQuery = countQuery.in('employment_type', filters.employment_type);
+      }
+
+      if (filters.experience_level.length > 0) {
+        countQuery = countQuery.in('experience_level', filters.experience_level);
+      }
+
+      if (filters.is_remote) {
+        countQuery = countQuery.eq('is_remote', true);
+      }
+
+      if (filters.salary_min > 0) {
+        countQuery = countQuery.gte('salary_min', filters.salary_min);
+      }
+
+      if (filters.salary_max > 0) {
+        countQuery = countQuery.lte('salary_max', filters.salary_max);
+      }
+
+      const { count, error: countError } = await countQuery;
+      
+      if (countError) {
+        console.error('Error fetching count:', countError);
+        throw countError;
+      }
+
+      // Now get the actual data for this page
+      let dataQuery = supabase
         .from('jobs')
         .select(`
           *,
@@ -36,60 +80,57 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
             company_size,
             is_verified
           )
-        `, { count: 'exact' })
+        `)
         .eq('is_active', true)
         .eq('job_status', 'open')
         .range(start, end);
 
-      // Apply filters
+      // Apply same filters for data
       if (filters.search) {
-        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,companies.name.ilike.%${filters.search}%`);
+        dataQuery = dataQuery.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
       }
 
       if (filters.location) {
-        query = query.ilike('location', `%${filters.location}%`);
+        dataQuery = dataQuery.ilike('location', `%${filters.location}%`);
       }
 
       if (filters.employment_type.length > 0) {
-        query = query.in('employment_type', filters.employment_type);
+        dataQuery = dataQuery.in('employment_type', filters.employment_type);
       }
 
       if (filters.experience_level.length > 0) {
-        query = query.in('experience_level', filters.experience_level);
+        dataQuery = dataQuery.in('experience_level', filters.experience_level);
       }
 
       if (filters.is_remote) {
-        query = query.eq('is_remote', true);
+        dataQuery = dataQuery.eq('is_remote', true);
       }
 
       if (filters.salary_min > 0) {
-        query = query.gte('salary_min', filters.salary_min);
+        dataQuery = dataQuery.gte('salary_min', filters.salary_min);
       }
 
       if (filters.salary_max > 0) {
-        query = query.lte('salary_max', filters.salary_max);
+        dataQuery = dataQuery.lte('salary_max', filters.salary_max);
       }
 
       // Apply sorting
       switch (sortBy) {
         case 'date':
         case 'created_at':
-          query = query.order('created_at', { ascending: false });
+          dataQuery = dataQuery.order('created_at', { ascending: false });
           break;
         case 'salary':
-          query = query.order('salary_max', { ascending: false });
-          break;
-        case 'company':
-          query = query.order('companies(name)', { ascending: true });
+          dataQuery = dataQuery.order('salary_max', { ascending: false });
           break;
         case 'title':
-          query = query.order('title', { ascending: true });
+          dataQuery = dataQuery.order('title', { ascending: true });
           break;
         default:
-          query = query.order('created_at', { ascending: false });
+          dataQuery = dataQuery.order('created_at', { ascending: false });
       }
 
-      const { data, error, count } = await query;
+      const { data, error } = await dataQuery;
       
       if (error) {
         console.error('Error fetching jobs:', error);
