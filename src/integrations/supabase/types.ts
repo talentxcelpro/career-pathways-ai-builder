@@ -7988,6 +7988,33 @@ export type Database = {
           },
         ]
       }
+      job_click_logs: {
+        Row: {
+          clicked_at: string | null
+          created_at: string | null
+          external_url: string | null
+          id: string
+          job_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          clicked_at?: string | null
+          created_at?: string | null
+          external_url?: string | null
+          id?: string
+          job_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          clicked_at?: string | null
+          created_at?: string | null
+          external_url?: string | null
+          id?: string
+          job_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       job_documents: {
         Row: {
           document_type: string | null
@@ -8509,6 +8536,7 @@ export type Database = {
           is_featured: boolean | null
           is_hiring_fast: boolean | null
           is_remote: boolean | null
+          is_scraped: boolean | null
           is_urgent: boolean | null
           jd_flyer_url: string | null
           job_description: string | null
@@ -8609,6 +8637,7 @@ export type Database = {
           is_featured?: boolean | null
           is_hiring_fast?: boolean | null
           is_remote?: boolean | null
+          is_scraped?: boolean | null
           is_urgent?: boolean | null
           jd_flyer_url?: string | null
           job_description?: string | null
@@ -8709,6 +8738,7 @@ export type Database = {
           is_featured?: boolean | null
           is_hiring_fast?: boolean | null
           is_remote?: boolean | null
+          is_scraped?: boolean | null
           is_urgent?: boolean | null
           jd_flyer_url?: string | null
           job_description?: string | null

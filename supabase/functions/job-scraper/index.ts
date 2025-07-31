@@ -271,6 +271,7 @@ serve(async (req) => {
         updated_at: new Date().toISOString(),
         external_url: externalUrl,
         is_external: isExternal,
+        is_scraped: true, // Mark as scraped job
         industry: industry
       };
 

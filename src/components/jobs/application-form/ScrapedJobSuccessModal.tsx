@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ExternalLink, ArrowRight } from "lucide-react";
 import { JobInfo } from './types';
+import { trackExternalJobClick } from "@/utils/trackExternalJobClick";
 
 interface ScrapedJobSuccessModalProps {
   open: boolean;
@@ -15,7 +16,12 @@ export const ScrapedJobSuccessModal: React.FC<ScrapedJobSuccessModalProps> = ({
   onOpenChange,
   job
 }) => {
-  const handleExternalRedirect = () => {
+  const handleExternalRedirect = async () => {
+    // Track external job click
+    if (job.external_url) {
+      await trackExternalJobClick(job.id, job.external_url);
+    }
+    
     if (job.external_url) {
       window.open(job.external_url, '_blank', 'noopener,noreferrer');
     }

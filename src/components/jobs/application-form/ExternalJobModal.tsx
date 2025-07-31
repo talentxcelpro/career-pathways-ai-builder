@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Building2, MapPin, Clock } from "lucide-react";
+import { trackExternalJobClick } from "@/utils/trackExternalJobClick";
 
 interface ExternalJobModalProps {
   open: boolean;
@@ -28,9 +29,9 @@ export const ExternalJobModal: React.FC<ExternalJobModalProps> = ({
   onOpenChange,
   job
 }) => {
-  const handleExternalRedirect = () => {
-    // Track application click
-    console.log('External application clicked for job:', job.title);
+  const handleExternalRedirect = async () => {
+    // Track external job click
+    await trackExternalJobClick(job.title, job.external_url);
     
     // Open external URL in new tab
     window.open(job.external_url, '_blank', 'noopener,noreferrer');
