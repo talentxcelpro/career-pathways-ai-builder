@@ -44,8 +44,6 @@ export const adminRoutes = [
     icon: <Shield className="h-4 w-4" />,
     page: <AdminDashboard />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Platform overview and analytics"
   },
   {
     title: "User Management",
@@ -53,8 +51,6 @@ export const adminRoutes = [
     icon: <Users className="h-4 w-4" />,
     page: <UserManagement />,
     requiresAuth: true,
-    permission: "canAccessUsers" as const,
-    description: "Manage and moderate all users"
   },
   {
     title: "Pro Users",
@@ -62,8 +58,6 @@ export const adminRoutes = [
     icon: <Crown className="h-4 w-4" />,
     page: <ProUsersPage />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Manage Pro subscriptions & Elite users"
   },
   {
     title: "Testimonials",
@@ -71,8 +65,6 @@ export const adminRoutes = [
     icon: <MessageSquare className="h-4 w-4" />,
     page: <TestimonialsManagement />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Manage user testimonials"
   },
   {
     title: "Verification",
@@ -80,8 +72,6 @@ export const adminRoutes = [
     icon: <Shield className="h-4 w-4" />,
     page: <VerificationManagement />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Manage user verification requests"
   },
   {
     title: "Employer Requests",
@@ -89,8 +79,6 @@ export const adminRoutes = [
     icon: <Building2 className="h-4 w-4" />,
     page: <EmployerRequestsAdmin />,
     requiresAuth: true,
-    permission: "canAccessEmployerRequests" as const,
-    description: "Review and approve employer applications"
   },
   {
     title: "Jobs Management",
@@ -98,8 +86,6 @@ export const adminRoutes = [
     icon: <Briefcase className="h-4 w-4" />,
     page: <JobsManagement />,
     requiresAuth: true,
-    permission: "canAccessJobs" as const,
-    description: "Manage job postings and categories"
   },
   {
     title: "Companies Management",
@@ -107,8 +93,6 @@ export const adminRoutes = [
     icon: <Building2 className="h-4 w-4" />,
     page: <CompaniesManagement />,
     requiresAuth: true,
-    permission: "canAccessCompanies" as const,
-    description: "Company profiles and verification"
   },
   {
     title: "Network Management",
@@ -116,8 +100,6 @@ export const adminRoutes = [
     icon: <Network className="h-4 w-4" />,
     page: <NetworkManagement />,
     requiresAuth: true,
-    permission: "canAccessNetwork" as const,
-    description: "Social network and community moderation"
   },
   {
     title: "Learning Management",
@@ -125,8 +107,6 @@ export const adminRoutes = [
     icon: <GraduationCap className="h-4 w-4" />,
     page: <LearningManagement />,
     requiresAuth: true,
-    permission: "canAccessLearning" as const,
-    description: "Courses and learning paths"
   },
   {
     title: "Colleges Management",
@@ -134,8 +114,6 @@ export const adminRoutes = [
     icon: <GraduationCap className="h-4 w-4" />,
     page: <CollegesManagement />,
     requiresAuth: true,
-    permission: "canAccessColleges" as const,
-    description: "College management & verification"
   },
   {
     title: "Career Map Management",
@@ -143,8 +121,6 @@ export const adminRoutes = [
     icon: <Map className="h-4 w-4" />,
     page: <CareerMapManagement />,
     requiresAuth: true,
-    permission: "canAccessCareerMap" as const,
-    description: "Career guidance and pathways"
   },
   {
     title: "Resume Management",
@@ -152,8 +128,6 @@ export const adminRoutes = [
     icon: <FileText className="h-4 w-4" />,
     page: <ResumeManagement />,
     requiresAuth: true,
-    permission: "canAccessResumes" as const,
-    description: "Resume templates and tools"
   },
   {
     title: "Tools Management",
@@ -161,8 +135,6 @@ export const adminRoutes = [
     icon: <Wrench className="h-4 w-4" />,
     page: <ToolsManagement />,
     requiresAuth: true,
-    permission: "canAccessTools" as const,
-    description: "AI tools and utilities"
   },
   {
     title: "Home Management",
@@ -170,8 +142,6 @@ export const adminRoutes = [
     icon: <Home className="h-4 w-4" />,
     page: <HomeManagement />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Homepage content management"
   },
   {
     title: "Analytics & Reports",
@@ -179,8 +149,6 @@ export const adminRoutes = [
     icon: <BarChart3 className="h-4 w-4" />,
     page: <AnalyticsReports />,
     requiresAuth: true,
-    permission: "canAccessAnalytics" as const,
-    description: "Platform analytics and reports"
   },
   {
     title: "Pricing & Payments",
@@ -188,8 +156,6 @@ export const adminRoutes = [
     icon: <CreditCard className="h-4 w-4" />,
     page: <PricingPayments />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Pricing plans and payment management"
   },
   {
     title: "Security & Logs",
@@ -197,8 +163,6 @@ export const adminRoutes = [
     icon: <Lock className="h-4 w-4" />,
     page: <SecurityLogs />,
     requiresAuth: true,
-    permission: "canAccessSecurity" as const,
-    description: "Security logs and audit trails"
   },
   {
     title: "Email Automation",
@@ -206,8 +170,6 @@ export const adminRoutes = [
     icon: <Mail className="h-4 w-4" />,
     page: <EmailAutomationPage />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Configure automated email templates and triggers"
   },
   {
     title: "AI/ML Training Center",
@@ -215,8 +177,6 @@ export const adminRoutes = [
     icon: <Brain className="h-4 w-4" />,
     page: <AIMLTrainingCenter />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Train, fine-tune, monitor, and manage AI models personalized for platform services"
   },
   {
     title: "AI Management",
@@ -224,8 +184,6 @@ export const adminRoutes = [
     icon: <Brain className="h-4 w-4" />,
     page: <AdminAIManagement />,
     requiresAuth: true,
-    permission: "canAccessReports" as const,
-    description: "Monitor and manage AI features across the platform"
   },
   {
     title: "Bot Management",
@@ -233,8 +191,6 @@ export const adminRoutes = [
     icon: <Bot className="h-4 w-4" />,
     page: <BotManagement />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "AI content generation bots"
   },
   {
     title: "Admin Management",
@@ -242,8 +198,6 @@ export const adminRoutes = [
     icon: <Shield className="h-4 w-4" />,
     page: <AdminManagement />,
     requiresAuth: true,
-    permission: "canAccessAdmins" as const,
-    description: "Manage administrator accounts"
   },
   {
     title: "Create Course",
@@ -251,8 +205,6 @@ export const adminRoutes = [
     icon: <Plus className="h-4 w-4" />,
     page: <CreateCourse />,
     requiresAuth: true,
-    permission: "canAccessLearning" as const,
-    description: "Create new learning courses"
   },
   {
     title: "Create Pricing Plan",
@@ -260,8 +212,6 @@ export const adminRoutes = [
     icon: <Plus className="h-4 w-4" />,
     page: <CreatePlan />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Create new subscription plans"
   },
   {
     title: "SEO Management",
@@ -276,8 +226,6 @@ export const adminRoutes = [
     icon: <Search className="h-4 w-4" />,
     page: <AdvancedSEOManager />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Comprehensive SEO management tools"
   },
   {
     title: "SEO Sitemap Dashboard",
@@ -285,8 +233,6 @@ export const adminRoutes = [
     icon: <Globe className="h-4 w-4" />,
     page: <SEODashboard />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Monitor sitemaps and search engine submissions"
   },
   {
     title: "AI Content Generator",
@@ -294,8 +240,6 @@ export const adminRoutes = [
     icon: <Brain className="h-4 w-4" />,
     page: lazy(() => import('@/components/admin/ContentManagement').then(m => ({ default: m.ContentManagement }))),
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "AI-powered content generation and management"
   },
   {
     title: "Ad Campaign Manager", 
@@ -303,8 +247,6 @@ export const adminRoutes = [
     icon: <Megaphone className="h-4 w-4" />,
     page: <AdCampaignManager />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Create and manage advertising campaigns"
   },
   {
     title: "Smart Page Builder",
@@ -312,8 +254,6 @@ export const adminRoutes = [
     icon: <Layout className="h-4 w-4" />,
     page: <SmartPageBuilder />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Create and customize landing pages"
   },
   {
     title: "AI Assistant Panel",
@@ -321,8 +261,6 @@ export const adminRoutes = [
     icon: <Brain className="h-4 w-4" />,
     page: <AIAssistantPanel />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Smart AI suggestions and insights"
   },
   {
     title: "Advanced Content Hub",
@@ -330,8 +268,6 @@ export const adminRoutes = [
     icon: <FileText className="h-4 w-4" />,
     page: <AdvancedContentHub />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "AI-powered content creation and management"
   },
   {
     title: "Feature Flags Manager",
@@ -339,8 +275,6 @@ export const adminRoutes = [
     icon: <Flag className="h-4 w-4" />,
     page: <FeatureFlagsManager />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Control feature rollouts and A/B testing"
   },
   {
     title: "Analytics Dashboard",
@@ -348,8 +282,6 @@ export const adminRoutes = [
     icon: <BarChart3 className="h-4 w-4" />,
     page: <AdvancedAnalyticsDashboard />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Advanced analytics and insights"
   },
   {
     title: "Performance Monitoring",
@@ -357,8 +289,6 @@ export const adminRoutes = [
     icon: <Shield className="h-4 w-4" />,
     page: <PerformanceMonitoring />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "System health and performance metrics"
   },
   {
     title: "Integration Hub",
@@ -366,7 +296,5 @@ export const adminRoutes = [
     icon: <Network className="h-4 w-4" />,
     page: <IntegrationHub />,
     requiresAuth: true,
-    permission: "canAccessDashboard" as const,
-    description: "Manage third-party integrations"
   }
 ];
