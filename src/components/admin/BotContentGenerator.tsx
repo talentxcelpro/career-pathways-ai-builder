@@ -162,6 +162,23 @@ export const BotContentGenerator: React.FC = () => {
       }
 
       if (!data.success) {
+        // Handle specific error types
+        if (data.error === 'INSUFFICIENT_BALANCE') {
+          toast.error(
+            <div className="flex flex-col gap-2">
+              <span>DeepSeek API account has insufficient balance</span>
+              <a 
+                href={data.topUpUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary underline"
+              >
+                Top up your account here
+              </a>
+            </div>
+          );
+          return;
+        }
         throw new Error(data.error || 'Generation failed');
       }
 
@@ -218,6 +235,25 @@ export const BotContentGenerator: React.FC = () => {
 
       if (error) {
         console.error('Bulk generation error:', error);
+        
+        // Handle specific error types
+        if (data?.error === 'INSUFFICIENT_BALANCE') {
+          toast.error(
+            <div className="flex flex-col gap-2">
+              <span>DeepSeek API account has insufficient balance</span>
+              <a 
+                href={data.topUpUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary underline"
+              >
+                Top up your account here
+              </a>
+            </div>
+          );
+          return;
+        }
+        
         throw new Error(error.message || 'Bulk generation failed');
       }
 

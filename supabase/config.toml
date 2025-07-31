@@ -7,6 +7,9 @@ verify_jwt = false
 [functions.job-publisher]
 verify_jwt = false
 
+[functions.deepseek-content-generator]
+verify_jwt = false
+
 [api]
 enabled = true
 port = 54321

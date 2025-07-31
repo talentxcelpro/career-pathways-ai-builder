@@ -189,7 +189,20 @@ CRITICAL REQUIREMENTS:
     if (!deepseekResponse.ok) {
       const errorText = await deepseekResponse.text();
       console.error('DeepSeek API error:', errorText);
-      throw new Error(`DeepSeek API error: ${deepseekResponse.status}`);
+      
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        errorData = { error: { message: errorText } };
+      }
+      
+      // Check for insufficient balance specifically
+      if (deepseekResponse.status === 402 || errorData?.error?.message?.includes('Insufficient Balance')) {
+        throw new Error('INSUFFICIENT_BALANCE: Your DeepSeek API account has insufficient balance. Please top up your account at https://platform.deepseek.com/');
+      }
+      
+      throw new Error(`DeepSeek API error: ${deepseekResponse.status} - ${errorData?.error?.message || errorText}`);
     }
 
     const deepseekData = await deepseekResponse.json();
@@ -304,10 +317,28 @@ CRITICAL REQUIREMENTS:
 
   } catch (error) {
     console.error('Error in content generation:', error);
+    
+    // Check if this is an insufficient balance error
+    if (error.message.includes('INSUFFICIENT_BALANCE')) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'INSUFFICIENT_BALANCE',
+          message: 'Your DeepSeek API account has insufficient balance. Please top up your account.',
+          topUpUrl: 'https://platform.deepseek.com/',
+          usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 }
+        }),
+        { 
+          status: 402, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+    
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message,
+        error: error.message || 'Content generation failed',
       }),
       {
         status: 500,
