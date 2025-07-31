@@ -177,7 +177,7 @@ Deno.serve(async (req) => {
       skills_required: job.skills_required || [],
       external_url: job.external_url,
       source: job.source || 'Scraped',
-      is_active: true,
+      status: 'active',
       posted_by: null, // System-generated jobs
       expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
     }))
