@@ -299,7 +299,9 @@ export const useTriggerDailyJobScraping = () => {
                     external_url: job.url,
                     is_active: true,
                     posted_at: new Date().toISOString(),
-                    expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                    expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    posted_by: (await supabase.auth.getUser()).data.user?.id, // Required for RLS policy
+                    company_name: job.company || 'Unknown Company' // Adding company name
                   })
                   .select('id, title')
                   .single();
