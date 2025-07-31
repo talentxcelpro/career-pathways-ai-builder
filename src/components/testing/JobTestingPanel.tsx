@@ -109,7 +109,7 @@ export const JobTestingPanel = () => {
         company_name: "TechnoVision Solutions",
         location: "Bangalore, India",
         employment_type: "full-time",
-        experience_level: "senior",
+        experience_level: "experienced",
         external_url: "https://technovision.com/careers/senior-react-developer",
         is_active: true,
         posted_at: new Date().toISOString(),
@@ -121,7 +121,7 @@ export const JobTestingPanel = () => {
         company_name: "DataFlow Analytics",
         location: "Mumbai, India",
         employment_type: "full-time",
-        experience_level: "senior",
+        experience_level: "experienced",
         external_url: "https://dataflow.com/jobs/data-science-manager",
         is_active: true,
         posted_at: new Date().toISOString(),
@@ -133,7 +133,7 @@ export const JobTestingPanel = () => {
         company_name: "Creative Labs India",
         location: "Remote",
         employment_type: "full-time",
-        experience_level: "mid",
+        experience_level: "mid_level",
         external_url: "https://creativelabs.in/careers/product-designer",
         is_active: true,
         posted_at: new Date().toISOString(),
@@ -145,7 +145,7 @@ export const JobTestingPanel = () => {
         company_name: "CloudTech Solutions",
         location: "Hyderabad, India",
         employment_type: "full-time",
-        experience_level: "mid",
+        experience_level: "mid_level",
         external_url: "https://cloudtech.io/jobs/devops-engineer",
         is_active: true,
         posted_at: new Date().toISOString(),
@@ -157,7 +157,7 @@ export const JobTestingPanel = () => {
         company_name: "InnovateTech Startup",
         location: "Pune, India",
         employment_type: "full-time",
-        experience_level: "mid",
+        experience_level: "mid_level",
         external_url: "https://innovatetech.com/careers/fullstack-developer",
         is_active: true,
         posted_at: new Date().toISOString(),
@@ -169,7 +169,7 @@ export const JobTestingPanel = () => {
         company_name: "AI Innovations Ltd",
         location: "Bangalore, India",
         employment_type: "full-time",
-        experience_level: "senior",
+        experience_level: "experienced",
         external_url: "https://aiinnovations.com/jobs/ml-engineer",
         is_active: true,
         posted_at: new Date().toISOString(),
@@ -181,7 +181,7 @@ export const JobTestingPanel = () => {
         company_name: "Growth Marketing Co",
         location: "Delhi, India",
         employment_type: "full-time",
-        experience_level: "senior",
+        experience_level: "experienced",
         external_url: "https://growthmarketing.in/careers/marketing-manager",
         is_active: true,
         posted_at: new Date().toISOString(),
@@ -193,7 +193,7 @@ export const JobTestingPanel = () => {
         company_name: "QualityFirst Technologies",
         location: "Chennai, India",
         employment_type: "full-time",
-        experience_level: "mid",
+        experience_level: "mid_level",
         external_url: "https://qualityfirst.tech/jobs/qa-automation",
         is_active: true,
         posted_at: new Date().toISOString(),
@@ -205,7 +205,7 @@ export const JobTestingPanel = () => {
         company_name: "BusinessLogic Consulting",
         location: "Remote",
         employment_type: "contract",
-        experience_level: "mid",
+        experience_level: "mid_level",
         external_url: "https://businesslogic.co.in/careers/business-analyst",
         is_active: true,
         posted_at: new Date().toISOString(),
@@ -217,7 +217,7 @@ export const JobTestingPanel = () => {
         company_name: "ContentCraft Media",
         location: "Remote",
         employment_type: "part-time",
-        experience_level: "entry",
+        experience_level: "entry_level",
         external_url: "https://contentcraft.media/jobs/content-writer",
         is_active: true,
         posted_at: new Date().toISOString(),
@@ -251,9 +251,9 @@ export const JobTestingPanel = () => {
 
   const determineExperienceLevel = (description: string): string => {
     const text = description.toLowerCase();
-    if (text.includes('senior') || text.includes('lead') || text.includes('principal')) return 'senior';
-    if (text.includes('junior') || text.includes('entry') || text.includes('fresher')) return 'entry';
-    return 'mid';
+    if (text.includes('senior') || text.includes('lead') || text.includes('principal')) return 'experienced';
+    if (text.includes('junior') || text.includes('entry') || text.includes('fresher')) return 'entry_level';
+    return 'mid_level';
   };
 
   const handleClearJobs = async () => {
