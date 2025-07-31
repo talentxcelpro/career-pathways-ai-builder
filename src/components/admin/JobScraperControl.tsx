@@ -28,16 +28,24 @@ export const JobScraperControl = () => {
       
       console.log('Calling job-scraper function with limit:', limit);
       
-      const { data, error } = await supabase.functions.invoke('job-scraper', {
-        body: { limit }
+      // Use direct fetch instead of supabase.functions.invoke for better reliability
+      const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-scraper`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
+        },
+        body: JSON.stringify({ limit })
       });
 
-      console.log('Function response:', { data, error });
-
-      if (error) {
-        console.error('Function error:', error);
-        throw error;
+      console.log('Function response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
+
+      const data = await response.json();
+      console.log('Function response data:', data);
 
       if (!data || !data.success) {
         throw new Error(data?.error || 'Unknown error occurred');
