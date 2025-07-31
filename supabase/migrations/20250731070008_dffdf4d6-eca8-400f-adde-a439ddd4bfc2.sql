@@ -1,0 +1,72 @@
+-- Drop existing conflicting policies first
+DROP POLICY IF EXISTS "Users can view their own applications" ON public.job_applications;
+DROP POLICY IF EXISTS "Users can create their own applications" ON public.job_applications;
+DROP POLICY IF EXISTS "Users can update their own applications" ON public.job_applications;
+DROP POLICY IF EXISTS "Employers can view applications for their jobs" ON public.job_applications;
+
+-- Create the correct policies for job applications
+CREATE POLICY "Users can view their own applications" 
+ON public.job_applications 
+FOR SELECT 
+USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create their own applications" 
+ON public.job_applications 
+FOR INSERT 
+WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own applications" 
+ON public.job_applications 
+FOR UPDATE 
+USING (auth.uid() = user_id);
+
+CREATE POLICY "Employers can view applications for their jobs" 
+ON public.job_applications 
+FOR SELECT 
+USING (job_id IN (SELECT id FROM public.jobs WHERE posted_by = auth.uid()));
+
+-- Insert the 20 real job samples for testing
+INSERT INTO public.jobs (
+  title, description, company_name, location, employment_type, experience_level,
+  salary_min, salary_max, skills_required, external_url, job_type, industry,
+  requirements, benefits
+) VALUES 
+('Senior Full Stack Developer', 'We are looking for an experienced Full Stack Developer to join our growing team. You will be responsible for developing and maintaining web applications using modern technologies.', 'TechCorp Inc', 'San Francisco, CA', 'full-time', 'senior-level', 120000, 160000, ARRAY['React', 'Node.js', 'TypeScript', 'PostgreSQL'], 'https://example.com/job1', 'hybrid', 'Technology', 'Bachelor''s degree in Computer Science or related field, 5+ years of experience', ARRAY['Health insurance', 'Stock options', '401k']),
+
+('Product Manager', 'Join our product team to help shape the future of our platform. Work closely with engineering, design, and business teams to deliver exceptional user experiences.', 'InnovateLabs', 'New York, NY', 'full-time', 'mid-level', 90000, 130000, ARRAY['Product Strategy', 'Agile', 'Data Analysis', 'User Research'], 'https://example.com/job2', 'onsite', 'Technology', '3+ years of product management experience, strong analytical skills', ARRAY['Flexible PTO', 'Health insurance', 'Learning budget']),
+
+('UX/UI Designer', 'Create beautiful and intuitive user interfaces for our web and mobile applications. Collaborate with product and engineering teams.', 'DesignHub', 'Austin, TX', 'full-time', 'mid-level', 70000, 95000, ARRAY['Figma', 'Adobe Creative Suite', 'User Research', 'Prototyping'], 'https://example.com/job3', 'remote', 'Design', 'Portfolio demonstrating UX/UI design skills, 2+ years experience', ARRAY['Remote work', 'Health insurance', 'Professional development']),
+
+('DevOps Engineer', 'Build and maintain our cloud infrastructure. Implement CI/CD pipelines and ensure system reliability and scalability.', 'CloudTech Solutions', 'Seattle, WA', 'full-time', 'senior-level', 110000, 145000, ARRAY['AWS', 'Docker', 'Kubernetes', 'Terraform', 'CI/CD'], 'https://example.com/job4', 'hybrid', 'Technology', 'Strong experience with cloud platforms, infrastructure as code', ARRAY['Stock options', 'Health insurance', 'Flexible hours']),
+
+('Data Scientist', 'Analyze large datasets to extract insights and build predictive models. Work with cross-functional teams to drive data-driven decisions.', 'DataCorp', 'Boston, MA', 'full-time', 'mid-level', 95000, 125000, ARRAY['Python', 'SQL', 'Machine Learning', 'Statistics', 'Pandas'], 'https://example.com/job5', 'hybrid', 'Data Science', 'MS in Data Science or related field, experience with ML frameworks', ARRAY['Health insurance', 'Learning budget', '401k']),
+
+('Frontend Developer', 'Develop responsive and performant user interfaces using modern JavaScript frameworks. Focus on user experience and accessibility.', 'WebSolutions', 'Los Angeles, CA', 'full-time', 'junior-level', 65000, 85000, ARRAY['React', 'JavaScript', 'CSS', 'HTML', 'Git'], 'https://example.com/job6', 'remote', 'Technology', '1-3 years of frontend development experience', ARRAY['Remote work', 'Health insurance', 'Professional development']),
+
+('Marketing Manager', 'Lead our digital marketing efforts across multiple channels. Develop and execute marketing campaigns to drive user acquisition and engagement.', 'GrowthCo', 'Chicago, IL', 'full-time', 'mid-level', 75000, 100000, ARRAY['Digital Marketing', 'Google Analytics', 'SEO', 'Content Marketing'], 'https://example.com/job7', 'hybrid', 'Marketing', '3+ years of marketing experience, proven track record', ARRAY['Flexible PTO', 'Health insurance', 'Commuter benefits']),
+
+('Backend Developer', 'Build scalable APIs and services using modern backend technologies. Work on high-performance systems serving millions of users.', 'ScaleTech', 'Denver, CO', 'full-time', 'mid-level', 85000, 115000, ARRAY['Node.js', 'Python', 'PostgreSQL', 'Redis', 'Microservices'], 'https://example.com/job8', 'remote', 'Technology', 'Strong backend development experience, knowledge of databases', ARRAY['Remote work', 'Stock options', 'Health insurance']),
+
+('Sales Representative', 'Drive revenue growth by building relationships with potential customers. Present our solutions and close deals with enterprise clients.', 'SalesPro', 'Miami, FL', 'full-time', 'entry-level', 50000, 75000, ARRAY['Sales', 'CRM', 'Communication', 'Negotiation'], 'https://example.com/job9', 'onsite', 'Sales', 'Bachelor''s degree, strong communication skills', ARRAY['Commission structure', 'Health insurance', 'Car allowance']),
+
+('Machine Learning Engineer', 'Deploy ML models in production and build MLOps pipelines. Work with data scientists to productionize machine learning solutions.', 'AI Innovations', 'San Jose, CA', 'full-time', 'senior-level', 130000, 170000, ARRAY['Python', 'TensorFlow', 'PyTorch', 'MLOps', 'Docker'], 'https://example.com/job10', 'hybrid', 'Technology', 'MS in CS/ML, experience deploying ML models at scale', ARRAY['Stock options', 'Health insurance', 'Learning budget']),
+
+('Customer Success Manager', 'Ensure customer satisfaction and drive product adoption. Work closely with customers to understand their needs and help them succeed.', 'CustomerFirst', 'Atlanta, GA', 'full-time', 'mid-level', 65000, 90000, ARRAY['Customer Success', 'SaaS', 'Communication', 'Project Management'], 'https://example.com/job11', 'hybrid', 'Customer Success', '2+ years in customer-facing role, SaaS experience preferred', ARRAY['Health insurance', 'Flexible PTO', 'Professional development']),
+
+('Security Engineer', 'Protect our systems and data from security threats. Implement security best practices and conduct security assessments.', 'SecureTech', 'Washington, DC', 'full-time', 'senior-level', 115000, 150000, ARRAY['Cybersecurity', 'Penetration Testing', 'Security Frameworks', 'Risk Assessment'], 'https://example.com/job12', 'hybrid', 'Technology', 'Security certifications, 5+ years security experience', ARRAY['Security clearance bonus', 'Health insurance', '401k']),
+
+('Quality Assurance Engineer', 'Ensure software quality through manual and automated testing. Develop test plans and work with development teams.', 'QualityFirst', 'Portland, OR', 'full-time', 'mid-level', 70000, 95000, ARRAY['Test Automation', 'Selenium', 'API Testing', 'Bug Tracking'], 'https://example.com/job13', 'remote', 'Technology', '3+ years QA experience, automation skills preferred', ARRAY['Remote work', 'Health insurance', 'Professional development']),
+
+('Business Analyst', 'Analyze business processes and requirements. Work with stakeholders to gather requirements and document business needs.', 'BusinessCorp', 'Phoenix, AZ', 'full-time', 'mid-level', 75000, 100000, ARRAY['Business Analysis', 'Requirements Gathering', 'SQL', 'Documentation'], 'https://example.com/job14', 'hybrid', 'Business', 'Bachelor''s degree, strong analytical skills', ARRAY['Health insurance', 'Flexible hours', '401k']),
+
+('Mobile Developer', 'Develop native mobile applications for iOS and Android. Focus on performance, user experience, and platform-specific features.', 'MobileApps Inc', 'San Diego, CA', 'full-time', 'mid-level', 85000, 115000, ARRAY['Swift', 'Kotlin', 'React Native', 'Mobile Development'], 'https://example.com/job15', 'hybrid', 'Technology', '3+ years mobile development experience', ARRAY['Stock options', 'Health insurance', 'Flexible PTO']),
+
+('Content Writer', 'Create engaging content for our blog, website, and marketing materials. Research industry topics and write SEO-optimized content.', 'ContentHub', 'Nashville, TN', 'full-time', 'junior-level', 45000, 65000, ARRAY['Content Writing', 'SEO', 'Research', 'Copywriting'], 'https://example.com/job16', 'remote', 'Marketing', 'Strong writing skills, portfolio of published content', ARRAY['Remote work', 'Health insurance', 'Professional development']),
+
+('Solutions Architect', 'Design and implement complex technical solutions for enterprise clients. Lead technical discussions and solution design.', 'ArchitectPro', 'Dallas, TX', 'full-time', 'senior-level', 125000, 165000, ARRAY['Solution Architecture', 'Cloud Platforms', 'Enterprise Integration', 'Technical Leadership'], 'https://example.com/job17', 'hybrid', 'Technology', '7+ years technical experience, solution architecture background', ARRAY['Stock options', 'Health insurance', 'Learning budget']),
+
+('HR Generalist', 'Support all aspects of human resources including recruitment, employee relations, and policy development.', 'PeopleFirst', 'Charlotte, NC', 'full-time', 'mid-level', 55000, 75000, ARRAY['HR Management', 'Recruitment', 'Employee Relations', 'HRIS'], 'https://example.com/job18', 'onsite', 'Human Resources', 'HR degree or certification, 2+ years HR experience', ARRAY['Health insurance', 'Retirement plan', 'Professional development']),
+
+('Financial Analyst', 'Analyze financial data and create reports to support business decisions. Work with various departments on budgeting and forecasting.', 'FinanceCorp', 'Houston, TX', 'full-time', 'entry-level', 55000, 75000, ARRAY['Financial Analysis', 'Excel', 'Financial Modeling', 'Reporting'], 'https://example.com/job19', 'hybrid', 'Finance', 'Finance degree, strong analytical and Excel skills', ARRAY['Health insurance', '401k matching', 'Professional development']),
+
+('Technical Writer', 'Create clear and comprehensive technical documentation for our products. Work with engineering teams to document APIs and user guides.', 'DocuTech', 'San Francisco, CA', 'full-time', 'mid-level', 75000, 100000, ARRAY['Technical Writing', 'Documentation', 'API Documentation', 'Git'], 'https://example.com/job20', 'remote', 'Technology', 'Technical writing experience, ability to understand complex technical concepts', ARRAY['Remote work', 'Health insurance', 'Learning budget']);
