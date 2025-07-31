@@ -17497,6 +17497,10 @@ export type Database = {
         Args: { resume_uuid: string }
         Returns: number
       }
+      can_apply_to_job: {
+        Args: { job_uuid: string }
+        Returns: boolean
+      }
       check_user_subscription: {
         Args: { user_uuid: string }
         Returns: {
