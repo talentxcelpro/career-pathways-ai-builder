@@ -59,8 +59,8 @@ serve(async (req) => {
     const titles = ['Software Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer'];
     const locations = ['Mumbai, India', 'Bangalore, India', 'Delhi, India', 'Remote'];
     const salaries = ['₹3-6 LPA', '₹6-10 LPA', '₹10-15 LPA', '₹15-25 LPA'];
-    const employmentTypes = ['Full-Time', 'Part-Time', 'Contract', 'Internship', 'Freelance', 'Temporary'];
-    const experienceLevels = ['Entry-Level', 'Mid-Level', 'Senior-Level', 'Executive'];
+    const employmentTypes = ['full-time', 'part-time', 'contract', 'freelance', 'internship'];
+    const experienceLevels = ['entry-level', 'mid-level', 'senior-level', 'executive'];
 
     const jobsToInsert = [];
     let duplicates = 0;
