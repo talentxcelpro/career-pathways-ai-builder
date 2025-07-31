@@ -2653,6 +2653,62 @@ export type Database = {
           },
         ]
       }
+      bot_wall: {
+        Row: {
+          bot_id: string | null
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_draft: boolean | null
+          published_at: string | null
+          scheduled_at: string | null
+          source: string | null
+          tags: string[] | null
+          title: string
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bot_id?: string | null
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_draft?: boolean | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          source?: string | null
+          tags?: string[] | null
+          title: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bot_id?: string | null
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_draft?: boolean | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          source?: string | null
+          tags?: string[] | null
+          title?: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bot_wall_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       breadcrumb_configs: {
         Row: {
           breadcrumb_structure: Json
