@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { supabase, supabaseFunctions } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
   Play, StopCircle, RefreshCw, Eye, Building, MapPin, 
@@ -28,7 +28,7 @@ export const JobScraperControl = () => {
       
       console.log('Calling job-scraper function with limit:', limit);
       
-      const { data, error } = await supabaseFunctions.functions.invoke('job-scraper', {
+      const { data, error } = await supabase.functions.invoke('job-scraper', {
         body: { limit }
       });
 
@@ -52,7 +52,7 @@ export const JobScraperControl = () => {
 
       // Trigger sitemap generation
       try {
-        await supabaseFunctions.functions.invoke('sitemap-generator');
+        await supabase.functions.invoke('sitemap-generator');
         toast.success('🗺️ Sitemap updated with new jobs');
       } catch (sitemapError) {
         console.warn('Sitemap generation failed:', sitemapError);
@@ -64,6 +64,38 @@ export const JobScraperControl = () => {
       toast.error(`❌ Scraper failed: ${error.message}`, { id: 'scraper' });
     } finally {
       setIsRunning(false);
+    }
+  };
+
+  const testDirectCall = async () => {
+    try {
+      console.log('Testing direct function call...');
+      toast.loading('Testing direct function call...', { id: 'test' });
+      
+      // Make a direct fetch call to test
+      const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-scraper`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
+        },
+        body: JSON.stringify({ limit: 5 })
+      });
+      
+      console.log('Direct call response status:', response.status);
+      const result = await response.json();
+      console.log('Direct call result:', result);
+      
+      if (result.success) {
+        toast.success('✅ Direct call successful!', { id: 'test' });
+        setStats(result.stats);
+        setRecentJobs(result.jobs || []);
+      } else {
+        toast.error(`❌ Direct call failed: ${result.error}`, { id: 'test' });
+      }
+    } catch (error) {
+      console.error('Direct call error:', error);
+      toast.error(`❌ Direct call error: ${error.message}`, { id: 'test' });
     }
   };
 
@@ -135,6 +167,13 @@ export const JobScraperControl = () => {
             >
               <Eye className="h-4 w-4 mr-2" />
               Check Stats
+            </Button>
+            
+            <Button 
+              variant="secondary" 
+              onClick={testDirectCall}
+            >
+              🧪 Test Direct Call
             </Button>
           </div>
 
