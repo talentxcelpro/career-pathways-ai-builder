@@ -7,12 +7,12 @@ const corsHeaders = {
 }
 
 interface ContentRequest {
-  templateId: string;
+  templateId?: string;
   botId: string;
   contentType: string;
-  prompt: string;
+  prompt?: any;
   category: string;
-  seoKeywords: string[];
+  seoKeywords?: string[];
 }
 
 serve(async (req) => {
@@ -32,7 +32,17 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { templateId, botId, contentType, prompt, category, seoKeywords }: ContentRequest = await req.json();
+    const requestBody = await req.json();
+    console.log('📦 Request body received:', JSON.stringify(requestBody, null, 2));
+    
+    const { 
+      templateId = null, 
+      botId, 
+      contentType = 'post', 
+      prompt = {}, 
+      category = 'General', 
+      seoKeywords = ['jobs', 'career', 'hiring'] 
+    } = requestBody;
 
     // Get word count based on content type per specifications
     const getWordCount = (type: string): string => {
@@ -80,7 +90,7 @@ CONTENT SPECIFICATIONS:
 - SEO Keywords (use naturally): ${seoKeywords.join(', ')}
 
 CONTENT TASK:
-${prompt}
+${typeof prompt === 'string' ? prompt : `Create engaging ${contentType} content about ${category} for TalentXcel professionals.`}
 
 DETAILED WRITING REQUIREMENTS:
 1. START with an attention-grabbing headline or opening
