@@ -17906,6 +17906,10 @@ export type Database = {
         Args: { user_uuid: string; feature_name: string }
         Returns: boolean
       }
+      user_owns_job: {
+        Args: { job_uuid: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role:
