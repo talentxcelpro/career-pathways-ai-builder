@@ -28,7 +28,7 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
         .from('jobs')
         .select(`
           *,
-          companies!inner(
+          companies(
             id,
             name,
             logo_url,
@@ -37,7 +37,8 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
             is_verified
           )
         `, { count: 'exact' })
-        .eq('status', 'active')
+        .eq('is_active', true)
+        .eq('job_status', 'open')
         .range(start, end);
 
       // Apply filters
