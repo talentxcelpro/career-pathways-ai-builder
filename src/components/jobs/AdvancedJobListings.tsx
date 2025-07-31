@@ -5,7 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { PremiumJobCard } from './PremiumJobCard';
-import { useJobsManagement } from '@/hooks/useJobsManagement';
+import { ModernJobCard } from './ModernJobCard';
+import { SocialPagination } from '@/components/ui/social-pagination';
+import { useJobsWithPagination } from '@/hooks/useJobsWithPagination';
 import { 
   Filter, SortAsc, SortDesc, Grid, List, 
   Zap, Star, Clock, TrendingUp, Brain,
@@ -28,162 +30,27 @@ interface AdvancedJobListingsProps {
 }
 
 type ViewMode = 'grid' | 'list';
-type SortOption = 'relevance' | 'date' | 'salary' | 'company' | 'match_score';
-
-const SAMPLE_JOBS = [
-  {
-    id: '1',
-    title: 'Senior Full Stack Developer',
-    description: 'We are looking for an experienced Full Stack Developer to join our dynamic team. You will be responsible for developing and maintaining web applications using modern technologies. The ideal candidate should have strong expertise in React, Node.js, and cloud technologies. This is a great opportunity to work on cutting-edge projects with a collaborative team.',
-    location: 'Bangalore',
-    salary_min: 1200000,
-    salary_max: 2000000,
-    employment_type: 'full-time',
-    experience_level: 'senior-level',
-    skills_required: ['React', 'Node.js', 'TypeScript', 'AWS', 'MongoDB'],
-    is_remote: true,
-    is_featured: true,
-    is_urgent: false,
-    views_count: 456,
-    applications_count: 23,
-    posted_at: '2024-01-10T10:00:00Z',
-    deadline: '2024-02-15T23:59:59Z',
-    company: {
-      id: 'c1',
-      name: 'TechCorp Solutions',
-      logo_url: null,
-      industry: 'Technology',
-      rating: 4.5,
-      size: '100-500',
-      verified: true
-    },
-    insights: {
-      match_score: 95,
-      competition_level: 'medium' as const,
-      hiring_urgency: 'high' as const,
-      success_rate: 85,
-      response_rate: 92
-    }
-  },
-  {
-    id: '2',
-    title: 'Product Manager - AI/ML',
-    description: 'Join our AI team as a Product Manager to drive the development of machine learning products. You will work closely with engineering and data science teams to define product requirements and roadmaps. Experience with AI/ML products and agile methodologies is essential.',
-    location: 'Mumbai',
-    salary_min: 1500000,
-    salary_max: 2500000,
-    employment_type: 'full-time',
-    experience_level: 'mid-level',
-    skills_required: ['Product Management', 'AI/ML', 'Agile', 'Data Analysis'],
-    is_remote: false,
-    is_featured: true,
-    is_urgent: true,
-    views_count: 789,
-    applications_count: 41,
-    posted_at: '2024-01-12T14:30:00Z',
-    company: {
-      id: 'c2',
-      name: 'AI Innovations Ltd',
-      logo_url: null,
-      industry: 'Artificial Intelligence',
-      rating: 4.8,
-      size: '50-100',
-      verified: true
-    },
-    insights: {
-      match_score: 88,
-      competition_level: 'high' as const,
-      hiring_urgency: 'high' as const,
-      success_rate: 72,
-      response_rate: 88
-    }
-  },
-  {
-    id: '3',
-    title: 'DevOps Engineer',
-    description: 'Looking for a DevOps Engineer to manage our cloud infrastructure and deployment pipelines. Experience with Kubernetes, Docker, and CI/CD is required.',
-    location: 'Hyderabad',
-    salary_min: 800000,
-    salary_max: 1400000,
-    employment_type: 'full-time',
-    experience_level: 'mid-level',
-    skills_required: ['DevOps', 'Kubernetes', 'Docker', 'AWS', 'Jenkins'],
-    is_remote: true,
-    is_featured: false,
-    is_urgent: false,
-    views_count: 234,
-    applications_count: 12,
-    posted_at: '2024-01-14T09:15:00Z',
-    company: {
-      id: 'c3',
-      name: 'CloudTech Systems',
-      logo_url: null,
-      industry: 'Cloud Computing',
-      rating: 4.2,
-      size: '200-500',
-      verified: true
-    },
-    insights: {
-      match_score: 82,
-      competition_level: 'low' as const,
-      hiring_urgency: 'medium' as const,
-      success_rate: 78,
-      response_rate: 85
-    }
-  }
-];
+type SortOption = 'created_at' | 'salary' | 'company' | 'title';
 
 export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
   filters,
   onClearFilters
 }) => {
-  const [jobs, setJobs] = useState(SAMPLE_JOBS);
-  const [sortBy, setSortBy] = useState<SortOption>('relevance');
+  const [sortBy, setSortBy] = useState<SortOption>('created_at');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [showPremiumOnly, setShowPremiumOnly] = useState(false);
 
-  useEffect(() => {
-    // Filter jobs based on current filters
-    const filteredJobs = SAMPLE_JOBS.filter(job => {
-      if (filters.search && !job.title.toLowerCase().includes(filters.search.toLowerCase()) && 
-          !job.company.name.toLowerCase().includes(filters.search.toLowerCase())) {
-        return false;
-      }
-      if (filters.location && !job.location.toLowerCase().includes(filters.location.toLowerCase())) {
-        return false;
-      }
-      if (filters.employment_type.length > 0 && !filters.employment_type.includes(job.employment_type)) {
-        return false;
-      }
-      if (filters.experience_level.length > 0 && !filters.experience_level.includes(job.experience_level)) {
-        return false;
-      }
-      if (filters.is_remote && !job.is_remote) {
-        return false;
-      }
-      return true;
-    });
-
-    // Sort jobs
-    const sortedJobs = [...filteredJobs].sort((a, b) => {
-      switch (sortBy) {
-        case 'date':
-          return new Date(b.posted_at).getTime() - new Date(a.posted_at).getTime();
-        case 'salary':
-          return (b.salary_max || 0) - (a.salary_max || 0);
-        case 'company':
-          return a.company.name.localeCompare(b.company.name);
-        case 'match_score':
-          return (b.insights?.match_score || 0) - (a.insights?.match_score || 0);
-        default: // relevance
-          return (b.insights?.match_score || 0) - (a.insights?.match_score || 0);
-      }
-    });
-
-    setJobs(sortedJobs);
-  }, [filters, sortBy]);
+  const { 
+    jobs, 
+    featuredJobs, 
+    regularJobs, 
+    totalCount, 
+    hasMore, 
+    isLoading, 
+    loadMore, 
+    refetch 
+  } = useJobsWithPagination(filters, sortBy);
 
   const handleSaveJob = (jobId: string) => {
     setSavedJobs(prev => 
@@ -211,14 +78,8 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
   };
 
   const refreshJobs = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    refetch();
   };
-
-  const featuredJobs = jobs.filter(job => job.is_featured);
-  const regularJobs = jobs.filter(job => !job.is_featured);
 
   return (
     <div className="space-y-8">
@@ -229,7 +90,10 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
             Job Opportunities
           </h2>
           <p className="text-muted-foreground">
-            Find your perfect match from <span className="font-semibold text-primary">{jobs.length}</span> active positions
+            Find your perfect match from <span className="font-semibold text-primary">{totalCount}</span> active positions
+            {jobs.length > 0 && jobs.length < totalCount && (
+              <span className="text-xs ml-1">(showing {jobs.length})</span>
+            )}
           </p>
         </div>
 
@@ -249,13 +113,7 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
               <SelectValue placeholder="Sort by..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="relevance">
-                <div className="flex items-center gap-2">
-                  <Brain className="h-4 w-4" />
-                  AI Relevance
-                </div>
-              </SelectItem>
-              <SelectItem value="date">
+              <SelectItem value="created_at">
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
                   Latest First
@@ -273,10 +131,10 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
                   Company A-Z
                 </div>
               </SelectItem>
-              <SelectItem value="match_score">
+              <SelectItem value="title">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="h-4 w-4" />
-                  Best Match
+                  Job Title A-Z
                 </div>
               </SelectItem>
             </SelectContent>
@@ -358,13 +216,10 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
                   : 'grid-cols-1'
               }`}>
                 {featuredJobs.map((job) => (
-                  <PremiumJobCard
+                  <ModernJobCard
                     key={job.id}
                     job={job}
-                    variant="premium"
                     onSave={handleSaveJob}
-                    onShare={handleShareJob}
-                    onApply={handleApplyJob}
                     isSaved={savedJobs.includes(job.id)}
                   />
                 ))}
@@ -391,13 +246,10 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
                   : 'grid-cols-1'
               }`}>
                 {regularJobs.map((job) => (
-                  <PremiumJobCard
+                  <ModernJobCard
                     key={job.id}
                     job={job}
-                    variant="standard"
                     onSave={handleSaveJob}
-                    onShare={handleShareJob}
-                    onApply={handleApplyJob}
                     isSaved={savedJobs.includes(job.id)}
                   />
                 ))}
@@ -406,12 +258,28 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
           )}
 
           {/* Load More */}
-          <div className="text-center">
-            <Button variant="outline" size="lg" className="px-8">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Load More Jobs
-            </Button>
-          </div>
+          {hasMore && (
+            <div className="text-center">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="px-8" 
+                onClick={loadMore}
+                disabled={isLoading}
+              >
+                <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                {isLoading ? 'Loading...' : 'Load More Jobs'}
+              </Button>
+            </div>
+          )}
+          
+          {!hasMore && jobs.length > 0 && (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">
+                🎉 You've seen all {totalCount} available jobs!
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
