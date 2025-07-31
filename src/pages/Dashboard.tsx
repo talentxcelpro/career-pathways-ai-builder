@@ -13,6 +13,7 @@ import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
 import { realDataService } from '@/utils/realDataService';
 import { updateMetaTags } from '@/utils/metaTags';
 import { supabase } from '@/integrations/supabase/client';
+import { useJobApplicationsCount } from '@/hooks/useJobApplicationsCount';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -84,6 +85,9 @@ const Dashboard = () => {
     staleTime: 10 * 60 * 1000,
   });
 
+  // Get real job applications count
+  const { data: jobApplicationsCount } = useJobApplicationsCount(userProfile?.id);
+
   const handleRefreshAll = () => {
     refetchStats();
     refetchJobs();
@@ -143,7 +147,8 @@ const Dashboard = () => {
   const userStats = {
     coursesCompleted: dashboardStats?.coursesCompleted || 0,
     resumeViews: dashboardStats?.resumeViews || 0,
-    appliedJobs: dashboardStats?.appliedJobs || 0,
+    appliedJobs: jobApplicationsCount?.total || 0,
+    appliedJobsThisWeek: jobApplicationsCount?.thisWeek || 0,
     profileViews: dashboardStats?.profileViews || 0,
   };
 

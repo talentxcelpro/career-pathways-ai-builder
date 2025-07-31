@@ -36,6 +36,9 @@ export interface JobInfo {
     logo_url?: string;
   } | null;
   skills_required?: string[];
+  external_url?: string;
+  posted_by?: string;
+  company_name?: string;
 }
 
 export interface Resume {

@@ -7,6 +7,7 @@ interface UserStats {
   coursesCompleted: number;
   resumeViews: number;
   appliedJobs: number;
+  appliedJobsThisWeek?: number;
   profileViews: number;
 }
 
@@ -20,7 +21,7 @@ export const StatsCards = ({ userStats }: StatsCardsProps) => {
       title: "Applications",
       value: userStats.appliedJobs.toString(),
       icon: Briefcase,
-      trend: "+2 this week",
+      trend: userStats.appliedJobsThisWeek ? `+${userStats.appliedJobsThisWeek} this week` : "+0 this week",
       trendUp: true,
       color: "blue",
       bgGradient: "from-blue-500 to-cyan-500",

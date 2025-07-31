@@ -11,6 +11,7 @@ import DeclarationStep from './application-form/DeclarationStep';
 import { FormData, JobInfo, Resume } from './application-form/types';
 import { validateStep, validateFileUpload } from './application-form/validation';
 import { useEmailAutomation } from '@/hooks/useEmailAutomation';
+import { ScrapedJobSuccessModal } from './application-form/ScrapedJobSuccessModal';
 
 interface ComprehensiveJobApplicationFormProps {
   open: boolean;
@@ -23,6 +24,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
+  const [showScrapedJobSuccess, setShowScrapedJobSuccess] = useState(false);
   const { triggerApplicationConfirmationEmail } = useEmailAutomation();
   const [formData, setFormData] = useState<FormData>({
     resumeSource: 'existing',
@@ -273,7 +275,16 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         return;
       }
 
-      toast.success('Application submitted successfully!');
+      // Check if this is a scraped job (has external_url)
+      const isScrapedJob = job.external_url && job.external_url.trim() !== '';
+      
+      if (isScrapedJob) {
+        // Show scraped job success modal instead of regular toast
+        setShowScrapedJobSuccess(true);
+      } else {
+        toast.success('Application submitted successfully!');
+        onOpenChange(false);
+      }
       
       // Trigger application confirmation email
       try {
@@ -281,15 +292,16 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
           formData.email,
           formData.fullName,
           job.title,
-          job.companies?.name || 'the company'
+          job.companies?.name || job.company_name || 'the company'
         );
       } catch (emailError) {
         console.error('Failed to send application confirmation email:', emailError);
         // Don't show error to user as application was successful
       }
       
-      onOpenChange(false);
-      setCurrentStep(1);
+      if (!isScrapedJob) {
+        setCurrentStep(1);
+      }
       
     } catch (error: any) {
       console.error('Application submission error:', error);
@@ -375,8 +387,23 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
 
   const canProceedToNext = () => validateStep(currentStep, formData);
 
+  const handleScrapedJobSuccessClose = (isOpen: boolean) => {
+    setShowScrapedJobSuccess(isOpen);
+    if (!isOpen) {
+      onOpenChange(false);
+      setCurrentStep(1);
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      <ScrapedJobSuccessModal 
+        open={showScrapedJobSuccess}
+        onOpenChange={handleScrapedJobSuccessClose}
+        job={job}
+      />
+      
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
@@ -456,5 +483,6 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
