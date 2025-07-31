@@ -7970,6 +7970,92 @@ export type Database = {
         }
         Relationships: []
       }
+      job_portal_blocklist: {
+        Row: {
+          created_at: string
+          domain: string
+          id: string
+          is_active: boolean
+          portal_type: string
+          reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          domain: string
+          id?: string
+          is_active?: boolean
+          portal_type?: string
+          reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          domain?: string
+          id?: string
+          is_active?: boolean
+          portal_type?: string
+          reason?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      job_quality_scores: {
+        Row: {
+          ai_assessment: Json | null
+          completeness_score: number
+          created_at: string
+          freshness_score: number
+          human_review_score: number | null
+          id: string
+          job_id: string | null
+          overall_score: number
+          relevance_score: number
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_trust_score: number
+          updated_at: string
+        }
+        Insert: {
+          ai_assessment?: Json | null
+          completeness_score?: number
+          created_at?: string
+          freshness_score?: number
+          human_review_score?: number | null
+          id?: string
+          job_id?: string | null
+          overall_score?: number
+          relevance_score?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_trust_score?: number
+          updated_at?: string
+        }
+        Update: {
+          ai_assessment?: Json | null
+          completeness_score?: number
+          created_at?: string
+          freshness_score?: number
+          human_review_score?: number | null
+          id?: string
+          job_id?: string | null
+          overall_score?: number
+          relevance_score?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_trust_score?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_quality_scores_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "scraped_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_recommendations: {
         Row: {
           created_at: string | null
@@ -8103,6 +8189,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      job_source_validations: {
+        Row: {
+          ai_reasoning: string | null
+          confidence_score: number | null
+          created_at: string
+          domain: string
+          id: string
+          source_url: string
+          validated_at: string
+          validated_by: string | null
+          validation_result: string
+        }
+        Insert: {
+          ai_reasoning?: string | null
+          confidence_score?: number | null
+          created_at?: string
+          domain: string
+          id?: string
+          source_url: string
+          validated_at?: string
+          validated_by?: string | null
+          validation_result: string
+        }
+        Update: {
+          ai_reasoning?: string | null
+          confidence_score?: number | null
+          created_at?: string
+          domain?: string
+          id?: string
+          source_url?: string
+          validated_at?: string
+          validated_by?: string | null
+          validation_result?: string
+        }
+        Relationships: []
       }
       job_swipes: {
         Row: {
@@ -13416,18 +13538,21 @@ export type Database = {
           error_message: string | null
           experience_level: string | null
           id: string
+          is_portal_job: boolean | null
           job_description: string
           job_title: string
           location: string | null
           posted_at: string | null
           processing_status: string | null
           published_job_id: string | null
+          quality_score: number | null
           salary: string | null
           scraped_at: string
           seo_keywords: string[] | null
           skills: Json | null
           source_platform: string
           source_url: string
+          source_validation_id: string | null
           status: string
           updated_at: string
         }
@@ -13441,18 +13566,21 @@ export type Database = {
           error_message?: string | null
           experience_level?: string | null
           id?: string
+          is_portal_job?: boolean | null
           job_description: string
           job_title: string
           location?: string | null
           posted_at?: string | null
           processing_status?: string | null
           published_job_id?: string | null
+          quality_score?: number | null
           salary?: string | null
           scraped_at?: string
           seo_keywords?: string[] | null
           skills?: Json | null
           source_platform: string
           source_url: string
+          source_validation_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -13466,18 +13594,21 @@ export type Database = {
           error_message?: string | null
           experience_level?: string | null
           id?: string
+          is_portal_job?: boolean | null
           job_description?: string
           job_title?: string
           location?: string | null
           posted_at?: string | null
           processing_status?: string | null
           published_job_id?: string | null
+          quality_score?: number | null
           salary?: string | null
           scraped_at?: string
           seo_keywords?: string[] | null
           skills?: Json | null
           source_platform?: string
           source_url?: string
+          source_validation_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -13487,6 +13618,13 @@ export type Database = {
             columns: ["bot_id"]
             isOneToOne: false
             referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scraped_jobs_source_validation_id_fkey"
+            columns: ["source_validation_id"]
+            isOneToOne: false
+            referencedRelation: "job_source_validations"
             referencedColumns: ["id"]
           },
         ]
@@ -13535,6 +13673,62 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      scraping_schedules: {
+        Row: {
+          bot_id: string | null
+          created_at: string
+          error_count: number | null
+          id: string
+          is_active: boolean
+          last_run_at: string | null
+          max_jobs_per_run: number | null
+          next_run_at: string | null
+          scraping_frequency: unknown
+          source_category: string
+          success_count: number | null
+          target_urls: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          bot_id?: string | null
+          created_at?: string
+          error_count?: number | null
+          id?: string
+          is_active?: boolean
+          last_run_at?: string | null
+          max_jobs_per_run?: number | null
+          next_run_at?: string | null
+          scraping_frequency?: unknown
+          source_category: string
+          success_count?: number | null
+          target_urls?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          bot_id?: string | null
+          created_at?: string
+          error_count?: number | null
+          id?: string
+          is_active?: boolean
+          last_run_at?: string | null
+          max_jobs_per_run?: number | null
+          next_run_at?: string | null
+          scraping_frequency?: unknown
+          source_category?: string
+          success_count?: number | null
+          target_urls?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scraping_schedules_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       search_engine_submissions: {
         Row: {
@@ -17913,6 +18107,10 @@ export type Database = {
         Args: { base_slug: string; company_id?: string }
         Returns: string
       }
+      extract_domain: {
+        Args: { url: string }
+        Returns: string
+      }
       generate_article_slug: {
         Args: { article_title: string }
         Returns: string
@@ -18051,6 +18249,10 @@ export type Database = {
       }
       is_current_user_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_domain_blocked: {
+        Args: { domain_to_check: string }
         Returns: boolean
       }
       is_ip_blocked: {
