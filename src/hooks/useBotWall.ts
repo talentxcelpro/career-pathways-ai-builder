@@ -67,6 +67,20 @@ export const useCreateWallPost = () => {
         .single();
       
       if (error) throw error;
+      
+      // Also insert into posts table for network feed visibility
+      if (!postData.is_draft) {
+        await supabase.from('posts').insert({
+          author_id: (await supabase.auth.getUser()).data.user?.id,
+          content: postData.content,
+          headline: postData.title,
+          visibility: 'public',
+          post_type: 'bot_content',
+          tags: postData.tags,
+          is_ai_generated: false
+        });
+      }
+      
       return data;
     },
     onSuccess: (data) => {
