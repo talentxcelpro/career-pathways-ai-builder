@@ -8504,6 +8504,7 @@ export type Database = {
           industry_domain: string | null
           is_active: boolean | null
           is_draft: boolean | null
+          is_external: boolean | null
           is_featured: boolean | null
           is_hiring_fast: boolean | null
           is_remote: boolean | null
@@ -8602,6 +8603,7 @@ export type Database = {
           industry_domain?: string | null
           is_active?: boolean | null
           is_draft?: boolean | null
+          is_external?: boolean | null
           is_featured?: boolean | null
           is_hiring_fast?: boolean | null
           is_remote?: boolean | null
@@ -8700,6 +8702,7 @@ export type Database = {
           industry_domain?: string | null
           is_active?: boolean | null
           is_draft?: boolean | null
+          is_external?: boolean | null
           is_featured?: boolean | null
           is_hiring_fast?: boolean | null
           is_remote?: boolean | null
@@ -13812,6 +13815,51 @@ export type Database = {
           },
         ]
       }
+      scraper_logs: {
+        Row: {
+          average_quality_score: number | null
+          created_at: string | null
+          duplicates_removed: number | null
+          errors_count: number | null
+          id: string
+          log_date: string
+          processing_time_ms: number | null
+          quality_approved: number | null
+          quality_rejected: number | null
+          source_success_rate: number | null
+          total_scraped: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          average_quality_score?: number | null
+          created_at?: string | null
+          duplicates_removed?: number | null
+          errors_count?: number | null
+          id?: string
+          log_date?: string
+          processing_time_ms?: number | null
+          quality_approved?: number | null
+          quality_rejected?: number | null
+          source_success_rate?: number | null
+          total_scraped?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          average_quality_score?: number | null
+          created_at?: string | null
+          duplicates_removed?: number | null
+          errors_count?: number | null
+          id?: string
+          log_date?: string
+          processing_time_ms?: number | null
+          quality_approved?: number | null
+          quality_rejected?: number | null
+          source_success_rate?: number | null
+          total_scraped?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       scraping_jobs_queue: {
         Row: {
           created_at: string | null
@@ -16126,6 +16174,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      system_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string | null
+          id: string
+          is_resolved: boolean | null
+          message: string
+          metadata: Json | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string | null
+          title: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          message: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string | null
+          title: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          message?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string | null
+          title?: string
+        }
+        Relationships: []
       }
       system_configuration: {
         Row: {
