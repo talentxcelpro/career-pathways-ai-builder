@@ -183,6 +183,8 @@ export const useTriggerDailyJobScraping = () => {
           });
 
           totalJobs += data.jobsScraped;
+          console.log(`✅ Added ${data.jobsScraped} jobs from ${source.source_name}. Total so far: ${totalJobs}`);
+          console.log(`📋 Sample job structure:`, data.jobs[0]);
         } catch (error) {
           console.error(`Error scraping ${source.source_name}:`, error);
         }
@@ -191,6 +193,8 @@ export const useTriggerDailyJobScraping = () => {
       // Direct database insertion as fallback since edge function is unreachable
       console.log("📤 Publishing jobs directly to database...");
       console.log("📤 Total jobs to publish:", totalJobs);
+      console.log("📤 Results array length:", results.length);
+      console.log("📤 Results structure:", results.map(r => ({ source: r.source, jobCount: r.jobs?.length || 0 })));
       
       // Helper functions to map scraped values to database enum values
       const mapEmploymentType = (jobType: string | undefined): string => {
@@ -259,7 +263,14 @@ export const useTriggerDailyJobScraping = () => {
       let totalErrors = 0;
       
       try {
+        console.log("🔍 DEBUG: Starting to iterate through results...");
+        console.log("🔍 DEBUG: Results array:", results);
+        
         for (const result of results) {
+          console.log("🔍 DEBUG: Processing result:", result);
+          console.log("🔍 DEBUG: result.jobs exists:", !!result.jobs);
+          console.log("🔍 DEBUG: result.jobs is array:", Array.isArray(result.jobs));
+          
           if (result.jobs && Array.isArray(result.jobs)) {
             console.log(`🔄 Processing ${result.jobs.length} jobs from ${result.source}`);
             
