@@ -76,7 +76,7 @@ const Jobs = () => {
     });
   }, []);
 
-  // Replace the old query with pagination hook
+  // Use pagination hook for jobs
   const { 
     jobs: allJobs, 
     totalCount, 
