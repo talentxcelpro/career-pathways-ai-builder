@@ -14,6 +14,8 @@ interface JobFilters {
 }
 
 export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'created_at') => {
+  console.log('🚀 useJobsWithPagination hook called with:', { filters, sortBy });
+  
   const [page, setPage] = useState(1);
   const [allJobs, setAllJobs] = useState<any[]>([]);
   const pageSize = 50;

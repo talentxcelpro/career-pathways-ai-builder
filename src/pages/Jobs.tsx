@@ -11,6 +11,7 @@ import { EnhancedJobFilters } from '@/components/jobs/EnhancedJobFilters';
 import { JobsList } from '@/components/jobs/JobsList';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 import { useJobsRealtime, useAutoRefreshJobs } from '@/hooks/useRealtimeData';
+import { useJobsWithPagination } from '@/hooks/useJobsWithPagination';
 import { AutoRefreshIndicator } from '@/components/shared/AutoRefreshIndicator';
 import { DataFreshness } from '@/components/shared/DataFreshness';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
@@ -23,6 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
+import { SocialPagination } from '@/components/ui/social-pagination';
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -74,56 +76,16 @@ const Jobs = () => {
     });
   }, []);
 
-  // Fetch jobs with enhanced filtering
-  const { data: allJobs = [], isLoading, refetch, dataUpdatedAt } = useQuery({
-    queryKey: ['jobs', filters, sortBy],
-    queryFn: async () => {
-      let query = supabase
-        .from('jobs')
-        .select(`
-          *,
-          companies (
-            id,
-            name,
-            logo_url,
-            industry
-          )
-        `)
-        .eq('is_active', true)
-        .eq('job_status', 'open');
-
-      // Apply filters
-      if (filters.search) {
-        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
-      }
-      if (filters.location) {
-        query = query.ilike('location', `%${filters.location}%`);
-      }
-      if (filters.employment_type.length > 0) {
-        query = query.in('employment_type', filters.employment_type);
-      }
-      if (filters.experience_level.length > 0) {
-        query = query.in('experience_level', filters.experience_level);
-      }
-      if (filters.is_remote) {
-        query = query.eq('is_remote', true);
-      }
-      if (filters.salary_min > 0) {
-        query = query.gte('salary_min', filters.salary_min);
-      }
-      if (filters.salary_max > 0) {
-        query = query.lte('salary_max', filters.salary_max);
-      }
-
-      const { data, error } = await query
-        .order('posted_at', { ascending: false })
-        .limit(50);
-
-      if (error) throw error;
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  // Replace the old query with pagination hook
+  const { 
+    jobs: allJobs, 
+    totalCount, 
+    isLoading, 
+    refetch, 
+    currentPage,
+    totalPages,
+    goToPage
+  } = useJobsWithPagination(filters, sortBy);
 
   // Auto-refresh jobs data
   useSmartAutoRefresh(() => {
@@ -282,7 +244,7 @@ const Jobs = () => {
               </div>
             </div>
             <div className="bg-[#28C76F]/10 text-[#28C76F] px-3 py-1 rounded-full text-sm font-medium">
-              {allJobs.length} Jobs
+              {totalCount} Jobs
             </div>
           </div>
           
@@ -424,7 +386,7 @@ const Jobs = () => {
             <div className="flex justify-between items-center mb-4">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">All Job Opportunities</h2>
-                <p className="text-sm text-gray-600">Find your perfect match from {allJobs.length} active positions</p>
+                <p className="text-sm text-gray-600">Find your perfect match from {totalCount} active positions</p>
               </div>
               <div className="flex items-center gap-2">
                 <AutoRefreshIndicator 
@@ -432,7 +394,7 @@ const Jobs = () => {
                   lastRefresh={lastRefresh}
                 />
                 <DataFreshness 
-                  lastUpdated={new Date(dataUpdatedAt || Date.now())}
+                  lastUpdated={new Date(Date.now())}
                   onRefresh={() => refetch()}
                   isRefreshing={isLoading}
                 />
@@ -450,6 +412,18 @@ const Jobs = () => {
               onSaveJob={handleSaveJob}
               onClearFilters={handleClearFilters}
             />
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-8">
+                <SocialPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalCount={totalCount}
+                  onPageChange={goToPage}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
