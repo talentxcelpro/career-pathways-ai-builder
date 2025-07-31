@@ -266,6 +266,15 @@ export const useTriggerDailyJobScraping = () => {
         console.log("🔍 DEBUG: Starting to iterate through results...");
         console.log("🔍 DEBUG: Results array:", results);
         
+        // Get the current user ID for RLS policy compliance
+        const { data: { user } } = await supabase.auth.getUser();
+        console.log("🔍 DEBUG: Current user ID:", user?.id);
+        
+        if (!user?.id) {
+          console.error("❌ No authenticated user found - cannot publish jobs");
+          throw new Error("User must be authenticated to publish jobs");
+        }
+        
         for (const result of results) {
           console.log("🔍 DEBUG: Processing result:", result);
           console.log("🔍 DEBUG: result.jobs exists:", !!result.jobs);
@@ -300,8 +309,8 @@ export const useTriggerDailyJobScraping = () => {
                     is_active: true,
                     posted_at: new Date().toISOString(),
                     expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-                    posted_by: (await supabase.auth.getUser()).data.user?.id, // Required for RLS policy
-                    company_name: job.company || 'Unknown Company' // Adding company name
+                    posted_by: user.id, // Use the user ID we already retrieved
+                    company_name: job.company || 'Unknown Company'
                   })
                   .select('id, title')
                   .single();
