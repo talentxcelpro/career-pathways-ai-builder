@@ -8541,7 +8541,9 @@ export type Database = {
           salary_currency: string | null
           salary_max: number | null
           salary_min: number | null
+          salary_range: string | null
           skills_required: string[] | null
+          source: string | null
           specialization_fields: string[] | null
           specific_experience_areas: string | null
           specific_tools: string[] | null
@@ -8635,7 +8637,9 @@ export type Database = {
           salary_currency?: string | null
           salary_max?: number | null
           salary_min?: number | null
+          salary_range?: string | null
           skills_required?: string[] | null
+          source?: string | null
           specialization_fields?: string[] | null
           specific_experience_areas?: string | null
           specific_tools?: string[] | null
@@ -8729,7 +8733,9 @@ export type Database = {
           salary_currency?: string | null
           salary_max?: number | null
           salary_min?: number | null
+          salary_range?: string | null
           skills_required?: string[] | null
+          source?: string | null
           specialization_fields?: string[] | null
           specific_experience_areas?: string | null
           specific_tools?: string[] | null
