@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe } from "lucide-react";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
@@ -286,6 +287,15 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessDashboard" as const,
     description: "Monitor sitemaps and search engine submissions"
+  },
+  {
+    title: "AI Content Generator",
+    to: "/admin/content",
+    icon: <Brain className="h-4 w-4" />,
+    page: lazy(() => import('@/components/admin/ContentManagement').then(m => ({ default: m.ContentManagement }))),
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "AI-powered content generation and management"
   },
   {
     title: "Ad Campaign Manager", 
