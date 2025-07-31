@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, supabaseFunctions } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
   Play, StopCircle, RefreshCw, Eye, Building, MapPin, 
@@ -26,11 +26,22 @@ export const JobScraperControl = () => {
     try {
       toast.loading('🚀 Starting job scraper...', { id: 'scraper' });
       
-      const { data, error } = await supabase.functions.invoke('job-scraper', {
+      console.log('Calling job-scraper function with limit:', limit);
+      
+      const { data, error } = await supabaseFunctions.functions.invoke('job-scraper', {
         body: { limit }
       });
 
-      if (error) throw error;
+      console.log('Function response:', { data, error });
+
+      if (error) {
+        console.error('Function error:', error);
+        throw error;
+      }
+
+      if (!data || !data.success) {
+        throw new Error(data?.error || 'Unknown error occurred');
+      }
 
       setStats(data.stats);
       setRecentJobs(data.jobs || []);
@@ -40,8 +51,13 @@ export const JobScraperControl = () => {
       });
 
       // Trigger sitemap generation
-      await supabase.functions.invoke('sitemap-generator');
-      toast.success('🗺️ Sitemap updated with new jobs');
+      try {
+        await supabaseFunctions.functions.invoke('sitemap-generator');
+        toast.success('🗺️ Sitemap updated with new jobs');
+      } catch (sitemapError) {
+        console.warn('Sitemap generation failed:', sitemapError);
+        // Don't show error toast for non-critical sitemap failure
+      }
 
     } catch (error) {
       console.error('Scraper error:', error);
