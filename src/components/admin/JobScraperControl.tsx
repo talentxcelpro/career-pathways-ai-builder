@@ -157,9 +157,9 @@ export const JobScraperControl = () => {
         <CardContent className="space-y-4">
           <div className="flex gap-4">
             <Button 
-              onClick={() => runJobScraper(100)} 
+              onClick={() => runJobScraper(200)} 
               disabled={isRunning}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600"
             >
               {isRunning ? (
                 <>
@@ -168,10 +168,19 @@ export const JobScraperControl = () => {
                 </>
               ) : (
                 <>
-                  <Play className="h-4 w-4" />
-                  Run Job Scraper (100 Jobs)
+                  <Sparkles className="h-4 w-4" />
+                  Generate 200 Diverse Jobs
                 </>
               )}
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => runJobScraper(100)}
+              disabled={isRunning}
+            >
+              <Play className="h-4 w-4 mr-2" />
+              Standard (100 Jobs)
             </Button>
             
             <Button 

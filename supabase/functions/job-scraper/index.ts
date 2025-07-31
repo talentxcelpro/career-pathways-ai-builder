@@ -7,18 +7,39 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Extended industry and experience level coverage
+// Extended 50+ industries coverage
 const INDUSTRIES = [
   'Technology', 'Finance', 'Healthcare', 'Education', 'Retail', 'Manufacturing',
   'Consulting', 'Marketing', 'Sales', 'Engineering', 'Design', 'Operations',
   'Human Resources', 'Legal', 'Real Estate', 'Media', 'Non-profit', 'Government',
   'Transportation', 'Hospitality', 'Energy', 'Construction', 'Agriculture',
-  'Telecommunications', 'Entertainment', 'Fashion', 'Food & Beverage'
+  'Telecommunications', 'Entertainment', 'Fashion', 'Food & Beverage',
+  'Banking', 'Insurance', 'Pharmaceuticals', 'Biotechnology', 'Aerospace',
+  'Automotive', 'Chemical', 'Mining', 'Oil & Gas', 'Renewable Energy',
+  'Logistics', 'Supply Chain', 'E-commerce', 'Gaming', 'Sports',
+  'Travel & Tourism', 'Airlines', 'Maritime', 'Publishing', 'Printing',
+  'Textiles', 'Jewelry', 'Furniture', 'Electronics', 'Architecture'
 ];
 
-const EXPERIENCE_LEVELS = ['internship', 'fresher', 'mid-level', 'senior-level', 'executive'];
+// Comprehensive 10+ experience levels from fresher to CEO
+const EXPERIENCE_LEVELS = ['intern', 'fresher', 'junior', 'mid-level', 'senior-level', 'lead', 'manager', 'senior-manager', 'director', 'vp', 'svp', 'cxo'];
 const EMPLOYMENT_TYPES = ['full-time', 'part-time', 'contract', 'freelance', 'internship'];
-const JOB_LEVELS = ['Entry Level', 'Mid Level', 'Senior Level', 'Lead', 'Manager', 'Director', 'VP', 'C-Level'];
+
+// Detailed job levels with salary mapping
+const JOB_LEVEL_MAPPING = {
+  'intern': { level: 'Intern', salary_range: '₹15,000-25,000/month' },
+  'fresher': { level: 'Fresher (0-1 years)', salary_range: '₹3-6 LPA' },
+  'junior': { level: 'Junior (1-3 years)', salary_range: '₹6-12 LPA' },
+  'mid-level': { level: 'Mid-Level (3-6 years)', salary_range: '₹12-25 LPA' },
+  'senior-level': { level: 'Senior (6-10 years)', salary_range: '₹25-45 LPA' },
+  'lead': { level: 'Team Lead (8-12 years)', salary_range: '₹35-60 LPA' },
+  'manager': { level: 'Manager (10-15 years)', salary_range: '₹50-85 LPA' },
+  'senior-manager': { level: 'Senior Manager (12-18 years)', salary_range: '₹75-1.2 Cr' },
+  'director': { level: 'Director (15-20 years)', salary_range: '₹1-2 Cr' },
+  'vp': { level: 'Vice President (18-25 years)', salary_range: '₹1.5-3 Cr' },
+  'svp': { level: 'Senior VP (20+ years)', salary_range: '₹2.5-5 Cr' },
+  'cxo': { level: 'C-Level Executive (20+ years)', salary_range: '₹3-10+ Cr' }
+};
 
 // Popular job domains for external URLs
 const JOB_DOMAINS = [
@@ -86,30 +107,79 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
     console.log('✅ Supabase client ready');
 
-    // Enhanced company and job data with more industries
+    // Comprehensive companies across 50+ industries
     const companies = [
-      'TechCorp', 'InnovateLab', 'DataFlow Inc', 'CloudTech', 'AI Dynamics',
-      'FinanceFirst', 'HealthPlus', 'EduTech Solutions', 'RetailMax', 'ManufacturingPro',
-      'ConsultCorp', 'MarketingGurus', 'SalesForce Pro', 'EngineerTech', 'DesignStudio',
-      'OpsTech', 'HRSolutions', 'LegalEagle', 'PropertyPros', 'MediaMax'
+      // Technology
+      'TechCorp', 'InnovateLab', 'DataFlow Inc', 'CloudTech', 'AI Dynamics', 'CyberSoft', 'QuantumTech',
+      // Finance & Banking
+      'FinanceFirst', 'CreditMax', 'InvestPro', 'BankTech', 'InsureSecure', 'WealthBuilders',
+      // Healthcare & Pharma
+      'HealthPlus', 'MediCore', 'PharmaAdvance', 'BioTech Solutions', 'CareFirst', 'LifeSciences',
+      // Education & Training
+      'EduTech Solutions', 'LearnMax', 'SkillDev', 'AcademyPro', 'KnowledgeHub',
+      // Retail & E-commerce
+      'RetailMax', 'ShopTech', 'EcommerceElite', 'MarketPlace Pro', 'Consumer Connect',
+      // Manufacturing & Industrial
+      'ManufacturingPro', 'IndustrialTech', 'Production Plus', 'Assembly Works', 'Factory Solutions',
+      // Energy & Environment
+      'GreenEnergy', 'SolarTech', 'CleanPower', 'EcoSolutions', 'RenewableTech',
+      // Media & Entertainment
+      'MediaMax', 'ContentCorp', 'StreamTech', 'GameDev Studios', 'CreativeWorks',
+      // Transportation & Logistics
+      'LogiTech', 'TransportPro', 'ShipmentMax', 'DeliveryFirst', 'MobilityTech'
     ];
     
+    // Comprehensive job titles across all levels and industries
     const jobTitles = [
-      'Software Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer',
-      'Data Scientist', 'Product Manager', 'Business Analyst', 'UX/UI Designer',
-      'DevOps Engineer', 'Quality Assurance Engineer', 'Project Manager', 'Sales Executive',
-      'Marketing Manager', 'Content Writer', 'Digital Marketing Specialist', 'HR Manager',
-      'Finance Analyst', 'Operations Manager', 'Customer Support Executive', 'Research Analyst'
+      // Technology - All levels
+      'Software Engineer', 'Senior Software Engineer', 'Principal Engineer', 'Engineering Manager', 'VP Engineering', 'CTO',
+      'Frontend Developer', 'Senior Frontend Developer', 'Lead Frontend Developer', 'Frontend Architect',
+      'Backend Developer', 'Senior Backend Developer', 'Lead Backend Developer', 'Backend Architect',
+      'Full Stack Developer', 'Senior Full Stack Developer', 'Lead Full Stack Developer',
+      'Data Scientist', 'Senior Data Scientist', 'Principal Data Scientist', 'Head of Data Science', 'Chief Data Officer',
+      'DevOps Engineer', 'Senior DevOps Engineer', 'DevOps Manager', 'Infrastructure Architect',
+      'QA Engineer', 'Senior QA Engineer', 'QA Manager', 'Test Architect',
+      'Product Manager', 'Senior Product Manager', 'Principal Product Manager', 'Director of Product', 'VP Product', 'CPO',
+      'UX Designer', 'Senior UX Designer', 'Lead UX Designer', 'Design Manager', 'Head of Design', 'Chief Design Officer',
+      'Business Analyst', 'Senior Business Analyst', 'Principal Business Analyst', 'Analytics Manager',
+      
+      // Finance & Banking
+      'Financial Analyst', 'Senior Financial Analyst', 'Finance Manager', 'Finance Director', 'CFO',
+      'Investment Banker', 'Senior Investment Banker', 'VP Investment Banking', 'Managing Director',
+      'Risk Manager', 'Senior Risk Manager', 'Chief Risk Officer',
+      'Compliance Officer', 'Senior Compliance Officer', 'Head of Compliance',
+      
+      // Sales & Marketing
+      'Sales Executive', 'Senior Sales Executive', 'Sales Manager', 'Sales Director', 'VP Sales', 'Chief Sales Officer',
+      'Marketing Executive', 'Marketing Manager', 'Senior Marketing Manager', 'Marketing Director', 'CMO',
+      'Digital Marketing Specialist', 'Digital Marketing Manager', 'Head of Digital Marketing',
+      'Content Writer', 'Content Manager', 'Content Director', 'Head of Content',
+      
+      // Operations & Management
+      'Operations Executive', 'Operations Manager', 'Senior Operations Manager', 'Operations Director', 'COO',
+      'Project Manager', 'Senior Project Manager', 'Program Manager', 'Portfolio Manager',
+      'Strategy Consultant', 'Senior Consultant', 'Principal Consultant', 'Partner',
+      
+      // HR & Administration
+      'HR Executive', 'HR Manager', 'Senior HR Manager', 'HR Director', 'CHRO',
+      'Talent Acquisition Specialist', 'Recruitment Manager', 'Head of Talent',
+      'Training Manager', 'L&D Manager', 'Head of Learning',
+      
+      // Legal & Compliance
+      'Legal Associate', 'Legal Manager', 'Senior Legal Manager', 'General Counsel', 'Chief Legal Officer',
+      
+      // Executive & Leadership
+      'CEO', 'President', 'Executive Vice President', 'Managing Director', 'Board Member',
+      'Chief Executive Officer', 'Chief Operating Officer', 'Chief Financial Officer',
+      'Chief Technology Officer', 'Chief Marketing Officer', 'Chief Human Resources Officer'
     ];
     
     const locations = [
       'Mumbai, India', 'Bangalore, India', 'Delhi, India', 'Pune, India', 'Hyderabad, India',
       'Chennai, India', 'Kolkata, India', 'Ahmedabad, India', 'Jaipur, India', 'Remote',
-      'Gurgaon, India', 'Noida, India', 'Kochi, India', 'Indore, India', 'Coimbatore, India'
-    ];
-    
-    const salaries = [
-      '₹3-6 LPA', '₹6-10 LPA', '₹10-15 LPA', '₹15-25 LPA', '₹25-40 LPA', '₹40-60 LPA'
+      'Gurgaon, India', 'Noida, India', 'Kochi, India', 'Indore, India', 'Coimbatore, India',
+      'Lucknow, India', 'Chandigarh, India', 'Nagpur, India', 'Bhopal, India', 'Vadodara, India',
+      'New York, USA', 'London, UK', 'Singapore', 'Dubai, UAE', 'Toronto, Canada'
     ];
     
     console.log('✅ Using employment types:', EMPLOYMENT_TYPES);
@@ -118,7 +188,7 @@ serve(async (req) => {
     const jobsToInsert = [];
     const qualityCheckPromises = [];
 
-    for (let i = 0; i < Math.min(limit, 50); i++) {
+    for (let i = 0; i < Math.min(limit, 200); i++) {
       const company = companies[Math.floor(Math.random() * companies.length)];
       const title = jobTitles[Math.floor(Math.random() * jobTitles.length)];
       const location = locations[Math.floor(Math.random() * locations.length)];
@@ -142,7 +212,10 @@ serve(async (req) => {
       
       const normalizeExperienceLevel = (level) => {
         const map = {
-          'fresher': 'fresher', 'mid-level': 'mid-level', 'senior-level': 'senior-level', 'executive': 'executive',
+          'intern': 'fresher', 'fresher': 'fresher', 'junior': 'fresher', 
+          'mid-level': 'mid-level', 'senior-level': 'senior-level', 
+          'lead': 'senior-level', 'manager': 'executive', 'senior-manager': 'executive',
+          'director': 'executive', 'vp': 'executive', 'svp': 'executive', 'cxo': 'executive',
           'Fresher': 'fresher', 'Mid-Level': 'mid-level', 'Senior-Level': 'senior-level', 'Executive': 'executive',
           'Mid Level': 'mid-level', 'Senior Level': 'senior-level', 'Entry Level': 'fresher', 'entry-level': 'fresher',
           'internship': 'fresher'
@@ -155,6 +228,10 @@ serve(async (req) => {
       
       const selectedEmploymentType = normalizeEmploymentType(rawEmploymentType);
       const selectedExperienceLevel = normalizeExperienceLevel(rawExperienceLevel);
+      
+      // Get salary based on experience level
+      const levelInfo = JOB_LEVEL_MAPPING[rawExperienceLevel] || JOB_LEVEL_MAPPING['fresher'];
+      const salaryRange = levelInfo.salary_range;
       
       console.log(`✅ Normalized job values: employment_type="${selectedEmploymentType}", experience_level="${selectedExperienceLevel}"`);
 
@@ -181,7 +258,7 @@ serve(async (req) => {
         company_name: company,
         description: jobDescription,
         location,
-        salary_range: salaries[Math.floor(Math.random() * salaries.length)],
+        salary_range: salaryRange,
         employment_type: selectedEmploymentType,
         experience_level: selectedExperienceLevel,
         skills_required: ['JavaScript', 'React', 'Node.js'],
