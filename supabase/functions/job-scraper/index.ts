@@ -59,6 +59,8 @@ serve(async (req) => {
     const titles = ['Software Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer'];
     const locations = ['Mumbai, India', 'Bangalore, India', 'Delhi, India', 'Remote'];
     const salaries = ['₹3-6 LPA', '₹6-10 LPA', '₹10-15 LPA', '₹15-25 LPA'];
+    const employmentTypes = ['Full-Time', 'Part-Time', 'Contract', 'Internship', 'Freelance', 'Temporary'];
+    const experienceLevels = ['Entry-Level', 'Mid-Level', 'Senior-Level', 'Executive'];
 
     const jobsToInsert = [];
     let duplicates = 0;
@@ -88,8 +90,8 @@ serve(async (req) => {
         description: `We are looking for a talented ${title} to join our team at ${company}. This is an excellent opportunity to work with cutting-edge technologies.`,
         location,
         salary_range: salaries[Math.floor(Math.random() * salaries.length)],
-        employment_type: 'full_time',
-        experience_level: 'Mid Level',
+        employment_type: employmentTypes[Math.floor(Math.random() * employmentTypes.length)],
+        experience_level: experienceLevels[Math.floor(Math.random() * experienceLevels.length)],
         skills_required: ['JavaScript', 'React', 'Node.js'],
         source: 'Generated API',
         status: 'active'
