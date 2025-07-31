@@ -17645,6 +17645,20 @@ export type Database = {
           users_needing_reminders: number
         }[]
       }
+      get_scraped_job_applications: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          application_id: string
+          job_id: string
+          job_title: string
+          external_url: string
+          full_name: string
+          email: string
+          resume_url: string
+          applied_at: string
+          company_name: string
+        }[]
+      }
       get_user_app_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
