@@ -39,10 +39,10 @@ export const BotContentGenerator: React.FC = () => {
   const checkConnectivity = async () => {
     try {
       console.log('🔍 Checking function connectivity...');
-      const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/bot-content-generator/health`, {
+      const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/deepseek-content-generator/health`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'}`,
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
           'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
         }
       });
@@ -68,7 +68,7 @@ export const BotContentGenerator: React.FC = () => {
         console.log(`🔄 Attempt ${attempt}/${maxRetries} - Invoking function...`);
         
         // Method 1: Use Supabase client
-        const { data, error } = await supabase.functions.invoke('bot-content-generator', {
+        const { data, error } = await supabase.functions.invoke('deepseek-content-generator', {
           body: payload,
           headers: {
             'Content-Type': 'application/json'
@@ -86,7 +86,7 @@ export const BotContentGenerator: React.FC = () => {
         if (attempt === maxRetries) {
           console.log('🔄 Trying direct fetch as fallback...');
           
-          const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/bot-content-generator`, {
+          const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/deepseek-content-generator`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -209,7 +209,7 @@ export const BotContentGenerator: React.FC = () => {
       }
       
       // Generate content for all active bots
-      const { data, error } = await supabase.functions.invoke('bot-content-generator', {
+      const { data, error } = await supabase.functions.invoke('deepseek-content-generator', {
         body: {
           bulkGenerate: true,
           count: 50 // Generate 50 pieces of content across all bots
