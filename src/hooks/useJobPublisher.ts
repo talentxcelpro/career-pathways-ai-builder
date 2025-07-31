@@ -283,8 +283,13 @@ export const useTriggerDailyJobScraping = () => {
           if (result.jobs && Array.isArray(result.jobs)) {
             console.log(`🔄 Processing ${result.jobs.length} jobs from ${result.source}`);
             
+            console.log(`🚀 Attempting to publish ${result.jobs.length} jobs from ${result.source}`);
+            
             for (const job of result.jobs) {
               try {
+                console.log(`📝 Publishing job: "${job.title}"`);
+                console.log(`📋 Job data structure:`, JSON.stringify(job, null, 2));
+                
                 // Validate required fields
                 if (!job.title || !job.description) {
                   console.warn(`⚠️ Skipping job with missing required fields:`, { title: job.title, hasDescription: !!job.description });
@@ -296,43 +301,39 @@ export const useTriggerDailyJobScraping = () => {
 
                 console.log(`📝 Mapping job: "${job.title}" - Type: ${job.job_type} → ${mappedEmploymentType}, Experience: ${job.experience_level} → ${mappedExperienceLevel}`);
 
+                const jobData = {
+                  title: job.title,
+                  description: job.description,
+                  location: job.location || 'Remote',
+                  employment_type: mappedEmploymentType,
+                  experience_level: mappedExperienceLevel,
+                  external_url: job.url,
+                  is_active: true,
+                  posted_at: new Date().toISOString(),
+                  expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                  posted_by: user.id,
+                  company_name: job.company || 'Unknown Company'
+                };
+
+                console.log(`🚀 About to insert job data:`, JSON.stringify(jobData, null, 2));
+
                 // Insert directly into jobs table with proper field mapping
                 const { data: publishedJob, error: publishError } = await supabase
                   .from('jobs')
-                  .insert({
-                    title: job.title,
-                    description: job.description,
-                    location: job.location || 'Remote',
-                    employment_type: mappedEmploymentType,
-                    experience_level: mappedExperienceLevel,
-                    external_url: job.url,
-                    is_active: true,
-                    posted_at: new Date().toISOString(),
-                    expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-                    posted_by: user.id, // Use the user ID we already retrieved
-                    company_name: job.company || 'Unknown Company'
-                  })
+                  .insert(jobData)
                   .select('id, title')
                   .single();
 
                 if (publishError) {
-                  console.error(`❌ Error publishing job "${job.title}":`, {
-                    error: publishError,
-                    jobData: {
-                      title: job.title,
-                      employment_type: mappedEmploymentType,
-                      experience_level: mappedExperienceLevel,
-                      original_job_type: job.job_type,
-                      original_experience: job.experience_level
-                    }
-                  });
+                  console.error(`❌ Insert error for "${job.title}":`, publishError.message);
+                  console.error(`❌ Full error details:`, JSON.stringify(publishError, null, 2));
                   totalErrors++;
                 } else {
                   totalPublished++;
-                  console.log(`✅ Published job: ${publishedJob.title} (ID: ${publishedJob.id})`);
+                  console.log(`✅ Successfully inserted: "${publishedJob?.title}" (ID: ${publishedJob?.id})`);
                 }
               } catch (jobError) {
-                console.error(`❌ Error processing job "${job.title}":`, jobError);
+                console.error(`❌ Unexpected error processing job "${job.title}":`, jobError);
                 totalErrors++;
               }
             }
