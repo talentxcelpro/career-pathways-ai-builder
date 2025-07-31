@@ -123,6 +123,30 @@ const App = () => {
                       <Route path="/resume-builder" element={<Navigate to="/resume/new" replace />} />
                       <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
                       <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
+                      
+                      {/* SEO Routes - Sitemap and Robots.txt */}
+                      <Route 
+                        path="/sitemap.xml" 
+                        element={
+                          <div>
+                            {typeof window !== 'undefined' && (() => {
+                              window.location.href = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/sitemap-generator?type=index';
+                              return null;
+                            })()}
+                          </div>
+                        } 
+                      />
+                      <Route 
+                        path="/robots.txt" 
+                        element={
+                          <div>
+                            {typeof window !== 'undefined' && (() => {
+                              window.location.href = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/sitemap-generator?type=robots';
+                              return null;
+                            })()}
+                          </div>
+                        } 
+                      />
                     </Routes>
                   </main>
                   <Footer />

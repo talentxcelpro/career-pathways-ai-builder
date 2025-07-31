@@ -1,4 +1,4 @@
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe } from "lucide-react";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
 import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
@@ -34,6 +34,7 @@ import FeatureFlagsManager from "../pages/admin/FeatureFlagsManager";
 import AdvancedAnalyticsDashboard from "../pages/admin/AdvancedAnalyticsDashboard";
 import PerformanceMonitoring from "../pages/admin/PerformanceMonitoring";
 import IntegrationHub from "../pages/admin/IntegrationHub";
+import { SEODashboard } from "../components/admin/SEODashboard";
 
 export const adminRoutes = [
   {
@@ -276,6 +277,15 @@ export const adminRoutes = [
     requiresAuth: true,
     permission: "canAccessDashboard" as const,
     description: "Comprehensive SEO management tools"
+  },
+  {
+    title: "SEO Sitemap Dashboard",
+    to: "/admin/seo-sitemap",
+    icon: <Globe className="h-4 w-4" />,
+    page: <SEODashboard />,
+    requiresAuth: true,
+    permission: "canAccessDashboard" as const,
+    description: "Monitor sitemaps and search engine submissions"
   },
   {
     title: "Ad Campaign Manager", 
