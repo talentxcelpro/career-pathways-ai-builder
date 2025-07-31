@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Users, Briefcase, Eye, TrendingUp, Calendar, Plus } from "lucide-react";
+import { Building2, Users, Briefcase, Eye, TrendingUp, Calendar, Plus, Mail, BarChart3 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -141,6 +141,65 @@ function DashboardContent() {
 
       {/* Permission Requests for Owners/Admins */}
       {companyId && <PermissionRequestsManager companyId={companyId} />}
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/jobs/post')}>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Plus className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Post New Job</h3>
+                <p className="text-sm text-gray-600">Create a job posting</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/employer/cv-database')}>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Users className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold">CV Database</h3>
+                <p className="text-sm text-gray-600">Browse all candidate CVs</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/employer/outreach')}>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Mail className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Email Outreach</h3>
+                <p className="text-sm text-gray-600">Contact candidates</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/employer/analytics')}>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <BarChart3 className="h-5 w-5 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Analytics</h3>
+                <p className="text-sm text-gray-600">View performance metrics</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

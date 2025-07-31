@@ -2880,8 +2880,22 @@ export type Database = {
             foreignKeyName: "fk_candidate_notes_author_id"
             columns: ["author_id"]
             isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "fk_candidate_notes_author_id"
+            columns: ["author_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_candidate_notes_candidate_id"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "fk_candidate_notes_candidate_id"
@@ -7423,6 +7437,13 @@ export type Database = {
             foreignKeyName: "interview_schedules_application_id_fkey"
             columns: ["application_id"]
             isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["application_id"]
+          },
+          {
+            foreignKeyName: "interview_schedules_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
             referencedRelation: "job_applications"
             referencedColumns: ["id"]
           },
@@ -7517,6 +7538,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "interviews_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["application_id"]
+          },
           {
             foreignKeyName: "interviews_application_id_fkey"
             columns: ["application_id"]
@@ -7690,6 +7718,13 @@ export type Database = {
             foreignKeyName: "job_application_stages_application_id_fkey"
             columns: ["application_id"]
             isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["application_id"]
+          },
+          {
+            foreignKeyName: "job_application_stages_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
             referencedRelation: "job_applications"
             referencedColumns: ["id"]
           },
@@ -7745,6 +7780,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "jobs"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_job_applications_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "fk_job_applications_user_id"
@@ -9066,6 +9108,139 @@ export type Database = {
         }
         Relationships: []
       }
+      outreach_campaigns: {
+        Row: {
+          campaign_name: string
+          created_at: string | null
+          employer_id: string | null
+          id: string
+          message: string
+          recipient_count: number | null
+          sent_at: string | null
+          sent_count: number | null
+          status: string | null
+          subject: string
+          updated_at: string | null
+        }
+        Insert: {
+          campaign_name: string
+          created_at?: string | null
+          employer_id?: string | null
+          id?: string
+          message: string
+          recipient_count?: number | null
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string | null
+          subject: string
+          updated_at?: string | null
+        }
+        Update: {
+          campaign_name?: string
+          created_at?: string | null
+          employer_id?: string | null
+          id?: string
+          message?: string
+          recipient_count?: number | null
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string | null
+          subject?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      outreach_recipients: {
+        Row: {
+          campaign_id: string | null
+          clicked_at: string | null
+          created_at: string | null
+          email: string
+          error_message: string | null
+          id: string
+          opened_at: string | null
+          profile_id: string | null
+          sent_at: string | null
+          status: string | null
+        }
+        Insert: {
+          campaign_id?: string | null
+          clicked_at?: string | null
+          created_at?: string | null
+          email: string
+          error_message?: string | null
+          id?: string
+          opened_at?: string | null
+          profile_id?: string | null
+          sent_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          campaign_id?: string | null
+          clicked_at?: string | null
+          created_at?: string | null
+          email?: string
+          error_message?: string | null
+          id?: string
+          opened_at?: string | null
+          profile_id?: string | null
+          sent_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outreach_recipients_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "outreach_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outreach_recipients_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "outreach_recipients_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outreach_usage: {
+        Row: {
+          created_at: string | null
+          emails_sent: number | null
+          employer_id: string | null
+          id: string
+          is_premium: boolean | null
+          month_year: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          emails_sent?: number | null
+          employer_id?: string | null
+          id?: string
+          is_premium?: boolean | null
+          month_year: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          emails_sent?: number | null
+          employer_id?: string | null
+          id?: string
+          is_premium?: boolean | null
+          month_year?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       page_builder_pages: {
         Row: {
           created_at: string | null
@@ -9716,6 +9891,13 @@ export type Database = {
             foreignKeyName: "posts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -9956,6 +10138,13 @@ export type Database = {
           would_recommend?: boolean | null
         }
         Relationships: [
+          {
+            foreignKeyName: "pro_client_feedback_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
           {
             foreignKeyName: "pro_client_feedback_client_id_fkey"
             columns: ["client_id"]
@@ -10680,6 +10869,13 @@ export type Database = {
             foreignKeyName: "fk_pro_service_profiles_user_id"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "fk_pro_service_profiles_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -10980,6 +11176,13 @@ export type Database = {
           viewer_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "profile_views_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
           {
             foreignKeyName: "profile_views_profile_id_fkey"
             columns: ["profile_id"]
@@ -17431,7 +17634,45 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      employer_cv_database: {
+        Row: {
+          application_id: string | null
+          application_status: string | null
+          applied_at: string | null
+          applied_company: string | null
+          applied_job_title: string | null
+          current_company: string | null
+          current_title: string | null
+          email: string | null
+          experience_years: number | null
+          external_url: string | null
+          full_name: string | null
+          job_id: string | null
+          linkedin_url: string | null
+          location: string | null
+          phone: string | null
+          profile_id: string | null
+          profile_picture_url: string | null
+          resume_url: string | null
+          skills: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_job_applications_job_id"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       accept_team_invitation: {
@@ -17499,6 +17740,10 @@ export type Database = {
       }
       can_apply_to_job: {
         Args: { job_uuid: string }
+        Returns: boolean
+      }
+      check_outreach_limit: {
+        Args: { employer_uuid: string; recipient_count: number }
         Returns: boolean
       }
       check_user_subscription: {
@@ -17848,6 +18093,10 @@ export type Database = {
       }
       suspend_user_account: {
         Args: { p_user_id: string; p_reason: string; p_duration_hours?: number }
+        Returns: undefined
+      }
+      track_outreach_usage: {
+        Args: { employer_uuid: string; email_count: number }
         Returns: undefined
       }
       track_public_post_view: {

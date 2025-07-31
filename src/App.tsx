@@ -23,6 +23,8 @@ import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import UserManagement from "@/pages/admin/UserManagement";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
 import { AdminScrapedJobApplications } from "@/components/admin/AdminScrapedJobApplications";
+import { CVDatabase } from "@/components/employer/CVDatabase";
+import { OutreachCampaign } from "@/components/employer/OutreachCampaign";
 
 // Create query client optimized for SEO content caching
 const queryClient = new QueryClient({
@@ -113,6 +115,8 @@ const App = () => {
                       <Route path="/admin/users" element={<UserManagement />} />
                       <Route path="/admin/security" element={<SecurityCenter />} />
                       <Route path="/admin/scraped-applications" element={<AdminScrapedJobApplications />} />
+                      <Route path="/employer/cv-database" element={<CVDatabase />} />
+                      <Route path="/employer/outreach" element={<OutreachCampaign />} />
                       
                       {/* Legacy resume builder redirects */}
                       <Route path="/resume" element={<Navigate to="/resume/new" replace />} />
