@@ -3,6 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
@@ -21,10 +22,22 @@ interface JobData {
 }
 
 serve(async (req) => {
-  console.log('Job scraper function started');
+  console.log(`🚀 Job scraper called: ${req.method} ${req.url}`);
   
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    console.log('✅ Handling CORS preflight request');
+    return new Response('OK', { 
+      status: 200, 
+      headers: corsHeaders 
+    });
+  }
+
+  if (req.method !== 'POST') {
+    console.log('❌ Method not allowed:', req.method);
+    return new Response('Method Not Allowed', { 
+      status: 405, 
+      headers: corsHeaders 
+    });
   }
 
   try {
