@@ -87,10 +87,33 @@ serve(async (req) => {
         continue;
       }
 
-      const selectedEmploymentType = employmentTypes[Math.floor(Math.random() * employmentTypes.length)];
-      const selectedExperienceLevel = experienceLevels[Math.floor(Math.random() * experienceLevels.length)];
+      // Force normalize to ensure DB constraint compliance
+      const normalizeEmploymentType = (type) => {
+        const map = {
+          'full-time': 'full-time', 'part-time': 'part-time', 'contract': 'contract',
+          'freelance': 'freelance', 'internship': 'internship', 'temporary': 'temporary',
+          'Full-Time': 'full-time', 'Part-Time': 'part-time', 'Contract': 'contract',
+          'Freelance': 'freelance', 'Internship': 'internship', 'Temporary': 'temporary'
+        };
+        return map[type] || 'full-time';
+      };
       
-      console.log(`Creating job with employment_type: "${selectedEmploymentType}", experience_level: "${selectedExperienceLevel}"`);
+      const normalizeExperienceLevel = (level) => {
+        const map = {
+          'entry-level': 'entry-level', 'mid-level': 'mid-level', 'senior-level': 'senior-level', 'executive': 'executive',
+          'Entry-Level': 'entry-level', 'Mid-Level': 'mid-level', 'Senior-Level': 'senior-level', 'Executive': 'executive',
+          'Mid Level': 'mid-level', 'Senior Level': 'senior-level', 'Entry Level': 'entry-level'
+        };
+        return map[level] || 'mid-level';
+      };
+
+      const rawEmploymentType = employmentTypes[Math.floor(Math.random() * employmentTypes.length)];
+      const rawExperienceLevel = experienceLevels[Math.floor(Math.random() * experienceLevels.length)];
+      
+      const selectedEmploymentType = normalizeEmploymentType(rawEmploymentType);
+      const selectedExperienceLevel = normalizeExperienceLevel(rawExperienceLevel);
+      
+      console.log(`✅ Normalized job values: employment_type="${selectedEmploymentType}", experience_level="${selectedExperienceLevel}"`);
 
       jobsToInsert.push({
         title,
