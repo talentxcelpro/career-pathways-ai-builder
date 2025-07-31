@@ -1,3 +1,4 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.1'
 
 const corsHeaders = {
@@ -51,13 +52,16 @@ interface ScrapedJob {
   source: string
 }
 
-Deno.serve(async (req) => {
+serve(async (req) => {
+  console.log('🚀 Job scraper function called with method:', req.method);
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
+    console.log('Initializing Supabase client...');
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -65,9 +69,10 @@ Deno.serve(async (req) => {
 
     console.log('🚀 Starting job scraping process...')
     
-    const { searchParams } = new URL(req.url)
-    const mode = searchParams.get('mode') || 'scrape' // scrape, test, or validate
-    const limit = parseInt(searchParams.get('limit') || '100')
+    const requestBody = await req.json().catch(() => ({}));
+    const limit = requestBody.limit || 100;
+    
+    console.log(`Scraping with limit: ${limit}`);
 
     let scrapedJobs: ScrapedJob[] = []
 
@@ -240,7 +245,7 @@ Deno.serve(async (req) => {
       }
     )
   }
-})
+});
 
 async function generateAdditionalJobs(count: number): Promise<ScrapedJob[]> {
   if (count <= 0) return []
