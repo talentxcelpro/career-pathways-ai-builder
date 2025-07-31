@@ -101,7 +101,8 @@ serve(async (req) => {
       console.log(`✅ Normalized job values: employment_type="${selectedEmploymentType}", experience_level="${selectedExperienceLevel}"`);
 
       jobsToInsert.push({
-        job_title: title,
+        title: title,              // Add this for NOT NULL constraint
+        job_title: title,          // Keep this for unique constraint
         company_name: company,
         description: `We are looking for a talented ${title} to join our team at ${company}. This is an excellent opportunity to work with cutting-edge technologies.`,
         location,
