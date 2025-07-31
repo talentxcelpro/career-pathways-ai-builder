@@ -53,7 +53,6 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
               name,
               logo_url,
               industry,
-              company_size,
               is_verified
             )
           `)
