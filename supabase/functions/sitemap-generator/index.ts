@@ -422,40 +422,141 @@ async function generateStaticSitemap(): Promise<Response> {
 async function generateRobotsTxt(): Promise<Response> {
   console.log('🤖 Generating robots.txt...')
   
-  const robotsTxt = `User-agent: *
+  const robotsTxt = `# TalentXcel Robots.txt - AI-Enhanced SEO Configuration
+
+User-agent: *
 Allow: /
 
-# High-crawl sections
-Allow: /jobs
-Allow: /companies
-Allow: /network
-Allow: /learning
-Allow: /tools
-Allow: /colleges
-Allow: /profile
+# Major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+Request-rate: 10/60s
 
-# Block sensitive areas
-Disallow: /admin/
-Disallow: /api/
-Disallow: /auth/
-Disallow: /_next/
-Disallow: /private/
-Disallow: /employer/settings
-Disallow: /resume/edit
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+Request-rate: 5/60s
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 3
+
+# Social & preview bots
+User-agent: Twitterbot
+Allow: /
+User-agent: facebookexternalhit
+Allow: /
+User-agent: LinkedInBot
+Allow: /
+User-agent: WhatsApp
+Allow: /
+User-agent: TelegramBot
+Allow: /
+
+# AI & ML bots
+User-agent: ChatGPT-User
+Allow: /
+User-agent: GPTBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-Web
+Allow: /
+
+# SEO analysis tools
+User-agent: AhrefsBot
+Allow: /
+User-agent: SemrushBot
+Allow: /
+User-agent: MJ12bot
+Allow: /
+
+# Job aggregator crawlers
+User-agent: JobBoardBot
+Allow: /
+User-agent: CareerBuilder
+Allow: /
+User-agent: Indeed
+Allow: /
 
 # Sitemaps
 Sitemap: ${SITE_URL}/functions/v1/sitemap-generator?type=index
 Sitemap: ${SITE_URL}/sitemap.xml
+Sitemap: ${SITE_URL}/sitemap-index.xml
+Sitemap: ${SITE_URL}/jobs-sitemap.xml
+Sitemap: ${SITE_URL}/companies-sitemap.xml
+Sitemap: ${SITE_URL}/courses-sitemap.xml
+Sitemap: ${SITE_URL}/seo-pages-sitemap.xml
+Sitemap: ${SITE_URL}/news-sitemap.xml
+Sitemap: ${SITE_URL}/rss-feed.xml
 
-# Crawl-delay for politeness
+# High-priority sections
+Allow: /jobs/
+Allow: /companies/
+Allow: /learning/
+Allow: /network/
+Allow: /salary/
+Allow: /career-map/
+Allow: /resume-builder/
+
+# SEO landing pages
+Allow: /jobs/location/
+Allow: /jobs/role/
+Allow: /jobs/skill/
+Allow: /companies/location/
+Allow: /courses/category/
+
+# Restricted & secure areas
+Disallow: /admin/
+Disallow: /api/private/
+Disallow: /auth/callback
+Disallow: /employer/settings/
+Disallow: /profile/settings/
+Disallow: /profile/edit/
+Disallow: /*?*sessionid=*
+Disallow: /*?*csrf=*
+Disallow: /*?*token=*
+
+# Unwanted parameters & file types
+Disallow: /*?*utm_*
+Disallow: /*?*ref=*
+Disallow: /*?*fbclid=*
+Disallow: /*?*gclid=*
+Disallow: /*?*msclkid=*
+Disallow: /*?*referrer=*
+Disallow: /search?*
+Disallow: /filter?*
+Disallow: /*.json$
+Disallow: /*.pdf$
+Disallow: /*.doc$
+Disallow: /*.docx$
+
+# API allowlist for beneficial tools
+Allow: /api/sitemap
+Allow: /api/rss
+Allow: /api/search
+Allow: /api/public/
+Allow: /.well-known/
+
+# Performance tuning
 Crawl-delay: 1
+Request-rate: 1/2s
+Visit-time: 0600-2200
 
-# Block AI crawlers if needed (optional)
-# User-agent: ChatGPT-User
-# Disallow: /
+# Host & canonical domain
+Host: ${SITE_URL}
 
-# User-agent: GPTBot
-# Disallow: /`
+# Clean parameter filtering
+Clean-param: utm_source
+Clean-param: utm_medium
+Clean-param: utm_campaign
+Clean-param: ref
+Clean-param: source`
 
   return new Response(robotsTxt, {
     headers: {
