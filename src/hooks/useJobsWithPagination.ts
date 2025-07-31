@@ -105,22 +105,24 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
     enabled: true
   });
 
-  // Update accumulated jobs when new data arrives
+  // Update accumulated jobs when new data arrives - use replace for pagination
   React.useEffect(() => {
     if (data?.jobs) {
-      if (page === 1) {
-        setAllJobs(data.jobs);
-      } else {
-        setAllJobs(prev => [...prev, ...data.jobs]);
-      }
+      setAllJobs(data.jobs); // Replace instead of accumulate for traditional pagination
     }
-  }, [data, page]);
+  }, [data]);
 
   // Reset when filters change
   React.useEffect(() => {
     setPage(1);
     setAllJobs([]);
   }, [filters, sortBy]);
+
+  const goToPage = (newPage: number) => {
+    if (newPage >= 1 && newPage <= Math.ceil((data?.totalCount || 0) / pageSize)) {
+      setPage(newPage);
+    }
+  };
 
   const loadMore = () => {
     if (data?.hasMore && !isLoading) {
@@ -140,6 +142,9 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
     isLoading,
     loadMore,
     refetch,
-    currentPage: page
+    currentPage: page,
+    totalPages: Math.ceil((data?.totalCount || 0) / pageSize),
+    goToPage,
+    pageSize
   };
 };

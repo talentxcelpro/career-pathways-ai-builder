@@ -49,7 +49,10 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
     hasMore, 
     isLoading, 
     loadMore, 
-    refetch 
+    refetch,
+    currentPage,
+    totalPages,
+    goToPage
   } = useJobsWithPagination(filters, sortBy);
 
   const handleSaveJob = (jobId: string) => {
@@ -257,27 +260,15 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
             </div>
           )}
 
-          {/* Load More */}
-          {hasMore && (
-            <div className="text-center">
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="px-8" 
-                onClick={loadMore}
-                disabled={isLoading}
-              >
-                <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                {isLoading ? 'Loading...' : 'Load More Jobs'}
-              </Button>
-            </div>
-          )}
-          
-          {!hasMore && jobs.length > 0 && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">
-                🎉 You've seen all {totalCount} available jobs!
-              </p>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center">
+              <SocialPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalCount={totalCount}
+                onPageChange={goToPage}
+              />
             </div>
           )}
         </div>
