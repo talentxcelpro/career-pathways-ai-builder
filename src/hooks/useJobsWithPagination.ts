@@ -21,17 +21,32 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
   const { data, isLoading, refetch, error } = useQuery({
     queryKey: ['jobs-paginated', filters, sortBy, page],
     queryFn: async () => {
-      console.log('useJobsWithPagination: Starting query for page', page);
-      try {
-        const start = (page - 1) * pageSize;
-        const end = start + pageSize - 1;
+      console.log('🔍 useJobsWithPagination: Starting query for page', page);
+      
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize - 1;
 
-        // Simplified approach - get data with count in one query
-        let query = supabase
+      try {
+        // Step 1: Get total count without joins to avoid issues
+        const { count: totalCount, error: countError } = await supabase
+          .from('jobs')
+          .select('*', { count: 'exact', head: true })
+          .eq('is_active', true)
+          .eq('job_status', 'open');
+
+        if (countError) {
+          console.error('❌ Count query error:', countError);
+          throw countError;
+        }
+
+        console.log('📊 Total jobs in database:', totalCount);
+
+        // Step 2: Get paginated data with joins
+        const { data: jobs, error: dataError } = await supabase
           .from('jobs')
           .select(`
             *,
-            companies(
+            companies (
               id,
               name,
               logo_url,
@@ -39,78 +54,34 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
               company_size,
               is_verified
             )
-          `, { count: 'exact' })
+          `)
           .eq('is_active', true)
           .eq('job_status', 'open')
+          .order('created_at', { ascending: false })
           .range(start, end);
 
-        // Apply filters
-        if (filters.search) {
-          query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+        if (dataError) {
+          console.error('❌ Data query error:', dataError);
+          throw dataError;
         }
 
-        if (filters.location) {
-          query = query.ilike('location', `%${filters.location}%`);
-        }
-
-        if (filters.employment_type.length > 0) {
-          query = query.in('employment_type', filters.employment_type);
-        }
-
-        if (filters.experience_level.length > 0) {
-          query = query.in('experience_level', filters.experience_level);
-        }
-
-        if (filters.is_remote) {
-          query = query.eq('is_remote', true);
-        }
-
-        if (filters.salary_min > 0) {
-          query = query.gte('salary_min', filters.salary_min);
-        }
-
-        if (filters.salary_max > 0) {
-          query = query.lte('salary_max', filters.salary_max);
-        }
-
-        // Apply sorting
-        switch (sortBy) {
-          case 'date':
-          case 'created_at':
-            query = query.order('created_at', { ascending: false });
-            break;
-          case 'salary':
-            query = query.order('salary_max', { ascending: false });
-            break;
-          case 'title':
-            query = query.order('title', { ascending: true });
-            break;
-          default:
-            query = query.order('created_at', { ascending: false });
-        }
-
-        const { data, error, count } = await query;
-        
-        if (error) {
-          console.error('Error fetching jobs:', error);
-          throw error;
-        }
-
-        console.log('Jobs fetched successfully:', {
-          dataLength: data?.length,
-          totalCount: count,
+        console.log('✅ Jobs fetched successfully:', {
+          jobsCount: jobs?.length || 0,
+          totalCount,
           page,
           start,
-          end
+          end,
+          hasMore: (totalCount || 0) > page * pageSize
         });
-        
+
         return {
-          jobs: data || [],
-          totalCount: count || 0,
-          hasMore: (count || 0) > page * pageSize
+          jobs: jobs || [],
+          totalCount: totalCount || 0,
+          hasMore: (totalCount || 0) > page * pageSize
         };
+
       } catch (err) {
-        console.error('useJobsWithPagination error:', err);
+        console.error('💥 useJobsWithPagination error:', err);
         throw err;
       }
     },
