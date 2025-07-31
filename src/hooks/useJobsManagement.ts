@@ -26,9 +26,9 @@ export const useJobsManagement = () => {
 
       if (statusFilter !== 'all') {
         if (statusFilter === 'active') {
-          query = query.eq('is_active', true);
+          query = query.eq('status', 'active');
         } else if (statusFilter === 'inactive') {
-          query = query.eq('is_active', false);
+          query = query.eq('status', 'expired');
         }
       }
 
@@ -48,9 +48,9 @@ export const useJobsManagement = () => {
         { count: expiredJobs }
       ] = await Promise.all([
         supabase.from('jobs').select('*', { count: 'exact', head: true }),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true),
+        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'active'),
         supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_featured', true),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).lt('expires_at', new Date().toISOString())
+        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'expired')
       ]);
 
       return {

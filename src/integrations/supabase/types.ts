@@ -8548,6 +8548,7 @@ export type Database = {
           specific_experience_areas: string | null
           specific_tools: string[] | null
           specific_tools_domains: string | null
+          status: string | null
           supporting_documents: Json | null
           team_brochure_url: string | null
           title: string
@@ -8644,6 +8645,7 @@ export type Database = {
           specific_experience_areas?: string | null
           specific_tools?: string[] | null
           specific_tools_domains?: string | null
+          status?: string | null
           supporting_documents?: Json | null
           team_brochure_url?: string | null
           title: string
@@ -8740,6 +8742,7 @@ export type Database = {
           specific_experience_areas?: string | null
           specific_tools?: string[] | null
           specific_tools_domains?: string | null
+          status?: string | null
           supporting_documents?: Json | null
           team_brochure_url?: string | null
           title?: string
@@ -18283,6 +18286,10 @@ export type Database = {
       ensure_unique_slug: {
         Args: { base_slug: string; company_id?: string }
         Returns: string
+      }
+      expire_old_jobs: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       extract_domain: {
         Args: { url: string }

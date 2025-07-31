@@ -2,43 +2,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, AlertTriangle, Calendar } from "lucide-react";
+import { Clock, AlertTriangle, Calendar, Loader2 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-
-interface ExpiringJob {
-  id: string;
-  title: string;
-  daysLeft: number;
-  applications: number;
-  urgency: 'critical' | 'warning' | 'notice';
-}
+import { useExpiringJobs } from '@/hooks/useExpiringJobs';
 
 export const JobExpiryWidget = () => {
   const navigate = useNavigate();
-  
-  const expiringJobs: ExpiringJob[] = [
-    {
-      id: '1',
-      title: 'Senior Frontend Developer',
-      daysLeft: 2,
-      applications: 45,
-      urgency: 'critical'
-    },
-    {
-      id: '2',
-      title: 'Product Manager',
-      daysLeft: 5,
-      applications: 28,
-      urgency: 'warning'
-    },
-    {
-      id: '3',
-      title: 'UX Designer',
-      daysLeft: 8,
-      applications: 19,
-      urgency: 'notice'
-    }
-  ];
+  const { data: expiringJobs = [], isLoading } = useExpiringJobs();
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
@@ -59,6 +29,34 @@ export const JobExpiryWidget = () => {
   };
 
   const criticalCount = expiringJobs.filter(job => job.urgency === 'critical').length;
+
+  if (isLoading) {
+    return (
+      <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
+        <CardContent className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin text-slate-600" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (expiringJobs.length === 0) {
+    return (
+      <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg">
+              <Clock className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <CardTitle className="text-base font-bold text-slate-900">Job Expiry Alerts</CardTitle>
+              <p className="text-xs text-slate-600 font-medium">All jobs are healthy!</p>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
@@ -111,7 +109,7 @@ export const JobExpiryWidget = () => {
                 </Badge>
               </div>
               <div className="flex items-center gap-2 text-xs text-slate-600">
-                <span>{job.applications} applications</span>
+                <span>{job.applications_count} applications</span>
                 <span>•</span>
                 <span className={job.urgency === 'critical' ? 'text-red-600 font-semibold' : ''}>
                   Expires in {job.daysLeft} day{job.daysLeft !== 1 ? 's' : ''}
