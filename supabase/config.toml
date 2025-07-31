@@ -76,3 +76,9 @@ verify_jwt = false
 
 [functions.create-bot-account]
 verify_jwt = false
+
+[functions.sitemap-generator]
+verify_jwt = false
+
+[functions.deepseek-ai]
+verify_jwt = false
