@@ -13,16 +13,14 @@ export const trackExternalJobClick = async (
       return;
     }
 
-    // Enhanced tracking with user agent and source page
+    // Use RPC for tracking since table types aren't loaded yet
     const { error } = await supabase
-      .from('external_job_redirects')
-      .insert({
-        user_id: user.id,
-        job_id: jobId,
-        external_url: externalUrl,
-        source_page: sourcePage,
-        user_agent: navigator.userAgent,
-        redirected_at: new Date().toISOString()
+      .rpc('track_external_job_redirect', {
+        p_user_id: user.id,
+        p_job_id: jobId,
+        p_external_url: externalUrl,
+        p_source_page: sourcePage,
+        p_user_agent: navigator.userAgent
       });
 
     if (error) {

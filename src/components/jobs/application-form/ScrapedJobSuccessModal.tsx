@@ -17,13 +17,16 @@ export const ScrapedJobSuccessModal: React.FC<ScrapedJobSuccessModalProps> = ({
   job
 }) => {
   const handleExternalRedirect = async () => {
-    // Track external job click
+    // Track external job click with enhanced analytics
     if (job.external_url) {
-      await trackExternalJobClick(job.id, job.external_url);
+      await trackExternalJobClick(job.id, job.external_url, 'application_success_modal');
     }
     
     if (job.external_url) {
-      window.open(job.external_url, '_blank', 'noopener,noreferrer');
+      // Add delay to ensure tracking completes
+      setTimeout(() => {
+        window.open(job.external_url, '_blank', 'noopener,noreferrer');
+      }, 100);
     }
     onOpenChange(false);
   };
