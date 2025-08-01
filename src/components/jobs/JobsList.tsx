@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { JobCard } from '@/components/jobs/JobCard';
-import { ModernJobCard } from '@/components/jobs/ModernJobCard';
+import { CleanJobCard } from '@/components/jobs/CleanJobCard';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TrendingUp, Sparkles } from "lucide-react";
@@ -58,15 +58,14 @@ export const JobsList: React.FC<JobsListProps> = ({
               🏆 Featured Jobs (Top Priority)
             </h2>
             <div className="space-y-4">
-              {featuredJobs.map((job) => (
-                <ModernJobCard
-                  key={job.id}
-                  job={job}
-                  onSave={onSaveJob}
-                  isSaved={savedJobs.includes(job.id)}
-                  variant="featured"
-                />
-              ))}
+          {featuredJobs.map((job) => (
+            <CleanJobCard
+              key={job.id}
+              job={job}
+              onSave={onSaveJob}
+              isSaved={savedJobs.includes(job.id)}
+            />
+          ))}
             </div>
           </div>
         </div>
@@ -80,12 +79,11 @@ export const JobsList: React.FC<JobsListProps> = ({
           )}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
             {regularJobs.map((job) => (
-              <ModernJobCard
+              <CleanJobCard
                 key={job.id}
                 job={job}
                 onSave={onSaveJob}
                 isSaved={savedJobs.includes(job.id)}
-                variant="regular"
               />
             ))}
           </div>

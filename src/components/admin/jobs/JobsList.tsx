@@ -14,6 +14,7 @@ import {
   IndianRupee
 } from 'lucide-react';
 import { formatSalaryRange } from '@/utils/currencyUtils';
+import { CleanJobCard } from '@/components/jobs/CleanJobCard';
 
 interface JobsListProps {
   jobs: any[];
@@ -46,73 +47,40 @@ export const JobsList: React.FC<JobsListProps> = ({ jobs, isLoading }) => {
         ) : (
           <div className="space-y-4">
             {jobs.map((job) => (
-              <div key={job.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white">
-                      {job.companies?.logo_url ? (
-                        <img src={job.companies.logo_url} alt="Company" className="w-8 h-8 rounded" />
-                      ) : (
-                        <Building2 className="h-6 w-6" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-semibold text-lg">{job.title}</h3>
-                        <Badge className={getJobStatusColor(job)}>
-                          {getJobStatusText(job)}
-                        </Badge>
-                        {job.is_featured && (
-                          <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
-                            Featured
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
-                        <div className="flex items-center gap-1">
-                          <Building2 className="h-4 w-4" />
-                          {job.companies?.name || job.company_name || 'Unknown Company'}
-                        </div>
-                        {job.location && (
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            {job.location}
-                          </div>
-                        )}
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          Posted {job.date_posted ? new Date(job.date_posted).toLocaleDateString() : new Date(job.created_at).toLocaleDateString()}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="h-4 w-4" />
-                          {job.applications_count || 0} applications
-                        </div>
-                        {(job.salary_min || job.salary_max) && (
-                          <div className="flex items-center gap-1">
-                            <IndianRupee className="h-4 w-4" />
-                            {formatSalaryRange(job.salary_min, job.salary_max)}
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-700 line-clamp-2">
-                        {job.description}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4 mr-2" />
-                      View
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </Button>
-                  </div>
+              <div key={job.id} className="relative">
+                <CleanJobCard
+                  job={{
+                    ...job,
+                    posted_at: job.date_posted || job.created_at,
+                    company_name: job.companies?.name || job.company_name,
+                    companies: job.companies || { 
+                      id: '', 
+                      name: job.company_name || 'Unknown Company',
+                      logo_url: job.companies?.logo_url
+                    }
+                  }}
+                />
+                <div className="absolute top-4 right-4 flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg p-2 shadow-sm border">
+                  <Badge className={getJobStatusColor(job)}>
+                    {getJobStatusText(job)}
+                  </Badge>
+                  {job.is_featured && (
+                    <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
+                      Featured
+                    </Badge>
+                  )}
+                  <Button variant="outline" size="sm">
+                    <Eye className="h-4 w-4 mr-1" />
+                    View
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    Delete
+                  </Button>
                 </div>
               </div>
             ))}
