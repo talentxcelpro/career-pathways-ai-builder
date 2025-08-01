@@ -411,12 +411,12 @@ serve(async (req) => {
         continue; // Skip invalid jobs
       }
 
-      // Calculate and attach job score
-      job.quality_score = calculateJobScore(job);
+      // Calculate job score for filtering (don't store in DB)
+      const jobScore = calculateJobScore(job);
       
       // Only include high-quality jobs
-      if (job.quality_score < 20) {
-        await logJobError(supabase, job, 'low_quality', `Job score ${job.quality_score} below threshold`, job.source);
+      if (jobScore < 20) {
+        await logJobError(supabase, job, 'low_quality', `Job score ${jobScore} below threshold`, job.source);
         continue;
       }
 
