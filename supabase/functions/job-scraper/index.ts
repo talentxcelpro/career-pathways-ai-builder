@@ -86,8 +86,10 @@ function calculateJobScore(job: any): number {
   let score = 0;
   
   // Freshness scoring (today = 10 pts, yesterday = 7 pts)
-  if (job.posted_date === new Date().toISOString().split('T')[0]) score += 10;
-  else if (isJobFresh(job.posted_date)) score += 7;
+  const todayDate = new Date().toISOString().split('T')[0];
+  const jobDate = job.posted_at ? new Date(job.posted_at).toISOString().split('T')[0] : todayDate;
+  if (jobDate === todayDate) score += 10;
+  else if (isJobFresh(jobDate)) score += 7;
   else score += 2;
   
   // Title relevance scoring
