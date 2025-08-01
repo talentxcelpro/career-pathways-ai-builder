@@ -91,15 +91,81 @@ export const JobDataManager: React.FC = () => {
   const runCleanupAll = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('job-quality-checker', {
-        body: { action: 'cleanup_all_jobs' }
-      });
+      console.log('Starting job cleanup...');
+      
+      // Simple cleanup without AI - direct SQL approach
+      const cleanupResults = {
+        salary_issues: 0,
+        company_issues: 0,
+        skill_mismatches: 0,
+        total_flagged: 0
+      };
 
-      if (error) throw error;
+      // 1. Flag jobs with unrealistic salaries
+      const { data: salaryIssues, error: salaryError } = await supabase
+        .from('jobs')
+        .update({ 
+          status: 'flagged',
+          notes: 'Flagged: Unrealistic salary detected'
+        })
+        .gt('salary_max', 15000000)
+        .select('id');
 
-      setCleanupSummary(data.cleanup_summary);
+      if (!salaryError && salaryIssues) {
+        cleanupResults.salary_issues = salaryIssues.length;
+      }
+
+      // 2. Flag jobs missing company names
+      const { data: companyIssues, error: companyError } = await supabase
+        .from('jobs')
+        .update({
+          status: 'flagged',
+          notes: 'Flagged: Missing company information'
+        })
+        .or('company_name.is.null,company_name.eq.')
+        .select('id');
+
+      if (!companyError && companyIssues) {
+        cleanupResults.company_issues = companyIssues.length;
+      }
+
+      // 3. Flag obvious skill mismatches
+      const { data: jobs, error: jobsError } = await supabase
+        .from('jobs')
+        .select('id, title, skills_required')
+        .not('skills_required', 'is', null)
+        .limit(100);
+
+      if (!jobsError && jobs) {
+        for (const job of jobs) {
+          const hasReactSkills = job.skills_required?.some((skill: string) => 
+            ['React', 'Vue.js', 'Angular', 'JavaScript', 'TypeScript'].includes(skill));
+          const isNonTechRole = job.title?.toLowerCase().includes('sales') || 
+                                job.title?.toLowerCase().includes('recruitment') ||
+                                job.title?.toLowerCase().includes('marketing') ||
+                                job.title?.toLowerCase().includes('hr');
+
+          if (hasReactSkills && isNonTechRole) {
+            await supabase
+              .from('jobs')
+              .update({
+                status: 'flagged',
+                notes: 'Flagged: Skill-role mismatch detected'
+              })
+              .eq('id', job.id);
+            cleanupResults.skill_mismatches++;
+          }
+        }
+      }
+
+      cleanupResults.total_flagged = cleanupResults.salary_issues + 
+                                    cleanupResults.company_issues + 
+                                    cleanupResults.skill_mismatches;
+
+      setCleanupSummary(cleanupResults);
       await fetchJobStats(); // Refresh stats
-      toast.success(`Cleanup completed! ${data.cleanup_summary.total_flagged} jobs flagged.`);
+      
+      toast.success(`Cleanup completed! Flagged ${cleanupResults.total_flagged} problematic jobs`);
     } catch (error) {
       console.error('Cleanup error:', error);
       toast.error('Failed to run cleanup');
