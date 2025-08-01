@@ -59,7 +59,9 @@ const JOB_DOMAINS = [
 ];
 
 function isTrustedUrl(url: string): boolean {
-  if (!url) return false;
+  if (!url || typeof url !== 'string' || url.trim() === '') {
+    return false;
+  }
   try {
     const parsed = new URL(url);
     return TRUSTED_DOMAINS.some(domain => parsed.hostname.includes(domain));

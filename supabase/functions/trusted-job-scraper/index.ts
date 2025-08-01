@@ -149,6 +149,19 @@ serve(async (req) => {
 
     console.log('📦 Processing job from:', source, 'URL:', job_url)
 
+    // Validate job_url exists first
+    if (!job_url || typeof job_url !== 'string' || job_url.trim() === '') {
+      const errorMsg = `Missing or empty job URL. Received: ${job_url}`
+      await logScrapingAttempt(job_url || 'NULL', source || 'unknown', 'rejected', errorMsg)
+      return new Response(
+        JSON.stringify({ error: 'Missing or empty job URL', received: job_url }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
     // Validate trusted URL
     if (!isTrustedUrl(job_url)) {
       await logScrapingAttempt(job_url, source || 'unknown', 'rejected', 'Untrusted domain')
