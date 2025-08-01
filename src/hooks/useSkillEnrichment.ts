@@ -21,6 +21,7 @@ export const useSkillEnrichment = () => {
   return useMutation({
     mutationFn: async (data: SkillEnrichmentRequest): Promise<SkillEnrichmentResponse> => {
       console.log('🔄 Enriching skills for:', data);
+      console.log('📡 Calling ai-skill-enricher function...');
       
       const { data: result, error } = await supabase.functions.invoke('ai-skill-enricher', {
         body: data
@@ -32,6 +33,15 @@ export const useSkillEnrichment = () => {
       }
 
       console.log('✅ Skill enrichment result:', result);
+      
+      // Validation of the result
+      if (!result || typeof result !== 'object') {
+        throw new Error('Invalid response from skill enricher');
+      }
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Skill enrichment failed');
+      }
       return result;
     },
     onSuccess: (data) => {
