@@ -215,25 +215,6 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
           </div>
         </div>
 
-        {/* Skills */}
-        <div className="space-y-3">
-          <Label>Popular Skills</Label>
-          <div className="flex flex-wrap gap-2">
-            {POPULAR_SKILLS.map((skill) => (
-              <Badge
-                key={skill}
-                variant={filters.skills.includes(skill) ? "default" : "outline"}
-                className="cursor-pointer text-xs"
-                onClick={() => handleSkillToggle(skill)}
-              >
-                {skill}
-                {filters.skills.includes(skill) && (
-                  <X className="h-3 w-3 ml-1" />
-                )}
-              </Badge>
-            ))}
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

@@ -363,15 +363,46 @@ const Jobs = () => {
           </div>
         )}
 
+        {/* Location Filter Tabs */}
+        <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <MapPin className="h-4 w-4 text-primary" />
+            <h3 className="font-semibold text-base text-gray-900">🌍 Job Location</h3>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant={filters.location === '' ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilters(prev => ({ ...prev, location: '' }))}
+            >
+              🌐 All Jobs
+            </Button>
+            <Button
+              variant={filters.location === 'India' ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilters(prev => ({ ...prev, location: 'India' }))}
+            >
+              🇮🇳 India Jobs
+            </Button>
+            <Button
+              variant={filters.location === 'International' ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilters(prev => ({ ...prev, location: 'International' }))}
+            >
+              🌎 International Jobs
+            </Button>
+          </div>
+        </div>
+
         {/* Main Jobs Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           
-          {/* Smart Filters Panel */}
+          {/* Enhanced Filters Panel */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm border p-4 sticky top-20">
               <div className="flex items-center gap-2 mb-4">
                 <Filter className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold text-base text-gray-900">🧠 Smart Filters</h3>
+                <h3 className="font-semibold text-base text-gray-900">🔍 Filters</h3>
               </div>
               <EnhancedJobFilters
                 filters={filters}

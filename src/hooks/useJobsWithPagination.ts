@@ -30,11 +30,21 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
 
       try {
         // Step 1: Get total count without joins to avoid issues
-        const { count: totalCount, error: countError } = await supabase
+        let countQuery = supabase
           .from('jobs')
           .select('*', { count: 'exact', head: true })
           .eq('is_active', true)
-          .eq('job_status', 'open');
+          .eq('job_status', 'open')
+          .gte('expires_at', new Date().toISOString()); // Filter out expired jobs
+
+        // Apply location filter for count
+        if (filters.location === 'India') {
+          countQuery = countQuery.ilike('location', '%india%');
+        } else if (filters.location === 'International') {
+          countQuery = countQuery.not('location', 'ilike', '%india%');
+        }
+
+        const { count: totalCount, error: countError } = await countQuery;
 
         if (countError) {
           console.error('❌ Count query error:', countError);
@@ -44,7 +54,7 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
         console.log('📊 Total jobs in database:', totalCount);
 
         // Step 2: Get paginated data with joins
-        const { data: jobs, error: dataError } = await supabase
+        let dataQuery = supabase
           .from('jobs')
           .select(`
             *,
@@ -58,8 +68,35 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
           `)
           .eq('is_active', true)
           .eq('job_status', 'open')
+          .gte('expires_at', new Date().toISOString()) // Filter out expired jobs
           .order('created_at', { ascending: false })
           .range(start, end);
+
+        // Apply location filter for data
+        if (filters.location === 'India') {
+          dataQuery = dataQuery.ilike('location', '%india%');
+        } else if (filters.location === 'International') {
+          dataQuery = dataQuery.not('location', 'ilike', '%india%');
+        }
+
+        // Apply other filters
+        if (filters.search) {
+          dataQuery = dataQuery.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,company_name.ilike.%${filters.search}%`);
+        }
+
+        if (filters.employment_type.length > 0) {
+          dataQuery = dataQuery.in('employment_type', filters.employment_type);
+        }
+
+        if (filters.experience_level.length > 0) {
+          dataQuery = dataQuery.in('experience_level', filters.experience_level);
+        }
+
+        if (filters.is_remote) {
+          dataQuery = dataQuery.eq('is_remote', true);
+        }
+
+        const { data: jobs, error: dataError } = await dataQuery;
 
         if (dataError) {
           console.error('❌ Data query error:', dataError);
