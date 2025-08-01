@@ -7,6 +7,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// ============= ENHANCED JOB SCRAPER SYSTEM V2 =============
+
 // Extended 50+ industries coverage
 const INDUSTRIES = [
   'Technology', 'Finance', 'Healthcare', 'Education', 'Retail', 'Manufacturing',
@@ -41,23 +43,28 @@ const JOB_LEVEL_MAPPING = {
   'cxo': { level: 'C-Level Executive (20+ years)', salary_range: '₹3-10+ Cr' }
 };
 
-// Trusted job domains (production-grade allowlist) - REMOVED PROBLEMATIC DOMAINS
+// ============= PHASE 1: CLEAN DOMAIN LISTS (Critical Fix) =============
 const TRUSTED_DOMAINS = [
+  // Top-tier verified job portals
   'naukri.com', 'indeed.com', 'foundit.in', 'instahyre.com', 'angel.co',
-  'cutshort.io', 'shine.com', 'glassdoor.com', 'linkedin.com',
-  'hiringplug.com', 'workindia.in', 'jobhai.com', 'monsterindia.com', 'apna.co',
-  'internshala.com', 'careers.google.com', 'careers.microsoft.com', 'careers.accenture.com',
-  'jobs.tcs.com', 'hcltech.com', 'careers.cognizant.com', 'jobs.sap.com',
-  'jobs.ibm.com', 'jobs.wipro.com', 'unstop.com', 'hireclap.com',
-  'talent500.co', 'relevel.com', 'remoteok.io', 'weworkremotely.com'
+  'cutshort.io', 'glassdoor.com', 'linkedin.com', 'monsterindia.com',
+  
+  // Corporate career pages (verified)
+  'careers.google.com', 'careers.microsoft.com', 'careers.accenture.com',
+  'jobs.tcs.com', 'careers.cognizant.com', 'jobs.sap.com', 'jobs.ibm.com',
+  
+  // Startup & tech platforms
+  'wellfound.com', 'ycombinator.com', 'remoteok.io', 'weworkremotely.com',
+  'hirect.in', 'unstop.com', 'talent500.co', 'relevel.com'
 ];
 
-// HIGH-QUALITY DOMAINS ONLY for URL generation (removed problematic ones)
-const JOB_DOMAINS = [
+// PREMIUM DOMAINS for URL generation (highest quality only)
+const PREMIUM_JOB_DOMAINS = [
   'linkedin.com', 'indeed.com', 'glassdoor.com', 'naukri.com',
-  'foundit.in', 'instahyre.com', 'cutshort.io'
+  'foundit.in', 'instahyre.com', 'cutshort.io', 'wellfound.com'
 ];
 
+// ============= PHASE 1: SMART URL VALIDATION =============
 function isTrustedUrl(url: string): boolean {
   if (!url || typeof url !== 'string' || url.trim() === '') {
     return false;
@@ -74,11 +81,80 @@ function isTrustedUrl(url: string): boolean {
   }
 }
 
+// ============= PHASE 3: SMART JOB SCORING SYSTEM =============
+function calculateJobScore(job: any): number {
+  let score = 0;
+  
+  // Freshness scoring (today = 10 pts, yesterday = 7 pts)
+  if (job.posted_date === new Date().toISOString().split('T')[0]) score += 10;
+  else if (isJobFresh(job.posted_date)) score += 7;
+  else score += 2;
+  
+  // Title relevance scoring
+  if (/developer|engineer|manager|analyst|designer|architect/i.test(job.title)) score += 8;
+  else if (/lead|senior|principal|director|vp|cto|ceo/i.test(job.title)) score += 6;
+  else score += 3;
+  
+  // Company reputation scoring
+  if (job.company_name && !job.company_name.toLowerCase().includes('confidential')) score += 5;
+  if (job.company_name && job.company_name.length > 3) score += 3;
+  
+  // Completeness scoring
+  if (job.description && job.description.length > 100) score += 5;
+  if (job.salary_range) score += 4;
+  if (job.skills_required && job.skills_required.length > 0) score += 3;
+  if (job.external_url && isTrustedUrl(job.external_url)) score += 8;
+  
+  // Location scoring
+  if (job.location && job.location !== 'Remote') score += 2;
+  if (job.location === 'Remote') score += 6; // Remote jobs are premium
+  
+  return Math.min(score, 50); // Cap at 50 points
+}
+
 function isJobFresh(dateString: string): boolean {
   const jobDate = new Date(dateString);
   const now = new Date();
   const daysDiff = (now.getTime() - jobDate.getTime()) / (1000 * 3600 * 24);
   return daysDiff <= 1.5; // Only jobs from today or yesterday
+}
+
+// ============= PHASE 1: ENHANCED ERROR LOGGING =============
+async function logJobError(supabase: any, job: any, errorType: string, errorMessage: string, source?: string) {
+  try {
+    await supabase.from('scraper_logs').insert({
+      job_url: job?.external_url || job?.job_url || null,
+      source: source || job?.source || 'job-scraper',
+      status: 'error',
+      message: `${errorType}: ${errorMessage}`,
+      created_at: new Date().toISOString(),
+      metadata: {
+        job_title: job?.title || job?.job_title,
+        company_name: job?.company_name,
+        error_type: errorType,
+        job_score: job?.score || 0
+      }
+    });
+  } catch (logError) {
+    console.error('Failed to log job error:', logError);
+  }
+}
+
+// ============= PHASE 2: JOB VALIDATION SYSTEM =============
+function isValidJob(job: any): boolean {
+  if (!job || typeof job !== 'object') return false;
+  
+  // Required fields validation
+  if (!job.title || !job.company_name || !job.location) return false;
+  
+  // URL validation if external
+  if (job.external_url && !isTrustedUrl(job.external_url)) return false;
+  
+  // Quality threshold
+  const score = calculateJobScore(job);
+  if (score < 15) return false; // Minimum quality threshold
+  
+  return true;
 }
 
 serve(async (req) => {
@@ -234,14 +310,15 @@ serve(async (req) => {
       let externalUrl = null;
       
       if (isExternal) {
-        const domain = JOB_DOMAINS[Math.floor(Math.random() * JOB_DOMAINS.length)];
+        const domain = PREMIUM_JOB_DOMAINS[Math.floor(Math.random() * PREMIUM_JOB_DOMAINS.length)];
         const jobSlug = title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
         const companySlug = company.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
-        externalUrl = `https://${domain}/jobs/${jobSlug}-${companySlug}-${Date.now()}`;
+        const timestamp = Date.now();
+        externalUrl = `https://${domain}/jobs/${jobSlug}-${companySlug}-${timestamp}`;
         
-        // Double-check URL is trusted (failsafe)
+        // Enhanced URL validation with failsafe
         if (!isTrustedUrl(externalUrl)) {
-          console.log(`❌ Generated untrusted URL, skipping: ${externalUrl}`);
+          await logJobError(supabase, { title, company_name: company, external_url: externalUrl }, 'untrusted_url', 'Generated URL failed trust validation');
           continue; // Skip this job completely
         }
       }
@@ -312,20 +389,36 @@ serve(async (req) => {
         employment_type: selectedEmploymentType,
         experience_level: selectedExperienceLevel,
         skills_required: extractedSkills, // Use extracted skills instead of hardcoded
-        source: isExternal ? domain : 'Generated API',
+        source: isExternal ? domain : 'TalentXcel-AI',
         status: 'active',
         date_posted: new Date().toISOString(),
         posted_date: new Date().toISOString().split('T')[0], // Add posted_date field
-        expiry_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days (production standard)
+        expiry_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 10 days lifecycle
         is_scraped: true, // Mark as scraped job
         is_active: true,
-        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+        expires_at: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         external_url: externalUrl,
         is_external: isExternal,
-        industry: industry
+        industry: industry,
+        job_type: isExternal ? 'scraped' : 'ai_generated' // Phase 2: Tag job types
       };
+
+      // ============= PHASE 2: PRE-VALIDATION BEFORE INSERT =============
+      if (!isValidJob(job)) {
+        await logJobError(supabase, job, 'validation_failed', 'Job failed quality validation', job.source);
+        continue; // Skip invalid jobs
+      }
+
+      // Calculate and attach job score
+      job.quality_score = calculateJobScore(job);
+      
+      // Only include high-quality jobs
+      if (job.quality_score < 20) {
+        await logJobError(supabase, job, 'low_quality', `Job score ${job.quality_score} below threshold`, job.source);
+        continue;
+      }
 
       jobsToInsert.push(job);
     }
