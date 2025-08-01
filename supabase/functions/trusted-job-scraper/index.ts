@@ -63,7 +63,11 @@ const GLOBAL_LOCATIONS = [
 function isTrustedUrl(url: string): boolean {
   try {
     const parsed = new URL(url)
-    return TRUSTED_DOMAINS.some(domain => parsed.hostname.includes(domain))
+    const hostname = parsed.hostname.replace('www.', '').toLowerCase()
+    return TRUSTED_DOMAINS.some(domain => 
+      hostname.includes(domain.toLowerCase()) || 
+      hostname.endsWith(domain.toLowerCase())
+    )
   } catch {
     return false
   }
@@ -73,7 +77,48 @@ function isJobFresh(postedDate: string): boolean {
   const posted = new Date(postedDate)
   const now = new Date()
   const daysDiff = (now.getTime() - posted.getTime()) / (1000 * 3600 * 24)
-  return daysDiff <= 1.5 // Only jobs from today or yesterday
+  return daysDiff <= 7 // Allow jobs up to 7 days old for better coverage
+}
+
+function getJobQualityScore(job: any): number {
+  let score = 0
+  
+  // Fresh jobs get higher score
+  const posted = new Date(job.posted_date)
+  const now = new Date()
+  const daysDiff = (now.getTime() - posted.getTime()) / (1000 * 3600 * 24)
+  if (daysDiff <= 1) score += 10
+  else if (daysDiff <= 3) score += 7
+  else if (daysDiff <= 7) score += 5
+  
+  // Quality indicators
+  if (job.title && job.title.length > 10) score += 3
+  if (job.company && !job.company.toLowerCase().includes('confidential')) score += 5
+  if (job.description && job.description.length > 100) score += 3
+  if (job.salary_range) score += 2
+  
+  // Preferred job types
+  const title = job.title?.toLowerCase() || ''
+  if (title.includes('engineer') || title.includes('developer')) score += 8
+  if (title.includes('manager') || title.includes('lead')) score += 6
+  if (title.includes('intern') && title.includes('senior')) score -= 3 // conflicting levels
+  
+  return score
+}
+
+function isHighQualityJob(job: any): boolean {
+  // Basic requirements
+  if (!job.job_url || !job.title || !job.company || !job.posted_date) return false
+  if (job.company.toLowerCase().includes('confidential')) return false
+  
+  // URL validation
+  if (!isTrustedUrl(job.job_url)) return false
+  
+  // Freshness check
+  if (!isJobFresh(job.posted_date)) return false
+  
+  // Quality score threshold
+  return getJobQualityScore(job) >= 15
 }
 
 function isValidLocation(location: string): boolean {
@@ -149,62 +194,32 @@ serve(async (req) => {
 
     console.log('📦 Processing job from:', source, 'URL:', job_url)
 
-    // Validate job_url exists first
-    if (!job_url || typeof job_url !== 'string' || job_url.trim() === '') {
-      const errorMsg = `Missing or empty job URL. Received: ${job_url}`
-      await logScrapingAttempt(job_url || 'NULL', source || 'unknown', 'rejected', errorMsg)
-      return new Response(
-        JSON.stringify({ error: 'Missing or empty job URL', received: job_url }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
+    // Smart quality validation - automatically filter for best jobs
+    const jobData = {
+      job_url,
+      title,
+      company,
+      location,
+      description,
+      salary_range,
+      posted_date,
+      employment_type,
+      experience_level,
+      source
     }
 
-    // Validate trusted URL
-    if (!isTrustedUrl(job_url)) {
-      await logScrapingAttempt(job_url, source || 'unknown', 'rejected', 'Untrusted domain')
+    if (!isHighQualityJob(jobData)) {
+      const score = getJobQualityScore(jobData)
+      await logScrapingAttempt(job_url || 'NULL', source || 'unknown', 'rejected', `Low quality score: ${score}`)
       return new Response(
-        JSON.stringify({ error: 'Untrusted job URL', url: job_url }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    // Validate freshness
-    if (!isJobFresh(posted_date)) {
-      await logScrapingAttempt(job_url, source, 'rejected', 'Job too old')
-      return new Response(
-        JSON.stringify({ error: 'Job too old', posted_date }),
+        JSON.stringify({ 
+          error: 'Job rejected - low quality score', 
+          score,
+          url: job_url,
+          message: 'Automatically filtered for quality - only best jobs are accepted'
+        }),
         { 
           status: 204, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    // Validate required fields
-    if (!title || !company || !location) {
-      await logScrapingAttempt(job_url, source, 'rejected', 'Missing required fields')
-      return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    // Validate location
-    if (!isValidLocation(location)) {
-      await logScrapingAttempt(job_url, source, 'rejected', 'Invalid location')
-      return new Response(
-        JSON.stringify({ error: 'Invalid location', location }),
-        { 
-          status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
