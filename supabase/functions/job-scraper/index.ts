@@ -393,20 +393,20 @@ serve(async (req) => {
         skills_required: extractedSkills,
         source: isExternal ? selectedDomain : 'TalentXcel-AI',
         external_url: externalUrl, // This can be null for internal jobs
-        posted_at: new Date().toISOString(), // Use posted_at instead of posted_date
+        posted_at: new Date().toISOString(),
         is_active: true,
         application_deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        remote_work_allowed: location === 'Remote',
         benefits: [
           'Health Insurance',
           'Flexible Working Hours',
           'Professional Development',
           'Performance Bonus'
         ],
-        company_industry: industry,
-        posted_by: null, // System generated
+        industry: industry, // Use 'industry' instead of 'company_industry'
+        posted_by: null,
         views_count: Math.floor(Math.random() * 50),
-        applications_count: Math.floor(Math.random() * 10)
+        applications_count: Math.floor(Math.random() * 10),
+        is_remote: location === 'Remote'
       };
 
       // Pre-insert validation - check for null/invalid URLs
@@ -446,7 +446,7 @@ serve(async (req) => {
     
     const deduplicatedJobs = Object.values(
       jobsToInsert.reduce((acc, job) => {
-        const uniqueKey = `${job.job_title}-${job.company_name}-${job.location}`.toLowerCase();
+        const uniqueKey = `${job.title}-${job.company_name}-${job.location}`.toLowerCase();
         acc[uniqueKey] = job;
         return acc;
       }, {} as Record<string, any>)
@@ -462,10 +462,8 @@ serve(async (req) => {
       
       const { data: upserted, error } = await supabase
         .from('jobs')
-        .upsert(deduplicatedJobs, { 
-          onConflict: 'job_title,company_name,location'
-        })
-        .select('id, job_title, company_name, description, external_url, is_external');
+        .insert(deduplicatedJobs) // Use simple insert instead of upsert with complex conflict
+        .select('id, title, company_name, description, external_url');
 
       if (error) {
         console.error('Insert error:', error);
@@ -490,7 +488,7 @@ serve(async (req) => {
           body: JSON.stringify({
             jobId: job.id,
             jobData: {
-              title: job.job_title,
+              title: job.title,
               company_name: job.company_name,
               description: job.description
             }
