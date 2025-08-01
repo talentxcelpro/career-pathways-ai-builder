@@ -41,21 +41,21 @@ const JOB_LEVEL_MAPPING = {
   'cxo': { level: 'C-Level Executive (20+ years)', salary_range: '₹3-10+ Cr' }
 };
 
-// Trusted job domains (production-grade allowlist)
+// Trusted job domains (production-grade allowlist) - REMOVED PROBLEMATIC DOMAINS
 const TRUSTED_DOMAINS = [
   'naukri.com', 'indeed.com', 'foundit.in', 'instahyre.com', 'angel.co',
-  'cutshort.io', 'shine.com', 'glassdoor.com', 'linkedin.com', 'timesjobs.com',
+  'cutshort.io', 'shine.com', 'glassdoor.com', 'linkedin.com',
   'hiringplug.com', 'workindia.in', 'jobhai.com', 'monsterindia.com', 'apna.co',
   'internshala.com', 'careers.google.com', 'careers.microsoft.com', 'careers.accenture.com',
   'jobs.tcs.com', 'hcltech.com', 'careers.cognizant.com', 'jobs.sap.com',
   'jobs.ibm.com', 'jobs.wipro.com', 'unstop.com', 'hireclap.com',
-  'talent500.co', 'relevel.com', 'remoteok.io', 'weworkremotely.com', 'simplyhired.com'
+  'talent500.co', 'relevel.com', 'remoteok.io', 'weworkremotely.com'
 ];
 
-// Popular job domains for external URLs (subset of trusted domains)
+// HIGH-QUALITY DOMAINS ONLY for URL generation (removed problematic ones)
 const JOB_DOMAINS = [
-  'linkedin.com', 'indeed.com', 'glassdoor.com', 'naukri.com', 'simplyhired.com',
-  'foundit.in', 'instahyre.com', 'cutshort.io', 'timesjobs.com'
+  'linkedin.com', 'indeed.com', 'glassdoor.com', 'naukri.com',
+  'foundit.in', 'instahyre.com', 'cutshort.io'
 ];
 
 function isTrustedUrl(url: string): boolean {
@@ -228,15 +228,22 @@ serve(async (req) => {
       const location = locations[Math.floor(Math.random() * locations.length)];
       const industry = INDUSTRIES[Math.floor(Math.random() * INDUSTRIES.length)];
       
-      // Generate external URL for some jobs (simulating scraped jobs)
+      
+      // Generate external URL ONLY from high-quality domains
       const isExternal = Math.random() > 0.3; // 70% external jobs
-      const domain = JOB_DOMAINS[Math.floor(Math.random() * JOB_DOMAINS.length)];
-      const externalUrl = isExternal ? `https://${domain}/jobs/${title.toLowerCase().replace(/\s+/g, '-')}-${company.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}` : null;
-
-      // Validate trusted URL (skip untrusted jobs)
-      if (externalUrl && !isTrustedUrl(externalUrl)) {
-        console.log(`❌ Skipping untrusted URL: ${externalUrl}`);
-        continue; // Skip this job
+      let externalUrl = null;
+      
+      if (isExternal) {
+        const domain = JOB_DOMAINS[Math.floor(Math.random() * JOB_DOMAINS.length)];
+        const jobSlug = title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+        const companySlug = company.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+        externalUrl = `https://${domain}/jobs/${jobSlug}-${companySlug}-${Date.now()}`;
+        
+        // Double-check URL is trusted (failsafe)
+        if (!isTrustedUrl(externalUrl)) {
+          console.log(`❌ Generated untrusted URL, skipping: ${externalUrl}`);
+          continue; // Skip this job completely
+        }
       }
 
       // Force normalize to ensure DB constraint compliance
