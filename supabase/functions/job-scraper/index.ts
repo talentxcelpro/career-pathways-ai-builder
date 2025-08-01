@@ -27,7 +27,7 @@ const INDUSTRIES = [
 const EXPERIENCE_LEVELS = ['intern', 'fresher', 'junior', 'mid-level', 'senior-level', 'lead', 'manager', 'senior-manager', 'director', 'vp', 'svp', 'cxo'];
 const EMPLOYMENT_TYPES = ['full-time', 'part-time', 'contract', 'freelance', 'internship'];
 
-// Detailed job levels with salary mapping
+// Realistic job levels with salary mapping (fixed for Indian market)
 const JOB_LEVEL_MAPPING = {
   'intern': { level: 'Intern', salary_range: '₹15,000-25,000/month' },
   'fresher': { level: 'Fresher (0-1 years)', salary_range: '₹3-6 LPA' },
@@ -36,11 +36,11 @@ const JOB_LEVEL_MAPPING = {
   'senior-level': { level: 'Senior (6-10 years)', salary_range: '₹25-45 LPA' },
   'lead': { level: 'Team Lead (8-12 years)', salary_range: '₹35-60 LPA' },
   'manager': { level: 'Manager (10-15 years)', salary_range: '₹50-85 LPA' },
-  'senior-manager': { level: 'Senior Manager (12-18 years)', salary_range: '₹75-1.2 Cr' },
+  'senior-manager': { level: 'Senior Manager (12-18 years)', salary_range: '₹75 LPA - 1.2 Cr' },
   'director': { level: 'Director (15-20 years)', salary_range: '₹1-2 Cr' },
-  'vp': { level: 'Vice President (18-25 years)', salary_range: '₹1.5-3 Cr' },
-  'svp': { level: 'Senior VP (20+ years)', salary_range: '₹2.5-5 Cr' },
-  'cxo': { level: 'C-Level Executive (20+ years)', salary_range: '₹3-10+ Cr' }
+  'vp': { level: 'Vice President (18+ years)', salary_range: '₹1.5-3 Cr' },
+  'svp': { level: 'Senior VP (20+ years)', salary_range: '₹2-4 Cr' },
+  'cxo': { level: 'C-Level Executive (20+ years)', salary_range: '₹3-8 Cr' }
 };
 
 // ============= PHASE 1: CLEAN DOMAIN LISTS (Critical Fix) =============
