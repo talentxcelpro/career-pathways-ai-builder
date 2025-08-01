@@ -186,17 +186,6 @@ export const JobListings: React.FC<JobListingsProps> = ({ filters, onClearFilter
           <p className="text-muted-foreground">
             Find your perfect match from <span className="font-semibold text-primary">{filteredJobs.length}</span> active positions
           </p>
-          <div className="flex items-center gap-2 text-sm">
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Offline</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <RefreshCw className="h-3 w-3" />
-              <span>Just now</span>
-            </div>
-            <span className="text-muted-foreground">Updated less than a minute ago</span>
-          </div>
         </div>
 
         <div className="flex items-center gap-4">
