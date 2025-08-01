@@ -88,3 +88,6 @@ verify_jwt = false
 
 [functions.job-scraper-quality]
 verify_jwt = false
+
+[functions.job-quality-checker]
+verify_jwt = true
