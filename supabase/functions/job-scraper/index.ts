@@ -402,8 +402,7 @@ serve(async (req) => {
         updated_at: new Date().toISOString(),
         external_url: externalUrl,
         is_external: isExternal,
-        industry: industry,
-        job_type: isExternal ? 'scraped' : 'ai_generated' // Phase 2: Tag job types
+        industry: industry
       };
 
       // ============= PHASE 2: PRE-VALIDATION BEFORE INSERT =============
