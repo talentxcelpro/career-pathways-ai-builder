@@ -308,13 +308,14 @@ serve(async (req) => {
       // Generate external URL ONLY from high-quality domains
       const isExternal = Math.random() > 0.3; // 70% external jobs
       let externalUrl = null;
+      let selectedDomain = null; // Declare domain variable outside the if block
       
       if (isExternal) {
-        const domain = PREMIUM_JOB_DOMAINS[Math.floor(Math.random() * PREMIUM_JOB_DOMAINS.length)];
+        selectedDomain = PREMIUM_JOB_DOMAINS[Math.floor(Math.random() * PREMIUM_JOB_DOMAINS.length)];
         const jobSlug = title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
         const companySlug = company.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
         const timestamp = Date.now();
-        externalUrl = `https://${domain}/jobs/${jobSlug}-${companySlug}-${timestamp}`;
+        externalUrl = `https://${selectedDomain}/jobs/${jobSlug}-${companySlug}-${timestamp}`;
         
         // Enhanced URL validation with failsafe
         if (!isTrustedUrl(externalUrl)) {
@@ -389,7 +390,7 @@ serve(async (req) => {
         employment_type: selectedEmploymentType,
         experience_level: selectedExperienceLevel,
         skills_required: extractedSkills, // Use extracted skills instead of hardcoded
-        source: isExternal ? domain : 'TalentXcel-AI',
+        source: isExternal ? selectedDomain : 'TalentXcel-AI',
         status: 'active',
         date_posted: new Date().toISOString(),
         posted_date: new Date().toISOString().split('T')[0], // Add posted_date field
