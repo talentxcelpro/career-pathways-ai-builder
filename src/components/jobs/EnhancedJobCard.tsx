@@ -176,7 +176,7 @@ export default function EnhancedJobCard({
               <MapPin className="h-4 w-4 mr-1" />
               <span>{job.location}</span>
             </div>
-            {(job.salary_min || job.salary_max) && (
+            {((job.salary_min || job.salary_max) || (job as any).salary_range) && (
               <div className="flex items-center">
                 <IndianRupee className="h-4 w-4 mr-1" />
                 <span>{formatSalaryRange(job.salary_min, job.salary_max, true, (job as any).salary_range)}</span>

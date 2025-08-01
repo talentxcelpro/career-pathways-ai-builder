@@ -132,19 +132,19 @@ const JOB_CATEGORIES = {
   }
 };
 
-// Salary ranges by level and location
+// Realistic salary ranges by level and location
 const SALARY_RANGES = {
   'India': {
-    'fresher': { min: 300000, max: 800000, range: '₹3-8 LPA' },
-    'mid-level': { min: 800000, max: 2000000, range: '₹8-20 LPA' },
-    'senior-level': { min: 2000000, max: 4500000, range: '₹20-45 LPA' },
-    'executive': { min: 4500000, max: 10000000, range: '₹45 LPA - 1 Cr' }
+    'fresher': { min: 200000, max: 600000, range: '₹2-6 LPA' },
+    'mid-level': { min: 500000, max: 1200000, range: '₹5-12 LPA' },
+    'senior-level': { min: 1000000, max: 2500000, range: '₹10-25 LPA' },
+    'executive': { min: 2000000, max: 5000000, range: '₹20-50 LPA' }
   },
   'International': {
-    'fresher': { min: 50000, max: 80000, range: '$50K-80K' },
-    'mid-level': { min: 80000, max: 150000, range: '$80K-150K' },
-    'senior-level': { min: 150000, max: 250000, range: '$150K-250K' },
-    'executive': { min: 250000, max: 500000, range: '$250K-500K' }
+    'fresher': { min: 40000, max: 70000, range: '$40K-70K' },
+    'mid-level': { min: 65000, max: 120000, range: '$65K-120K' },
+    'senior-level': { min: 110000, max: 200000, range: '$110K-200K' },
+    'executive': { min: 180000, max: 350000, range: '$180K-350K' }
   }
 };
 
