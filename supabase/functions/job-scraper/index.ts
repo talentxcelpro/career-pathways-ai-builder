@@ -41,11 +41,39 @@ const JOB_LEVEL_MAPPING = {
   'cxo': { level: 'C-Level Executive (20+ years)', salary_range: '₹3-10+ Cr' }
 };
 
-// Popular job domains for external URLs
-const JOB_DOMAINS = [
-  'linkedin.com', 'indeed.com', 'glassdoor.com', 'naukri.com', 'monster.com',
-  'dice.com', 'careerbuilder.com', 'ziprecruiter.com', 'simplyhired.com'
+// Trusted job domains (production-grade allowlist)
+const TRUSTED_DOMAINS = [
+  'naukri.com', 'indeed.com', 'foundit.in', 'instahyre.com', 'angel.co',
+  'cutshort.io', 'shine.com', 'glassdoor.com', 'linkedin.com', 'timesjobs.com',
+  'hiringplug.com', 'workindia.in', 'jobhai.com', 'monsterindia.com', 'apna.co',
+  'internshala.com', 'careers.google.com', 'careers.microsoft.com', 'careers.accenture.com',
+  'jobs.tcs.com', 'hcltech.com', 'careers.cognizant.com', 'jobs.sap.com',
+  'jobs.ibm.com', 'jobs.wipro.com', 'unstop.com', 'hireclap.com',
+  'talent500.co', 'relevel.com', 'remoteok.io', 'weworkremotely.com', 'simplyhired.com'
 ];
+
+// Popular job domains for external URLs (subset of trusted domains)
+const JOB_DOMAINS = [
+  'linkedin.com', 'indeed.com', 'glassdoor.com', 'naukri.com', 'simplyhired.com',
+  'foundit.in', 'instahyre.com', 'cutshort.io', 'timesjobs.com'
+];
+
+function isTrustedUrl(url: string): boolean {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return TRUSTED_DOMAINS.some(domain => parsed.hostname.includes(domain));
+  } catch {
+    return false;
+  }
+}
+
+function isJobFresh(dateString: string): boolean {
+  const jobDate = new Date(dateString);
+  const now = new Date();
+  const daysDiff = (now.getTime() - jobDate.getTime()) / (1000 * 3600 * 24);
+  return daysDiff <= 1.5; // Only jobs from today or yesterday
+}
 
 serve(async (req) => {
   console.log(`🚀 Job scraper called: ${req.method}`);
@@ -199,6 +227,12 @@ serve(async (req) => {
       const domain = JOB_DOMAINS[Math.floor(Math.random() * JOB_DOMAINS.length)];
       const externalUrl = isExternal ? `https://${domain}/jobs/${title.toLowerCase().replace(/\s+/g, '-')}-${company.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}` : null;
 
+      // Validate trusted URL (skip untrusted jobs)
+      if (externalUrl && !isTrustedUrl(externalUrl)) {
+        console.log(`❌ Skipping untrusted URL: ${externalUrl}`);
+        continue; // Skip this job
+      }
+
       // Force normalize to ensure DB constraint compliance
       const normalizeEmploymentType = (type) => {
         const map = {
@@ -265,16 +299,18 @@ serve(async (req) => {
         employment_type: selectedEmploymentType,
         experience_level: selectedExperienceLevel,
         skills_required: extractedSkills, // Use extracted skills instead of hardcoded
-        source: isExternal ? `Scraped from ${domain}` : 'Generated API',
+        source: isExternal ? domain : 'Generated API',
         status: 'active',
         date_posted: new Date().toISOString(),
+        posted_date: new Date().toISOString().split('T')[0], // Add posted_date field
+        expiry_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days (production standard)
+        is_scraped: true, // Mark as scraped job
         is_active: true,
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         external_url: externalUrl,
         is_external: isExternal,
-        is_scraped: true, // Mark as scraped job
         industry: industry
       };
 
