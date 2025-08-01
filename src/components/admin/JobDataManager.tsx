@@ -35,6 +35,7 @@ interface ValidationResult {
 }
 
 interface CleanupSummary {
+  salary_frequency_fixes?: number;
   salary_issues: number;
   company_issues: number;
   skill_mismatches: number;
@@ -91,31 +92,82 @@ export const JobDataManager: React.FC = () => {
   const runCleanupAll = async () => {
     setIsLoading(true);
     try {
-      console.log('Starting job cleanup...');
+      console.log('Starting enhanced salary frequency cleanup...');
       
-      // Simple cleanup without AI - direct SQL approach
       const cleanupResults = {
+        salary_frequency_fixes: 0,
         salary_issues: 0,
         company_issues: 0,
         skill_mismatches: 0,
         total_flagged: 0
       };
 
-      // 1. Flag jobs with unrealistic salaries
+      // 1. Detect jobs with potential salary frequency issues
+      const { data: suspiciousJobs, error: fetchError } = await supabase
+        .from('jobs')
+        .select('id, salary_min, salary_max, employment_type, experience_level, title')
+        .or('salary_max.gt.5000000,and(salary_max.lt.50000,experience_level.neq.intern)')
+        .limit(500);
+
+      if (!fetchError && suspiciousJobs) {
+        console.log(`Found ${suspiciousJobs.length} potentially problematic salary entries`);
+        
+        // Process each suspicious job
+        for (const job of suspiciousJobs) {
+          let shouldUpdate = false;
+          let newFrequency = 'yearly';
+          let newMin = job.salary_min;
+          let newMax = job.salary_max;
+          
+          // Detect likely monthly salaries (very high amounts for non-executives)
+          if (job.salary_max && job.salary_max > 5000000 && 
+              !['executive', 'director', 'vp', 'cxo'].includes(job.experience_level || '')) {
+            shouldUpdate = true;
+            newFrequency = 'monthly';
+            newMin = job.salary_min ? Math.round(job.salary_min / 12) : null;
+            newMax = Math.round(job.salary_max / 12);
+          }
+          
+          // Detect likely hourly rates (very small amounts for non-interns)
+          else if (job.salary_max && job.salary_max < 50000 && job.experience_level !== 'intern') {
+            shouldUpdate = true;
+            newFrequency = 'hourly';
+            // Keep the amounts as-is for hourly
+          }
+          
+          if (shouldUpdate) {
+            const { error: updateError } = await supabase
+              .from('jobs')
+              .update({
+                salary_frequency: newFrequency,
+                salary_min: newMin,
+                salary_max: newMax,
+                notes: `Auto-corrected salary frequency to ${newFrequency}`
+              })
+              .eq('id', job.id);
+
+            if (!updateError) {
+              cleanupResults.salary_frequency_fixes++;
+            }
+          }
+        }
+      }
+
+      // 2. Flag remaining unrealistic salaries (after frequency fix)
       const { data: salaryIssues, error: salaryError } = await supabase
         .from('jobs')
         .update({ 
           status: 'flagged',
-          notes: 'Flagged: Unrealistic salary detected'
+          notes: 'Flagged: Still unrealistic salary after frequency correction'
         })
-        .gt('salary_max', 15000000)
+        .gt('salary_max', 10000000)
         .select('id');
 
       if (!salaryError && salaryIssues) {
         cleanupResults.salary_issues = salaryIssues.length;
       }
 
-      // 2. Flag jobs missing company names
+      // 3. Flag jobs missing company names
       const { data: companyIssues, error: companyError } = await supabase
         .from('jobs')
         .update({
@@ -129,7 +181,7 @@ export const JobDataManager: React.FC = () => {
         cleanupResults.company_issues = companyIssues.length;
       }
 
-      // 3. Flag obvious skill mismatches
+      // 4. Flag obvious skill mismatches
       const { data: jobs, error: jobsError } = await supabase
         .from('jobs')
         .select('id, title, skills_required')
@@ -165,7 +217,10 @@ export const JobDataManager: React.FC = () => {
       setCleanupSummary(cleanupResults);
       await fetchJobStats(); // Refresh stats
       
-      toast.success(`Cleanup completed! Flagged ${cleanupResults.total_flagged} problematic jobs`);
+      toast.success(
+        `Cleanup completed! Fixed ${cleanupResults.salary_frequency_fixes} salary frequencies, ` +
+        `flagged ${cleanupResults.total_flagged} other issues`
+      );
     } catch (error) {
       console.error('Cleanup error:', error);
       toast.error('Failed to run cleanup');
