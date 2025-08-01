@@ -20,6 +20,8 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
   const [allJobs, setAllJobs] = useState<any[]>([]);
   const pageSize = 50;
 
+  console.log('📊 Hook state:', { page, allJobsLength: allJobs.length, pageSize });
+
   const { data, isLoading, refetch, error } = useQuery({
     queryKey: ['jobs-paginated', filters, sortBy, page],
     queryFn: async () => {
@@ -156,10 +158,11 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
     }
   }, [data]);
 
-  // Reset when filters change
+  // Reset when filters change but preserve data during page navigation
   React.useEffect(() => {
     setPage(1);
-    setAllJobs([]);
+    // Don't clear allJobs immediately - let the new query populate it
+    // setAllJobs([]); // ← Removed this to prevent blank page flash
   }, [filters, sortBy]);
 
   const goToPage = (newPage: number) => {

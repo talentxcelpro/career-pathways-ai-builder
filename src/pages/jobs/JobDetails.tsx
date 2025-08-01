@@ -29,6 +29,8 @@ const JobDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
+  console.log('🔍 JobDetails rendered for ID:', id);
+
   // Fetch job details (no authentication required)
   const { data: job, isLoading, error } = useQuery({
     queryKey: ['job', id],
@@ -131,7 +133,10 @@ const JobDetails = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/jobs')}
+            onClick={() => {
+              console.log('🔙 Navigating back to jobs from job detail');
+              navigate('/jobs');
+            }}
             className="mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />

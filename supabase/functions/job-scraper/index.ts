@@ -252,6 +252,9 @@ serve(async (req) => {
       
       This is an excellent opportunity to work with cutting-edge technologies in the ${industry} industry.`;
 
+      // Extract skills from job description based on title and content
+      const extractedSkills = extractSkillsFromJobDescription(title, jobDescription, industry);
+      
       const job = {
         title: title,
         job_title: title,
@@ -261,7 +264,7 @@ serve(async (req) => {
         salary_range: salaryRange,
         employment_type: selectedEmploymentType,
         experience_level: selectedExperienceLevel,
-        skills_required: ['JavaScript', 'React', 'Node.js'],
+        skills_required: extractedSkills, // Use extracted skills instead of hardcoded
         source: isExternal ? `Scraped from ${domain}` : 'Generated API',
         status: 'active',
         date_posted: new Date().toISOString(),
@@ -485,4 +488,91 @@ async function checkAndCreateAlerts(supabase: any, logData: any, insertedCount: 
   } catch (alertError) {
     console.error('Failed to create alerts:', alertError);
   }
+}
+
+// Helper function to extract realistic skills based on job title, description, and industry
+function extractSkillsFromJobDescription(title: string, description: string, industry: string): string[] {
+  const allSkills = {
+    // Programming Languages
+    programming: ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'C++', 'PHP', 'Ruby', 'Go', 'Rust', 'Swift', 'Kotlin'],
+    
+    // Frontend Technologies
+    frontend: ['React', 'Vue.js', 'Angular', 'HTML', 'CSS', 'SASS', 'jQuery', 'Bootstrap', 'Tailwind CSS'],
+    
+    // Backend Technologies
+    backend: ['Node.js', 'Express.js', 'Django', 'Flask', 'Spring Boot', 'ASP.NET', 'Ruby on Rails'],
+    
+    // Databases
+    databases: ['MySQL', 'PostgreSQL', 'MongoDB', 'Redis', 'Oracle', 'SQL Server', 'DynamoDB', 'Cassandra'],
+    
+    // Cloud & DevOps
+    cloud: ['AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins', 'CI/CD', 'Terraform'],
+    
+    // Data & Analytics
+    data: ['SQL', 'Python', 'R', 'Tableau', 'Power BI', 'Excel', 'Machine Learning', 'Data Science', 'Pandas', 'NumPy'],
+    
+    // Design & UX
+    design: ['Figma', 'Adobe Creative Suite', 'Sketch', 'InVision', 'Prototyping', 'User Research', 'Wireframing'],
+    
+    // Business & Management
+    business: ['Project Management', 'Agile', 'Scrum', 'JIRA', 'Confluence', 'Strategic Planning', 'Leadership'],
+    
+    // Finance
+    finance: ['Financial Analysis', 'Excel', 'Bloomberg', 'SAP', 'QuickBooks', 'Financial Modeling', 'Risk Management'],
+    
+    // Marketing & Sales
+    marketing: ['Google Analytics', 'SEO', 'SEM', 'Content Marketing', 'Social Media', 'HubSpot', 'Salesforce'],
+    
+    // Healthcare
+    healthcare: ['EMR Systems', 'HIPAA', 'Medical Coding', 'Clinical Research', 'Healthcare Analytics'],
+    
+    // Legal
+    legal: ['Contract Law', 'Compliance', 'Legal Research', 'Risk Assessment', 'Regulatory Affairs']
+  };
+
+  const extractedSkills: string[] = [];
+  const lowerTitle = title.toLowerCase();
+  const lowerDescription = description.toLowerCase();
+  const lowerIndustry = industry.toLowerCase();
+
+  // Role-based skill extraction
+  if (lowerTitle.includes('frontend') || lowerTitle.includes('ui') || lowerTitle.includes('react')) {
+    extractedSkills.push(...allSkills.frontend.slice(0, 4));
+    extractedSkills.push(...allSkills.programming.filter(s => ['JavaScript', 'TypeScript'].includes(s)));
+  } else if (lowerTitle.includes('backend') || lowerTitle.includes('api') || lowerTitle.includes('server')) {
+    extractedSkills.push(...allSkills.backend.slice(0, 3));
+    extractedSkills.push(...allSkills.databases.slice(0, 3));
+    extractedSkills.push(...allSkills.programming.filter(s => ['Python', 'Java', 'Node.js'].includes(s)));
+  } else if (lowerTitle.includes('full stack') || lowerTitle.includes('fullstack')) {
+    extractedSkills.push(...allSkills.frontend.slice(0, 2));
+    extractedSkills.push(...allSkills.backend.slice(0, 2));
+    extractedSkills.push('JavaScript', 'Python');
+  } else if (lowerTitle.includes('data') || lowerTitle.includes('analyst') || lowerTitle.includes('scientist')) {
+    extractedSkills.push(...allSkills.data.slice(0, 5));
+  } else if (lowerTitle.includes('devops') || lowerTitle.includes('infrastructure')) {
+    extractedSkills.push(...allSkills.cloud.slice(0, 5));
+  } else if (lowerTitle.includes('design') || lowerTitle.includes('ux') || lowerTitle.includes('ui')) {
+    extractedSkills.push(...allSkills.design.slice(0, 4));
+  } else if (lowerTitle.includes('manager') || lowerTitle.includes('director') || lowerTitle.includes('lead')) {
+    extractedSkills.push(...allSkills.business.slice(0, 4));
+  } else if (lowerTitle.includes('sales') || lowerTitle.includes('marketing')) {
+    extractedSkills.push(...allSkills.marketing.slice(0, 4));
+  } else if (lowerTitle.includes('finance') || lowerTitle.includes('analyst')) {
+    extractedSkills.push(...allSkills.finance.slice(0, 4));
+  }
+
+  // Industry-specific skills
+  if (lowerIndustry.includes('technology') || lowerIndustry.includes('tech')) {
+    extractedSkills.push('Agile', 'Git', 'REST APIs');
+  } else if (lowerIndustry.includes('finance') || lowerIndustry.includes('banking')) {
+    extractedSkills.push(...allSkills.finance.slice(0, 3));
+  } else if (lowerIndustry.includes('healthcare') || lowerIndustry.includes('medical')) {
+    extractedSkills.push(...allSkills.healthcare.slice(0, 3));
+  } else if (lowerIndustry.includes('legal')) {
+    extractedSkills.push(...allSkills.legal.slice(0, 3));
+  }
+
+  // Remove duplicates and return max 6 skills
+  const uniqueSkills = [...new Set(extractedSkills)];
+  return uniqueSkills.slice(0, 6);
 }

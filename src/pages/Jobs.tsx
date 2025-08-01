@@ -49,11 +49,11 @@ const Jobs = () => {
   const { lastRefresh } = useAutoRefreshJobs();
   const { isConnected } = useJobsRealtime(
     (payload) => {
-      console.log('Job updated:', payload);
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      console.log('🔄 Job updated:', payload);
+      queryClient.invalidateQueries({ queryKey: ['jobs-paginated'] });
     },
     (payload) => {
-      console.log('Application updated:', payload);
+      console.log('🔄 Application updated:', payload);
       queryClient.invalidateQueries({ queryKey: ['job_applications'] });
     }
   );
@@ -133,6 +133,17 @@ const Jobs = () => {
 
   const featuredJobs = sortedJobs.filter(job => job.is_featured);
   const regularJobs = sortedJobs.filter(job => !job.is_featured);
+
+  // Debug logging for both issues
+  console.log('📊 Jobs Data Debug:', {
+    totalCount,
+    allJobsLength: allJobs?.length,
+    sortedJobsLength: sortedJobs?.length,
+    regularJobsLength: regularJobs?.length,
+    isLoading,
+    currentPage,
+    sampleJob: sortedJobs[0]
+  });
 
   const handleSaveJob = async (jobId: string) => {
     if (!currentUser) {

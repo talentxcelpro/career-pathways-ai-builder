@@ -45,6 +45,7 @@ export const ModernJobCard: React.FC<ModernJobCardProps> = ({
   const navigate = useNavigate();
 
   const handleCardClick = () => {
+    console.log('🔗 Navigating to job detail:', job.id);
     navigate(`/jobs/${job.id}`);
   };
 
