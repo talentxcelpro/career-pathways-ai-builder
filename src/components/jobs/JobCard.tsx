@@ -121,7 +121,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             {(job.salary_min || job.salary_max) && (
               <div className="flex items-center gap-1">
                 <IndianRupee className="h-4 w-4" />
-                <span>{formatSalaryRange(job.salary_min, job.salary_max)}</span>
+                <span>{formatSalaryRange(job.salary_min, job.salary_max, true, (job as any).salary_range)}</span>
               </div>
             )}
           </div>

@@ -122,7 +122,7 @@ export const ModernJobCard: React.FC<ModernJobCardProps> = ({
                 </span>
                 <span>🏢 {job.employment_type}</span>
                 <span className="font-semibold text-primary">
-                  {formatSalaryRange(job.salary_min, job.salary_max, true)}
+                  {formatSalaryRange(job.salary_min, job.salary_max, true, (job as any).salary_range)}
                 </span>
               </div>
 
@@ -229,7 +229,7 @@ export const ModernJobCard: React.FC<ModernJobCardProps> = ({
               <span>{job.employment_type}</span>
               <span>|</span>
               <span className="font-medium text-primary">
-                {formatSalaryRange(job.salary_min, job.salary_max, true)}
+                {formatSalaryRange(job.salary_min, job.salary_max, true, (job as any).salary_range)}
               </span>
             </div>
 

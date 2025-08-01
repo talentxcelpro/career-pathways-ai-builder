@@ -84,7 +84,7 @@ export const FeaturedJobs = ({ jobs }: FeaturedJobsProps) => {
                 
                 <div className="mb-3">
                   <span className="font-medium text-green-600">
-                    {formatSalaryRange(job.salary_min, job.salary_max)}
+                    {formatSalaryRange(job.salary_min, job.salary_max, true, (job as any).salary_range)}
                   </span>
                 </div>
                 

@@ -13,7 +13,13 @@ export const formatCurrency = (amount: number | null | undefined): string => {
   }
 };
 
-export const formatSalaryRange = (min?: number, max?: number, lpa: boolean = true): string => {
+export const formatSalaryRange = (min?: number, max?: number, lpa: boolean = true, salaryRange?: string): string => {
+  // First check if we have a salary_range string (for quality jobs)
+  if (salaryRange && salaryRange.trim() !== '') {
+    return salaryRange;
+  }
+  
+  // Fallback to min/max if no salary_range
   if (!min && !max) return "Salary not specified";
   
   const formatAmount = (amount: number) => {
