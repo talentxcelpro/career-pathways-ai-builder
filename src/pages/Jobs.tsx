@@ -413,15 +413,7 @@ const Jobs = () => {
               <p className="text-sm text-gray-600">Find your perfect match from {totalCount} active positions</p>
             </div>
             <div className="flex items-center gap-2">
-              <AutoRefreshIndicator 
-                isConnected={isConnected} 
-                lastRefresh={lastRefresh}
-              />
-              <DataFreshness 
-                lastUpdated={new Date(Date.now())}
-                onRefresh={() => refetch()}
-                isRefreshing={isLoading}
-              />
+              <span className="text-sm font-medium">{totalCount} jobs found</span>
             </div>
           </div>
 
