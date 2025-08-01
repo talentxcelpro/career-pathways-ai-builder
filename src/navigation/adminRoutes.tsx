@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle } from "lucide-react";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
 import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
@@ -36,6 +36,7 @@ import AdvancedAnalyticsDashboard from "../pages/admin/AdvancedAnalyticsDashboar
 import PerformanceMonitoring from "../pages/admin/PerformanceMonitoring";
 import IntegrationHub from "../pages/admin/IntegrationHub";
 import { SEODashboard } from "../components/admin/SEODashboard";
+import { JobDataManager } from "../components/admin/JobDataManager";
 
 export const adminRoutes = [
   {
@@ -85,6 +86,13 @@ export const adminRoutes = [
     to: "/admin/jobs",
     icon: <Briefcase className="h-4 w-4" />,
     page: <JobsManagement />,
+    requiresAuth: true,
+  },
+  {
+    title: "Job Data Quality",
+    to: "/admin/jobs/quality",
+    icon: <AlertTriangle className="h-4 w-4" />,
+    page: <JobDataManager />,
     requiresAuth: true,
   },
   {
