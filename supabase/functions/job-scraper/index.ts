@@ -64,7 +64,11 @@ function isTrustedUrl(url: string): boolean {
   }
   try {
     const parsed = new URL(url);
-    return TRUSTED_DOMAINS.some(domain => parsed.hostname.includes(domain));
+    const hostname = parsed.hostname.replace('www.', '').toLowerCase();
+    return TRUSTED_DOMAINS.some(domain => 
+      hostname.includes(domain.toLowerCase()) || 
+      hostname.endsWith(domain.toLowerCase())
+    );
   } catch {
     return false;
   }

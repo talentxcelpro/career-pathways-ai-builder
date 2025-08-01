@@ -44,7 +44,13 @@ const TRUSTED_DOMAINS = [
   'relevel.com',
   'remoteok.io',
   'weworkremotely.com',
-  'simplyhired.com'
+  'simplyhired.com',
+  'ziprecruiter.com',
+  'freshersworld.com',
+  'talent.com',
+  'hirect.in',
+  'dice.com',
+  'careerbuilder.com'
 ]
 
 // Indian tech cities for location validation
