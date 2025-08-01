@@ -384,33 +384,47 @@ serve(async (req) => {
       
       const job = {
         title: title,
-        job_title: title,
         company_name: company,
         description: jobDescription,
         location,
         salary_range: salaryRange,
         employment_type: selectedEmploymentType,
         experience_level: selectedExperienceLevel,
-        skills_required: extractedSkills, // Use extracted skills instead of hardcoded
+        skills_required: extractedSkills,
         source: isExternal ? selectedDomain : 'TalentXcel-AI',
-        status: 'active',
-        date_posted: new Date().toISOString(),
-        posted_date: new Date().toISOString().split('T')[0], // Add posted_date field
-        expiry_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 10 days lifecycle
-        is_scraped: true, // Mark as scraped job
+        external_url: externalUrl, // This can be null for internal jobs
+        posted_at: new Date().toISOString(), // Use posted_at instead of posted_date
         is_active: true,
-        expires_at: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        external_url: externalUrl,
-        is_external: isExternal,
-        industry: industry
+        application_deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        remote_work_allowed: location === 'Remote',
+        benefits: [
+          'Health Insurance',
+          'Flexible Working Hours',
+          'Professional Development',
+          'Performance Bonus'
+        ],
+        company_industry: industry,
+        posted_by: null, // System generated
+        views_count: Math.floor(Math.random() * 50),
+        applications_count: Math.floor(Math.random() * 10)
       };
 
-      // ============= PHASE 2: PRE-VALIDATION BEFORE INSERT =============
+      // Pre-insert validation - check for null/invalid URLs
+      if (job.external_url && !isTrustedUrl(job.external_url)) {
+        await logJobError(supabase, job, 'invalid_url', `Untrusted or invalid URL: ${job.external_url}`, job.source);
+        continue;
+      }
+
+      // Skip jobs with null external URLs if they're supposed to be external
+      if (isExternal && !job.external_url) {
+        await logJobError(supabase, job, 'null_url', 'External job generated with null URL', job.source);
+        continue;
+      }
+
+      // Skip invalid or poor quality jobs
       if (!isValidJob(job)) {
-        await logJobError(supabase, job, 'validation_failed', 'Job failed quality validation', job.source);
-        continue; // Skip invalid jobs
+        await logJobError(supabase, job, 'invalid_job', 'Job failed basic validation checks', job.source);
+        continue;
       }
 
       // Calculate job score for filtering (don't store in DB)
