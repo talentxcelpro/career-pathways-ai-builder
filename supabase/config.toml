@@ -85,3 +85,6 @@ verify_jwt = false
 
 [functions.deepseek-ai]
 verify_jwt = false
+
+[functions.job-scraper-quality]
+verify_jwt = false
