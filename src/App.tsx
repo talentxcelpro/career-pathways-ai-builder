@@ -125,27 +125,14 @@ const App = () => {
                       <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
                       
                       {/* SEO Routes - Sitemap and Robots.txt */}
+                      {/* External routes that redirect to Supabase functions */}
                       <Route 
                         path="/sitemap.xml" 
-                        element={
-                          <div>
-                            {typeof window !== 'undefined' && (() => {
-                              window.location.href = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/sitemap-generator?type=index';
-                              return null;
-                            })()}
-                          </div>
-                        } 
+                        element={<Navigate to="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/sitemap-xml" replace />} 
                       />
                       <Route 
                         path="/robots.txt" 
-                        element={
-                          <div>
-                            {typeof window !== 'undefined' && (() => {
-                              window.location.href = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/sitemap-generator?type=robots';
-                              return null;
-                            })()}
-                          </div>
-                        } 
+                        element={<Navigate to="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/sitemap-generator?type=robots" replace />} 
                       />
                     </Routes>
                   </main>
