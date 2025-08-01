@@ -7,7 +7,7 @@ import { JobsBanner } from '@/components/jobs/JobsBanner';
 import { TopCompaniesHiring } from '@/components/jobs/TopCompaniesHiring';
 import { JobCategories } from '@/components/jobs/JobCategories';
 import { TrustSection } from '@/components/jobs/TrustSection';
-import { EnhancedJobFilters } from '@/components/jobs/EnhancedJobFilters';
+import { ComprehensiveJobFilters } from '@/components/jobs/ComprehensiveJobFilters';
 import { JobsList } from '@/components/jobs/JobsList';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 import { useJobsRealtime, useAutoRefreshJobs } from '@/hooks/useRealtimeData';
@@ -38,6 +38,14 @@ const Jobs = () => {
     salary_max: 0,
     is_remote: false,
     skills: [] as string[],
+    department: [] as string[],
+    company_type: [] as string[],
+    work_mode: [] as string[],
+    industry: [] as string[],
+    role_category: [] as string[],
+    education: [] as string[],
+    posted_by: [] as string[],
+    freshness: [] as string[],
   });
   const [sortBy, setSortBy] = useState('posted_at');
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
@@ -174,6 +182,11 @@ const Jobs = () => {
     }
   };
 
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(newFilters);
+    refetch();
+  };
+
   const handleClearFilters = () => {
     setFilters({
       search: '',
@@ -184,7 +197,16 @@ const Jobs = () => {
       salary_max: 0,
       is_remote: false,
       skills: [],
+      department: [],
+      company_type: [],
+      work_mode: [],
+      industry: [],
+      role_category: [],
+      education: [],
+      posted_by: [],
+      freshness: [],
     });
+    refetch();
   };
 
   const handleUniversalSearch = (query: string, aiFilters?: SearchFilters) => {
@@ -198,6 +220,14 @@ const Jobs = () => {
         salary_max: aiFilters.max_salary || 0,
         is_remote: aiFilters.remote || false,
         skills: aiFilters.skills || [],
+        department: [],
+        company_type: [],
+        work_mode: [],
+        industry: [],
+        role_category: [],
+        education: [],
+        posted_by: [],
+        freshness: [],
       };
       setFilters(newFilters);
     } else {
@@ -405,42 +435,55 @@ const Jobs = () => {
           </div>
         </div>
 
-        {/* Jobs Content - Full Width */}
-        <div className="w-full">
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">All Job Opportunities</h2>
-              <p className="text-sm text-gray-600">Find your perfect match from {totalCount} active positions</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">{totalCount} jobs found</span>
-            </div>
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Filters Sidebar */}
+          <div className="lg:col-span-1">
+            <ComprehensiveJobFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+              className="sticky top-6"
+            />
           </div>
 
-          <JobsList
-            jobs={regularJobs}
-            featuredJobs={[]}
-            regularJobs={regularJobs}
-            savedJobs={savedJobs}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
-            isLoading={isLoading}
-            onSaveJob={handleSaveJob}
-            onClearFilters={handleClearFilters}
-          />
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-8">
-              <SocialPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                totalCount={totalCount}
-                onPageChange={goToPage}
-              />
+          {/* Jobs Content */}
+          <div className="lg:col-span-3">
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">All Job Opportunities</h2>
+                <p className="text-sm text-gray-600">Find your perfect match from {totalCount} active positions</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">{totalCount} jobs found</span>
+              </div>
             </div>
-          )}
+
+            <JobsList
+              jobs={regularJobs}
+              featuredJobs={[]}
+              regularJobs={regularJobs}
+              savedJobs={savedJobs}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              isLoading={isLoading}
+              onSaveJob={handleSaveJob}
+              onClearFilters={handleClearFilters}
+            />
+          </div>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-8">
+            <SocialPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              onPageChange={goToPage}
+            />
+          </div>
+        )}
       </div>
 
       {/* Top Companies Hiring - Moved up */}

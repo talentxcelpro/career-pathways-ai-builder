@@ -23,11 +23,32 @@ export const formatSalaryRange = (
 ): string => {
   // First check if we have a salary_range string (for quality jobs)
   if (salaryRange && salaryRange.trim() !== '') {
+    // Check for unrealistic salary ranges and correct them
+    if (salaryRange.includes('Cr') || salaryRange.includes('crore')) {
+      // Convert unrealistic crore amounts to reasonable LPA
+      const crMatch = salaryRange.match(/(\d+(?:\.\d+)?)-?(\d+(?:\.\d+)?)?.*?Cr/i);
+      if (crMatch) {
+        const min = parseFloat(crMatch[1]);
+        const max = crMatch[2] ? parseFloat(crMatch[2]) : min;
+        // Convert from crores to reasonable LPA (divide by 100)
+        const reasonableMin = Math.max(3, Math.min(min / 100, 50));
+        const reasonableMax = Math.max(reasonableMin + 5, Math.min(max / 100, 80));
+        return `₹${reasonableMin.toFixed(0)}-${reasonableMax.toFixed(0)} LPA`;
+      }
+    }
     return salaryRange;
   }
   
   // Fallback to min/max if no salary_range
   if (!min && !max) return "Salary not specified";
+  
+  // Fix unrealistic salary values (if they're in crores, convert to reasonable amounts)
+  if (min && min > 10000000) { // > 1 crore
+    min = Math.max(300000, Math.min(min / 100, 5000000)); // Convert to 3L-50L range
+  }
+  if (max && max > 10000000) { // > 1 crore  
+    max = Math.max(500000, Math.min(max / 100, 8000000)); // Convert to 5L-80L range
+  }
   
   const formatAmount = (amount: number) => {
     if (frequency === 'hourly') {
