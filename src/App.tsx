@@ -124,16 +124,7 @@ const App = () => {
                       <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
                       <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
                       
-                      {/* SEO Routes - Sitemap and Robots.txt */}
-                      {/* External routes that redirect to Supabase functions */}
-                      <Route 
-                        path="/sitemap.xml" 
-                        element={<Navigate to="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/sitemap-xml" replace />} 
-                      />
-                      <Route 
-                        path="/robots.txt" 
-                        element={<Navigate to="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/sitemap-generator?type=robots" replace />} 
-                      />
+{/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
                     </Routes>
                   </main>
                   <Footer />
