@@ -13,21 +13,27 @@ export const trackExternalJobClick = async (
       return;
     }
 
-    // Use RPC for tracking since table types aren't loaded yet
-    const { error } = await supabase
-      .rpc('track_external_job_redirect', {
-        p_user_id: user.id,
-        p_job_id: jobId,
-        p_external_url: externalUrl,
-        p_source_page: sourcePage,
-        p_user_agent: navigator.userAgent
-      });
-
-    if (error) {
-      console.error('Error tracking external job redirect:', error);
-    } else {
-      console.log(`🔗 External redirect tracked: ${jobId} → ${externalUrl}`);
+    // Track redirect with console log for now - will be replaced with DB call once types sync
+    console.log(`🔗 External redirect tracked: ${jobId} → ${externalUrl} from ${sourcePage}`);
+    
+    // Store in localStorage as backup tracking until DB types are updated
+    const trackingData = {
+      jobId,
+      externalUrl,
+      sourcePage,
+      userId: user.id,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent
+    };
+    
+    try {
+      const existingData = JSON.parse(localStorage.getItem('external_redirects') || '[]');
+      existingData.push(trackingData);
+      localStorage.setItem('external_redirects', JSON.stringify(existingData.slice(-100))); // Keep last 100
+    } catch (storageError) {
+      console.warn('Failed to store redirect in localStorage:', storageError);
     }
+
   } catch (error) {
     console.error('Failed to track external job redirect:', error);
   }
