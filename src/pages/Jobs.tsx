@@ -394,68 +394,49 @@ const Jobs = () => {
           </div>
         </div>
 
-        {/* Main Jobs Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          
-          {/* Enhanced Filters Panel */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border p-4 sticky top-20">
-              <div className="flex items-center gap-2 mb-4">
-                <Filter className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold text-base text-gray-900">🔍 Filters</h3>
-              </div>
-              <EnhancedJobFilters
-                filters={filters}
-                onFiltersChange={setFilters}
-                onClearFilters={handleClearFilters}
+        {/* Jobs Content - Full Width */}
+        <div className="w-full">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">All Job Opportunities</h2>
+              <p className="text-sm text-gray-600">Find your perfect match from {totalCount} active positions</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <AutoRefreshIndicator 
+                isConnected={isConnected} 
+                lastRefresh={lastRefresh}
+              />
+              <DataFreshness 
+                lastUpdated={new Date(Date.now())}
+                onRefresh={() => refetch()}
+                isRefreshing={isLoading}
               />
             </div>
           </div>
-          
-          {/* Jobs Content */}
-          <div className="lg:col-span-3">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">All Job Opportunities</h2>
-                <p className="text-sm text-gray-600">Find your perfect match from {totalCount} active positions</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <AutoRefreshIndicator 
-                  isConnected={isConnected} 
-                  lastRefresh={lastRefresh}
-                />
-                <DataFreshness 
-                  lastUpdated={new Date(Date.now())}
-                  onRefresh={() => refetch()}
-                  isRefreshing={isLoading}
-                />
-              </div>
+
+          <JobsList
+            jobs={regularJobs}
+            featuredJobs={[]}
+            regularJobs={regularJobs}
+            savedJobs={savedJobs}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            isLoading={isLoading}
+            onSaveJob={handleSaveJob}
+            onClearFilters={handleClearFilters}
+          />
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-8">
+              <SocialPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalCount={totalCount}
+                onPageChange={goToPage}
+              />
             </div>
-
-            <JobsList
-              jobs={regularJobs}
-              featuredJobs={[]}
-              regularJobs={regularJobs}
-              savedJobs={savedJobs}
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-              isLoading={isLoading}
-              onSaveJob={handleSaveJob}
-              onClearFilters={handleClearFilters}
-            />
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center mt-8">
-                <SocialPagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalCount={totalCount}
-                  onPageChange={goToPage}
-                />
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
 

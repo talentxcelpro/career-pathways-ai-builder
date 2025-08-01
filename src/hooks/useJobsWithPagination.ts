@@ -37,11 +37,27 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
           .eq('job_status', 'open')
           .gte('expires_at', new Date().toISOString()); // Filter out expired jobs
 
-        // Apply location filter for count
+        // Apply all filters to count query too
         if (filters.location === 'India') {
           countQuery = countQuery.ilike('location', '%india%');
         } else if (filters.location === 'International') {
           countQuery = countQuery.not('location', 'ilike', '%india%');
+        }
+
+        if (filters.search) {
+          countQuery = countQuery.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,company_name.ilike.%${filters.search}%`);
+        }
+
+        if (filters.employment_type.length > 0) {
+          countQuery = countQuery.in('employment_type', filters.employment_type);
+        }
+
+        if (filters.experience_level.length > 0) {
+          countQuery = countQuery.in('experience_level', filters.experience_level);
+        }
+
+        if (filters.is_remote) {
+          countQuery = countQuery.eq('is_remote', true);
         }
 
         const { count: totalCount, error: countError } = await countQuery;
