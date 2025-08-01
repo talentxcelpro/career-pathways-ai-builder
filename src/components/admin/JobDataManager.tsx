@@ -14,10 +14,13 @@ import {
   Building2,
   DollarSign,
   Settings,
-  Wrench
+  Wrench,
+  Brain,
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useSkillEnrichment, getFallbackSkills } from '@/hooks/useSkillEnrichment';
 
 interface JobIssue {
   type: string;
@@ -49,6 +52,9 @@ export const JobDataManager: React.FC = () => {
   const [cleanupSummary, setCleanupSummary] = useState<CleanupSummary | null>(null);
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
+  const [skillEnrichmentProgress, setSkillEnrichmentProgress] = useState<{ current: number; total: number } | null>(null);
+  
+  const skillEnrichment = useSkillEnrichment();
 
   useEffect(() => {
     fetchJobStats();
@@ -229,6 +235,104 @@ export const JobDataManager: React.FC = () => {
     }
   };
 
+  const enrichJobSkills = async () => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    setSkillEnrichmentProgress({ current: 0, total: 0 });
+    
+    try {
+      // Get jobs that need skill enrichment
+      const { data: jobs, error: fetchError } = await supabase
+        .from('jobs')
+        .select('id, title, industry, description, experience_level, employment_type, skills_required, ai_skill_tags')
+        .or('skills_required.is.null,ai_skill_tags.is.null')
+        .limit(50);
+
+      if (fetchError) throw fetchError;
+      if (!jobs || jobs.length === 0) {
+        toast.info('No jobs found that need skill enrichment');
+        return;
+      }
+
+      setSkillEnrichmentProgress({ current: 0, total: jobs.length });
+      let enriched = 0;
+
+      for (let i = 0; i < jobs.length; i++) {
+        const job = jobs[i];
+        setSkillEnrichmentProgress({ current: i + 1, total: jobs.length });
+        
+        try {
+          // Check if job already has good skills
+          const hasGoodSkills = job.ai_skill_tags && job.ai_skill_tags.length >= 5;
+          if (hasGoodSkills) continue;
+
+          // Enrich skills using AI
+          const enrichmentData = {
+            job_title: job.title,
+            industry: job.industry || undefined,
+            description: job.description ? job.description.slice(0, 500) : undefined,
+            experience_level: job.experience_level || undefined,
+            employment_type: job.employment_type || undefined,
+          };
+
+          let newSkills: string[] = [];
+          
+          try {
+            const result = await skillEnrichment.mutateAsync(enrichmentData);
+            if (result.success && result.skills.length > 0) {
+              newSkills = result.skills;
+            }
+          } catch (aiError) {
+            console.warn('AI skill enrichment failed, using fallback:', aiError);
+            newSkills = getFallbackSkills(job.title);
+          }
+
+          if (newSkills.length === 0) continue;
+
+          // Update job with new skills
+          const { error: updateError } = await supabase
+            .from('jobs')
+            .update({
+              ai_skill_tags: newSkills,
+              skills_required: job.skills_required || newSkills,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', job.id);
+
+          if (updateError) {
+            console.error('Failed to update job skills:', updateError);
+          } else {
+            enriched++;
+          }
+
+          // Add small delay to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, 100));
+
+        } catch (jobError) {
+          console.error(`Failed to enrich skills for job ${job.id}:`, jobError);
+        }
+      }
+
+      toast.success(
+        `Skill enrichment complete`,
+        {
+          description: `Enhanced skills for ${enriched} out of ${jobs.length} jobs`
+        }
+      );
+
+    } catch (error) {
+      console.error('❌ Skill enrichment failed:', error);
+      toast.error('Skill enrichment failed', {
+        description: error instanceof Error ? error.message : 'Unknown error occurred'
+      });
+    } finally {
+      setIsLoading(false);
+      setSkillEnrichmentProgress(null);
+      await fetchJobStats(); // Refresh stats
+    }
+  };
+
   const validateSpecificJob = async (jobId: string) => {
     setIsLoading(true);
     try {
@@ -328,14 +432,34 @@ export const JobDataManager: React.FC = () => {
           <h1 className="text-3xl font-bold text-foreground">Job Data Quality Manager</h1>
           <p className="text-muted-foreground">Monitor and fix job posting data quality issues</p>
         </div>
-        <Button 
-          onClick={runCleanupAll} 
-          disabled={isLoading}
-          variant="default"
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-          {isLoading ? 'Running Cleanup...' : 'Run Full Cleanup'}
-        </Button>
+        <div className="space-x-2">
+          <Button 
+            onClick={runCleanupAll} 
+            disabled={isLoading}
+            variant="default"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading && !skillEnrichmentProgress ? 'animate-spin' : ''}`} />
+            {isLoading && !skillEnrichmentProgress ? 'Running Cleanup...' : 'Fix Salary & Company Issues'}
+          </Button>
+          
+          <Button 
+            onClick={enrichJobSkills} 
+            disabled={isLoading}
+            variant="outline"
+          >
+            {isLoading && skillEnrichmentProgress ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Enriching Skills... ({skillEnrichmentProgress.current}/{skillEnrichmentProgress.total})
+              </>
+            ) : (
+              <>
+                <Brain className="h-4 w-4 mr-2" />
+                AI Skill Enrichment
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
