@@ -32,8 +32,10 @@ export default defineConfig(({ mode }) => ({
           'supabase': ['@supabase/supabase-js'],
           'query': ['@tanstack/react-query'],
           'forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
-          // Separate PDF libraries to avoid memory issues
-          'pdf-libs': ['jspdf', 'html2canvas']
+          // Only include PDF libraries in chunks for production
+          ...(mode === 'production' && {
+            'pdf-libs': ['jspdf', 'html2canvas']
+          })
         }
       },
       // Reduce memory usage during build
