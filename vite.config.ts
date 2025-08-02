@@ -31,19 +31,11 @@ export default defineConfig(({ mode }) => ({
           'icons': ['lucide-react'],
           'supabase': ['@supabase/supabase-js'],
           'query': ['@tanstack/react-query'],
-          'forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
-          // Only include PDF libraries in chunks for production
-          ...(mode === 'production' && {
-            'pdf-libs': ['jspdf', 'html2canvas']
-          })
+          'forms': ['react-hook-form', '@hookform/resolvers', 'zod']
         }
       },
       // Reduce memory usage during build
-      maxParallelFileOps: 1,
-      // Externalize heavy dependencies in development
-      ...((mode === 'development') && {
-        external: ['jspdf', 'html2canvas']
-      })
+      maxParallelFileOps: 1
     },
     target: 'esnext',
     minify: mode === 'production' ? 'terser' : false,
