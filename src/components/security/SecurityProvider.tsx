@@ -31,10 +31,12 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
     if (!user) return;
     
     try {
-      await supabase.rpc('log_security_event_secure', {
+      // Use enhanced security logging with severity detection
+      await supabase.rpc('log_security_event_enhanced', {
         p_user_id: user.id,
         p_event_type: eventType,
         p_description: description,
+        p_severity: metadata.severity || 'medium',
         p_ip_address: null, // Would need to be captured on backend
         p_user_agent: navigator.userAgent,
         p_metadata: metadata

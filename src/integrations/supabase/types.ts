@@ -19259,6 +19259,18 @@ export type Database = {
             }
         Returns: string
       }
+      log_security_event_enhanced: {
+        Args: {
+          p_user_id: string
+          p_event_type: string
+          p_description: string
+          p_severity?: string
+          p_ip_address?: unknown
+          p_user_agent?: string
+          p_metadata?: Json
+        }
+        Returns: string
+      }
       log_security_event_secure: {
         Args: {
           p_user_id: string
@@ -19467,6 +19479,10 @@ export type Database = {
       }
       validate_job_url: {
         Args: { url: string }
+        Returns: boolean
+      }
+      validate_user_input: {
+        Args: { input_text: string; input_type?: string; max_length?: number }
         Returns: boolean
       }
     }
