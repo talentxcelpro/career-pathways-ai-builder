@@ -23,10 +23,7 @@ Disallow: /_next/
 Disallow: /static/
 
 # Allow search engines to access sitemaps
-Sitemap: https://talentxcel.in/sitemap.xml
-Sitemap: https://talentxcel.in/sitemap-jobs.xml
-Sitemap: https://talentxcel.in/sitemap-companies.xml
-Sitemap: https://talentxcel.in/sitemap-courses.xml
+Sitemap: https://talentxcel.in/api/sitemap.xml
 
 # Crawl delay to prevent overloading
 Crawl-delay: 1
