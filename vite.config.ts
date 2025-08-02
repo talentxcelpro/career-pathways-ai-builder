@@ -20,22 +20,24 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Performance optimizations with memory management
+    // Aggressive memory management for build
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor': ['react', 'react-dom'],
-          'router': ['react-router-dom'],
-          'ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-toast'],
-          'utils': ['clsx', 'class-variance-authority', 'date-fns'],
-          'icons': ['lucide-react'],
-          'supabase': ['@supabase/supabase-js'],
-          'query': ['@tanstack/react-query'],
-          'forms': ['react-hook-form', '@hookform/resolvers', 'zod']
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) return 'vendor';
+            if (id.includes('@radix-ui')) return 'ui';
+            if (id.includes('supabase')) return 'supabase';
+            if (id.includes('lucide-react')) return 'icons';
+            return 'vendor';
+          }
+          if (id.includes('/admin/')) return 'admin';
+          if (id.includes('/components/')) return 'components';
         }
       },
-      // Reduce memory usage during build
-      maxParallelFileOps: 1
+      // Aggressive memory reduction
+      maxParallelFileOps: 1,
+      cache: false
     },
     target: 'esnext',
     minify: mode === 'production' ? 'terser' : false,
