@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { validateInput, authRateLimiter, formRateLimiter } from '@/utils/sanitize';
-import { useSecurityContext } from '@/components/security/SecurityProvider';
+// import { useSecurityContext } from '@/components/security/SecurityProvider';
 
 interface ValidationOptions {
   type?: 'email' | 'phone' | 'url' | 'text' | 'password';
@@ -17,7 +17,10 @@ interface ValidationResult {
 }
 
 export const useSecurityValidation = () => {
-  const { logSecurityEvent } = useSecurityContext();
+  // const { logSecurityEvent } = useSecurityContext();
+  const logSecurityEvent = async (event: string, desc: string, meta?: any) => {
+    console.log(`Security Event: ${event} - ${desc}`, meta);
+  };
   const [isValidating, setIsValidating] = useState(false);
 
   const validateSecurely = useCallback(async (
