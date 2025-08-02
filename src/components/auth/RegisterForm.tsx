@@ -38,13 +38,41 @@ export const RegisterForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Enhanced input validation and sanitization
+    const sanitizedEmail = formData.email.trim().toLowerCase();
+    const sanitizedFullName = formData.fullName.trim();
+    
+    // Email validation
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    // Name validation
+    if (sanitizedFullName.length < 2 || sanitizedFullName.length > 100) {
+      toast.error("Full name must be between 2 and 100 characters");
+      return;
+    }
+
+    // XSS prevention for name
+    if (/<[^>]*>/g.test(sanitizedFullName)) {
+      toast.error("Full name contains invalid characters");
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
 
-    if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+    // Enhanced password validation
+    if (formData.password.length < 8) {
+      toast.error('Password must be at least 8 characters long');
+      return;
+    }
+
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+      toast.error('Password must contain at least one uppercase letter, one lowercase letter, and one number');
       return;
     }
 
@@ -52,13 +80,13 @@ export const RegisterForm = () => {
 
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: formData.email,
+        email: sanitizedEmail,
         password: formData.password,
         options: {
+          emailRedirectTo: `${window.location.origin}/`,
           data: {
-            full_name: formData.fullName,
-          },
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+            full_name: sanitizedFullName,
+          }
         }
       });
 

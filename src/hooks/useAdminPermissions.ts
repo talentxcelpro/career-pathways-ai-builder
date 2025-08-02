@@ -47,6 +47,26 @@ export const useAdminPermissions = () => {
           return;
         }
 
+        // Additional server-side validation to prevent role escalation
+        const { data: isAuthorized } = await supabase.rpc('validate_admin_operation', {
+          _required_role: 'user'  // Minimum role check
+        });
+
+        if (!isAuthorized) {
+          console.error('Role validation failed - unauthorized access attempt');
+          await logSecurityEvent(
+            'unauthorized_role_access',
+            'Attempted unauthorized role access',
+            {
+              userId: user.id,
+              severity: 'critical'
+            }
+          );
+          setAdminRole('moderator');
+          setPermissions(ROLE_PERMISSIONS.moderator);
+          return;
+        }
+
         if (error) {
           console.error('Error fetching user role:', error);
           
