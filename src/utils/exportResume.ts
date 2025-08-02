@@ -1,5 +1,3 @@
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
 import { saveAs } from 'file-saver';
 import { toast } from 'sonner';
@@ -23,16 +21,11 @@ export const exportToPDF = async (elementId: string, filename: string = 'resume.
 
     console.log('Element found, dimensions:', rect);
 
-    // Load html2canvas and jsPDF dynamically to handle potential loading issues
-    if (typeof html2canvas !== 'function') {
-      console.error('html2canvas not loaded properly');
-      throw new Error('PDF generation libraries not loaded. Please refresh the page and try again.');
-    }
-
-    if (typeof jsPDF !== 'function') {
-      console.error('jsPDF not loaded properly');
-      throw new Error('PDF generation libraries not loaded. Please refresh the page and try again.');
-    }
+    // Load html2canvas and jsPDF dynamically
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import('html2canvas'),
+      import('jspdf')
+    ]);
 
     console.log('Generating canvas from element...');
     toast.loading('Generating PDF...', { id: 'pdf-export' });

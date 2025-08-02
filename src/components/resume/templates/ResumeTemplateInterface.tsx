@@ -10,8 +10,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { ArrowLeft, ArrowRight, Download, Eye, Settings, Palette } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 interface ResumeTemplateInterfaceProps {
   resumeData: any;
@@ -143,7 +141,12 @@ export const ResumeTemplateInterface: React.FC<ResumeTemplateInterfaceProps> = (
       // Wait for rendering
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Generate PDF
+      // Generate PDF using dynamic imports
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf')
+      ]);
+
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
