@@ -1,113 +1,45 @@
-# TalentXcel Robots.txt - AI-Enhanced SEO Configuration
-
 User-agent: *
 Allow: /
 
-# Major search engines
+# High-priority pages
+Allow: /jobs
+Allow: /companies
+Allow: /resume-builder
+Allow: /network
+Allow: /courses
+Allow: /career-guidance
+
+# Block admin and sensitive areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /dashboard/private/
+Disallow: /user/private/
+
+# Block temporary and test pages
+Disallow: /test/
+Disallow: /temp/
+Disallow: /_next/
+Disallow: /static/
+
+# Allow search engines to access sitemaps
+Sitemap: https://talentxcel.in/sitemap.xml
+Sitemap: https://talentxcel.in/sitemap-jobs.xml
+Sitemap: https://talentxcel.in/sitemap-companies.xml
+Sitemap: https://talentxcel.in/sitemap-courses.xml
+
+# Crawl delay to prevent overloading
+Crawl-delay: 1
+
+# Specific rules for major search engines
 User-agent: Googlebot
 Allow: /
 Crawl-delay: 1
-Request-rate: 10/60s
 
 User-agent: Bingbot
 Allow: /
-Crawl-delay: 2
-Request-rate: 5/60s
+Crawl-delay: 1
 
 User-agent: Slurp
 Allow: /
-Crawl-delay: 3
-
-# Social & preview bots
-User-agent: Twitterbot
-Allow: /
-User-agent: facebookexternalhit
-Allow: /
-User-agent: LinkedInBot
-Allow: /
-User-agent: WhatsApp
-Allow: /
-User-agent: TelegramBot
-Allow: /
-
-# AI & ML bots
-User-agent: ChatGPT-User
-Allow: /
-User-agent: GPTBot
-Allow: /
-User-agent: Google-Extended
-Allow: /
-User-agent: PerplexityBot
-Allow: /
-User-agent: ClaudeBot
-Allow: /
-User-agent: Claude-Web
-Allow: /
-
-# SEO analysis tools
-User-agent: AhrefsBot
-Allow: /
-User-agent: SemrushBot
-Allow: /
-User-agent: MJ12bot
-Allow: /
-
-# Job aggregator crawlers
-User-agent: JobBoardBot
-Allow: /
-User-agent: CareerBuilder
-Allow: /
-User-agent: Indeed
-Allow: /
-
-# Sitemap for content discovery
-Sitemap: https://talentxcel.in/sitemap.xml
-
-# High-priority sections
-Allow: /jobs/
-Allow: /companies/
-Allow: /learning/
-Allow: /network/
-Allow: /salary/
-Allow: /career-map/
-Allow: /resume-builder/
-
-# SEO landing pages
-Allow: /jobs/location/
-Allow: /jobs/role/
-Allow: /jobs/skill/
-Allow: /companies/location/
-Allow: /courses/category/
-
-# Restrict only sensitive/internal paths
-Disallow: /admin/
-Disallow: /auth/
-Disallow: /private/
-Disallow: /employer/settings/
-Disallow: /profile/edit/
-Disallow: /api/private/
-
-# Clean parameters
-Clean-param: utm_source&utm_medium&utm_campaign&ref
-
-# API allowlist for beneficial tools
-Allow: /api/sitemap
-Allow: /api/rss
-Allow: /api/search
-Allow: /api/public/
-Allow: /.well-known/
-
-# Performance tuning
 Crawl-delay: 1
-Request-rate: 1/2s
-Visit-time: 0600-2200
-
-# Host & canonical domain
-Host: https://talentxcel.in
-
-# Clean parameter filtering
-Clean-param: utm_source
-Clean-param: utm_medium
-Clean-param: utm_campaign
-Clean-param: ref
-Clean-param: source

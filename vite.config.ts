@@ -19,4 +19,40 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Performance optimizations
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor': ['react', 'react-dom'],
+          'router': ['react-router-dom'],
+          'ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-toast'],
+          'utils': ['clsx', 'class-variance-authority', 'date-fns'],
+          'icons': ['lucide-react'],
+          'supabase': ['@supabase/supabase-js'],
+          'ai': ['@tanstack/react-query']
+        }
+      }
+    },
+    target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production',
+        drop_debugger: mode === 'production'
+      }
+    },
+    sourcemap: mode !== 'production',
+    chunkSizeWarningLimit: 1000
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@supabase/supabase-js',
+      '@tanstack/react-query',
+      'lucide-react'
+    ]
+  }
 }));

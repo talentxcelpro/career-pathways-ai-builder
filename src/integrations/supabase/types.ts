@@ -10240,6 +10240,54 @@ export type Database = {
         }
         Relationships: []
       }
+      performance_metrics: {
+        Row: {
+          cls: number | null
+          connection_type: string | null
+          created_at: string | null
+          device_memory: number | null
+          fcp: number | null
+          fid: number | null
+          id: string
+          inp: number | null
+          lcp: number | null
+          page_url: string
+          session_id: string | null
+          ttfb: number | null
+          user_id: string | null
+        }
+        Insert: {
+          cls?: number | null
+          connection_type?: string | null
+          created_at?: string | null
+          device_memory?: number | null
+          fcp?: number | null
+          fid?: number | null
+          id?: string
+          inp?: number | null
+          lcp?: number | null
+          page_url: string
+          session_id?: string | null
+          ttfb?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          cls?: number | null
+          connection_type?: string | null
+          created_at?: string | null
+          device_memory?: number | null
+          fcp?: number | null
+          fid?: number | null
+          id?: string
+          inp?: number | null
+          lcp?: number | null
+          page_url?: string
+          session_id?: string | null
+          ttfb?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       permission_requests: {
         Row: {
           approved_by: string | null
@@ -14720,6 +14768,48 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_analytics: {
+        Row: {
+          avg_session_duration: number | null
+          bounce_rate: number | null
+          conversion_rate: number | null
+          created_at: string | null
+          date: string | null
+          id: string
+          keyword_rankings: Json | null
+          organic_traffic: number | null
+          page_type: string | null
+          page_url: string
+          updated_at: string | null
+        }
+        Insert: {
+          avg_session_duration?: number | null
+          bounce_rate?: number | null
+          conversion_rate?: number | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          keyword_rankings?: Json | null
+          organic_traffic?: number | null
+          page_type?: string | null
+          page_url: string
+          updated_at?: string | null
+        }
+        Update: {
+          avg_session_duration?: number | null
+          bounce_rate?: number | null
+          conversion_rate?: number | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          keyword_rankings?: Json | null
+          organic_traffic?: number | null
+          page_type?: string | null
+          page_url?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       seo_bulk_jobs: {
         Row: {
           completed_at: string | null
@@ -14822,6 +14912,36 @@ export type Database = {
           page_type?: string
           structured_data?: Json | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      seo_content_cache: {
+        Row: {
+          cache_key: string
+          content_data: Json
+          content_type: string
+          created_at: string | null
+          expires_at: string
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          cache_key: string
+          content_data: Json
+          content_type: string
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          cache_key?: string
+          content_data?: Json
+          content_type?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -18951,6 +19071,10 @@ export type Database = {
       check_vanity_url_availability: {
         Args: { url: string }
         Returns: boolean
+      }
+      clean_expired_seo_cache: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       cleanup_expired_jobs: {
         Args: Record<PropertyKey, never>

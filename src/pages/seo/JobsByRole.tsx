@@ -1,217 +1,23 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useSEO } from '@/hooks/useSEO';
-import { SEOHead } from '@/components/seo/SEOHead';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { SEOPageGenerator } from '@/components/seo/SEOPageGenerator';
+import { PerformanceOptimizer } from '@/components/seo/PerformanceOptimizer';
 
-const JobsByRole = () => {
-  const { role } = useParams<{ role: string }>();
-  const formattedRole = role?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) || '';
+const JobsByRole: React.FC = () => {
+  const { role, location } = useParams<{ role: string; location?: string }>();
 
-  // Fetch jobs data for this role
-  const { data: jobsData = [] } = useQuery({
-    queryKey: ['jobs', role],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('jobs')
-        .select(`
-          *,
-          companies (
-            name,
-            logo_url,
-            industry
-          )
-        `)
-        .eq('is_active', true)
-        .ilike('title', `%${formattedRole}%`)
-        .order('posted_at', { ascending: false });
-      return data || [];
-    }
-  });
-
-  const seoConfig = {
-    title: `${formattedRole} Jobs | Latest ${formattedRole} Openings | TalentXcel`,
-    description: `Find the best ${formattedRole} jobs in India. Browse latest ${formattedRole} openings from top companies. Apply now and advance your career as a ${formattedRole}.`,
-    keywords: [
-      `${formattedRole.toLowerCase()} jobs`,
-      `${formattedRole.toLowerCase()} openings`,
-      `${formattedRole.toLowerCase()} career`,
-      `${formattedRole.toLowerCase()} positions`,
-      'job opportunities',
-      'hiring',
-      'employment'
-    ],
-    canonical: `/jobs/role/${role}`,
-    structuredData: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "JobPostingOrganization",
-      "name": `${formattedRole} Jobs`,
-      "description": `Latest ${formattedRole} job opportunities`,
-      "occupationalCategory": formattedRole,
-      "url": `https://talentxcel.in/jobs/role/${role}`
-    })
-  };
-
-  useSEO(seoConfig);
-
-  const roleData = {
-    'software-engineer': {
-      averageSalary: '₹12L',
-      experience: '2-8 years',
-      skills: ['JavaScript', 'React', 'Node.js', 'Python', 'AWS'],
-      description: 'Software Engineers design, develop, and maintain software applications and systems.'
-    },
-    'data-scientist': {
-      averageSalary: '₹15L',
-      experience: '3-7 years',
-      skills: ['Python', 'Machine Learning', 'SQL', 'Tableau', 'Statistics'],
-      description: 'Data Scientists analyze complex data to help organizations make data-driven decisions.'
-    },
-    'product-manager': {
-      averageSalary: '₹18L',
-      experience: '4-10 years',
-      skills: ['Strategy', 'Analytics', 'User Research', 'Agile', 'Leadership'],
-      description: 'Product Managers guide the strategy, roadmap, and feature definition of products.'
-    }
-  };
-
-  const currentRole = roleData[role as keyof typeof roleData] || roleData['software-engineer'];
+  if (!role) {
+    return <div>Role not found</div>;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <SEOHead {...seoConfig} />
-      
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              {formattedRole} Jobs
-            </h1>
-            <p className="text-xl mb-8 max-w-3xl mx-auto">
-              {currentRole.description} Explore exciting {formattedRole} opportunities 
-              with top companies and advance your career.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm">
-              <span className="bg-white/20 px-3 py-1 rounded-full">2000+ Openings</span>
-              <span className="bg-white/20 px-3 py-1 rounded-full">{currentRole.averageSalary} Avg Salary</span>
-              <span className="bg-white/20 px-3 py-1 rounded-full">Remote Options</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Role Overview */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <h3 className="text-lg font-semibold mb-4">Average Salary</h3>
-              <div className="text-3xl font-bold text-green-600">{currentRole.averageSalary}</div>
-            </div>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold mb-4">Experience Range</h3>
-              <div className="text-3xl font-bold text-blue-600">{currentRole.experience}</div>
-            </div>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold mb-4">Top Skills</h3>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {currentRole.skills.map((skill, index) => (
-                  <span key={index} className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Jobs Listing */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold mb-4">{formattedRole} Opportunities</h2>
-            <p className="text-gray-600">Found {jobsData.length} job openings</p>
-          </div>
-          
-          <div className="space-y-4">
-            {jobsData.map((job) => (
-              <div key={job.id} className="bg-white rounded-lg border p-6 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
-                    <p className="text-gray-600 mb-2">{job.companies?.name}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <span>{job.location}</span>
-                      {job.salary_min && job.salary_max && (
-                        <span>₹{job.salary_min/100000}L - ₹{job.salary_max/100000}L</span>
-                      )}
-                      <span>{job.employment_type}</span>
-                    </div>
-                  </div>
-                  {job.is_featured && (
-                    <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
-                      Featured
-                    </span>
-                  )}
-                </div>
-                <p className="text-gray-700 mb-4 line-clamp-2">{job.description}</p>
-                <div className="flex justify-between items-center">
-                  <div className="flex flex-wrap gap-2">
-                    {job.skills_required?.slice(0, 3).map((skill: string, index: number) => (
-                      <span key={index} className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                  <button className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
-                    Apply Now
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {jobsData.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No {formattedRole} jobs found. Check back later for new opportunities.</p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Career Guide */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="prose max-w-none">
-            <h2>{formattedRole} Career Guide</h2>
-            <p>
-              A career as a {formattedRole} offers excellent growth opportunities and competitive 
-              compensation. The role requires a combination of technical skills, problem-solving 
-              abilities, and continuous learning.
-            </p>
-            
-            <h3>Key Responsibilities</h3>
-            <ul>
-              <li>Develop and implement solutions to complex technical challenges</li>
-              <li>Collaborate with cross-functional teams</li>
-              <li>Stay updated with latest industry trends and technologies</li>
-              <li>Contribute to product strategy and technical decisions</li>
-            </ul>
-
-            <h3>Career Progression</h3>
-            <p>
-              {formattedRole} professionals typically progress from junior roles to senior positions, 
-              with opportunities to specialize in specific technologies or move into leadership roles 
-              such as Tech Lead, Engineering Manager, or CTO.
-            </p>
-          </div>
-        </div>
-      </section>
-    </div>
+    <PerformanceOptimizer component="jobs-role" preload={false}>
+      <SEOPageGenerator 
+        pageType="job-role"
+        role={role}
+        location={location}
+      />
+    </PerformanceOptimizer>
   );
 };
 
