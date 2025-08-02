@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         if (!mounted) return;
 
         console.log('Auth state changed:', event, session?.user?.email);
@@ -69,6 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.log('Token refreshed successfully');
         }
         
+        // Always set loading to false after any auth event
         if (mounted) {
           setLoading(false);
         }
@@ -81,7 +82,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
           console.error('Error getting session:', error);
-        } else if (mounted) {
+        }
+        
+        if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
           
@@ -93,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (error) {
         console.error('Auth initialization error:', error);
       } finally {
+        // Ensure loading is always set to false, even if there's an error
         if (mounted) {
           setLoading(false);
         }
@@ -101,9 +105,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initializeAuth();
 
+    // Fallback timeout to ensure loading doesn't stay true forever
+    const timeout = setTimeout(() => {
+      if (mounted) {
+        console.log('Auth initialization timeout, setting loading to false');
+        setLoading(false);
+      }
+    }, 3000);
+
     return () => {
       mounted = false;
       subscription.unsubscribe();
+      clearTimeout(timeout);
     };
   }, [navigate]);
 
