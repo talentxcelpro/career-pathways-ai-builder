@@ -34,22 +34,29 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   }
 });
 
-// Create a separate client for functions with custom URL
-export const supabaseFunctions = createClient<Database>(
-  "https://auth.talentxcel.in", 
-  SUPABASE_PUBLISHABLE_KEY,
-  {
-    auth: {
-      storage: window.localStorage,
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      flowType: 'pkce'
-    },
-    global: {
-      headers: {
-        'cache-control': 'no-cache'
+// Single instance pattern to prevent multiple GoTrue clients
+let supabaseFunctionsInstance: ReturnType<typeof createClient<Database>> | null = null;
+
+export const getSupabaseFunctions = () => {
+  if (!supabaseFunctionsInstance) {
+    supabaseFunctionsInstance = createClient<Database>(
+      SUPABASE_URL, // Use same URL to prevent multiple instances
+      SUPABASE_PUBLISHABLE_KEY,
+      {
+        auth: {
+          storage: window.localStorage,
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: false, // Prevent duplicate session detection
+          flowType: 'pkce'
+        },
+        global: {
+          headers: {
+            'cache-control': 'no-cache'
+          }
+        }
       }
-    }
+    );
   }
-);
+  return supabaseFunctionsInstance;
+};
