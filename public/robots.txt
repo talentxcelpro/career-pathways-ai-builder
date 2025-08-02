@@ -60,15 +60,12 @@ Allow: /
 User-agent: Indeed
 Allow: /
 
-# Sitemaps
-Sitemap: https://talentxcel.in/sitemap.xml
-Sitemap: https://talentxcel.in/sitemap-index.xml
-Sitemap: https://talentxcel.in/jobs-sitemap.xml
-Sitemap: https://talentxcel.in/companies-sitemap.xml
-Sitemap: https://talentxcel.in/courses-sitemap.xml
-Sitemap: https://talentxcel.in/seo-pages-sitemap.xml
-Sitemap: https://talentxcel.in/news-sitemap.xml
-Sitemap: https://talentxcel.in/rss-feed.xml
+# Sitemaps for better content discovery
+Sitemap: https://talentxcel.in/functions/v1/sitemap-generator?type=index
+Sitemap: https://talentxcel.in/functions/v1/sitemap-generator?type=main
+Sitemap: https://talentxcel.in/functions/v1/sitemap-generator?type=jobs
+Sitemap: https://talentxcel.in/functions/v1/sitemap-generator?type=network
+Sitemap: https://talentxcel.in/functions/v1/sitemap-generator?type=companies
 
 # High-priority sections
 Allow: /jobs/

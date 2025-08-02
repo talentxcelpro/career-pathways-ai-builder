@@ -73,8 +73,9 @@ ${urls}
     return new Response(sitemapXml, {
       headers: {
         ...corsHeaders,
-        'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=3600',
+        'X-Content-Type-Options': 'nosniff',
       },
     });
 
@@ -91,7 +92,8 @@ ${urls}
       status: 500,
       headers: {
         ...corsHeaders,
-        'Content-Type': 'application/xml',
+        'Content-Type': 'application/xml; charset=utf-8',
+        'X-Content-Type-Options': 'nosniff',
       },
     });
   }
