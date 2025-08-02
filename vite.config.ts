@@ -20,35 +20,26 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Performance optimizations with memory management
+    // Aggressive memory management for build
     rollupOptions: {
       output: {
+        // Simplified chunking to reduce memory overhead
         manualChunks: {
           'vendor': ['react', 'react-dom'],
-          'router': ['react-router-dom'],
-          'ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-toast'],
-          'utils': ['clsx', 'class-variance-authority', 'date-fns'],
-          'icons': ['lucide-react'],
-          'supabase': ['@supabase/supabase-js'],
-          'query': ['@tanstack/react-query'],
-          'forms': ['react-hook-form', '@hookform/resolvers', 'zod']
+          'libs': ['@supabase/supabase-js', '@tanstack/react-query', 'react-router-dom']
         }
       },
-      // Reduce memory usage during build
-      maxParallelFileOps: 1
+      // Minimize parallel operations to conserve memory
+      maxParallelFileOps: 1,
+      // Additional memory optimizations
+      cache: false
     },
     target: 'esnext',
-    minify: mode === 'production' ? 'terser' : false,
-    ...(mode === 'production' && {
-      terserOptions: {
-        compress: {
-          drop_console: true,
-          drop_debugger: true
-        }
-      }
-    }),
-    sourcemap: mode !== 'production',
-    chunkSizeWarningLimit: 1500
+    minify: false, // Disable minification to save memory during dev builds
+    sourcemap: false, // Disable sourcemaps to save memory
+    chunkSizeWarningLimit: 2000,
+    // Reduce build concurrency
+    assetsInlineLimit: 0
   },
   optimizeDeps: {
     include: [
