@@ -17,7 +17,7 @@ import { useSmartSuggestions } from "@/hooks/useSmartSuggestions";
 import { RealTimeATSScore } from "@/components/resume/enhanced/RealTimeATSScore";
 import { SmartSuggestionsPanel } from "@/components/resume/enhanced/SmartSuggestionsPanel";
 import { toast } from "sonner";
-import html2pdf from 'html2pdf.js';
+
 
 interface ResumeData {
   personalInfo: {
@@ -554,18 +554,11 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
 
     setIsGeneratingPDF(true);
     try {
-      const element = resumePreviewRef.current;
-      const opt = {
-        margin: 0.5,
-        filename: `${resumeData.personalInfo.fullName || 'resume'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-
-      await html2pdf().set(opt).from(element).save();
-      toast.success('PDF downloaded successfully!');
+      // Show message that PDF export is not available in development
+      toast.info('PDF export is temporarily disabled in development mode. Please use production build for PDF export.');
+      
     } catch (error) {
+      console.error('PDF generation error:', error);
       toast.error('Failed to generate PDF');
     } finally {
       setIsGeneratingPDF(false);
