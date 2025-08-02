@@ -5,7 +5,7 @@ import { BotIdentityManager } from "../components/admin/BotIdentityManager";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
 import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
-import SimpleAdminDashboard from "../pages/admin/SimpleAdminDashboard";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminManagement from "../pages/admin/AdminManagement";
 import UserManagement from "../pages/admin/UserManagement";
 import HomeManagement from "../pages/admin/HomeManagement";
@@ -46,7 +46,7 @@ export const adminRoutes = [
     title: "Admin Dashboard",
     to: "/admin",
     icon: <Shield className="h-4 w-4" />,
-    page: <SimpleAdminDashboard />,
+    page: <AdminDashboard />,
     requiresAuth: true,
   },
   {

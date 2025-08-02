@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Shield, 
   AlertTriangle, 
@@ -10,8 +11,10 @@ import {
   Users, 
   Lock,
   Eye,
+  TrendingUp,
   RefreshCw
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface SecurityEvent {
   id: string;
@@ -33,48 +36,150 @@ interface SecurityStats {
 }
 
 const SecurityMonitoring = () => {
-  const [loading, setLoading] = useState(false);
+  const [securityEvents, setSecurityEvents] = useState<SecurityEvent[]>([]);
+  const [stats, setStats] = useState<SecurityStats>({
+    totalEvents: 0,
+    criticalEvents: 0,
+    failedLogins: 0,
+    suspiciousActivity: 0,
+    activeUsers: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Mock data for display
-  const mockEvents: SecurityEvent[] = [
-    {
-      id: '1',
-      user_id: 'user123',
-      event_type: 'login_failed',
-      description: 'Failed login attempt detected',
-      created_at: new Date().toISOString(),
-      metadata: { severity: 'medium' },
-      ip_address: '192.168.1.100',
-      user_agent: 'Mozilla/5.0...'
-    },
-    {
-      id: '2',
-      user_id: 'user456',
-      event_type: 'role_escalation_attempt',
-      description: 'Unauthorized admin access attempt',
-      created_at: new Date(Date.now() - 3600000).toISOString(),
-      metadata: { severity: 'critical' },
-      ip_address: '10.0.0.25',
-      user_agent: 'Mozilla/5.0...'
+  const fetchSecurityData = async () => {
+    try {
+      setRefreshing(true);
+
+      // Fetch recent security events
+      const { data: events, error: eventsError } = await supabase
+        .from('security_events')
+        .select(`
+          id,
+          user_id,
+          event_type,
+          description,
+          created_at,
+          metadata,
+          ip_address,
+          user_agent
+        `)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (eventsError) {
+        console.error('Error fetching security events:', eventsError);
+        toast.error('Failed to load security events');
+        return;
+      }
+
+      // Type-safe event handling
+      const typedEvents = (events || []).map(event => ({
+        ...event,
+        metadata: event.metadata as Record<string, any> || {},
+        ip_address: event.ip_address as string | null
+      }));
+
+      setSecurityEvents(typedEvents);
+
+      // Calculate security statistics
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const todayEvents = typedEvents.filter(event => 
+        new Date(event.created_at) >= today
+      );
+
+      const criticalEvents = todayEvents.filter(event => 
+        (event.metadata as any)?.severity === 'critical' ||
+        event.event_type.includes('failed') ||
+        event.event_type.includes('blocked') ||
+        event.event_type.includes('violation')
+      );
+
+      const failedLogins = todayEvents.filter(event => 
+        event.event_type === 'login_failed' ||
+        event.event_type === 'login_validation_failed'
+      );
+
+      const suspiciousActivity = todayEvents.filter(event => 
+        event.event_type.includes('rate_limit') ||
+        event.event_type.includes('invalid_role') ||
+        event.event_type.includes('unauthorized')
+      );
+
+      // Get active users count (users who logged in today)
+      const activeUsersToday = new Set(
+        todayEvents
+          .filter(event => event.event_type === 'login_success')
+          .map(event => event.user_id)
+      ).size;
+
+      setStats({
+        totalEvents: todayEvents.length,
+        criticalEvents: criticalEvents.length,
+        failedLogins: failedLogins.length,
+        suspiciousActivity: suspiciousActivity.length,
+        activeUsers: activeUsersToday
+      });
+
+    } catch (error) {
+      console.error('Error fetching security data:', error);
+      toast.error('Failed to load security monitoring data');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
-  ];
-
-  const mockStats: SecurityStats = {
-    totalEvents: 45,
-    criticalEvents: 2,
-    failedLogins: 8,
-    suspiciousActivity: 3,
-    activeUsers: 156
   };
 
-  const handleRefresh = () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 1000);
-  };
+  useEffect(() => {
+    fetchSecurityData();
+    
+    // Set up real-time subscription for security events
+    const channel = supabase
+      .channel('security_events')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'security_events'
+        },
+        (payload) => {
+          const newEvent = {
+            ...payload.new,
+            metadata: payload.new.metadata as Record<string, any> || {},
+            ip_address: payload.new.ip_address as string | null
+          } as SecurityEvent;
+          setSecurityEvents(prev => [newEvent, ...prev.slice(0, 49)]);
+          fetchSecurityData(); // Refresh stats
+        }
+      )
+      .subscribe();
+
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(fetchSecurityData, 30000);
+
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(interval);
+    };
+  }, []);
 
   const getSeverityColor = (event: SecurityEvent) => {
     const severity = (event.metadata as any)?.severity || 'medium';
-    return severity === 'critical' ? 'destructive' : 'secondary';
+    const eventType = event.event_type;
+
+    if (severity === 'critical' || eventType.includes('system_error')) {
+      return 'destructive';
+    }
+    if (severity === 'high' || eventType.includes('failed') || eventType.includes('blocked')) {
+      return 'destructive';
+    }
+    if (severity === 'medium' || eventType.includes('rate_limit')) {
+      return 'secondary';
+    }
+    return 'outline';
   };
 
   const formatEventTime = (timestamp: string) => {
@@ -88,92 +193,123 @@ const SecurityMonitoring = () => {
     return <Activity className="h-4 w-4" />;
   };
 
-  return (
-    <UnifiedAdminLayout 
-      title="Security Monitoring" 
-      description="Real-time security event monitoring and analysis"
-    >
+  if (loading) {
+    return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Shield className="h-5 w-5" />
-            <h2 className="text-xl font-semibold">Security Monitoring</h2>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={loading}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+          <h2 className="text-xl font-semibold">Security Monitoring</h2>
         </div>
-
-        {/* Security Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <Activity className="h-4 w-4 text-blue-500" />
-                <div className="text-sm font-medium text-muted-foreground">Total Events Today</div>
-              </div>
-              <div className="text-2xl font-bold">{mockStats.totalEvents}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <AlertTriangle className="h-4 w-4 text-red-500" />
-                <div className="text-sm font-medium text-muted-foreground">Critical Events</div>
-              </div>
-              <div className="text-2xl font-bold text-red-500">{mockStats.criticalEvents}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <Lock className="h-4 w-4 text-orange-500" />
-                <div className="text-sm font-medium text-muted-foreground">Failed Logins</div>
-              </div>
-              <div className="text-2xl font-bold text-orange-500">{mockStats.failedLogins}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <Eye className="h-4 w-4 text-yellow-500" />
-                <div className="text-sm font-medium text-muted-foreground">Suspicious Activity</div>
-              </div>
-              <div className="text-2xl font-bold text-yellow-500">{mockStats.suspiciousActivity}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <Users className="h-4 w-4 text-green-500" />
-                <div className="text-sm font-medium text-muted-foreground">Active Users</div>
-              </div>
-              <div className="text-2xl font-bold text-green-500">{mockStats.activeUsers}</div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardContent className="p-6">
+                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                <div className="h-8 bg-muted rounded w-1/2"></div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
+      </div>
+    );
+  }
 
-        {/* Recent Security Events */}
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Shield className="h-5 w-5" />
+          <h2 className="text-xl font-semibold">Security Monitoring</h2>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={fetchSecurityData}
+          disabled={refreshing}
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+          Refresh
+        </Button>
+      </div>
+
+      {/* Security Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Activity className="h-5 w-5" />
-              <span>Recent Security Events</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {mockEvents.map((event) => (
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-2">
+              <Activity className="h-4 w-4 text-blue-500" />
+              <div className="text-sm font-medium text-muted-foreground">Total Events Today</div>
+            </div>
+            <div className="text-2xl font-bold">{stats.totalEvents}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-2">
+              <AlertTriangle className="h-4 w-4 text-red-500" />
+              <div className="text-sm font-medium text-muted-foreground">Critical Events</div>
+            </div>
+            <div className="text-2xl font-bold text-red-500">{stats.criticalEvents}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-2">
+              <Lock className="h-4 w-4 text-orange-500" />
+              <div className="text-sm font-medium text-muted-foreground">Failed Logins</div>
+            </div>
+            <div className="text-2xl font-bold text-orange-500">{stats.failedLogins}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-2">
+              <Eye className="h-4 w-4 text-yellow-500" />
+              <div className="text-sm font-medium text-muted-foreground">Suspicious Activity</div>
+            </div>
+            <div className="text-2xl font-bold text-yellow-500">{stats.suspiciousActivity}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-2">
+              <Users className="h-4 w-4 text-green-500" />
+              <div className="text-sm font-medium text-muted-foreground">Active Users</div>
+            </div>
+            <div className="text-2xl font-bold text-green-500">{stats.activeUsers}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Critical Alerts */}
+      {stats.criticalEvents > 0 && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            {stats.criticalEvents} critical security event(s) detected today. Please review immediately.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Recent Security Events */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Activity className="h-5 w-5" />
+            <span>Recent Security Events</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {securityEvents.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No security events found
+              </div>
+            ) : (
+              securityEvents.map((event) => (
                 <div
                   key={event.id}
                   className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors"
@@ -202,12 +338,12 @@ const SecurityMonitoring = () => {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </UnifiedAdminLayout>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
