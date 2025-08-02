@@ -11,13 +11,13 @@ const JobsByLocation: React.FC = () => {
   }
 
   return (
-    <PerformanceOptimizer component="jobs-location" preload={false}>
+    <div>
       <SEOPageGenerator 
         pageType="job-location"
         location={location}
         role={role}
       />
-    </PerformanceOptimizer>
+    </div>
   );
 };
 

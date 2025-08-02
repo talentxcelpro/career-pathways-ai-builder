@@ -11,13 +11,13 @@ const JobsByRole: React.FC = () => {
   }
 
   return (
-    <PerformanceOptimizer component="jobs-role" preload={false}>
+    <div>
       <SEOPageGenerator 
         pageType="job-role"
         role={role}
         location={location}
       />
-    </PerformanceOptimizer>
+    </div>
   );
 };
 

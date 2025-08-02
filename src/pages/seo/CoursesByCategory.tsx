@@ -11,12 +11,12 @@ const CoursesByCategory: React.FC = () => {
   }
 
   return (
-    <PerformanceOptimizer component="courses-category" preload={false}>
+    <div>
       <SEOPageGenerator 
         pageType="skill-guide"
         skill={skill || category}
       />
-    </PerformanceOptimizer>
+    </div>
   );
 };
 

@@ -11,12 +11,12 @@ const JobsBySkill: React.FC = () => {
   }
 
   return (
-    <PerformanceOptimizer component="jobs-skill" preload={false}>
+    <div>
       <SEOPageGenerator 
         pageType="skill-guide"
         skill={skill}
       />
-    </PerformanceOptimizer>
+    </div>
   );
 };
 

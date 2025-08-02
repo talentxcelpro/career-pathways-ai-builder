@@ -11,13 +11,13 @@ const SalaryGuide: React.FC = () => {
   }
 
   return (
-    <PerformanceOptimizer component="salary-guide" preload={false}>
+    <div>
       <SEOPageGenerator 
         pageType="career-path"
         role={role}
         industry={industry}
       />
-    </PerformanceOptimizer>
+    </div>
   );
 };
 

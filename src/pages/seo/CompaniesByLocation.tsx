@@ -11,13 +11,13 @@ const CompaniesByLocation: React.FC = () => {
   }
 
   return (
-    <PerformanceOptimizer component="companies-location" preload={false}>
+    <div>
       <SEOPageGenerator 
         pageType="company-location"
         company={company}
         location={location}
       />
-    </PerformanceOptimizer>
+    </div>
   );
 };
 
