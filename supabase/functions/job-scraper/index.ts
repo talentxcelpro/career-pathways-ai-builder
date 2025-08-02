@@ -463,11 +463,14 @@ serve(async (req) => {
       
       const { data: upserted, error } = await supabase
         .from('jobs')
-        .insert(deduplicatedJobs) // Use simple insert instead of upsert with complex conflict
+        .upsert(deduplicatedJobs, {
+          onConflict: 'job_title, company_name, location',
+          ignoreDuplicates: true
+        })
         .select('id, title, company_name, description, external_url');
 
       if (error) {
-        console.error('Insert error:', error);
+        console.error('💥 Error in job scraper:', error);
         logData.errors_count++;
         throw error;
       }
