@@ -7,6 +7,7 @@ import { BotAuthFixer } from '@/components/admin/BotAuthFixer';
 import { BotTemplateManager } from '@/components/admin/BotTemplateManager';
 import { ContentAutomationDashboard } from '@/components/admin/ContentAutomationDashboard';
 import { BotWallManagement } from '@/components/admin/BotWallManagement';
+import { BotAutomationDashboard } from '@/components/admin/BotAutomationDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const BotManagement: React.FC = () => {
@@ -15,8 +16,9 @@ const BotManagement: React.FC = () => {
       title="AI Bot Management"
       description="Manage AI bots, content generation, and analytics"
     >
-      <Tabs defaultValue="dashboard" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+      <Tabs defaultValue="engine" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-7">
+          <TabsTrigger value="engine">Automation Engine</TabsTrigger>
           <TabsTrigger value="dashboard">Bot Dashboard</TabsTrigger>
           <TabsTrigger value="wall">Wall Management</TabsTrigger>
           <TabsTrigger value="automation">Content Automation</TabsTrigger>
@@ -24,6 +26,10 @@ const BotManagement: React.FC = () => {
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="sources">Templates</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="engine" className="space-y-6">
+          <BotAutomationDashboard />
+        </TabsContent>
 
         <TabsContent value="dashboard" className="space-y-6">
           <div className="grid gap-6">

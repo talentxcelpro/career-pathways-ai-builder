@@ -216,10 +216,12 @@ export const useBotStats = () => {
   return useQuery({
     queryKey: ['bot-stats'],
     queryFn: async () => {
-      const [botsResult, contentResult, templatesResult] = await Promise.all([
+      const [botsResult, contentResult, templatesResult, promptsResult, queueResult] = await Promise.all([
         supabase.from('ai_bots').select('id, is_active').eq('is_active', true),
         supabase.from('bot_generated_content').select('id, status, generation_cost'),
-        supabase.from('bot_content_templates').select('id, is_active')
+        supabase.from('bot_content_templates').select('id, is_active'),
+        supabase.from('bot_prompt_library').select('id, is_active, usage_count'),
+        supabase.from('bot_content_queue').select('id, status')
       ]);
 
       const activeBots = botsResult.data?.length || 0;
@@ -228,6 +230,9 @@ export const useBotStats = () => {
       const publishedContent = contentResult.data?.filter(content => content.status === 'published').length || 0;
       const totalCost = contentResult.data?.reduce((sum, content) => sum + (content.generation_cost || 0), 0) || 0;
       const activeTemplates = templatesResult.data?.filter(template => template.is_active).length || 0;
+      const activePrompts = promptsResult.data?.filter(prompt => prompt.is_active).length || 0;
+      const totalPromptUsage = promptsResult.data?.reduce((sum, prompt) => sum + (prompt.usage_count || 0), 0) || 0;
+      const queuedContent = queueResult.data?.filter(item => item.status === 'generated').length || 0;
 
       return {
         activeBots,
@@ -235,8 +240,96 @@ export const useBotStats = () => {
         totalContent,
         publishedContent,
         totalCost,
-        activeTemplates
+        activeTemplates,
+        activePrompts,
+        totalPromptUsage,
+        queuedContent
       };
     },
+  });
+};
+
+// New hooks for automation features
+export const useBotAutomation = () => {
+  const queryClient = useQueryClient();
+
+  const generateBatch = useMutation({
+    mutationFn: async ({ botId, count = 5 }: { botId?: string; count?: number }) => {
+      const { data, error } = await supabase.functions.invoke('ai-bot-content-engine', {
+        body: { action: 'generate_batch', botId, count }
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bot-generated-content'] });
+      queryClient.invalidateQueries({ queryKey: ['bot-stats'] });
+      toast.success('Content batch generated successfully');
+    },
+    onError: (error) => {
+      toast.error(`Failed to generate content: ${error.message}`);
+    },
+  });
+
+  const publishQueue = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke('ai-bot-content-engine', {
+        body: { action: 'publish_queue' }
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['bot-generated-content'] });
+      queryClient.invalidateQueries({ queryKey: ['bot-stats'] });
+      toast.success(`Published ${data.published} posts successfully`);
+    },
+    onError: (error) => {
+      toast.error(`Failed to publish content: ${error.message}`);
+    },
+  });
+
+  return { generateBatch, publishQueue };
+};
+
+export const useBotPrompts = (botId?: string) => {
+  return useQuery({
+    queryKey: ['bot-prompts', botId],
+    queryFn: async () => {
+      let query = supabase.from('bot_prompt_library').select('*');
+      
+      if (botId) {
+        query = query.eq('bot_id', botId);
+      }
+      
+      const { data, error } = await query
+        .eq('is_active', true)
+        .order('priority', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!botId || botId === undefined,
+  });
+};
+
+export const useBotContentQueue = (botId?: string) => {
+  return useQuery({
+    queryKey: ['bot-content-queue', botId],
+    queryFn: async () => {
+      let query = supabase
+        .from('bot_content_queue')
+        .select('*, ai_bots(name), bot_prompt_library(category)');
+      
+      if (botId) {
+        query = query.eq('bot_id', botId);
+      }
+      
+      const { data, error } = await query.order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!botId || botId === undefined,
   });
 };
