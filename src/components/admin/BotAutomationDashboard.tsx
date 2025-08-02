@@ -21,11 +21,36 @@ import { useBots, useBotStats, useBotAutomation, useBotContentQueue } from '@/ho
 
 export const BotAutomationDashboard: React.FC = () => {
   const [selectedBotId, setSelectedBotId] = useState<string>('');
-  const { data: bots } = useBots();
-  const { data: stats } = useBotStats();
-  const { data: queueItems } = useBotContentQueue();
+  
+  // Try to get data safely with error handling
+  const { data: bots, isLoading: botsLoading, error: botsError } = useBots();
+  const { data: stats, isLoading: statsLoading, error: statsError } = useBotStats();
+  const { data: queueItems, isLoading: queueLoading, error: queueError } = useBotContentQueue();
   const { generateBatch, publishQueue } = useBotAutomation();
 
+  // Show loading state
+  if (botsLoading || statsLoading || queueLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">Loading automation dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (botsError || statsError || queueError) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <p className="text-destructive">Error loading dashboard: {(botsError || statsError || queueError)?.message}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Handler functions
   const handleGenerateBatch = async () => {
     await generateBatch.mutateAsync({ 
       botId: selectedBotId || undefined, 

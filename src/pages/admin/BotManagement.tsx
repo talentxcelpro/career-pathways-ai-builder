@@ -28,7 +28,11 @@ const BotManagement: React.FC = () => {
         </TabsList>
 
         <TabsContent value="engine" className="space-y-6">
-          <BotAutomationDashboard />
+          <div className="p-4 border rounded-lg">
+            <h3 className="text-lg font-semibold mb-2">Automation Engine</h3>
+            <p className="text-muted-foreground">Loading automation dashboard...</p>
+            <BotAutomationDashboard />
+          </div>
         </TabsContent>
 
         <TabsContent value="dashboard" className="space-y-6">
