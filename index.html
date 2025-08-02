@@ -35,15 +35,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     
-    <!-- Content Security Policy -->
+    <!-- Content Security Policy - Mobile Optimized -->
     <meta http-equiv="Content-Security-Policy" content="
-      default-src 'self';
+      default-src 'self' data: blob:;
       script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com;
-      connect-src 'self' https://accounts.google.com https://*.supabase.co https://api.openai.com https://api.razorpay.com https://www.google-analytics.com;
+      connect-src 'self' https://accounts.google.com https://*.supabase.co https://dthlgsnakhoftinssokm.supabase.co wss://*.supabase.co https://api.openai.com https://api.razorpay.com https://www.google-analytics.com https://fonts.googleapis.com https://fonts.gstatic.com;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com;
-      font-src 'self' https://fonts.gstatic.com;
-      frame-src https://accounts.google.com https://www.google.com;
+      font-src 'self' https://fonts.gstatic.com data:;
+      frame-src 'self' https://accounts.google.com https://www.google.com;
       img-src 'self' data: https: blob:;
+      media-src 'self' data: blob:;
+      object-src 'none';
+      worker-src 'self' blob:;
     " />
     
     <!-- Preload critical resources -->
