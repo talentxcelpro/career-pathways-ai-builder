@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
 import { 
   Shield, 
   AlertTriangle, 
@@ -87,142 +88,126 @@ const SecurityMonitoring = () => {
     return <Activity className="h-4 w-4" />;
   };
 
-  if (loading) {
-    return (
+  return (
+    <UnifiedAdminLayout 
+      title="Security Monitoring" 
+      description="Real-time security event monitoring and analysis"
+    >
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Security Monitoring</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                <div className="h-8 bg-muted rounded w-1/2"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Shield className="h-5 w-5" />
-          <h2 className="text-xl font-semibold">Security Monitoring</h2>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleRefresh}
-          disabled={loading}
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
-      </div>
-
-      {/* Security Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Activity className="h-4 w-4 text-blue-500" />
-              <div className="text-sm font-medium text-muted-foreground">Total Events Today</div>
-            </div>
-            <div className="text-2xl font-bold">{mockStats.totalEvents}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <AlertTriangle className="h-4 w-4 text-red-500" />
-              <div className="text-sm font-medium text-muted-foreground">Critical Events</div>
-            </div>
-            <div className="text-2xl font-bold text-red-500">{mockStats.criticalEvents}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Lock className="h-4 w-4 text-orange-500" />
-              <div className="text-sm font-medium text-muted-foreground">Failed Logins</div>
-            </div>
-            <div className="text-2xl font-bold text-orange-500">{mockStats.failedLogins}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Eye className="h-4 w-4 text-yellow-500" />
-              <div className="text-sm font-medium text-muted-foreground">Suspicious Activity</div>
-            </div>
-            <div className="text-2xl font-bold text-yellow-500">{mockStats.suspiciousActivity}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Users className="h-4 w-4 text-green-500" />
-              <div className="text-sm font-medium text-muted-foreground">Active Users</div>
-            </div>
-            <div className="text-2xl font-bold text-green-500">{mockStats.activeUsers}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-
-      {/* Recent Security Events */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Activity className="h-5 w-5" />
-            <span>Recent Security Events</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {mockEvents.map((event) => (
-              <div
-                key={event.id}
-                className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex-shrink-0 mt-0.5">
-                  {getEventIcon(event.event_type)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <span className="font-medium">{event.event_type.replace(/_/g, ' ')}</span>
-                    <Badge variant={getSeverityColor(event)} className="text-xs">
-                      {(event.metadata as any)?.severity || 'medium'}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {event.description}
-                  </p>
-                  <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-                    <span>{formatEventTime(event.created_at)}</span>
-                    {event.user_id && (
-                      <span>User: {event.user_id.substring(0, 8)}...</span>
-                    )}
-                    {event.ip_address && (
-                      <span>IP: {event.ip_address}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center space-x-2">
+            <Shield className="h-5 w-5" />
+            <h2 className="text-xl font-semibold">Security Monitoring</h2>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={loading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
+
+        {/* Security Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <Activity className="h-4 w-4 text-blue-500" />
+                <div className="text-sm font-medium text-muted-foreground">Total Events Today</div>
+              </div>
+              <div className="text-2xl font-bold">{mockStats.totalEvents}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <AlertTriangle className="h-4 w-4 text-red-500" />
+                <div className="text-sm font-medium text-muted-foreground">Critical Events</div>
+              </div>
+              <div className="text-2xl font-bold text-red-500">{mockStats.criticalEvents}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <Lock className="h-4 w-4 text-orange-500" />
+                <div className="text-sm font-medium text-muted-foreground">Failed Logins</div>
+              </div>
+              <div className="text-2xl font-bold text-orange-500">{mockStats.failedLogins}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <Eye className="h-4 w-4 text-yellow-500" />
+                <div className="text-sm font-medium text-muted-foreground">Suspicious Activity</div>
+              </div>
+              <div className="text-2xl font-bold text-yellow-500">{mockStats.suspiciousActivity}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <Users className="h-4 w-4 text-green-500" />
+                <div className="text-sm font-medium text-muted-foreground">Active Users</div>
+              </div>
+              <div className="text-2xl font-bold text-green-500">{mockStats.activeUsers}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Security Events */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Activity className="h-5 w-5" />
+              <span>Recent Security Events</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {mockEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex-shrink-0 mt-0.5">
+                    {getEventIcon(event.event_type)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="font-medium">{event.event_type.replace(/_/g, ' ')}</span>
+                      <Badge variant={getSeverityColor(event)} className="text-xs">
+                        {(event.metadata as any)?.severity || 'medium'}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {event.description}
+                    </p>
+                    <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                      <span>{formatEventTime(event.created_at)}</span>
+                      {event.user_id && (
+                        <span>User: {event.user_id.substring(0, 8)}...</span>
+                      )}
+                      {event.ip_address && (
+                        <span>IP: {event.ip_address}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </UnifiedAdminLayout>
   );
 };
 
