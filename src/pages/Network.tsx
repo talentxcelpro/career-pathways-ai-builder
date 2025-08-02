@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
@@ -11,10 +12,56 @@ import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EmailTestButton } from "@/components/EmailTestButton";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
 import Posts from './network/Posts';
+import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
 
 const Network = () => {
+  // SEO meta tags and structured data
+  React.useEffect(() => {
+    updateMetaTags({
+      title: 'Professional Network | Connect with Industry Experts | TalentXcel',
+      description: 'Build your professional network. Connect with industry experts, join professional groups, attend virtual events, and advance your career through meaningful connections.',
+      url: `${window.location.origin}/network`,
+      keywords: ['professional networking', 'industry experts', 'career networking', 'professional connections', 'industry events', 'career growth'],
+      type: 'website',
+      image: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
+    });
+
+    // Add SocialMediaPosting structured data
+    const networkSchema = {
+      "@context": "https://schema.org/",
+      "@type": "SocialMediaPosting",
+      "headline": "Professional Networking Platform",
+      "url": `${window.location.origin}/network`,
+      "description": "Connect with professionals, share insights, and grow your career network",
+      "author": {
+        "@type": "Organization",
+        "name": "TalentXcel",
+        "url": "https://talentxcel.in"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "TalentXcel"
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(networkSchema);
+    script.id = 'network-schema';
+    
+    const existing = document.getElementById('network-schema');
+    if (existing) existing.remove();
+    
+    document.head.appendChild(script);
+
+    return () => {
+      const schemaScript = document.getElementById('network-schema');
+      if (schemaScript) schemaScript.remove();
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
       {/* Main Content with Tabs */}

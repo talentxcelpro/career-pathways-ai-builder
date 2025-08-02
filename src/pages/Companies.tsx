@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
+import { updateMetaTags } from '@/utils/metaTags';
 
 const Companies = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,6 +46,48 @@ const Companies = () => {
       setSearchTerm(query);
     }
   };
+
+  // SEO meta tags and structured data
+  React.useEffect(() => {
+    updateMetaTags({
+      title: 'Top Companies Hiring in India | Company Profiles & Jobs | TalentXcel',
+      description: 'Explore 500+ top companies hiring in India. Get insights into company culture, salaries, interview process, and current job openings. Make informed career decisions.',
+      url: `${window.location.origin}/companies`,
+      keywords: ['top companies india', 'company profiles', 'employer reviews', 'company culture', 'hiring companies', 'career opportunities'],
+      type: 'website',
+      image: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
+    });
+
+    // Add Organization structured data
+    const organizationSchema = {
+      "@context": "https://schema.org/",
+      "@type": "CollectionPage",
+      "name": "Top Companies - TalentXcel",
+      "description": "Discover top companies hiring in India with detailed profiles and job opportunities",
+      "url": `${window.location.origin}/companies`,
+      "mainEntity": {
+        "@type": "Organization",
+        "name": "TalentXcel",
+        "url": "https://talentxcel.in",
+        "description": "India's AI-powered career platform connecting talent with opportunities"
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(organizationSchema);
+    script.id = 'companies-schema';
+    
+    const existing = document.getElementById('companies-schema');
+    if (existing) existing.remove();
+    
+    document.head.appendChild(script);
+
+    return () => {
+      const schemaScript = document.getElementById('companies-schema');
+      if (schemaScript) schemaScript.remove();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">

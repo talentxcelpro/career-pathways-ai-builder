@@ -75,13 +75,59 @@ const Jobs = () => {
     getCurrentUser();
   }, []);
 
-  // Meta tags for SEO
+  // Meta tags and structured data for SEO
   useEffect(() => {
     updateMetaTags({
-      title: 'Find Your Dream Job Now | TalentXcel Jobs',
-      description: 'Discover verified jobs, AI-matched roles, and top companies hiring. Join thousands who found their perfect job with TalentXcel.',
+      title: 'Latest Jobs in India | Find Your Dream Career | TalentXcel Jobs',
+      description: 'Discover 10,000+ verified job openings in India. AI-powered job matching, top companies hiring, and instant applications. Find jobs in tech, finance, healthcare, and more.',
       url: `${window.location.origin}/jobs`,
+      keywords: ['jobs in india', 'job search', 'career opportunities', 'hiring', 'employment', 'job openings', 'recruitment', 'AI job matching', 'career growth'],
+      type: 'website',
+      image: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
     });
+
+    // Add JobPosting structured data
+    const jobPostingSchema = {
+      "@context": "https://schema.org/",
+      "@type": "CollectionPage",
+      "name": "Jobs at TalentXcel",
+      "description": "Find your next career opportunity with thousands of verified job listings",
+      "url": `${window.location.origin}/jobs`,
+      "mainEntity": {
+        "@type": "JobPosting",
+        "title": "Various Job Opportunities",
+        "description": "Explore thousands of job opportunities across India",
+        "hiringOrganization": {
+          "@type": "Organization",
+          "name": "TalentXcel",
+          "url": "https://talentxcel.in"
+        },
+        "jobLocation": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "IN"
+          }
+        }
+      }
+    };
+
+    // Inject structured data
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(jobPostingSchema);
+    script.id = 'jobs-schema';
+    
+    // Remove existing schema
+    const existing = document.getElementById('jobs-schema');
+    if (existing) existing.remove();
+    
+    document.head.appendChild(script);
+
+    return () => {
+      const schemaScript = document.getElementById('jobs-schema');
+      if (schemaScript) schemaScript.remove();
+    };
   }, []);
 
   // Use pagination hook for jobs

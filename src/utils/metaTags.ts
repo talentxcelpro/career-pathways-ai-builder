@@ -5,6 +5,7 @@ interface MetaTagsConfig {
   url?: string;
   image?: string;
   type?: string;
+  keywords?: string[];
 }
 
 export const updateMetaTags = (config: MetaTagsConfig) => {
@@ -56,6 +57,11 @@ export const updateMetaTags = (config: MetaTagsConfig) => {
   
   if (config.image) {
     updateOrCreateMetaTag('name', 'twitter:image', config.image);
+  }
+
+  // Update keywords meta tag
+  if (config.keywords && config.keywords.length > 0) {
+    updateOrCreateMetaTag('name', 'keywords', config.keywords.join(', '));
   }
 };
 

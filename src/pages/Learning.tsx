@@ -31,13 +31,49 @@ const Learning = () => {
     isLoading
   } = useLearningData();
 
-  // Update meta tags for SEO
+  // Update meta tags and structured data for SEO
   useEffect(() => {
     updateMetaTags({
-      title: 'Learning Hub | TalentXcel - Advance Your Career',
-      description: 'Discover courses, learning paths, and AI-powered recommendations to boost your skills and advance your career.',
+      title: 'Free Online Courses & Skill Development | TalentXcel Learning Hub',
+      description: 'Learn new skills with free online courses. Programming, Data Science, AI/ML, Digital Marketing, and more. Get certified and boost your career prospects with AI-powered learning paths.',
       url: `${window.location.origin}/learning`,
+      keywords: ['online courses', 'free courses', 'skill development', 'programming courses', 'data science', 'certification', 'upskilling', 'AI learning', 'career development'],
+      type: 'website',
+      image: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
     });
+
+    // Add Course/EducationalOccupationalProgram structured data
+    const learningSchema = {
+      "@context": "https://schema.org/",
+      "@type": "EducationalOccupationalProgram",
+      "name": "TalentXcel Learning Hub",
+      "description": "Comprehensive learning platform with AI-powered course recommendations",
+      "url": `${window.location.origin}/learning`,
+      "provider": {
+        "@type": "Organization",
+        "name": "TalentXcel",
+        "url": "https://talentxcel.in"
+      },
+      "educationalCredentialAwarded": "Certificate of Completion",
+      "timeToComplete": "P1M",
+      "applicationStartDate": new Date().toISOString(),
+      "occupationalCategory": "Technology, Business, Design"
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(learningSchema);
+    script.id = 'learning-schema';
+    
+    const existing = document.getElementById('learning-schema');
+    if (existing) existing.remove();
+    
+    document.head.appendChild(script);
+
+    return () => {
+      const schemaScript = document.getElementById('learning-schema');
+      if (schemaScript) schemaScript.remove();
+    };
   }, []);
 
   const handleEnroll = (courseId: string) => {

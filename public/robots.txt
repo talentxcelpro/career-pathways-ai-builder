@@ -86,30 +86,16 @@ Allow: /jobs/skill/
 Allow: /companies/location/
 Allow: /courses/category/
 
-# Restricted & secure areas
+# Restrict only sensitive/internal paths
 Disallow: /admin/
-Disallow: /api/private/
-Disallow: /auth/callback
+Disallow: /auth/
+Disallow: /private/
 Disallow: /employer/settings/
-Disallow: /profile/settings/
 Disallow: /profile/edit/
-Disallow: /*?*sessionid=*
-Disallow: /*?*csrf=*
-Disallow: /*?*token=*
+Disallow: /api/private/
 
-# Unwanted parameters & file types
-Disallow: /*?*utm_*
-Disallow: /*?*ref=*
-Disallow: /*?*fbclid=*
-Disallow: /*?*gclid=*
-Disallow: /*?*msclkid=*
-Disallow: /*?*referrer=*
-Disallow: /search?*
-Disallow: /filter?*
-Disallow: /*.json$
-Disallow: /*.pdf$
-Disallow: /*.doc$
-Disallow: /*.docx$
+# Clean parameters
+Clean-param: utm_source&utm_medium&utm_campaign&ref
 
 # API allowlist for beneficial tools
 Allow: /api/sitemap

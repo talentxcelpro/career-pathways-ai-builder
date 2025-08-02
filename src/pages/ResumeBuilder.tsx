@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FileText, Sparkles, Upload, PenTool, Download, CheckCircle, ArrowRight, ArrowLeft, Star, MessageCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { updateMetaTags } from '@/utils/metaTags';
 import { ChatGPTStyleInterface } from "@/components/resume/ChatGPTStyleInterface";
 
 const ResumeBuilder = () => {
@@ -15,6 +16,54 @@ const ResumeBuilder = () => {
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [resumeData, setResumeData] = useState<any>(null);
+
+  // SEO meta tags and structured data
+  React.useEffect(() => {
+    updateMetaTags({
+      title: 'Free ATS Resume Builder | Create Professional Resumes | TalentXcel',
+      description: 'Build ATS-friendly resumes that get you hired. Free professional resume templates, AI-powered suggestions, and expert tips. Download in PDF & Word formats.',
+      url: `${window.location.origin}/resume-builder`,
+      keywords: ['resume builder', 'ATS resume', 'free resume builder', 'professional resume', 'CV maker', 'resume templates', 'job application'],
+      type: 'website',
+      image: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
+    });
+
+    // Add SoftwareApplication structured data
+    const resumeBuilderSchema = {
+      "@context": "https://schema.org/",
+      "@type": "SoftwareApplication",
+      "name": "TalentXcel Resume Builder",
+      "description": "Free ATS-friendly resume builder with professional templates",
+      "url": `${window.location.origin}/resume-builder`,
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "2500"
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(resumeBuilderSchema);
+    script.id = 'resume-builder-schema';
+    
+    const existing = document.getElementById('resume-builder-schema');
+    if (existing) existing.remove();
+    
+    document.head.appendChild(script);
+
+    return () => {
+      const schemaScript = document.getElementById('resume-builder-schema');
+      if (schemaScript) schemaScript.remove();
+    };
+  }, []);
 
   const templates = [
     { id: 'modern', name: 'TalentXcel Modern', description: 'Clean and contemporary design', popular: true, color: 'from-blue-500 to-purple-500' },

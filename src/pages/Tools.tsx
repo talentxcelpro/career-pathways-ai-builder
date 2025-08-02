@@ -43,6 +43,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
 import { useToolsData } from '@/hooks/useToolsData';
+import { updateMetaTags } from '@/utils/metaTags';
 import { toolsRoutes } from '@/navigation/toolsRoutes';
 
 interface FeaturedTool {
@@ -77,6 +78,49 @@ const Tools = () => {
     usageStats,
     logToolUsage
   } = useToolsData();
+
+  // SEO meta tags and structured data
+  React.useEffect(() => {
+    updateMetaTags({
+      title: 'Free Career Tools | Resume Builder, Salary Calculator | TalentXcel',
+      description: 'Free career development tools including resume builder, salary calculator, career assessment, interview prep, and skill gap analysis. Boost your career with AI-powered tools.',
+      url: `${window.location.origin}/tools`,
+      keywords: ['career tools', 'free tools', 'resume builder', 'salary calculator', 'career assessment', 'interview preparation', 'skill analysis'],
+      type: 'website',
+      image: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
+    });
+
+    // Add SoftwareApplication structured data
+    const toolsSchema = {
+      "@context": "https://schema.org/",
+      "@type": "SoftwareApplication",
+      "name": "TalentXcel Career Tools",
+      "description": "Comprehensive suite of free career development tools",
+      "url": `${window.location.origin}/tools`,
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(toolsSchema);
+    script.id = 'tools-schema';
+    
+    const existing = document.getElementById('tools-schema');
+    if (existing) existing.remove();
+    
+    document.head.appendChild(script);
+
+    return () => {
+      const schemaScript = document.getElementById('tools-schema');
+      if (schemaScript) schemaScript.remove();
+    };
+  }, []);
 
   // Featured tools configuration
   const featuredTools: FeaturedTool[] = [
