@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Performance optimizations
+    // Performance optimizations with memory management
     rollupOptions: {
       output: {
         manualChunks: {
@@ -30,9 +30,18 @@ export default defineConfig(({ mode }) => ({
           'utils': ['clsx', 'class-variance-authority', 'date-fns'],
           'icons': ['lucide-react'],
           'supabase': ['@supabase/supabase-js'],
-          'ai': ['@tanstack/react-query']
+          'query': ['@tanstack/react-query'],
+          'forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          // Separate PDF libraries to avoid memory issues
+          'pdf-libs': ['jspdf', 'html2canvas']
         }
-      }
+      },
+      // Reduce memory usage during build
+      maxParallelFileOps: 1,
+      // Externalize heavy dependencies in development
+      ...((mode === 'development') && {
+        external: ['jspdf', 'html2canvas']
+      })
     },
     target: 'esnext',
     minify: mode === 'production' ? 'terser' : false,
@@ -45,7 +54,7 @@ export default defineConfig(({ mode }) => ({
       }
     }),
     sourcemap: mode !== 'production',
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1500
   },
   optimizeDeps: {
     include: [

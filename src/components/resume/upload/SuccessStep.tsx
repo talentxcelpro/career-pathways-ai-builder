@@ -61,9 +61,11 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
-      // Use jsPDF to generate PDF
-      const { jsPDF } = await import('jspdf');
-      const html2canvas = (await import('html2canvas')).default;
+      // Dynamic imports to avoid static bundling issues
+      const [jsPDFModule, html2canvas] = await Promise.all([
+        import('jspdf'),
+        import('html2canvas')
+      ]);
       
       // Create a temporary element for PDF generation
       const tempDiv = document.createElement('div');
@@ -77,15 +79,16 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
       // Render resume content
       tempDiv.innerHTML = generateResumeHTML(resumeData);
 
-      // Generate PDF
-      const canvas = await html2canvas(tempDiv, {
-        scale: 2,
+      // Generate PDF with reduced canvas size to save memory
+      const canvas = await html2canvas.default(tempDiv, {
+        scale: 1.5, // Reduced from 2 to save memory
         useCORS: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        logging: false // Disable logging to reduce memory
       });
       
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png', 0.8); // Reduced quality to save memory
+      const pdf = new jsPDFModule.jsPDF('p', 'mm', 'a4');
       const imgWidth = 210;
       const pageHeight = 295;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
