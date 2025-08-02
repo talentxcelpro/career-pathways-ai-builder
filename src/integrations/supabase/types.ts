@@ -2486,6 +2486,214 @@ export type Database = {
           },
         ]
       }
+      bot_automation_schedule: {
+        Row: {
+          bot_id: string | null
+          created_at: string | null
+          frequency_type: string
+          frequency_value: number
+          id: string
+          is_active: boolean | null
+          last_executed_at: string | null
+          name: string
+          next_execution_at: string | null
+          posts_per_cycle: number
+          seo_keywords: string[] | null
+          time_slots: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          bot_id?: string | null
+          created_at?: string | null
+          frequency_type: string
+          frequency_value?: number
+          id?: string
+          is_active?: boolean | null
+          last_executed_at?: string | null
+          name: string
+          next_execution_at?: string | null
+          posts_per_cycle?: number
+          seo_keywords?: string[] | null
+          time_slots?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          bot_id?: string | null
+          created_at?: string | null
+          frequency_type?: string
+          frequency_value?: number
+          id?: string
+          is_active?: boolean | null
+          last_executed_at?: string | null
+          name?: string
+          next_execution_at?: string | null
+          posts_per_cycle?: number
+          seo_keywords?: string[] | null
+          time_slots?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bot_automation_schedule_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bot_content_analytics: {
+        Row: {
+          analytics_date: string | null
+          bot_id: string | null
+          click_through_rate: number | null
+          comments: number | null
+          content_id: string | null
+          created_at: string | null
+          engagement_rate: number | null
+          id: string
+          impressions: number | null
+          likes: number | null
+          prompt_id: string | null
+          reach: number | null
+          shares: number | null
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          analytics_date?: string | null
+          bot_id?: string | null
+          click_through_rate?: number | null
+          comments?: number | null
+          content_id?: string | null
+          created_at?: string | null
+          engagement_rate?: number | null
+          id?: string
+          impressions?: number | null
+          likes?: number | null
+          prompt_id?: string | null
+          reach?: number | null
+          shares?: number | null
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          analytics_date?: string | null
+          bot_id?: string | null
+          click_through_rate?: number | null
+          comments?: number | null
+          content_id?: string | null
+          created_at?: string | null
+          engagement_rate?: number | null
+          id?: string
+          impressions?: number | null
+          likes?: number | null
+          prompt_id?: string | null
+          reach?: number | null
+          shares?: number | null
+          updated_at?: string | null
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bot_content_analytics_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bot_content_analytics_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "bot_generated_content"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bot_content_analytics_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "bot_prompt_library"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bot_content_queue: {
+        Row: {
+          bot_id: string | null
+          content_type: string
+          created_at: string | null
+          error_message: string | null
+          generated_content: string | null
+          id: string
+          max_retries: number | null
+          priority: number | null
+          prompt_id: string | null
+          retry_count: number | null
+          schedule_id: string | null
+          scheduled_for: string | null
+          seo_keywords: string[] | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          bot_id?: string | null
+          content_type?: string
+          created_at?: string | null
+          error_message?: string | null
+          generated_content?: string | null
+          id?: string
+          max_retries?: number | null
+          priority?: number | null
+          prompt_id?: string | null
+          retry_count?: number | null
+          schedule_id?: string | null
+          scheduled_for?: string | null
+          seo_keywords?: string[] | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          bot_id?: string | null
+          content_type?: string
+          created_at?: string | null
+          error_message?: string | null
+          generated_content?: string | null
+          id?: string
+          max_retries?: number | null
+          priority?: number | null
+          prompt_id?: string | null
+          retry_count?: number | null
+          schedule_id?: string | null
+          scheduled_for?: string | null
+          seo_keywords?: string[] | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bot_content_queue_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bot_content_queue_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "bot_prompt_library"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bot_content_queue_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "bot_automation_schedule"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bot_content_templates: {
         Row: {
           bot_id: string | null
@@ -2619,6 +2827,65 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "bot_content_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bot_prompt_library: {
+        Row: {
+          bot_id: string | null
+          category: string
+          created_at: string | null
+          engagement_type: string | null
+          id: string
+          is_active: boolean | null
+          last_used_at: string | null
+          performance_score: number | null
+          priority: number | null
+          prompt_text: string
+          seo_focus: string[] | null
+          updated_at: string | null
+          usage_count: number | null
+          variables: Json | null
+        }
+        Insert: {
+          bot_id?: string | null
+          category: string
+          created_at?: string | null
+          engagement_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          performance_score?: number | null
+          priority?: number | null
+          prompt_text: string
+          seo_focus?: string[] | null
+          updated_at?: string | null
+          usage_count?: number | null
+          variables?: Json | null
+        }
+        Update: {
+          bot_id?: string | null
+          category?: string
+          created_at?: string | null
+          engagement_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          performance_score?: number | null
+          priority?: number | null
+          prompt_text?: string
+          seo_focus?: string[] | null
+          updated_at?: string | null
+          usage_count?: number | null
+          variables?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bot_prompt_library_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
             referencedColumns: ["id"]
           },
         ]
