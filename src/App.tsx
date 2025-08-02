@@ -11,7 +11,7 @@ import { Footer } from "./components/layout/Footer";
 import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
-import { AIProvider } from "./contexts/AIContext";
+// import { AIProvider } from "./contexts/AIContext";
 // import { SecurityProvider } from "./components/security/SecurityProvider";
 import { ContentSecurityPolicy } from "./components/security/ContentSecurityPolicy";
 
@@ -23,8 +23,8 @@ import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import UserManagement from "@/pages/admin/UserManagement";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
 import { AdminScrapedJobApplications } from "@/components/admin/AdminScrapedJobApplications";
-import { CVDatabase } from "@/components/employer/CVDatabase";
-import { OutreachCampaign } from "@/components/employer/OutreachCampaign";
+// import { CVDatabase } from "@/components/employer/CVDatabase";
+// import { OutreachCampaign } from "@/components/employer/OutreachCampaign";
 
 // Create query client optimized for SEO content caching
 const queryClient = new QueryClient({
@@ -65,7 +65,7 @@ const App = () => {
           <AnalyticsProvider>
             <AuthProvider>
               {/* <SecurityProvider> */}
-                <AIProvider>
+                {/* <AIProvider> */}
                   <ContentSecurityPolicy />
                 <Toaster 
                   duration={10000}
@@ -115,8 +115,8 @@ const App = () => {
                       <Route path="/admin/users" element={<UserManagement />} />
                       <Route path="/admin/security" element={<SecurityCenter />} />
                       <Route path="/admin/scraped-applications" element={<AdminScrapedJobApplications />} />
-                      <Route path="/employer/cv-database" element={<CVDatabase />} />
-                      <Route path="/employer/outreach" element={<OutreachCampaign />} />
+                      {/* <Route path="/employer/cv-database" element={<CVDatabase />} />
+                      <Route path="/employer/outreach" element={<OutreachCampaign />} /> */}
                       
                       {/* Legacy resume builder redirects */}
                       <Route path="/resume" element={<Navigate to="/resume/new" replace />} />
@@ -130,7 +130,7 @@ const App = () => {
                   <Footer />
                 </div>
                   <Analytics />
-                </AIProvider>
+                {/* </AIProvider> */}
               {/* </SecurityProvider> */}
             </AuthProvider>
           </AnalyticsProvider>
