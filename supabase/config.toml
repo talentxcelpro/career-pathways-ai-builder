@@ -86,6 +86,9 @@ verify_jwt = false
 [functions.sitemap-xml]
 verify_jwt = false
 
+[functions.static-sitemap]
+verify_jwt = false
+
 [functions.deepseek-ai]
 verify_jwt = true
 

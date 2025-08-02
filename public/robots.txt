@@ -61,11 +61,8 @@ User-agent: Indeed
 Allow: /
 
 # Sitemaps for better content discovery
+Sitemap: https://talentxcel.in/functions/v1/static-sitemap
 Sitemap: https://talentxcel.in/functions/v1/sitemap-generator?type=index
-Sitemap: https://talentxcel.in/functions/v1/sitemap-generator?type=main
-Sitemap: https://talentxcel.in/functions/v1/sitemap-generator?type=jobs
-Sitemap: https://talentxcel.in/functions/v1/sitemap-generator?type=network
-Sitemap: https://talentxcel.in/functions/v1/sitemap-generator?type=companies
 
 # High-priority sections
 Allow: /jobs/
