@@ -175,6 +175,18 @@ const adminMenuItems = [
     description: 'AI content generation bots'
   },
   {
+    title: 'Bot Post Manager',
+    url: '/admin/bot-posts',
+    icon: Bot,
+    description: 'Create and manage bot posts'
+  },
+  {
+    title: 'Bot Identity Manager',
+    url: '/admin/bot-identity',
+    icon: Bot,
+    description: 'Assign users to bots for posting'
+  },
+  {
     title: 'Admin Management',
     url: '/admin/admins',
     icon: Settings,

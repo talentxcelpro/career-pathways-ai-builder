@@ -1,5 +1,7 @@
 import { lazy } from "react";
 import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle } from "lucide-react";
+import { BotPostManager } from "../components/admin/BotPostManager";
+import { BotIdentityManager } from "../components/admin/BotIdentityManager";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
 import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
@@ -198,6 +200,20 @@ export const adminRoutes = [
     to: "/admin/bots",
     icon: <Bot className="h-4 w-4" />,
     page: <BotManagement />,
+    requiresAuth: true,
+  },
+  {
+    title: "Bot Post Manager",
+    to: "/admin/bot-posts",
+    icon: <Bot className="h-4 w-4" />,
+    page: <BotPostManager />,
+    requiresAuth: true,
+  },
+  {
+    title: "Bot Identity Manager",
+    to: "/admin/bot-identity",
+    icon: <Bot className="h-4 w-4" />,
+    page: <BotIdentityManager />,
     requiresAuth: true,
   },
   {

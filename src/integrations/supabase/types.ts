@@ -336,6 +336,7 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          profile_id: string | null
           profile_picture_url: string | null
           role: string
           tone_style: string
@@ -354,6 +355,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          profile_id?: string | null
           profile_picture_url?: string | null
           role: string
           tone_style?: string
@@ -372,13 +374,29 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          profile_id?: string | null
           profile_picture_url?: string | null
           role?: string
           tone_style?: string
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ai_bots_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ai_bots_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_career_insights: {
         Row: {
@@ -10655,6 +10673,7 @@ export type Database = {
         Row: {
           article_category: string | null
           author_id: string
+          bot_id: string | null
           comments_count: number | null
           content: string
           content_type: string | null
@@ -10663,6 +10682,7 @@ export type Database = {
           headline: string | null
           id: string
           intent_tags: string[] | null
+          is_bot_post: boolean | null
           is_deleted: boolean | null
           is_featured: boolean | null
           is_pinned: boolean | null
@@ -10687,6 +10707,7 @@ export type Database = {
         Insert: {
           article_category?: string | null
           author_id: string
+          bot_id?: string | null
           comments_count?: number | null
           content: string
           content_type?: string | null
@@ -10695,6 +10716,7 @@ export type Database = {
           headline?: string | null
           id?: string
           intent_tags?: string[] | null
+          is_bot_post?: boolean | null
           is_deleted?: boolean | null
           is_featured?: boolean | null
           is_pinned?: boolean | null
@@ -10719,6 +10741,7 @@ export type Database = {
         Update: {
           article_category?: string | null
           author_id?: string
+          bot_id?: string | null
           comments_count?: number | null
           content?: string
           content_type?: string | null
@@ -10727,6 +10750,7 @@ export type Database = {
           headline?: string | null
           id?: string
           intent_tags?: string[] | null
+          is_bot_post?: boolean | null
           is_deleted?: boolean | null
           is_featured?: boolean | null
           is_pinned?: boolean | null
@@ -10749,6 +10773,13 @@ export type Database = {
           word_count?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "posts_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "posts_user_id_fkey"
             columns: ["user_id"]
@@ -12060,6 +12091,8 @@ export type Database = {
           allow_profile_sharing: boolean | null
           banner_picture_url: string | null
           banner_url: string | null
+          bot_config_id: string | null
+          bot_tag: string | null
           bot_tone: string | null
           career_goals: string[] | null
           career_interests: string[] | null
@@ -12136,6 +12169,8 @@ export type Database = {
           allow_profile_sharing?: boolean | null
           banner_picture_url?: string | null
           banner_url?: string | null
+          bot_config_id?: string | null
+          bot_tag?: string | null
           bot_tone?: string | null
           career_goals?: string[] | null
           career_interests?: string[] | null
@@ -12212,6 +12247,8 @@ export type Database = {
           allow_profile_sharing?: boolean | null
           banner_picture_url?: string | null
           banner_url?: string | null
+          bot_config_id?: string | null
+          bot_tag?: string | null
           bot_tone?: string | null
           career_goals?: string[] | null
           career_interests?: string[] | null
@@ -12283,7 +12320,15 @@ export type Database = {
           website?: string | null
           work_experiences?: Json | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_bot_config_id_fkey"
+            columns: ["bot_config_id"]
+            isOneToOne: false
+            referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       projects: {
         Row: {
@@ -19105,6 +19150,16 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: undefined
       }
+      create_bot_post: {
+        Args: {
+          bot_uuid: string
+          post_title: string
+          post_content: string
+          post_type?: string
+          is_manual?: boolean
+        }
+        Returns: string
+      }
       create_notification: {
         Args: {
           p_user_id: string
@@ -19210,6 +19265,15 @@ export type Database = {
       generate_vanity_url_suggestions: {
         Args: { base_name: string }
         Returns: string[]
+      }
+      get_bot_display_info: {
+        Args: { bot_uuid: string }
+        Returns: {
+          display_name: string
+          display_role: string
+          profile_picture_url: string
+          bot_tag: string
+        }[]
       }
       get_email_domain: {
         Args: { email_address: string }
