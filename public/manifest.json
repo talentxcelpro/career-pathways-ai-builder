@@ -1,0 +1,60 @@
+{
+  "name": "TalentXcel - AI-Powered Career Platform",
+  "short_name": "TalentXcel",
+  "description": "Your Career. One Platform. Endless Possibilities. Find jobs, grow skills, network with professionals.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["business", "education", "productivity"],
+  "screenshots": [
+    {
+      "src": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "TalentXcel Dashboard"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Find Jobs",
+      "short_name": "Jobs",
+      "description": "Search and apply for jobs",
+      "url": "/jobs",
+      "icons": [{"src": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png", "sizes": "96x96"}]
+    },
+    {
+      "name": "AI Resume Builder",
+      "short_name": "Resume",
+      "description": "Create AI-powered resumes",
+      "url": "/resume-builder",
+      "icons": [{"src": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png", "sizes": "96x96"}]
+    },
+    {
+      "name": "Network",
+      "short_name": "Network",
+      "description": "Connect with professionals",
+      "url": "/network",
+      "icons": [{"src": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png", "sizes": "96x96"}]
+    }
+  ],
+  "prefer_related_applications": false
+}

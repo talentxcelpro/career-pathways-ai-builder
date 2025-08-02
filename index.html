@@ -43,6 +43,9 @@
     <meta name="theme-color" content="#3B82F6" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TalentXcel" />
+    <link rel="apple-touch-icon" href="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
+    <link rel="manifest" href="/manifest.json" />
     
     <!-- Content Security Policy - Mobile Optimized -->
     <meta http-equiv="Content-Security-Policy" content="
@@ -69,17 +72,6 @@
     <!-- TalentXcel Brand Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-XXXXXXXXXX', {
-        page_title: 'TalentXcel',
-        custom_map: {'custom_parameter_1': 'page_type'}
-      });
-    </script>
     
     <!-- Google One Tap Sign-In -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -104,5 +96,20 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
