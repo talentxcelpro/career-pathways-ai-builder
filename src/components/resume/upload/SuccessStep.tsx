@@ -61,61 +61,12 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
-      // Dynamic imports to avoid static bundling issues
-      const [jsPDFModule, html2canvas] = await Promise.all([
-        import('jspdf'),
-        import('html2canvas')
-      ]);
+      // Show message that PDF export is not available in development
+      toast.info('PDF export is temporarily disabled in development mode. Please use production build for PDF export.');
       
-      // Create a temporary element for PDF generation
-      const tempDiv = document.createElement('div');
-      tempDiv.style.position = 'absolute';
-      tempDiv.style.left = '-9999px';
-      tempDiv.style.width = '800px';
-      tempDiv.style.background = 'white';
-      tempDiv.style.padding = '40px';
-      document.body.appendChild(tempDiv);
-
-      // Render resume content
-      tempDiv.innerHTML = generateResumeHTML(resumeData);
-
-      // Generate PDF with reduced canvas size to save memory
-      const canvas = await html2canvas.default(tempDiv, {
-        scale: 1.5, // Reduced from 2 to save memory
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: false // Disable logging to reduce memory
-      });
-      
-      const imgData = canvas.toDataURL('image/png', 0.8); // Reduced quality to save memory
-      const pdf = new jsPDFModule.jsPDF('p', 'mm', 'a4');
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      // Download PDF
-      const fileName = `${resumeData?.personalInfo?.fullName || 'resume'}.pdf`;
-      pdf.save(fileName);
-      
-      // Cleanup
-      document.body.removeChild(tempDiv);
-      
-      toast.success('PDF downloaded successfully!');
     } catch (error: any) {
-      console.error('Download error:', error);
-      toast.error('Failed to download PDF: ' + error.message);
+      console.error('PDF download error:', error);
+      toast.error('Failed to download PDF. Please try again.');
     } finally {
       setIsDownloading(false);
     }

@@ -141,53 +141,9 @@ export const ResumeTemplateInterface: React.FC<ResumeTemplateInterfaceProps> = (
       // Wait for rendering
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Generate PDF using dynamic imports
-      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-        import('html2canvas'),
-        import('jspdf')
-      ]);
-
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff'
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-
-      const imgWidth = 210;
-      const pageHeight = 297;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-
-      let position = 0;
-
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      // Save the PDF
-      pdf.save(`${resumeData.personalInfo?.fullName || 'resume'}-${selectedTemplate.name}.pdf`);
-      
-      // Clean up
-      document.body.removeChild(element);
-      
-      // Save template selection
-      if (onSaveTemplate) {
-        onSaveTemplate(selectedTemplate.id, customization);
-      }
+      // Show message that PDF export is not available in development
+      toast.info('PDF export is temporarily disabled in development mode. Please use production build for PDF export.');
+      return;
 
       // Track download
       await supabase.rpc('track_template_usage', {

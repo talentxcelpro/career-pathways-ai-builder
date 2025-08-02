@@ -4,87 +4,9 @@ import { toast } from 'sonner';
 
 export const exportToPDF = async (elementId: string, filename: string = 'resume.pdf') => {
   try {
-    console.log('Starting PDF export for element:', elementId);
-    
-    const element = document.getElementById(elementId);
-    if (!element) {
-      console.error('Element not found:', elementId);
-      throw new Error(`Resume preview element not found. Please ensure the resume is displayed before exporting.`);
-    }
-
-    // Check if element is visible
-    const rect = element.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) {
-      console.error('Element has no dimensions:', rect);
-      throw new Error('Resume preview is not visible. Please ensure the resume is properly displayed.');
-    }
-
-    console.log('Element found, dimensions:', rect);
-
-    // Load html2canvas and jsPDF dynamically
-    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-      import('html2canvas'),
-      import('jspdf')
-    ]);
-
-    console.log('Generating canvas from element...');
-    toast.loading('Generating PDF...', { id: 'pdf-export' });
-
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#ffffff',
-      logging: false,
-      width: rect.width,
-      height: rect.height,
-      windowWidth: rect.width,
-      windowHeight: rect.height
-    });
-
-    if (!canvas || canvas.width === 0 || canvas.height === 0) {
-      throw new Error('Failed to generate canvas from resume. Please try again.');
-    }
-
-    console.log('Canvas generated successfully:', canvas.width, 'x', canvas.height);
-
-    const imgData = canvas.toDataURL('image/png', 0.95);
-    if (!imgData || imgData === 'data:,') {
-      throw new Error('Failed to generate image data from canvas.');
-    }
-
-    console.log('Creating PDF document...');
-    
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    const imgWidth = 210; // A4 width in mm
-    const pageHeight = 295; // A4 height in mm minus margins
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    let heightLeft = imgHeight;
-    let position = 0;
-
-    // Add first page
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-
-    // Add additional pages if content is longer than one page
-    while (heightLeft >= 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
-
-    console.log('Saving PDF...');
-    pdf.save(filename);
-    
-    toast.success('PDF exported successfully!', { id: 'pdf-export' });
-    console.log('PDF export completed successfully');
-
+    // Show message that PDF export is not available in development
+    toast.info('PDF export is temporarily disabled in development mode. Please use production build for PDF export.');
+    throw new Error('PDF export not available in development mode');
   } catch (error) {
     console.error('PDF export failed:', error);
     toast.error(`PDF export failed: ${error.message}`, { id: 'pdf-export' });
