@@ -19,6 +19,7 @@ import CareerMapManagement from "../pages/admin/CareerMapManagement";
 import PricingPayments from "../pages/admin/PricingPayments";
 import AnalyticsReports from "../pages/admin/AnalyticsReports";
 import SecurityLogs from "../pages/admin/SecurityLogs";
+import SecurityMonitoring from "../components/admin/SecurityMonitoring";
 import CreateCourse from "../pages/admin/learning/CreateCourse";
 import CreatePlan from "../pages/admin/pricing/CreatePlan";
 import EmailAutomationPage from "../pages/admin/EmailAutomation";
@@ -168,8 +169,15 @@ export const adminRoutes = [
     requiresAuth: true,
   },
   {
-    title: "Security & Logs",
+    title: "Security Monitoring",
     to: "/admin/security",
+    icon: <Lock className="h-4 w-4" />,
+    page: <SecurityMonitoring />,
+    requiresAuth: true,
+  },
+  {
+    title: "Security Logs",
+    to: "/admin/security-logs",
     icon: <Lock className="h-4 w-4" />,
     page: <SecurityLogs />,
     requiresAuth: true,
