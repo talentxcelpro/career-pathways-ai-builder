@@ -9,20 +9,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, Loader2, ArrowRight, AlertTriangle } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
-import { useSecurityValidation } from '@/hooks/useSecurityValidation';
-import { useSecurityContext } from '@/components/security/SecurityProvider';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [attemptCount, setAttemptCount] = useState(0);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { validateAuthInput, isValidating } = useSecurityValidation();
-  const { logSecurityEvent } = useSecurityContext();
 
   // Get return URL from query params
   const returnUrl = searchParams.get('returnUrl');
@@ -46,44 +41,13 @@ const LoginForm = () => {
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setValidationErrors({});
 
     try {
-      // Enhanced security validation
-      const userIdentifier = email || `${Date.now()}-${Math.random()}`;
-      
-      // Validate inputs with security checks
-      const validation = await validateAuthInput(email, password, userIdentifier);
-      
-      if (!validation.isValid) {
-        setValidationErrors(validation.errors);
-        setAttemptCount(prev => prev + 1);
-        
-        // Log failed validation attempt
-        await logSecurityEvent(
-          'login_validation_failed',
-          'Login attempt failed validation',
-          {
-            email: email ? email.substring(0, 3) + '***' : 'empty',
-            attemptCount: attemptCount + 1,
-            errors: Object.keys(validation.errors),
-            userAgent: navigator.userAgent
-          }
-        );
-        
-        toast.error('Please check your input and try again');
+      // Basic validation
+      if (!email || !password) {
+        toast.error('Please fill in all fields');
         return;
       }
-
-      // Log successful validation
-      await logSecurityEvent(
-        'login_attempt',
-        'User attempting to sign in',
-        {
-          email: email.substring(0, 3) + '***',
-          attemptCount: attemptCount + 1
-        }
-      );
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
@@ -93,25 +57,11 @@ const LoginForm = () => {
       if (error) {
         setAttemptCount(prev => prev + 1);
         
-        // Log authentication failure
-        await logSecurityEvent(
-          'login_failed',
-          'Authentication failed',
-          {
-            email: email.substring(0, 3) + '***',
-            error: error.message,
-            attemptCount: attemptCount + 1,
-            userAgent: navigator.userAgent
-          }
-        );
-        
         // Provide user-friendly error messages
         if (error.message.includes('Invalid login credentials')) {
           toast.error('Invalid email or password. Please check your credentials.');
         } else if (error.message.includes('Email not confirmed')) {
           toast.error('Please check your email and confirm your account before signing in.');
-        } else if (error.message.includes('Too many requests')) {
-          toast.error('Too many login attempts. Please wait a few minutes before trying again.');
         } else {
           toast.error('Unable to sign in. Please try again later.');
         }
@@ -119,17 +69,6 @@ const LoginForm = () => {
       }
 
       if (data.user) {
-        // Log successful login
-        await logSecurityEvent(
-          'login_success',
-          'User successfully signed in',
-          {
-            userId: data.user.id,
-            email: email.substring(0, 3) + '***',
-            sessionId: data.session?.access_token.substring(0, 10) + '...'
-          }
-        );
-        
         toast.success('Welcome back! 🎉');
         
         // Redirect to return URL or network
@@ -141,18 +80,6 @@ const LoginForm = () => {
       }
     } catch (error: any) {
       setAttemptCount(prev => prev + 1);
-      
-      // Log unexpected error
-      await logSecurityEvent(
-        'login_system_error',
-        'Unexpected error during login',
-        {
-          email: email ? email.substring(0, 3) + '***' : 'empty',
-          error: error.message || 'Unknown error',
-          attemptCount: attemptCount + 1
-        }
-      );
-      
       toast.error('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -204,22 +131,12 @@ const LoginForm = () => {
                 placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`pl-10 h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-sm font-medium text-slate-800 ${
-                  validationErrors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''
-                }`}
+                className="pl-10 h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-sm font-medium text-slate-800"
                 required
                 autoComplete="email"
                 maxLength={254}
               />
-              {validationErrors.email && (
-                <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
-                  <AlertTriangle className="h-4 w-4 text-red-500" />
-                </div>
-              )}
             </div>
-            {validationErrors.email && (
-              <p className="text-xs text-red-600 font-medium mt-1">{validationErrors.email}</p>
-            )}
           </div>
 
           <div className="space-y-2">
@@ -234,9 +151,7 @@ const LoginForm = () => {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`pl-10 pr-12 h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-sm font-medium text-slate-800 ${
-                  validationErrors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''
-                }`}
+                className="pl-10 pr-12 h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-sm font-medium text-slate-800"
                 required
                 autoComplete="current-password"
                 maxLength={128}
@@ -253,18 +168,7 @@ const LoginForm = () => {
                   <Eye className="h-4 w-4" />
                 )}
               </button>
-              {validationErrors.password && (
-                <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
-                  <AlertTriangle className="h-4 w-4 text-red-500" />
-                </div>
-              )}
             </div>
-            {validationErrors.password && (
-              <p className="text-xs text-red-600 font-medium mt-1">{validationErrors.password}</p>
-            )}
-            {validationErrors.general && (
-              <p className="text-xs text-red-600 font-medium mt-1">{validationErrors.general}</p>
-            )}
           </div>
 
           <div className="flex items-center justify-between pt-1">
@@ -281,12 +185,12 @@ const LoginForm = () => {
           <Button 
             type="submit" 
             className="w-full h-11 font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
-            disabled={loading || isValidating || attemptCount >= 5}
+            disabled={loading || attemptCount >= 5}
           >
-            {loading || isValidating ? (
+            {loading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                {isValidating ? 'Validating...' : 'Signing in...'}
+                Signing in...
               </>
             ) : attemptCount >= 5 ? (
               <>
