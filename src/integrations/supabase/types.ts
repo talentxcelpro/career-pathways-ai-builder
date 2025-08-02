@@ -7229,6 +7229,50 @@ export type Database = {
           },
         ]
       }
+      external_job_redirects: {
+        Row: {
+          created_at: string | null
+          external_url: string
+          id: string
+          ip_address: unknown | null
+          job_id: string | null
+          redirected_at: string | null
+          source_page: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          external_url: string
+          id?: string
+          ip_address?: unknown | null
+          job_id?: string | null
+          redirected_at?: string | null
+          source_page?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          external_url?: string
+          id?: string
+          ip_address?: unknown | null
+          job_id?: string | null
+          redirected_at?: string | null
+          source_page?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_job_redirects_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       failed_login_attempts: {
         Row: {
           attempt_count: number
@@ -8255,6 +8299,98 @@ export type Database = {
           },
         ]
       }
+      job_external_analytics: {
+        Row: {
+          created_at: string | null
+          id: string
+          job_id: string | null
+          last_updated: string | null
+          redirect_conversion_rate: number | null
+          total_external_redirects: number | null
+          total_internal_applications: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          last_updated?: string | null
+          redirect_conversion_rate?: number | null
+          total_external_redirects?: number | null
+          total_internal_applications?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          last_updated?: string | null
+          redirect_conversion_rate?: number | null
+          total_external_redirects?: number | null
+          total_internal_applications?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_external_analytics_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: true
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_locations_india: {
+        Row: {
+          city: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          state: string
+          tier: number
+        }
+        Insert: {
+          city: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          state: string
+          tier: number
+        }
+        Update: {
+          city?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          state?: string
+          tier?: number
+        }
+        Relationships: []
+      }
+      job_locations_international: {
+        Row: {
+          city: string
+          country: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          region: string
+        }
+        Insert: {
+          city: string
+          country: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          region: string
+        }
+        Update: {
+          city?: string
+          country?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          region?: string
+        }
+        Relationships: []
+      }
       job_matches: {
         Row: {
           created_at: string | null
@@ -8376,6 +8512,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      job_quality_standards: {
+        Row: {
+          created_at: string | null
+          description: string
+          id: string
+          is_mandatory: boolean | null
+          requirement_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          id?: string
+          is_mandatory?: boolean | null
+          requirement_type: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          id?: string
+          is_mandatory?: boolean | null
+          requirement_type?: string
+        }
+        Relationships: []
       }
       job_recommendations: {
         Row: {
@@ -8629,6 +8789,33 @@ export type Database = {
         }
         Relationships: []
       }
+      job_source_whitelist: {
+        Row: {
+          created_at: string | null
+          domain: string
+          id: string
+          is_trusted: boolean | null
+          reliability_score: number | null
+          source_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          domain: string
+          id?: string
+          is_trusted?: boolean | null
+          reliability_score?: number | null
+          source_name: string
+        }
+        Update: {
+          created_at?: string | null
+          domain?: string
+          id?: string
+          is_trusted?: boolean | null
+          reliability_score?: number | null
+          source_name?: string
+        }
+        Relationships: []
+      }
       job_swipes: {
         Row: {
           action: string
@@ -8730,6 +8917,7 @@ export type Database = {
           experience_preference: string | null
           experience_type: string | null
           expires_at: string | null
+          expiry_date: string | null
           external_url: string | null
           field_of_study: string[] | null
           id: string
@@ -8757,14 +8945,19 @@ export type Database = {
           max_experience: number | null
           maximum_experience_years: number | null
           maximum_gap_allowed: number | null
+          meta_description: string | null
+          meta_title: string | null
           min_experience: number | null
           minimum_education: string | null
           minimum_experience_years: number | null
           minimum_year_of_passing: number | null
           must_have_requirements: string[] | null
           nice_to_have: string[] | null
+          og_image_url: string | null
+          popularity_score: number | null
           posted_at: string | null
           posted_by: string | null
+          posted_date: string | null
           preferred_certifications: Json | null
           preferred_certifications_list: string[] | null
           preferred_company_background: string[] | null
@@ -8775,9 +8968,11 @@ export type Database = {
           relevant_industry_experience: string[] | null
           requirements: string | null
           salary_currency: string | null
+          salary_frequency: string | null
           salary_max: number | null
           salary_min: number | null
           salary_range: string | null
+          seo_slug: string | null
           skills_required: string[] | null
           source: string | null
           specialization_fields: string[] | null
@@ -8788,6 +8983,7 @@ export type Database = {
           supporting_documents: Json | null
           team_brochure_url: string | null
           title: string
+          trending_score: number | null
           updated_at: string | null
           views_count: number | null
           visibility_duration_days: number | null
@@ -8831,6 +9027,7 @@ export type Database = {
           experience_preference?: string | null
           experience_type?: string | null
           expires_at?: string | null
+          expiry_date?: string | null
           external_url?: string | null
           field_of_study?: string[] | null
           id?: string
@@ -8858,14 +9055,19 @@ export type Database = {
           max_experience?: number | null
           maximum_experience_years?: number | null
           maximum_gap_allowed?: number | null
+          meta_description?: string | null
+          meta_title?: string | null
           min_experience?: number | null
           minimum_education?: string | null
           minimum_experience_years?: number | null
           minimum_year_of_passing?: number | null
           must_have_requirements?: string[] | null
           nice_to_have?: string[] | null
+          og_image_url?: string | null
+          popularity_score?: number | null
           posted_at?: string | null
           posted_by?: string | null
+          posted_date?: string | null
           preferred_certifications?: Json | null
           preferred_certifications_list?: string[] | null
           preferred_company_background?: string[] | null
@@ -8876,9 +9078,11 @@ export type Database = {
           relevant_industry_experience?: string[] | null
           requirements?: string | null
           salary_currency?: string | null
+          salary_frequency?: string | null
           salary_max?: number | null
           salary_min?: number | null
           salary_range?: string | null
+          seo_slug?: string | null
           skills_required?: string[] | null
           source?: string | null
           specialization_fields?: string[] | null
@@ -8889,6 +9093,7 @@ export type Database = {
           supporting_documents?: Json | null
           team_brochure_url?: string | null
           title: string
+          trending_score?: number | null
           updated_at?: string | null
           views_count?: number | null
           visibility_duration_days?: number | null
@@ -8932,6 +9137,7 @@ export type Database = {
           experience_preference?: string | null
           experience_type?: string | null
           expires_at?: string | null
+          expiry_date?: string | null
           external_url?: string | null
           field_of_study?: string[] | null
           id?: string
@@ -8959,14 +9165,19 @@ export type Database = {
           max_experience?: number | null
           maximum_experience_years?: number | null
           maximum_gap_allowed?: number | null
+          meta_description?: string | null
+          meta_title?: string | null
           min_experience?: number | null
           minimum_education?: string | null
           minimum_experience_years?: number | null
           minimum_year_of_passing?: number | null
           must_have_requirements?: string[] | null
           nice_to_have?: string[] | null
+          og_image_url?: string | null
+          popularity_score?: number | null
           posted_at?: string | null
           posted_by?: string | null
+          posted_date?: string | null
           preferred_certifications?: Json | null
           preferred_certifications_list?: string[] | null
           preferred_company_background?: string[] | null
@@ -8977,9 +9188,11 @@ export type Database = {
           relevant_industry_experience?: string[] | null
           requirements?: string | null
           salary_currency?: string | null
+          salary_frequency?: string | null
           salary_max?: number | null
           salary_min?: number | null
           salary_range?: string | null
+          seo_slug?: string | null
           skills_required?: string[] | null
           source?: string | null
           specialization_fields?: string[] | null
@@ -8990,6 +9203,7 @@ export type Database = {
           supporting_documents?: Json | null
           team_brochure_url?: string | null
           title?: string
+          trending_score?: number | null
           updated_at?: string | null
           views_count?: number | null
           visibility_duration_days?: number | null
@@ -14506,6 +14720,63 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_bulk_jobs: {
+        Row: {
+          completed_at: string | null
+          configuration: Json | null
+          content_type: string | null
+          created_at: string
+          created_by: string | null
+          error_message: string | null
+          failed_items: number | null
+          id: string
+          job_type: string
+          processed_items: number | null
+          progress_data: Json | null
+          started_at: string | null
+          status: string
+          success_rate: number | null
+          total_items: number | null
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          configuration?: Json | null
+          content_type?: string | null
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          failed_items?: number | null
+          id?: string
+          job_type: string
+          processed_items?: number | null
+          progress_data?: Json | null
+          started_at?: string | null
+          status?: string
+          success_rate?: number | null
+          total_items?: number | null
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          configuration?: Json | null
+          content_type?: string | null
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          failed_items?: number | null
+          id?: string
+          job_type?: string
+          processed_items?: number | null
+          progress_data?: Json | null
+          started_at?: string | null
+          status?: string
+          success_rate?: number | null
+          total_items?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       seo_cache: {
         Row: {
           cache_key: string
@@ -14902,6 +15173,63 @@ export type Database = {
           priority?: number | null
           updated_at?: string | null
           url_pattern?: string
+        }
+        Relationships: []
+      }
+      seo_performance_tracking: {
+        Row: {
+          avg_position: number | null
+          bounce_rate: number | null
+          click_through_rate: number | null
+          content_id: string | null
+          content_type: string | null
+          conversions: number | null
+          created_at: string
+          date: string
+          id: string
+          organic_clicks: number | null
+          organic_impressions: number | null
+          revenue: number | null
+          source: string | null
+          time_on_page: number | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          avg_position?: number | null
+          bounce_rate?: number | null
+          click_through_rate?: number | null
+          content_id?: string | null
+          content_type?: string | null
+          conversions?: number | null
+          created_at?: string
+          date?: string
+          id?: string
+          organic_clicks?: number | null
+          organic_impressions?: number | null
+          revenue?: number | null
+          source?: string | null
+          time_on_page?: number | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          avg_position?: number | null
+          bounce_rate?: number | null
+          click_through_rate?: number | null
+          content_id?: string | null
+          content_type?: string | null
+          conversions?: number | null
+          created_at?: string
+          date?: string
+          id?: string
+          organic_clicks?: number | null
+          organic_impressions?: number | null
+          revenue?: number | null
+          source?: string | null
+          time_on_page?: number | null
+          updated_at?: string
+          url?: string
         }
         Relationships: []
       }
@@ -18547,6 +18875,14 @@ export type Database = {
         Args: { request_id: string }
         Returns: Json
       }
+      assign_user_role_secure: {
+        Args: {
+          _target_user_id: string
+          _new_role: Database["public"]["Enums"]["app_role"]
+          _reason?: string
+        }
+        Returns: Json
+      }
       backfill_admin_connections: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -18557,6 +18893,10 @@ export type Database = {
       }
       calculate_company_engagement_score: {
         Args: { company_uuid: string }
+        Returns: number
+      }
+      calculate_job_popularity: {
+        Args: { job_id: string }
         Returns: number
       }
       calculate_job_skill_match: {
@@ -18584,6 +18924,13 @@ export type Database = {
         Args: { job_uuid: string }
         Returns: boolean
       }
+      can_user_assign_role: {
+        Args: {
+          _assigner_id: string
+          _target_role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
       check_outreach_limit: {
         Args: { employer_uuid: string; recipient_count: number }
         Returns: boolean
@@ -18605,6 +18952,10 @@ export type Database = {
         Args: { url: string }
         Returns: boolean
       }
+      cleanup_expired_jobs: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_old_notifications: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -18617,6 +18968,10 @@ export type Database = {
           user_preferences?: Json
         }
         Returns: undefined
+      }
+      count_external_redirects: {
+        Args: { job_uuid: string }
+        Returns: number
       }
       count_words: {
         Args: { content_text: string }
@@ -18661,6 +19016,17 @@ export type Database = {
         }
         Returns: string
       }
+      detect_salary_frequency_issues: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          job_id: string
+          current_salary_min: number
+          current_salary_max: number
+          suggested_frequency: string
+          suggested_min: number
+          suggested_max: number
+        }[]
+      }
       ensure_unique_college_slug: {
         Args: { base_slug: string; college_id?: string }
         Returns: string
@@ -18693,6 +19059,10 @@ export type Database = {
         Args: { company_name: string }
         Returns: string
       }
+      generate_job_seo_slug: {
+        Args: { job_title: string; company_name: string; location: string }
+        Returns: string
+      }
       generate_referral_code: {
         Args: { user_uuid: string }
         Returns: string
@@ -18720,6 +19090,18 @@ export type Database = {
       get_email_domain: {
         Args: { email_address: string }
         Returns: string
+      }
+      get_job_redirect_history: {
+        Args: { job_uuid: string }
+        Returns: {
+          id: string
+          user_id: string
+          external_url: string
+          source_page: string
+          redirected_at: string
+          user_name: string
+          user_email: string
+        }[]
       }
       get_or_create_user_referral: {
         Args: { user_uuid: string }
@@ -18877,6 +19259,17 @@ export type Database = {
             }
         Returns: string
       }
+      log_security_event_secure: {
+        Args: {
+          p_user_id: string
+          p_event_type: string
+          p_description: string
+          p_ip_address?: unknown
+          p_user_agent?: string
+          p_metadata?: Json
+        }
+        Returns: string
+      }
       log_team_activity: {
         Args: {
           _company_id: string
@@ -18900,6 +19293,10 @@ export type Database = {
           p_is_public?: boolean
         }
         Returns: string
+      }
+      normalize_salary_to_annual: {
+        Args: { amount: number; frequency: string }
+        Returns: number
       }
       process_successful_referral: {
         Args: { p_referee_id: string; p_referral_code: string }
@@ -18964,6 +19361,16 @@ export type Database = {
           error_message: string
         }[]
       }
+      track_external_job_redirect: {
+        Args: {
+          p_user_id: string
+          p_job_id: string
+          p_external_url: string
+          p_source_page?: string
+          p_user_agent?: string
+        }
+        Returns: undefined
+      }
       track_outreach_usage: {
         Args: { employer_uuid: string; email_count: number }
         Returns: undefined
@@ -19020,6 +19427,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      update_trending_scores: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       update_upload_progress: {
         Args: {
           status_id: string
@@ -19044,6 +19455,18 @@ export type Database = {
       }
       user_owns_job: {
         Args: { job_uuid: string }
+        Returns: boolean
+      }
+      validate_admin_operation: {
+        Args: { _required_role?: Database["public"]["Enums"]["app_role"] }
+        Returns: boolean
+      }
+      validate_job_location: {
+        Args: { location: string }
+        Returns: boolean
+      }
+      validate_job_url: {
+        Args: { url: string }
         Returns: boolean
       }
     }

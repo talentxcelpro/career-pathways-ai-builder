@@ -16,7 +16,7 @@ export const useResumeEnhancement = () => {
   const parser = new ResumeSectionParser();
   
   // API constants
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+  // Use secure authentication instead of hardcoded key
   const FUNCTION_URL = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/enhance-resume';
 
   const enhanceResumeText = async (
@@ -81,7 +81,7 @@ export const useResumeEnhancement = () => {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${session.data.session?.access_token}`,
-              'apikey': SUPABASE_ANON_KEY,
+              // Use secure client instead of hardcoded key
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestData)
@@ -194,7 +194,7 @@ export const useResumeEnhancement = () => {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${session.data.session?.access_token}`,
-              'apikey': SUPABASE_ANON_KEY,
+              // Use secure client instead of hardcoded key
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestData)

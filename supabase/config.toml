@@ -2,13 +2,13 @@
 project_id = "dthlgsnakhoftinssokm"
 
 [functions.job-scraper]
-verify_jwt = false
+verify_jwt = true
 
 [functions.job-publisher]
-verify_jwt = false
+verify_jwt = true
 
 [functions.deepseek-content-generator]
-verify_jwt = false
+verify_jwt = true
 
 [api]
 enabled = true
@@ -72,22 +72,22 @@ verify_jwt = false
 verify_jwt = true
 
 [functions.bot-content-generator]
-verify_jwt = false
+verify_jwt = true
 
 [functions.fix-bot-auth]
-verify_jwt = false
+verify_jwt = true
 
 [functions.create-bot-account]
-verify_jwt = false
+verify_jwt = true
 
 [functions.sitemap-generator]
 verify_jwt = false
 
 [functions.deepseek-ai]
-verify_jwt = false
+verify_jwt = true
 
 [functions.job-scraper-quality]
-verify_jwt = false
+verify_jwt = true
 
 [functions.job-quality-checker]
 verify_jwt = true

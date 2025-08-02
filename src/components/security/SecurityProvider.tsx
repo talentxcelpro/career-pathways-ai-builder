@@ -31,7 +31,7 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({ children }) 
     if (!user) return;
     
     try {
-      await supabase.rpc('log_security_event', {
+      await supabase.rpc('log_security_event_secure', {
         p_user_id: user.id,
         p_event_type: eventType,
         p_description: description,

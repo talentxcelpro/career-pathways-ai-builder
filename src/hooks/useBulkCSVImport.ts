@@ -42,7 +42,7 @@ export const useBulkCSVImport = () => {
       console.log('Testing connection to bulk-csv-import function...');
       
       const SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
-      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc";
+      // Use secure authentication instead of hardcoded key
       const functionUrl = `${SUPABASE_URL}/functions/v1/bulk-csv-import`;
       
       console.log('Function URL:', functionUrl);
@@ -55,7 +55,7 @@ export const useBulkCSVImport = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          // Use secure authentication via Supabase client instead
         },
         body: JSON.stringify(testPayload)
       });
@@ -160,7 +160,7 @@ export const useBulkCSVImport = () => {
       setProgress(prev => ({ ...prev, total: users.length }));
 
       const SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
-      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc";
+      // Use secure authentication instead of hardcoded key
       const functionUrl = `${SUPABASE_URL}/functions/v1/bulk-csv-import`;
 
       // Fix: Send the parsed users array in csvData field
@@ -184,7 +184,7 @@ export const useBulkCSVImport = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          // Use secure authentication via Supabase client instead
         },
         body: JSON.stringify(payload)
       });

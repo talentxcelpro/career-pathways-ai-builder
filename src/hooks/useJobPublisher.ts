@@ -16,79 +16,22 @@ export const usePublishScrapedJobs = () => {
       // Get current session and token for debugging
       const session = await supabase.auth.getSession();
       const token = session?.data?.session?.access_token;
-      const apikey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+      // Use secure authentication instead of hardcoded key
       
       console.log('🔐 Auth token available:', !!token);
       console.log('🔐 Token length:', token?.length || 0);
       console.log('🔐 Token preview:', token ? token.substring(0, 20) + '...' : 'None');
-      console.log('🔐 Apikey available:', !!apikey);
-      console.log('🔗 Using direct cloud URL: https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher');
+      console.log('🔗 Using secure Supabase client');
       
-      const headers = {
-        'Content-Type': 'application/json',
-        'apikey': apikey,
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-      };
-      
-      console.log('📋 Request headers:', Object.keys(headers));
-      console.log('📋 Headers detail:', headers);
-      
-      try {
-        console.log('🚀 Starting fetch request...');
-        console.log('🌐 User Agent:', navigator.userAgent);
-        console.log('🔗 Request URL:', 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher');
-        console.log('📤 Request body:', JSON.stringify(params));
-        
-        // Use direct fetch to cloud function (no localhost fallback)
-        const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-publisher', {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify(params)
-        });
-        
-        console.log('📥 Fetch completed successfully!');
-        console.log('📥 Response status:', response.status);
-        console.log('📥 Response statusText:', response.statusText);
-        console.log('📥 Response ok:', response.ok);
-        console.log('📥 Response type:', response.type);
-        console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('❌ Function call failed:', response.status, response.statusText);
-          console.error('❌ Error response body:', errorText);
-          throw new Error(`Function call failed: ${response.status} ${response.statusText} - ${errorText}`);
-        }
-        
-        const data = await response.json();
-        console.log('📥 Function response:', data);
-        
+      // Use secure Supabase client instead of direct fetch
+      return await supabase.functions.invoke('job-publisher', {
+        body: params
+      }).then(({ data, error }) => {
+        if (error) throw error;
         return data;
-      } catch (fetchError: any) {
-        console.error('❌ Fetch error caught:', fetchError);
-        console.error('❌ Error name:', fetchError.name);
-        console.error('❌ Error message:', fetchError.message);
-        console.error('❌ Error stack:', fetchError.stack);
-        console.error('❌ Error cause:', fetchError.cause);
-        console.error('❌ Error toString:', fetchError.toString());
-        
-        // Additional diagnostics
-        if (fetchError.name === 'TypeError' && fetchError.message === 'Failed to fetch') {
-          console.error('🔍 This is a network-level error. Possible causes:');
-          console.error('   - CORS blocking the request');
-          console.error('   - Network connectivity issues');
-          console.error('   - Browser security policies');
-          console.error('   - Ad blockers or extensions');
-          console.error('   - Mixed content (HTTP/HTTPS) issues');
-        }
-        
-        // Check if we're in a secure context
-        console.log('🔒 Is secure context:', window.isSecureContext);
-        console.log('🌐 Protocol:', window.location.protocol);
-        console.log('🏠 Origin:', window.location.origin);
-        
-        throw fetchError;
-      }
+      });
+      
+      // Rest of function removed - handled by secure client above
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
