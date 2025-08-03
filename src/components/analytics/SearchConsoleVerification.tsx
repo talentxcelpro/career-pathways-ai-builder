@@ -6,7 +6,7 @@ interface SearchConsoleVerificationProps {
 }
 
 export const SearchConsoleVerification: React.FC<SearchConsoleVerificationProps> = ({
-  verificationCode = 'your-search-console-verification-code' // Replace with actual verification code
+  verificationCode = 'nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM'
 }) => {
   useEffect(() => {
     // Only add verification if code is provided and not placeholder
