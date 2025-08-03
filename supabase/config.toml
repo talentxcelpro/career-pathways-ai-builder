@@ -103,3 +103,9 @@ verify_jwt = false
 
 [functions.health-check]
 verify_jwt = false
+
+[functions.optimized-sitemap]
+verify_jwt = false
+
+[functions.seo-job-enhancer]
+verify_jwt = false
