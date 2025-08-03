@@ -42,16 +42,11 @@ serve(async (req) => {
       console.log(`📊 Total jobs: ${totalJobs}, Total sitemaps needed: ${totalJobSitemaps}`)
 
       // Generate sitemap index XML
+      const today = new Date().toISOString().split('T')[0]
       const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>https://talentxcel.in/api/optimized-sitemap</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-  </sitemap>
-${totalJobSitemaps > 0 ? Array.from({ length: totalJobSitemaps }, (_, i) => `  <sitemap>
-    <loc>https://talentxcel.in/api/optimized-sitemap-${i + 1}</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-  </sitemap>`).join('\n') : ''}
+  <sitemap><loc>https://talentxcel.in/api/optimized-sitemap</loc><lastmod>${today}</lastmod></sitemap>${totalJobSitemaps > 0 ? Array.from({ length: totalJobSitemaps }, (_, i) => `
+  <sitemap><loc>https://talentxcel.in/api/optimized-sitemap-${i + 1}</loc><lastmod>${today}</lastmod></sitemap>`).join('') : ''}
 </sitemapindex>`
 
       return new Response(sitemapIndex, {
