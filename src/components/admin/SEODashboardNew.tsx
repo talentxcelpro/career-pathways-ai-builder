@@ -32,8 +32,15 @@ export const SEODashboardNew = () => {
       console.log('🔧 Calling SEO enhancer function...');
       console.log('📋 Request payload:', { enhance_all: true });
       
+      // Try to get current user session first
+      const { data: session } = await supabase.auth.getSession();
+      console.log('🔐 Current session:', session);
+      
       const { data, error } = await supabase.functions.invoke('seo-job-enhancer', {
-        body: { enhance_all: true }
+        body: { enhance_all: true },
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
       console.log('📊 Function response:', { data, error });
