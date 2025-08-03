@@ -19,7 +19,7 @@ const PrivacyPolicy = () => {
         <Card className="mb-8">
           <CardContent className="p-6 text-center">
             <p className="text-gray-600">
-              <strong>Effective Date:</strong> July 01, 2025 | <strong>Last Updated:</strong> July 01, 2025
+              <strong>Effective Date:</strong> August 03, 2025 | <strong>Last Updated:</strong> August 03, 2025
             </p>
             <p className="text-sm text-gray-500 mt-2">
               We may update this privacy policy from time to time. We will notify you of any significant changes via email or through our platform.
@@ -69,6 +69,8 @@ const PrivacyPolicy = () => {
                   <li>• Profile photos and video resumes</li>
                   <li>• Location and preferred work locations</li>
                   <li>• Salary expectations and career preferences</li>
+                  <li>• Google account information when signing in with Google (name, email, profile picture)</li>
+                  <li>• Social login data from third-party authentication providers</li>
                 </ul>
               </div>
               
@@ -334,13 +336,23 @@ const PrivacyPolicy = () => {
         {/* Third-Party Services */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="text-2xl text-gray-800">Third-Party Services</CardTitle>
+            <CardTitle className="text-2xl text-gray-800">Third-Party Services & Authentication</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-gray-600 leading-relaxed space-y-4">
-              <p>
-                Our platform may contain links to third-party websites and services. We are not responsible for the privacy practices of these external sites. We encourage you to review their privacy policies before providing any personal information.
-              </p>
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-2">Google Authentication</h3>
+                <p>
+                  When you sign in with Google, we receive your basic profile information (name, email address, and profile picture) from Google. This information is used to create and maintain your TalentXcel account. We comply with Google's user data policies and only access the minimum information necessary for authentication.
+                </p>
+              </div>
+              
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-2">External Websites</h3>
+                <p>
+                  Our platform may contain links to third-party websites and services. We are not responsible for the privacy practices of these external sites. We encourage you to review their privacy policies before providing any personal information.
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>

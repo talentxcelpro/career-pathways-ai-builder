@@ -128,6 +128,9 @@ const App = () => {
                       <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
                       <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
                       
+                      {/* Privacy policy redirect for consistency */}
+                      <Route path="/privacy" element={<Navigate to="/privacypolicy" replace />} />
+                      
 {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
                     </Routes>
                   </main>
