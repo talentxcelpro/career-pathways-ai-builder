@@ -65,11 +65,19 @@ serve(async (req) => {
     };
 
     // Get bot profile for personalization
-    const { data: botProfile } = await supabase
+    const { data: botProfile, error: botError } = await supabase
       .from('ai_bots')
       .select('name, role, content_domains, tone_style, department')
       .eq('id', botId)
-      .single();
+      .maybeSingle();
+
+    if (botError) {
+      throw new Error(`Error fetching bot profile: ${botError.message}`);
+    }
+
+    if (!botProfile) {
+      throw new Error(`Bot with ID ${botId} not found or inactive`);
+    }
 
     const wordCount = getWordCount(contentType);
     const botName = botProfile?.name || 'TalentXcel AI';
