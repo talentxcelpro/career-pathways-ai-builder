@@ -102,11 +102,19 @@ serve(async (req) => {
             .from('bot_content_templates')
             .select('*')
             .eq('is_active', true)
-            .overlaps('content_categories', bot.content_domains)
             .limit(10);
           
           if (templates && templates.length > 0) {
-            template = templates[Math.floor(Math.random() * templates.length)];
+            // Filter templates that match any of the bot's content domains
+            const matchingTemplates = templates.filter(template => 
+              bot.content_domains.some(domain => 
+                template.category && template.category.toLowerCase().includes(domain.toLowerCase())
+              )
+            );
+            
+            // Use matching template or fall back to any active template
+            const templatesToUse = matchingTemplates.length > 0 ? matchingTemplates : templates;
+            template = templatesToUse[Math.floor(Math.random() * templatesToUse.length)];
           }
         }
         
@@ -123,11 +131,11 @@ serve(async (req) => {
         if (openAIApiKey) {
           const prompt = `
 You are ${bot.name}, a ${bot.role} at TalentXcel. 
-Generate engaging content based on this template: "${template.template_content}"
+Generate engaging content based on this template: "${template.prompt_template}"
 
 Content Domain: ${bot.content_domains.join(', ')}
 Tone: ${bot.tone_style || 'professional'}
-Style: ${template.content_style || 'informative'}
+Style: ${template.tone || 'informative'}
 
 Create a ${template.content_type || 'post'} that provides value to professionals and job seekers. 
 Include practical tips, insights, or actionable advice.
@@ -167,7 +175,7 @@ Keep it under 300 words and make it engaging for LinkedIn/social media.
         // Fallback to template-based content if OpenAI fails
         if (!generatedContent) {
           generatedContent = `
-${template.template_content}
+${template.prompt_template || 'Career insights from ' + bot.name}
 
 Key insights for ${bot.content_domains[0] || 'career growth'}:
 • Focus on continuous learning and skill development
