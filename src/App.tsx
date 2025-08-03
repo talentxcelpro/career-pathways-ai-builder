@@ -20,6 +20,7 @@ import { SearchConsoleVerification } from "./components/analytics/SearchConsoleV
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
+import UnifiedDashboard from './pages/UnifiedDashboard';
 import UserManagement from "@/pages/admin/UserManagement";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
 import { AdminScrapedJobApplications } from "@/components/admin/AdminScrapedJobApplications";
@@ -110,7 +111,8 @@ const App = () => {
                             }
                           />
                         );
-                      })}
+                       })}
+                      <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
                       <Route path="/admin/users" element={<UserManagement />} />
                       <Route path="/admin/security" element={<SecurityCenter />} />
