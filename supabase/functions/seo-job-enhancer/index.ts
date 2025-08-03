@@ -49,6 +49,11 @@ serve(async (req) => {
       if (error) throw error
       jobs = data || []
     } else {
+      // Validate jobId for single job enhancement
+      if (!jobId || typeof jobId !== 'string') {
+        throw new Error('Missing or invalid jobId for single job enhancement')
+      }
+
       // Get specific job
       const { data, error } = await supabase
         .from('jobs')
