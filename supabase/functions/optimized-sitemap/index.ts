@@ -18,7 +18,7 @@ serve(async (req) => {
     const page = url.searchParams.get('page')
     const type = url.searchParams.get('type') || 'main'
 
-    console.log(`🗂️ Generating sitemap type: ${type}, page: ${page}`)
+    console.log(`🗂️ Generating sitemap type: ${type}, page: ${page}, pathname: ${pathname}`)
 
     // Initialize Supabase client with anon key (public function)
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -48,10 +48,10 @@ serve(async (req) => {
     <loc>https://talentxcel.in/api/optimized-sitemap</loc>
     <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
   </sitemap>
-${Array.from({ length: totalJobSitemaps }, (_, i) => `  <sitemap>
+${totalJobSitemaps > 0 ? Array.from({ length: totalJobSitemaps }, (_, i) => `  <sitemap>
     <loc>https://talentxcel.in/api/optimized-sitemap-${i + 1}</loc>
     <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-  </sitemap>`).join('\n')}
+  </sitemap>`).join('\n') : ''}
 </sitemapindex>`
 
       return new Response(sitemapIndex, {
