@@ -2439,6 +2439,69 @@ export type Database = {
         }
         Relationships: []
       }
+      batch_scraping_queue: {
+        Row: {
+          batch_name: string
+          completed_at: string | null
+          created_at: string | null
+          error_count: number | null
+          error_details: Json | null
+          id: string
+          jobs_processed: number | null
+          jobs_scraped: number | null
+          jobs_seo_optimized: number | null
+          jobs_validated: number | null
+          priority: number | null
+          processing_time_seconds: number | null
+          results: Json | null
+          source_ids: string[]
+          started_at: string | null
+          status: string | null
+          target_job_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          batch_name: string
+          completed_at?: string | null
+          created_at?: string | null
+          error_count?: number | null
+          error_details?: Json | null
+          id?: string
+          jobs_processed?: number | null
+          jobs_scraped?: number | null
+          jobs_seo_optimized?: number | null
+          jobs_validated?: number | null
+          priority?: number | null
+          processing_time_seconds?: number | null
+          results?: Json | null
+          source_ids: string[]
+          started_at?: string | null
+          status?: string | null
+          target_job_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          batch_name?: string
+          completed_at?: string | null
+          created_at?: string | null
+          error_count?: number | null
+          error_details?: Json | null
+          id?: string
+          jobs_processed?: number | null
+          jobs_scraped?: number | null
+          jobs_seo_optimized?: number | null
+          jobs_validated?: number | null
+          priority?: number | null
+          processing_time_seconds?: number | null
+          results?: Json | null
+          source_ids?: string[]
+          started_at?: string | null
+          status?: string | null
+          target_job_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       bot_activity_schedule: {
         Row: {
           bot_id: string | null
@@ -6715,6 +6778,69 @@ export type Database = {
         }
         Relationships: []
       }
+      dynamic_landing_pages: {
+        Row: {
+          auto_update_frequency: string | null
+          content_sections: Json | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          last_content_update: string | null
+          meta_description: string | null
+          page_title: string
+          page_type: string
+          page_views: number | null
+          related_jobs_count: number | null
+          search_ranking: Json | null
+          slug: string
+          target_company: string | null
+          target_keywords: string[] | null
+          target_location: string | null
+          target_skill: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_update_frequency?: string | null
+          content_sections?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_content_update?: string | null
+          meta_description?: string | null
+          page_title: string
+          page_type: string
+          page_views?: number | null
+          related_jobs_count?: number | null
+          search_ranking?: Json | null
+          slug: string
+          target_company?: string | null
+          target_keywords?: string[] | null
+          target_location?: string | null
+          target_skill?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_update_frequency?: string | null
+          content_sections?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_content_update?: string | null
+          meta_description?: string | null
+          page_title?: string
+          page_type?: string
+          page_views?: number | null
+          related_jobs_count?: number | null
+          search_ranking?: Json | null
+          slug?: string
+          target_company?: string | null
+          target_keywords?: string[] | null
+          target_location?: string | null
+          target_skill?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       education: {
         Row: {
           academic_projects: string[] | null
@@ -7289,6 +7415,81 @@ export type Database = {
           submitted_at?: string | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      enhanced_job_sources: {
+        Row: {
+          avg_response_time_ms: number | null
+          base_url: string
+          company_types: string[] | null
+          consecutive_failures: number | null
+          country: string | null
+          created_at: string | null
+          domain: string
+          id: string
+          is_active: boolean | null
+          job_categories: string[] | null
+          jobs_per_hour: number | null
+          last_successful_scrape: string | null
+          location_coverage: string[] | null
+          max_concurrent_requests: number | null
+          priority: number | null
+          rate_limit_delay_ms: number | null
+          retry_count: number | null
+          scraping_config: Json | null
+          source_name: string
+          source_type: string
+          success_rate: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_response_time_ms?: number | null
+          base_url: string
+          company_types?: string[] | null
+          consecutive_failures?: number | null
+          country?: string | null
+          created_at?: string | null
+          domain: string
+          id?: string
+          is_active?: boolean | null
+          job_categories?: string[] | null
+          jobs_per_hour?: number | null
+          last_successful_scrape?: string | null
+          location_coverage?: string[] | null
+          max_concurrent_requests?: number | null
+          priority?: number | null
+          rate_limit_delay_ms?: number | null
+          retry_count?: number | null
+          scraping_config?: Json | null
+          source_name: string
+          source_type?: string
+          success_rate?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_response_time_ms?: number | null
+          base_url?: string
+          company_types?: string[] | null
+          consecutive_failures?: number | null
+          country?: string | null
+          created_at?: string | null
+          domain?: string
+          id?: string
+          is_active?: boolean | null
+          job_categories?: string[] | null
+          jobs_per_hour?: number | null
+          last_successful_scrape?: string | null
+          location_coverage?: string[] | null
+          max_concurrent_requests?: number | null
+          priority?: number | null
+          rate_limit_delay_ms?: number | null
+          retry_count?: number | null
+          scraping_config?: Json | null
+          source_name?: string
+          source_type?: string
+          success_rate?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -9738,6 +9939,63 @@ export type Database = {
           },
         ]
       }
+      market_insights: {
+        Row: {
+          content_potential_score: number | null
+          data_period_end: string | null
+          data_period_start: string | null
+          data_points: Json
+          expires_at: string | null
+          generated_at: string | null
+          id: string
+          industry: string | null
+          insight_summary: string | null
+          insight_title: string
+          insight_type: string
+          location: string | null
+          recommended_content_types: string[] | null
+          skill_category: string | null
+          target_audience: string[] | null
+          trends: Json | null
+        }
+        Insert: {
+          content_potential_score?: number | null
+          data_period_end?: string | null
+          data_period_start?: string | null
+          data_points: Json
+          expires_at?: string | null
+          generated_at?: string | null
+          id?: string
+          industry?: string | null
+          insight_summary?: string | null
+          insight_title: string
+          insight_type: string
+          location?: string | null
+          recommended_content_types?: string[] | null
+          skill_category?: string | null
+          target_audience?: string[] | null
+          trends?: Json | null
+        }
+        Update: {
+          content_potential_score?: number | null
+          data_period_end?: string | null
+          data_period_start?: string | null
+          data_points?: Json
+          expires_at?: string | null
+          generated_at?: string | null
+          id?: string
+          industry?: string | null
+          insight_summary?: string | null
+          insight_title?: string
+          insight_type?: string
+          location?: string | null
+          recommended_content_types?: string[] | null
+          skill_category?: string | null
+          target_audience?: string[] | null
+          trends?: Json | null
+        }
+        Relationships: []
+      }
       marketing_campaigns: {
         Row: {
           budget: number | null
@@ -9914,6 +10172,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      monitoring_alerts: {
+        Row: {
+          alert_data: Json | null
+          alert_type: string
+          created_at: string | null
+          current_value: number | null
+          description: string | null
+          id: string
+          is_resolved: boolean | null
+          metric_name: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          threshold_value: number | null
+          title: string
+        }
+        Insert: {
+          alert_data?: Json | null
+          alert_type: string
+          created_at?: string | null
+          current_value?: number | null
+          description?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          metric_name?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          threshold_value?: number | null
+          title: string
+        }
+        Update: {
+          alert_data?: Json | null
+          alert_type?: string
+          created_at?: string | null
+          current_value?: number | null
+          description?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          metric_name?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          threshold_value?: number | null
+          title?: string
+        }
+        Relationships: []
       }
       notification_templates: {
         Row: {
@@ -14629,6 +14935,87 @@ export type Database = {
         }
         Relationships: []
       }
+      salary_normalization_rules: {
+        Row: {
+          confidence_weight: number | null
+          created_at: string | null
+          extraction_logic: Json
+          frequency_detection: Json
+          id: string
+          is_active: boolean | null
+          pattern: string
+          rule_name: string
+          validation_rules: Json
+        }
+        Insert: {
+          confidence_weight?: number | null
+          created_at?: string | null
+          extraction_logic: Json
+          frequency_detection: Json
+          id?: string
+          is_active?: boolean | null
+          pattern: string
+          rule_name: string
+          validation_rules: Json
+        }
+        Update: {
+          confidence_weight?: number | null
+          created_at?: string | null
+          extraction_logic?: Json
+          frequency_detection?: Json
+          id?: string
+          is_active?: boolean | null
+          pattern?: string
+          rule_name?: string
+          validation_rules?: Json
+        }
+        Relationships: []
+      }
+      salary_validations: {
+        Row: {
+          ai_reasoning: string | null
+          confidence_score: number | null
+          created_at: string | null
+          detected_frequency: string | null
+          id: string
+          job_id: string | null
+          normalized_annual_max: number | null
+          normalized_annual_min: number | null
+          original_salary_text: string | null
+          parsed_max_salary: number | null
+          parsed_min_salary: number | null
+          validation_flags: string[] | null
+        }
+        Insert: {
+          ai_reasoning?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          detected_frequency?: string | null
+          id?: string
+          job_id?: string | null
+          normalized_annual_max?: number | null
+          normalized_annual_min?: number | null
+          original_salary_text?: string | null
+          parsed_max_salary?: number | null
+          parsed_min_salary?: number | null
+          validation_flags?: string[] | null
+        }
+        Update: {
+          ai_reasoning?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          detected_frequency?: string | null
+          id?: string
+          job_id?: string | null
+          normalized_annual_max?: number | null
+          normalized_annual_min?: number | null
+          original_salary_text?: string | null
+          parsed_max_salary?: number | null
+          parsed_min_salary?: number | null
+          validation_flags?: string[] | null
+        }
+        Relationships: []
+      }
       saved_jobs: {
         Row: {
           id: string
@@ -15365,6 +15752,72 @@ export type Database = {
           page_type?: string
           structured_data?: Json | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      seo_content_automation: {
+        Row: {
+          ai_model_used: string | null
+          content_blocks: Json | null
+          content_type: string
+          entity_id: string | null
+          entity_type: string
+          generated_at: string | null
+          generation_time_ms: number | null
+          h1_title: string | null
+          id: string
+          is_published: boolean | null
+          keyword_density: Json | null
+          last_updated: string | null
+          meta_description: string | null
+          meta_title: string | null
+          readability_score: number | null
+          seo_score: number | null
+          status: string | null
+          structured_data: Json | null
+          target_keywords: string[] | null
+        }
+        Insert: {
+          ai_model_used?: string | null
+          content_blocks?: Json | null
+          content_type: string
+          entity_id?: string | null
+          entity_type: string
+          generated_at?: string | null
+          generation_time_ms?: number | null
+          h1_title?: string | null
+          id?: string
+          is_published?: boolean | null
+          keyword_density?: Json | null
+          last_updated?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          readability_score?: number | null
+          seo_score?: number | null
+          status?: string | null
+          structured_data?: Json | null
+          target_keywords?: string[] | null
+        }
+        Update: {
+          ai_model_used?: string | null
+          content_blocks?: Json | null
+          content_type?: string
+          entity_id?: string | null
+          entity_type?: string
+          generated_at?: string | null
+          generation_time_ms?: number | null
+          h1_title?: string | null
+          id?: string
+          is_published?: boolean | null
+          keyword_density?: Json | null
+          last_updated?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          readability_score?: number | null
+          seo_score?: number | null
+          status?: string | null
+          structured_data?: Json | null
+          target_keywords?: string[] | null
         }
         Relationships: []
       }
@@ -17473,6 +17926,66 @@ export type Database = {
           metric_value?: number
           organization_id?: string
           timestamp?: string
+        }
+        Relationships: []
+      }
+      system_performance_metrics: {
+        Row: {
+          avg_scraping_speed_jobs_per_hour: number | null
+          content_pieces_generated: number | null
+          created_at: string | null
+          daily_active_users: number | null
+          failed_scrapes: number | null
+          high_quality_jobs: number | null
+          id: string
+          job_applications: number | null
+          metric_date: string | null
+          organic_traffic: number | null
+          page_views: number | null
+          salary_normalized_jobs: number | null
+          search_queries: number | null
+          search_rankings: Json | null
+          seo_optimized_jobs: number | null
+          successful_scrapes: number | null
+          total_jobs_scraped: number | null
+        }
+        Insert: {
+          avg_scraping_speed_jobs_per_hour?: number | null
+          content_pieces_generated?: number | null
+          created_at?: string | null
+          daily_active_users?: number | null
+          failed_scrapes?: number | null
+          high_quality_jobs?: number | null
+          id?: string
+          job_applications?: number | null
+          metric_date?: string | null
+          organic_traffic?: number | null
+          page_views?: number | null
+          salary_normalized_jobs?: number | null
+          search_queries?: number | null
+          search_rankings?: Json | null
+          seo_optimized_jobs?: number | null
+          successful_scrapes?: number | null
+          total_jobs_scraped?: number | null
+        }
+        Update: {
+          avg_scraping_speed_jobs_per_hour?: number | null
+          content_pieces_generated?: number | null
+          created_at?: string | null
+          daily_active_users?: number | null
+          failed_scrapes?: number | null
+          high_quality_jobs?: number | null
+          id?: string
+          job_applications?: number | null
+          metric_date?: string | null
+          organic_traffic?: number | null
+          page_views?: number | null
+          salary_normalized_jobs?: number | null
+          search_queries?: number | null
+          search_rankings?: Json | null
+          seo_optimized_jobs?: number | null
+          successful_scrapes?: number | null
+          total_jobs_scraped?: number | null
         }
         Relationships: []
       }
