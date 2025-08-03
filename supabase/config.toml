@@ -114,4 +114,4 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.seo-job-enhancer]
-verify_jwt = false
+verify_jwt = true
