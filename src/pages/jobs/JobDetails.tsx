@@ -61,14 +61,95 @@ const JobDetails = () => {
     },
   });
 
-  // Update meta tags for SEO
+  // Update meta tags and structured data for SEO
   useEffect(() => {
     if (job) {
+      // Use existing meta data if available, otherwise generate
+      const metaTitle = job.meta_title || `${job.title} at ${job.companies?.name || 'Company'} | TalentXcel Jobs`
+      const metaDescription = job.meta_description || (job.description.substring(0, 157) + '...')
+      
       updateMetaTags({
-        title: `${job.title} at ${job.companies?.name || 'Company'} | TalentXcel Jobs`,
-        description: job.description.substring(0, 160) + '...',
+        title: metaTitle,
+        description: metaDescription,
         url: `${window.location.origin}/jobs/${id}`,
+        keywords: (job as any).keywords || [
+          job.title.toLowerCase(),
+          `${job.title.toLowerCase()} jobs`,
+          `jobs in ${job.location?.toLowerCase()}`,
+          'career opportunities'
+        ],
+        type: 'article',
+        image: job.companies?.logo_url || '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
       });
+
+      // Inject JobPosting structured data
+      const structuredData = (job as any).structured_data || {
+        "@context": "https://schema.org",
+        "@type": "JobPosting",
+        "title": job.title,
+        "description": job.description,
+        "identifier": {
+          "@type": "PropertyValue",
+          "name": job.companies?.name || "Company",
+          "value": job.id
+        },
+        "datePosted": job.created_at,
+        "validThrough": job.expiry_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        "employmentType": job.employment_type?.toUpperCase() || "FULL_TIME",
+        "hiringOrganization": {
+          "@type": "Organization",
+          "name": job.companies?.name || "Company",
+          "url": job.companies?.website || "https://talentxcel.in"
+        },
+        "jobLocation": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": job.location,
+            "addressCountry": "IN"
+          }
+        },
+        "baseSalary": job.salary_min && job.salary_max ? {
+          "@type": "MonetaryAmount",
+          "currency": "INR",
+          "value": {
+            "@type": "QuantitativeValue",
+            "minValue": job.salary_min,
+            "maxValue": job.salary_max,
+            "unitText": "YEAR"
+          }
+        } : undefined,
+        "url": `${window.location.origin}/jobs/${id}`,
+        "applicationContact": {
+          "@type": "ContactPoint",
+          "url": `${window.location.origin}/jobs/${id}/apply`,
+          "contactType": "Application Portal"
+        },
+        "industry": job.companies?.industry,
+        "workHours": "40 hours per week",
+        "benefits": job.benefits || ["Competitive salary", "Health insurance", "Professional development"]
+      }
+
+      // Remove any existing structured data
+      const existingScript = document.getElementById('job-structured-data')
+      if (existingScript) {
+        existingScript.remove()
+      }
+
+      // Add new structured data
+      const script = document.createElement('script')
+      script.id = 'job-structured-data'
+      script.type = 'application/ld+json'
+      script.textContent = JSON.stringify(structuredData)
+      document.head.appendChild(script)
+
+      // Cleanup on unmount
+      return () => {
+        const scriptToRemove = document.getElementById('job-structured-data')
+        if (scriptToRemove) {
+          scriptToRemove.remove()
+        }
+      }
     }
   }, [job, id]);
 
