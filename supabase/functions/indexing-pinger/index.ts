@@ -16,18 +16,31 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    // Debug: Check all available environment variables
+    console.log("Available env vars:", Object.keys(Deno.env.toObject()));
+    console.log("GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 exists:", !!Deno.env.get("GOOGLE_SERVICE_ACCOUNT_KEY_BASE64"));
+    
     // Read environment variable
     const encoded = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_KEY_BASE64");
     if (!encoded) {
       console.error("GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 not found");
+      console.error("All env vars:", Deno.env.toObject());
       throw new Error("Google service account credentials not configured");
     }
+
+    console.log("Found credentials, length:", encoded.length);
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Parse credentials from base64
-    const credentials = JSON.parse(atob(encoded));
-    console.log("Service account loaded:", credentials.client_email);
+    let credentials;
+    try {
+      credentials = JSON.parse(atob(encoded));
+      console.log("Service account loaded:", credentials.client_email);
+    } catch (error) {
+      console.error("Failed to parse service account JSON:", error);
+      throw new Error("Invalid service account credentials format");
+    }
 
     console.log('Fetching active jobs from Supabase...');
     
