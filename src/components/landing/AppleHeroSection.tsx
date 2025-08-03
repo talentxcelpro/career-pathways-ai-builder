@@ -1,14 +1,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
-import { GoogleOneTapLogin } from '../auth/GoogleOneTapLogin';
 import { ChevronRight } from 'lucide-react';
 
 export const AppleHeroSection = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-white via-slate-50 to-slate-100">
-      {/* Google One Tap Login */}
-      <GoogleOneTapLogin autoSelect={true} />
+      {/* Google One Tap Login disabled to prevent errors */}
       {/* Floating geometric elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-200/30 to-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
