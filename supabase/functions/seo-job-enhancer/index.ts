@@ -28,7 +28,12 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-    console.log('🔧 SEO Job Enhancement Request:', { jobId, enhance_all })
+    console.log('🔧 SEO Job Enhancement Request:', { 
+      jobId: jobId, 
+      jobIdType: typeof jobId,
+      jobIdLength: jobId?.length,
+      enhance_all: enhance_all 
+    })
 
     let jobs = []
 
