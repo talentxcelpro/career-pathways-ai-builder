@@ -50,8 +50,8 @@ serve(async (req) => {
       jobs = data || []
     } else {
       // Validate jobId for single job enhancement
-      if (!jobId || typeof jobId !== 'string') {
-        throw new Error('Missing or invalid jobId for single job enhancement')
+      if (!jobId || typeof jobId !== 'string' || jobId.length !== 36) {
+        throw new Error('Missing or invalid jobId - must be a valid UUID string (36 characters)')
       }
 
       // Get specific job
