@@ -28,9 +28,16 @@ serve(async (req) => {
     let requestBody;
     try {
       requestBody = JSON.parse(requestText);
+      console.log('✅ Parsed request body:', requestBody);
     } catch (parseError) {
       console.error('❌ JSON parse error:', parseError);
-      throw new Error('Invalid JSON in request body');
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Invalid JSON in request body'
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
     
     const { jobId, enhance_all = false } = requestBody;
