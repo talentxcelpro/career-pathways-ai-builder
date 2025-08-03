@@ -27,27 +27,35 @@ export const JobScraperControl = () => {
     try {
       toast.loading('🚀 Starting job scraper...', { id: 'scraper' });
       
-      console.log('Calling job-scraper function with limit:', limit);
+      console.log('=== Job Scraper Debug Info ===');
+      console.log('Limit:', limit);
+      console.log('Supabase client:', !!supabase);
+      console.log('User:', await supabase.auth.getUser());
       
-      // Use Supabase functions.invoke method instead of direct fetch
+      // Test if we can reach the function at all
       const { data, error } = await supabase.functions.invoke('job-scraper', {
-        body: { limit }
+        body: { limit, test: true }
       });
 
-      console.log('Function response:', { data, error });
+      console.log('Raw response:', { data, error });
       
       if (error) {
-        throw new Error(error.message || 'Function call failed');
+        console.error('Function error details:', error);
+        throw new Error(error.message || JSON.stringify(error));
       }
 
-      if (!data || !data.success) {
-        throw new Error(data?.error || 'Unknown error occurred');
+      if (!data) {
+        throw new Error('No response data received');
       }
 
-      setStats(data.stats);
+      if (!data.success) {
+        throw new Error(data?.error || 'Function returned unsuccessful response');
+      }
+
+      setStats(data.stats || { total_scraped: 0, valid_jobs: 0, published_jobs: 0, next_run: new Date().toISOString() });
       setRecentJobs(data.jobs || []);
       
-      toast.success(`✅ Successfully scraped ${data.stats.published_jobs} jobs!`, { 
+      toast.success(`✅ Successfully scraped ${data.stats?.published_jobs || 0} jobs!`, { 
         id: 'scraper' 
       });
 
@@ -61,21 +69,30 @@ export const JobScraperControl = () => {
       }
 
     } catch (error) {
-      console.error('Scraper error:', error);
+      console.error('=== Scraper Error Details ===');
+      console.error('Error object:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error keys:', Object.keys(error || {}));
       
-      // Enhanced error handling with specific error types
       let errorMessage = 'Unknown error occurred';
+      
       if (error?.message) {
         errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
       } else if (error?.details) {
         errorMessage = error.details;
+      } else if (error?.error) {
+        errorMessage = error.error;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else {
+        errorMessage = JSON.stringify(error);
       }
+      
+      console.error('Final error message:', errorMessage);
       
       toast.error(`❌ Scraper failed: ${errorMessage}`, { 
         id: 'scraper',
-        duration: 5000 
+        duration: 8000 
       });
     } finally {
       setIsRunning(false);
@@ -84,31 +101,49 @@ export const JobScraperControl = () => {
 
   const testDirectCall = async () => {
     try {
-      console.log('Testing function call...');
-      toast.loading('Testing function call...', { id: 'test' });
+      console.log('=== Testing Edge Function Connectivity ===');
+      toast.loading('Testing function connectivity...', { id: 'test' });
       
-      // Use Supabase functions.invoke method
-      const { data, error } = await supabase.functions.invoke('job-scraper', {
-        body: { limit: 5 }
+      // Test the simple test-connection function first
+      console.log('Testing basic connectivity...');
+      const { data: testData, error: testError } = await supabase.functions.invoke('test-connection', {
+        body: { message: 'Hello from admin!' }
       });
       
-      console.log('Test call result:', { data, error });
+      console.log('Test connection result:', { testData, testError });
+      
+      if (testError) {
+        throw new Error(`Basic connectivity failed: ${testError.message}`);
+      }
+      
+      if (!testData?.success) {
+        throw new Error('Basic connectivity test failed');
+      }
+      
+      // Now test the job-scraper function
+      console.log('Testing job-scraper function...');
+      const { data, error } = await supabase.functions.invoke('job-scraper', {
+        body: { limit: 5, test: true }
+      });
+      
+      console.log('Job scraper test result:', { data, error });
       
       if (error) {
-        toast.error(`❌ Test call failed: ${error.message}`, { id: 'test' });
+        toast.error(`❌ Job scraper failed: ${error.message}`, { id: 'test' });
         return;
       }
       
       if (data?.success) {
-        toast.success('✅ Test call successful!', { id: 'test' });
-        setStats(data.stats);
-        setRecentJobs(data.jobs || []);
+        toast.success('✅ All function tests successful!', { id: 'test' });
+        if (data.stats) setStats(data.stats);
+        if (data.jobs) setRecentJobs(data.jobs);
       } else {
-        toast.error(`❌ Test call failed: ${data?.error || 'Unknown error'}`, { id: 'test' });
+        toast.error(`❌ Job scraper test failed: ${data?.error || 'Unknown error'}`, { id: 'test' });
       }
     } catch (error) {
-      console.error('Test call error:', error);
-      toast.error(`❌ Test call error: ${error?.message || 'Unknown error'}`, { id: 'test' });
+      console.error('=== Test Call Error Details ===');
+      console.error('Error:', error);
+      toast.error(`❌ Test failed: ${error?.message || 'Unknown error'}`, { id: 'test' });
     }
   };
 
@@ -195,7 +230,24 @@ export const JobScraperControl = () => {
               variant="secondary" 
               onClick={testDirectCall}
             >
-              🧪 Test Function
+              🧪 Test Connectivity
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={async () => {
+                console.log('=== Supabase Client Debug ===');
+                console.log('Supabase client exists:', !!supabase);
+                console.log('Functions available:', !!supabase.functions);
+                
+                const { data: { user }, error } = await supabase.auth.getUser();
+                console.log('Current user:', user?.id ? 'Authenticated' : 'Not authenticated');
+                console.log('User error:', error);
+                
+                toast.info(`User: ${user?.id ? 'Authenticated' : 'Not authenticated'}`);
+              }}
+            >
+              🔍 Debug Info
             </Button>
           </div>
 
