@@ -14,23 +14,38 @@ import {
   Users,
   Award,
   ArrowRight,
-  Plus
+  Plus,
+  Bot
 } from 'lucide-react';
 import { CareerPassportCard } from '@/components/profile/CareerPassportCard';
 import { useCareerPassport } from '@/hooks/useCareerPassport';
+import { useCopilotContext } from '@/components/ai/CopilotProvider';
 
 export function StudentDashboard() {
   const { careerPassport, getNextMilestone } = useCareerPassport();
+  const { openCopilot } = useCopilotContext();
   const nextMilestone = getNextMilestone();
 
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-6 rounded-lg">
-        <h1 className="text-2xl font-bold mb-2">Welcome to your Student Dashboard</h1>
-        <p className="text-muted-foreground">
-          Track your career progress, discover opportunities, and build your professional profile.
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold mb-2">Welcome to your Student Dashboard</h1>
+            <p className="text-muted-foreground">
+              Track your career progress, discover opportunities, and build your professional profile.
+            </p>
+          </div>
+          <Button
+            onClick={() => openCopilot('dashboard')}
+            className="bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
+            variant="outline"
+          >
+            <Bot className="h-4 w-4 mr-2" />
+            AI Copilot
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
