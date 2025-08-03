@@ -21,7 +21,19 @@ serve(async (req) => {
   }
 
   try {
-    const { jobId, enhance_all = false } = await req.json()
+    // Add detailed logging of the raw request
+    const requestText = await req.text();
+    console.log('📥 Raw request body:', requestText);
+    
+    let requestBody;
+    try {
+      requestBody = JSON.parse(requestText);
+    } catch (parseError) {
+      console.error('❌ JSON parse error:', parseError);
+      throw new Error('Invalid JSON in request body');
+    }
+    
+    const { jobId, enhance_all = false } = requestBody;
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -32,7 +44,9 @@ serve(async (req) => {
       jobId: jobId, 
       jobIdType: typeof jobId,
       jobIdLength: jobId?.length,
-      enhance_all: enhance_all 
+      enhance_all: enhance_all,
+      enhance_all_type: typeof enhance_all,
+      enhance_all_strict: enhance_all === true
     })
 
     let jobs = []
