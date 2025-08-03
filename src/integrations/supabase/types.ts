@@ -3307,6 +3307,60 @@ export type Database = {
           },
         ]
       }
+      career_achievements: {
+        Row: {
+          achievement_description: string | null
+          achievement_title: string
+          achievement_type: string
+          earned_at: string | null
+          id: string
+          is_public: boolean | null
+          points_awarded: number | null
+          user_id: string
+          verification_data: Json | null
+          verified: boolean | null
+        }
+        Insert: {
+          achievement_description?: string | null
+          achievement_title: string
+          achievement_type: string
+          earned_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          points_awarded?: number | null
+          user_id: string
+          verification_data?: Json | null
+          verified?: boolean | null
+        }
+        Update: {
+          achievement_description?: string | null
+          achievement_title?: string
+          achievement_type?: string
+          earned_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          points_awarded?: number | null
+          user_id?: string
+          verification_data?: Json | null
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "career_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       career_articles: {
         Row: {
           author_name: string | null
@@ -3447,6 +3501,81 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      career_passport: {
+        Row: {
+          career_milestones: Json | null
+          career_readiness_score: number | null
+          certifications_count: number | null
+          completion_percentage: number | null
+          connections_count: number | null
+          created_at: string | null
+          id: string
+          jobs_applied_count: number | null
+          last_activity_at: string | null
+          learning_progress: Json | null
+          market_competitiveness_score: number | null
+          recommendation_engine_data: Json | null
+          resumes_count: number | null
+          skills_verified_count: number | null
+          tests_completed_count: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          career_milestones?: Json | null
+          career_readiness_score?: number | null
+          certifications_count?: number | null
+          completion_percentage?: number | null
+          connections_count?: number | null
+          created_at?: string | null
+          id?: string
+          jobs_applied_count?: number | null
+          last_activity_at?: string | null
+          learning_progress?: Json | null
+          market_competitiveness_score?: number | null
+          recommendation_engine_data?: Json | null
+          resumes_count?: number | null
+          skills_verified_count?: number | null
+          tests_completed_count?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          career_milestones?: Json | null
+          career_readiness_score?: number | null
+          certifications_count?: number | null
+          completion_percentage?: number | null
+          connections_count?: number | null
+          created_at?: string | null
+          id?: string
+          jobs_applied_count?: number | null
+          last_activity_at?: string | null
+          learning_progress?: Json | null
+          market_competitiveness_score?: number | null
+          recommendation_engine_data?: Json | null
+          resumes_count?: number | null
+          skills_verified_count?: number | null
+          tests_completed_count?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_passport_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "career_passport_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       career_switches: {
         Row: {
@@ -12355,6 +12484,7 @@ export type Database = {
       profiles: {
         Row: {
           about: string | null
+          achievement_score: number | null
           allow_profile_sharing: boolean | null
           banner_picture_url: string | null
           banner_url: string | null
@@ -12363,6 +12493,7 @@ export type Database = {
           bot_tone: string | null
           career_goals: string[] | null
           career_interests: string[] | null
+          career_passport_completed_at: string | null
           career_stage: string | null
           content_domains: string[] | null
           content_frequency: string | null
@@ -12418,6 +12549,7 @@ export type Database = {
           resume_url: string | null
           skills: string[] | null
           social_links: Json | null
+          talentxcel_id: string | null
           testimonials_count: number | null
           title: string | null
           updated_at: string | null
@@ -12426,6 +12558,7 @@ export type Database = {
           vanity_url: string | null
           verification_badges: Json | null
           verification_status: string | null
+          verified_skills: string[] | null
           video_bio_url: string | null
           video_resume_url: string | null
           website: string | null
@@ -12433,6 +12566,7 @@ export type Database = {
         }
         Insert: {
           about?: string | null
+          achievement_score?: number | null
           allow_profile_sharing?: boolean | null
           banner_picture_url?: string | null
           banner_url?: string | null
@@ -12441,6 +12575,7 @@ export type Database = {
           bot_tone?: string | null
           career_goals?: string[] | null
           career_interests?: string[] | null
+          career_passport_completed_at?: string | null
           career_stage?: string | null
           content_domains?: string[] | null
           content_frequency?: string | null
@@ -12496,6 +12631,7 @@ export type Database = {
           resume_url?: string | null
           skills?: string[] | null
           social_links?: Json | null
+          talentxcel_id?: string | null
           testimonials_count?: number | null
           title?: string | null
           updated_at?: string | null
@@ -12504,6 +12640,7 @@ export type Database = {
           vanity_url?: string | null
           verification_badges?: Json | null
           verification_status?: string | null
+          verified_skills?: string[] | null
           video_bio_url?: string | null
           video_resume_url?: string | null
           website?: string | null
@@ -12511,6 +12648,7 @@ export type Database = {
         }
         Update: {
           about?: string | null
+          achievement_score?: number | null
           allow_profile_sharing?: boolean | null
           banner_picture_url?: string | null
           banner_url?: string | null
@@ -12519,6 +12657,7 @@ export type Database = {
           bot_tone?: string | null
           career_goals?: string[] | null
           career_interests?: string[] | null
+          career_passport_completed_at?: string | null
           career_stage?: string | null
           content_domains?: string[] | null
           content_frequency?: string | null
@@ -12574,6 +12713,7 @@ export type Database = {
           resume_url?: string | null
           skills?: string[] | null
           social_links?: Json | null
+          talentxcel_id?: string | null
           testimonials_count?: number | null
           title?: string | null
           updated_at?: string | null
@@ -12582,6 +12722,7 @@ export type Database = {
           vanity_url?: string | null
           verification_badges?: Json | null
           verification_status?: string | null
+          verified_skills?: string[] | null
           video_bio_url?: string | null
           video_resume_url?: string | null
           website?: string | null
@@ -18459,6 +18600,63 @@ export type Database = {
         }
         Relationships: []
       }
+      user_journey_tracking: {
+        Row: {
+          contributes_to_completion: boolean | null
+          created_at: string | null
+          event_data: Json | null
+          event_module: string
+          event_type: string
+          id: string
+          impact_score: number | null
+          ip_address: unknown | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          contributes_to_completion?: boolean | null
+          created_at?: string | null
+          event_data?: Json | null
+          event_module: string
+          event_type: string
+          id?: string
+          impact_score?: number | null
+          ip_address?: unknown | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          contributes_to_completion?: boolean | null
+          created_at?: string | null
+          event_data?: Json | null
+          event_module?: string
+          event_type?: string
+          id?: string
+          impact_score?: number | null
+          ip_address?: unknown | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_journey_tracking_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "user_journey_tracking_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_lesson_progress: {
         Row: {
           completed_at: string | null
@@ -19323,6 +19521,10 @@ export type Database = {
         Args: { attempt_uuid: string }
         Returns: undefined
       }
+      calculate_career_passport_completion: {
+        Args: { user_uuid: string }
+        Returns: number
+      }
       calculate_company_engagement_score: {
         Args: { company_uuid: string }
         Returns: number
@@ -19523,6 +19725,10 @@ export type Database = {
       }
       generate_service_slug: {
         Args: { service_title: string; provider_id: string }
+        Returns: string
+      }
+      generate_talentxcel_id: {
+        Args: { user_uuid: string }
         Returns: string
       }
       generate_username: {
@@ -19883,6 +20089,16 @@ export type Database = {
           metadata?: Json
         }
         Returns: undefined
+      }
+      track_user_journey: {
+        Args: {
+          p_user_id: string
+          p_event_type: string
+          p_event_module: string
+          p_event_data?: Json
+          p_impact_score?: number
+        }
+        Returns: string
       }
       update_ai_feature_status: {
         Args: {

@@ -12,8 +12,15 @@ import ProfileDocuments from "../pages/profile/ProfileDocuments";
 import ProfileBranding from "../pages/profile/ProfileBranding";
 import PublicUserProfile from "../pages/network/PublicUserProfile";
 import UsernameProfile from "../pages/profile/UsernameProfile";
+import TalentXcelProfile from "../pages/TalentXcelProfile";
 
 export const profileRoutes = [
+  {
+    title: "TalentXcel Profile",
+    to: "/profile/talentxcel",
+    page: <TalentXcelProfile />,
+    requiresAuth: true,
+  },
   {
     title: "Profile",
     to: "/profile",
