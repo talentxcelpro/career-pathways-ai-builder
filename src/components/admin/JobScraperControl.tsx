@@ -32,16 +32,25 @@ export const JobScraperControl = () => {
       console.log('Supabase client:', !!supabase);
       console.log('User:', await supabase.auth.getUser());
       
-      // Test if we can reach the function at all
-      const { data, error } = await supabase.functions.invoke('job-scraper', {
-        body: { limit, test: true }
+      // Use direct fetch call to avoid auth issues
+      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-scraper', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+        },
+        body: JSON.stringify({ limit, test: true })
       });
 
-      console.log('Raw response:', { data, error });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Raw response:', { data, status: response.status });
       
-      if (error) {
-        console.error('Function error details:', error);
-        throw new Error(error.message || JSON.stringify(error));
+      if (!data) {
+        throw new Error('No response data received');
       }
 
       if (!data) {
@@ -106,15 +115,21 @@ export const JobScraperControl = () => {
       
       // Test the simple test-connection function first
       console.log('Testing basic connectivity...');
-      const { data: testData, error: testError } = await supabase.functions.invoke('test-connection', {
-        body: { message: 'Hello from admin!' }
+      const testResponse = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/test-connection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+        },
+        body: JSON.stringify({ message: 'Hello from admin!' })
       });
       
-      console.log('Test connection result:', { testData, testError });
-      
-      if (testError) {
-        throw new Error(`Basic connectivity failed: ${testError.message}`);
+      if (!testResponse.ok) {
+        throw new Error(`Basic connectivity failed: HTTP ${testResponse.status}`);
       }
+      
+      const testData = await testResponse.json();
+      console.log('Test connection result:', testData);
       
       if (!testData?.success) {
         throw new Error('Basic connectivity test failed');
@@ -122,16 +137,22 @@ export const JobScraperControl = () => {
       
       // Now test the job-scraper function
       console.log('Testing job-scraper function...');
-      const { data, error } = await supabase.functions.invoke('job-scraper', {
-        body: { limit: 5, test: true }
+      const scraperResponse = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-scraper', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+        },
+        body: JSON.stringify({ limit: 5, test: true })
       });
       
-      console.log('Job scraper test result:', { data, error });
-      
-      if (error) {
-        toast.error(`❌ Job scraper failed: ${error.message}`, { id: 'test' });
+      if (!scraperResponse.ok) {
+        toast.error(`❌ Job scraper failed: HTTP ${scraperResponse.status}`, { id: 'test' });
         return;
       }
+      
+      const data = await scraperResponse.json();
+      console.log('Job scraper test result:', data);
       
       if (data?.success) {
         toast.success('✅ All function tests successful!', { id: 'test' });
