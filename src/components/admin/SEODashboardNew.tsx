@@ -29,20 +29,40 @@ export const SEODashboardNew = () => {
       setEnhancing(true);
       toast.info('Starting SEO enhancement for all jobs...');
 
+      console.log('🔧 Calling SEO enhancer function...');
+      
       const { data, error } = await supabase.functions.invoke('seo-job-enhancer', {
         body: { enhance_all: true }
       });
 
-      if (error) throw error;
+      console.log('📊 Function response:', { data, error });
 
-      toast.success(`✅ Enhanced ${data.enhanced_count} jobs with SEO data`);
+      if (error) {
+        console.error('❌ Edge function error:', error);
+        throw new Error(error.message || 'Failed to call edge function');
+      }
+
+      if (!data) {
+        throw new Error('No response data received from edge function');
+      }
+
+      toast.success(`✅ Enhanced ${data.enhanced_count || 0} jobs with SEO data`);
       
       // Update stats
       await fetchStats();
       
-    } catch (error) {
-      console.error('SEO enhancement error:', error);
-      toast.error(`Failed to enhance jobs: ${error.message}`);
+    } catch (error: any) {
+      console.error('❌ SEO enhancement error:', error);
+      
+      // More specific error handling
+      let errorMessage = 'Unknown error occurred';
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      toast.error(`Failed to enhance jobs: ${errorMessage}`);
     } finally {
       setEnhancing(false);
     }

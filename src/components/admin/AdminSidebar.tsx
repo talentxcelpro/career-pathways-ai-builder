@@ -115,6 +115,12 @@ const adminMenuItems = [
     description: 'Resume templates & tools'
   },
   {
+    title: 'SEO Enhancement',
+    url: '/admin/seo-enhancement',
+    icon: Settings,
+    description: 'Job SEO optimization & sitemap'
+  },
+  {
     title: 'Tools',
     url: '/admin/tools',
     icon: Wrench,
