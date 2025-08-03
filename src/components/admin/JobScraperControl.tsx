@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
   Play, StopCircle, RefreshCw, Eye, Building, MapPin, 
-  DollarSign, Calendar, ExternalLink, Sparkles 
+  DollarSign, Calendar, ExternalLink, Sparkles, Building2 
 } from 'lucide-react';
 
 
@@ -22,10 +22,11 @@ export const JobScraperControl = () => {
   const [stats, setStats] = useState<ScrapingStats | null>(null);
   const [recentJobs, setRecentJobs] = useState<any[]>([]);
 
-  const runJobScraper = async (limit = 100) => {
+  const runJobScraper = async (limit = 100, jobType = 'private') => {
     setIsRunning(true);
     try {
-      toast.loading('🚀 Starting job scraper...', { id: 'scraper' });
+      const message = jobType === 'government' ? '🏛️ Starting government job scraper...' : '🚀 Starting private job scraper...';
+      toast.loading(message, { id: 'scraper' });
       
       console.log('=== Job Scraper Debug Info ===');
       console.log('Limit:', limit);
@@ -39,7 +40,7 @@ export const JobScraperControl = () => {
           'Content-Type': 'application/json',
           'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
         },
-        body: JSON.stringify({ limit, test: true })
+        body: JSON.stringify({ limit, test: true, jobType })
       });
 
       if (!response.ok) {
@@ -204,7 +205,7 @@ export const JobScraperControl = () => {
         <CardContent className="space-y-4">
           <div className="flex gap-4">
             <Button 
-              onClick={() => runJobScraper(200)} 
+              onClick={() => runJobScraper(200, 'private')} 
               disabled={isRunning}
               className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600"
             >
@@ -216,14 +217,32 @@ export const JobScraperControl = () => {
               ) : (
                 <>
                   <Sparkles className="h-4 w-4" />
-                  Generate 200 Diverse Jobs
+                  Generate 200 Private Jobs
+                </>
+              )}
+            </Button>
+            
+            <Button 
+              onClick={() => runJobScraper(100, 'government')} 
+              disabled={isRunning}
+              className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-blue-600"
+            >
+              {isRunning ? (
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  Running Govt Scraper...
+                </>
+              ) : (
+                <>
+                  <Building2 className="h-4 w-4" />
+                  Generate 100 Govt Jobs
                 </>
               )}
             </Button>
             
             <Button 
               variant="outline" 
-              onClick={() => runJobScraper(100)}
+              onClick={() => runJobScraper(100, 'private')}
               disabled={isRunning}
             >
               <Play className="h-4 w-4 mr-2" />
@@ -232,7 +251,7 @@ export const JobScraperControl = () => {
             
             <Button 
               variant="outline" 
-              onClick={() => runJobScraper(25)}
+              onClick={() => runJobScraper(25, 'private')}
               disabled={isRunning}
             >
               <Play className="h-4 w-4 mr-2" />
@@ -360,7 +379,11 @@ export const JobScraperControl = () => {
             </div>
             <div className="flex justify-between">
               <span>✅ Valid sources:</span>
-              <span className="text-muted-foreground">RemoteOK, Generated Jobs, Other APIs</span>
+              <span className="text-muted-foreground">RemoteOK, Generated Jobs, Govt Portals</span>
+            </div>
+            <div className="flex justify-between">
+              <span>🏛️ Government sources:</span>
+              <span className="text-muted-foreground">UPSC, SSC, Railway, Banking, PSU</span>
             </div>
             <div className="flex justify-between">
               <span>🤖 AI Enhancement:</span>

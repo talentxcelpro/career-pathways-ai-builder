@@ -3768,6 +3768,51 @@ export type Database = {
         }
         Relationships: []
       }
+      city_pages: {
+        Row: {
+          city_name: string
+          created_at: string
+          id: string
+          is_active: boolean
+          jobs_count: number | null
+          population: number | null
+          seo_meta: string
+          seo_title: string
+          slug: string
+          state: string
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          city_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          jobs_count?: number | null
+          population?: number | null
+          seo_meta: string
+          seo_title: string
+          slug: string
+          state: string
+          tier?: string
+          updated_at?: string
+        }
+        Update: {
+          city_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          jobs_count?: number | null
+          population?: number | null
+          seo_meta?: string
+          seo_title?: string
+          slug?: string
+          state?: string
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clean_resumes: {
         Row: {
           ats_score: number | null
@@ -8076,6 +8121,78 @@ export type Database = {
         }
         Relationships: []
       }
+      govt_job_sources: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          is_active: boolean
+          last_scraped_at: string | null
+          source_name: string
+          source_url: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_scraped_at?: string | null
+          source_name: string
+          source_url: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_scraped_at?: string | null
+          source_name?: string
+          source_url?: string
+        }
+        Relationships: []
+      }
+      govt_jobs_pages: {
+        Row: {
+          category: string
+          created_at: string
+          department: string | null
+          exam_name: string | null
+          id: string
+          is_active: boolean
+          seo_meta: string
+          seo_title: string
+          slug: string
+          state: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          department?: string | null
+          exam_name?: string | null
+          id?: string
+          is_active?: boolean
+          seo_meta: string
+          seo_title: string
+          slug: string
+          state?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          department?: string | null
+          exam_name?: string | null
+          id?: string
+          is_active?: boolean
+          seo_meta?: string
+          seo_title?: string
+          slug?: string
+          state?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       group_memberships: {
         Row: {
           group_id: string | null
@@ -9522,12 +9639,14 @@ export type Database = {
           contact_person_phone: string | null
           created_at: string | null
           date_posted: string | null
+          department: string | null
           description: string
           detailed_description: string | null
           education_level: string | null
           education_notes: string | null
           educational_qualification: string | null
           employment_type: string | null
+          exam_name: string | null
           experience_level: string | null
           experience_preference: string | null
           experience_type: string | null
@@ -9542,6 +9661,7 @@ export type Database = {
           is_draft: boolean | null
           is_external: boolean | null
           is_featured: boolean | null
+          is_government_job: boolean | null
           is_hiring_fast: boolean | null
           is_remote: boolean | null
           is_scraped: boolean | null
@@ -9632,12 +9752,14 @@ export type Database = {
           contact_person_phone?: string | null
           created_at?: string | null
           date_posted?: string | null
+          department?: string | null
           description: string
           detailed_description?: string | null
           education_level?: string | null
           education_notes?: string | null
           educational_qualification?: string | null
           employment_type?: string | null
+          exam_name?: string | null
           experience_level?: string | null
           experience_preference?: string | null
           experience_type?: string | null
@@ -9652,6 +9774,7 @@ export type Database = {
           is_draft?: boolean | null
           is_external?: boolean | null
           is_featured?: boolean | null
+          is_government_job?: boolean | null
           is_hiring_fast?: boolean | null
           is_remote?: boolean | null
           is_scraped?: boolean | null
@@ -9742,12 +9865,14 @@ export type Database = {
           contact_person_phone?: string | null
           created_at?: string | null
           date_posted?: string | null
+          department?: string | null
           description?: string
           detailed_description?: string | null
           education_level?: string | null
           education_notes?: string | null
           educational_qualification?: string | null
           employment_type?: string | null
+          exam_name?: string | null
           experience_level?: string | null
           experience_preference?: string | null
           experience_type?: string | null
@@ -9762,6 +9887,7 @@ export type Database = {
           is_draft?: boolean | null
           is_external?: boolean | null
           is_featured?: boolean | null
+          is_government_job?: boolean | null
           is_hiring_fast?: boolean | null
           is_remote?: boolean | null
           is_scraped?: boolean | null

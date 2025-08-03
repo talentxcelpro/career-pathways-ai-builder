@@ -45,19 +45,25 @@ export const useJobsManagement = () => {
         { count: totalJobs },
         { count: activeJobs },
         { count: featuredJobs },
-        { count: expiredJobs }
+        { count: expiredJobs },
+        { count: governmentJobs },
+        { count: privateJobs }
       ] = await Promise.all([
         supabase.from('jobs').select('*', { count: 'exact', head: true }),
         supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'active'),
         supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_featured', true),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'expired')
+        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'expired'),
+        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_government_job', true),
+        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_government_job', false)
       ]);
 
       return {
         totalJobs: totalJobs || 0,
         activeJobs: activeJobs || 0,
         featuredJobs: featuredJobs || 0,
-        expiredJobs: expiredJobs || 0
+        expiredJobs: expiredJobs || 0,
+        governmentJobs: governmentJobs || 0,
+        privateJobs: privateJobs || 0
       };
     }
   });
