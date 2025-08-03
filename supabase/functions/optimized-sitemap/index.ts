@@ -45,11 +45,11 @@ serve(async (req) => {
       const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>https://talentxcel.in/api/optimized-sitemap?type=main</loc>
+    <loc>https://talentxcel.in/api/optimized-sitemap</loc>
     <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
   </sitemap>
 ${Array.from({ length: totalJobSitemaps }, (_, i) => `  <sitemap>
-    <loc>https://talentxcel.in/api/optimized-sitemap?type=paginated&page=${i + 1}</loc>
+    <loc>https://talentxcel.in/api/optimized-sitemap-${i + 1}</loc>
     <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
   </sitemap>`).join('\n')}
 </sitemapindex>`
