@@ -18,15 +18,15 @@ serve(async (req) => {
     const page = url.searchParams.get('page')
     const type = url.searchParams.get('type') || 'main'
 
-    console.log(`🗂️ Generating sitemap type: ${type}, page: ${page}, pathname: ${pathname}`)
+    console.log(`🗂️ Generating sitemap - URL: ${req.url}, type: ${type}, page: ${page}, pathname: ${pathname}`)
 
     // Initialize Supabase client with anon key (public function)
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-    // Handle sitemap index
-    if (type === 'index') {
+    // Handle sitemap index - check both type parameter and pathname
+    if (type === 'index' || pathname.includes('sitemap-index')) {
       console.log('📋 Generating sitemap index...')
       
       // Get total count of active jobs to calculate number of sitemaps needed
