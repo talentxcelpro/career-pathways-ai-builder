@@ -107,5 +107,11 @@ verify_jwt = false
 [functions.optimized-sitemap]
 verify_jwt = false
 
+[functions.optimized-sitemap-index]
+verify_jwt = false
+
+[functions.optimized-sitemap-paginated]
+verify_jwt = false
+
 [functions.seo-job-enhancer]
 verify_jwt = false
