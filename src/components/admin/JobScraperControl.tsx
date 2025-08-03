@@ -8,7 +8,7 @@ import {
   Play, StopCircle, RefreshCw, Eye, Building, MapPin, 
   DollarSign, Calendar, ExternalLink, Sparkles 
 } from 'lucide-react';
-import { getSupabaseConfig, getSecurityHeaders } from '@/utils/secureApiKeys';
+
 
 interface ScrapingStats {
   total_scraped: number;
@@ -195,7 +195,7 @@ export const JobScraperControl = () => {
               variant="secondary" 
               onClick={testDirectCall}
             >
-              🧪 Test Direct Call
+              🧪 Test Function
             </Button>
           </div>
 
