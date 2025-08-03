@@ -32,13 +32,20 @@ serve(async (req) => {
     let botsToProcess = [];
     
     if (requestData.bot_id) {
-      // Single bot generation
-      const { data: bot, error } = await supabase
+      // Single bot generation - support both UUID and name
+      let query = supabase
         .from('ai_bots')
         .select('*')
-        .eq('name', requestData.bot_id)
-        .eq('is_active', true)
-        .single();
+        .eq('is_active', true);
+      
+      // Check if bot_id looks like a UUID, otherwise treat as name
+      if (requestData.bot_id.length === 36 && requestData.bot_id.includes('-')) {
+        query = query.eq('id', requestData.bot_id);
+      } else {
+        query = query.eq('name', requestData.bot_id);
+      }
+      
+      const { data: bot, error } = await query.single();
       
       if (error || !bot) {
         throw new Error(`Bot ${requestData.bot_id} not found or inactive`);
