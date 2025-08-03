@@ -29,27 +29,16 @@ export const JobScraperControl = () => {
       
       console.log('Calling job-scraper function with limit:', limit);
       
-      // Use secure configuration
-      const config = getSupabaseConfig();
-      const securityHeaders = getSecurityHeaders();
-      const response = await fetch(`${config.url}/functions/v1/job-scraper`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.anonKey}`,
-          ...securityHeaders
-        },
-        body: JSON.stringify({ limit })
+      // Use Supabase functions.invoke method instead of direct fetch
+      const { data, error } = await supabase.functions.invoke('job-scraper', {
+        body: { limit }
       });
 
-      console.log('Function response status:', response.status);
+      console.log('Function response:', { data, error });
       
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      if (error) {
+        throw new Error(error.message || 'Function call failed');
       }
-
-      const data = await response.json();
-      console.log('Function response data:', data);
 
       if (!data || !data.success) {
         throw new Error(data?.error || 'Unknown error occurred');
@@ -76,11 +65,11 @@ export const JobScraperControl = () => {
       
       // Enhanced error handling with specific error types
       let errorMessage = 'Unknown error occurred';
-      if (error.message) {
+      if (error?.message) {
         errorMessage = error.message;
       } else if (typeof error === 'string') {
         errorMessage = error;
-      } else if (error.details) {
+      } else if (error?.details) {
         errorMessage = error.details;
       }
       
@@ -95,36 +84,31 @@ export const JobScraperControl = () => {
 
   const testDirectCall = async () => {
     try {
-      console.log('Testing direct function call...');
-      toast.loading('Testing direct function call...', { id: 'test' });
+      console.log('Testing function call...');
+      toast.loading('Testing function call...', { id: 'test' });
       
-      // Make a direct fetch call to test
-      const config = getSupabaseConfig();
-      const securityHeaders = getSecurityHeaders();
-      const response = await fetch(`${config.url}/functions/v1/job-scraper`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.anonKey}`,
-          ...securityHeaders,
-        },
-        body: JSON.stringify({ limit: 5 })
+      // Use Supabase functions.invoke method
+      const { data, error } = await supabase.functions.invoke('job-scraper', {
+        body: { limit: 5 }
       });
       
-      console.log('Direct call response status:', response.status);
-      const result = await response.json();
-      console.log('Direct call result:', result);
+      console.log('Test call result:', { data, error });
       
-      if (result.success) {
-        toast.success('✅ Direct call successful!', { id: 'test' });
-        setStats(result.stats);
-        setRecentJobs(result.jobs || []);
+      if (error) {
+        toast.error(`❌ Test call failed: ${error.message}`, { id: 'test' });
+        return;
+      }
+      
+      if (data?.success) {
+        toast.success('✅ Test call successful!', { id: 'test' });
+        setStats(data.stats);
+        setRecentJobs(data.jobs || []);
       } else {
-        toast.error(`❌ Direct call failed: ${result.error}`, { id: 'test' });
+        toast.error(`❌ Test call failed: ${data?.error || 'Unknown error'}`, { id: 'test' });
       }
     } catch (error) {
-      console.error('Direct call error:', error);
-      toast.error(`❌ Direct call error: ${error.message}`, { id: 'test' });
+      console.error('Test call error:', error);
+      toast.error(`❌ Test call error: ${error?.message || 'Unknown error'}`, { id: 'test' });
     }
   };
 
