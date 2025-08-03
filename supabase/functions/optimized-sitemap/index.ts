@@ -15,10 +15,10 @@ serve(async (req) => {
   try {
     console.log('🗂️ Generating optimized sitemap...')
 
-    // Initialize Supabase client
+    // Initialize Supabase client with anon key (public function)
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
+    const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
     // Fetch active jobs with proper schema
     console.log('📋 Fetching active jobs...')
