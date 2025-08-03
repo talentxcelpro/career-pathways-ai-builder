@@ -15,6 +15,12 @@ import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 // import { SecurityProvider } from "./components/security/SecurityProvider";
 import { ContentSecurityPolicy } from "./components/security/ContentSecurityPolicy";
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
+import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
+import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
+import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
+import { SEOJobsRoleLocation } from "@/components/seo/SEOJobsRoleLocation";
+import { SEOCompaniesLocation } from "@/components/seo/SEOCompaniesLocation";
+import { SEOPosts } from "@/components/seo/SEOPosts";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -130,6 +136,17 @@ const App = () => {
                       
                       {/* Privacy policy redirect for consistency */}
                       <Route path="/privacy" element={<Navigate to="/privacypolicy" replace />} />
+                      
+{/* SEO Routes - Dynamic categories */}
+                      <Route path="/jobs/location/:location" element={<SEOJobsLocation />} />
+                      <Route path="/jobs/role/:role" element={<SEOJobsRole />} />
+                      <Route path="/jobs/:role/:location" element={<SEOJobsRoleLocation />} />
+                      <Route path="/companies/location/:location" element={<SEOCompaniesLocation />} />
+                      <Route path="/posts/:id" element={<SEOPosts />} />
+                      
+                      {/* Sitemap route */}
+                      <Route path="/sitemap.xml" element={<SitemapRedirect />} />
+                      <Route path="/sitemap-dynamic.xml" element={<SitemapRedirect />} />
                       
 {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
                     </Routes>
