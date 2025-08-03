@@ -28,13 +28,6 @@ export const BotAutomationDashboard: React.FC = () => {
   const { data: queueItems, isLoading: queueLoading, error: queueError } = useBotContentQueue();
   const { generateBatch, publishQueue } = useBotAutomation();
 
-  // Debug logging
-  console.log('BotAutomationDashboard Debug:', {
-    botsLoading, botsError, bots,
-    statsLoading, statsError, stats,
-    queueLoading, queueError, queueItems
-  });
-
   // Show loading state
   if (botsLoading || statsLoading || queueLoading) {
     return (
