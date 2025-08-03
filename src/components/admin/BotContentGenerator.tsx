@@ -118,6 +118,10 @@ export const BotContentGenerator: React.FC = () => {
 
       const { data, error } = await invokeWithRetry(payload);
 
+      console.log('🔧 Debug: Function call complete');
+      console.log('🔧 Debug: Data received:', data);
+      console.log('🔧 Debug: Error received:', error);
+
       if (error) {
         console.error('Function invocation error:', error);
         throw new Error(`Function error: ${error.message}`);
