@@ -2,16 +2,16 @@
 {
   "rewrites": [
     {
-      "source": "/api/optimized-sitemap",
-      "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap"
-    },
-    {
       "source": "/api/optimized-sitemap-index",
-      "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap-index"
+      "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap?type=index"
     },
     {
       "source": "/api/optimized-sitemap-:id",
-      "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap-paginated?page=:id"
+      "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap?type=paginated&page=:id"
+    },
+    {
+      "source": "/api/optimized-sitemap",
+      "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap"
     },
     { "source": "/(.*)", "destination": "/" }
   ]
