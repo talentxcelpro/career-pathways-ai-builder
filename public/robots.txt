@@ -26,6 +26,11 @@ Disallow: /static/
 Sitemap: https://talentxcel.in/sitemap.xml
 Sitemap: https://dthlgsnakhoftinssokm.supabase.co/functions/v1/api-sitemap
 
+# Allow specific content types
+Allow: /posts/
+Allow: /jobs/*/
+Allow: /companies/*/
+
 # Crawl delay to prevent overloading
 Crawl-delay: 1
 

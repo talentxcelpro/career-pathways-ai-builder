@@ -75,24 +75,24 @@ async function generateMainSitemap(supabase: any) {
   })
 
   try {
-    // Add active jobs (limit for performance)
+    // Add ALL active jobs (no limit for SEO)
     const { data: jobs } = await supabase
       .from('jobs')
-      .select('id, title, company_name, location, created_at, updated_at')
+      .select('id, title, company_name, location, created_at, updated_at, slug')
       .eq('status', 'active')
       .order('created_at', { ascending: false })
-      .limit(500)
 
     if (jobs) {
       console.log(`📊 Adding ${jobs.length} job listings to sitemap`)
       jobs.forEach((job: any) => {
         const lastmod = job.updated_at || job.created_at
+        const jobSlug = job.slug || job.id
         sitemap += `
   <url>
-    <loc>${baseUrl}/jobs/${job.id}</loc>
+    <loc>${baseUrl}/jobs/${jobSlug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>`
       })
     }
@@ -100,20 +100,42 @@ async function generateMainSitemap(supabase: any) {
     // Add companies
     const { data: companies } = await supabase
       .from('companies')
-      .select('id, name, created_at, updated_at')
+      .select('id, name, created_at, updated_at, slug')
       .order('created_at', { ascending: false })
-      .limit(300)
 
     if (companies) {
       console.log(`🏢 Adding ${companies.length} companies to sitemap`)
       companies.forEach((company: any) => {
         const lastmod = company.updated_at || company.created_at
+        const companySlug = company.slug || company.id
         sitemap += `
   <url>
-    <loc>${baseUrl}/companies/${company.id}</loc>
+    <loc>${baseUrl}/companies/${companySlug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
+  </url>`
+      })
+    }
+
+    // Add posts from the network/posts
+    const { data: posts } = await supabase
+      .from('posts')
+      .select('id, headline, content, created_at, updated_at, author_id')
+      .eq('status', 'published')
+      .eq('visibility', 'public')
+      .order('created_at', { ascending: false })
+
+    if (posts) {
+      console.log(`📝 Adding ${posts.length} posts to sitemap`)
+      posts.forEach((post: any) => {
+        const lastmod = post.updated_at || post.created_at
+        sitemap += `
+  <url>
+    <loc>${baseUrl}/posts/${post.id}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>`
       })
     }
@@ -169,7 +191,8 @@ async function generateMainSitemap(supabase: any) {
 
   sitemap += '\n</urlset>'
   
-  console.log(`✅ Generated sitemap with ${staticPages.length + (jobs?.length || 0) + (companies?.length || 0) + cities.length * 2 + roles.length} URLs`)
+  const totalUrls = staticPages.length + (jobs?.length || 0) + (companies?.length || 0) + (posts?.length || 0) + cities.length * 2 + roles.length
+  console.log(`✅ Generated sitemap with ${totalUrls} URLs: ${jobs?.length || 0} jobs, ${posts?.length || 0} posts, ${companies?.length || 0} companies`)
   
   return sitemap
 }
