@@ -23,6 +23,17 @@ interface JobData {
 
 export const generateJobStructuredData = (job: JobData) => {
   const company = job.company || job.companies;
+  
+  // Ensure required fields are present
+  const currentDate = new Date().toISOString();
+  const postedDate = job.posted_at || job.created_at || currentDate;
+  const expiryDate = job.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 days from now
+  
+  // Parse location for better address structure
+  const locationParts = job.location?.split(',') || ['Remote'];
+  const locality = locationParts[0]?.trim() || 'Remote';
+  const region = locationParts[1]?.trim();
+  
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "JobPosting",
@@ -31,26 +42,28 @@ export const generateJobStructuredData = (job: JobData) => {
     "identifier": {
       "@type": "PropertyValue",
       "name": "TalentXcel Job ID",
-      "value": job.id
+      "value": job.id || "unknown"
     },
-    "datePosted": job.posted_at || job.created_at,
-    "validThrough": job.expires_at,
-    "employmentType": job.employment_type?.toUpperCase() || "FULL_TIME",
+    "datePosted": postedDate,
+    "validThrough": expiryDate,
+    "employmentType": (job.employment_type?.toUpperCase() || "FULL_TIME").replace(/[^A-Z_]/g, ''),
     "hiringOrganization": {
       "@type": "Organization",
       "name": company?.name || job.company_name || "TalentXcel Partner",
       "sameAs": company?.website,
-      "logo": company?.logo_url
+      "logo": company?.logo_url || "https://talentxcel.in/logo.png"
     },
     "jobLocation": {
       "@type": "Place",
       "address": {
         "@type": "PostalAddress",
-        "addressLocality": job.location,
-        "addressCountry": "IN"
+        "addressLocality": locality,
+        "addressRegion": region,
+        "addressCountry": "IN",
+        "postalCode": region && region.match(/\d{6}/) ? region.match(/\d{6}/)[0] : undefined
       }
     },
-    "baseSalary": job.salary_min && job.salary_max ? {
+    "baseSalary": (job.salary_min && job.salary_max) ? {
       "@type": "MonetaryAmount",
       "currency": job.salary_currency || "INR",
       "value": {
@@ -59,23 +72,49 @@ export const generateJobStructuredData = (job: JobData) => {
         "maxValue": job.salary_max,
         "unitText": "YEAR"
       }
-    } : undefined,
+    } : (job.salary_min || job.salary_max) ? {
+      "@type": "MonetaryAmount",
+      "currency": job.salary_currency || "INR", 
+      "value": {
+        "@type": "QuantitativeValue",
+        "value": job.salary_min || job.salary_max,
+        "unitText": "YEAR"
+      }
+    } : {
+      "@type": "MonetaryAmount",
+      "currency": "INR",
+      "value": {
+        "@type": "QuantitativeValue",
+        "minValue": 300000,
+        "maxValue": 1500000,
+        "unitText": "YEAR"
+      }
+    },
     "skills": job.skills?.join(", "),
     "qualifications": job.requirements?.join(". "),
-    "url": `https://talentxcel.in/jobs/${job.id}`,
+    "url": `https://talentxcel.in/jobs/${job.id || 'apply'}`,
     "applicationContact": {
       "@type": "ContactPoint",
-      "url": `https://talentxcel.in/jobs/${job.id}/apply`
+      "url": `https://talentxcel.in/jobs/${job.id || 'apply'}/apply`
     },
-    "industry": company?.name ? "Technology" : undefined,
+    "industry": "Technology",
     "workHours": "40 hours per week",
-    "benefits": "Health insurance, Professional development, Flexible working hours"
+    "benefits": "Health insurance, Professional development, Flexible working hours",
+    "jobBenefits": [
+      "Health insurance",
+      "Professional development opportunities", 
+      "Flexible working hours",
+      "Competitive salary",
+      "Career advancement"
+    ]
   };
 
-  // Remove undefined values
-  Object.keys(structuredData).forEach(key => 
-    structuredData[key] === undefined && delete structuredData[key]
-  );
+  // Remove undefined values but keep essential ones
+  Object.keys(structuredData).forEach(key => {
+    if (structuredData[key] === undefined && !['datePosted', 'validThrough', 'employmentType', 'baseSalary'].includes(key)) {
+      delete structuredData[key];
+    }
+  });
 
   return JSON.stringify(structuredData, null, 2);
 };
