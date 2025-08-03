@@ -4703,10 +4703,14 @@ export type Database = {
           is_verified: boolean | null
           location: string | null
           logo_url: string | null
+          meta_description: string | null
+          meta_title: string | null
           name: string
+          seo_slug: string | null
           size_range: string | null
           slug: string | null
           social_links: Json | null
+          structured_data: Json | null
           tech_stack: string[] | null
           updated_at: string | null
           website: string | null
@@ -4725,10 +4729,14 @@ export type Database = {
           is_verified?: boolean | null
           location?: string | null
           logo_url?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
           name: string
+          seo_slug?: string | null
           size_range?: string | null
           slug?: string | null
           social_links?: Json | null
+          structured_data?: Json | null
           tech_stack?: string[] | null
           updated_at?: string | null
           website?: string | null
@@ -4747,10 +4755,14 @@ export type Database = {
           is_verified?: boolean | null
           location?: string | null
           logo_url?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
           name?: string
+          seo_slug?: string | null
           size_range?: string | null
           slug?: string | null
           social_links?: Json | null
+          structured_data?: Json | null
           tech_stack?: string[] | null
           updated_at?: string | null
           website?: string | null
@@ -9672,6 +9684,7 @@ export type Database = {
           job_summary: string | null
           job_title: string
           key_responsibilities: string[] | null
+          keywords: string[] | null
           location: string | null
           location_city: string | null
           location_state: string | null
@@ -9715,6 +9728,7 @@ export type Database = {
           specific_tools: string[] | null
           specific_tools_domains: string | null
           status: string | null
+          structured_data: Json | null
           supporting_documents: Json | null
           team_brochure_url: string | null
           title: string
@@ -9785,6 +9799,7 @@ export type Database = {
           job_summary?: string | null
           job_title?: string
           key_responsibilities?: string[] | null
+          keywords?: string[] | null
           location?: string | null
           location_city?: string | null
           location_state?: string | null
@@ -9828,6 +9843,7 @@ export type Database = {
           specific_tools?: string[] | null
           specific_tools_domains?: string | null
           status?: string | null
+          structured_data?: Json | null
           supporting_documents?: Json | null
           team_brochure_url?: string | null
           title: string
@@ -9898,6 +9914,7 @@ export type Database = {
           job_summary?: string | null
           job_title?: string
           key_responsibilities?: string[] | null
+          keywords?: string[] | null
           location?: string | null
           location_city?: string | null
           location_state?: string | null
@@ -9941,6 +9958,7 @@ export type Database = {
           specific_tools?: string[] | null
           specific_tools_domains?: string | null
           status?: string | null
+          structured_data?: Json | null
           supporting_documents?: Json | null
           team_brochure_url?: string | null
           title?: string
@@ -20360,6 +20378,10 @@ export type Database = {
       }
       generate_resume_slug_enhanced: {
         Args: { resume_title: string; user_uuid: string }
+        Returns: string
+      }
+      generate_seo_slug: {
+        Args: { input_text: string }
         Returns: string
       }
       generate_service_slug: {

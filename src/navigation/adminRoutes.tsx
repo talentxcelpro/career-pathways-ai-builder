@@ -39,6 +39,7 @@ import AdvancedAnalyticsDashboard from "../pages/admin/AdvancedAnalyticsDashboar
 import PerformanceMonitoring from "../pages/admin/PerformanceMonitoring";
 import IntegrationHub from "../pages/admin/IntegrationHub";
 import { SEODashboard } from "../components/admin/SEODashboard";
+import { SEODashboardNew } from "../components/admin/SEODashboardNew";
 import { JobDataManager } from "../components/admin/JobDataManager";
 
 export const adminRoutes = [
@@ -264,6 +265,13 @@ export const adminRoutes = [
     to: "/admin/seo-sitemap",
     icon: <Globe className="h-4 w-4" />,
     page: <SEODashboard />,
+    requiresAuth: true,
+  },
+  {
+    title: "SEO Enhancement Dashboard",
+    to: "/admin/seo-enhancement",
+    icon: <Search className="h-4 w-4" />,
+    page: <SEODashboardNew />,
     requiresAuth: true,
   },
   {
