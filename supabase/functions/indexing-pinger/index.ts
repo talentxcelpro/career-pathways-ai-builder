@@ -63,14 +63,11 @@ serve(async (req) => {
 
     console.log(`Found ${jobs.length} active jobs to index`);
 
-    // Generate JWT token for Google API
+    // Get access token for Google API
+    console.log('Getting Google API access token...');
+    
     const now = Math.floor(Date.now() / 1000);
-    const header = {
-      alg: 'RS256',
-      typ: 'JWT',
-    };
-
-    const payload = {
+    const jwtPayload = {
       iss: credentials.client_email,
       scope: 'https://www.googleapis.com/auth/indexing',
       aud: 'https://oauth2.googleapis.com/token',
@@ -78,12 +75,61 @@ serve(async (req) => {
       exp: now + 3600, // 1 hour
     };
 
-    // Create the JWT (simplified for now - in production you'd use proper JWT signing)
-    const headerB64 = btoa(JSON.stringify(header));
-    const payloadB64 = btoa(JSON.stringify(payload));
+    // Create JWT for Google API authentication
+    const encoder = new TextEncoder();
+    const keyData = credentials.private_key.replace(/-----BEGIN PRIVATE KEY-----\n?/, '')
+                                        .replace(/\n?-----END PRIVATE KEY-----/, '')
+                                        .replace(/\n/g, '');
     
-    // For now, we'll log the indexing requests and return success
-    // In production, you'd implement proper JWT signing with the private key
+    const binaryKey = Uint8Array.from(atob(keyData), c => c.charCodeAt(0));
+    
+    const cryptoKey = await crypto.subtle.importKey(
+      'pkcs8',
+      binaryKey,
+      {
+        name: 'RSASSA-PKCS1-v1_5',
+        hash: 'SHA-256',
+      },
+      false,
+      ['sign']
+    );
+
+    const header = { alg: 'RS256', typ: 'JWT' };
+    const encodedHeader = btoa(JSON.stringify(header)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    const encodedPayload = btoa(JSON.stringify(jwtPayload)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    
+    const unsignedToken = `${encodedHeader}.${encodedPayload}`;
+    const signature = await crypto.subtle.sign(
+      'RSASSA-PKCS1-v1_5',
+      cryptoKey,
+      encoder.encode(unsignedToken)
+    );
+    
+    const encodedSignature = btoa(String.fromCharCode(...new Uint8Array(signature)))
+                              .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    
+    const jwt = `${unsignedToken}.${encodedSignature}`;
+
+    // Get access token
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion: jwt,
+      }),
+    });
+
+    const tokenData = await tokenResponse.json();
+    
+    if (!tokenResponse.ok) {
+      throw new Error(`Failed to get access token: ${JSON.stringify(tokenData)}`);
+    }
+
+    const accessToken = tokenData.access_token;
+    console.log('Successfully obtained access token');
     const results = [];
     const baseUrl = 'https://talentxcel.in';
 
@@ -93,35 +139,84 @@ serve(async (req) => {
         : `${baseUrl}/jobs/${job.id}`;
 
       try {
-        // Log the indexing attempt
-        const { error: logError } = await supabase
-          .from('search_engine_submissions')
-          .insert({
-            engine: 'google_indexing_api',
+        // Submit to Google Indexing API
+        const indexingResponse = await fetch('https://indexing.googleapis.com/v3/urlNotifications:publish', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
             url: jobUrl,
-            submission_type: 'url',
-            status: 'submitted',
-            response_data: {
-              job_id: job.id,
-              job_title: job.title,
-              company: job.company_name,
-              location: job.location
-            }
-          });
-
-        if (logError) {
-          console.error(`Failed to log submission for ${jobUrl}:`, logError);
-        }
-
-        console.log(`Would submit to Google Indexing API: ${jobUrl} (URL_UPDATED)`);
-        
-        results.push({
-          url: jobUrl,
-          status: 'logged',
-          job_id: job.id,
-          job_title: job.title,
-          timestamp: new Date().toISOString(),
+            type: 'URL_UPDATED',
+          }),
         });
+
+        const indexingResult = await indexingResponse.json();
+        
+        if (indexingResponse.ok) {
+          console.log(`Successfully submitted to Google Indexing API: ${jobUrl}`);
+          
+          // Log successful submission
+          const { error: logError } = await supabase
+            .from('search_engine_submissions')
+            .insert({
+              engine: 'google_indexing_api',
+              url: jobUrl,
+              submission_type: 'url',
+              status: 'success',
+              response_data: {
+                job_id: job.id,
+                job_title: job.title,
+                company: job.company_name,
+                location: job.location,
+                google_response: indexingResult
+              }
+            });
+
+          if (logError) {
+            console.error(`Failed to log submission for ${jobUrl}:`, logError);
+          }
+          
+          results.push({
+            url: jobUrl,
+            status: 'success',
+            job_id: job.id,
+            job_title: job.title,
+            timestamp: new Date().toISOString(),
+            google_response: indexingResult,
+          });
+        } else {
+          console.error(`Failed to submit ${jobUrl} to Google:`, indexingResult);
+          
+          // Log failed submission
+          const { error: logError } = await supabase
+            .from('search_engine_submissions')
+            .insert({
+              engine: 'google_indexing_api',
+              url: jobUrl,
+              submission_type: 'url',
+              status: 'failed',
+              response_data: {
+                job_id: job.id,
+                job_title: job.title,
+                error: indexingResult
+              }
+            });
+
+          if (logError) {
+            console.error(`Failed to log submission for ${jobUrl}:`, logError);
+          }
+          
+          results.push({
+            url: jobUrl,
+            status: 'failed',
+            job_id: job.id,
+            job_title: job.title,
+            error: indexingResult,
+            timestamp: new Date().toISOString(),
+          });
+        }
 
       } catch (error) {
         console.error(`Error processing ${jobUrl}:`, error);
@@ -150,32 +245,63 @@ serve(async (req) => {
         const postUrl = `${baseUrl}/posts/${post.id}`;
         
         try {
-          const { error: logError } = await supabase
-            .from('search_engine_submissions')
-            .insert({
-              engine: 'google_indexing_api',
+          // Submit to Google Indexing API
+          const indexingResponse = await fetch('https://indexing.googleapis.com/v3/urlNotifications:publish', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
               url: postUrl,
-              submission_type: 'url',
-              status: 'submitted',
-              response_data: {
-                post_id: post.id,
-                post_title: post.headline
-              }
-            });
-
-          if (logError) {
-            console.error(`Failed to log submission for ${postUrl}:`, logError);
-          }
-
-          console.log(`Would submit to Google Indexing API: ${postUrl} (URL_UPDATED)`);
-          
-          results.push({
-            url: postUrl,
-            status: 'logged',
-            post_id: post.id,
-            post_title: post.headline,
-            timestamp: new Date().toISOString(),
+              type: 'URL_UPDATED',
+            }),
           });
+
+          const indexingResult = await indexingResponse.json();
+          
+          if (indexingResponse.ok) {
+            console.log(`Successfully submitted post to Google Indexing API: ${postUrl}`);
+            
+            // Log successful submission
+            const { error: logError } = await supabase
+              .from('search_engine_submissions')
+              .insert({
+                engine: 'google_indexing_api',
+                url: postUrl,
+                submission_type: 'url',
+                status: 'success',
+                response_data: {
+                  post_id: post.id,
+                  post_title: post.headline,
+                  google_response: indexingResult
+                }
+              });
+
+            if (logError) {
+              console.error(`Failed to log submission for ${postUrl}:`, logError);
+            }
+            
+            results.push({
+              url: postUrl,
+              status: 'success',
+              post_id: post.id,
+              post_title: post.headline,
+              timestamp: new Date().toISOString(),
+              google_response: indexingResult,
+            });
+          } else {
+            console.error(`Failed to submit post ${postUrl} to Google:`, indexingResult);
+            
+            results.push({
+              url: postUrl,
+              status: 'failed',
+              post_id: post.id,
+              post_title: post.headline,
+              error: indexingResult,
+              timestamp: new Date().toISOString(),
+            });
+          }
 
         } catch (error) {
           console.error(`Error processing ${postUrl}:`, error);
@@ -189,16 +315,18 @@ serve(async (req) => {
       }
     }
 
-    const successCount = results.filter(r => r.status === 'logged').length;
+    const successCount = results.filter(r => r.status === 'success').length;
+    const failedCount = results.filter(r => r.status === 'failed').length;
     const errorCount = results.filter(r => r.status === 'error').length;
 
     return new Response(JSON.stringify({
       success: true,
       indexed_count: successCount,
+      failed_count: failedCount,
       error_count: errorCount,
       total_processed: results.length,
       results: results.slice(0, 10), // Return first 10 for preview
-      note: 'Google Indexing API integration ready - URLs logged for submission'
+      note: 'Google Indexing API submissions completed - check logs for details'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
