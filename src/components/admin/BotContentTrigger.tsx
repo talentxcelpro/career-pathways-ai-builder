@@ -38,6 +38,8 @@ const BotContentTrigger: React.FC = () => {
     try {
       console.log(`🚀 Triggering ${triggerType} content generation...`);
       
+      console.log('🔧 Debug: About to call edge function with:', { trigger_type: triggerType, bot_id: botId });
+      
       const { data, error } = await supabase.functions.invoke('generate-bot-content', {
         body: {
           trigger_type: triggerType,
@@ -45,8 +47,11 @@ const BotContentTrigger: React.FC = () => {
         }
       });
 
+      console.log('🔧 Debug: Edge function response:', { data, error });
+
       if (error) {
-        throw error;
+        console.error('🔧 Debug: Edge function error details:', error);
+        throw new Error(`Failed to send a request to the Edge Function: ${error.message}`);
       }
 
       console.log('✅ Generation response:', data);
