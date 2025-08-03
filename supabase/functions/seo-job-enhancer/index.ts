@@ -38,6 +38,7 @@ serve(async (req) => {
     let jobs = []
 
     if (enhance_all) {
+      console.log('⚙️ Enhancing all jobs...')
       // Get all active jobs without SEO data
       const { data, error } = await supabase
         .from('jobs')
@@ -56,9 +57,11 @@ serve(async (req) => {
     } else {
       // Validate jobId for single job enhancement
       if (!jobId || typeof jobId !== 'string' || jobId.length !== 36) {
+        console.error('❌ Invalid or missing jobId for single job enhancement:', jobId)
         throw new Error('Missing or invalid jobId - must be a valid UUID string (36 characters)')
       }
 
+      console.log('✅ Enhancing single job:', jobId)
       // Get specific job
       const { data, error } = await supabase
         .from('jobs')
