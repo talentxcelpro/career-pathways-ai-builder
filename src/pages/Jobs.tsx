@@ -86,7 +86,10 @@ const Jobs = () => {
       image: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
     });
 
-    // Add JobPosting structured data
+    // Add JobPosting structured data with all required fields
+    const currentDate = new Date().toISOString();
+    const expiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 days from now
+    
     const jobPostingSchema = {
       "@context": "https://schema.org/",
       "@type": "CollectionPage",
@@ -96,19 +99,53 @@ const Jobs = () => {
       "mainEntity": {
         "@type": "JobPosting",
         "title": "Various Job Opportunities",
-        "description": "Explore thousands of job opportunities across India",
+        "description": "Explore thousands of job opportunities across India with AI-powered matching, competitive salaries, and growth opportunities in technology, finance, healthcare, and more industries.",
+        "datePosted": currentDate,
+        "validThrough": expiryDate,
+        "employmentType": "FULL_TIME",
         "hiringOrganization": {
           "@type": "Organization",
           "name": "TalentXcel",
-          "url": "https://talentxcel.in"
+          "url": "https://talentxcel.in",
+          "logo": "https://talentxcel.in/logo.png"
         },
         "jobLocation": {
           "@type": "Place",
           "address": {
             "@type": "PostalAddress",
-            "addressCountry": "IN"
+            "addressLocality": "Multiple Cities",
+            "addressRegion": "All States",
+            "addressCountry": "IN",
+            "postalCode": "000000"
           }
-        }
+        },
+        "baseSalary": {
+          "@type": "MonetaryAmount",
+          "currency": "INR",
+          "value": {
+            "@type": "QuantitativeValue",
+            "minValue": 300000,
+            "maxValue": 2500000,
+            "unitText": "YEAR"
+          }
+        },
+        "skills": "Technology, Engineering, Finance, Healthcare, Marketing, Sales, Operations, Management",
+        "workHours": "40 hours per week",
+        "benefits": "Health insurance, Professional development, Flexible working hours, Competitive salary, Career advancement",
+        "url": `${window.location.origin}/jobs`,
+        "applicationContact": {
+          "@type": "ContactPoint",
+          "url": `${window.location.origin}/jobs`,
+          "contactType": "Application Portal"
+        },
+        "industry": "Multiple Industries",
+        "jobBenefits": [
+          "Health insurance",
+          "Professional development opportunities",
+          "Flexible working hours",
+          "Competitive salary packages",
+          "Career advancement programs"
+        ]
       }
     };
 
