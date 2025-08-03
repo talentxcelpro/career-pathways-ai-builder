@@ -17,9 +17,9 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     // Read environment variable
-    const encoded = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_BASE64");
+    const encoded = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_KEY_BASE64");
     if (!encoded) {
-      console.error("GOOGLE_SERVICE_ACCOUNT_BASE64 not found");
+      console.error("GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 not found");
       throw new Error("Google service account credentials not configured");
     }
 
