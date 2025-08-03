@@ -8,6 +8,7 @@ import {
   Play, StopCircle, RefreshCw, Eye, Building, MapPin, 
   DollarSign, Calendar, ExternalLink, Sparkles 
 } from 'lucide-react';
+import { getSupabaseConfig, getSecurityHeaders } from '@/utils/secureApiKeys';
 
 interface ScrapingStats {
   total_scraped: number;
@@ -28,12 +29,15 @@ export const JobScraperControl = () => {
       
       console.log('Calling job-scraper function with limit:', limit);
       
-      // Use direct fetch instead of supabase.functions.invoke for better reliability
-      const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-scraper`, {
+      // Use secure configuration
+      const config = getSupabaseConfig();
+      const securityHeaders = getSecurityHeaders();
+      const response = await fetch(`${config.url}/functions/v1/job-scraper`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
+          'Authorization': `Bearer ${config.anonKey}`,
+          ...securityHeaders
         },
         body: JSON.stringify({ limit })
       });
@@ -95,11 +99,14 @@ export const JobScraperControl = () => {
       toast.loading('Testing direct function call...', { id: 'test' });
       
       // Make a direct fetch call to test
-      const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-scraper`, {
+      const config = getSupabaseConfig();
+      const securityHeaders = getSecurityHeaders();
+      const response = await fetch(`${config.url}/functions/v1/job-scraper`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
+          'Authorization': `Bearer ${config.anonKey}`,
+          ...securityHeaders,
         },
         body: JSON.stringify({ limit: 5 })
       });

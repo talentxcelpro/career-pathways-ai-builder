@@ -32,16 +32,22 @@ export const useAdminPermissions = () => {
           return;
         }
 
-        // Simple role mapping without complex validation
+        // Secure role mapping - default to lowest privilege level
         const roleMapping: Record<string, AdminRole> = {
           'super_admin': 'super_admin',
           'admin': 'content_admin',
           'moderator': 'moderator',
-          'employer': 'job_admin',
-          'user': 'moderator'
+          'employer': 'job_admin'
         };
         
-        const mappedRole = roleMapping[data] || 'moderator';
+        // Only assign admin roles to explicitly defined roles, default to null for security
+        const mappedRole = roleMapping[data] || null;
+        if (!mappedRole) {
+          console.warn('Unknown role detected:', data);
+          setAdminRole('moderator');
+          setPermissions(ROLE_PERMISSIONS.moderator);
+          return;
+        }
         setAdminRole(mappedRole);
         setPermissions(ROLE_PERMISSIONS[mappedRole]);
 

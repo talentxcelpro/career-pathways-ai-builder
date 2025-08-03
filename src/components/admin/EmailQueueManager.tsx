@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { RefreshCw, Play, Clock, CheckCircle, XCircle, Mail, Activity, Globe } from 'lucide-react';
+import { getSupabaseConfig, getSecurityHeaders } from '@/utils/secureApiKeys';
 
 interface QueuedEmail {
   id: string;
@@ -75,14 +76,17 @@ export function EmailQueueManager() {
     console.log('Timestamp:', new Date().toISOString());
     
     try {
-      // Use direct HTTP call instead of Supabase client
-      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/process-email-queue`;
+      // Use secure configuration
+      const config = getSupabaseConfig();
+      const securityHeaders = getSecurityHeaders();
+      const functionUrl = `${config.url}/functions/v1/process-email-queue`;
       
       const response = await fetch(functionUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`
+          'Authorization': `Bearer ${config.anonKey}`,
+          ...securityHeaders
         },
         body: JSON.stringify({ manual: true })
       });
@@ -179,7 +183,9 @@ export function EmailQueueManager() {
   const testDirectUrl = async () => {
     console.log('=== Testing Direct Function URLs ===');
     
-    const baseUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1`;
+    const config = getSupabaseConfig();
+    const securityHeaders = getSecurityHeaders();
+    const baseUrl = `${config.url}/functions/v1`;
     
     try {
       // Test health check endpoint
@@ -190,8 +196,9 @@ export function EmailQueueManager() {
       const healthResponse = await fetch(healthUrl, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
+          'Authorization': `Bearer ${config.anonKey}`,
           'Content-Type': 'application/json',
+          ...securityHeaders,
         },
       });
       
