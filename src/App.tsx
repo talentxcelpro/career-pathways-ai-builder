@@ -89,7 +89,7 @@ const App = () => {
                 />
                 <MobileAppInitializer />
                 <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
-                <SearchConsoleVerification verificationCode="your-search-console-verification-code" />
+                <SearchConsoleVerification verificationCode="nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM" />
                 <div className="min-h-screen flex flex-col">
                   <OfflineIndicator />
                   <Navbar />
