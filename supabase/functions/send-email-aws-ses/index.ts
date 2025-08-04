@@ -48,7 +48,7 @@ serve(async (req) => {
     
     // Validate required fields
     if (!to || !subject || !html) {
-      console.log('❌ Missing required fields');
+      console.log('❌ Missing required fields: to, subject, html');
       return new Response(
         JSON.stringify({ success: false, error: 'Missing required fields: to, subject, html' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
