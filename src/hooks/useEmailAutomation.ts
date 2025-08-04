@@ -17,41 +17,80 @@ export const useEmailAutomation = () => {
   const sendAutomatedEmail = async (config: EmailAutomationConfig) => {
     setIsProcessing(true);
     try {
-      // Generate HTML content from template
-      const templateFunction = templates[config.template];
-      if (!templateFunction) {
-        throw new Error(`Template ${config.template} not found`);
+      // Try SES API function first (most reliable)
+      console.log('Attempting to send via SES API function...');
+      try {
+        const { data, error } = await supabase.functions.invoke('send-email-ses-api', {
+          body: {
+            to: config.to,
+            subject: config.subject,
+            template: config.template,
+            template_data: config.data
+          }
+        });
+
+        if (error) throw error;
+        
+        console.log('Email sent successfully via SES API');
+        return { success: true, result: data };
+        
+      } catch (sesError) {
+        console.error('SES API function failed, trying SMTP fallback...', sesError);
+        
+        // Fallback: Try SMTP function
+        try {
+          console.log('Attempting fallback via SMTP function...');
+          const { data: smtpData, error: smtpError } = await supabase.functions.invoke('send-automated-email', {
+            body: {
+              template_name: config.template,
+              recipient_email: config.to,
+              recipient_name: config.data?.name || config.data?.recipient_name || 'User',
+              template_data: config.data
+            }
+          });
+
+          if (smtpError) throw smtpError;
+          
+          console.log('Email sent successfully via SMTP fallback');
+          return { success: true, result: smtpData };
+          
+        } catch (smtpError) {
+          console.error('SMTP fallback also failed, queuing email:', smtpError);
+          
+          // Final fallback: Queue email in database for later processing
+          // Generate HTML content from template for the queue
+          const templateFunction = templates[config.template];
+          const htmlContent = templateFunction ? templateFunction(config.data) : `<p>Subject: ${config.subject}</p>`;
+          
+          const { error: queueError } = await supabase
+            .from('email_queue_simple')
+            .insert({
+              to_email: config.to,
+              subject: config.subject,
+              html_content: htmlContent,
+              template_name: config.template,
+              template_data: {
+                name: config.data?.name || config.data?.recipient_name || 'User',
+                ...config.data
+              },
+              status: 'pending',
+              retry_count: 0,
+              max_retries: 3
+            });
+
+          if (queueError) {
+            console.error('Failed to queue email:', queueError);
+            throw new Error('All email sending methods failed');
+          }
+          
+          console.log('Email queued successfully for later processing');
+          toast.info('Email queued for delivery');
+          return { success: true, queued: true };
+        }
       }
-
-      const htmlContent = templateFunction(config.data);
-
-      // Send email via edge function
-      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/send-email`;
-      
-      const response = await fetch(functionUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Use secure authentication instead of hardcoded key
-        },
-        body: JSON.stringify({
-          to: config.to,
-          subject: config.subject,
-          html: htmlContent
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to send email: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log('Email sent successfully:', result);
-      
-      return { success: true, result };
     } catch (error) {
       console.error('Email automation error:', error);
+      toast.error('Failed to send email');
       throw error;
     } finally {
       setIsProcessing(false);
