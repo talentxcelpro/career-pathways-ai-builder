@@ -46,6 +46,27 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
+    // Get email configuration settings
+    const { data: emailConfig, error: configError } = await supabase
+      .from('email_config_settings')
+      .select('setting_key, setting_value')
+      .in('setting_key', ['smtp_from_address', 'smtp_from_name', 'smtp_reply_to', 'company_name', 'website_url']);
+
+    if (configError) {
+      console.error('Error fetching email config:', configError);
+    }
+
+    // Convert config array to object for easy access
+    const config = emailConfig?.reduce((acc, item) => {
+      acc[item.setting_key] = item.setting_value;
+      return acc;
+    }, {} as Record<string, string>) || {};
+
+    // Set defaults if config not found
+    const fromAddress = config.smtp_from_address || 'no-reply@savantis.com';
+    const fromName = config.smtp_from_name || 'TalentXcel';
+    const replyTo = config.smtp_reply_to || 'support@talentxcel.in';
+
     // Get template from database
     const { data: templateData, error: templateError } = await supabase
       .from('email_automation_settings')
@@ -64,11 +85,15 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Template ${template_name} not found or disabled`);
     }
 
-    // Prepare email data for variable replacement
+    // Prepare email data for variable replacement with config values
     const emailData = {
       name: recipient_name,
       candidate_name: recipient_name,
       first_name: template_data?.first_name || recipient_name?.split(' ')[0] || recipient_name,
+      company_name: config.company_name || 'TalentXcel',
+      website_url: config.website_url || 'https://talentxcel.in',
+      support_email: config.smtp_reply_to || 'support@talentxcel.in',
+      current_year: new Date().getFullYear().toString(),
       ...template_data
     };
 
@@ -90,8 +115,9 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     await client.send({
-      from: Deno.env.get('SMTP_FROM') ?? 'no-reply@talentxcel.in',
+      from: `${fromName} <${fromAddress}>`,
       to: recipient_email,
+      replyTo: replyTo,
       subject: subject,
       html: htmlContent,
     });
