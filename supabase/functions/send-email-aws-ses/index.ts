@@ -1,6 +1,6 @@
 // AWS SES Email Sending Function for TalentXcel
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { SESClient, SendEmailCommand } from "npm:@aws-sdk/client-ses@3.500.0";
+import { SESClient, SendEmailCommand } from "npm:@aws-sdk/client-ses";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
