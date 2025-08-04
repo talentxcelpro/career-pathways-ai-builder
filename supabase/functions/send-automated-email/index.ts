@@ -32,10 +32,12 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     console.log('Automated email sending started...');
+    console.log('Request body:', JSON.stringify(await req.clone().json()));
     
     const { template_name, recipient_email, recipient_name, template_data } = await req.json();
     
     if (!template_name || !recipient_email) {
+      console.error('Missing required fields:', { template_name, recipient_email });
       throw new Error('Missing required fields: template_name and recipient_email');
     }
 
@@ -101,19 +103,37 @@ const handler = async (req: Request): Promise<Response> => {
     const subject = replaceTemplateVariables(templateData.subject_template, emailData);
     const htmlContent = replaceTemplateVariables(templateData.html_template, emailData);
     
+    // Check SMTP configuration
+    const smtpHost = Deno.env.get('SMTP_HOST');
+    const smtpPort = Deno.env.get('SMTP_PORT');
+    const smtpUser = Deno.env.get('SMTP_USER');
+    const smtpPass = Deno.env.get('SMTP_PASS');
+    
+    console.log('SMTP Configuration Check:');
+    console.log('SMTP_HOST:', smtpHost ? 'Set' : 'NOT SET');
+    console.log('SMTP_PORT:', smtpPort ? 'Set' : 'NOT SET');
+    console.log('SMTP_USER:', smtpUser ? 'Set' : 'NOT SET');
+    console.log('SMTP_PASS:', smtpPass ? 'Set' : 'NOT SET');
+    
+    if (!smtpHost || !smtpPort || !smtpUser || !smtpPass) {
+      throw new Error('SMTP configuration incomplete. Please set SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS environment variables.');
+    }
+    
     // Send email via SMTP
+    console.log('Initializing SMTP client...');
     const client = new SMTPClient({
       connection: {
-        hostname: Deno.env.get('SMTP_HOST') ?? '',
-        port: parseInt(Deno.env.get('SMTP_PORT') ?? '587'),
+        hostname: smtpHost,
+        port: parseInt(smtpPort),
         tls: true,
         auth: {
-          username: Deno.env.get('SMTP_USER') ?? '',
-          password: Deno.env.get('SMTP_PASS') ?? '',
+          username: smtpUser,
+          password: smtpPass,
         },
       },
     });
 
+    console.log('Sending email via SMTP...');
     await client.send({
       from: `${fromName} <${fromAddress}>`,
       to: recipient_email,
@@ -122,6 +142,7 @@ const handler = async (req: Request): Promise<Response> => {
       html: htmlContent,
     });
 
+    console.log('Email sent successfully, closing SMTP connection...');
     await client.close();
 
     console.log(`Email sent successfully to ${recipient_email}`);
