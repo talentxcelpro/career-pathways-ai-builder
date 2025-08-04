@@ -1,136 +1,188 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface EmailRequest {
-  email_id: string;
-  recipient_email: string;
-  template: string;
-  data?: Record<string, any>;
-}
+// Email templates
+const EMAIL_TEMPLATES = {
+  welcome: {
+    subject: "Welcome to TalentXcel - Your Career Journey Starts Here! 🎉",
+    html: (data: any) => `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; overflow: hidden;">
+        <div style="padding: 40px 30px; text-align: center;">
+          <h1 style="margin: 0 0 20px 0; font-size: 28px; font-weight: bold;">Welcome to TalentXcel!</h1>
+          <p style="font-size: 18px; margin: 0 0 30px 0; opacity: 0.9;">Hi ${data.first_name || data.name || 'there'},</p>
+          <p style="font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+            We're thrilled to have you join our community of ambitious professionals! TalentXcel is your gateway to endless career opportunities and professional growth.
+          </p>
+          <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin: 30px 0;">
+            <h3 style="margin: 0 0 15px 0; color: #ffd700;">🚀 What's next?</h3>
+            <ul style="text-align: left; padding-left: 0; list-style: none;">
+              <li style="margin: 10px 0; padding-left: 25px; position: relative;">
+                <span style="position: absolute; left: 0; color: #ffd700;">✓</span> Complete your profile to get noticed by top employers
+              </li>
+              <li style="margin: 10px 0; padding-left: 25px; position: relative;">
+                <span style="position: absolute; left: 0; color: #ffd700;">✓</span> Browse thousands of job opportunities
+              </li>
+              <li style="margin: 10px 0; padding-left: 25px; position: relative;">
+                <span style="position: absolute; left: 0; color: #ffd700;">✓</span> Connect with industry professionals
+              </li>
+              <li style="margin: 10px 0; padding-left: 25px; position: relative;">
+                <span style="position: absolute; left: 0; color: #ffd700;">✓</span> Use our AI-powered resume builder
+              </li>
+            </ul>
+          </div>
+          <a href="https://talentxcel.in/profile" style="display: inline-block; background: #ffd700; color: #333; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 20px 0; transition: transform 0.2s;">
+            Complete Your Profile Now
+          </a>
+          <p style="font-size: 14px; opacity: 0.8; margin-top: 30px;">
+            Need help? Reply to this email and our team will assist you.
+          </p>
+        </div>
+        <div style="background: rgba(0,0,0,0.1); padding: 20px; text-align: center; font-size: 12px; opacity: 0.7;">
+          <p>© 2025 TalentXcel. Building careers, connecting futures.</p>
+          <p>You received this email because you signed up for TalentXcel.</p>
+        </div>
+      </div>
+    `
+  },
+  
+  job_match: {
+    subject: "🎯 New Job Matches Found - Perfect for Your Skills!",
+    html: (data: any) => `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa; border-radius: 12px; overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px; text-align: center;">
+          <h1 style="margin: 0 0 10px 0; font-size: 24px;">New Job Matches!</h1>
+          <p style="margin: 0; opacity: 0.9;">Hi ${data.name}, we found ${data.job_count || 'several'} jobs that match your profile</p>
+        </div>
+        <div style="padding: 30px; background: white;">
+          <p style="color: #333; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+            Based on your skills and preferences, we've found some exciting opportunities that could be perfect for your next career move.
+          </p>
+          <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0;">
+            <h3 style="color: #28a745; margin: 0 0 10px 0;">Why these matches are special:</h3>
+            <p style="color: #666; margin: 0;">Our AI algorithm analyzed your profile and found positions that align with your experience, skills, and career goals.</p>
+          </div>
+          <a href="https://talentxcel.in/jobs" style="display: inline-block; background: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">
+            View Job Matches
+          </a>
+        </div>
+        <div style="background: #f8f9fa; padding: 20px; text-align: center; font-size: 12px; color: #666;">
+          <p>© 2025 TalentXcel - Your AI-powered career platform</p>
+        </div>
+      </div>
+    `
+  },
+
+  connection_request: {
+    subject: "New Connection Request on TalentXcel",
+    html: (data: any) => `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; border: 1px solid #e0e0e0;">
+        <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 30px; text-align: center;">
+          <h1 style="margin: 0 0 10px 0; font-size: 24px;">New Connection Request</h1>
+          <p style="margin: 0; opacity: 0.9;">${data.sender_name} wants to connect with you!</p>
+        </div>
+        <div style="padding: 30px;">
+          <p style="color: #333; font-size: 16px; line-height: 1.6;">
+            Hi ${data.recipient_name},<br><br>
+            ${data.sender_name} would like to connect with you on TalentXcel. Building your professional network opens doors to new opportunities and collaborations.
+          </p>
+          <a href="https://talentxcel.in/network/requests" style="display: inline-block; background: #6366f1; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">
+            View Connection Request
+          </a>
+        </div>
+      </div>
+    `
+  }
+};
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { email_id, recipient_email, template, data = {} }: EmailRequest = await req.json();
+    console.log('Automated email sending started...');
     
-    console.log(`Processing automated email ${email_id} for ${recipient_email} with template ${template}`);
-
-    // Get SMTP configuration from environment
-    const SMTP_HOST = Deno.env.get("SMTP_HOST");
-    const SMTP_PORT = Deno.env.get("SMTP_PORT");
-    const SMTP_USER = Deno.env.get("SMTP_USER");
-    const SMTP_PASS = Deno.env.get("SMTP_PASS");
-
-    if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
-      throw new Error("Missing SMTP configuration");
+    const { template_name, recipient_email, recipient_name, template_data } = await req.json();
+    
+    if (!template_name || !recipient_email) {
+      throw new Error('Missing required fields: template_name and recipient_email');
     }
 
-    // Dynamic import of nodemailer
-    const { default: nodemailer } = await import("npm:nodemailer@6.9.1");
+    console.log(`Sending ${template_name} email to ${recipient_email}`);
 
-    const transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: parseInt(SMTP_PORT),
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS,
-      },
-    });
-
-    // Generate email content based on template
-    let subject = '';
-    let htmlContent = '';
-
-    switch (template) {
-      case 'profile_completion_reminder':
-        subject = '🔔 Complete Your TalentXcel Profile';
-        htmlContent = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2563eb;">Complete Your Profile on TalentXcel</h2>
-            <p>Hi ${data.userName || 'there'},</p>
-            <p>We noticed your TalentXcel profile isn't complete yet. A complete profile helps employers find you and increases your chances of landing your dream job!</p>
-            <div style="margin: 20px 0;">
-              <a href="https://talentxcel.in/profile" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Complete Your Profile</a>
-            </div>
-            <p>Best regards,<br>The TalentXcel Team</p>
-          </div>
-        `;
-        break;
-      
-      case 'welcome':
-        subject = '🎉 Welcome to TalentXcel!';
-        htmlContent = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2563eb;">Welcome to TalentXcel!</h2>
-            <p>Hi ${data.userName || 'there'},</p>
-            <p>Welcome to TalentXcel! We're excited to have you join our community of talented professionals.</p>
-            <p>Get started by completing your profile and exploring job opportunities that match your skills.</p>
-            <div style="margin: 20px 0;">
-              <a href="https://talentxcel.in/dashboard" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Get Started</a>
-            </div>
-            <p>Best regards,<br>The TalentXcel Team</p>
-          </div>
-        `;
-        break;
-
-      default:
-        subject = `Notification from TalentXcel`;
-        htmlContent = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2563eb;">TalentXcel Notification</h2>
-            <p>Hi there,</p>
-            <p>You have a new notification from TalentXcel.</p>
-            <p>Visit your dashboard to see more details.</p>
-            <div style="margin: 20px 0;">
-              <a href="https://talentxcel.in/dashboard" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Dashboard</a>
-            </div>
-            <p>Best regards,<br>The TalentXcel Team</p>
-          </div>
-        `;
+    // Get template
+    const template = EMAIL_TEMPLATES[template_name as keyof typeof EMAIL_TEMPLATES];
+    if (!template) {
+      throw new Error(`Template ${template_name} not found`);
     }
 
-    console.log(`Sending email with subject: ${subject}`);
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
-    const info = await transporter.sendMail({
-      from: '"TalentXcel" <admin@talentxcel.in>',
-      to: recipient_email,
-      subject: subject,
-      html: htmlContent,
+    // Prepare email data
+    const emailData = {
+      name: recipient_name,
+      first_name: template_data?.first_name || recipient_name,
+      ...template_data
+    };
+
+    // Generate email content
+    const htmlContent = template.html(emailData);
+    
+    // Send email via AWS SES function
+    const emailResponse = await supabase.functions.invoke('send-email-aws-ses', {
+      body: {
+        to: recipient_email,
+        subject: template.subject,
+        html: htmlContent,
+        template: template_name,
+        templateData: emailData
+      }
     });
 
-    console.log(`Email sent successfully to ${recipient_email}, Message ID: ${info.messageId}`);
+    if (emailResponse.error) {
+      console.error('Error from send-email-aws-ses:', emailResponse.error);
+      throw new Error(`Failed to send email: ${JSON.stringify(emailResponse.error)}`);
+    }
 
-    return new Response(JSON.stringify({
+    if (emailResponse.data?.error) {
+      console.error('Error in email response:', emailResponse.data.error);
+      throw new Error(`Email sending failed: ${emailResponse.data.error}`);
+    }
+
+    console.log(`Email sent successfully to ${recipient_email}`);
+
+    return new Response(JSON.stringify({ 
       success: true,
-      messageId: info.messageId,
-      message: `Email sent successfully to ${recipient_email}`,
-      timestamp: new Date().toISOString()
+      message: 'Email sent successfully',
+      template: template_name,
+      recipient: recipient_email,
+      messageId: emailResponse.data?.messageId
     }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
 
   } catch (error: any) {
-    console.error("Automated email send error:", error);
-    
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message,
-      message: `Failed to send automated email: ${error.message}`,
-      timestamp: new Date().toISOString()
-    }), {
-      status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
+    console.error("Error in send-automated-email function:", error);
+    return new Response(
+      JSON.stringify({ 
+        error: error.message,
+        success: false
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      }
+    );
   }
 };
 
