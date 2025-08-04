@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Save, Mail, Settings } from "lucide-react";
+import { Loader2, Save, Mail, Settings, Send } from "lucide-react";
 
 interface EmailConfigSetting {
   id: string;
@@ -19,12 +19,14 @@ export const EmailConfigurationPanel = () => {
   const [settings, setSettings] = useState<EmailConfigSetting[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [testEmailSending, setTestEmailSending] = useState(false);
+  const [testEmail, setTestEmail] = useState('');
   const { toast } = useToast();
 
   const settingLabels: Record<string, { label: string; description: string; type: 'input' | 'textarea' }> = {
     smtp_from_address: {
       label: "From Email Address",
-      description: "The email address emails will be sent from (e.g., no-reply@savantis.com)",
+      description: "The email address emails will be sent from (e.g., no-reply@talentxcel.in)",
       type: 'input'
     },
     smtp_from_name: {
@@ -124,6 +126,48 @@ export const EmailConfigurationPanel = () => {
     }
   };
 
+  const sendTestEmail = async () => {
+    if (!testEmail) {
+      toast({
+        title: "Error",
+        description: "Please enter a test email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setTestEmailSending(true);
+    try {
+      const { error } = await supabase.functions.invoke('send-automated-email', {
+        body: {
+          template_name: 'welcome',
+          recipient_email: testEmail,
+          recipient_name: 'Test User',
+          template_data: {
+            first_name: 'Test'
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Test email sent successfully to ${testEmail}`,
+      });
+      setTestEmail('');
+    } catch (error) {
+      console.error('Error sending test email:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send test email. Please check your configuration.",
+        variant: "destructive",
+      });
+    } finally {
+      setTestEmailSending(false);
+    }
+  };
+
   if (loading) {
     return (
       <Card>
@@ -181,6 +225,35 @@ export const EmailConfigurationPanel = () => {
               </div>
             );
           })}
+        </div>
+
+        <div className="border-t pt-6">
+          <h3 className="text-lg font-semibold mb-4">Test Email Configuration</h3>
+          <div className="flex gap-2">
+            <Input
+              type="email"
+              placeholder="Enter test email address"
+              value={testEmail}
+              onChange={(e) => setTestEmail(e.target.value)}
+              className="flex-1"
+            />
+            <Button onClick={sendTestEmail} disabled={testEmailSending || !testEmail}>
+              {testEmailSending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send Test
+                </>
+              )}
+            </Button>
+          </div>
+          <p className="text-sm text-muted-foreground mt-2">
+            Send a test welcome email to verify your configuration
+          </p>
         </div>
 
         <div className="flex justify-end pt-4">

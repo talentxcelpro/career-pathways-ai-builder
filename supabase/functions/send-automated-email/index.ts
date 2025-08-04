@@ -63,7 +63,7 @@ const handler = async (req: Request): Promise<Response> => {
     }, {} as Record<string, string>) || {};
 
     // Set defaults if config not found
-    const fromAddress = config.smtp_from_address || 'no-reply@savantis.com';
+    const fromAddress = config.smtp_from_address || 'no-reply@talentxcel.in';
     const fromName = config.smtp_from_name || 'TalentXcel';
     const replyTo = config.smtp_reply_to || 'support@talentxcel.in';
 
