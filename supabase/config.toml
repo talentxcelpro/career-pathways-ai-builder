@@ -115,3 +115,6 @@ verify_jwt = false
 
 [functions.seo-job-enhancer]
 verify_jwt = true
+
+[functions.send-email-aws-ses]
+verify_jwt = false
