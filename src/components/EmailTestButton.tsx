@@ -12,7 +12,13 @@ export const EmailTestButton = () => {
     try {
       console.log('Testing email system...');
       
-      const { data, error } = await supabase.functions.invoke('test-email-system');
+      const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
+        body: {
+          to: "nexgennwelfare@gmail.com",
+          subject: "Test Email from TalentXcel",
+          html: "<p>This is a test email sent via AWS SES from TalentXcel platform!</p>"
+        }
+      });
       
       if (error) {
         throw error;
