@@ -34,37 +34,28 @@ export const JobScraperControl = () => {
       console.log('Job Count:', limit);
       console.log('Job Type:', jobType);
       
-      // Use the new real-job-scraper function
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/real-job-scraper', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
-        },
-        body: JSON.stringify({ 
+      // Use Supabase client for proper authentication
+      const { data, error } = await supabase.functions.invoke('real-job-scraper', {
+        body: { 
           limit, 
           jobType,
           sources: ['government', 'private', 'international']
-        })
+        }
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      console.log('Raw response:', { data, status: response.status });
       
-      if (!data) {
-        throw new Error('No response data received');
+      console.log('📊 Scraper response:', { data, error });
+      
+      if (error) {
+        console.error('❌ Supabase invoke error:', error);
+        throw error;
       }
 
       if (!data) {
-        throw new Error('No response data received');
+        throw new Error('No response data received from scraper');
       }
 
       if (!data.success) {
-        throw new Error(data?.error || 'Function returned unsuccessful response');
+        throw new Error(data?.error || 'Scraper returned unsuccessful response');
       }
 
       setStats(data.stats || { total_scraped: 0, valid_jobs: 0, published_jobs: 0, next_run: new Date().toISOString() });
@@ -144,29 +135,23 @@ export const JobScraperControl = () => {
       
       // Now test the real-job-scraper function
       console.log('Testing real-job-scraper function...');
-      const scraperResponse = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/real-job-scraper', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2tmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
-        },
-        body: JSON.stringify({ limit: 10, jobType: 'mixed' })
+      const { data: scraperData, error: scraperError } = await supabase.functions.invoke('real-job-scraper', {
+        body: { limit: 10, jobType: 'mixed' }
       });
       
-      if (!scraperResponse.ok) {
-        toast.error(`❌ Job scraper failed: HTTP ${scraperResponse.status}`, { id: 'test' });
+      console.log('📊 Scraper test result:', { scraperData, scraperError });
+      
+      if (scraperError) {
+        toast.error(`❌ Job scraper test failed: ${scraperError.message}`, { id: 'test' });
         return;
       }
       
-      const data = await scraperResponse.json();
-      console.log('Job scraper test result:', data);
-      
-      if (data?.success) {
+      if (scraperData?.success) {
         toast.success('✅ All function tests successful!', { id: 'test' });
-        if (data.stats) setStats(data.stats);
-        if (data.jobs) setRecentJobs(data.jobs);
+        if (scraperData.stats) setStats(scraperData.stats);
+        if (scraperData.jobs) setRecentJobs(scraperData.jobs);
       } else {
-        toast.error(`❌ Job scraper test failed: ${data?.error || 'Unknown error'}`, { id: 'test' });
+        toast.error(`❌ Job scraper test failed: ${scraperData?.error || 'Unknown error'}`, { id: 'test' });
       }
     } catch (error) {
       console.error('=== Test Call Error Details ===');

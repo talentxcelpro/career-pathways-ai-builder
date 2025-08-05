@@ -10,37 +10,38 @@ export const EmailTestButton = () => {
   const testEmailSystem = async () => {
     setIsTesting(true);
     try {
-      console.log('Testing email system with AWS SES...');
+      console.log('🧪 Testing AWS SES email system...');
       
-      // Use direct fetch to ensure proper request formatting
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/send-email-aws-ses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
-        },
-        body: JSON.stringify({
-          to: "nexgennwelfare@gmail.com",
-          subject: "Test Email from TalentXcel Platform",
-          html: "<h2>✅ AWS SES Test Email</h2><p>This test email was successfully sent via AWS SES from TalentXcel platform!</p><p>Timestamp: " + new Date().toLocaleString() + "</p>"
-        })
+      const emailPayload = {
+        to: "nexgennwelfare@gmail.com",
+        subject: "Test Email from TalentXcel Platform",
+        html: "<h2>✅ AWS SES Test Email</h2><p>This test email was successfully sent via AWS SES from TalentXcel platform!</p><p>Timestamp: " + new Date().toLocaleString() + "</p>"
+      };
+      
+      console.log('📧 Email payload:', emailPayload);
+      console.log('📏 Payload size:', JSON.stringify(emailPayload).length, 'bytes');
+      
+      // Use Supabase client to ensure proper authentication
+      const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
+        body: emailPayload
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      
+      console.log('📨 Raw response:', { data, error });
+      
+      if (error) {
+        console.error('❌ Supabase invoke error:', error);
+        throw error;
       }
 
-      const data = await response.json();
-      console.log('Email API Response:', data);
-      
-      if (data.success) {
+      if (data?.success) {
         toast({
           title: "✅ Email Test Successful!",
-          description: `Test email sent to nexgennwelfare@gmail.com. Provider: ${data.provider}`,
+          description: `Test email sent via ${data.provider}. Response time: ${data.responseTime}ms`,
         });
-        console.log('Email test result:', data);
+        console.log('✅ Email test successful:', data);
       } else {
-        throw new Error(data.error || 'Email test failed');
+        console.error('❌ Email function returned error:', data);
+        throw new Error(data?.error || 'Email test failed');
       }
     } catch (error: any) {
       console.error('Email test error:', error);
