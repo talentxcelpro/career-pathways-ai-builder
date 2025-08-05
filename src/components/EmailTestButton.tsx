@@ -10,28 +10,37 @@ export const EmailTestButton = () => {
   const testEmailSystem = async () => {
     setIsTesting(true);
     try {
-      console.log('Testing email system...');
+      console.log('Testing email system with AWS SES...');
       
-      const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
-        body: {
+      // Use direct fetch to ensure proper request formatting
+      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/send-email-aws-ses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`,
+        },
+        body: JSON.stringify({
           to: "nexgennwelfare@gmail.com",
-          subject: "Test Email from TalentXcel",
-          html: "<p>This is a test email sent via AWS SES from TalentXcel platform!</p>"
-        }
+          subject: "Test Email from TalentXcel Platform",
+          html: "<h2>✅ AWS SES Test Email</h2><p>This test email was successfully sent via AWS SES from TalentXcel platform!</p><p>Timestamp: " + new Date().toLocaleString() + "</p>"
+        })
       });
-      
-      if (error) {
-        throw error;
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      if (data?.success) {
+      const data = await response.json();
+      console.log('Email API Response:', data);
+      
+      if (data.success) {
         toast({
           title: "✅ Email Test Successful!",
-          description: `Test email sent to nexgennwelfare@gmail.com. Message ID: ${data.messageId}`,
+          description: `Test email sent to nexgennwelfare@gmail.com. Provider: ${data.provider}`,
         });
         console.log('Email test result:', data);
       } else {
-        throw new Error(data?.error || 'Email test failed');
+        throw new Error(data.error || 'Email test failed');
       }
     } catch (error: any) {
       console.error('Email test error:', error);

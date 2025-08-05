@@ -22,25 +22,30 @@ export const JobScraperControl = () => {
   const [stats, setStats] = useState<ScrapingStats | null>(null);
   const [recentJobs, setRecentJobs] = useState<any[]>([]);
 
-  const runJobScraper = async (limit = 100, jobType = 'private') => {
+  const runJobScraper = async (limit = 100, jobType = 'mixed') => {
     setIsRunning(true);
     try {
-      const message = jobType === 'government' ? '🏛️ Starting government job scraper...' : '🚀 Starting private job scraper...';
+      const message = jobType === 'government' ? '🏛️ Scraping Government Jobs...' : 
+                     jobType === 'international' ? '🌍 Scraping International Jobs...' : 
+                     '🚀 Scraping Quality Jobs...';
       toast.loading(message, { id: 'scraper' });
       
-      console.log('=== Job Scraper Debug Info ===');
-      console.log('Limit:', limit);
-      console.log('Supabase client:', !!supabase);
-      console.log('User:', await supabase.auth.getUser());
+      console.log('=== Real Job Scraper Started ===');
+      console.log('Job Count:', limit);
+      console.log('Job Type:', jobType);
       
-      // Use direct fetch call to avoid auth issues
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-scraper', {
+      // Use the new real-job-scraper function
+      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/real-job-scraper', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
         },
-        body: JSON.stringify({ limit, test: true, jobType })
+        body: JSON.stringify({ 
+          limit, 
+          jobType,
+          sources: ['government', 'private', 'international']
+        })
       });
 
       if (!response.ok) {
@@ -65,7 +70,8 @@ export const JobScraperControl = () => {
       setStats(data.stats || { total_scraped: 0, valid_jobs: 0, published_jobs: 0, next_run: new Date().toISOString() });
       setRecentJobs(data.jobs || []);
       
-      toast.success(`✅ Successfully scraped ${data.stats?.published_jobs || 0} jobs!`, { 
+      const summary = data.summary || {};
+      toast.success(`✅ Successfully generated ${summary.inserted || 0} jobs! (${summary.duplicates_skipped || 0} duplicates skipped)`, { 
         id: 'scraper' 
       });
 
@@ -136,15 +142,15 @@ export const JobScraperControl = () => {
         throw new Error('Basic connectivity test failed');
       }
       
-      // Now test the job-scraper function
-      console.log('Testing job-scraper function...');
-      const scraperResponse = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/job-scraper', {
+      // Now test the real-job-scraper function
+      console.log('Testing real-job-scraper function...');
+      const scraperResponse = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/real-job-scraper', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2tmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
         },
-        body: JSON.stringify({ limit: 5, test: true })
+        body: JSON.stringify({ limit: 10, jobType: 'mixed' })
       });
       
       if (!scraperResponse.ok) {
@@ -205,19 +211,19 @@ export const JobScraperControl = () => {
         <CardContent className="space-y-4">
           <div className="flex gap-4">
             <Button 
-              onClick={() => runJobScraper(200, 'private')} 
+              onClick={() => runJobScraper(200, 'mixed')} 
               disabled={isRunning}
               className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600"
             >
               {isRunning ? (
                 <>
                   <RefreshCw className="h-4 w-4 animate-spin" />
-                  Running Scraper...
+                  Generating Jobs...
                 </>
               ) : (
                 <>
                   <Sparkles className="h-4 w-4" />
-                  Generate 200 Private Jobs
+                  Generate 200 Mixed Jobs
                 </>
               )}
             </Button>
@@ -242,20 +248,21 @@ export const JobScraperControl = () => {
             
             <Button 
               variant="outline" 
-              onClick={() => runJobScraper(100, 'private')}
+              onClick={() => runJobScraper(100, 'international')}
               disabled={isRunning}
+              className="bg-gradient-to-r from-orange-500 to-red-500 text-white"
             >
               <Play className="h-4 w-4 mr-2" />
-              Standard (100 Jobs)
+              100 International Jobs
             </Button>
             
             <Button 
               variant="outline" 
-              onClick={() => runJobScraper(25, 'private')}
+              onClick={() => runJobScraper(50, 'mixed')}
               disabled={isRunning}
             >
               <Play className="h-4 w-4 mr-2" />
-              Quick Test (25 Jobs)
+              Quick Test (50 Mixed)
             </Button>
             
             <Button 
