@@ -1,4 +1,4 @@
-import { SmtpClient } from "https://deno.land/x/smtp/mod.ts";
+import { SmtpClient } from "https://deno.land/x/smtp@v0.10.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
