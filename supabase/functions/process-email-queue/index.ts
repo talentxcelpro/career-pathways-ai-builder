@@ -91,14 +91,13 @@ const handler = async (req: Request): Promise<Response> => {
           })
           .eq('id', email.id);
 
-        // Send email via the AWS SES email function (the working one)
-        const emailResponse = await supabase.functions.invoke('send-email-aws-ses', {
+        // Send email via the automated email function (SMTP - working system from Aug 4th)
+        const emailResponse = await supabase.functions.invoke('send-automated-email', {
           body: {
-            to: email.recipient_email,
-            subject: `${email.trigger_type} notification`,
-            html: `<h1>Hello ${email.recipient_name || email.recipient_email}</h1><p>This is an automated email.</p>`,
-            template: email.trigger_type,
-            templateData: email.template_data
+            template_name: email.trigger_type,
+            recipient_email: email.recipient_email,
+            recipient_name: email.recipient_name,
+            template_data: email.template_data
           }
         });
 
