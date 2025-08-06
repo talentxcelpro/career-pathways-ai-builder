@@ -151,24 +151,34 @@ export const EmailSystemTester = () => {
       
       console.log('📧 Email payload (secrets hidden):', { ...emailPayload, smtp: { ...emailPayload.smtp, user: '***', pass: '***' } });
       
-      // Use supabase.functions.invoke instead of direct fetch
-      const { data, error } = await supabase.functions.invoke('send-email-smtp', {
-        body: emailPayload,
+      // Use direct fetch like SMTP test
+      const projectRef = 'dthlgsnakhoftinssokm';
+      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+      
+      const url = `https://${projectRef}.supabase.co/functions/v1/send-email-smtp`;
+      console.log('🎯 Testing URL:', url);
+      
+      const response = await fetch(url, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+          'Authorization': `Bearer ${anonKey}`,
+          'apikey': anonKey
+        },
+        body: JSON.stringify(emailPayload)
       });
       
-      console.log('📨 Email Send Response:', { data, error });
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
       
-      if (error) {
-        console.error('❌ Supabase invoke error:', error);
-        // Check if it's a connection error
-        if (error.message?.includes('Failed to send a request')) {
-          throw new Error('Edge function not accessible. Please ensure SMTP secrets are configured and function is deployed.');
-        }
-        throw new Error(`Function Error: ${error.message}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Response error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText || 'Unknown error'}`);
       }
+      
+      const data = await response.json();
+      console.log('📨 Email Send Response:', data);
       
       setResults(prev => ({ ...prev, emailSend: data }));
       
@@ -185,12 +195,22 @@ export const EmailSystemTester = () => {
         });
       }
     } catch (error: any) {
-      console.error('Email sending test error:', error);
+      console.error('❌ Email sending test error:', error);
       const errorMessage = error.message || 'Unknown error occurred';
       setResults(prev => ({ ...prev, emailSend: { error: errorMessage } }));
+      
+      let description = errorMessage;
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+        description = 'Network error - send-email-smtp function may not be deployed';
+      } else if (errorMessage.includes('404')) {
+        description = 'send-email-smtp function not found - May not be deployed yet';
+      } else if (errorMessage.includes('403') || errorMessage.includes('401')) {
+        description = 'Authentication error - Check API keys';
+      }
+      
       toast({
         title: "❌ Email Sending Test Failed",
-        description: errorMessage,
+        description,
         variant: "destructive"
       });
     } finally {
