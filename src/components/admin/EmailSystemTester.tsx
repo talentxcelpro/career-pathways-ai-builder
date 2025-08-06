@@ -23,6 +23,7 @@ export const EmailSystemTester = () => {
     try {
       console.log('🧪 Testing SMTP configuration...');
       
+      // Use supabase.functions.invoke instead of direct fetch
       const { data, error } = await supabase.functions.invoke('test-ses-smtp', {
         headers: {
           'Content-Type': 'application/json',
@@ -33,7 +34,11 @@ export const EmailSystemTester = () => {
       
       if (error) {
         console.error('❌ Supabase invoke error:', error);
-        throw new Error(`Edge Function Error: ${error.message}`);
+        // Check if it's a connection error
+        if (error.message?.includes('Failed to send a request')) {
+          throw new Error('Edge function not accessible. Please ensure SMTP secrets are configured and function is deployed.');
+        }
+        throw new Error(`Function Error: ${error.message}`);
       }
       
       setResults(prev => ({ ...prev, smtp: data }));
@@ -46,7 +51,7 @@ export const EmailSystemTester = () => {
       } else {
         toast({
           title: "⚠️ SMTP Configuration Issues", 
-          description: "Some SMTP credentials are missing or misconfigured",
+          description: "Some SMTP credentials are missing. Please set SMTP secrets in Supabase.",
           variant: "destructive"
         });
       }
@@ -56,8 +61,7 @@ export const EmailSystemTester = () => {
       setResults(prev => ({ ...prev, smtp: { error: errorMessage } }));
       toast({
         title: "❌ SMTP Test Failed",
-        description: errorMessage.includes('Failed to send a request') ? 
-          'Edge function connection failed. Check if the function is deployed.' : errorMessage,
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -118,13 +122,14 @@ export const EmailSystemTester = () => {
         smtp: {
           host: "email-smtp.eu-north-1.amazonaws.com",
           port: "587",
-          user: "", // Will be populated from Supabase secrets
-          pass: ""  // Will be populated from Supabase secrets
+          user: "WILL_BE_SET_FROM_SUPABASE_SECRETS", 
+          pass: "WILL_BE_SET_FROM_SUPABASE_SECRETS"  
         }
       };
       
-      console.log('📧 Email payload:', emailPayload);
+      console.log('📧 Email payload (secrets hidden):', { ...emailPayload, smtp: { ...emailPayload.smtp, user: '***', pass: '***' } });
       
+      // Use supabase.functions.invoke instead of direct fetch
       const { data, error } = await supabase.functions.invoke('send-email-smtp', {
         body: emailPayload,
         headers: {
@@ -136,7 +141,11 @@ export const EmailSystemTester = () => {
       
       if (error) {
         console.error('❌ Supabase invoke error:', error);
-        throw new Error(`Edge Function Error: ${error.message}`);
+        // Check if it's a connection error
+        if (error.message?.includes('Failed to send a request')) {
+          throw new Error('Edge function not accessible. Please ensure SMTP secrets are configured and function is deployed.');
+        }
+        throw new Error(`Function Error: ${error.message}`);
       }
       
       setResults(prev => ({ ...prev, emailSend: data }));
@@ -159,8 +168,7 @@ export const EmailSystemTester = () => {
       setResults(prev => ({ ...prev, emailSend: { error: errorMessage } }));
       toast({
         title: "❌ Email Sending Test Failed",
-        description: errorMessage.includes('Failed to send a request') ? 
-          'Edge function connection failed. Check if send-email-smtp function is deployed.' : errorMessage,
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
