@@ -34,15 +34,17 @@ const JOB_TEMPLATES = {
       skills: ["React", "Node.js", "TypeScript", "AWS"],
       description: "Join our engineering team to build scalable web applications using modern technologies. Work on challenging problems with a collaborative team.",
       salary_range: "₹15-25 LPA",
-      experience_level: "Senior"
+      experience_level: "senior-level",
+      employment_type: "full-time"
     },
     {
       title: "Data Scientist",
-      department: "Data & Analytics",
+      department: "Data & Analytics", 
       skills: ["Python", "Machine Learning", "SQL", "TensorFlow"],
       description: "Analyze complex datasets to drive business decisions using advanced analytics and machine learning techniques.",
       salary_range: "₹12-20 LPA",
-      experience_level: "Mid-level"
+      experience_level: "mid-level",
+      employment_type: "full-time"
     },
     {
       title: "DevOps Engineer",
@@ -50,7 +52,44 @@ const JOB_TEMPLATES = {
       skills: ["Kubernetes", "Docker", "AWS", "Jenkins"],
       description: "Manage cloud infrastructure and implement CI/CD pipelines for scalable applications.",
       salary_range: "₹18-28 LPA",
-      experience_level: "Senior"
+      experience_level: "senior-level",
+      employment_type: "full-time"
+    },
+    {
+      title: "Frontend Developer",
+      department: "Engineering",
+      skills: ["React", "JavaScript", "CSS", "HTML"],
+      description: "Build beautiful and responsive user interfaces using modern frontend technologies.",
+      salary_range: "₹8-15 LPA",
+      experience_level: "mid-level",
+      employment_type: "full-time"
+    },
+    {
+      title: "Backend Developer",
+      department: "Engineering", 
+      skills: ["Node.js", "Python", "PostgreSQL", "REST APIs"],
+      description: "Design and implement scalable backend systems and APIs for web applications.",
+      salary_range: "₹10-18 LPA",
+      experience_level: "mid-level",
+      employment_type: "full-time"
+    },
+    {
+      title: "UI/UX Designer",
+      department: "Design",
+      skills: ["Figma", "Adobe XD", "User Research", "Prototyping"],
+      description: "Create intuitive and engaging user experiences for digital products.",
+      salary_range: "₹6-12 LPA",
+      experience_level: "mid-level",
+      employment_type: "full-time"
+    },
+    {
+      title: "Software Engineer Intern",
+      department: "Engineering",
+      skills: ["Programming", "Git", "Problem Solving"],
+      description: "Join our engineering team as an intern to learn and contribute to real-world projects.",
+      salary_range: "₹25-40K/month",
+      experience_level: "fresher",
+      employment_type: "internship"
     }
   ],
   government: [
@@ -60,7 +99,8 @@ const JOB_TEMPLATES = {
       skills: ["Banking Operations", "Financial Analysis", "Customer Service"],
       description: "Handle banking operations, customer relations, and financial services in a leading public sector bank.",
       salary_range: "₹8-12 LPA",
-      experience_level: "Mid-level",
+      experience_level: "mid-level",
+      employment_type: "full-time",
       source: "Banking Recruitment"
     },
     {
@@ -69,7 +109,8 @@ const JOB_TEMPLATES = {
       skills: ["Law Enforcement", "Investigation", "Public Safety"],
       description: "Maintain law and order, conduct investigations, and ensure public safety in the state police force.",
       salary_range: "₹6-10 LPA",
-      experience_level: "Entry"
+      experience_level: "fresher",
+      employment_type: "full-time"
     },
     {
       title: "Junior Engineer - PWD",
@@ -77,7 +118,26 @@ const JOB_TEMPLATES = {
       skills: ["Civil Engineering", "Project Management", "CAD"],
       description: "Plan and execute infrastructure projects for state public works department.",
       salary_range: "₹5-8 LPA",
-      experience_level: "Entry"
+      experience_level: "fresher",
+      employment_type: "full-time"
+    },
+    {
+      title: "Clerk - Government Office",
+      department: "Administration",
+      skills: ["Data Entry", "Office Management", "Documentation"],
+      description: "Handle administrative tasks and documentation in government office.",
+      salary_range: "₹4-7 LPA",
+      experience_level: "fresher",
+      employment_type: "full-time"
+    },
+    {
+      title: "Teacher - Government School",
+      department: "Education",
+      skills: ["Teaching", "Curriculum Development", "Student Management"],
+      description: "Educate and guide students in government school with comprehensive curriculum.",
+      salary_range: "₹5-9 LPA",
+      experience_level: "mid-level",
+      employment_type: "full-time"
     }
   ],
   international: [
@@ -87,7 +147,8 @@ const JOB_TEMPLATES = {
       skills: ["Java", "Spring Boot", "Microservices", "Cloud"],
       description: "Develop enterprise applications for leading fintech company in Dubai with excellent benefits.",
       salary_range: "$60-80K",
-      experience_level: "Mid-level",
+      experience_level: "mid-level",
+      employment_type: "full-time",
       location: "Dubai, UAE"
     },
     {
@@ -96,8 +157,29 @@ const JOB_TEMPLATES = {
       skills: ["Project Management", "Agile", "Stakeholder Management"],
       description: "Lead cross-functional teams in delivering complex projects for multinational corporation.",
       salary_range: "$70-90K",
-      experience_level: "Senior",
+      experience_level: "senior-level",
+      employment_type: "full-time",
       location: "Singapore"
+    },
+    {
+      title: "Data Analyst - London",
+      department: "Analytics",
+      skills: ["SQL", "Python", "Tableau", "Excel"],
+      description: "Analyze business data and provide insights for strategic decision making.",
+      salary_range: "£45-60K",
+      experience_level: "mid-level",
+      employment_type: "full-time",
+      location: "London, UK"
+    },
+    {
+      title: "Marketing Specialist - Canada",
+      department: "Marketing",
+      skills: ["Digital Marketing", "SEO", "Content Marketing", "Analytics"],
+      description: "Drive marketing campaigns and brand awareness in North American market.",
+      salary_range: "CAD 55-75K",
+      experience_level: "mid-level",
+      employment_type: "full-time",
+      location: "Toronto, Canada"
     }
   ]
 };
@@ -129,7 +211,7 @@ function generateRealisticJob(template: any, company: any, jobType: string): Job
     location,
     description: template.description,
     salary_range: template.salary_range,
-    employment_type: "Full-time",
+    employment_type: template.employment_type || "full-time",
     experience_level: template.experience_level,
     source: jobType === 'government' ? "Government Portal" : "Company Careers",
     posted_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -149,18 +231,22 @@ async function insertJobsToDatabase(jobs: JobData[]) {
     location: job.location,
     description: job.description,
     job_description: job.description,
+    job_summary: job.description.substring(0, 200) + "...",
     salary_range: job.salary_range,
     employment_type: job.employment_type,
     experience_level: job.experience_level,
-    source: job.source,
     posted_at: job.posted_at,
     skills_required: job.skills,
-    department: job.department,
-    job_status: 'active',
+    must_have_requirements: job.skills.slice(0, 3),
+    nice_to_have: job.skills.slice(3),
+    job_status: 'open',
     is_active: true,
-    is_featured: Math.random() > 0.8, // 20% featured jobs
+    is_featured: Math.random() > 0.8,
     views_count: Math.floor(Math.random() * 100),
-    applications_count: Math.floor(Math.random() * 25)
+    applications_count: Math.floor(Math.random() * 25),
+    salary_min: 300000,
+    salary_max: 2000000,
+    salary_currency: 'INR'
   }));
 
   const { data, error } = await supabase
