@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useEmailService, emailUtils } from '@/hooks/useEmailService';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const EmailSystemTest = () => {
   const [testEmail, setTestEmail] = useState('');
-  const { sendEmail, isLoading } = useEmailService();
+  const [isLoading, setIsLoading] = useState(false);
 
   const testWelcomeEmail = async () => {
     if (!testEmail) {
@@ -15,16 +15,41 @@ const EmailSystemTest = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
-      await sendEmail({
+      console.log('🧪 Testing AWS SES welcome email to:', testEmail);
+      
+      const emailPayload = {
         to: testEmail,
         subject: 'Welcome to TalentXcel! 🎉',
-        template: 'welcome',
-        data: { name: 'Test User' },
-        immediate: true,
+        html: `
+          <h2>Welcome to TalentXcel!</h2>
+          <p>Hello Test User,</p>
+          <p>Welcome to TalentXcel platform! We're excited to have you on board.</p>
+          <p>This is a test email sent via AWS SES.</p>
+          <p>Timestamp: ${new Date().toLocaleString()}</p>
+        `
+      };
+      
+      const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
+        body: emailPayload
       });
-    } catch (error) {
-      console.error('Test email failed:', error);
+      
+      if (error) {
+        console.error('❌ Email test error:', error);
+        toast.error('Failed to send welcome email: ' + error.message);
+      } else if (data?.success) {
+        console.log('✅ Welcome email sent successfully:', data);
+        toast.success(`Welcome email sent successfully to ${testEmail}!`);
+      } else {
+        console.error('❌ Email function returned error:', data);
+        toast.error('Email test failed: ' + (data?.error || 'Unknown error'));
+      }
+    } catch (error: any) {
+      console.error('Welcome email test error:', error);
+      toast.error('Failed to send welcome email: ' + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -34,24 +59,48 @@ const EmailSystemTest = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
-      await sendEmail({
+      console.log('🧪 Testing AWS SES job match email to:', testEmail);
+      
+      const emailPayload = {
         to: testEmail,
         subject: 'New Job Match for You! 💼',
-        template: 'job_opening',
-        data: {
-          name: 'Test User',
-          job_title: 'Senior Software Engineer',
-          company_name: 'TechCorp',
-          job_id: 'test-123',
-          location: 'Remote',
-          salary_range: '$80,000 - $120,000',
-          requirements: ['React', 'TypeScript', '3+ years experience']
-        },
-        immediate: true,
+        html: `
+          <h2>New Job Match Found!</h2>
+          <p>Hello Test User,</p>
+          <p>We found a great job match for you:</p>
+          <ul>
+            <li><strong>Position:</strong> Senior Software Engineer</li>
+            <li><strong>Company:</strong> TechCorp</li>
+            <li><strong>Location:</strong> Remote</li>
+            <li><strong>Salary:</strong> $80,000 - $120,000</li>
+          </ul>
+          <p><strong>Requirements:</strong> React, TypeScript, 3+ years experience</p>
+          <p>This is a test email sent via AWS SES.</p>
+          <p>Timestamp: ${new Date().toLocaleString()}</p>
+        `
+      };
+      
+      const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
+        body: emailPayload
       });
-    } catch (error) {
-      console.error('Test email failed:', error);
+      
+      if (error) {
+        console.error('❌ Email test error:', error);
+        toast.error('Failed to send job match email: ' + error.message);
+      } else if (data?.success) {
+        console.log('✅ Job match email sent successfully:', data);
+        toast.success(`Job match email sent successfully to ${testEmail}!`);
+      } else {
+        console.error('❌ Email function returned error:', data);
+        toast.error('Email test failed: ' + (data?.error || 'Unknown error'));
+      }
+    } catch (error: any) {
+      console.error('Job match email test error:', error);
+      toast.error('Failed to send job match email: ' + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -96,17 +145,13 @@ const EmailSystemTest = () => {
           </Button>
         </div>
 
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <h4 className="font-semibold text-blue-900 mb-2">Available Email Templates:</h4>
-          <ul className="text-sm text-blue-800 space-y-1">
-            <li>• <strong>welcome</strong> - Welcome new users</li>
-            <li>• <strong>new_connection</strong> - Connection requests</li>
-            <li>• <strong>job_opening</strong> - Job recommendations</li>
-            <li>• <strong>application_confirmation</strong> - Application confirmations</li>
-            <li>• <strong>invite_member</strong> - Team invitations</li>
-            <li>• <strong>password_reset</strong> - Password reset links</li>
-            <li>• <strong>interview_scheduled</strong> - Interview notifications</li>
-            <li>• <strong>monthly_digest</strong> - Monthly activity summary</li>
+        <div className="mt-6 p-4 bg-green-50 rounded-lg">
+          <h4 className="font-semibold text-green-900 mb-2">AWS SES Email Testing:</h4>
+          <ul className="text-sm text-green-800 space-y-1">
+            <li>• <strong>Welcome Email</strong> - Test user welcome message</li>
+            <li>• <strong>Job Match Email</strong> - Test job recommendation format</li>
+            <li>• Uses AWS SES for reliable email delivery</li>
+            <li>• Check console logs for detailed debugging info</li>
           </ul>
         </div>
       </CardContent>
