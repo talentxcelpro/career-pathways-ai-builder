@@ -22,31 +22,36 @@ export const EmailSystemTester = () => {
     setTesting(prev => ({ ...prev, smtp: true }));
     try {
       console.log('🧪 Testing SMTP configuration...');
+      console.log('🔗 Testing direct URL access...');
       
-      // First test simple function accessibility
-      console.log('🔍 Testing function accessibility...');
-      const { data: simpleTest, error: simpleError } = await supabase.functions.invoke('simple-email-test');
+      // Test with direct fetch to get better error information
+      const projectRef = 'dthlgsnakhoftinssokm';
+      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
       
-      if (simpleError) {
-        console.error('❌ Simple test failed:', simpleError);
-        throw new Error(`Functions not accessible: ${simpleError.message}`);
-      }
+      const url = `https://${projectRef}.supabase.co/functions/v1/test-ses-smtp`;
+      console.log('🎯 Testing URL:', url);
       
-      console.log('✅ Functions are accessible, testing SMTP config...');
-      
-      // Now test the actual SMTP configuration
-      const { data, error } = await supabase.functions.invoke('test-ses-smtp', {
+      const response = await fetch(url, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+          'Authorization': `Bearer ${anonKey}`,
+          'apikey': anonKey
+        },
+        body: JSON.stringify({})
       });
       
-      console.log('📨 SMTP Test Response:', { data, error });
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
       
-      if (error) {
-        console.error('❌ SMTP test error:', error);
-        throw new Error(`SMTP Test Failed: ${error.message}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Response error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText || 'Unknown error'}`);
       }
+      
+      const data = await response.json();
+      console.log('📨 SMTP Test Response:', data);
       
       setResults(prev => ({ ...prev, smtp: data }));
       
@@ -58,17 +63,27 @@ export const EmailSystemTester = () => {
       } else {
         toast({
           title: "⚠️ SMTP Configuration Issues", 
-          description: "Some SMTP credentials are missing. Please check your Supabase secrets.",
+          description: `Status: ${data?.status || 'Unknown'}. Check Supabase secrets.`,
           variant: "destructive"
         });
       }
     } catch (error: any) {
-      console.error('SMTP test error:', error);
+      console.error('❌ SMTP test error:', error);
       const errorMessage = error.message || 'Unknown error occurred';
       setResults(prev => ({ ...prev, smtp: { error: errorMessage } }));
+      
+      let description = errorMessage;
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+        description = 'Network error - Edge functions may not be deployed or accessible';
+      } else if (errorMessage.includes('404')) {
+        description = 'Function not found - May not be deployed yet';
+      } else if (errorMessage.includes('403') || errorMessage.includes('401')) {
+        description = 'Authentication error - Check API keys';
+      }
+      
       toast({
         title: "❌ SMTP Test Failed",
-        description: errorMessage,
+        description,
         variant: "destructive"
       });
     } finally {
