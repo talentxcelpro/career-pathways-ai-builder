@@ -159,13 +159,17 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('Template not found or error, using default:', templateError.message);
     }
 
-    // Send email via unified email service (better HTML handling)
+    // Send email via React Email service (perfect HTML rendering)
     const emailResponse = await supabase.functions.invoke('unified-email-service', {
       body: {
         to: email.recipient_email,
         subject: emailSubject,
-        html: emailHtml,
-        provider: 'ses', // Use Amazon SES
+        template: email.template_type,
+        templateData: {
+          candidate_name: email.recipient_name || 'User',
+          ...email.payload_data
+        },
+        provider: 'react-email', // Use React Email for perfect rendering
         priority: 'normal'
       }
     });

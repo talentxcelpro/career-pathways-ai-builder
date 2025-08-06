@@ -136,6 +136,8 @@ const handler = async (req: Request): Promise<Response> => {
 async function sendWithProvider(provider: string, { to, subject, html, template, templateData }: any): Promise<EmailResponse> {
   if (provider === 'resend') {
     return await sendWithResend(to, subject, html, template, templateData);
+  } else if (provider === 'react-email') {
+    return await sendWithReactEmail(to, subject, template, templateData);
   } else if (provider === 'ses') {
     return await sendWithSES(to, subject, html, template, templateData);
   } else {
@@ -246,6 +248,47 @@ async function sendWithSES(to: string, subject: string, html: string, template?:
     };
   } catch (error) {
     console.error('SES SMTP Error:', error);
+    throw error;
+  }
+}
+
+async function sendWithReactEmail(to: string, subject: string, template: string, templateData?: any): Promise<EmailResponse> {
+  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+  if (!RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY not configured for React Email');
+  }
+
+  try {
+    // Create the Supabase client and call the React Email function directly
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+    
+    const response = await supabase.functions.invoke('send-email-react', {
+      body: {
+        to: to,
+        subject: subject,
+        template: template,
+        data: templateData || {}
+      }
+    });
+
+    if (response.error) {
+      throw new Error(`React Email Error: ${JSON.stringify(response.error)}`);
+    }
+    
+    if (!response.data?.success) {
+      throw new Error(`React Email Error: ${response.data?.error || 'Unknown error'}`);
+    }
+
+    return {
+      success: true,
+      messageId: response.data.messageId,
+      provider: 'react-email'
+    };
+  } catch (error) {
+    console.error('React Email Error:', error);
     throw error;
   }
 }
