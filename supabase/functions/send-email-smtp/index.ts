@@ -78,13 +78,14 @@ Deno.serve(async (req) => {
 
     console.log('✉️ Sending email...');
 
-    // Send the email
+    // Send the email with proper HTML content
     await client.send({
       from: from,
       to: to,
       subject: subject,
-      content: html,
       html: html,
+      // Only set plain text content if different from HTML
+      ...(html && { content: undefined })
     });
 
     console.log('📤 Closing SMTP connection...');
