@@ -218,19 +218,25 @@ async function sendWithSES(to: string, subject: string, html: string, template?:
 
   // For Deno environment, we'll use a simple SMTP implementation
   try {
-    // Use native Deno SMTP (simplified approach for SES)
-    const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/send-email-smtp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    // Create the Supabase client and call the SMTP function directly
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+    
+    const response = await supabase.functions.invoke('send-email-smtp', {
+      body: {
         ...emailData,
         smtp: SES_CONFIG
-      })
+      }
     });
 
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Amazon SES Error: ${error}`);
+    if (response.error) {
+      throw new Error(`Amazon SES Error: ${JSON.stringify(response.error)}`);
+    }
+    
+    if (!response.data?.success) {
+      throw new Error(`Amazon SES Error: ${response.data?.error || 'Unknown error'}`);
     }
 
     return {
