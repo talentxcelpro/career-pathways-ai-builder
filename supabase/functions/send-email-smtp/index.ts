@@ -78,14 +78,15 @@ Deno.serve(async (req) => {
 
     console.log('✉️ Sending email...');
 
-    // Send the email with proper HTML content
+    // Send the email with proper HTML content - force raw HTML mode
     await client.send({
       from: from,
       to: to,
       subject: subject,
       html: html,
-      content: undefined,
+      content: undefined, // Ensure no text content that could trigger quoted-printable
       headers: {
+        'MIME-Version': '1.0',
         'Content-Transfer-Encoding': '8bit'
       }
     });
