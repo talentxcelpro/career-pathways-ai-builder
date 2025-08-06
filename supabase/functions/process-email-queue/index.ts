@@ -99,8 +99,8 @@ const handler = async (req: Request): Promise<Response> => {
       // Try to get template from database
       const { data: template } = await supabase
         .from('email_templates')
-        .select('subject_template, html_template')
-        .eq('template_name', email.trigger_type)
+        .select('subject, html_template')
+        .eq('template_type', email.trigger_type)
         .eq('is_active', true)
         .single();
 
@@ -121,7 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
         };
 
         // Simple template replacement (replace {{variable}} with values)
-        emailSubject = template.subject_template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+        emailSubject = template.subject.replace(/\{\{(\w+)\}\}/g, (match, key) => {
           return defaultData[key] || match;
         });
 
