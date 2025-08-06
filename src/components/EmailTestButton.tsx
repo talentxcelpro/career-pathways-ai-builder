@@ -21,7 +21,7 @@ export const EmailTestButton = () => {
       console.log('📧 Email payload:', emailPayload);
       console.log('📏 Payload size:', JSON.stringify(emailPayload).length, 'bytes');
       
-      // Use Supabase client to ensure proper authentication
+      // Use the primary AWS SES function 
       const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
         body: emailPayload
       });

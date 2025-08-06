@@ -10,7 +10,7 @@ const corsHeaders = {
 
 // Initialize AWS SES Client
 const ses = new SESClient({
-  region: "ap-south-1", // Mumbai region for best performance in India
+  region: Deno.env.get('AWS_REGION') || "eu-north-1", // Use environment variable with fallback
   credentials: {
     accessKeyId: Deno.env.get("SES_ACCESS_KEY_ID")!,
     secretAccessKey: Deno.env.get("SES_SECRET_ACCESS_KEY")!,
@@ -98,11 +98,20 @@ serve(async (req) => {
       })
     }
     
-    // Validate required fields
-    if (!to || !subject || !html) {
-      console.log('❌ Missing required fields: to, subject, html');
+    // Validate required fields with detailed feedback
+    const missingFields = [];
+    if (!to) missingFields.push('to');
+    if (!subject) missingFields.push('subject');
+    if (!html) missingFields.push('html');
+    
+    if (missingFields.length > 0) {
+      console.error(`❌ Missing required fields: ${missingFields.join(', ')}`);
       return new Response(
-        JSON.stringify({ success: false, error: 'Missing required fields: to, subject, html' }),
+        JSON.stringify({ 
+          success: false, 
+          error: `Missing required fields: ${missingFields.join(', ')}`,
+          received: { to: !!to, subject: !!subject, html: !!html }
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
