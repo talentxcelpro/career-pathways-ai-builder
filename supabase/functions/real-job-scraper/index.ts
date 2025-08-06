@@ -249,8 +249,23 @@ serve(async (req) => {
     const { 
       limit = 100, 
       jobType = 'mixed',
-      sources = ['government', 'private', 'international']
+      sources = ['government', 'private', 'international'],
+      healthCheck = false
     } = await req.json();
+
+    // Handle health check
+    if (healthCheck) {
+      console.log('🏥 Health check request received')
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'Job scraper function is healthy',
+        healthCheck: true,
+        timestamp: new Date().toISOString()
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
 
     console.log(`📊 Scraping ${limit} jobs of type: ${jobType}`);
     

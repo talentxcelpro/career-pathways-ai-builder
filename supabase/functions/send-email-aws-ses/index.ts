@@ -31,6 +31,7 @@ interface EmailRequest {
   templateData?: Record<string, any>;
   priority?: 'high' | 'medium' | 'low';
   trackingPixel?: boolean;
+  dryRun?: boolean;
 }
 
 serve(async (req) => {
@@ -42,9 +43,60 @@ serve(async (req) => {
   }
 
   try {
-    console.log('📧 Processing email request via AWS SES...');
+    console.log('📧 Processing email request via AWS SES...')
+    console.log('📊 Request method:', req.method)
+    console.log('📊 Request headers:', Object.fromEntries(req.headers.entries()))
     
-    const { to, subject, html, template, templateData, priority = 'medium', trackingPixel = true }: EmailRequest = await req.json();
+    const requestBody = await req.text()
+    console.log('📏 Request body size:', requestBody.length, 'bytes')
+    console.log('📄 Raw request body:', requestBody)
+    
+    // Validate request body is not empty
+    if (!requestBody || requestBody.trim() === '') {
+      console.error('❌ Empty request body received')
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Empty request body',
+        details: 'No email data provided'
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    // Parse JSON with error handling
+    let emailRequest: EmailRequest
+    try {
+      emailRequest = JSON.parse(requestBody)
+    } catch (parseError) {
+      console.error('❌ JSON parsing failed:', parseError)
+      console.error('❌ Failed body content:', requestBody)
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Invalid JSON in request body',
+        details: parseError.message,
+        receivedBody: requestBody.substring(0, 100)
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    const { to, subject, html, template, templateData, priority = 'medium', trackingPixel = true, dryRun = false } = emailRequest
+    
+    // Handle dry run for health checks
+    if (dryRun) {
+      console.log('🧪 Dry run mode - skipping actual email send')
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'Dry run successful - email function is healthy',
+        dryRun: true,
+        provider: 'aws_ses'
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
     
     // Validate required fields
     if (!to || !subject || !html) {

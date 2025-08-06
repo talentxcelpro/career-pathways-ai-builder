@@ -33,8 +33,7 @@ serve(async (req) => {
     const { data: jobs, error: jobsError } = await supabase
       .from('jobs')
       .select('id, seo_slug, updated_at, title, location, company_name')
-      .eq('is_active', true)
-      .eq('job_status', 'open')
+      .eq('status', 'active')
       .not('seo_slug', 'is', null)
       .order('updated_at', { ascending: false })
       .range(offset, offset + limit - 1)

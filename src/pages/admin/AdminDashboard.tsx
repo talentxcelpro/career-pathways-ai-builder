@@ -15,6 +15,7 @@ import ProfileReminderEmailSender from '@/components/admin/ProfileReminderEmailS
 import { useAdminStats } from '@/hooks/useAdminStats';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
+import { SystemHealthDashboard } from '@/components/admin/SystemHealthDashboard';
 
 const AdminDashboard = () => {
   const { data: adminStats, isLoading: statsLoading } = useAdminStats();
@@ -71,6 +72,9 @@ const AdminDashboard = () => {
         <div className="lg:col-span-2">
           <EmailQueueManager />
         </div>
+        
+        {/* System Health Monitoring */}
+        <SystemHealthDashboard />
       </div>
     </UnifiedAdminLayout>
   );

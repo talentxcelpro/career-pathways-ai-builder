@@ -33,8 +33,7 @@ serve(async (req) => {
       const { count: totalJobs } = await supabase
         .from('jobs')
         .select('*', { count: 'exact', head: true })
-        .eq('is_active', true)
-        .eq('job_status', 'open')
+        .eq('status', 'active')
 
       const URLS_PER_SITEMAP = 50000
       const totalJobSitemaps = Math.ceil((totalJobs || 0) / URLS_PER_SITEMAP)
@@ -68,8 +67,7 @@ serve(async (req) => {
       const { data: jobs, error: jobsError } = await supabase
         .from('jobs')
         .select('id, seo_slug, updated_at, title, location, company_name')
-        .eq('is_active', true)
-        .eq('job_status', 'open')
+        .eq('status', 'active')
         .not('seo_slug', 'is', null)
         .order('updated_at', { ascending: false })
         .range(offset, offset + URLS_PER_SITEMAP - 1)
@@ -120,8 +118,7 @@ ${jobUrls.map(url => `  <url>
     const { data: jobs, error: jobsError } = await supabase
       .from('jobs')
       .select('id, seo_slug, updated_at, title, location, company_name')
-      .eq('is_active', true)
-      .eq('job_status', 'open')
+      .eq('status', 'active')
       .not('seo_slug', 'is', null)
       .order('updated_at', { ascending: false })
       .limit(10000) // Prevent oversized sitemaps
