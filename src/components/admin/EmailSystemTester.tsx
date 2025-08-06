@@ -23,7 +23,18 @@ export const EmailSystemTester = () => {
     try {
       console.log('🧪 Testing SMTP configuration...');
       
-      // Use supabase.functions.invoke instead of direct fetch
+      // First test simple function accessibility
+      console.log('🔍 Testing function accessibility...');
+      const { data: simpleTest, error: simpleError } = await supabase.functions.invoke('simple-email-test');
+      
+      if (simpleError) {
+        console.error('❌ Simple test failed:', simpleError);
+        throw new Error(`Functions not accessible: ${simpleError.message}`);
+      }
+      
+      console.log('✅ Functions are accessible, testing SMTP config...');
+      
+      // Now test the actual SMTP configuration
       const { data, error } = await supabase.functions.invoke('test-ses-smtp', {
         headers: {
           'Content-Type': 'application/json',
@@ -33,12 +44,8 @@ export const EmailSystemTester = () => {
       console.log('📨 SMTP Test Response:', { data, error });
       
       if (error) {
-        console.error('❌ Supabase invoke error:', error);
-        // Check if it's a connection error
-        if (error.message?.includes('Failed to send a request')) {
-          throw new Error('Edge function not accessible. Please ensure SMTP secrets are configured and function is deployed.');
-        }
-        throw new Error(`Function Error: ${error.message}`);
+        console.error('❌ SMTP test error:', error);
+        throw new Error(`SMTP Test Failed: ${error.message}`);
       }
       
       setResults(prev => ({ ...prev, smtp: data }));
@@ -51,7 +58,7 @@ export const EmailSystemTester = () => {
       } else {
         toast({
           title: "⚠️ SMTP Configuration Issues", 
-          description: "Some SMTP credentials are missing. Please set SMTP secrets in Supabase.",
+          description: "Some SMTP credentials are missing. Please check your Supabase secrets.",
           variant: "destructive"
         });
       }
