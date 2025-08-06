@@ -16,6 +16,7 @@ interface EmailTemplate {
   template_type: string;
   subject: string;
   content: string;
+  html_template?: string;
   is_active: boolean;
 }
 
@@ -31,6 +32,7 @@ export const EmailTemplateManager = () => {
     template_type: 'notification',
     subject: '',
     content: '',
+    html_template: '',
     is_active: true
   });
 
@@ -43,7 +45,7 @@ export const EmailTemplateManager = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('email_templates')
-        .select('id, name, template_type, subject, content, is_active')
+        .select('id, name, template_type, subject, content, html_template, is_active')
         .order('template_type', { ascending: true });
 
       if (error) throw error;
@@ -83,6 +85,7 @@ export const EmailTemplateManager = () => {
             template_type: formData.template_type,
             subject: formData.subject,
             content: formData.content,
+            html_template: formData.html_template,
             is_active: formData.is_active
           }]);
 
@@ -145,6 +148,7 @@ export const EmailTemplateManager = () => {
       template_type: 'notification',
       subject: '',
       content: '',
+      html_template: '',
       is_active: true
     });
   };
@@ -156,6 +160,7 @@ export const EmailTemplateManager = () => {
       template_type: template.template_type,
       subject: template.subject,
       content: template.content,
+      html_template: template.html_template || '',
       is_active: template.is_active
     });
     setIsEditing(true);
@@ -319,15 +324,30 @@ export const EmailTemplateManager = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="content">HTML Template</Label>
+                  <Label htmlFor="content">Simple Content (Optional)</Label>
                   <Textarea
                     id="content"
                     value={formData.content}
                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    placeholder="HTML content with {{placeholders}}"
-                    rows={8}
+                    placeholder="Simple text content"
+                    rows={3}
                     className="font-mono text-sm"
                   />
+                </div>
+
+                <div>
+                  <Label htmlFor="html_template">Full HTML Template</Label>
+                  <Textarea
+                    id="html_template"
+                    value={formData.html_template}
+                    onChange={(e) => setFormData({ ...formData, html_template: e.target.value })}
+                    placeholder="Full HTML content with {{placeholders}} - including <!DOCTYPE html>, <html>, <head>, etc."
+                    rows={20}
+                    className="font-mono text-xs"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Use {"{"}{"{"} candidate_name {"}"} {"}"} for dynamic values. This field supports full HTML email templates.
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -375,10 +395,16 @@ export const EmailTemplateManager = () => {
                 </div>
 
                 <div>
-                  <Label>HTML Preview</Label>
+                  <Label>HTML Template Preview</Label>
                   <div className="bg-muted p-2 rounded text-xs font-mono max-h-40 overflow-y-auto">
-                    {selectedTemplate.content.substring(0, 500)}...
+                    {(selectedTemplate.html_template || selectedTemplate.content).substring(0, 1000)}
+                    {(selectedTemplate.html_template || selectedTemplate.content).length > 1000 ? '...' : ''}
                   </div>
+                  {selectedTemplate.html_template && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Rich HTML template with {selectedTemplate.html_template.length} characters
+                    </p>
+                  )}
                 </div>
 
                 <Button
