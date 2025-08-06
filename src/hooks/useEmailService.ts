@@ -48,33 +48,33 @@ export const useEmailService = (): EmailServiceHook => {
       }
       
       try {
-        // First try unified email service
-        const { data, error } = await supabase.functions.invoke('unified-email-service', {
+        // Use AWS SES email service directly
+        const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
           body: {
             to: emailData.to,
             subject: emailData.subject,
             html: html,
             template: emailData.template,
             templateData: emailData.data,
-            priority: emailData.immediate ? 'high' : 'medium',
-            provider: 'auto'
+            priority: emailData.immediate ? 'high' : 'medium'
           },
         });
 
-        console.log('Unified email service response:', { data, error });
+        console.log('AWS SES email service response:', { data, error });
 
         if (error) {
-          console.log('Unified email service failed, falling back to database queue');
+          console.log('AWS SES email service failed, falling back to database queue');
           throw error;
         }
 
         if (data?.success) {
-          const providerMsg = data.fallback ? `via ${data.provider} (fallback)` : `via ${data.provider}`;
-          toast.success(`Email sent successfully ${providerMsg}!`);
+          toast.success(`Email sent successfully via Amazon SES!`);
           return true;
+        } else {
+          throw new Error(data?.error || 'AWS SES failed');
         }
       } catch (edgeFunctionError) {
-        console.log('Edge function error:', edgeFunctionError);
+        console.log('AWS SES Edge function error:', edgeFunctionError);
         
         // Fallback to database queue
         console.log('Using database queue fallback');

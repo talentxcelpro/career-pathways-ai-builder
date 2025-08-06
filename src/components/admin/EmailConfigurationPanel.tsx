@@ -4,10 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Save, Mail, Settings, Send, Shield, Cloud } from "lucide-react";
+import { Loader2, Save, Mail, Settings, Send, Shield } from "lucide-react";
 
 interface EmailConfigSetting {
   id: string;
@@ -22,7 +21,6 @@ export const EmailConfigurationPanel = () => {
   const [saving, setSaving] = useState(false);
   const [testEmailSending, setTestEmailSending] = useState(false);
   const [testEmail, setTestEmail] = useState('');
-  const [selectedProvider, setSelectedProvider] = useState<'aws_ses' | 'resend'>('aws_ses');
   const { toast } = useToast();
 
   const settingLabels: Record<string, { label: string; description: string; type: 'input' | 'textarea' }> = {
@@ -140,67 +138,57 @@ export const EmailConfigurationPanel = () => {
 
     setTestEmailSending(true);
     try {
-      console.log('🧪 Testing email system with provider:', selectedProvider);
+      console.log('🧪 Testing Amazon SES email system');
       
-      if (selectedProvider === 'aws_ses') {
-        // Use AWS SES function
-        const emailPayload = {
-          to: testEmail,
-          subject: 'TalentXcel Email Configuration Test',
-          html: `
-            <h2>✅ Email Configuration Test</h2>
+      const emailPayload = {
+        to: testEmail,
+        subject: 'TalentXcel Amazon SES Configuration Test',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">✅ Amazon SES Configuration Test</h2>
             <p>Hello,</p>
-            <p>This is a test email from TalentXcel's email configuration panel.</p>
-            <p><strong>Provider:</strong> Amazon SES</p>
-            <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+            <p>This is a test email from TalentXcel's Amazon SES email system.</p>
+            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <h3>Configuration Details:</h3>
+              <ul>
+                <li><strong>Provider:</strong> Amazon SES</li>
+                <li><strong>Region:</strong> eu-north-1 (Stockholm)</li>
+                <li><strong>Function:</strong> send-email-aws-ses</li>
+                <li><strong>Timestamp:</strong> ${new Date().toLocaleString()}</li>
+              </ul>
+            </div>
             <p>If you received this email, your Amazon SES configuration is working correctly!</p>
-            <hr>
-            <p><small>This test was sent from the TalentXcel Admin Panel</small></p>
-          `
-        };
-        
-        console.log('📧 AWS SES Email payload:', emailPayload);
-        
-        const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
-          body: emailPayload
-        });
-        
-        console.log('📨 AWS SES Response:', { data, error });
-        
-        if (error) {
-          console.error('❌ AWS SES Error:', error);
-          throw error;
-        }
-        
-        if (data?.success) {
-          console.log('✅ AWS SES Email sent successfully:', data);
-          toast({
-            title: "Success",
-            description: `Test email sent successfully via AWS SES to ${testEmail}. Response time: ${data.responseTime}ms`,
-          });
-        } else {
-          console.error('❌ AWS SES function returned error:', data);
-          throw new Error(data?.error || 'AWS SES test failed');
-        }
-      } else {
-        // Use Resend function (fallback)
-        const { error } = await supabase.functions.invoke('send-automated-email', {
-          body: {
-            template_name: 'welcome',
-            recipient_email: testEmail,
-            recipient_name: 'Test User',
-            template_data: {
-              first_name: 'Test'
-            }
-          }
-        });
-
-        if (error) throw error;
-        
+            <hr style="margin: 30px 0;">
+            <p style="color: #6b7280; font-size: 14px;">
+              <strong>TalentXcel Email Service</strong><br>
+              This test was sent from the TalentXcel Admin Panel
+            </p>
+          </div>
+        `
+      };
+      
+      console.log('📧 AWS SES Email payload:', emailPayload);
+      
+      const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
+        body: emailPayload
+      });
+      
+      console.log('📨 AWS SES Response:', { data, error });
+      
+      if (error) {
+        console.error('❌ AWS SES Error:', error);
+        throw error;
+      }
+      
+      if (data?.success) {
+        console.log('✅ AWS SES Email sent successfully:', data);
         toast({
           title: "Success",
-          description: `Test email sent successfully via Resend to ${testEmail}`,
+          description: `Test email sent successfully via Amazon SES to ${testEmail}. Response time: ${data.responseTime}ms`,
         });
+      } else {
+        console.error('❌ AWS SES function returned error:', data);
+        throw new Error(data?.error || 'Amazon SES test failed');
       }
       
       setTestEmail('');
@@ -234,75 +222,36 @@ export const EmailConfigurationPanel = () => {
 
   return (
     <div className="space-y-6">
-      {/* Email Provider Selection */}
+      {/* Amazon SES Configuration */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Cloud className="h-5 w-5" />
-            Email Provider Configuration
+            <Shield className="h-5 w-5" />
+            Amazon SES Configuration
           </CardTitle>
           <CardDescription>
-            Configure your email service provider for sending automated emails
+            TalentXcel uses Amazon SES for reliable email delivery
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={selectedProvider} onValueChange={(value) => setSelectedProvider(value as 'aws_ses' | 'resend')}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="aws_ses" className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Amazon SES
-              </TabsTrigger>
-              <TabsTrigger value="resend" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                Resend
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="aws_ses" className="mt-6">
-              <div className="space-y-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-green-800 mb-2">Amazon SES Configuration</h4>
-                  <p className="text-sm text-green-700 mb-3">
-                    Your Amazon SES is configured via Supabase Edge Function secrets. Current status:
-                  </p>
-                  <ul className="text-sm text-green-700 space-y-1">
-                    <li>• <strong>Region:</strong> eu-north-1 (Stockholm)</li>
-                    <li>• <strong>Service:</strong> Amazon Simple Email Service</li>
-                    <li>• <strong>Function:</strong> send-email-aws-ses</li>
-                    <li>• <strong>Status:</strong> ✅ Configured and Ready</li>
-                  </ul>
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
-                    <p className="text-sm text-blue-700">
-                      <strong>Note:</strong> To update AWS SES credentials, go to Supabase Dashboard → 
-                      Edge Functions → Secrets and update SES_ACCESS_KEY_ID and SES_SECRET_ACCESS_KEY.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="resend" className="mt-6">
-              <div className="space-y-4">
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-orange-800 mb-2">Resend Configuration</h4>
-                  <p className="text-sm text-orange-700 mb-3">
-                    Resend is configured as a fallback email provider. To use Resend:
-                  </p>
-                  <ul className="text-sm text-orange-700 space-y-1">
-                    <li>• Set up your Resend API key in Supabase secrets</li>
-                    <li>• Verify your domain in Resend dashboard</li>
-                    <li>• Configure DNS records for authentication</li>
-                  </ul>
-                  <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
-                    <p className="text-sm text-yellow-700">
-                      <strong>Recommendation:</strong> Use Amazon SES for better deliverability and lower costs 
-                      for high-volume email sending.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <h4 className="font-semibold text-green-800 mb-2">✅ Amazon SES Active</h4>
+            <p className="text-sm text-green-700 mb-3">
+              Your Amazon SES is configured and ready for email delivery. Configuration details:
+            </p>
+            <ul className="text-sm text-green-700 space-y-1">
+              <li>• <strong>Region:</strong> eu-north-1 (Stockholm)</li>
+              <li>• <strong>Service:</strong> Amazon Simple Email Service</li>
+              <li>• <strong>Function:</strong> send-email-aws-ses</li>
+              <li>• <strong>Status:</strong> ✅ Active and Ready</li>
+            </ul>
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+              <p className="text-sm text-blue-700">
+                <strong>Credentials:</strong> Amazon SES credentials are securely stored in Supabase Edge Function secrets.
+                To update: Supabase Dashboard → Edge Functions → Secrets → Update SES_ACCESS_KEY_ID and SES_SECRET_ACCESS_KEY.
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -372,10 +321,10 @@ export const EmailConfigurationPanel = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Send className="h-5 w-5" />
-            Test Email System
+            Test Amazon SES
           </CardTitle>
           <CardDescription>
-            Send a test email to verify your {selectedProvider === 'aws_ses' ? 'Amazon SES' : 'Resend'} configuration
+            Send a test email to verify your Amazon SES configuration
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -403,17 +352,15 @@ export const EmailConfigurationPanel = () => {
               </Button>
             </div>
             <p className="text-sm text-muted-foreground">
-              Send a test email via {selectedProvider === 'aws_ses' ? 'Amazon SES' : 'Resend'} to verify your configuration.
+              Send a test email via Amazon SES to verify your configuration.
               Check browser console for detailed debugging information.
             </p>
-            {selectedProvider === 'aws_ses' && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-sm text-blue-700">
-                  <strong>AWS SES Testing:</strong> This will use your configured AWS SES credentials 
-                  and send via the send-email-aws-ses Edge Function.
-                </p>
-              </div>
-            )}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-blue-700">
+                <strong>Amazon SES Testing:</strong> This will use your configured AWS SES credentials 
+                and send via the send-email-aws-ses Edge Function with full debugging enabled.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

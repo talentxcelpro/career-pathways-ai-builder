@@ -17,7 +17,7 @@ const EmailSystemTest = () => {
 
     setIsLoading(true);
     try {
-      console.log('🧪 Testing AWS SES welcome email to:', testEmail);
+      console.log('🧪 Testing Amazon SES welcome email to:', testEmail);
       
       const emailPayload = {
         to: testEmail,
@@ -31,7 +31,7 @@ const EmailSystemTest = () => {
         `
       };
       
-      console.log('🧪 Testing AWS SES welcome email to:', testEmail);
+      console.log('🧪 Testing Amazon SES welcome email to:', testEmail);
       console.log('📧 Email payload:', emailPayload);
       console.log('📏 Payload size:', JSON.stringify(emailPayload).length, 'bytes');
       
@@ -67,7 +67,7 @@ const EmailSystemTest = () => {
 
     setIsLoading(true);
     try {
-      console.log('🧪 Testing AWS SES job match email to:', testEmail);
+      console.log('🧪 Testing Amazon SES job match email to:', testEmail);
       
       const emailPayload = {
         to: testEmail,
@@ -88,7 +88,7 @@ const EmailSystemTest = () => {
         `
       };
       
-      console.log('🧪 Testing AWS SES job match email to:', testEmail);
+      console.log('🧪 Testing Amazon SES job match email to:', testEmail);
       console.log('📧 Email payload:', emailPayload);
       console.log('📏 Payload size:', JSON.stringify(emailPayload).length, 'bytes');
       
@@ -119,9 +119,9 @@ const EmailSystemTest = () => {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>AWS SES Email System Test</CardTitle>
+        <CardTitle>Amazon SES Email System Test</CardTitle>
         <CardDescription>
-          Test your AWS SES email integration with detailed debugging
+          Test your Amazon SES email integration with detailed debugging
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -158,11 +158,11 @@ const EmailSystemTest = () => {
         </div>
 
         <div className="mt-6 p-4 bg-green-50 rounded-lg">
-          <h4 className="font-semibold text-green-900 mb-2">AWS SES Email Testing:</h4>
+          <h4 className="font-semibold text-green-900 mb-2">Amazon SES Email Testing:</h4>
           <ul className="text-sm text-green-800 space-y-1">
             <li>• <strong>Welcome Email</strong> - Test user welcome message</li>
             <li>• <strong>Job Match Email</strong> - Test job recommendation format</li>
-            <li>• Uses AWS SES for reliable email delivery</li>
+            <li>• Uses Amazon SES exclusively for reliable email delivery</li>
             <li>• Check console logs for detailed debugging info</li>
           </ul>
         </div>
