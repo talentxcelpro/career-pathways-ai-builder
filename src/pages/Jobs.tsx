@@ -604,9 +604,6 @@ const Jobs = () => {
       {/* Mock Interview Banner - Moved to bottom */}
       <JobsBanner />
 
-      {/* Browse by Categories */}
-      <JobCategories />
-
       {/* Trust & FOMO Section */}
       <TrustSection />
 
