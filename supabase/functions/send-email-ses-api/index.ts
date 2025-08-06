@@ -77,9 +77,9 @@ async function createAWSSignature(
 }
 
 async function sendViaSESAPI(emailData: EmailRequest) {
-  const region = Deno.env.get('AWS_REGION') || 'ap-south-1';
-  const accessKey = Deno.env.get('AWS_ACCESS_KEY_ID');
-  const secretKey = Deno.env.get('AWS_SECRET_ACCESS_KEY');
+  const region = Deno.env.get('AWS_REGION') || 'eu-north-1';
+  const accessKey = Deno.env.get('SES_ACCESS_KEY_ID');
+  const secretKey = Deno.env.get('SES_SECRET_ACCESS_KEY');
   
   if (!accessKey || !secretKey) {
     throw new Error('AWS credentials not configured');
