@@ -1,6 +1,5 @@
 // AWS SES Email Sending Function for TalentXcel
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { SESClient, SendEmailCommand } from "npm:@aws-sdk/client-ses";
+import { SESClient, SendEmailCommand } from "npm:@aws-sdk/client-ses@3.490.0";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
@@ -9,13 +8,20 @@ const corsHeaders = {
 };
 
 // Initialize AWS SES Client
-const ses = new SESClient({
-  region: Deno.env.get('AWS_REGION') || "eu-north-1", // Use environment variable with fallback
-  credentials: {
-    accessKeyId: Deno.env.get("SES_ACCESS_KEY_ID")!,
-    secretAccessKey: Deno.env.get("SES_SECRET_ACCESS_KEY")!,
-  }
-});
+let sesClient: SESClient;
+
+try {
+  sesClient = new SESClient({
+    region: Deno.env.get('AWS_REGION') || "eu-north-1",
+    credentials: {
+      accessKeyId: Deno.env.get("SES_ACCESS_KEY_ID") || "",
+      secretAccessKey: Deno.env.get("SES_SECRET_ACCESS_KEY") || "",
+    }
+  });
+  console.log('✅ SES Client initialized successfully');
+} catch (error) {
+  console.error('❌ Failed to initialize SES client:', error);
+}
 
 // Initialize Supabase client for logging
 const supabase = createClient(
@@ -34,7 +40,7 @@ interface EmailRequest {
   dryRun?: boolean;
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   console.log('🚀 AWS SES Email Function Starting...');
   
   // Handle CORS preflight requests
@@ -43,11 +49,11 @@ serve(async (req) => {
   }
 
   try {
-    console.log('📧 Processing email request via AWS SES...')
-    console.log('📊 Request method:', req.method)
-    console.log('📊 Request headers:', Object.fromEntries(req.headers.entries()))
+    console.log('📧 Processing email request via AWS SES...');
+    console.log('📊 Request method:', req.method);
+    console.log('📊 Request headers:', Object.fromEntries(req.headers.entries()));
     
-    const requestBody = await req.text()
+    const requestBody = await req.text();
     console.log('📏 Request body size:', requestBody.length, 'bytes')
     console.log('📄 Raw request body:', requestBody)
     
@@ -179,9 +185,14 @@ serve(async (req) => {
     console.log('📤 Sending email via AWS SES to:', to);
     console.log('📋 Subject:', subject);
     
+    // Check if SES client is initialized
+    if (!sesClient) {
+      throw new Error('SES client not initialized. Check AWS credentials.');
+    }
+    
     // Send email via AWS SES
     const startTime = Date.now();
-    const result = await ses.send(command);
+    const result = await sesClient.send(command);
     const responseTime = Date.now() - startTime;
     
     console.log('✅ Email sent successfully via AWS SES');
