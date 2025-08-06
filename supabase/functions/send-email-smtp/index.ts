@@ -1,3 +1,5 @@
+import { SmtpClient } from "https://deno.land/x/smtp/mod.ts";
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -10,7 +12,7 @@ interface EmailRequest {
   html: string;
   messageId?: string;
   headers?: Record<string, string>;
-  smtp: {
+  smtp?: {
     host: string;
     port: string;
     user: string;
@@ -36,7 +38,7 @@ Deno.serve(async (req) => {
     }
 
     const emailData: EmailRequest = JSON.parse(requestBody);
-    const { to, from, subject, html, messageId, headers, smtp } = emailData;
+    const { to, from, subject, html, messageId } = emailData;
 
     console.log(`📧 Sending email via SMTP to: ${to}`);
 
@@ -45,43 +47,54 @@ Deno.serve(async (req) => {
       throw new Error('Missing required email fields: to, from, subject, html');
     }
 
-    if (!smtp || !smtp.host || !smtp.user || !smtp.pass) {
-      throw new Error('Missing SMTP configuration: host, user, pass are required');
+    // Get SMTP config from environment variables
+    const smtpConfig = {
+      host: Deno.env.get('SMTP_HOST'),
+      port: parseInt(Deno.env.get('SMTP_PORT') || '587'),
+      user: Deno.env.get('SMTP_USER'),
+      pass: Deno.env.get('SMTP_PASS'),
+    };
+
+    if (!smtpConfig.host || !smtpConfig.user || !smtpConfig.pass) {
+      throw new Error('Missing SMTP configuration in environment variables');
     }
 
-    // Dynamically import nodemailer
-    const nodemailer = await import('npm:nodemailer@6.9.8');
+    console.log('🔧 Creating SMTP client...');
+    console.log('📡 SMTP Host:', smtpConfig.host);
+    console.log('📡 SMTP Port:', smtpConfig.port);
 
-    console.log('🔧 Creating SMTP transporter...');
-    const transporter = nodemailer.default.createTransporter({
-      host: smtp.host,
-      port: parseInt(smtp.port) || 587,
-      secure: false, // Use STARTTLS
-      auth: {
-        user: smtp.user,
-        pass: smtp.pass,
-      },
-      debug: true,
-      logger: true,
+    const client = new SmtpClient();
+
+    // Connect to SMTP server with TLS
+    await client.connectTLS({
+      hostname: smtpConfig.host,
+      port: smtpConfig.port,
+      username: smtpConfig.user,
+      password: smtpConfig.pass,
     });
 
     console.log('✉️ Sending email...');
-    const info = await transporter.sendMail({
+
+    // Send the email
+    await client.send({
       from: from,
       to: to,
       subject: subject,
+      content: html,
       html: html,
-      messageId: messageId || crypto.randomUUID(),
-      headers: headers,
     });
 
-    console.log('✅ Email sent successfully:', info.messageId);
+    console.log('📤 Closing SMTP connection...');
+    await client.close();
+
+    const responseMessageId = messageId || crypto.randomUUID();
+    console.log('✅ Email sent successfully:', responseMessageId);
 
     return new Response(JSON.stringify({
       success: true,
-      messageId: info.messageId,
-      provider: 'smtp',
-      response: info.response
+      messageId: responseMessageId,
+      provider: 'smtp-deno',
+      timestamp: new Date().toISOString()
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
@@ -93,7 +106,8 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({
       success: false,
       error: error.message || 'Unknown error occurred',
-      stack: error.stack
+      stack: error.stack,
+      timestamp: new Date().toISOString()
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
