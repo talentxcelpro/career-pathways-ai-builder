@@ -21,7 +21,7 @@ export const EmailTestButton = () => {
       console.log('📧 Email payload:', emailPayload);
       console.log('📏 Payload size:', JSON.stringify(emailPayload).length, 'bytes');
       
-      // Use the working AWS SES function
+      // Use the working AWS SES function with correct payload format
       const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
         body: emailPayload
       });
