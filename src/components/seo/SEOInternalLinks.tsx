@@ -89,10 +89,10 @@ export const SEOInternalLinks = () => {
                 </Link>
               ))}
               <Link
-                to="/jobs/roles"
+                to="/jobs"
                 className="inline-flex items-center text-primary hover:text-primary/80 text-sm font-medium mt-2"
               >
-                View all roles →
+                View all jobs →
               </Link>
             </div>
           </div>
@@ -119,10 +119,10 @@ export const SEOInternalLinks = () => {
                 </Link>
               ))}
               <Link
-                to="/jobs/locations"
+                to="/jobs"
                 className="inline-flex items-center text-primary hover:text-primary/80 text-sm font-medium mt-2"
               >
-                View all cities →
+                View all jobs →
               </Link>
             </div>
           </div>
@@ -149,13 +149,24 @@ export const SEOInternalLinks = () => {
                 </Link>
               ))}
               <Link
-                to="/jobs/skills"
+                to="/jobs"
                 className="inline-flex items-center text-primary hover:text-primary/80 text-sm font-medium mt-2"
               >
-                View all skills →
+                View all jobs →
               </Link>
             </div>
           </div>
+        </div>
+        
+        {/* Main CTA to all jobs */}
+        <div className="text-center mt-8">
+          <Link
+            to="/jobs"
+            className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors duration-200"
+          >
+            Browse All Jobs
+            <span className="ml-2">→</span>
+          </Link>
         </div>
       </div>
     </section>
