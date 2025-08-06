@@ -6,7 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
   Play, StopCircle, RefreshCw, Eye, Building, MapPin, 
-  DollarSign, Calendar, ExternalLink, Sparkles, Building2 
+  DollarSign, Calendar, ExternalLink, Sparkles, Building2, 
+  Globe, Zap 
 } from 'lucide-react';
 
 
@@ -19,7 +20,9 @@ interface ScrapingStats {
 
 export const JobScraperControl = () => {
   const [isRunning, setIsRunning] = useState(false);
+  const [isAdzunaRunning, setIsAdzunaRunning] = useState(false);
   const [stats, setStats] = useState<ScrapingStats | null>(null);
+  const [adzunaStats, setAdzunaStats] = useState<ScrapingStats | null>(null);
   const [recentJobs, setRecentJobs] = useState<any[]>([]);
 
   const runJobScraper = async (limit = 100, jobType = 'mixed') => {
@@ -216,6 +219,59 @@ export const JobScraperControl = () => {
     }
   };
 
+  const runAdzunaImport = async (limit = 50, keywords = '', location = 'india') => {
+    setIsAdzunaRunning(true);
+    try {
+      toast.loading('🌐 Importing jobs from Adzuna API...', { id: 'adzuna' });
+      
+      const payload = { 
+        limit, 
+        keywords, 
+        location,
+        page: 1
+      };
+      
+      console.log('🌐 Adzuna import started:', payload);
+      
+      const { data, error } = await supabase.functions.invoke('adzuna-job-importer', {
+        body: payload
+      });
+      
+      if (error) {
+        console.error('❌ Adzuna import error:', error);
+        throw error;
+      }
+
+      if (!data || !data.success) {
+        throw new Error(data?.error || 'Adzuna import failed');
+      }
+
+      setAdzunaStats(data.stats || { total_scraped: 0, valid_jobs: 0, published_jobs: 0, next_run: new Date().toISOString() });
+      setRecentJobs(prev => [...(data.jobs || []), ...prev.slice(0, 10)]);
+      
+      const summary = data.summary || {};
+      toast.success(`✅ Imported ${summary.inserted || 0} jobs from Adzuna! (${summary.duplicates_skipped || 0} duplicates skipped)`, { 
+        id: 'adzuna' 
+      });
+
+    } catch (error) {
+      console.error('Adzuna import error:', error);
+      let errorMessage = 'Unknown error occurred';
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      toast.error(`❌ Adzuna import failed: ${errorMessage}`, { 
+        id: 'adzuna',
+        duration: 8000 
+      });
+    } finally {
+      setIsAdzunaRunning(false);
+    }
+  };
+
   const checkJobStats = async () => {
     try {
       const { data: jobCount } = await supabase
@@ -250,115 +306,226 @@ export const JobScraperControl = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-4">
-            <Button 
-              onClick={() => runJobScraper(200, 'mixed')} 
-              disabled={isRunning}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600"
-            >
-              {isRunning ? (
-                <>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  Generating Jobs...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  Generate 200 Mixed Jobs
-                </>
-              )}
-            </Button>
+          <div className="space-y-4">
+            {/* Adzuna API Import Section */}
+            <div className="p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-purple-50">
+              <h3 className="font-semibold mb-2 flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                Adzuna API Import (Real Jobs)
+              </h3>
+              <div className="flex gap-2 flex-wrap">
+                <Button 
+                  onClick={() => runAdzunaImport(100, 'developer', 'india')} 
+                  disabled={isAdzunaRunning}
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-blue-600"
+                  size="sm"
+                >
+                  {isAdzunaRunning ? (
+                    <>
+                      <RefreshCw className="h-3 w-3 animate-spin" />
+                      Importing...
+                    </>
+                  ) : (
+                    <>
+                      <Globe className="h-3 w-3" />
+                      100 Developer Jobs
+                    </>
+                  )}
+                </Button>
+                <Button 
+                  onClick={() => runAdzunaImport(50, 'data scientist', 'bangalore')} 
+                  disabled={isAdzunaRunning}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Zap className="h-3 w-3 mr-1" />
+                  50 Data Science
+                </Button>
+                <Button 
+                  onClick={() => runAdzunaImport(75, 'manager', 'mumbai')} 
+                  disabled={isAdzunaRunning}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Building className="h-3 w-3 mr-1" />
+                  75 Management
+                </Button>
+                <Button 
+                  onClick={() => runAdzunaImport(30, '', 'remote')} 
+                  disabled={isAdzunaRunning}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Globe className="h-3 w-3 mr-1" />
+                  30 Remote Jobs
+                </Button>
+              </div>
+            </div>
+
+            {/* Existing Scraper Section */}
+            <div className="p-4 border rounded-lg bg-gradient-to-r from-orange-50 to-red-50">
+              <h3 className="font-semibold mb-2 flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                AI Job Generation (Generated Jobs)
+              </h3>
+              <div className="flex gap-2 flex-wrap">
+                <Button 
+                  onClick={() => runJobScraper(200, 'mixed')} 
+                  disabled={isRunning}
+                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600"
+                  size="sm"
+                >
+                  {isRunning ? (
+                    <>
+                      <RefreshCw className="h-3 w-3 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-3 w-3" />
+                      200 Mixed Jobs
+                    </>
+                  )}
+                </Button>
             
-            <Button 
-              onClick={() => runJobScraper(100, 'government')} 
-              disabled={isRunning}
-              className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-blue-600"
-            >
-              {isRunning ? (
-                <>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  Running Govt Scraper...
-                </>
-              ) : (
-                <>
-                  <Building2 className="h-4 w-4" />
-                  Generate 100 Govt Jobs
-                </>
-              )}
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              onClick={() => runJobScraper(100, 'international')}
-              disabled={isRunning}
-              className="bg-gradient-to-r from-orange-500 to-red-500 text-white"
-            >
-              <Play className="h-4 w-4 mr-2" />
-              100 International Jobs
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              onClick={() => runJobScraper(50, 'mixed')}
-              disabled={isRunning}
-            >
-              <Play className="h-4 w-4 mr-2" />
-              Quick Test (50 Mixed)
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              onClick={checkJobStats}
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              Check Stats
-            </Button>
-            
-            <Button 
-              variant="secondary" 
-              onClick={testDirectCall}
-            >
-              🧪 Test Connectivity
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              onClick={async () => {
-                console.log('=== Supabase Client Debug ===');
-                console.log('Supabase client exists:', !!supabase);
-                console.log('Functions available:', !!supabase.functions);
+                <Button 
+                  onClick={() => runJobScraper(100, 'government')} 
+                  disabled={isRunning}
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-blue-600"
+                  size="sm"
+                >
+                  {isRunning ? (
+                    <>
+                      <RefreshCw className="h-3 w-3 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Building2 className="h-3 w-3" />
+                      100 Govt Jobs
+                    </>
+                  )}
+                </Button>
                 
-                const { data: { user }, error } = await supabase.auth.getUser();
-                console.log('Current user:', user?.id ? 'Authenticated' : 'Not authenticated');
-                console.log('User error:', error);
+                <Button 
+                  variant="outline" 
+                  onClick={() => runJobScraper(100, 'international')}
+                  disabled={isRunning}
+                  size="sm"
+                >
+                  <Play className="h-3 w-3 mr-1" />
+                  100 International
+                </Button>
                 
-                toast.info(`User: ${user?.id ? 'Authenticated' : 'Not authenticated'}`);
-              }}
-            >
-              🔍 Debug Info
-            </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => runJobScraper(50, 'mixed')}
+                  disabled={isRunning}
+                  size="sm"
+                >
+                  <Play className="h-3 w-3 mr-1" />
+                  Test (50 Mixed)
+                </Button>
+              </div>
+            </div>
+            
+            
+            {/* Control Actions */}
+            <div className="flex gap-2 flex-wrap mt-4">
+              <Button 
+                variant="outline" 
+                onClick={checkJobStats}
+                size="sm"
+              >
+                <Eye className="h-3 w-3 mr-1" />
+                Check Stats
+              </Button>
+              
+              <Button 
+                variant="secondary" 
+                onClick={testDirectCall}
+                size="sm"
+              >
+                🧪 Test Connectivity
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={async () => {
+                  console.log('=== Supabase Client Debug ===');
+                  console.log('Supabase client exists:', !!supabase);
+                  console.log('Functions available:', !!supabase.functions);
+                  
+                  const { data: { user }, error } = await supabase.auth.getUser();
+                  console.log('Current user:', user?.id ? 'Authenticated' : 'Not authenticated');
+                  console.log('User error:', error);
+                  
+                  toast.info(`User: ${user?.id ? 'Authenticated' : 'Not authenticated'}`);
+                }}
+                size="sm"
+              >
+                🔍 Debug Info
+              </Button>
+            </div>
           </div>
 
-          {stats && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-              <div className="text-center p-3 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{stats.total_scraped}</div>
-                <div className="text-sm text-blue-600">Total Scraped</div>
-              </div>
-              <div className="text-center p-3 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{stats.valid_jobs}</div>
-                <div className="text-sm text-green-600">Valid Jobs</div>
-              </div>
-              <div className="text-center p-3 bg-purple-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">{stats.published_jobs}</div>
-                <div className="text-sm text-purple-600">Published</div>
-              </div>
-              <div className="text-center p-3 bg-orange-50 rounded-lg">
-                <div className="text-sm text-orange-600">Next Run</div>
-                <div className="text-xs text-orange-600">
-                  {new Date(stats.next_run).toLocaleString()}
+          {(stats || adzunaStats) && (
+            <div className="space-y-4 mt-4">
+              {adzunaStats && (
+                <div>
+                  <h3 className="font-medium mb-2 flex items-center gap-2">
+                    <Globe className="h-4 w-4" />
+                    Adzuna API Stats
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center p-3 bg-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">{adzunaStats.total_scraped}</div>
+                      <div className="text-sm text-green-600">API Fetched</div>
+                    </div>
+                    <div className="text-center p-3 bg-blue-50 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">{adzunaStats.valid_jobs}</div>
+                      <div className="text-sm text-blue-600">Valid Jobs</div>
+                    </div>
+                    <div className="text-center p-3 bg-purple-50 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-600">{adzunaStats.published_jobs}</div>
+                      <div className="text-sm text-purple-600">Imported</div>
+                    </div>
+                    <div className="text-center p-3 bg-orange-50 rounded-lg">
+                      <div className="text-sm text-orange-600">Real Jobs</div>
+                      <div className="text-xs text-orange-600">Via Adzuna API</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
+              
+              {stats && (
+                <div>
+                  <h3 className="font-medium mb-2 flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    AI Generation Stats
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center p-3 bg-blue-50 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">{stats.total_scraped}</div>
+                      <div className="text-sm text-blue-600">Total Generated</div>
+                    </div>
+                    <div className="text-center p-3 bg-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">{stats.valid_jobs}</div>
+                      <div className="text-sm text-green-600">Valid Jobs</div>
+                    </div>
+                    <div className="text-center p-3 bg-purple-50 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-600">{stats.published_jobs}</div>
+                      <div className="text-sm text-purple-600">Published</div>
+                    </div>
+                    <div className="text-center p-3 bg-orange-50 rounded-lg">
+                      <div className="text-sm text-orange-600">Next Run</div>
+                      <div className="text-xs text-orange-600">
+                        {new Date(stats.next_run).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
@@ -427,7 +594,7 @@ export const JobScraperControl = () => {
             </div>
             <div className="flex justify-between">
               <span>✅ Valid sources:</span>
-              <span className="text-muted-foreground">RemoteOK, Generated Jobs, Govt Portals</span>
+              <span className="text-muted-foreground">Adzuna API, RemoteOK, Generated Jobs, Govt Portals</span>
             </div>
             <div className="flex justify-between">
               <span>🏛️ Government sources:</span>
