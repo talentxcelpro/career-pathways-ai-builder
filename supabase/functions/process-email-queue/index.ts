@@ -96,13 +96,21 @@ const handler = async (req: Request): Promise<Response> => {
     let emailHtml = `<h1>Hello ${email.recipient_name || 'User'}!</h1><p>This is a ${email.trigger_type} notification from TalentXcel.</p>`;
 
     try {
+      console.log(`Looking for template with template_type: "${email.trigger_type}"`);
+      
       // Try to get template from database
-      const { data: template } = await supabase
+      const { data: template, error: templateError } = await supabase
         .from('email_templates')
         .select('subject, html_template')
         .eq('template_type', email.trigger_type)
         .eq('is_active', true)
         .single();
+
+      console.log('Template query result:', { template: !!template, error: templateError });
+      
+      if (templateError) {
+        console.error('Template lookup error:', templateError);
+      }
 
       if (template) {
         console.log(`Using template for ${email.trigger_type}`);
