@@ -31,16 +31,22 @@ const EmailSystemTest = () => {
         `
       };
       
+      console.log('🧪 Testing AWS SES welcome email to:', testEmail);
+      console.log('📧 Email payload:', emailPayload);
+      console.log('📏 Payload size:', JSON.stringify(emailPayload).length, 'bytes');
+      
       const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
         body: emailPayload
       });
       
+      console.log('📨 Raw response:', { data, error });
+      
       if (error) {
-        console.error('❌ Email test error:', error);
+        console.error('❌ Supabase invoke error:', error);
         toast.error('Failed to send welcome email: ' + error.message);
       } else if (data?.success) {
         console.log('✅ Welcome email sent successfully:', data);
-        toast.success(`Welcome email sent successfully to ${testEmail}!`);
+        toast.success(`✅ Welcome email sent via ${data.provider}! Response time: ${data.responseTime}ms`);
       } else {
         console.error('❌ Email function returned error:', data);
         toast.error('Email test failed: ' + (data?.error || 'Unknown error'));
@@ -82,16 +88,22 @@ const EmailSystemTest = () => {
         `
       };
       
+      console.log('🧪 Testing AWS SES job match email to:', testEmail);
+      console.log('📧 Email payload:', emailPayload);
+      console.log('📏 Payload size:', JSON.stringify(emailPayload).length, 'bytes');
+      
       const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
         body: emailPayload
       });
       
+      console.log('📨 Raw response:', { data, error });
+      
       if (error) {
-        console.error('❌ Email test error:', error);
+        console.error('❌ Supabase invoke error:', error);
         toast.error('Failed to send job match email: ' + error.message);
       } else if (data?.success) {
         console.log('✅ Job match email sent successfully:', data);
-        toast.success(`Job match email sent successfully to ${testEmail}!`);
+        toast.success(`✅ Job match email sent via ${data.provider}! Response time: ${data.responseTime}ms`);
       } else {
         console.error('❌ Email function returned error:', data);
         toast.error('Email test failed: ' + (data?.error || 'Unknown error'));
@@ -107,9 +119,9 @@ const EmailSystemTest = () => {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Email System Test</CardTitle>
+        <CardTitle>AWS SES Email System Test</CardTitle>
         <CardDescription>
-          Test your email templates and SendGrid integration
+          Test your AWS SES email integration with detailed debugging
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
