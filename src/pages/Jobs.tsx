@@ -8,7 +8,8 @@ import { TopCompaniesHiring } from '@/components/jobs/TopCompaniesHiring';
 import { JobCategories } from '@/components/jobs/JobCategories';
 import { TrustSection } from '@/components/jobs/TrustSection';
 import { ComprehensiveJobFilters } from '@/components/jobs/ComprehensiveJobFilters';
-import { JobsList } from '@/components/jobs/JobsList';
+import { JobsListOptimized } from '@/components/jobs/JobsListOptimized';
+import { useJobsOptimized } from '@/hooks/useJobsOptimized';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 import { useJobsRealtime, useAutoRefreshJobs } from '@/hooks/useRealtimeData';
 import { useJobsWithPagination } from '@/hooks/useJobsWithPagination';
@@ -167,16 +168,17 @@ const Jobs = () => {
     };
   }, []);
 
-  // Use pagination hook for jobs
+  // Use optimized pagination hook for jobs
   const { 
     jobs: allJobs, 
     totalCount, 
+    hasMore,
     isLoading, 
     refetch, 
     currentPage,
     totalPages,
     goToPage
-  } = useJobsWithPagination(filters, sortBy);
+  } = useJobsOptimized(filters, sortBy, 'pagination');
 
   // Auto-refresh jobs data
   useSmartAutoRefresh(() => {
@@ -571,16 +573,17 @@ const Jobs = () => {
               </div>
             </div>
 
-            <JobsList
-              jobs={regularJobs}
-              featuredJobs={[]}
-              regularJobs={regularJobs}
-              savedJobs={savedJobs}
-              sortBy={sortBy}
-              setSortBy={setSortBy}
+            <JobsListOptimized 
+              jobs={sortedJobs}
+              totalCount={totalCount}
+              hasMore={hasMore}
               isLoading={isLoading}
+              mode="pagination"
+              onPageChange={goToPage}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              savedJobs={savedJobs}
               onSaveJob={handleSaveJob}
-              onClearFilters={handleClearFilters}
             />
           </div>
         </div>

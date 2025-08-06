@@ -20449,6 +20449,14 @@ export type Database = {
         Args: { email_address: string }
         Returns: string
       }
+      get_job_categories_with_counts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          category: string
+          job_count: number
+          avg_salary: number
+        }[]
+      }
       get_job_redirect_history: {
         Args: { job_uuid: string }
         Returns: {
@@ -20459,6 +20467,26 @@ export type Database = {
           redirected_at: string
           user_name: string
           user_email: string
+        }[]
+      }
+      get_jobs_paginated_optimized: {
+        Args: {
+          p_page?: number
+          p_limit?: number
+          p_search?: string
+          p_location?: string
+          p_employment_types?: string[]
+          p_experience_levels?: string[]
+          p_min_salary?: number
+          p_max_salary?: number
+          p_is_remote?: boolean
+          p_skills?: string[]
+          p_sort_by?: string
+        }
+        Returns: {
+          jobs: Json
+          total_count: number
+          has_more: boolean
         }[]
       }
       get_or_create_user_referral: {
@@ -20496,6 +20524,14 @@ export type Database = {
           resume_url: string
           applied_at: string
           company_name: string
+        }[]
+      }
+      get_trending_job_locations: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          location: string
+          job_count: number
+          growth_rate: number
         }[]
       }
       get_user_app_role: {

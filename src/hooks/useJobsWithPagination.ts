@@ -18,15 +18,47 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
   
   const [page, setPage] = useState(1);
   const [allJobs, setAllJobs] = useState<any[]>([]);
-  const pageSize = 50;
+  const pageSize = 20; // Reduced for better performance
 
   console.log('📊 Hook state:', { page, allJobsLength: allJobs.length, pageSize });
 
+  // Try optimized RPC first, fallback to old method
   const { data, isLoading, refetch, error } = useQuery({
     queryKey: ['jobs-paginated', filters, sortBy, page],
     queryFn: async () => {
-      console.log('🔍 useJobsWithPagination: Starting query for page', page);
+      console.log('🔍 useJobsWithPagination: Starting optimized query for page', page);
       
+      // Try optimized RPC function first
+      try {
+        const { data: rpcData, error: rpcError } = await supabase.rpc('get_jobs_paginated_optimized', {
+          p_page: page,
+          p_limit: pageSize,
+          p_search: filters.search || '',
+          p_location: filters.location || '',
+          p_employment_types: filters.employment_type,
+          p_experience_levels: filters.experience_level,
+          p_min_salary: filters.salary_min || 0,
+          p_max_salary: filters.salary_max || 0,
+          p_is_remote: filters.is_remote || false,
+          p_skills: filters.skills,
+          p_sort_by: sortBy
+        });
+
+        if (!rpcError && rpcData) {
+          console.log('✅ Using optimized RPC function');
+          const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+          return {
+            jobs: Array.isArray(result?.jobs) ? result.jobs : (result?.jobs ? [result.jobs] : []),
+            totalCount: result?.total_count || 0,
+            hasMore: result?.has_more || false
+          };
+        }
+        console.log('⚠️ RPC function not available, falling back to old method');
+      } catch (rpcErr) {
+        console.log('⚠️ RPC function failed, falling back to old method:', rpcErr);
+      }
+
+      // Fallback to original method
       const start = (page - 1) * pageSize;
       const end = start + pageSize - 1;
 
