@@ -67,17 +67,46 @@ const JobDetails = () => {
         .eq('job_status', 'open');
 
       if (fetchBySeoSlug) {
+        // Try exact match first
         query = query.eq('seo_slug', slugOrId);
       } else {
         // Try exact match first, then partial match for short IDs
         query = jobId?.length === 36 
           ? query.eq('id', jobId)
-          : query.ilike('id', `${jobId}%`);
+          : query.eq('id', jobId);
       }
 
-      const { data, error } = await query.single();
+      let { data, error } = await query.maybeSingle();
 
-      if (error) throw error;
+      // If no exact slug match found, try partial slug match
+      if (!data && fetchBySeoSlug) {
+        const partialQuery = supabase
+          .from('jobs')
+          .select(`
+            *,
+            companies (
+              id,
+              name,
+              logo_url,
+              industry,
+              description,
+              website,
+              founded_year
+            )
+          `)
+          .eq('is_active', true)
+          .eq('job_status', 'open')
+          .ilike('seo_slug', `${slugOrId}%`);
+        
+        const { data: partialData, error: partialError } = await partialQuery.maybeSingle();
+        if (partialData) {
+          data = partialData;
+        } else if (partialError) {
+          error = partialError;
+        }
+      }
+
+      if (error && error.code !== 'PGRST116') throw error; // Don't throw if just no data found
       return data;
     },
   });
