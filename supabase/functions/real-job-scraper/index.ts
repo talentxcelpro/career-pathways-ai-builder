@@ -144,17 +144,20 @@ async function insertJobsToDatabase(jobs: JobData[]) {
   
   const jobsToInsert = jobs.map(job => ({
     title: job.title,
+    job_title: job.title,
     company_name: job.company_name,
     location: job.location,
     description: job.description,
+    job_description: job.description,
     salary_range: job.salary_range,
     employment_type: job.employment_type,
     experience_level: job.experience_level,
     source: job.source,
     posted_at: job.posted_at,
-    skills: job.skills,
+    skills_required: job.skills,
     department: job.department,
-    status: 'active',
+    job_status: 'active',
+    is_active: true,
     is_featured: Math.random() > 0.8, // 20% featured jobs
     views_count: Math.floor(Math.random() * 100),
     applications_count: Math.floor(Math.random() * 25)
