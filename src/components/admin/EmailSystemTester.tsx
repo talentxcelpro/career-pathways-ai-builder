@@ -137,7 +137,7 @@ export const EmailSystemTester = () => {
       console.log('🧪 Testing email sending...');
       
       const emailPayload = {
-        to: "test@example.com",
+        to: "talentxcelpro@gmail.com",
         from: "TalentXcel <noreply@talentxcel.in>",
         subject: "Test Email from TalentXcel System",
         html: "<h1>✅ System Test Email</h1><p>This is a system test to verify email functionality.</p><p>Sent at: " + new Date().toLocaleString() + "</p>",
