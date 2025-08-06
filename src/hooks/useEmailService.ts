@@ -26,25 +26,71 @@ export const useEmailService = (): EmailServiceHook => {
       
       // Create HTML content from template
       let html = '';
-      if (emailData.template === 'welcome') {
-        html = `
-          <h2>Welcome to TalentXcel!</h2>
-          <p>Hi ${emailData.data?.name || 'there'}! 🎉</p>
-          <p>We're excited to have you join our professional community.</p>
-          <p><strong>Powering Global Career Growth</strong></p>
-        `;
-      } else if (emailData.template === 'job_opening') {
-        html = `
-          <h2>New Job Match for You!</h2>
-          <p>Hi ${emailData.data?.name || 'there'}! 💼</p>
-          <p>We found a job opportunity that matches your profile:</p>
-          <h3>${emailData.data?.job_title || 'Job Title'}</h3>
-          <p><strong>${emailData.data?.company_name || 'Company'}</strong> • ${emailData.data?.location || 'Location'}</p>
-          <p>Salary: ${emailData.data?.salary_range || 'Competitive'}</p>
-          <p>Requirements: ${emailData.data?.requirements?.join(', ') || 'As per job description'}</p>
-        `;
-      } else {
-        html = '<p>Thank you for using TalentXcel!</p>';
+      
+      try {
+        // First try to get HTML template from database
+        const { data: template } = await supabase
+          .from('email_templates')
+          .select('html_template, content')
+          .eq('template_type', emailData.template)
+          .single();
+        
+        if (template?.html_template) {
+          // Use rich HTML template and replace variables
+          html = template.html_template
+            .replace(/\{\{candidate_name\}\}/g, emailData.data?.name || 'there')
+            .replace(/\{\{name\}\}/g, emailData.data?.name || 'there')
+            .replace(/\{\{job_title\}\}/g, emailData.data?.job_title || '')
+            .replace(/\{\{company_name\}\}/g, emailData.data?.company_name || '')
+            .replace(/\{\{location\}\}/g, emailData.data?.location || '')
+            .replace(/\{\{salary_range\}\}/g, emailData.data?.salary_range || 'Competitive')
+            .replace(/\{\{requirements\}\}/g, emailData.data?.requirements?.join(', ') || 'As per job description');
+        } else {
+          // Fallback to hardcoded templates
+          if (emailData.template === 'welcome') {
+            html = `
+              <h2>Welcome to TalentXcel!</h2>
+              <p>Hi ${emailData.data?.name || 'there'}! 🎉</p>
+              <p>We're excited to have you join our professional community.</p>
+              <p><strong>Powering Global Career Growth</strong></p>
+            `;
+          } else if (emailData.template === 'job_opening') {
+            html = `
+              <h2>New Job Match for You!</h2>
+              <p>Hi ${emailData.data?.name || 'there'}! 💼</p>
+              <p>We found a job opportunity that matches your profile:</p>
+              <h3>${emailData.data?.job_title || 'Job Title'}</h3>
+              <p><strong>${emailData.data?.company_name || 'Company'}</strong> • ${emailData.data?.location || 'Location'}</p>
+              <p>Salary: ${emailData.data?.salary_range || 'Competitive'}</p>
+              <p>Requirements: ${emailData.data?.requirements?.join(', ') || 'As per job description'}</p>
+            `;
+          } else {
+            html = '<p>Thank you for using TalentXcel!</p>';
+          }
+        }
+      } catch (dbError) {
+        console.warn('Failed to fetch email template from database, using fallback:', dbError);
+        // Fallback to hardcoded templates
+        if (emailData.template === 'welcome') {
+          html = `
+            <h2>Welcome to TalentXcel!</h2>
+            <p>Hi ${emailData.data?.name || 'there'}! 🎉</p>
+            <p>We're excited to have you join our professional community.</p>
+            <p><strong>Powering Global Career Growth</strong></p>
+          `;
+        } else if (emailData.template === 'job_opening') {
+          html = `
+            <h2>New Job Match for You!</h2>
+            <p>Hi ${emailData.data?.name || 'there'}! 💼</p>
+            <p>We found a job opportunity that matches your profile:</p>
+            <h3>${emailData.data?.job_title || 'Job Title'}</h3>
+            <p><strong>${emailData.data?.company_name || 'Company'}</strong> • ${emailData.data?.location || 'Location'}</p>
+            <p>Salary: ${emailData.data?.salary_range || 'Competitive'}</p>
+            <p>Requirements: ${emailData.data?.requirements?.join(', ') || 'As per job description'}</p>
+          `;
+        } else {
+          html = '<p>Thank you for using TalentXcel!</p>';
+        }
       }
       
       try {
