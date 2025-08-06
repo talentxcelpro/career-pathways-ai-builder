@@ -10,29 +10,12 @@ export const slugify = (text: string): string => {
     .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
 };
 
-export const generateJobSlug = (title: string, company: string, location?: string, jobCode?: string): string => {
-  const parts = [];
-  
-  // Add title (required)
-  if (title) {
-    parts.push(slugify(title));
-  }
-  
-  // Add job code if available (like GOV0004)
-  if (jobCode) {
-    parts.push(slugify(jobCode));
-  }
-  
-  // Add company name (required) 
-  if (company) {
-    parts.push(slugify(company));
-  }
-  
-  // Add location (fallback to 'india')
+export const generateJobSlug = (title: string, location?: string, id?: string): string => {
+  const titleSlug = slugify(title);
   const locationSlug = location ? slugify(location) : 'india';
-  parts.push(locationSlug);
+  const shortId = id ? id.substring(0, 8) : '';
   
-  return parts.filter(part => part.length > 0).join('-');
+  return `${titleSlug}-${locationSlug}${shortId ? `-${shortId}` : ''}`;
 };
 
 export const parseJobSlug = (slug: string): { titleSlug: string; locationSlug: string; id: string } => {
@@ -106,23 +89,15 @@ export const getJobDetailUrl = (job: any): string => {
     return `/jobs/${job.seo_slug}`;
   }
   
-  // Fallback: generate slug on the fly using new format
-  const jobCode = extractJobCodeFromTitle(job.title);
-  const slug = generateJobSlug(job.title, job.company_name || job.companies?.name, job.location, jobCode);
+  // Fallback to generating slug on the fly
+  const slug = generateJobSlug(job.title, job.location, job.id);
   return `/jobs/${slug}`;
 };
 
-// Extract job code from job title (e.g., "Data Scientist - GOV0004" -> "GOV0004")
-export const extractJobCodeFromTitle = (title: string): string | undefined => {
-  const codeMatch = title.match(/([A-Z]{2,}\d{3,})/);
-  return codeMatch ? codeMatch[1] : undefined;
-};
-
-// Convert old UUID URL to new SEO URL  
-export const convertLegacyJobUrl = (jobId: string, title?: string, company?: string, location?: string): string => {
-  if (title && company) {
-    const jobCode = extractJobCodeFromTitle(title);
-    const slug = generateJobSlug(title, company, location, jobCode);
+// Convert old UUID URL to new SEO URL
+export const convertLegacyJobUrl = (jobId: string, title?: string, location?: string): string => {
+  if (title) {
+    const slug = generateJobSlug(title, location, jobId);
     return `/jobs/${slug}`;
   }
   
