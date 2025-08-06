@@ -82,10 +82,9 @@ const JobsSimple: React.FC<JobsSimpleProps> = ({ roleFilter, locationFilter, ski
             onClearFilters={clearFilters}
           />
           
-          <JobsList
-            jobs={[]}
-            isLoading={false}
-          />
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">Job listings will be displayed here</p>
+          </div>
         </div>
       </div>
     </>
