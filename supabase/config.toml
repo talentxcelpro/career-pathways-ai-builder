@@ -127,3 +127,18 @@ verify_jwt = false
 
 [functions.admin-health-check]
 verify_jwt = false
+
+[functions.test-ses-smtp]
+verify_jwt = false
+
+[functions.send-email-smtp]
+verify_jwt = false
+
+[functions.process-email-queue]
+verify_jwt = false
+
+[functions.test-email-system]
+verify_jwt = false
+
+[functions.send-test-email]
+verify_jwt = false

@@ -21,9 +21,20 @@ export const EmailSystemTester = () => {
   const testSMTPConfig = async () => {
     setTesting(prev => ({ ...prev, smtp: true }));
     try {
-      const { data, error } = await supabase.functions.invoke('test-ses-smtp');
+      console.log('🧪 Testing SMTP configuration...');
       
-      if (error) throw error;
+      const { data, error } = await supabase.functions.invoke('test-ses-smtp', {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      console.log('📨 SMTP Test Response:', { data, error });
+      
+      if (error) {
+        console.error('❌ Supabase invoke error:', error);
+        throw new Error(`Edge Function Error: ${error.message}`);
+      }
       
       setResults(prev => ({ ...prev, smtp: data }));
       
@@ -34,17 +45,19 @@ export const EmailSystemTester = () => {
         });
       } else {
         toast({
-          title: "⚠️ SMTP Configuration Issues",
-          description: "Some SMTP credentials are missing",
+          title: "⚠️ SMTP Configuration Issues", 
+          description: "Some SMTP credentials are missing or misconfigured",
           variant: "destructive"
         });
       }
     } catch (error: any) {
       console.error('SMTP test error:', error);
-      setResults(prev => ({ ...prev, smtp: { error: error.message } }));
+      const errorMessage = error.message || 'Unknown error occurred';
+      setResults(prev => ({ ...prev, smtp: { error: errorMessage } }));
       toast({
         title: "❌ SMTP Test Failed",
-        description: error.message,
+        description: errorMessage.includes('Failed to send a request') ? 
+          'Edge function connection failed. Check if the function is deployed.' : errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -95,6 +108,8 @@ export const EmailSystemTester = () => {
   const testEmailSending = async () => {
     setTesting(prev => ({ ...prev, emailSend: true }));
     try {
+      console.log('🧪 Testing email sending...');
+      
       const emailPayload = {
         to: "test@example.com",
         from: "TalentXcel <noreply@talentxcel.in>",
@@ -108,11 +123,21 @@ export const EmailSystemTester = () => {
         }
       };
       
+      console.log('📧 Email payload:', emailPayload);
+      
       const { data, error } = await supabase.functions.invoke('send-email-smtp', {
-        body: emailPayload
+        body: emailPayload,
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
       
-      if (error) throw error;
+      console.log('📨 Email Send Response:', { data, error });
+      
+      if (error) {
+        console.error('❌ Supabase invoke error:', error);
+        throw new Error(`Edge Function Error: ${error.message}`);
+      }
       
       setResults(prev => ({ ...prev, emailSend: data }));
       
@@ -130,10 +155,12 @@ export const EmailSystemTester = () => {
       }
     } catch (error: any) {
       console.error('Email sending test error:', error);
-      setResults(prev => ({ ...prev, emailSend: { error: error.message } }));
+      const errorMessage = error.message || 'Unknown error occurred';
+      setResults(prev => ({ ...prev, emailSend: { error: errorMessage } }));
       toast({
         title: "❌ Email Sending Test Failed",
-        description: error.message,
+        description: errorMessage.includes('Failed to send a request') ? 
+          'Edge function connection failed. Check if send-email-smtp function is deployed.' : errorMessage,
         variant: "destructive"
       });
     } finally {
