@@ -76,7 +76,7 @@ const JobCategories = () => {
           <div className="mt-6">
             <Link to="/jobs">
               <Button variant="outline" className="group">
-                View all roles
+                View all jobs
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -112,7 +112,7 @@ const JobCategories = () => {
           <div className="mt-6">
             <Link to="/jobs">
               <Button variant="outline" className="group">
-                View all cities
+                View all jobs
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -148,7 +148,7 @@ const JobCategories = () => {
           <div className="mt-6">
             <Link to="/jobs">
               <Button variant="outline" className="group">
-                View all skills
+                View all jobs
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
