@@ -19,7 +19,6 @@ interface JobData {
   employment_type: string;
   experience_level: string;
   source: string;
-  job_url: string;
   posted_at: string;
   skills: string[];
   department?: string;
@@ -133,7 +132,6 @@ function generateRealisticJob(template: any, company: any, jobType: string): Job
     employment_type: "Full-time",
     experience_level: template.experience_level,
     source: jobType === 'government' ? "Government Portal" : "Company Careers",
-    job_url: `https://careers.${company.name.toLowerCase().replace(/\s+/g, '')}.com/job/${Math.random().toString(36).substring(7)}`,
     posted_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
     skills: template.skills,
     department: template.department,
@@ -153,7 +151,6 @@ async function insertJobsToDatabase(jobs: JobData[]) {
     employment_type: job.employment_type,
     experience_level: job.experience_level,
     source: job.source,
-    job_url: job.job_url,
     posted_at: job.posted_at,
     skills: job.skills,
     department: job.department,
