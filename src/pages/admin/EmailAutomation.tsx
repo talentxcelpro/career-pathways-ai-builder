@@ -5,8 +5,10 @@ import { BulkWelcomeEmailSender } from '@/components/admin/BulkWelcomeEmailSende
 import { EmailQueueMonitor } from '@/components/admin/EmailQueueMonitor';
 import { EmailConfigurationPanel } from '@/components/admin/EmailConfigurationPanel';
 import { EmailSystemTester } from '@/components/admin/EmailSystemTester';
+import { EmailTemplateManager } from '@/components/admin/EmailTemplateManager';
+import { EmailAutomationQueueTester } from '@/components/admin/EmailAutomationQueueTester';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Settings, Monitor, Send, TestTube } from "lucide-react";
+import { Mail, Settings, Monitor, Send, TestTube, Clock } from "lucide-react";
 
 const EmailAutomationPage = () => {
   return (
@@ -15,7 +17,7 @@ const EmailAutomationPage = () => {
       description="Configure automated email templates, settings, and monitoring"
     >
       <Tabs defaultValue="testing" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="testing" className="flex items-center gap-2">
             <TestTube className="h-4 w-4" />
             Testing
@@ -23,6 +25,14 @@ const EmailAutomationPage = () => {
           <TabsTrigger value="templates" className="flex items-center gap-2">
             <Mail className="h-4 w-4" />
             Templates
+          </TabsTrigger>
+          <TabsTrigger value="html-templates" className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            HTML Templates
+          </TabsTrigger>
+          <TabsTrigger value="queue-test" className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            Queue Test
           </TabsTrigger>
           <TabsTrigger value="configuration" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
@@ -44,6 +54,14 @@ const EmailAutomationPage = () => {
 
         <TabsContent value="templates" className="space-y-6">
           <EmailAutomationManager />
+        </TabsContent>
+
+        <TabsContent value="html-templates" className="space-y-6">
+          <EmailTemplateManager />
+        </TabsContent>
+
+        <TabsContent value="queue-test" className="space-y-6">
+          <EmailAutomationQueueTester />
         </TabsContent>
 
         <TabsContent value="configuration" className="space-y-6">

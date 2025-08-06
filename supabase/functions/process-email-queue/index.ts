@@ -91,21 +91,81 @@ const handler = async (req: Request): Promise<Response> => {
           })
           .eq('id', email.id);
 
-        // Send email via SMTP (working system)
-        const emailResponse = await supabase.functions.invoke('send-email-smtp', {
-          body: {
-            to: email.recipient_email,
-            from: 'TalentXcel <noreply@talentxcel.in>',
-            subject: `TalentXcel - ${email.trigger_type.replace('_', ' ').toUpperCase()}`,
-            html: `<h1>Hello ${email.recipient_name || 'User'}!</h1><p>This is a ${email.trigger_type} notification from TalentXcel.</p>`,
-            smtp: {
-              host: Deno.env.get('SMTP_HOST') || 'email-smtp.eu-north-1.amazonaws.com',
-              port: '587',
-              user: Deno.env.get('SMTP_USER') || '',
-              pass: Deno.env.get('SMTP_PASS') || ''
-            }
-          }
+    // Get email template and render it
+    let emailSubject = `TalentXcel - ${email.trigger_type.replace('_', ' ').toUpperCase()}`;
+    let emailHtml = `<h1>Hello ${email.recipient_name || 'User'}!</h1><p>This is a ${email.trigger_type} notification from TalentXcel.</p>`;
+
+    try {
+      // Try to get template from database
+      const { data: template } = await supabase
+        .from('email_templates')
+        .select('subject_template, html_template')
+        .eq('template_name', email.trigger_type)
+        .eq('is_active', true)
+        .single();
+
+      if (template) {
+        console.log(`Using template for ${email.trigger_type}`);
+        
+        // Parse template data
+        const templateData = email.template_data || {};
+        
+        // Default template data
+        const defaultData = {
+          candidate_name: email.recipient_name || 'User',
+          title: emailSubject,
+          subtitle: 'TalentXcel Notification',
+          message: `This is a ${email.trigger_type} notification from TalentXcel.`,
+          footer_note: 'This email was sent automatically by TalentXcel. Please do not reply.',
+          ...templateData
+        };
+
+        // Simple template replacement (replace {{variable}} with values)
+        emailSubject = template.subject_template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+          return defaultData[key] || match;
         });
+
+        emailHtml = template.html_template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+          return defaultData[key] || match;
+        });
+
+        // Handle conditional sections and arrays
+        emailHtml = emailHtml.replace(/\{\{#(\w+)\}\}(.*?)\{\{\/\1\}\}/gs, (match, key, content) => {
+          const value = defaultData[key];
+          if (Array.isArray(value) && value.length > 0) {
+            return content.replace(/\{\{#each (\w+)\}\}(.*?)\{\{\/each\}\}/gs, (eachMatch, eachKey, eachContent) => {
+              return value.map(item => eachContent.replace(/\{\{this\}\}/g, item)).join('');
+            });
+          } else if (value) {
+            return content;
+          }
+          return '';
+        });
+
+        // Handle #if conditions
+        emailHtml = emailHtml.replace(/\{\{#if (\w+)\}\}(.*?)\{\{\/if\}\}/gs, (match, key, content) => {
+          return defaultData[key] ? content : '';
+        });
+      }
+    } catch (templateError) {
+      console.log('Template not found or error, using default:', templateError.message);
+    }
+
+    // Send email via SMTP (working system)
+    const emailResponse = await supabase.functions.invoke('send-email-smtp', {
+      body: {
+        to: email.recipient_email,
+        from: 'TalentXcel <noreply@talentxcel.in>',
+        subject: emailSubject,
+        html: emailHtml,
+        smtp: {
+          host: Deno.env.get('SMTP_HOST') || 'email-smtp.eu-north-1.amazonaws.com',
+          port: '587',
+          user: Deno.env.get('SMTP_USER') || '',
+          pass: Deno.env.get('SMTP_PASS') || ''
+        }
+      }
+    });
 
         if (emailResponse.error) {
           throw new Error(JSON.stringify(emailResponse.error));
