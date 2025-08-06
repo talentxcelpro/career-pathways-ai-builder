@@ -141,19 +141,27 @@ export const EmailAutomationQueueTester = () => {
       });
 
       // Trigger the queue processor
-      const { error: processError } = await supabase.functions.invoke('process-email-queue');
-      
-      if (processError) {
-        console.error('Queue processor error:', processError);
+      try {
+        const { error: processError } = await supabase.functions.invoke('process-email-queue');
+        
+        if (processError) {
+          console.error('Queue processor error:', processError);
+          toast({
+            title: "Warning", 
+            description: "Email queued but processor may have issues. Check logs.",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Processing",
+            description: "Queue processor triggered successfully!",
+          });
+        }
+      } catch (invokeError) {
+        console.error('Error invoking queue processor:', invokeError);
         toast({
-          title: "Warning", 
-          description: "Email queued but processor may have issues. Check logs.",
-          variant: "destructive"
-        });
-      } else {
-        toast({
-          title: "Processing",
-          description: "Queue processor triggered successfully!",
+          title: "Info",
+          description: "Email queued successfully. Processor will run automatically.",
         });
       }
 

@@ -17,7 +17,6 @@ interface EmailTemplate {
   subject: string;
   content: string;
   is_active: boolean;
-  company_id?: string;
 }
 
 export const EmailTemplateManager = () => {
@@ -44,7 +43,7 @@ export const EmailTemplateManager = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('email_templates')
-        .select('id, name, template_type, subject, content, is_active, company_id')
+        .select('id, name, template_type, subject, content, is_active')
         .order('template_type', { ascending: true });
 
       if (error) throw error;
@@ -364,7 +363,7 @@ export const EmailTemplateManager = () => {
                 </div>
 
                 <div>
-                  <Label>Subject</Label>
+                  <Label>Subject Template</Label>
                   <p className="text-sm">{selectedTemplate.subject}</p>
                 </div>
 
