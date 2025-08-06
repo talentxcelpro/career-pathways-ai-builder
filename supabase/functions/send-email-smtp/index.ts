@@ -84,8 +84,8 @@ Deno.serve(async (req) => {
       to: to,
       subject: subject,
       html: html,
-      // Only set plain text content if different from HTML
-      ...(html && { content: undefined })
+      content: undefined, // Explicitly set to undefined to avoid plain text conversion
+      encoding: 'utf8' // Ensure UTF-8 encoding
     });
 
     console.log('📤 Closing SMTP connection...');
