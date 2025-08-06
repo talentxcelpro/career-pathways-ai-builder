@@ -11,8 +11,18 @@ const corsHeaders = {
 let sesClient: SESClient;
 
 try {
+  let region = Deno.env.get('SES_REGION') || Deno.env.get('AWS_REGION') || "eu-north-1";
+  
+  // Clean up region if it contains URL parts
+  if (region.includes('http') || region.includes('amazonaws.com')) {
+    console.log('⚠️ Detected malformed region, cleaning up:', region);
+    region = 'eu-north-1'; // Reset to safe default
+  }
+  
+  console.log('🌍 Using SES region:', region);
+  
   sesClient = new SESClient({
-    region: Deno.env.get('AWS_REGION') || "eu-north-1",
+    region: region,
     credentials: {
       accessKeyId: Deno.env.get("SES_ACCESS_KEY_ID") || "",
       secretAccessKey: Deno.env.get("SES_SECRET_ACCESS_KEY") || "",

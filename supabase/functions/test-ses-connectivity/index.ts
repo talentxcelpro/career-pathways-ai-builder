@@ -18,7 +18,13 @@ Deno.serve(async (req) => {
     // Get SES configuration from environment variables
     const SES_ACCESS_KEY_ID = Deno.env.get('SES_ACCESS_KEY_ID');
     const SES_SECRET_ACCESS_KEY = Deno.env.get('SES_SECRET_ACCESS_KEY');
-    const SES_REGION = Deno.env.get('SES_REGION') || 'eu-north-1';
+    let SES_REGION = Deno.env.get('SES_REGION') || 'eu-north-1';
+    
+    // Clean up region if it contains URL parts
+    if (SES_REGION.includes('http') || SES_REGION.includes('amazonaws.com')) {
+      console.log('⚠️ Detected malformed region, cleaning up:', SES_REGION);
+      SES_REGION = 'eu-north-1'; // Reset to safe default
+    }
 
     console.log('📋 SES Configuration Check:');
     console.log('- Access Key ID:', SES_ACCESS_KEY_ID ? 'Found ✅' : 'Missing ❌');
