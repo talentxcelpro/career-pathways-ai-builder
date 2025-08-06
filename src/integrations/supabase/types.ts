@@ -20400,6 +20400,10 @@ export type Database = {
           | { job_title: string; job_location: string; job_id: string }
         Returns: string
       }
+      generate_job_seo_slug_v2: {
+        Args: { job_title: string; job_company: string; job_location: string }
+        Returns: string
+      }
       generate_referral_code: {
         Args: { user_uuid: string }
         Returns: string
