@@ -45,12 +45,12 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
     // Get pending emails from queue, including retry logic
+    // Also get failed emails that can be retried (reset their status to pending)
     const { data: pendingEmails, error: fetchError } = await supabase
       .from('email_automation_queue')
       .select('*')
-      .eq('status', 'pending')
+      .or('status.eq.pending,and(status.eq.failed,attempts.lt.3)')
       .lte('scheduled_at', new Date().toISOString())
-      .lt('attempts', 3) // Only retry up to 3 times
       .order('created_at', { ascending: true })
       .limit(50); // Process in batches
 
@@ -81,6 +81,18 @@ const handler = async (req: Request): Promise<Response> => {
     for (const email of pendingEmails) {
       try {
         console.log(`Processing email ${email.id} to ${email.recipient_email} (attempt ${(email.attempts || 0) + 1})`);
+
+        // Reset failed emails to pending status for retry
+        if (email.status === 'failed') {
+          console.log(`Retrying failed email ${email.id}`);
+          await supabase
+            .from('email_automation_queue')
+            .update({
+              status: 'pending',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', email.id);
+        }
 
         // Increment attempts before processing
         await supabase
@@ -159,18 +171,21 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('Template not found or error, using default:', templateError.message);
     }
 
-    // Send email via React Email service (perfect HTML rendering)
-    const emailResponse = await supabase.functions.invoke('unified-email-service', {
+    // Send email directly via SMTP (bypass unified service for now)
+    console.log('Sending email via direct SMTP...');
+    
+    const emailResponse = await supabase.functions.invoke('send-email-smtp', {
       body: {
         to: email.recipient_email,
+        from: 'TalentXcel <noreply@talentxcel.in>',
         subject: emailSubject,
-        template: email.template_type,
-        templateData: {
-          candidate_name: email.recipient_name || 'User',
-          ...email.payload_data
-        },
-        provider: 'react-email', // Use React Email for perfect rendering
-        priority: 'normal'
+        html: emailHtml,
+        smtp: {
+          host: Deno.env.get('SMTP_HOST') || 'email-smtp.eu-north-1.amazonaws.com',
+          port: Deno.env.get('SMTP_PORT') || '587',
+          user: 'WILL_BE_SET_FROM_SUPABASE_SECRETS',
+          pass: 'WILL_BE_SET_FROM_SUPABASE_SECRETS'
+        }
       }
     });
 
