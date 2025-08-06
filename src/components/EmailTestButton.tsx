@@ -10,19 +10,25 @@ export const EmailTestButton = () => {
   const testEmailSystem = async () => {
     setIsTesting(true);
     try {
-      console.log('🧪 Testing AWS SES email system...');
+      console.log('🧪 Testing SMTP email system...');
       
       const emailPayload = {
-        to: "nexgennwelfare@gmail.com",
-        subject: "Test Email from TalentXcel Platform",
-        html: "<h2>✅ AWS SES Test Email</h2><p>This test email was successfully sent via AWS SES from TalentXcel platform!</p><p>Timestamp: " + new Date().toLocaleString() + "</p>"
+        to: "arsh.wani@gmail.com",
+        from: "TalentXcel <noreply@talentxcel.in>",
+        subject: "Test Email from TalentXcel",
+        html: "<h1>✅ SMTP Test Email</h1><p>This is a test email to verify the SMTP email system is working correctly.</p><p>Sent at: " + new Date().toLocaleString() + "</p>",
+        smtp: {
+          host: "email-smtp.eu-north-1.amazonaws.com",
+          port: "587",
+          user: "", // Will be populated from Supabase secrets
+          pass: ""  // Will be populated from Supabase secrets
+        }
       };
       
-      console.log('📧 Email payload:', emailPayload);
-      console.log('📏 Payload size:', JSON.stringify(emailPayload).length, 'bytes');
+      console.log('📧 SMTP Email payload:', emailPayload);
       
-      // Use the working AWS SES function with correct payload format
-      const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
+      // Use the working SMTP function
+      const { data, error } = await supabase.functions.invoke('send-email-smtp', {
         body: emailPayload
       });
       
@@ -36,7 +42,7 @@ export const EmailTestButton = () => {
       if (data?.success) {
         toast({
           title: "✅ Email Test Successful!",
-          description: `Test email sent via ${data.provider}. Response time: ${data.responseTime}ms`,
+          description: `Test email sent successfully via SMTP. Message ID: ${data.messageId}`,
         });
         console.log('✅ Email test successful:', data);
       } else {
@@ -61,7 +67,7 @@ export const EmailTestButton = () => {
       disabled={isTesting}
       className="bg-green-600 hover:bg-green-700"
     >
-      {isTesting ? "Testing..." : "🧪 Test Email System"}
+      {isTesting ? "Testing..." : "🧪 Test SMTP Email"}
     </Button>
   );
 };
