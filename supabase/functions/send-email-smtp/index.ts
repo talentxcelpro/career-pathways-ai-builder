@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
 
     console.log('✉️ Sending email...');
 
-    // Send the email with proper HTML content and headers
+    // Send the email with proper HTML content
     await client.send({
       from: from,
       to: to,
@@ -86,7 +86,6 @@ Deno.serve(async (req) => {
       html: html,
       content: undefined,
       headers: {
-        'Content-Type': 'text/html; charset=UTF-8',
         'Content-Transfer-Encoding': '8bit'
       }
     });
