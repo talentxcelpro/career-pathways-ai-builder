@@ -76,14 +76,8 @@ const JobsSimple: React.FC<JobsSimpleProps> = ({ roleFilter, locationFilter, ski
         {!roleFilter && !locationFilter && !skillFilter && <JobCategories />}
         
         <div className="space-y-6">
-          <JobFilters
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-            onClearFilters={clearFilters}
-          />
-          
           <div className="text-center py-8">
-            <p className="text-muted-foreground">Job listings will be displayed here</p>
+            <p className="text-muted-foreground">Job listings will be displayed here based on {roleFilter || locationFilter || skillFilter || 'all criteria'}</p>
           </div>
         </div>
       </div>

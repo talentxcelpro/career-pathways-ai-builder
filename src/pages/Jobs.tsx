@@ -605,7 +605,7 @@ const Jobs = () => {
       <JobsBanner />
 
       {/* Browse by Categories */}
-      <JobCategories onCategoryClick={handleCategoryClick} />
+      <JobCategories />
 
       {/* Trust & FOMO Section */}
       <TrustSection />

@@ -471,7 +471,7 @@ const Jobs = () => {
       <TopCompaniesHiring />
 
       {/* 7. Browse by Categories */}
-      <JobCategories onCategoryClick={handleCategoryClick} />
+      <JobCategories />
 
       {/* 8. Trust & FOMO Section */}
       <TrustSection />
