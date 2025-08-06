@@ -1,4 +1,4 @@
-import { SmtpClient } from "https://deno.land/x/smtp@v0.10.0/mod.ts";
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -63,14 +63,17 @@ Deno.serve(async (req) => {
     console.log('📡 SMTP Host:', smtpConfig.host);
     console.log('📡 SMTP Port:', smtpConfig.port);
 
-    const client = new SmtpClient();
-
-    // Connect to SMTP server with TLS
-    await client.connectTLS({
-      hostname: smtpConfig.host,
-      port: smtpConfig.port,
-      username: smtpConfig.user,
-      password: smtpConfig.pass,
+    // Create SMTP client with denomailer
+    const client = new SMTPClient({
+      connection: {
+        hostname: smtpConfig.host,
+        port: smtpConfig.port,
+        tls: true,
+        auth: {
+          username: smtpConfig.user,
+          password: smtpConfig.pass,
+        },
+      },
     });
 
     console.log('✉️ Sending email...');
@@ -93,7 +96,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({
       success: true,
       messageId: responseMessageId,
-      provider: 'smtp-deno',
+      provider: 'smtp-denomailer',
       timestamp: new Date().toISOString()
     }), {
       status: 200,
