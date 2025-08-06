@@ -24,8 +24,7 @@ serve(async (req) => {
     const { count: totalJobs } = await supabase
       .from('jobs')
       .select('*', { count: 'exact', head: true })
-      .eq('is_active', true)
-      .eq('job_status', 'open')
+      .eq('status', 'active')
 
     const URLS_PER_SITEMAP = 50000
     const STATIC_URLS_COUNT = 100 // Approximate count of static URLs + categories + locations

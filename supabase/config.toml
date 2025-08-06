@@ -4,6 +4,12 @@ project_id = "dthlgsnakhoftinssokm"
 [functions.job-scraper]
 verify_jwt = false
 
+[functions.real-job-scraper]
+verify_jwt = false
+
+[functions.send-email-aws-ses]
+verify_jwt = false
+
 [functions.job-publisher]
 verify_jwt = true
 
@@ -115,9 +121,6 @@ verify_jwt = false
 
 [functions.seo-job-enhancer]
 verify_jwt = true
-
-[functions.send-email-aws-ses]
-verify_jwt = false
 
 [functions.send-automated-email]
 verify_jwt = false
