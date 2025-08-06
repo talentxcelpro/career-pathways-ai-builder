@@ -324,6 +324,19 @@ const Jobs = () => {
     refetch();
   };
 
+  const TagButton = ({ label, isActive = false }: { label: string; isActive?: boolean }) => (
+    <button
+      className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+        isActive 
+          ? 'bg-[#1E2A78] text-white' 
+          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+      }`}
+      onClick={() => handleCategoryClick(label.split(' ')[1] || label)}
+    >
+      {label}
+    </button>
+  );
+
   const tagSuggestions = [
     'Remote Jobs',
     '10+ LPA',
@@ -340,6 +353,22 @@ const Jobs = () => {
     <div className="min-h-screen bg-background">
       <OfflineIndicator />
       
+      {/* Job Category Tabs */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex gap-8 overflow-x-auto py-4">
+            <TagButton label="🇮🇳 India Jobs" isActive={true} />
+            <TagButton label="🏛️ Govt Jobs" />
+            <TagButton label="🌍 Middle East Jobs" />
+            <TagButton label="🌎 Rest of World" />
+            <TagButton label="🎓 Internships" />
+            <TagButton label="🚀 IT Jobs" />
+            <TagButton label="💼 Finance Jobs" />
+            <TagButton label="🏥 Healthcare Jobs" />
+          </div>
+        </div>
+      </div>
+
       {/* Header with TalentXcel branding */}
       <div className="bg-gradient-to-r from-[#1E2A78]/10 to-[#28C76F]/10 border-b sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
