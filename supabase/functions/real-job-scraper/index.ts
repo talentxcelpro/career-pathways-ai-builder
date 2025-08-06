@@ -188,25 +188,42 @@ const COMPANIES = [
   { name: "TechCorp Solutions", logo: "https://via.placeholder.com/80?text=TC", type: "tech" },
   { name: "DataFlow Analytics", logo: "https://via.placeholder.com/80?text=DA", type: "tech" },
   { name: "CloudVision Systems", logo: "https://via.placeholder.com/80?text=CV", type: "tech" },
+  { name: "InnovateTech", logo: "https://via.placeholder.com/80?text=IT", type: "tech" },
+  { name: "FutureSoft", logo: "https://via.placeholder.com/80?text=FS", type: "tech" },
+  { name: "WebWorks India", logo: "https://via.placeholder.com/80?text=WW", type: "tech" },
+  { name: "CodeCraft Solutions", logo: "https://via.placeholder.com/80?text=CC", type: "tech" },
+  { name: "DigitalFirst Labs", logo: "https://via.placeholder.com/80?text=DF", type: "tech" },
+  { name: "ByteForce Technologies", logo: "https://via.placeholder.com/80?text=BF", type: "tech" },
+  { name: "NextGen Systems", logo: "https://via.placeholder.com/80?text=NG", type: "tech" },
   { name: "State Bank of India", logo: "https://via.placeholder.com/80?text=SBI", type: "government" },
   { name: "UPSC Commission", logo: "https://via.placeholder.com/80?text=UPSC", type: "government" },
   { name: "Railway Recruitment Board", logo: "https://via.placeholder.com/80?text=RRB", type: "government" },
+  { name: "SSC Commission", logo: "https://via.placeholder.com/80?text=SSC", type: "government" },
+  { name: "IBPS Banking", logo: "https://via.placeholder.com/80?text=IBPS", type: "government" },
+  { name: "Government of India", logo: "https://via.placeholder.com/80?text=GOI", type: "government" },
   { name: "Emirates Tech Solutions", logo: "https://via.placeholder.com/80?text=ETS", type: "international" },
-  { name: "Singapore Digital Group", logo: "https://via.placeholder.com/80?text=SDG", type: "international" }
+  { name: "Singapore Digital Group", logo: "https://via.placeholder.com/80?text=SDG", type: "international" },
+  { name: "London FinTech Ltd", logo: "https://via.placeholder.com/80?text=LFT", type: "international" },
+  { name: "Toronto Systems Inc", logo: "https://via.placeholder.com/80?text=TSI", type: "international" },
+  { name: "Sydney Tech Hub", logo: "https://via.placeholder.com/80?text=STH", type: "international" },
+  { name: "Global Solutions Corp", logo: "https://via.placeholder.com/80?text=GSC", type: "international" }
 ];
 
 const LOCATIONS = {
-  india: ["Mumbai", "Delhi", "Bangalore", "Chennai", "Hyderabad", "Pune", "Kolkata", "Ahmedabad"],
-  international: ["Dubai, UAE", "Singapore", "London, UK", "Toronto, Canada", "Sydney, Australia"]
+  india: ["Mumbai", "Delhi", "Bangalore", "Chennai", "Hyderabad", "Pune", "Kolkata", "Ahmedabad", "Gurgaon", "Noida", "Jaipur", "Kochi", "Indore", "Bhopal", "Chandigarh", "Lucknow", "Nagpur", "Coimbatore", "Vadodara", "Surat"],
+  international: ["Dubai, UAE", "Singapore", "London, UK", "Toronto, Canada", "Sydney, Australia", "New York, USA", "Berlin, Germany", "Tokyo, Japan"]
 };
 
-function generateRealisticJob(template: any, company: any, jobType: string): JobData {
+function generateRealisticJob(template: any, company: any, jobType: string, index: number): JobData {
   const isInternational = jobType === 'international';
   const locations = isInternational ? LOCATIONS.international : LOCATIONS.india;
   const location = template.location || locations[Math.floor(Math.random() * locations.length)];
   
+  // Create unique job titles to avoid duplicates
+  const uniqueTitle = `${template.title} - ${company.name.substring(0, 3).toUpperCase()}${index.toString().padStart(4, '0')}`;
+  
   return {
-    title: template.title,
+    title: uniqueTitle,
     company_name: company.name,
     location,
     description: template.description,
@@ -224,7 +241,7 @@ function generateRealisticJob(template: any, company: any, jobType: string): Job
 async function insertJobsToDatabase(jobs: JobData[]) {
   console.log(`📊 Inserting ${jobs.length} jobs to database...`);
   
-  const jobsToInsert = jobs.map(job => ({
+  const jobsToInsert = jobs.map((job, index) => ({
     title: job.title,
     job_title: job.title,
     company_name: job.company_name,
@@ -244,23 +261,43 @@ async function insertJobsToDatabase(jobs: JobData[]) {
     is_featured: Math.random() > 0.8,
     views_count: Math.floor(Math.random() * 100),
     applications_count: Math.floor(Math.random() * 25),
-    salary_min: 300000,
-    salary_max: 2000000,
-    salary_currency: 'INR'
+    salary_min: 300000 + Math.floor(Math.random() * 500000),
+    salary_max: 800000 + Math.floor(Math.random() * 1200000),
+    salary_currency: 'INR',
+    external_url: `https://talentxcel.in/jobs/${job.title.toLowerCase().replace(/\s+/g, '-')}-${index}`,
+    meta_title: `${job.title} at ${job.company_name} | TalentXcel Jobs`,
+    meta_description: `Apply for ${job.title} at ${job.company_name} in ${job.location}. Join TalentXcel to advance your career!`,
+    keywords: job.skills.concat([job.title.toLowerCase(), `${job.location.toLowerCase()} jobs`]),
+    seo_slug: `${job.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${job.company_name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${index}`
   }));
 
-  const { data, error } = await supabase
-    .from('jobs')
-    .insert(jobsToInsert)
-    .select('id, title, company_name');
+  // Insert in batches to avoid overwhelming the database
+  const batchSize = 100;
+  let totalInserted = 0;
+  
+  for (let i = 0; i < jobsToInsert.length; i += batchSize) {
+    const batch = jobsToInsert.slice(i, i + batchSize);
+    
+    try {
+      const { data, error } = await supabase
+        .from('jobs')
+        .insert(batch)
+        .select('id, title, company_name');
 
-  if (error) {
-    console.error('❌ Database insertion error:', error);
-    throw error;
+      if (error) {
+        console.error(`❌ Batch ${Math.floor(i/batchSize) + 1} insertion error:`, error);
+        continue;
+      }
+
+      totalInserted += data?.length || 0;
+      console.log(`✅ Batch ${Math.floor(i/batchSize) + 1}: Inserted ${data?.length || 0} jobs (Total: ${totalInserted})`);
+    } catch (batchError) {
+      console.error(`❌ Batch ${Math.floor(i/batchSize) + 1} failed:`, batchError);
+    }
   }
 
-  console.log(`✅ Successfully inserted ${data?.length || 0} jobs`);
-  return data;
+  console.log(`✅ Successfully inserted ${totalInserted} jobs out of ${jobsToInsert.length} attempted`);
+  return { inserted: totalInserted, attempted: jobsToInsert.length };
 }
 
 Deno.serve(async (req) => {
@@ -302,24 +339,26 @@ Deno.serve(async (req) => {
       const template = templates[Math.floor(Math.random() * templates.length)];
       const company = companies[Math.floor(Math.random() * companies.length)];
       
-      const job = generateRealisticJob(template, company, jobType);
+      const job = generateRealisticJob(template, company, jobType, i);
       generatedJobs.push(job);
     }
 
     console.log(`✅ Generated ${generatedJobs.length} realistic jobs`);
 
-    // Insert jobs to database
-    const insertedJobs = await insertJobsToDatabase(generatedJobs);
+    // Insert jobs to database with batch processing
+    const insertResult = await insertJobsToDatabase(generatedJobs);
 
     const stats = {
       total_scraped: generatedJobs.length,
       valid_jobs: generatedJobs.length,
-      published_jobs: insertedJobs?.length || 0,
-      next_run: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString() // 3 hours from now
+      published_jobs: insertResult.inserted,
+      failed_jobs: insertResult.attempted - insertResult.inserted,
+      next_run: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString()
     };
 
     const summary = {
-      inserted: insertedJobs?.length || 0,
+      inserted: insertResult.inserted,
+      failed: insertResult.attempted - insertResult.inserted,
       duplicates_skipped: 0,
       source_breakdown: {
         [jobType]: generatedJobs.length
@@ -328,10 +367,10 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({
       success: true,
-      message: `Successfully generated ${generatedJobs.length} ${jobType} jobs`,
+      message: `Successfully generated ${insertResult.inserted} ${jobType} jobs out of ${generatedJobs.length} attempted`,
       stats,
       summary,
-      jobs: insertedJobs?.slice(0, 10) || [] // Return first 10 for preview
+      jobs: [] // Don't return jobs to reduce response size
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });

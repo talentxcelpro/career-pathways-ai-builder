@@ -31,6 +31,9 @@ import UnifiedDashboard from './pages/UnifiedDashboard';
 import UserManagement from "@/pages/admin/UserManagement";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
 import { AdminScrapedJobApplications } from "@/components/admin/AdminScrapedJobApplications";
+import JobsByRole from "@/pages/JobsByRole";
+import JobsByLocation from "@/pages/JobsByLocation";
+import JobsBySkill from "@/pages/JobsBySkill";
 // import { CVDatabase } from "@/components/employer/CVDatabase";
 // import { OutreachCampaign } from "@/components/employer/OutreachCampaign";
 
@@ -138,8 +141,9 @@ const App = () => {
                       <Route path="/privacy" element={<Navigate to="/privacypolicy" replace />} />
                       
 {/* SEO Routes - Dynamic categories */}
-                      <Route path="/jobs/location/:location" element={<SEOJobsLocation />} />
-                      <Route path="/jobs/role/:role" element={<SEOJobsRole />} />
+                      <Route path="/jobs/role/:role" element={<JobsByRole />} />
+                      <Route path="/jobs/location/:location" element={<JobsByLocation />} />
+                      <Route path="/jobs/skill/:skill" element={<JobsBySkill />} />
                       <Route path="/jobs/:role/:location" element={<SEOJobsRoleLocation />} />
                       <Route path="/companies/location/:location" element={<SEOCompaniesLocation />} />
                       <Route path="/posts/:id" element={<SEOPosts />} />
