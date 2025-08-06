@@ -87,33 +87,70 @@ const JobDetails = () => {
       let { data, error } = await query.maybeSingle();
       console.log('🔍 First query result:', data ? 'Found' : 'Not found', error);
 
-      // If no exact slug match found, try partial slug match
+      // If no exact slug match found, try to find the closest match
       if (!data && fetchBySeoSlug) {
-        console.log('🔍 Trying partial slug match for:', `${slugOrId}%`);
-        const partialQuery = supabase
-          .from('jobs')
-          .select(`
-            *,
-            companies (
-              id,
-              name,
-              logo_url,
-              industry,
-              description,
-              website,
-              founded_year
-            )
-          `)
-          .eq('is_active', true)
-          .eq('job_status', 'open')
-          .ilike('seo_slug', `${slugOrId}%`);
+        console.log('🔍 Trying partial slug match for:', slugOrId);
         
-        const { data: partialData, error: partialError } = await partialQuery.maybeSingle();
-        console.log('🔍 Partial query result:', partialData ? 'Found' : 'Not found', partialError);
-        if (partialData) {
-          data = partialData;
-        } else if (partialError) {
-          error = partialError;
+        // First try removing the last segment (in case of extra suffix like -1)
+        const parts = slugOrId.split('-');
+        if (parts.length > 4) {
+          const shorterSlug = parts.slice(0, -1).join('-');
+          console.log('🔍 Trying shorter slug:', shorterSlug);
+          
+          const { data: shorterData, error: shorterError } = await supabase
+            .from('jobs')
+            .select(`
+              *,
+              companies (
+                id,
+                name,
+                logo_url,
+                industry,
+                description,
+                website,
+                founded_year
+              )
+            `)
+            .eq('is_active', true)
+            .eq('job_status', 'open')
+            .eq('seo_slug', shorterSlug)
+            .maybeSingle();
+          
+          if (shorterData) {
+            data = shorterData;
+            console.log('🔍 Found job with shorter slug, will redirect');
+          } else if (!shorterError || shorterError.code === 'PGRST116') {
+            // If shorter didn't work, try partial match
+            console.log('🔍 Trying partial match with LIKE:', `${slugOrId.substring(0, 30)}%`);
+            const { data: partialData, error: partialError } = await supabase
+              .from('jobs')
+              .select(`
+                *,
+                companies (
+                  id,
+                  name,
+                  logo_url,
+                  industry,
+                  description,
+                  website,
+                  founded_year
+                )
+              `)
+              .eq('is_active', true)
+              .eq('job_status', 'open')
+              .ilike('seo_slug', `${slugOrId.substring(0, 30)}%`)
+              .limit(1)
+              .maybeSingle();
+            
+            if (partialData) {
+              data = partialData;
+              console.log('🔍 Found job with partial match');
+            } else if (partialError && partialError.code !== 'PGRST116') {
+              error = partialError;
+            }
+          } else {
+            error = shorterError;
+          }
         }
       }
 
@@ -124,10 +161,14 @@ const JobDetails = () => {
 
   // Redirect to SEO URL if needed
   useEffect(() => {
-    if (job && !isValidJobSlug(slugOrId || '') && job.seo_slug) {
-      const seoUrl = getJobDetailUrl(job);
-      if (seoUrl !== `/jobs/${slugOrId}`) {
-        navigate(seoUrl, { replace: true });
+    if (job && job.seo_slug) {
+      const correctUrl = `/jobs/${job.seo_slug}`;
+      const currentUrl = `/jobs/${slugOrId}`;
+      
+      // If the current URL doesn't match the correct one, redirect
+      if (correctUrl !== currentUrl) {
+        console.log('🔄 Redirecting from', currentUrl, 'to', correctUrl);
+        navigate(correctUrl, { replace: true });
       }
     }
   }, [job, slugOrId, navigate]);
