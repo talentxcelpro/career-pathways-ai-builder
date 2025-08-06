@@ -7362,6 +7362,7 @@ export type Database = {
           content: string
           created_at: string | null
           created_by: string | null
+          html_template: string | null
           id: string
           is_active: boolean | null
           name: string
@@ -7374,6 +7375,7 @@ export type Database = {
           content: string
           created_at?: string | null
           created_by?: string | null
+          html_template?: string | null
           id?: string
           is_active?: boolean | null
           name: string
@@ -7386,6 +7388,7 @@ export type Database = {
           content?: string
           created_at?: string | null
           created_by?: string | null
+          html_template?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
