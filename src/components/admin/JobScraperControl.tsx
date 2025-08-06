@@ -34,16 +34,63 @@ export const JobScraperControl = () => {
       console.log('Job Count:', limit);
       console.log('Job Type:', jobType);
       
-      // Use Supabase client for proper authentication
-      const { data, error } = await supabase.functions.invoke('real-job-scraper', {
-        body: { 
-          limit, 
-          jobType,
-          sources: ['government', 'private', 'international']
-        }
-      });
+      // Try direct HTTP call first as fallback
+      const directCallUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/real-job-scraper';
+      const payload = { 
+        limit, 
+        jobType,
+        sources: ['government', 'private', 'international']
+      };
       
-      console.log('📊 Scraper response:', { data, error });
+      console.log('🔗 Making direct HTTP call to:', directCallUrl);
+      console.log('📦 Payload:', payload);
+      
+      let data, error;
+      
+      try {
+        // Method 1: Direct HTTP call with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        
+        const response = await fetch(directCallUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        console.log('📡 Direct response status:', response.status);
+        console.log('📡 Direct response ok:', response.ok);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ Direct call failed:', errorText);
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        
+        data = await response.json();
+        console.log('✅ Direct call successful:', data);
+        
+      } catch (directError) {
+        console.log('🔄 Direct call failed, trying Supabase client...');
+        console.error('Direct error:', directError);
+        
+        // Method 2: Fallback to Supabase client
+        const result = await supabase.functions.invoke('real-job-scraper', {
+          body: payload
+        });
+        
+        data = result.data;
+        error = result.error;
+        
+        console.log('📊 Supabase client response:', { data, error });
+      }
       
       if (error) {
         console.error('❌ Supabase invoke error:', error);
@@ -72,7 +119,6 @@ export const JobScraperControl = () => {
         toast.success('🗺️ Sitemap updated with new jobs');
       } catch (sitemapError) {
         console.warn('Sitemap generation failed:', sitemapError);
-        // Don't show error toast for non-critical sitemap failure
       }
 
     } catch (error) {
@@ -111,52 +157,62 @@ export const JobScraperControl = () => {
       console.log('=== Testing Edge Function Connectivity ===');
       toast.loading('Testing function connectivity...', { id: 'test' });
       
-      // Test the simple test-connection function first
-      console.log('Testing basic connectivity...');
-      const testResponse = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/test-connection', {
+      // Test direct HTTP call to real-job-scraper
+      console.log('Testing real-job-scraper function directly...');
+      
+      const directUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/real-job-scraper';
+      console.log('🔗 Testing URL:', directUrl);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      
+      const response = await fetch(directUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc`
         },
-        body: JSON.stringify({ message: 'Hello from admin!' })
+        body: JSON.stringify({ limit: 10, jobType: 'mixed' }),
+        signal: controller.signal
       });
       
-      if (!testResponse.ok) {
-        throw new Error(`Basic connectivity failed: HTTP ${testResponse.status}`);
+      clearTimeout(timeoutId);
+      
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', [...response.headers.entries()]);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Response not ok:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
       
-      const testData = await testResponse.json();
-      console.log('Test connection result:', testData);
+      const data = await response.json();
+      console.log('✅ Direct test successful:', data);
       
-      if (!testData?.success) {
-        throw new Error('Basic connectivity test failed');
-      }
-      
-      // Now test the real-job-scraper function
-      console.log('Testing real-job-scraper function...');
-      const { data: scraperData, error: scraperError } = await supabase.functions.invoke('real-job-scraper', {
-        body: { limit: 10, jobType: 'mixed' }
-      });
-      
-      console.log('📊 Scraper test result:', { scraperData, scraperError });
-      
-      if (scraperError) {
-        toast.error(`❌ Job scraper test failed: ${scraperError.message}`, { id: 'test' });
-        return;
-      }
-      
-      if (scraperData?.success) {
-        toast.success('✅ All function tests successful!', { id: 'test' });
-        if (scraperData.stats) setStats(scraperData.stats);
-        if (scraperData.jobs) setRecentJobs(scraperData.jobs);
+      if (data?.success) {
+        toast.success(`✅ Function test successful! Generated ${data.stats?.published_jobs || 0} jobs`, { id: 'test' });
+        if (data.stats) setStats(data.stats);
+        if (data.jobs) setRecentJobs(data.jobs);
       } else {
-        toast.error(`❌ Job scraper test failed: ${scraperData?.error || 'Unknown error'}`, { id: 'test' });
+        toast.error(`❌ Function test failed: ${data?.error || 'Unknown error'}`, { id: 'test' });
       }
+      
     } catch (error) {
       console.error('=== Test Call Error Details ===');
       console.error('Error:', error);
-      toast.error(`❌ Test failed: ${error?.message || 'Unknown error'}`, { id: 'test' });
+      console.error('Error name:', error?.name);
+      console.error('Error message:', error?.message);
+      
+      let errorMessage = 'Unknown error';
+      if (error?.name === 'AbortError') {
+        errorMessage = 'Request timed out after 15 seconds';
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(`❌ Test failed: ${errorMessage}`, { id: 'test' });
     }
   };
 
