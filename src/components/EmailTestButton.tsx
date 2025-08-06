@@ -21,9 +21,17 @@ export const EmailTestButton = () => {
       console.log('📧 Email payload:', emailPayload);
       console.log('📏 Payload size:', JSON.stringify(emailPayload).length, 'bytes');
       
-      // Use the primary AWS SES function 
-      const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
-        body: emailPayload
+      // Use the restored SMTP function (working system from Aug 2nd)
+      const { data, error } = await supabase.functions.invoke('send-automated-email', {
+        body: {
+          template_name: 'test_email',
+          recipient_email: emailPayload.to,
+          recipient_name: 'Test User',
+          template_data: {
+            subject: emailPayload.subject,
+            content: emailPayload.html
+          }
+        }
       });
       
       console.log('📨 Raw response:', { data, error });
