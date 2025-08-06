@@ -41,43 +41,36 @@ export const useBulkCSVImport = () => {
       setConnectionStatus('testing');
       console.log('Testing connection to bulk-csv-import function...');
       
-      const SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
-      // Use secure authentication instead of hardcoded key
-      const functionUrl = `${SUPABASE_URL}/functions/v1/bulk-csv-import`;
-      
-      console.log('Function URL:', functionUrl);
-
-      // Send test: true for connection test
-      const testPayload = { test: true };
-      console.log('Sending test payload:', testPayload);
-
-      const response = await fetch(functionUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Use secure authentication via Supabase client instead
-        },
-        body: JSON.stringify(testPayload)
+      // Use Supabase client method instead of direct fetch
+      const { data, error } = await supabase.functions.invoke('bulk-csv-import', {
+        body: { test: true }
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Response error:', errorText);
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      console.log('Connection test result:', { data, error });
+
+      if (error) {
+        console.error('Connection test failed:', error);
+        setConnectionStatus('unhealthy');
+        toast.error('Connection test failed. Please check the Edge Function deployment.');
+        return false;
       }
 
-      const result = await response.json();
-      console.log('Test response:', result);
-      
-      setConnectionStatus('healthy');
-      console.log('✅ Connection test successful');
-      return true;
+      if (data?.success) {
+        console.log('✅ Connection test successful:', data);
+        setConnectionStatus('healthy');
+        toast.success('Connection test successful!');
+        return true;
+      } else {
+        console.error('Unexpected response:', data);
+        setConnectionStatus('unhealthy');
+        toast.error('Unexpected response from edge function');
+        return false;
+      }
+
     } catch (error: any) {
       console.error('❌ Connection test failed:', error);
       setConnectionStatus('unhealthy');
+      toast.error('Connection test failed. Please check the Edge Function deployment.');
       return false;
     }
   };
@@ -159,68 +152,52 @@ export const useBulkCSVImport = () => {
       // Update progress with total count
       setProgress(prev => ({ ...prev, total: users.length }));
 
-      const SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
-      // Use secure authentication instead of hardcoded key
-      const functionUrl = `${SUPABASE_URL}/functions/v1/bulk-csv-import`;
-
-      // Fix: Send the parsed users array in csvData field
-      const payload = {
-        csvData: users, // This is the key fix - send parsed user array
-        batchSize: options.batchSize || 50,
-        maxConcurrent: options.maxConcurrent || 3,
-        speed: options.speed || 'medium'
-      };
-
-      console.log('Sending import request to:', functionUrl);
-      console.log('Payload summary:', { 
-        csvDataCount: users.length, 
-        firstUser: users[0],
-        batchSize: payload.batchSize, 
-        maxConcurrent: payload.maxConcurrent,
-        speed: payload.speed 
+      // Use Supabase client method for better reliability and authentication
+      console.log('Starting bulk import via Supabase client...');
+      
+      const { data, error } = await supabase.functions.invoke('bulk-csv-import', {
+        body: {
+          csvData: users, // Send parsed user array
+          batchSize: options.batchSize || 50,
+          maxConcurrent: options.maxConcurrent || 3,
+          speed: options.speed || 'medium'
+        }
       });
 
-      const response = await fetch(functionUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Use secure authentication via Supabase client instead
-        },
-        body: JSON.stringify(payload)
-      });
+      console.log('Import response:', { data, error });
 
-      console.log('Import response status:', response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Import response error:', errorText);
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      if (error) {
+        console.error('Import failed with error:', error);
+        throw new Error(`Import failed: ${error.message}`);
       }
 
-      const result = await response.json();
-      console.log('Import response:', result);
-
-      if (result.error) {
-        throw new Error(result.error);
+      if (!data?.success) {
+        console.error('Import unsuccessful:', data);
+        throw new Error(data?.error || 'Import failed - unknown error');
       }
 
-      // Update final progress
+      const result = data;
+      console.log('Import completed successfully:', result);
+
+      // Update final progress with the response data
+      const finalProgress = result.progress || {};
       setProgress(prev => ({
         ...prev,
-        total: result.total || prev.total,
-        processed: result.processed || result.successful + result.failed,
-        successful: result.successful || 0,
-        failed: result.failed || 0,
-        errors: result.errors || [],
-        totalTime: result.totalTime,
-        usersPerSecond: result.usersPerSecond,
-        successRate: result.successRate
+        total: finalProgress.total || users.length,
+        processed: finalProgress.processed || 0,
+        successful: finalProgress.successful || 0,
+        failed: finalProgress.failed || 0,
+        errors: finalProgress.errors || [],
+        totalTime: finalProgress.totalTime || 0,
+        usersPerSecond: finalProgress.usersPerSecond || 0,
+        successRate: finalProgress.successRate || 0
       }));
 
-      toast.success(`Import completed! ${result.successful} users imported successfully.`);
+      toast.success(`Import completed! ${finalProgress.successful || 0} users imported successfully.`);
       
-      if (result.failed > 0) {
-        toast.warning(`${result.failed} users failed to import. Check the progress details for more information.`);
+      if (finalProgress.failed > 0) {
+        toast.warning(`${finalProgress.failed} users failed to import. Check console for details.`);
+        console.warn('Failed users:', finalProgress.errors);
       }
 
       return result;
