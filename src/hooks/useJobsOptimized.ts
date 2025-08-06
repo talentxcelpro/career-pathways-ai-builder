@@ -64,11 +64,11 @@ export const useJobsOptimized = (
 
       console.log('✅ RPC result:', data);
       
-      // Handle both array and single object responses
-      const result = Array.isArray(data) ? data[0] : data;
+      // The RPC function returns a JSONB object directly, not an array
+      const result = data;
       
       return {
-        jobs: Array.isArray(result?.jobs) ? result.jobs : (result?.jobs ? [result.jobs] : []),
+        jobs: Array.isArray(result?.jobs) ? result.jobs : [],
         totalCount: result?.total_count || 0,
         hasMore: result?.has_more || false,
         page: pageParam
@@ -109,11 +109,11 @@ export const useJobsOptimized = (
 
       console.log('✅ RPC result:', data);
       
-      // Handle both array and single object responses
-      const result = Array.isArray(data) ? data[0] : data;
+      // The RPC function returns a JSONB object directly, not an array
+      const result = data;
       
       return {
-        jobs: Array.isArray(result?.jobs) ? result.jobs : (result?.jobs ? [result.jobs] : []),
+        jobs: Array.isArray(result?.jobs) ? result.jobs : [],
         totalCount: result?.total_count || 0,
         hasMore: result?.has_more || false
       };

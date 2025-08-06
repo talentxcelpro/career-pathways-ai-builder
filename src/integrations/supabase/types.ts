@@ -20483,11 +20483,7 @@ export type Database = {
           p_skills?: string[]
           p_sort_by?: string
         }
-        Returns: {
-          jobs: Json
-          total_count: number
-          has_more: boolean
-        }[]
+        Returns: Json
       }
       get_or_create_user_referral: {
         Args: { user_uuid: string }
