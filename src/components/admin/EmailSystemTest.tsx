@@ -9,8 +9,16 @@ const EmailSystemTest = () => {
   const [testEmail, setTestEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  console.log('🔧 EmailSystemTest component rendered');
+  console.log('📧 Current test email state:', testEmail);
+  console.log('⏳ Current loading state:', isLoading);
+
   const testWelcomeEmail = async () => {
+    console.log('🚀 Welcome email test function called');
+    console.log('📧 Test email:', testEmail);
+    
     if (!testEmail) {
+      console.log('❌ No email provided');
       toast.error('Please enter an email address');
       return;
     }
