@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { extractJobId, getJobDetailUrl, isValidJobSlug } from '@/utils/seoUrls';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -26,18 +27,29 @@ import { PublicJobSaveButton } from '@/components/jobs/PublicJobSaveButton';
 import { updateMetaTags } from '@/utils/metaTags';
 
 const JobDetails = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slugOrId } = useParams<{ slugOrId: string }>();
   const navigate = useNavigate();
 
-  console.log('🔍 JobDetails rendered for ID:', id);
+  console.log('🔍 JobDetails rendered for slugOrId:', slugOrId);
 
   // Fetch job details (no authentication required)
   const { data: job, isLoading, error } = useQuery({
-    queryKey: ['job', id],
+    queryKey: ['job', slugOrId],
     queryFn: async () => {
-      if (!id) throw new Error('Job ID is required');
+      if (!slugOrId) throw new Error('Job slug or ID is required');
       
-      const { data, error } = await supabase
+      let jobId = slugOrId;
+      let fetchBySeoSlug = false;
+
+      // Check if it's a SEO slug or UUID
+      if (isValidJobSlug(slugOrId)) {
+        fetchBySeoSlug = true;
+      } else if (slugOrId.length !== 36) {
+        // Extract ID from slug if not a full UUID
+        jobId = extractJobId(slugOrId);
+      }
+
+      let query = supabase
         .from('jobs')
         .select(`
           *,
@@ -51,15 +63,34 @@ const JobDetails = () => {
             founded_year
           )
         `)
-        .eq('id', id)
         .eq('is_active', true)
-        .eq('job_status', 'open')
-        .single();
+        .eq('job_status', 'open');
+
+      if (fetchBySeoSlug) {
+        query = query.eq('seo_slug', slugOrId);
+      } else {
+        // Try exact match first, then partial match for short IDs
+        query = jobId?.length === 36 
+          ? query.eq('id', jobId)
+          : query.ilike('id', `${jobId}%`);
+      }
+
+      const { data, error } = await query.single();
 
       if (error) throw error;
       return data;
     },
   });
+
+  // Redirect to SEO URL if needed
+  useEffect(() => {
+    if (job && !isValidJobSlug(slugOrId || '') && job.seo_slug) {
+      const seoUrl = getJobDetailUrl(job);
+      if (seoUrl !== `/jobs/${slugOrId}`) {
+        navigate(seoUrl, { replace: true });
+      }
+    }
+  }, [job, slugOrId, navigate]);
 
   // Update meta tags and structured data for SEO
   useEffect(() => {
@@ -71,7 +102,7 @@ const JobDetails = () => {
       updateMetaTags({
         title: metaTitle,
         description: metaDescription,
-        url: `${window.location.origin}/jobs/${id}`,
+        url: `${window.location.origin}/jobs/${job.seo_slug || slugOrId}`,
         keywords: (job as any).keywords || [
           job.title.toLowerCase(),
           `${job.title.toLowerCase()} jobs`,
@@ -119,10 +150,10 @@ const JobDetails = () => {
             "unitText": "YEAR"
           }
         } : undefined,
-        "url": `${window.location.origin}/jobs/${id}`,
+        "url": `${window.location.origin}/jobs/${job.seo_slug || slugOrId}`,
         "applicationContact": {
           "@type": "ContactPoint",
-          "url": `${window.location.origin}/jobs/${id}/apply`,
+          "url": `${window.location.origin}/jobs/${job.seo_slug || slugOrId}/apply`,
           "contactType": "Application Portal"
         },
         "industry": job.companies?.industry,
@@ -151,7 +182,7 @@ const JobDetails = () => {
         }
       }
     }
-  }, [job, id]);
+  }, [job, slugOrId]);
 
   // Increment view count
   useEffect(() => {

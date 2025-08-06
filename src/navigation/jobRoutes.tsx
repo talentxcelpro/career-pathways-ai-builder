@@ -16,6 +16,7 @@ import AppliedJobs from "../pages/jobs/AppliedJobs";
 import JobApplicants from "../pages/jobs/JobApplicants";
 import ApplicantDetail from "../pages/jobs/ApplicantDetail";
 import ComprehensiveJobs from "../pages/ComprehensiveJobs";
+import { JobUrlRedirect } from "../components/seo/JobUrlRedirect";
 
 export const jobRoutes = [
   {
@@ -26,8 +27,13 @@ export const jobRoutes = [
   },
   {
     title: "Job Details",
-    to: "/jobs/:id",
+    to: "/jobs/:slugOrId",
     page: <JobDetails />,
+  },
+  {
+    title: "Legacy Job Redirect",
+    to: "/job/:slugOrId",
+    page: <JobUrlRedirect />,
   },
   {
     title: "Apply for Job",

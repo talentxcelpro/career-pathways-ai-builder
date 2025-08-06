@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 
 export const SitemapRedirect = () => {
   useEffect(() => {
-    // Redirect to the dynamic sitemap function
-    window.location.href = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/api-sitemap';
+    // Redirect to the enhanced sitemap function with SEO URLs
+    window.location.href = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/enhanced-sitemap';
   }, []);
 
   return (

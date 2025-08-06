@@ -20395,7 +20395,9 @@ export type Database = {
         Returns: string
       }
       generate_job_seo_slug: {
-        Args: { job_title: string; company_name: string; location: string }
+        Args:
+          | { job_title: string; company_name: string; location: string }
+          | { job_title: string; job_location: string; job_id: string }
         Returns: string
       }
       generate_referral_code: {
