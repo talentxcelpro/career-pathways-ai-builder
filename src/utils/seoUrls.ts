@@ -21,11 +21,11 @@ export const generateJobSlug = (title: string, location?: string, id?: string): 
 export const parseJobSlug = (slug: string): { titleSlug: string; locationSlug: string; id: string } => {
   const parts = slug.split('-');
   
-  // Last part should be the 8-character ID
+  // Last part should be the 8-character ID or numeric ID
   const id = parts[parts.length - 1];
   
-  // If last part looks like an ID (8 alphanumeric characters)
-  if (id.length === 8 && /^[a-f0-9]{8}$/i.test(id)) {
+  // If last part looks like an ID (8 alphanumeric characters OR numbers)
+  if ((id.length === 8 && /^[a-f0-9]{8}$/i.test(id)) || /^\d+$/.test(id)) {
     const remainingParts = parts.slice(0, -1);
     
     // Find location part (common location names)
@@ -73,8 +73,8 @@ export const isValidJobSlug = (slug: string): boolean => {
   const parts = slug.split('-');
   const lastPart = parts[parts.length - 1];
   
-  // Should end with 8-character hex ID
-  return lastPart.length === 8 && /^[a-f0-9]{8}$/i.test(lastPart);
+  // Should end with 8-character hex ID or numeric ID
+  return (lastPart.length === 8 && /^[a-f0-9]{8}$/i.test(lastPart)) || /^\d+$/.test(lastPart);
 };
 
 export const getJobDetailUrl = (job: any): string => {
@@ -108,6 +108,10 @@ export const extractJobId = (slugOrId: string): string => {
   // If it's a slug, extract the ID part
   const parsed = parseJobSlug(slugOrId);
   if (parsed.id) {
+    // If it's a numeric ID, we need to find the job by SEO slug instead
+    if (/^\d+$/.test(parsed.id)) {
+      return slugOrId; // Return the full slug for lookup
+    }
     return parsed.id;
   }
   
