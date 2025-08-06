@@ -21,6 +21,7 @@ export const EmailConfigurationPanel = () => {
   const [saving, setSaving] = useState(false);
   const [testEmailSending, setTestEmailSending] = useState(false);
   const [testEmail, setTestEmail] = useState('');
+  const [testingConnectivity, setTestingConnectivity] = useState(false);
   const { toast } = useToast();
 
   const settingLabels: Record<string, { label: string; description: string; type: 'input' | 'textarea' }> = {
@@ -123,6 +124,51 @@ export const EmailConfigurationPanel = () => {
       });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const testSESConnectivity = async () => {
+    setTestingConnectivity(true);
+    try {
+      console.log('🔧 Testing SES connectivity...');
+      
+      const { data, error } = await supabase.functions.invoke('test-ses-connectivity');
+      
+      console.log('📨 SES connectivity response:', { data, error });
+      
+      if (error) {
+        console.error('❌ SES connectivity error:', error);
+        toast({
+          title: "SES Test Failed",
+          description: `Failed to test SES connectivity: ${error.message}`,
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (data?.success) {
+        console.log('✅ SES connectivity successful:', data);
+        toast({
+          title: "SES Connectivity Test Passed",
+          description: "Amazon SES credentials and configuration are working correctly!",
+        });
+      } else {
+        console.error('❌ SES configuration issues:', data);
+        toast({
+          title: "SES Configuration Issues",
+          description: data?.error || "SES connectivity test failed",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error('SES connectivity test error:', error);
+      toast({
+        title: "Error",
+        description: `Failed to test SES connectivity: ${error.message}`,
+        variant: "destructive",
+      });
+    } finally {
+      setTestingConnectivity(false);
     }
   };
 
@@ -234,24 +280,41 @@ export const EmailConfigurationPanel = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h4 className="font-semibold text-green-800 mb-2">✅ Amazon SES Active</h4>
-            <p className="text-sm text-green-700 mb-3">
-              Your Amazon SES is configured and ready for email delivery. Configuration details:
-            </p>
-            <ul className="text-sm text-green-700 space-y-1">
-              <li>• <strong>Region:</strong> eu-north-1 (Stockholm)</li>
-              <li>• <strong>Service:</strong> Amazon Simple Email Service</li>
-              <li>• <strong>Function:</strong> send-email-aws-ses</li>
-              <li>• <strong>Status:</strong> ✅ Active and Ready</li>
-            </ul>
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
-              <p className="text-sm text-blue-700">
-                <strong>Credentials:</strong> Amazon SES credentials are securely stored in Supabase Edge Function secrets.
-                To update: Supabase Dashboard → Edge Functions → Secrets → Update SES_ACCESS_KEY_ID and SES_SECRET_ACCESS_KEY.
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h4 className="font-semibold text-green-800 mb-2">✅ Amazon SES Active</h4>
+              <p className="text-sm text-green-700 mb-3">
+                Your Amazon SES is configured and ready for email delivery. Configuration details:
               </p>
+              <ul className="text-sm text-green-700 space-y-1">
+                <li>• <strong>Region:</strong> eu-north-1 (Stockholm)</li>
+                <li>• <strong>Service:</strong> Amazon Simple Email Service</li>
+                <li>• <strong>Function:</strong> send-email-aws-ses</li>
+                <li>• <strong>Status:</strong> ✅ Active and Ready</li>
+              </ul>
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                <p className="text-sm text-blue-700">
+                  <strong>Credentials:</strong> Amazon SES credentials are securely stored in Supabase Edge Function secrets.
+                  To update: Supabase Dashboard → Edge Functions → Secrets → Update SES_ACCESS_KEY_ID and SES_SECRET_ACCESS_KEY.
+                </p>
+              </div>
+              <div className="mt-4">
+                <Button 
+                  onClick={testSESConnectivity} 
+                  disabled={testingConnectivity}
+                  variant="outline"
+                  size="sm"
+                >
+                  {testingConnectivity ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Testing...
+                    </>
+                  ) : (
+                    'Test SES Connectivity'
+                  )}
+                </Button>
+              </div>
             </div>
-          </div>
         </CardContent>
       </Card>
 
