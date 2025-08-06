@@ -86,7 +86,6 @@ Deno.serve(async (req) => {
       html: html,
       content: undefined, // Ensure no text content that could trigger quoted-printable
       headers: {
-        'MIME-Version': '1.0',
         'Content-Transfer-Encoding': '8bit'
       }
     });
