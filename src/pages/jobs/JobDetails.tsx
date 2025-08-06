@@ -38,15 +38,20 @@ const JobDetails = () => {
     queryFn: async () => {
       if (!slugOrId) throw new Error('Job slug or ID is required');
       
+      console.log('🔍 Processing slugOrId:', slugOrId);
+      console.log('🔍 isValidJobSlug check:', isValidJobSlug(slugOrId));
+      
       let jobId = slugOrId;
       let fetchBySeoSlug = false;
 
       // Check if it's a SEO slug or UUID
       if (isValidJobSlug(slugOrId)) {
         fetchBySeoSlug = true;
+        console.log('🔍 Will fetch by SEO slug');
       } else if (slugOrId.length !== 36) {
         // Extract ID from slug if not a full UUID
         jobId = extractJobId(slugOrId);
+        console.log('🔍 Extracted jobId:', jobId);
       }
 
       let query = supabase
@@ -66,8 +71,11 @@ const JobDetails = () => {
         .eq('is_active', true)
         .eq('job_status', 'open');
 
+      console.log('🔍 Query setup - fetchBySeoSlug:', fetchBySeoSlug, 'jobId:', jobId);
+
       if (fetchBySeoSlug) {
         // Try exact match first
+        console.log('🔍 Trying exact slug match for:', slugOrId);
         query = query.eq('seo_slug', slugOrId);
       } else {
         // Try exact match first, then partial match for short IDs
@@ -77,9 +85,11 @@ const JobDetails = () => {
       }
 
       let { data, error } = await query.maybeSingle();
+      console.log('🔍 First query result:', data ? 'Found' : 'Not found', error);
 
       // If no exact slug match found, try partial slug match
       if (!data && fetchBySeoSlug) {
+        console.log('🔍 Trying partial slug match for:', `${slugOrId}%`);
         const partialQuery = supabase
           .from('jobs')
           .select(`
@@ -99,6 +109,7 @@ const JobDetails = () => {
           .ilike('seo_slug', `${slugOrId}%`);
         
         const { data: partialData, error: partialError } = await partialQuery.maybeSingle();
+        console.log('🔍 Partial query result:', partialData ? 'Found' : 'Not found', partialError);
         if (partialData) {
           data = partialData;
         } else if (partialError) {

@@ -69,12 +69,19 @@ export const parseJobSlug = (slug: string): { titleSlug: string; locationSlug: s
 };
 
 export const isValidJobSlug = (slug: string): boolean => {
-  // Check if slug has the expected format
+  // Check if it's a UUID (36 chars with dashes)
+  if (slug.length === 36 && slug.includes('-')) {
+    return false; // This is a UUID, not a slug
+  }
+  
+  // If it contains multiple dashes and looks like a slug, treat it as valid
   const parts = slug.split('-');
   const lastPart = parts[parts.length - 1];
   
-  // Should end with 8-character hex ID or numeric ID
-  return (lastPart.length === 8 && /^[a-f0-9]{8}$/i.test(lastPart)) || /^\d+$/.test(lastPart);
+  // Valid if it ends with 8-character hex ID, numeric ID, or is a multi-part slug
+  return (lastPart.length === 8 && /^[a-f0-9]{8}$/i.test(lastPart)) || 
+         /^\d+$/.test(lastPart) || 
+         (parts.length >= 3 && parts.every(part => part.length > 0));
 };
 
 export const getJobDetailUrl = (job: any): string => {
