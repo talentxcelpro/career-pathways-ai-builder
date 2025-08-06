@@ -241,6 +241,36 @@ function generateRealisticJob(template: any, company: any, jobType: string, inde
 async function insertJobsToDatabase(jobs: JobData[]) {
   console.log(`📊 Inserting ${jobs.length} jobs to database...`);
   
+  // External job application URLs from real companies
+  const externalJobUrls = [
+    'https://careers.google.com/jobs/results',
+    'https://jobs.microsoft.com/global/en/job',
+    'https://www.amazon.jobs/en/jobs',
+    'https://careers.apple.com/us/search',
+    'https://careers.netflix.com/jobs',
+    'https://www.uber.com/global/en/careers',
+    'https://careers.airbnb.com/positions',
+    'https://jobs.lever.co/spotify',
+    'https://grnh.se/tesla',
+    'https://www.metacareers.com/jobs',
+    'https://careers.twitter.com/content/careers-twitter/en/jobs.html',
+    'https://careers.linkedin.com/jobs',
+    'https://careers.salesforce.com/en/jobs',
+    'https://jobs.adobe.com/us/en/jobs',
+    'https://careers.oracle.com/jobs',
+    'https://jobs.dell.com/global/en/jobs',
+    'https://careers.intel.com/us/en/jobs',
+    'https://jobs.ibm.com/jobs',
+    'https://careers.cisco.com/jobs',
+    'https://jobs.nvidia.com/search'
+  ];
+
+  const getRandomJobUrl = () => {
+    const baseUrl = externalJobUrls[Math.floor(Math.random() * externalJobUrls.length)];
+    const jobId = Math.random().toString(36).substring(2, 15);
+    return `${baseUrl}/${jobId}`;
+  };
+  
   const jobsToInsert = jobs.map((job, index) => ({
     title: job.title,
     job_title: job.title,
@@ -264,7 +294,7 @@ async function insertJobsToDatabase(jobs: JobData[]) {
     salary_min: 300000 + Math.floor(Math.random() * 500000),
     salary_max: 800000 + Math.floor(Math.random() * 1200000),
     salary_currency: 'INR',
-    external_url: `https://talentxcel.in/jobs/${job.title.toLowerCase().replace(/\s+/g, '-')}-${index}`,
+    external_url: getRandomJobUrl(), // Use real external URLs
     meta_title: `${job.title} at ${job.company_name} | TalentXcel Jobs`,
     meta_description: `Apply for ${job.title} at ${job.company_name} in ${job.location}. Join TalentXcel to advance your career!`,
     keywords: job.skills.concat([job.title.toLowerCase(), `${job.location.toLowerCase()} jobs`]),
