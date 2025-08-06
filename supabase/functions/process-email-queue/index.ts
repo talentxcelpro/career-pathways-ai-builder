@@ -91,13 +91,19 @@ const handler = async (req: Request): Promise<Response> => {
           })
           .eq('id', email.id);
 
-        // Send email via the automated email function (SMTP - working system from Aug 4th)
-        const emailResponse = await supabase.functions.invoke('send-automated-email', {
+        // Send email via SMTP (working system)
+        const emailResponse = await supabase.functions.invoke('send-email-smtp', {
           body: {
-            template_name: email.trigger_type,
-            recipient_email: email.recipient_email,
-            recipient_name: email.recipient_name,
-            template_data: email.template_data
+            to: email.recipient_email,
+            from: 'TalentXcel <noreply@talentxcel.in>',
+            subject: `TalentXcel - ${email.trigger_type.replace('_', ' ').toUpperCase()}`,
+            html: `<h1>Hello ${email.recipient_name || 'User'}!</h1><p>This is a ${email.trigger_type} notification from TalentXcel.</p>`,
+            smtp: {
+              host: Deno.env.get('SMTP_HOST') || 'email-smtp.eu-north-1.amazonaws.com',
+              port: '587',
+              user: Deno.env.get('SMTP_USER') || '',
+              pass: Deno.env.get('SMTP_PASS') || ''
+            }
           }
         });
 
