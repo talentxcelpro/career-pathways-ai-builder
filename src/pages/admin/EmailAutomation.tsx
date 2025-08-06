@@ -7,6 +7,7 @@ import { EmailConfigurationPanel } from '@/components/admin/EmailConfigurationPa
 import { EmailSystemTester } from '@/components/admin/EmailSystemTester';
 import { EmailTemplateManager } from '@/components/admin/EmailTemplateManager';
 import { EmailAutomationQueueTester } from '@/components/admin/EmailAutomationQueueTester';
+import EmailTemplateTest from '@/components/admin/EmailTemplateTest';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Settings, Monitor, Send, TestTube, Clock } from "lucide-react";
 
@@ -50,6 +51,7 @@ const EmailAutomationPage = () => {
 
         <TabsContent value="testing" className="space-y-6">
           <EmailSystemTester />
+          <EmailTemplateTest />
         </TabsContent>
 
         <TabsContent value="templates" className="space-y-6">
