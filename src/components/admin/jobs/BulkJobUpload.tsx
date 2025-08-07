@@ -104,87 +104,121 @@ export const BulkJobUpload = () => {
             batchName: batchName.trim()
           });
           
-          // Test with minimal payload first
-          console.log('=== DEBUGGING EDGE FUNCTION CALL ===');
-          console.log('1. About to call bulk-job-upload function');
-          console.log('2. CSV Data length:', csvData.length);
-          console.log('3. Batch name:', batchName.trim());
+          // Let's debug the Supabase client and try different approaches
+          console.log('=== DEBUGGING EDGE FUNCTION ACCESS ===');
           
-          // First, test with a tiny payload to see if the function works at all
-          const testPayload = {
-            csvData: "title,company_name,location,employment_type,description\nTest Job,Test Company,Test Location,Full-time,Test Description",
-            batchName: "TEST_BATCH"
-          };
+          // Get Supabase config from environment
+          const supabaseUrl = 'https://dthlgsnakhoftinssokm.supabase.co';
+          const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
           
-          console.log('4. Testing with minimal payload first...');
+          console.log('1. Using direct fetch to Edge Function...');
           
+          // Try direct fetch approach which often works better
           try {
-            const { data: testData, error: testError } = await supabase.functions.invoke('bulk-job-upload', {
-              body: testPayload
+            const directResponse = await fetch(`${supabaseUrl}/functions/v1/bulk-job-upload`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${session.session.access_token}`,
+                'Content-Type': 'application/json',
+                'apikey': supabaseAnonKey
+              },
+              body: JSON.stringify({
+                csvData,
+                batchName: batchName.trim()
+              })
             });
             
-            console.log('5. Test call result:', { testData, testError });
+            console.log('Direct fetch response status:', directResponse.status);
+            console.log('Direct fetch response headers:', Object.fromEntries(directResponse.headers.entries()));
             
-            if (testError) {
-              console.error('Test call failed:', testError);
-              toast.error('Function test failed: ' + testError.message);
+            if (directResponse.ok) {
+              const realData = await directResponse.json();
+              console.log('Upload successful via direct fetch:', realData);
+              
+              setUploadResult(realData);
+              if (realData.success) {
+                if (realData.failedJobs > 0) {
+                  toast.success(`Upload completed! ${realData.successfulJobs} jobs uploaded successfully, ${realData.failedJobs} failed.`);
+                } else {
+                  toast.success(`Upload successful! ${realData.successfulJobs} jobs uploaded.`);
+                }
+              } else {
+                toast.error('Upload failed: ' + realData.error);
+              }
+              setIsUploading(false);
+              return;
+            } else {
+              const errorText = await directResponse.text();
+              console.error('Direct fetch failed with status:', directResponse.status, 'Response:', errorText);
+              
+              if (directResponse.status === 404) {
+                toast.error('Edge Function not found. The bulk-job-upload function may not be deployed.');
+              } else if (directResponse.status === 401) {
+                toast.error('Authentication failed. Please sign in again.');
+              } else {
+                toast.error(`Upload failed with status ${directResponse.status}: ${errorText}`);
+              }
               setIsUploading(false);
               return;
             }
             
-            console.log('6. Test successful! Now trying with real data...');
+          } catch (directException) {
+            console.error('Direct fetch exception:', directException);
             
-          } catch (testException) {
-            console.error('Test call exception:', testException);
-            toast.error('Function test exception: ' + testException.message);
-            setIsUploading(false);
-            return;
-          }
-
-          // Now try with the real data
-          const { data, error } = await supabase.functions.invoke('bulk-job-upload', {
-            body: {
-              csvData,
-              batchName: batchName.trim()
-            }
-          });
-
-          console.log('Function response:', { data, error });
-          console.log('Error details:', error);
-
-          if (error) {
-            console.error('Function error details:', error);
-            console.error('Error context:', error.context);
-            console.error('Error name:', error.name);
-            console.error('Error message:', error.message);
+            // If direct fetch fails, try the Supabase client method as fallback
+            console.log('2. Direct fetch failed, trying supabase.functions.invoke...');
             
-            // More detailed error logging
-            if (error.context) {
-              console.error('Error context details:', JSON.stringify(error.context, null, 2));
-            }
-            
-            // Try to get more error information
-            const errorMessage = error.message || error.details || 'Failed to send a request to the Edge Function';
-            toast.error('Upload failed: ' + errorMessage);
-            setIsUploading(false);
-            return;
-          }
+            try {
+              const { data, error } = await supabase.functions.invoke('bulk-job-upload', {
+                body: {
+                  csvData,
+                  batchName: batchName.trim()
+                }
+              });
 
-          setUploadResult(data);
-          
-          if (data.success) {
-            if (data.failedJobs > 0) {
-              toast.warning(`Upload completed with ${data.failedJobs} errors out of ${data.totalJobs} jobs`);
-            } else {
-              toast.success(`Successfully uploaded ${data.successfulJobs} jobs`);
+              console.log('Function response:', { data, error });
+              console.log('Error details:', error);
+
+              if (error) {
+                console.error('Function error details:', error);
+                console.error('Error context:', error.context);
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                
+                // More detailed error logging
+                if (error.context) {
+                  console.error('Error context details:', JSON.stringify(error.context, null, 2));
+                }
+                
+                // Try to get more error information
+                const errorMessage = error.message || error.details || 'Failed to send a request to the Edge Function';
+                toast.error('Upload failed: ' + errorMessage);
+                setIsUploading(false);
+                return;
+              }
+
+              setUploadResult(data);
+              
+              if (data.success) {
+                if (data.failedJobs > 0) {
+                  toast.warning(`Upload completed with ${data.failedJobs} errors out of ${data.totalJobs} jobs`);
+                } else {
+                  toast.success(`Successfully uploaded ${data.successfulJobs} jobs`);
+                }
+              } else {
+                toast.error('Upload failed');
+              }
+              setIsUploading(false);
+              
+            } catch (supabaseClientError) {
+              console.error('Supabase client method also failed:', supabaseClientError);
+              toast.error('Both direct fetch and Supabase client failed. Edge Function may not be deployed.');
+              setIsUploading(false);
             }
-          } else {
-            toast.error('Upload failed');
           }
-        } catch (innerError) {
-          console.error('Inner upload error:', innerError);
-          toast.error('Upload failed: ' + (innerError as Error).message);
-        } finally {
+        } catch (outerError) {
+          console.error('CSV processing error:', outerError);
+          toast.error('Failed to process CSV: ' + (outerError as Error).message);
           setIsUploading(false);
         }
       };
