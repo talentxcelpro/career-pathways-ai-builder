@@ -195,18 +195,24 @@ serve(async (req) => {
           continue;
         }
 
-        // Map employment types from Adzuna to our schema
+        // Map employment types from Adzuna to our schema (using proper case format)
         const mapEmploymentType = (adzunaType: string) => {
+          if (!adzunaType) return 'Full-time';
+          
           const typeMap: { [key: string]: string } = {
-            'permanent': 'full_time',
-            'contract': 'contract', 
-            'temporary': 'contract',
-            'part_time': 'part_time',
-            'full_time': 'full_time',
-            'freelance': 'freelance',
-            'internship': 'internship'
+            'permanent': 'Full-time',
+            'full-time': 'Full-time', 
+            'full_time': 'Full-time',
+            'contract': 'Contract', 
+            'temporary': 'Contract',
+            'part-time': 'Part-time',
+            'part_time': 'Part-time',
+            'freelance': 'Freelance',
+            'internship': 'Internship'
           };
-          return typeMap[adzunaType?.toLowerCase()] || 'full_time';
+          
+          const normalizedType = adzunaType.toLowerCase().replace(/\s+/g, '_');
+          return typeMap[normalizedType] || 'Full-time';
         };
 
         // Map Adzuna job to our schema with only existing columns
@@ -272,17 +278,8 @@ serve(async (req) => {
       }
     }
 
-    // Update job source whitelist for Adzuna if not exists (removed verified_by)
-    const { error: whitelistError } = await supabase
-      .from('job_source_whitelist')
-      .upsert({
-        domain: 'adzuna.com',
-        is_trusted: true
-      }, { onConflict: 'domain' });
-
-    if (whitelistError) {
-      console.warn('Failed to update whitelist:', whitelistError);
-    }
+    // Remove the whitelist update section completely since the table structure is unknown
+    // and this is causing errors in the logs
 
     const summary = {
       total_fetched: adzunaData.results.length,
