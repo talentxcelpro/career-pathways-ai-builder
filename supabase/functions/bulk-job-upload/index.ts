@@ -98,7 +98,13 @@ serve(async (req) => {
   }
 
   try {
-    // Get the Authorization header
+    // Initialize Supabase client - auth is handled by Supabase automatically
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+    );
+
+    // Get the authenticated user (automatically available since verify_jwt = true)
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
@@ -107,25 +113,12 @@ serve(async (req) => {
       );
     }
 
-    // Initialize Supabase client with the user's auth token
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: {
-            Authorization: authHeader
-          }
-        }
-      }
-    );
-
-    // Verify user authentication and role
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
 
     if (authError || !user) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
+        JSON.stringify({ error: 'Invalid authentication token' }),
         { status: 401, headers: corsHeaders }
       );
     }
