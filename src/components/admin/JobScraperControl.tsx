@@ -256,16 +256,30 @@ export const JobScraperControl = () => {
         throw error;
       }
 
-      if (!data || !data.success) {
-        console.error('❌ Adzuna import failed - data:', data);
-        throw new Error(data?.error || 'Adzuna import failed');
+      if (!data) {
+        console.error('❌ No data received from function');
+        throw new Error('No response data received from function');
+      }
+
+      if (!data.success) {
+        console.error('❌ Function returned success=false:', data);
+        throw new Error(data.error || 'Function execution failed');
+      }
+
+      // Check for errors in the response (like validation errors)
+      if (data.errors && data.errors.length > 0) {
+        console.warn('⚠️ Some jobs had validation errors:', data.errors);
+        // Don't throw error, just log the warnings
       }
 
       setAdzunaStats(data.stats || { total_scraped: 0, valid_jobs: 0, published_jobs: 0, next_run: new Date().toISOString() });
       setRecentJobs(prev => [...(data.jobs || []), ...prev.slice(0, 10)]);
       
       const summary = data.summary || {};
-      toast.success(`✅ Imported ${summary.inserted || 0} jobs from Adzuna! (${summary.duplicates_skipped || 0} duplicates skipped)`, { 
+      const errorCount = data.errors ? data.errors.length : 0;
+      const successMessage = `✅ Imported ${summary.inserted || 0} jobs from Adzuna! (${summary.duplicates_skipped || 0} duplicates skipped${errorCount > 0 ? `, ${errorCount} validation errors` : ''})`;
+      
+      toast.success(successMessage, { 
         id: 'adzuna' 
       });
 
