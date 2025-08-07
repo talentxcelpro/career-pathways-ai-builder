@@ -92,13 +92,40 @@ export const useBulkUpload = () => {
         batchId
       };
       
-      console.log('🚀 Calling CV parser with payload:', JSON.stringify(requestPayload, null, 2));
+      console.log('🚀 About to call CV parser with payload:', JSON.stringify(requestPayload, null, 2));
       
-      const { data, error } = await supabase.functions.invoke('cv-parser', {
-        body: requestPayload
+      // Use direct fetch approach since supabase.functions.invoke has been problematic
+      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/cv-parser`;
+      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+      
+      console.log('🌐 Calling function directly at:', functionUrl);
+      console.log('📦 Payload size:', JSON.stringify(requestPayload).length, 'characters');
+      
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${anonKey}`,
+          'Content-Type': 'application/json',
+          'apikey': anonKey
+        },
+        body: JSON.stringify(requestPayload)
       });
-
-      if (error) throw error;
+      
+      console.log('📡 Function response status:', response.status);
+      console.log('📡 Function response headers:', Object.fromEntries(response.headers.entries()));
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Function error response:', errorText);
+        throw new Error(`Function responded with ${response.status}: ${errorText}`);
+      }
+      
+      const data = await response.json();
+      console.log('✅ Function response data:', data);
+      
+      if (!data.success) {
+        throw new Error(data.error || 'CV parsing failed');
+      }
 
       return {
         fileUrl: publicUrl,
