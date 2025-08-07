@@ -310,8 +310,6 @@ serve(async (req) => {
     
     // Try to update batch progress even on failure
     try {
-      const requestBody = await req.clone().json();
-      const { batchId } = requestBody;
       if (batchId) {
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
         const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
