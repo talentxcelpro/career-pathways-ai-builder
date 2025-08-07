@@ -104,7 +104,8 @@ export const useBulkUpload = () => {
       };
     },
     onError: (error: any) => {
-      console.error('CV processing error:', error);
+      console.error('❌ CV processing error:', error);
+      toast.error(`Failed to process CV: ${error.message}`);
     }
   });
 
