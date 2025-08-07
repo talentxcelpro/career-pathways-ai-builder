@@ -9705,10 +9705,12 @@ export type Database = {
           ai_match_enabled: boolean | null
           ai_priority: boolean | null
           ai_skill_tags: string[] | null
+          applicant_location_requirements: string | null
           application_deadline: string | null
           application_email: string | null
           application_method: string | null
           applications_count: number | null
+          base_salary_currency: string | null
           benefits: string[] | null
           benefits_offered: string[] | null
           benefits_policy_url: string | null
@@ -9742,6 +9744,7 @@ export type Database = {
           exam_name: string | null
           experience_level: string | null
           experience_preference: string | null
+          experience_requirements: string | null
           experience_type: string | null
           expires_at: string | null
           expiry_date: string | null
@@ -9761,8 +9764,10 @@ export type Database = {
           is_scraped: boolean | null
           is_urgent: boolean | null
           jd_flyer_url: string | null
+          job_benefits: string | null
           job_description: string | null
           job_function: string | null
+          job_location_type: string | null
           job_status: string | null
           job_summary: string | null
           job_title: string
@@ -9785,6 +9790,8 @@ export type Database = {
           must_have_requirements: string[] | null
           nice_to_have: string[] | null
           og_image_url: string | null
+          organization_logo_url: string | null
+          organization_website: string | null
           popularity_score: number | null
           posted_at: string | null
           posted_by: string | null
@@ -9798,6 +9805,7 @@ export type Database = {
           preferred_industries: string[] | null
           preferred_requirements: string[] | null
           priority: boolean | null
+          qualifications: string | null
           relevant_industry_experience: string[] | null
           requirements: string | null
           salary_currency: string | null
@@ -9805,6 +9813,7 @@ export type Database = {
           salary_max: number | null
           salary_min: number | null
           salary_range: string | null
+          salary_unit: string | null
           seo_slug: string | null
           seo_tags: string[] | null
           skills_required: string[] | null
@@ -9832,10 +9841,12 @@ export type Database = {
           ai_match_enabled?: boolean | null
           ai_priority?: boolean | null
           ai_skill_tags?: string[] | null
+          applicant_location_requirements?: string | null
           application_deadline?: string | null
           application_email?: string | null
           application_method?: string | null
           applications_count?: number | null
+          base_salary_currency?: string | null
           benefits?: string[] | null
           benefits_offered?: string[] | null
           benefits_policy_url?: string | null
@@ -9869,6 +9880,7 @@ export type Database = {
           exam_name?: string | null
           experience_level?: string | null
           experience_preference?: string | null
+          experience_requirements?: string | null
           experience_type?: string | null
           expires_at?: string | null
           expiry_date?: string | null
@@ -9888,8 +9900,10 @@ export type Database = {
           is_scraped?: boolean | null
           is_urgent?: boolean | null
           jd_flyer_url?: string | null
+          job_benefits?: string | null
           job_description?: string | null
           job_function?: string | null
+          job_location_type?: string | null
           job_status?: string | null
           job_summary?: string | null
           job_title?: string
@@ -9912,6 +9926,8 @@ export type Database = {
           must_have_requirements?: string[] | null
           nice_to_have?: string[] | null
           og_image_url?: string | null
+          organization_logo_url?: string | null
+          organization_website?: string | null
           popularity_score?: number | null
           posted_at?: string | null
           posted_by?: string | null
@@ -9925,6 +9941,7 @@ export type Database = {
           preferred_industries?: string[] | null
           preferred_requirements?: string[] | null
           priority?: boolean | null
+          qualifications?: string | null
           relevant_industry_experience?: string[] | null
           requirements?: string | null
           salary_currency?: string | null
@@ -9932,6 +9949,7 @@ export type Database = {
           salary_max?: number | null
           salary_min?: number | null
           salary_range?: string | null
+          salary_unit?: string | null
           seo_slug?: string | null
           seo_tags?: string[] | null
           skills_required?: string[] | null
@@ -9959,10 +9977,12 @@ export type Database = {
           ai_match_enabled?: boolean | null
           ai_priority?: boolean | null
           ai_skill_tags?: string[] | null
+          applicant_location_requirements?: string | null
           application_deadline?: string | null
           application_email?: string | null
           application_method?: string | null
           applications_count?: number | null
+          base_salary_currency?: string | null
           benefits?: string[] | null
           benefits_offered?: string[] | null
           benefits_policy_url?: string | null
@@ -9996,6 +10016,7 @@ export type Database = {
           exam_name?: string | null
           experience_level?: string | null
           experience_preference?: string | null
+          experience_requirements?: string | null
           experience_type?: string | null
           expires_at?: string | null
           expiry_date?: string | null
@@ -10015,8 +10036,10 @@ export type Database = {
           is_scraped?: boolean | null
           is_urgent?: boolean | null
           jd_flyer_url?: string | null
+          job_benefits?: string | null
           job_description?: string | null
           job_function?: string | null
+          job_location_type?: string | null
           job_status?: string | null
           job_summary?: string | null
           job_title?: string
@@ -10039,6 +10062,8 @@ export type Database = {
           must_have_requirements?: string[] | null
           nice_to_have?: string[] | null
           og_image_url?: string | null
+          organization_logo_url?: string | null
+          organization_website?: string | null
           popularity_score?: number | null
           posted_at?: string | null
           posted_by?: string | null
@@ -10052,6 +10077,7 @@ export type Database = {
           preferred_industries?: string[] | null
           preferred_requirements?: string[] | null
           priority?: boolean | null
+          qualifications?: string | null
           relevant_industry_experience?: string[] | null
           requirements?: string | null
           salary_currency?: string | null
@@ -10059,6 +10085,7 @@ export type Database = {
           salary_max?: number | null
           salary_min?: number | null
           salary_range?: string | null
+          salary_unit?: string | null
           seo_slug?: string | null
           seo_tags?: string[] | null
           skills_required?: string[] | null
@@ -20542,6 +20569,15 @@ export type Database = {
         Args: { company_name: string }
         Returns: string
       }
+      generate_enhanced_seo_slug: {
+        Args: {
+          job_title: string
+          company_name: string
+          location: string
+          job_id: string
+        }
+        Returns: string
+      }
       generate_job_seo_slug: {
         Args:
           | { job_title: string; company_name: string; location: string }
@@ -20551,6 +20587,10 @@ export type Database = {
       generate_job_seo_slug_v2: {
         Args: { job_title: string; job_company: string; job_location: string }
         Returns: string
+      }
+      generate_job_structured_data: {
+        Args: { job_record: Database["public"]["Tables"]["jobs"]["Row"] }
+        Returns: Json
       }
       generate_referral_code: {
         Args: { user_uuid: string }

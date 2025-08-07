@@ -6,6 +6,7 @@ import { JobFilters } from '@/components/admin/jobs/JobFilters';
 import { JobsList } from '@/components/admin/jobs/JobsList';
 import { JobScraperControl } from '@/components/admin/JobScraperControl';
 import { BulkJobUpload } from '@/components/admin/jobs/BulkJobUpload';
+import { SitemapGenerator } from '@/components/seo/SitemapGenerator';
 import { useJobsManagement } from '@/hooks/useJobsManagement';
 
 const JobsManagement = () => {
@@ -30,6 +31,8 @@ const JobsManagement = () => {
         <JobScraperControl />
         
         <BulkJobUpload />
+        
+        <SitemapGenerator />
         
         <JobStatsCards jobStats={jobStats} />
         
