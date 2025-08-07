@@ -284,6 +284,28 @@ serve(async (req) => {
         
         console.log('✅ Successfully created profile with ID:', userId);
 
+        // Manually create career passport record since we disabled the trigger
+        try {
+          console.log('📋 Creating career passport for user:', userId);
+          const { error: careerPassportError } = await supabase
+            .from('career_passport')
+            .insert({
+              user_id: userId,
+              completion_percentage: 25, // Basic completion for CV upload
+              career_readiness_score: 0
+            });
+            
+          if (careerPassportError) {
+            console.error('❌ Career passport creation failed:', careerPassportError);
+            // Don't throw here - profile creation succeeded, this is just supplementary
+          } else {
+            console.log('✅ Career passport created successfully');
+          }
+        } catch (careerError) {
+          console.error('❌ Career passport creation error:', careerError);
+          // Continue processing even if career passport fails
+        }
+
         // Add work experience - FIXED: using correct column names
         if (parsedCV.work_experience?.length > 0) {
           const workExperience = parsedCV.work_experience.map((exp: any) => ({
