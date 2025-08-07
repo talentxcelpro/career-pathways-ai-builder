@@ -9614,24 +9614,33 @@ export type Database = {
           domain: string
           id: string
           is_trusted: boolean | null
+          last_verified_at: string | null
           reliability_score: number | null
           source_name: string
+          verification_notes: string | null
+          verification_status: string | null
         }
         Insert: {
           created_at?: string | null
           domain: string
           id?: string
           is_trusted?: boolean | null
+          last_verified_at?: string | null
           reliability_score?: number | null
           source_name: string
+          verification_notes?: string | null
+          verification_status?: string | null
         }
         Update: {
           created_at?: string | null
           domain?: string
           id?: string
           is_trusted?: boolean | null
+          last_verified_at?: string | null
           reliability_score?: number | null
           source_name?: string
+          verification_notes?: string | null
+          verification_status?: string | null
         }
         Relationships: []
       }
@@ -9716,6 +9725,7 @@ export type Database = {
           benefits_policy_url: string | null
           bulk_upload_batch_id: string | null
           canonical_url: string | null
+          category: string | null
           category_id: string | null
           certification_required: string | null
           certifications: string[] | null
@@ -9852,6 +9862,7 @@ export type Database = {
           benefits_policy_url?: string | null
           bulk_upload_batch_id?: string | null
           canonical_url?: string | null
+          category?: string | null
           category_id?: string | null
           certification_required?: string | null
           certifications?: string[] | null
@@ -9988,6 +9999,7 @@ export type Database = {
           benefits_policy_url?: string | null
           bulk_upload_batch_id?: string | null
           canonical_url?: string | null
+          category?: string | null
           category_id?: string | null
           certification_required?: string | null
           certifications?: string[] | null
