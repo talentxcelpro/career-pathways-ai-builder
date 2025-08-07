@@ -355,21 +355,6 @@ const Jobs = () => {
     <div className="min-h-screen bg-background">
       <OfflineIndicator />
       
-      {/* Job Category Tabs */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-8 overflow-x-auto py-4">
-            <TagButton label="🇮🇳 India Jobs" isActive={true} />
-            <TagButton label="🏛️ Govt Jobs" />
-            <TagButton label="🌍 Middle East Jobs" />
-            <TagButton label="🌎 Rest of World" />
-            <TagButton label="🎓 Internships" />
-            <TagButton label="🚀 IT Jobs" />
-            <TagButton label="💼 Finance Jobs" />
-            <TagButton label="🏥 Healthcare Jobs" />
-          </div>
-        </div>
-      </div>
 
       {/* Header with TalentXcel branding */}
       <div className="bg-gradient-to-r from-[#1E2A78]/10 to-[#28C76F]/10 border-b sticky top-0 z-40">
@@ -518,36 +503,6 @@ const Jobs = () => {
           </div>
         )}
 
-        {/* Location Filter Tabs */}
-        <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex items-center gap-2 mb-4">
-            <MapPin className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold text-base text-gray-900">🌍 Job Location</h3>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant={filters.location === '' ? "default" : "outline"}
-              size="sm"
-              onClick={() => setFilters(prev => ({ ...prev, location: '' }))}
-            >
-              🌐 All Jobs
-            </Button>
-            <Button
-              variant={filters.location === 'India' ? "default" : "outline"}
-              size="sm"
-              onClick={() => setFilters(prev => ({ ...prev, location: 'India' }))}
-            >
-              🇮🇳 India Jobs
-            </Button>
-            <Button
-              variant={filters.location === 'International' ? "default" : "outline"}
-              size="sm"
-              onClick={() => setFilters(prev => ({ ...prev, location: 'International' }))}
-            >
-              🌎 International Jobs
-            </Button>
-          </div>
-        </div>
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
