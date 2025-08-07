@@ -11,7 +11,9 @@ import {
   Calendar,
   Building2,
   Users,
-  IndianRupee
+  IndianRupee,
+  Star,
+  Tag
 } from 'lucide-react';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { CleanJobCard } from '@/components/jobs/CleanJobCard';
@@ -59,29 +61,41 @@ export const JobsList: React.FC<JobsListProps> = ({ jobs, isLoading }) => {
                       logo_url: job.companies?.logo_url
                     }
                   }}
-                />
-                <div className="absolute top-4 right-4 flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg p-2 shadow-sm border">
-                  <Badge className={getJobStatusColor(job)}>
-                    {getJobStatusText(job)}
-                  </Badge>
-                  {job.is_featured && (
-                    <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
-                      Featured
-                    </Badge>
-                  )}
-                  <Button variant="outline" size="sm">
-                    <Eye className="h-4 w-4 mr-1" />
-                    View
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Edit className="h-4 w-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    Delete
-                  </Button>
-                </div>
+                 />
+                 <div className="absolute top-4 right-4 flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg p-2 shadow-sm border">
+                   <Badge className={getJobStatusColor(job)}>
+                     {getJobStatusText(job)}
+                   </Badge>
+                   {job.is_featured && (
+                     <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
+                       <Star className="h-3 w-3 mr-1" />
+                       Featured
+                     </Badge>
+                   )}
+                   {job.priority && (
+                     <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                       <Tag className="h-3 w-3 mr-1" />
+                       Priority
+                     </Badge>
+                   )}
+                   {job.source_type === 'bulk_upload' && (
+                     <Badge variant="outline" className="bg-green-50 text-green-700">
+                       Bulk Upload
+                     </Badge>
+                   )}
+                   <Button variant="outline" size="sm">
+                     <Eye className="h-4 w-4 mr-1" />
+                     View
+                   </Button>
+                   <Button variant="outline" size="sm">
+                     <Edit className="h-4 w-4 mr-1" />
+                     Edit
+                   </Button>
+                   <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                     <Trash2 className="h-4 w-4 mr-1" />
+                     Delete
+                   </Button>
+                 </div>
               </div>
             ))}
           </div>

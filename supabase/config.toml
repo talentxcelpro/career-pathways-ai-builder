@@ -1,7 +1,7 @@
 
 project_id = "dthlgsnakhoftinssokm"
 
-[functions.secure-admin-validation]
+[functions.bulk-job-upload]
 verify_jwt = true
 
 [functions.job-scraper]
