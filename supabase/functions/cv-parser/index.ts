@@ -26,14 +26,9 @@ serve(async (req) => {
     console.log('📨 Raw request body:', requestBody);
     console.log('📨 Request body keys:', Object.keys(requestBody || {}));
     
-    // Handle case where the request body might be nested or malformed
-    let actualBody = requestBody;
-    if (requestBody && requestBody.body) {
-      actualBody = requestBody.body;
-      console.log('📨 Found nested body:', actualBody);
-    }
-    
-    const { fileUrl, fileName, fileType, batchId } = actualBody || {};
+    // When using supabase.functions.invoke(), the data is directly in the request body
+    // No need to check for nested body property
+    const { fileUrl, fileName, fileType, batchId } = requestBody || {};
     
     console.log('📨 Extracted values:', {
       fileUrl: fileUrl || 'UNDEFINED',
