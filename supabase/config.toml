@@ -1,6 +1,9 @@
 
 project_id = "dthlgsnakhoftinssokm"
 
+[functions.secure-admin-validation]
+verify_jwt = true
+
 [functions.job-scraper]
 verify_jwt = false
 

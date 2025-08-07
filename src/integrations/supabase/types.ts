@@ -20208,6 +20208,14 @@ export type Database = {
         }
         Returns: Json
       }
+      audit_admin_action: {
+        Args: {
+          p_action_type: string
+          p_target_resource: string
+          p_details?: Json
+        }
+        Returns: undefined
+      }
       backfill_admin_connections: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -20888,6 +20896,10 @@ export type Database = {
       validate_job_url: {
         Args: { url: string }
         Returns: boolean
+      }
+      validate_secure_input: {
+        Args: { input_data: Json; validation_rules?: Json }
+        Returns: Json
       }
       validate_user_input: {
         Args: { input_text: string; input_type?: string; max_length?: number }

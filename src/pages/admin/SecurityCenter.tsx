@@ -6,8 +6,9 @@ import { SecurityAlertsPanel } from '@/components/admin/security/SecurityAlertsP
 import { AccountSuspensionPanel } from '@/components/admin/security/AccountSuspensionPanel';
 import { IPManagementPanel } from '@/components/admin/security/IPManagementPanel';
 import { SessionManagementPanel } from '@/components/admin/security/SessionManagementPanel';
+import { SecurityMonitoringDashboard } from '@/components/admin/security/SecurityMonitoringDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, AlertTriangle, Ban, Monitor, Users, Globe } from 'lucide-react';
+import { Shield, AlertTriangle, Ban, Monitor, Users, Globe, Activity } from 'lucide-react';
 
 const SecurityCenter = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -19,10 +20,14 @@ const SecurityCenter = () => {
     >
       <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="monitoring" className="flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              Monitor
             </TabsTrigger>
             <TabsTrigger value="events" className="flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" />
@@ -48,6 +53,10 @@ const SecurityCenter = () => {
 
           <TabsContent value="dashboard">
             <SecurityDashboard />
+          </TabsContent>
+
+          <TabsContent value="monitoring">
+            <SecurityMonitoringDashboard />
           </TabsContent>
 
           <TabsContent value="events">
