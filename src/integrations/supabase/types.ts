@@ -8945,6 +8945,7 @@ export type Database = {
           applied_at: string | null
           assigned_to: string | null
           cover_letter: string | null
+          created_at: string | null
           id: string
           job_id: string | null
           last_activity_at: string | null
@@ -8959,6 +8960,7 @@ export type Database = {
           applied_at?: string | null
           assigned_to?: string | null
           cover_letter?: string | null
+          created_at?: string | null
           id?: string
           job_id?: string | null
           last_activity_at?: string | null
@@ -8973,6 +8975,7 @@ export type Database = {
           applied_at?: string | null
           assigned_to?: string | null
           cover_letter?: string | null
+          created_at?: string | null
           id?: string
           job_id?: string | null
           last_activity_at?: string | null
