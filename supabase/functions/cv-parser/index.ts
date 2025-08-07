@@ -21,7 +21,15 @@ serve(async (req) => {
   }
 
   try {
-    const { fileUrl, fileName, fileType, batchId }: CVParsingRequest = await req.json();
+    const requestBody = await req.json();
+    console.log('📨 Received request:', JSON.stringify(requestBody, null, 2));
+    
+    const { fileUrl, fileName, fileType, batchId }: CVParsingRequest = requestBody;
+    
+    // Validate required fields
+    if (!fileUrl || !fileName || !fileType || !batchId) {
+      throw new Error(`Missing required fields: fileUrl=${!!fileUrl}, fileName=${!!fileName}, fileType=${!!fileType}, batchId=${!!batchId}`);
+    }
     
     console.log('🔄 Processing CV:', fileName);
 
