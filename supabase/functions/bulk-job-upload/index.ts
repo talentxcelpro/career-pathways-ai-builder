@@ -7,21 +7,32 @@ const corsHeaders = {
 };
 
 interface JobData {
+  job_id?: string;
   title: string;
   company_name: string;
   location: string;
+  location_type?: string;
   employment_type: string;
   industry?: string;
+  job_function?: string;
   description: string;
+  education_requirements?: string;
+  experience_level?: string;
   salary_min?: number;
   salary_max?: number;
   salary_currency?: string;
   is_remote?: boolean;
+  skills_required?: string[];
+  skills_keywords?: string[];
+  job_tags?: string[];
+  benefits?: string[];
   external_url?: string;
   application_email?: string;
-  expires_at?: string;
+  application_method?: string;
+  job_type_detail?: string;
   priority?: boolean;
-  skills_required?: string[];
+  job_posted_at?: string;
+  expires_at?: string;
 }
 
 function generateSlug(title: string, company: string, location: string): string {
@@ -197,13 +208,16 @@ serve(async (req) => {
               case 'priority':
                 jobData[header] = values[index].toLowerCase() === 'true';
                 break;
-              case 'skills_required':
-                jobData[header] = values[index].split(',').map(s => s.trim());
-                break;
-              default:
-                (jobData as any)[header] = values[index];
-            }
-          }
+               case 'skills_required':
+               case 'skills_keywords':
+               case 'job_tags':
+               case 'benefits':
+                 jobData[header] = values[index].split(',').map(s => s.trim());
+                 break;
+               default:
+                 (jobData as any)[header] = values[index];
+             }
+           }
         });
 
         // Validate job data

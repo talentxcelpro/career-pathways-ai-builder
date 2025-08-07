@@ -125,16 +125,17 @@ export const BulkJobUpload = () => {
 
   const downloadTemplate = () => {
     const template = [
-      'title,company_name,location,employment_type,industry,description,salary_min,salary_max,salary_currency,is_remote,external_url,application_email,expires_at,priority,skills_required',
-      'Senior Frontend Developer,TechCorp India,Mumbai,Full-time,Information Technology,"Build modern web applications using React and TypeScript",800000,1200000,INR,false,https://techcorp.com/jobs/123,hr@techcorp.com,2025-02-07,true,"React,TypeScript,JavaScript"',
-      'Marketing Manager,Marketing Pro,Bangalore,Full-time,Marketing,"Lead digital marketing campaigns and team management",600000,900000,INR,true,https://marketingpro.com/careers,careers@marketingpro.com,2025-02-07,false,"Digital Marketing,SEO,Analytics"'
+      'job_id,title,company_name,location,location_type,employment_type,industry,job_function,description,education_requirements,experience_level,salary_min,salary_max,salary_currency,is_remote,skills_required,skills_keywords,job_tags,benefits,external_url,application_email,application_method,job_type_detail,priority,job_posted_at,expires_at',
+      'TECH001,Senior Frontend Developer,TechCorp India,Mumbai,On-site,Full-time,Information Technology,Software Development,"Build modern web applications using React and TypeScript",Bachelor\'s in Computer Science,3-5 Years,800000,1200000,INR,false,"React,TypeScript,JavaScript","JavaScript,React.js,TypeScript,Redux,Webpack,UI Design,Frontend Development,ES6,HTML5,CSS3","Top MNC,Urgent Hiring","Health Insurance,Remote Work,Flexible Hours",https://techcorp.com/jobs/123,hr@techcorp.com,Apply on Company Site,Permanent,true,2025-01-07,2025-02-07',
+      'MKT002,Marketing Manager,Marketing Pro,Bangalore,Hybrid,Full-time,Marketing,Marketing & Communications,"Lead digital marketing campaigns and team management",MBA in Marketing,5-7 Years,600000,900000,INR,true,"Digital Marketing,SEO,Analytics","Digital Marketing,SEO,SEM,Analytics,Content Marketing,Social Media,Campaign Management","Fast Growth,Startup Culture","Health Insurance,Stock Options,Learning Budget",https://marketingpro.com/careers,careers@marketingpro.com,Email Application,Permanent,false,2025-01-07,2025-02-07',
+      'DEV003,Junior Software Engineer,StartupTech,Remote,Remote,Full-time,Information Technology,Software Development,"Develop and maintain web applications using modern frameworks",Bachelor\'s in Engineering,0-2 Years,400000,600000,INR,true,"Python,Django,PostgreSQL","Python,Django,PostgreSQL,REST API,Git,Linux,Web Development,Backend Development","Remote First,Entry Level","Health Insurance,Learning Budget,Flexible Hours",https://startuptech.com/apply,jobs@startuptech.com,Apply on Company Site,Permanent,false,2025-01-07,2025-02-07'
     ].join('\n');
 
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'job_upload_template.csv';
+    a.download = 'enhanced_job_upload_template.csv';
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -318,8 +319,8 @@ export const BulkJobUpload = () => {
               </Alert>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Required CSV Columns:</h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <h3 className="text-lg font-semibold">Enhanced CSV Columns for SEO & Google Schema:</h3>
+                <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
                     <h4 className="font-medium text-green-600 mb-2">Required Fields:</h4>
                     <ul className="space-y-1">
@@ -331,7 +332,20 @@ export const BulkJobUpload = () => {
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-medium text-blue-600 mb-2">Optional Fields:</h4>
+                    <h4 className="font-medium text-blue-600 mb-2">SEO Enhanced Fields:</h4>
+                    <ul className="space-y-1">
+                      <li>• job_id (unique identifier)</li>
+                      <li>• location_type (On-site/Remote/Hybrid)</li>
+                      <li>• job_function (categorization)</li>
+                      <li>• education_requirements</li>
+                      <li>• experience_level</li>
+                      <li>• skills_keywords (SEO optimized)</li>
+                      <li>• job_tags (SEO boost)</li>
+                      <li>• benefits (employer branding)</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-purple-600 mb-2">Optional Fields:</h4>
                     <ul className="space-y-1">
                       <li>• industry</li>
                       <li>• salary_min, salary_max</li>
@@ -339,7 +353,10 @@ export const BulkJobUpload = () => {
                       <li>• is_remote (true/false)</li>
                       <li>• external_url</li>
                       <li>• application_email</li>
+                      <li>• application_method</li>
+                      <li>• job_type_detail</li>
                       <li>• expires_at (YYYY-MM-DD)</li>
+                      <li>• job_posted_at (YYYY-MM-DD)</li>
                       <li>• priority (true/false)</li>
                       <li>• skills_required (comma-separated)</li>
                     </ul>
