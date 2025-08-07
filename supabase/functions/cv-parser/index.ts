@@ -214,9 +214,10 @@ serve(async (req) => {
         userId = existingProfile.id;
         console.log('📝 Found existing profile for:', email);
       } else {
-        // Create new profile - Generate UUID first
+        // Create new profile with a UUID that doesn't need to reference auth.users
         const newUserId = crypto.randomUUID();
         console.log('👤 About to create new profile for:', email, 'with ID:', newUserId);
+        console.log('📋 Profile will be standalone (not linked to auth.users)');
         
         try {
           const { data: newProfile, error: profileError } = await supabase
