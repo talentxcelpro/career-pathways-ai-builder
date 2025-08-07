@@ -98,6 +98,12 @@ export const BulkJobUpload = () => {
           }
           
           console.log('Calling bulk-job-upload function...');
+          console.log('Function name: bulk-job-upload');
+          console.log('Request body:', {
+            csvData: csvData.substring(0, 100) + '...',
+            batchName: batchName.trim()
+          });
+          
           const { data, error } = await supabase.functions.invoke('bulk-job-upload', {
             body: {
               csvData,
@@ -106,9 +112,13 @@ export const BulkJobUpload = () => {
           });
 
           console.log('Function response:', { data, error });
+          console.log('Error details:', error);
 
           if (error) {
             console.error('Function error details:', error);
+            console.error('Error context:', error.context);
+            console.error('Error name:', error.name);
+            console.error('Error message:', error.message);
             toast.error('Upload failed: ' + error.message);
             setIsUploading(false);
             return;
