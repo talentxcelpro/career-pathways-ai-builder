@@ -90,6 +90,9 @@ export const BulkJobUpload = () => {
           body: {
             csvData,
             batchName: batchName.trim()
+          },
+          headers: {
+            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
           }
         });
 
