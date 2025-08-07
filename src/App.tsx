@@ -26,6 +26,7 @@ import { JobUrlRedirect } from "@/components/seo/JobUrlRedirect";
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { AdminLayout } from "./components/admin/AdminLayout";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import UnifiedDashboard from './pages/UnifiedDashboard';
@@ -126,9 +127,9 @@ const App = () => {
                        })}
                       <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
-                      <Route path="/admin/users" element={<UserManagement />} />
-                      <Route path="/admin/security" element={<SecurityCenter />} />
-                      <Route path="/admin/scraped-applications" element={<AdminScrapedJobApplications />} />
+                       <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
+                       <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
+                       <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
                       {/* <Route path="/employer/cv-database" element={<CVDatabase />} />
                       <Route path="/employer/outreach" element={<OutreachCampaign />} /> */}
                       
