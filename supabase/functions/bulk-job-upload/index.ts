@@ -4,6 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 interface JobData {
@@ -92,99 +93,122 @@ function validateJobData(job: Partial<JobData>): { valid: boolean; errors: strin
 }
 
 serve(async (req) => {
+  console.log('=== BULK JOB UPLOAD FUNCTION START ===');
+  console.log(`Method: ${req.method}`);
+  console.log(`URL: ${req.url}`);
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('=== BULK JOB UPLOAD REQUEST ===');
-    console.log(`Method: ${req.method}`);
-    console.log(`Headers:`, Object.fromEntries(req.headers.entries()));
-
-    // Since verify_jwt = true, Supabase automatically validates the JWT
-    // We can use a service role client for all operations
+    // Initialize Supabase client with the authorization header from request
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     
-    if (!supabaseUrl || !serviceRoleKey) {
-      console.error('Missing environment variables');
-      return new Response(
-        JSON.stringify({ error: 'Server configuration error' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    console.log('Environment check:', { 
+      hasUrl: !!supabaseUrl, 
+      hasAnonKey: !!supabaseAnonKey 
+    });
 
-    // Create service role client for database operations
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
-
-    // Get user from the JWT (automatically validated by Supabase)
+    // Get authorization header
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      console.error('No authorization header provided');
-      return new Response(
-        JSON.stringify({ error: 'Authorization required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Extract user ID from JWT payload (token already validated by Supabase)
-    const token = authHeader.replace('Bearer ', '');
-    let userId: string;
+    console.log('Auth header present:', !!authHeader);
     
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      userId = payload.sub;
-      
-      if (!userId) {
-        throw new Error('No user ID in token');
-      }
-      console.log('Authenticated user ID:', userId);
-    } catch (jwtError) {
-      console.error('JWT decode error:', jwtError);
+    if (!authHeader?.startsWith('Bearer ')) {
+      console.error('Missing or invalid authorization header');
       return new Response(
-        JSON.stringify({ error: 'Invalid token format' }),
+        JSON.stringify({ error: 'Authorization header required' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Use the validate_admin_operation function for permission check
-    console.log('Checking admin permissions...');
-    const { data: hasPermission, error: permError } = await supabase
-      .rpc('validate_admin_operation', { _required_role: 'employer' });
+    // Create Supabase client that will use the user's JWT for authentication
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: { Authorization: authHeader },
+      },
+    });
 
-    console.log('Permission check result:', { hasPermission, permError });
-
-    if (permError) {
-      console.error('Permission check error:', permError);
+    // Verify authentication and get user
+    console.log('Verifying user authentication...');
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError) {
+      console.error('Authentication error:', authError);
       return new Response(
-        JSON.stringify({ error: 'Permission check failed', details: permError.message }),
+        JSON.stringify({ error: 'Authentication failed', details: authError.message }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!user?.id) {
+      console.error('No user found in JWT');
+      return new Response(
+        JSON.stringify({ error: 'No user ID found in token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('User authenticated successfully:', { userId: user.id, email: user.email });
+
+    // Check user permissions - directly query user_roles table
+    console.log('Checking user permissions...');
+    const { data: userRoles, error: roleError } = await supabase
+      .from('user_roles')
+      .select('role, is_active')
+      .eq('user_id', user.id)
+      .eq('is_active', true);
+
+    if (roleError) {
+      console.error('Error checking user roles:', roleError);
+      return new Response(
+        JSON.stringify({ error: 'Permission check failed', details: roleError.message }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    console.log('User roles found:', userRoles);
+
+    // Check if user has any admin/employer role
+    const allowedRoles = ['super_admin', 'admin', 'moderator', 'employer'];
+    const hasPermission = userRoles?.some(role => 
+      allowedRoles.includes(role.role) && role.is_active
+    );
 
     if (!hasPermission) {
-      console.error('User lacks required permissions');
+      console.error('User lacks required permissions. Roles:', userRoles);
       return new Response(
-        JSON.stringify({ error: 'Insufficient permissions - requires employer role or higher' }),
+        JSON.stringify({ 
+          error: 'Insufficient permissions', 
+          message: 'You need admin or employer role to upload bulk jobs',
+          userRoles: userRoles?.map(r => r.role) || []
+        }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     console.log('Permission check passed');
 
+    // Parse request body
+    console.log('Parsing request body...');
     const { csvData, batchName } = await req.json();
 
     if (!csvData || !batchName) {
       return new Response(
         JSON.stringify({ error: 'CSV data and batch name are required' }),
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('Processing CSV data...');
     // Parse CSV data
     const lines = csvData.trim().split('\n');
     const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/\s+/g, '_'));
+    
+    console.log('CSV headers:', headers);
     
     // Expected headers
     const requiredHeaders = ['title', 'company_name', 'location', 'employment_type', 'description'];
@@ -194,9 +218,10 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           error: `Missing required headers: ${missingHeaders.join(', ')}`,
-          expectedHeaders: requiredHeaders
+          expectedHeaders: requiredHeaders,
+          foundHeaders: headers
         }),
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -205,7 +230,7 @@ serve(async (req) => {
     const { data: batch, error: batchError } = await supabase
       .from('bulk_upload_batches')
       .insert({
-        uploaded_by: userId,
+        uploaded_by: user.id,
         batch_name: batchName,
         total_jobs: lines.length - 1,
         status: 'processing'
@@ -216,14 +241,18 @@ serve(async (req) => {
     if (batchError) {
       console.error('Error creating batch:', batchError);
       return new Response(
-        JSON.stringify({ error: 'Failed to create batch' }),
-        { status: 500, headers: corsHeaders }
+        JSON.stringify({ error: 'Failed to create batch', details: batchError.message }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    console.log('Batch created successfully:', batch.id);
 
     // Process jobs
     const successfulJobs: any[] = [];
     const failedJobs: any[] = [];
+    
+    console.log(`Processing ${lines.length - 1} jobs...`);
     
     for (let i = 1; i < lines.length; i++) {
       try {
@@ -277,7 +306,7 @@ serve(async (req) => {
           seo_slug: slug,
           source_type: 'bulk_upload',
           bulk_upload_batch_id: batch.id,
-          posted_by: userId,
+          posted_by: user.id,
           is_active: true,
           job_status: 'open',
           salary_currency: jobData.salary_currency || 'INR',
@@ -292,6 +321,7 @@ serve(async (req) => {
           .single();
 
         if (insertError) {
+          console.error(`Error inserting job at row ${i + 1}:`, insertError);
           failedJobs.push({
             row: i + 1,
             data: jobData,
@@ -302,6 +332,7 @@ serve(async (req) => {
         }
 
       } catch (error) {
+        console.error(`Error processing row ${i + 1}:`, error);
         failedJobs.push({
           row: i + 1,
           data: {},
@@ -312,7 +343,7 @@ serve(async (req) => {
 
     // Update batch with results
     console.log('Updating batch with results...');
-    await supabase
+    const { error: updateError } = await supabase
       .from('bulk_upload_batches')
       .update({
         processed_jobs: successfulJobs.length,
@@ -322,6 +353,12 @@ serve(async (req) => {
         completed_at: new Date().toISOString()
       })
       .eq('id', batch.id);
+
+    if (updateError) {
+      console.error('Error updating batch:', updateError);
+    }
+
+    console.log(`Bulk upload completed: ${successfulJobs.length} successful, ${failedJobs.length} failed`);
 
     return new Response(
       JSON.stringify({
@@ -341,7 +378,11 @@ serve(async (req) => {
   } catch (error) {
     console.error('Bulk upload error:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error', details: error.message }),
+      JSON.stringify({ 
+        error: 'Internal server error', 
+        details: error.message,
+        stack: error.stack 
+      }),
       { 
         status: 500, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
