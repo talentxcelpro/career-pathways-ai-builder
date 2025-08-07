@@ -20486,6 +20486,10 @@ export type Database = {
         }
         Returns: string
       }
+      create_seo_pages_for_job: {
+        Args: { job_id: string }
+        Returns: undefined
+      }
       detect_salary_frequency_issues: {
         Args: Record<PropertyKey, never>
         Returns: {
