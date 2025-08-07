@@ -20914,6 +20914,7 @@ export type Database = {
         | "employer"
         | "user"
         | "ai_bot"
+        | "staffing_partner"
       application_status:
         | "applied"
         | "reviewing"
@@ -21069,6 +21070,7 @@ export const Constants = {
         "employer",
         "user",
         "ai_bot",
+        "staffing_partner",
       ],
       application_status: [
         "applied",
