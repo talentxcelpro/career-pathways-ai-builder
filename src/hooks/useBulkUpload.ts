@@ -93,11 +93,14 @@ export const useBulkUpload = () => {
       });
       
       const { data, error } = await supabase.functions.invoke('cv-parser', {
-        body: {
+        body: JSON.stringify({
           fileUrl: publicUrl,
           fileName: file.name,
           fileType: file.type,
           batchId
+        }),
+        headers: {
+          'Content-Type': 'application/json'
         }
       });
 
