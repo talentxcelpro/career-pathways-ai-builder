@@ -101,9 +101,10 @@ function validateJobData(job: Partial<JobData>): { valid: boolean; errors: strin
 }
 
 serve(async (req) => {
-  console.log('=== BULK JOB UPLOAD FUNCTION START ===');
+  console.log('=== BULK JOB UPLOAD FUNCTION START (v2.0) ===');
   console.log(`Method: ${req.method}`);
   console.log(`URL: ${req.url}`);
+  console.log(`Timestamp: ${new Date().toISOString()}`);
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
