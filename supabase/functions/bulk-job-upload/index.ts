@@ -98,7 +98,8 @@ serve(async (req) => {
   }
 
   try {
-    // Get the authorization header
+    // Extract user ID from the already-validated JWT token
+    // (JWT is validated by Supabase when verify_jwt = true in config.toml)
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
@@ -107,34 +108,30 @@ serve(async (req) => {
       );
     }
 
-    // Initialize Supabase client with the user's token
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: {
-            Authorization: authHeader
-          }
-        }
-      }
-    );
-
-    // Get the authenticated user
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    const token = authHeader.replace('Bearer ', '');
     
-    if (authError || !user) {
+    // Decode JWT to get user ID (token is already validated by Supabase)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const userId = payload.sub;
+    
+    if (!userId) {
       return new Response(
-        JSON.stringify({ error: 'Authentication failed', details: authError?.message }),
+        JSON.stringify({ error: 'Invalid token payload' }),
         { status: 401, headers: corsHeaders }
       );
     }
+
+    // Initialize Supabase client with SERVICE_ROLE_KEY for database operations
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
     // Check if user has permission to upload jobs
     const { data: userRole } = await supabaseClient
       .from('user_roles')
       .select('role')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .eq('is_active', true)
       .in('role', ['super_admin', 'admin', 'staffing_partner'])
       .single();
@@ -177,7 +174,7 @@ serve(async (req) => {
     const { data: batch, error: batchError } = await supabaseClient
       .from('bulk_upload_batches')
       .insert({
-        uploaded_by: user.id,
+        uploaded_by: userId,
         batch_name: batchName,
         total_jobs: lines.length - 1,
         status: 'processing'
@@ -249,7 +246,7 @@ serve(async (req) => {
           seo_slug: slug,
           source_type: 'bulk_upload',
           bulk_upload_batch_id: batch.id,
-          posted_by: user.id,
+          posted_by: userId,
           posted_by_role: userRole.role,
           is_active: true,
           job_status: 'open',
