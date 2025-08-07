@@ -8,6 +8,7 @@ import { TopCompaniesHiring } from '@/components/jobs/TopCompaniesHiring';
 import { JobCategories } from '@/components/jobs/JobCategories';
 import { TrustSection } from '@/components/jobs/TrustSection';
 import { ComprehensiveJobFilters } from '@/components/jobs/ComprehensiveJobFilters';
+import { LiveJobFilters } from '@/components/jobs/LiveJobFilters';
 import { JobsListOptimized } from '@/components/jobs/JobsListOptimized';
 import { useJobsOptimized } from '@/hooks/useJobsOptimized';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
@@ -508,11 +509,11 @@ const Jobs = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Filters Sidebar */}
           <div className="lg:col-span-1">
-            <ComprehensiveJobFilters
+            <LiveJobFilters
               filters={filters}
               onFiltersChange={handleFiltersChange}
               onClearFilters={handleClearFilters}
-              className="sticky top-6"
+              totalJobs={totalCount}
             />
           </div>
 
