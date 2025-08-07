@@ -84,45 +84,65 @@ export const BulkJobUpload = () => {
     try {
       const reader = new FileReader();
       reader.onload = async (e) => {
-        const csvData = e.target?.result as string;
-        
-        // Get the current session first
-        const { data: session } = await supabase.auth.getSession();
-        if (!session.session?.access_token) {
-          toast.error('Authentication required. Please sign in again.');
-          return;
-        }
-        
-        const { data, error } = await supabase.functions.invoke('bulk-job-upload', {
-          body: {
-            csvData,
-            batchName: batchName.trim()
+        try {
+          const csvData = e.target?.result as string;
+          
+          // Get the current session first
+          const { data: session } = await supabase.auth.getSession();
+          console.log('Session check:', { hasSession: !!session.session, hasToken: !!session.session?.access_token });
+          
+          if (!session.session?.access_token) {
+            toast.error('Authentication required. Please sign in again.');
+            setIsUploading(false);
+            return;
           }
-        });
+          
+          console.log('Calling bulk-job-upload function...');
+          const { data, error } = await supabase.functions.invoke('bulk-job-upload', {
+            body: {
+              csvData,
+              batchName: batchName.trim()
+            }
+          });
 
-        if (error) {
-          toast.error('Upload failed: ' + error.message);
-          return;
-        }
+          console.log('Function response:', { data, error });
 
-        setUploadResult(data);
-        
-        if (data.success) {
-          if (data.failedJobs > 0) {
-            toast.warning(`Upload completed with ${data.failedJobs} errors out of ${data.totalJobs} jobs`);
+          if (error) {
+            console.error('Function error details:', error);
+            toast.error('Upload failed: ' + error.message);
+            setIsUploading(false);
+            return;
+          }
+
+          setUploadResult(data);
+          
+          if (data.success) {
+            if (data.failedJobs > 0) {
+              toast.warning(`Upload completed with ${data.failedJobs} errors out of ${data.totalJobs} jobs`);
+            } else {
+              toast.success(`Successfully uploaded ${data.successfulJobs} jobs`);
+            }
           } else {
-            toast.success(`Successfully uploaded ${data.successfulJobs} jobs`);
+            toast.error('Upload failed');
           }
-        } else {
-          toast.error('Upload failed');
+        } catch (innerError) {
+          console.error('Inner upload error:', innerError);
+          toast.error('Upload failed: ' + (innerError as Error).message);
+        } finally {
+          setIsUploading(false);
         }
+      };
+      
+      reader.onerror = () => {
+        console.error('File reading error');
+        toast.error('Failed to read CSV file');
+        setIsUploading(false);
       };
       
       reader.readAsText(csvFile);
     } catch (error) {
-      console.error('Upload error:', error);
-      toast.error('Upload failed: ' + error.message);
-    } finally {
+      console.error('Outer upload error:', error);
+      toast.error('Upload failed: ' + (error as Error).message);
       setIsUploading(false);
     }
   };
