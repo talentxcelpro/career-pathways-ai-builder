@@ -104,6 +104,44 @@ export const BulkJobUpload = () => {
             batchName: batchName.trim()
           });
           
+          // Test with minimal payload first
+          console.log('=== DEBUGGING EDGE FUNCTION CALL ===');
+          console.log('1. About to call bulk-job-upload function');
+          console.log('2. CSV Data length:', csvData.length);
+          console.log('3. Batch name:', batchName.trim());
+          
+          // First, test with a tiny payload to see if the function works at all
+          const testPayload = {
+            csvData: "title,company_name,location,employment_type,description\nTest Job,Test Company,Test Location,Full-time,Test Description",
+            batchName: "TEST_BATCH"
+          };
+          
+          console.log('4. Testing with minimal payload first...');
+          
+          try {
+            const { data: testData, error: testError } = await supabase.functions.invoke('bulk-job-upload', {
+              body: testPayload
+            });
+            
+            console.log('5. Test call result:', { testData, testError });
+            
+            if (testError) {
+              console.error('Test call failed:', testError);
+              toast.error('Function test failed: ' + testError.message);
+              setIsUploading(false);
+              return;
+            }
+            
+            console.log('6. Test successful! Now trying with real data...');
+            
+          } catch (testException) {
+            console.error('Test call exception:', testException);
+            toast.error('Function test exception: ' + testException.message);
+            setIsUploading(false);
+            return;
+          }
+
+          // Now try with the real data
           const { data, error } = await supabase.functions.invoke('bulk-job-upload', {
             body: {
               csvData,
