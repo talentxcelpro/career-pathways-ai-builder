@@ -41,9 +41,19 @@ export const useBulkCSVImport = () => {
       setConnectionStatus('testing');
       console.log('Testing connection to bulk-csv-import function...');
       
+      // Get current session for authorization
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No valid session found. Please sign in again.');
+      }
+
       // Use Supabase client method instead of direct fetch
       const { data, error } = await supabase.functions.invoke('bulk-csv-import', {
-        body: { test: true }
+        body: { test: true },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
       });
 
       console.log('Connection test result:', { data, error });
@@ -152,7 +162,13 @@ export const useBulkCSVImport = () => {
       // Update progress with total count
       setProgress(prev => ({ ...prev, total: users.length }));
 
-      // Use Supabase client method for better reliability and authentication
+      // Get current session to pass authorization header
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No valid session found. Please sign in again.');
+      }
+
       console.log('Starting bulk import via Supabase client...');
       
       const { data, error } = await supabase.functions.invoke('bulk-csv-import', {
@@ -161,6 +177,9 @@ export const useBulkCSVImport = () => {
           batchSize: options.batchSize || 50,
           maxConcurrent: options.maxConcurrent || 3,
           speed: options.speed || 'medium'
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
         }
       });
 

@@ -43,6 +43,10 @@ Deno.serve(async (req) => {
     const startTime = Date.now();
     console.log('=== BULK CSV IMPORT STARTED ===');
 
+    // Get authorization header
+    const authHeader = req.headers.get('Authorization');
+    console.log('Auth header present:', !!authHeader);
+    
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -58,6 +62,7 @@ Deno.serve(async (req) => {
       throw new Error('Missing required environment variables');
     }
 
+    // Create client with service role for admin operations
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
@@ -76,6 +81,30 @@ Deno.serve(async (req) => {
     } catch (error) {
       console.error('Failed to parse request body:', error);
       throw new Error('Invalid JSON in request body');
+    }
+
+    // Verify user authentication for non-test requests
+    if (!requestBody.test && authHeader) {
+      try {
+        // Create a regular client to verify the user token
+        const userSupabase = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+          global: {
+            headers: { Authorization: authHeader }
+          }
+        });
+        
+        const { data: { user }, error: authError } = await userSupabase.auth.getUser();
+        
+        if (authError || !user) {
+          console.error('Authentication failed:', authError);
+          throw new Error('Authentication failed: Invalid or expired token');
+        }
+        
+        console.log('User authenticated:', user.email);
+      } catch (authError) {
+        console.error('Auth verification failed:', authError);
+        throw new Error('Authentication required');
+      }
     }
 
     // Handle test connection requests
