@@ -116,11 +116,13 @@ const App = () => {
                             key={item.to} 
                             path={item.to} 
                             element={
-                              isPublicRoute ? (
-                                item.page
-                              ) : (
-                                <ProtectedRoute>{item.page}</ProtectedRoute>
-                              )
+                               isPublicRoute ? (
+                                 item.page
+                               ) : item.to.startsWith('/admin') ? (
+                                 <ProtectedRoute><AdminLayout>{item.page}</AdminLayout></ProtectedRoute>
+                               ) : (
+                                 <ProtectedRoute>{item.page}</ProtectedRoute>
+                               )
                             }
                           />
                         );
