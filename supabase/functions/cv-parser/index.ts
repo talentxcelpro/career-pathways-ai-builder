@@ -62,8 +62,19 @@ serve(async (req) => {
     console.log('🔄 Processing CV:', fileName);
 
     // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    console.log('🔧 Environment check:', {
+      hasSupabaseUrl: !!supabaseUrl,
+      hasSupabaseKey: !!supabaseKey,
+      hasOpenAIKey: !!Deno.env.get('OPENAI_API_KEY')
+    });
+    
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase environment variables not configured');
+    }
+    
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Get OpenAI API key
@@ -73,9 +84,11 @@ serve(async (req) => {
     }
 
     // Download the file content
+    console.log('📥 Attempting to download file from:', fileUrl);
     const fileResponse = await fetch(fileUrl);
+    console.log('📥 File download response status:', fileResponse.status);
     if (!fileResponse.ok) {
-      throw new Error('Failed to download file');
+      throw new Error(`Failed to download file: ${fileResponse.status} ${fileResponse.statusText}`);
     }
 
     // For now, we'll use a simplified text extraction approach
@@ -191,9 +204,20 @@ serve(async (req) => {
         console.log('📝 Found existing profile for:', email);
       } else {
         // Create new profile
+        console.log('👤 Creating new profile for:', email);
+        console.log('📋 Profile data being inserted:', {
+          email: email,
+          full_name: parsedCV.personal_info?.full_name || 'Unknown',
+          phone: parsedCV.personal_info?.phone,
+          location: parsedCV.personal_info?.location,
+          vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user'),
+          username: generateUsername(parsedCV.personal_info?.full_name || 'user')
+        });
+        
         const { data: newProfile, error: profileError } = await supabase
           .from('profiles')
           .insert({
+            id: crypto.randomUUID(), // Generate a UUID for the profile
             email: email,
             full_name: parsedCV.personal_info?.full_name || 'Unknown',
             phone: parsedCV.personal_info?.phone,
@@ -219,7 +243,8 @@ serve(async (req) => {
           .single();
 
         if (profileError) {
-          console.error('Failed to create profile:', profileError);
+          console.error('❌ Failed to create profile:', profileError);
+          console.error('❌ Profile error details:', JSON.stringify(profileError, null, 2));
           throw profileError;
         }
 
