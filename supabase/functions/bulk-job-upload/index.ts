@@ -8,32 +8,40 @@ const corsHeaders = {
 };
 
 interface JobData {
-  job_id?: string;
-  title: string;
-  company_name: string;
-  location: string;
+  // Core fields that match database
+  title?: string;
+  description?: string;
+  requirements?: string;
+  company_name?: string;
+  location?: string;
   location_type?: string;
-  employment_type: string;
-  industry?: string;
-  job_function?: string;
-  description: string;
-  education_requirements?: string;
+  employment_type?: string;
   experience_level?: string;
   salary_min?: number;
   salary_max?: number;
   salary_currency?: string;
   is_remote?: boolean;
   skills_required?: string[];
-  skills_keywords?: string[];
-  job_tags?: string[];
   benefits?: string[];
   external_url?: string;
-  application_email?: string;
   application_method?: string;
-  job_type_detail?: string;
-  priority?: boolean;
-  job_posted_at?: string;
+  posted_at?: string;
   expires_at?: string;
+  
+  // Mapped fields
+  work_mode?: string;
+  industry_domain?: string;
+  job_summary?: string;
+  educational_qualification?: string;
+  minimum_education?: string;
+  contact_person_name?: string;
+  detailed_description?: string;
+  is_featured?: boolean;
+  
+  // System fields
+  posted_by?: string;
+  is_active?: boolean;
+  job_status?: string;
 }
 
 function generateSlug(title: string, company: string, location: string): string {
@@ -259,27 +267,102 @@ serve(async (req) => {
         const values = parseCSVLine(lines[i]);
         const jobData: Partial<JobData> = {};
         
+        // Map CSV headers to actual database columns
         headers.forEach((header, index) => {
-          if (values[index] !== undefined && values[index] !== '') {
+          const value = values[index];
+          if (value !== undefined && value !== '') {
             switch (header) {
+              // Skip job_id - database auto-generates 'id'
+              case 'job_id':
+                break;
+              case 'title':
+                jobData.title = value;
+                break;
+              case 'company_name':
+                jobData.company_name = value;
+                break;
+              case 'description':
+                jobData.description = value;
+                jobData.requirements = value; // Map to requirements field too
+                break;
+              case 'location':
+                jobData.location = value;
+                break;
+              case 'location_type':
+                jobData.location_type = value;
+                jobData.work_mode = value; // Map to work_mode as well
+                break;
+              case 'employment_type':
+                jobData.employment_type = value;
+                break;
+              case 'industry':
+                jobData.industry_domain = value; // Map to industry_domain
+                break;
+              case 'job_function':
+                // Map to job_summary since job_function doesn't exist
+                jobData.job_summary = value;
+                break;
+              case 'education_requirements':
+                jobData.educational_qualification = value;
+                jobData.minimum_education = value;
+                break;
+              case 'experience_level':
+                jobData.experience_level = value;
+                break;
               case 'salary_min':
+                jobData.salary_min = parseFloat(value) || undefined;
+                break;
               case 'salary_max':
-                jobData[header] = parseFloat(values[index]) || undefined;
+                jobData.salary_max = parseFloat(value) || undefined;
+                break;
+              case 'salary_currency':
+                jobData.salary_currency = value;
                 break;
               case 'is_remote':
-              case 'priority':
-                jobData[header] = values[index].toLowerCase() === 'true';
+                jobData.is_remote = value.toLowerCase() === 'true' || value === '1';
                 break;
-               case 'skills_required':
-               case 'skills_keywords':
-               case 'job_tags':
-               case 'benefits':
-                 jobData[header] = values[index].split(',').map(s => s.trim());
-                 break;
-               default:
-                 (jobData as any)[header] = values[index];
-             }
-           }
+              case 'skills_required':
+                jobData.skills_required = value.split(',').map(s => s.trim());
+                break;
+              case 'skills_keywords':
+                // Add to skills_required since skills_keywords doesn't exist
+                const existingSkills = jobData.skills_required || [];
+                const newSkills = value.split(',').map(s => s.trim());
+                jobData.skills_required = [...existingSkills, ...newSkills].filter((v, i, a) => a.indexOf(v) === i);
+                break;
+              case 'job_tags':
+                // Store in a custom field or ignore
+                break;
+              case 'benefits':
+                jobData.benefits = value.split(',').map(s => s.trim());
+                break;
+              case 'external_url':
+                jobData.external_url = value;
+                break;
+              case 'application_email':
+                // Map to contact fields
+                jobData.contact_person_name = value;
+                break;
+              case 'application_method':
+                jobData.application_method = value;
+                break;
+              case 'job_type_detail':
+                jobData.detailed_description = value;
+                break;
+              case 'priority':
+                jobData.is_featured = value.toLowerCase() === 'high' || value === '1';
+                break;
+              case 'job_posted_at':
+                jobData.posted_at = new Date(value).toISOString();
+                break;
+              case 'expires_at':
+                jobData.expires_at = new Date(value).toISOString();
+                break;
+              default:
+                // Ignore unknown headers
+                break;
+            }
+          }
         });
 
         // Validate job data
