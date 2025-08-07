@@ -115,18 +115,18 @@ serve(async (req) => {
                   "start_date": "YYYY-MM",
                   "end_date": "YYYY-MM or current",
                   "location": "string",
-                  "description": "string",
-                  "achievements": ["array of achievements"]
+                  "responsibilities": ["array of responsibilities"],
+                  "key_achievements": ["array of achievements"]
                 }
               ],
               "education": [
                 {
                   "institution": "string",
                   "degree": "string",
-                  "field_of_study": "string",
-                  "start_year": "YYYY",
-                  "end_year": "YYYY",
-                  "grade": "string"
+                  "graduation_date": "YYYY-MM-DD",
+                  "gpa_honors": "string",
+                  "relevant_coursework": ["array of courses"],
+                  "academic_projects": ["array of projects"]
                 }
               ],
               "certifications": ["array of certifications"],
@@ -215,7 +215,7 @@ serve(async (req) => {
         userId = newProfile.id;
         console.log('👤 Created new profile for:', email);
 
-        // Add work experience
+        // Add work experience - FIXED: using correct column names
         if (parsedCV.work_experience?.length > 0) {
           const workExperience = parsedCV.work_experience.map((exp: any) => ({
             user_id: userId,
@@ -223,25 +223,25 @@ serve(async (req) => {
             job_title: exp.position,
             start_date: exp.start_date ? `${exp.start_date}-01` : null,
             end_date: exp.end_date && exp.end_date !== 'current' ? `${exp.end_date}-01` : null,
-            is_current: exp.end_date === 'current',
             location: exp.location,
-            description: exp.description,
-            achievements: exp.achievements || []
+            responsibilities: exp.responsibilities || [], // FIXED: using responsibilities instead of description
+            key_achievements: exp.key_achievements || [], // FIXED: using key_achievements instead of achievements
+            technologies_used: exp.technologies_used || []
           }));
 
           await supabase.from('work_experience').insert(workExperience);
         }
 
-        // Add education
+        // Add education - FIXED: using correct column names
         if (parsedCV.education?.length > 0) {
           const education = parsedCV.education.map((edu: any) => ({
             user_id: userId,
-            institution_name: edu.institution,
+            institution: edu.institution, // FIXED: using institution instead of institution_name
             degree: edu.degree,
-            field_of_study: edu.field_of_study,
-            start_year: parseInt(edu.start_year) || null,
-            end_year: parseInt(edu.end_year) || null,
-            grade_or_gpa: edu.grade
+            graduation_date: edu.graduation_date ? edu.graduation_date : null, // FIXED: using graduation_date instead of start_year/end_year
+            gpa_honors: edu.gpa_honors,
+            relevant_coursework: edu.relevant_coursework || [],
+            academic_projects: edu.academic_projects || []
           }));
 
           await supabase.from('education').insert(education);
@@ -300,6 +300,24 @@ serve(async (req) => {
 
   } catch (error: any) {
     console.error('❌ CV parsing error:', error);
+    
+    // Try to update batch progress even on failure
+    try {
+      const requestBody = await req.clone().json();
+      const { batchId } = requestBody;
+      if (batchId) {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        
+        await supabase.rpc('increment_batch_progress', {
+          batch_id: batchId,
+          success: false
+        });
+      }
+    } catch (batchError) {
+      console.error('Failed to update batch progress on error:', batchError);
+    }
     
     return new Response(JSON.stringify({
       success: false,
