@@ -46,9 +46,15 @@ export const useBulkUpload = () => {
 
   const processCVFile = useMutation({
     mutationFn: async ({ file, batchId }: ProcessCVParams) => {
-      console.log('📁 Starting file upload:', file.name, 'to batch:', batchId);
-      
-      // Upload file to Supabase Storage
+      try {
+        console.log('📁 Starting file upload:', file.name, 'to batch:', batchId);
+        console.log('📁 File details:', { 
+          name: file.name, 
+          size: file.size, 
+          type: file.type 
+        });
+        
+        // Upload file to Supabase Storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
       const filePath = `cv-uploads/${batchId}/${fileName}`;
@@ -102,6 +108,10 @@ export const useBulkUpload = () => {
         extractedData: data,
         fileName: file.name
       };
+      } catch (error: any) {
+        console.error('❌ Complete upload process failed:', error);
+        throw error;
+      }
     },
     onError: (error: any) => {
       console.error('❌ CV processing error:', error);
