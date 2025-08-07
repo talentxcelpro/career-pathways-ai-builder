@@ -106,6 +106,31 @@ serve(async (req) => {
       throw new Error('Unsupported file type');
     }
 
+    // For testing, let's use mock data instead of OpenAI to isolate the issue
+    console.log('🤖 Using mock CV data for testing...');
+    
+    const parsedCV = {
+      personal_info: {
+        full_name: `Test User ${Date.now()}`,
+        email: `test${Date.now()}@example.com`,
+        phone: '+1234567890',
+        location: 'Test City, Test State',
+        linkedin_url: 'https://linkedin.com/in/testuser',
+        github_url: null,
+        portfolio_url: null
+      },
+      professional_summary: 'Experienced professional with strong background in technology.',
+      skills: ['JavaScript', 'React', 'Node.js', 'Python'],
+      work_experience: [],
+      education: [],
+      certifications: [],
+      languages: ['English'],
+      years_of_experience: 3,
+      preferred_job_titles: ['Software Developer'],
+      availability_status: 'open_to_opportunities'
+    };
+
+    /* TEMPORARILY DISABLED - OpenAI parsing
     // Use OpenAI to parse the CV content
     const parseResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -169,23 +194,9 @@ serve(async (req) => {
         temperature: 0.3,
         max_tokens: 2000
       }),
-    });
+    */
 
-    if (!parseResponse.ok) {
-      throw new Error('Failed to parse CV with OpenAI');
-    }
-
-    const parseData = await parseResponse.json();
-    let parsedCV;
-    
-    try {
-      parsedCV = JSON.parse(parseData.choices[0].message.content);
-    } catch (error) {
-      console.error('Failed to parse OpenAI response as JSON:', error);
-      throw new Error('Invalid CV parsing response');
-    }
-
-    console.log('✅ CV parsed successfully:', parsedCV.personal_info?.full_name || 'Unknown');
+    console.log('✅ CV parsed successfully with mock data:', parsedCV.personal_info?.full_name || 'Unknown');
 
     // Create or find user profile
     let userId;
