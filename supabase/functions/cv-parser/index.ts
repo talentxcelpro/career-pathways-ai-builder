@@ -284,22 +284,38 @@ serve(async (req) => {
         
         console.log('✅ Successfully created profile with ID:', userId);
 
+        // Add a small delay to ensure profile is fully committed before creating career passport
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         // Manually create career passport record since we disabled the trigger
         try {
           console.log('📋 Creating career passport for user:', userId);
-          const { error: careerPassportError } = await supabase
+          
+          // First check if career passport already exists to avoid duplicates
+          const { data: existingPassport } = await supabase
             .from('career_passport')
-            .insert({
-              user_id: userId,
-              completion_percentage: 25, // Basic completion for CV upload
-              career_readiness_score: 0
-            });
+            .select('id')
+            .eq('user_id', userId)
+            .single();
             
-          if (careerPassportError) {
-            console.error('❌ Career passport creation failed:', careerPassportError);
-            // Don't throw here - profile creation succeeded, this is just supplementary
+          if (!existingPassport) {
+            const { error: careerPassportError } = await supabase
+              .from('career_passport')
+              .insert({
+                user_id: userId,
+                completion_percentage: 25, // Basic completion for CV upload
+                career_readiness_score: 0
+              });
+              
+            if (careerPassportError) {
+              console.error('❌ Career passport creation failed:', careerPassportError);
+              console.error('❌ Career passport error details:', JSON.stringify(careerPassportError, null, 2));
+              // Don't throw here - profile creation succeeded, this is just supplementary
+            } else {
+              console.log('✅ Career passport created successfully');
+            }
           } else {
-            console.log('✅ Career passport created successfully');
+            console.log('📋 Career passport already exists for user');
           }
         } catch (careerError) {
           console.error('❌ Career passport creation error:', careerError);
