@@ -216,73 +216,101 @@ serve(async (req) => {
       } else {
         // Create new profile - Generate UUID first
         const newUserId = crypto.randomUUID();
-        console.log('👤 Creating new profile for:', email, 'with ID:', newUserId);
+        console.log('👤 About to create new profile for:', email, 'with ID:', newUserId);
         
-        // First try to create a minimal profile to avoid trigger issues
-        const { data: newProfile, error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: newUserId,
-            email: email,
-            full_name: parsedCV.personal_info?.full_name || 'Unknown',
-            phone: parsedCV.personal_info?.phone,
-            location: parsedCV.personal_info?.location,
-            about: parsedCV.professional_summary,
-            linkedin_url: parsedCV.personal_info?.linkedin_url,
-            github_url: parsedCV.personal_info?.github_url,
-            portfolio_url: parsedCV.personal_info?.portfolio_url,
-            skills: parsedCV.skills || [],
-            experience_years: parsedCV.years_of_experience || 0,
-            is_profile_public: true,
-            vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user') + '-' + newUserId.slice(0, 8),
-            username: generateUsername(parsedCV.personal_info?.full_name || 'user'),
-            looking_for_job: true,
-            preferences: {
-              certifications: parsedCV.certifications || [],
-              languages: parsedCV.languages || [],
-              availability_status: parsedCV.availability_status || 'open_to_opportunities'
-            }
-          })
-          .select()
-          .single();
+        try {
+          const { data: newProfile, error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: newUserId,
+              email: email,
+              full_name: parsedCV.personal_info?.full_name || 'Unknown',
+              phone: parsedCV.personal_info?.phone,
+              location: parsedCV.personal_info?.location,
+              about: parsedCV.professional_summary,
+              linkedin_url: parsedCV.personal_info?.linkedin_url,
+              github_url: parsedCV.personal_info?.github_url,
+              portfolio_url: parsedCV.personal_info?.portfolio_url,
+              skills: parsedCV.skills || [],
+              experience_years: parsedCV.years_of_experience || 0,
+              is_profile_public: true,
+              vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user') + '-' + newUserId.slice(0, 8),
+              username: generateUsername(parsedCV.personal_info?.full_name || 'user'),
+              looking_for_job: true,
+              preferences: {
+                certifications: parsedCV.certifications || [],
+                languages: parsedCV.languages || [],
+                availability_status: parsedCV.availability_status || 'open_to_opportunities'
+              }
+            })
+            .select()
+            .single();
 
-        if (profileError) {
-          console.error('❌ Failed to create profile:', profileError);
-          console.error('❌ Profile error details:', JSON.stringify(profileError, null, 2));
-          
-          // Check if it's a unique constraint violation and try with different username/vanity_url
-          if (profileError.code === '23505') {
-            console.log('🔄 Unique constraint violation, retrying with different identifiers...');
-            const retryUserId = crypto.randomUUID();
-            const { data: retryProfile, error: retryError } = await supabase
-              .from('profiles')
-              .insert({
-                id: retryUserId,
-                email: email,
-                full_name: parsedCV.personal_info?.full_name || 'Unknown',
-                phone: parsedCV.personal_info?.phone,
-                location: parsedCV.personal_info?.location,
-                about: parsedCV.professional_summary,
-                vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user') + '-' + retryUserId.slice(0, 8),
-                username: generateUsername(parsedCV.personal_info?.full_name || 'user') + '-' + retryUserId.slice(0, 4),
-                looking_for_job: true
-              })
-              .select()
-              .single();
+          if (profileError) {
+            console.error('❌ Profile creation failed:', profileError);
+            console.error('❌ Profile error code:', profileError.code);
+            console.error('❌ Profile error details:', JSON.stringify(profileError, null, 2));
+            
+            // Check if it's a unique constraint violation
+            if (profileError.code === '23505') {
+              console.log('🔄 Unique constraint violation, retrying with different identifiers...');
+              const retryUserId = crypto.randomUUID();
+              const { data: retryProfile, error: retryError } = await supabase
+                .from('profiles')
+                .insert({
+                  id: retryUserId,
+                  email: email,
+                  full_name: parsedCV.personal_info?.full_name || 'Unknown',
+                  phone: parsedCV.personal_info?.phone,
+                  location: parsedCV.personal_info?.location,
+                  about: parsedCV.professional_summary,
+                  vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user') + '-' + retryUserId.slice(0, 8),
+                  username: generateUsername(parsedCV.personal_info?.full_name || 'user') + '-' + retryUserId.slice(0, 4),
+                  looking_for_job: true
+                })
+                .select()
+                .single();
+                
+              if (retryError) {
+                console.error('❌ Retry profile creation also failed:', retryError);
+                throw new Error(`Profile creation failed after retry: ${retryError.message}`);
+              }
               
-            if (retryError) {
-              console.error('❌ Retry also failed:', retryError);
-              throw retryError;
+              if (!retryProfile || !retryProfile.id) {
+                throw new Error('Profile creation succeeded but no profile data returned');
+              }
+              
+              userId = retryProfile.id;
+              console.log('✅ Profile created successfully on retry with ID:', userId);
+            } else {
+              throw new Error(`Profile creation failed: ${profileError.message}`);
             }
-            userId = retryProfile.id;
           } else {
-            throw profileError;
+            if (!newProfile || !newProfile.id) {
+              throw new Error('Profile creation succeeded but no profile data returned');
+            }
+            userId = newProfile.id;
+            console.log('✅ Profile created successfully with ID:', userId);
           }
-        } else {
-          userId = newProfile.id;
+          
+          // Verify the profile actually exists before proceeding
+          console.log('🔍 Verifying profile exists in database...');
+          const { data: verifyProfile, error: verifyError } = await supabase
+            .from('profiles')
+            .select('id, email, full_name')
+            .eq('id', userId)
+            .single();
+            
+          if (verifyError || !verifyProfile) {
+            throw new Error(`Profile verification failed: ${verifyError?.message || 'Profile not found'}`);
+          }
+          
+          console.log('✅ Profile verified in database:', verifyProfile);
+          
+        } catch (profileCreationError) {
+          console.error('❌ Complete profile creation process failed:', profileCreationError);
+          throw profileCreationError;
         }
-        
-        console.log('✅ Successfully created profile with ID:', userId);
 
         // Add a small delay to ensure profile is fully committed before creating career passport
         await new Promise(resolve => setTimeout(resolve, 100));
