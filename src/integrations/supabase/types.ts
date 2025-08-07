@@ -20907,7 +20907,9 @@ export type Database = {
         Returns: undefined
       }
       increment_batch_progress: {
-        Args: { batch_id: string; success?: boolean }
+        Args:
+          | { batch_id: string; success?: boolean }
+          | { batch_id: string; success?: boolean }
         Returns: undefined
       }
       increment_job_applications: {
