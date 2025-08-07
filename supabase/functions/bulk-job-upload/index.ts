@@ -427,11 +427,32 @@ serve(async (req) => {
         }
 
         // Generate additional fields
-        const slug = generateSlug(
+        const baseSlug = generateSlug(
           jobData.title!,
           jobData.company_name!,
           jobData.location!
         );
+        
+        // Make slug unique by adding timestamp
+        const slug = `${baseSlug}-${Date.now()}`;
+
+        // Check for existing job with same title, company, location
+        const { data: existingJob } = await supabase
+          .from('jobs')
+          .select('id')
+          .eq('title', jobData.title)
+          .eq('company_name', jobData.company_name)
+          .eq('location', jobData.location)
+          .limit(1);
+
+        if (existingJob && existingJob.length > 0) {
+          failedJobs.push({
+            row: i + 1,
+            data: jobData,
+            errors: [`Duplicate job: A job with title "${jobData.title}" at "${jobData.company_name}" in "${jobData.location}" already exists`]
+          });
+          continue;
+        }
 
         // Set default values
         const jobToInsert = {
