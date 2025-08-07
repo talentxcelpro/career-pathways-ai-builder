@@ -100,65 +100,78 @@ serve(async (req) => {
   try {
     console.log('=== BULK JOB UPLOAD REQUEST ===');
     console.log(`Method: ${req.method}`);
-    console.log(`URL: ${req.url}`);
+    console.log(`Headers:`, Object.fromEntries(req.headers.entries()));
 
-    // Initialize Supabase client
+    // Since verify_jwt = true, Supabase automatically validates the JWT
+    // We can use a service role client for all operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
-    // Get authorization header
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error('Missing environment variables');
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Create service role client for database operations
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+    // Get user from the JWT (automatically validated by Supabase)
     const authHeader = req.headers.get('Authorization');
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.error('No valid Authorization header provided');
+    if (!authHeader?.startsWith('Bearer ')) {
+      console.error('No authorization header provided');
       return new Response(
         JSON.stringify({ error: 'Authorization required' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Create Supabase client with the user's token for authentication
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        headers: { Authorization: authHeader }
-      }
-    });
-
-    // Verify user authentication using Supabase
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    // Extract user ID from JWT payload (token already validated by Supabase)
+    const token = authHeader.replace('Bearer ', '');
+    let userId: string;
     
-    if (authError || !user) {
-      console.error('Authentication failed:', authError);
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      userId = payload.sub;
+      
+      if (!userId) {
+        throw new Error('No user ID in token');
+      }
+      console.log('Authenticated user ID:', userId);
+    } catch (jwtError) {
+      console.error('JWT decode error:', jwtError);
       return new Response(
-        JSON.stringify({ error: 'Invalid or expired token' }),
+        JSON.stringify({ error: 'Invalid token format' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('User authenticated:', user.email);
-    const userId = user.id;
+    // Use the validate_admin_operation function for permission check
+    console.log('Checking admin permissions...');
+    const { data: hasPermission, error: permError } = await supabase
+      .rpc('validate_admin_operation', { _required_role: 'employer' });
 
-    // Initialize Supabase client with SERVICE_ROLE_KEY for database operations
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    console.log('Permission check result:', { hasPermission, permError });
 
-    // Check if user has permission to upload jobs
-    const { data: userRole } = await supabaseClient
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId)
-      .eq('is_active', true)
-      .in('role', ['super_admin', 'admin', 'staffing_partner'])
-      .single();
-
-    if (!userRole) {
+    if (permError) {
+      console.error('Permission check error:', permError);
       return new Response(
-        JSON.stringify({ error: 'Insufficient permissions' }),
-        { status: 403, headers: corsHeaders }
+        JSON.stringify({ error: 'Permission check failed', details: permError.message }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    if (!hasPermission) {
+      console.error('User lacks required permissions');
+      return new Response(
+        JSON.stringify({ error: 'Insufficient permissions - requires employer role or higher' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Permission check passed');
 
     const { csvData, batchName } = await req.json();
 
@@ -188,7 +201,8 @@ serve(async (req) => {
     }
 
     // Create batch record
-    const { data: batch, error: batchError } = await supabaseClient
+    console.log('Creating batch record...');
+    const { data: batch, error: batchError } = await supabase
       .from('bulk_upload_batches')
       .insert({
         uploaded_by: userId,
@@ -264,7 +278,6 @@ serve(async (req) => {
           source_type: 'bulk_upload',
           bulk_upload_batch_id: batch.id,
           posted_by: userId,
-          posted_by_role: userRole.role,
           is_active: true,
           job_status: 'open',
           salary_currency: jobData.salary_currency || 'INR',
@@ -272,7 +285,7 @@ serve(async (req) => {
         };
 
         // Insert job
-        const { data: insertedJob, error: insertError } = await supabaseClient
+        const { data: insertedJob, error: insertError } = await supabase
           .from('jobs')
           .insert(jobToInsert)
           .select()
@@ -298,7 +311,8 @@ serve(async (req) => {
     }
 
     // Update batch with results
-    await supabaseClient
+    console.log('Updating batch with results...');
+    await supabase
       .from('bulk_upload_batches')
       .update({
         processed_jobs: successfulJobs.length,
