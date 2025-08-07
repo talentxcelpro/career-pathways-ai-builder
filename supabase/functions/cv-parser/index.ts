@@ -203,16 +203,17 @@ serve(async (req) => {
             github_url: parsedCV.personal_info?.github_url,
             portfolio_url: parsedCV.personal_info?.portfolio_url,
             skills: parsedCV.skills || [],
-            certifications: parsedCV.certifications || [],
-            languages: parsedCV.languages || [],
-            years_of_experience: parsedCV.years_of_experience || 0,
-            availability_status: parsedCV.availability_status || 'open_to_opportunities',
-            public_profile: true,
-            slug: generateSlug(parsedCV.personal_info?.full_name || 'user'),
+            experience_years: parsedCV.years_of_experience || 0,
+            is_profile_public: true,
+            vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user'),
             username: generateUsername(parsedCV.personal_info?.full_name || 'user'),
-            seo_meta_title: `${parsedCV.personal_info?.full_name || 'Professional'} - Hire on TalentXcel`,
-            seo_meta_description: `Connect with ${parsedCV.personal_info?.full_name || 'this professional'} on TalentXcel. ${parsedCV.professional_summary?.substring(0, 100) || 'Experienced professional seeking new opportunities.'}...`,
-            seo_keywords: parsedCV.skills?.slice(0, 10) || []
+            looking_for_job: true,
+            // Store additional data in preferences JSON field
+            preferences: {
+              certifications: parsedCV.certifications || [],
+              languages: parsedCV.languages || [],
+              availability_status: parsedCV.availability_status || 'open_to_opportunities'
+            }
           })
           .select()
           .single();
