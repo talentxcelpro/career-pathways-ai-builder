@@ -232,17 +232,32 @@ export const JobScraperControl = () => {
       };
       
       console.log('🌐 Adzuna import started:', payload);
+      console.log('🔧 Supabase client available:', !!supabase);
+      
+      // Add detailed logging for the function call
+      console.log('📞 Calling edge function: adzuna-job-importer');
+      console.log('📦 Payload:', JSON.stringify(payload, null, 2));
       
       const { data, error } = await supabase.functions.invoke('adzuna-job-importer', {
         body: payload
       });
       
+      console.log('📨 Function response - data:', data);
+      console.log('📨 Function response - error:', error);
+      
       if (error) {
-        console.error('❌ Adzuna import error:', error);
+        console.error('❌ Adzuna import error details:', {
+          name: error.name,
+          message: error.message,
+          stack: error.stack,
+          cause: error.cause,
+          context: error.context
+        });
         throw error;
       }
 
       if (!data || !data.success) {
+        console.error('❌ Adzuna import failed - data:', data);
         throw new Error(data?.error || 'Adzuna import failed');
       }
 
@@ -255,7 +270,15 @@ export const JobScraperControl = () => {
       });
 
     } catch (error) {
-      console.error('Adzuna import error:', error);
+      console.error('❌ Adzuna import comprehensive error:', {
+        error: error,
+        message: error?.message,
+        stack: error?.stack,
+        name: error?.name,
+        type: typeof error,
+        stringified: JSON.stringify(error, null, 2)
+      });
+      
       let errorMessage = 'Unknown error occurred';
       if (error?.message) {
         errorMessage = error.message;
