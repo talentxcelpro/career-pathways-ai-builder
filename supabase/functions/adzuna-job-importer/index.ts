@@ -32,11 +32,30 @@ interface AdzunaJobResponse {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log(`🚀 Edge function called: ${req.method} ${req.url}`);
+
   try {
+    // Parse request body with error handling
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch (parseError) {
+      console.error('❌ Failed to parse request body:', parseError);
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Invalid JSON in request body',
+        details: parseError.message
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const { 
       limit = 50, 
       location = 'india', 
@@ -44,21 +63,41 @@ serve(async (req) => {
       page = 1,
       salary_min,
       salary_max 
-    } = await req.json();
+    } = requestBody;
 
     console.log('🌐 Adzuna Import Started:', { limit, location, keywords, page });
 
-    // Get Adzuna API credentials
+    // Validate Adzuna API credentials
     const adzunaAppId = Deno.env.get('ADZUNA_APP_ID');
     const adzunaAppKey = Deno.env.get('ADZUNA_APP_KEY');
 
     if (!adzunaAppId || !adzunaAppKey) {
-      throw new Error('Adzuna API credentials not configured');
+      console.error('❌ Missing Adzuna API credentials');
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Adzuna API credentials not configured'
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate Supabase environment
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('❌ Missing Supabase credentials');
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Supabase credentials not configured'
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Build Adzuna API URL
@@ -80,11 +119,39 @@ serve(async (req) => {
 
     console.log('🔗 Fetching from Adzuna:', adzunaUrl.toString());
 
-    // Fetch jobs from Adzuna
-    const adzunaResponse = await fetch(adzunaUrl.toString());
+    // Fetch jobs from Adzuna with timeout and better error handling
+    let adzunaResponse;
+    try {
+      adzunaResponse = await fetch(adzunaUrl.toString(), {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'TalentXcel-JobBot/1.0',
+          'Accept': 'application/json'
+        }
+      });
+    } catch (fetchError) {
+      console.error('❌ Failed to fetch from Adzuna:', fetchError);
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Failed to connect to Adzuna API',
+        details: fetchError.message
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     if (!adzunaResponse.ok) {
-      throw new Error(`Adzuna API error: ${adzunaResponse.status} ${adzunaResponse.statusText}`);
+      const errorText = await adzunaResponse.text();
+      console.error('❌ Adzuna API error:', adzunaResponse.status, errorText);
+      return new Response(JSON.stringify({
+        success: false,
+        error: `Adzuna API error: ${adzunaResponse.status}`,
+        details: errorText
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const adzunaData: AdzunaJobResponse = await adzunaResponse.json();
@@ -214,11 +281,18 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('Adzuna import error:', error);
+    console.error('❌ Adzuna import comprehensive error:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause
+    });
+    
     return new Response(JSON.stringify({
       success: false,
-      error: error.message,
-      details: error.stack
+      error: error.message || 'Unknown error occurred',
+      details: error.stack,
+      timestamp: new Date().toISOString()
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
