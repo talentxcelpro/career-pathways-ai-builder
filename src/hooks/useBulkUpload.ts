@@ -85,20 +85,17 @@ export const useBulkUpload = () => {
       }
 
       // Call CV parsing edge function
-      console.log('🚀 Calling CV parser with:', { 
-        fileUrl: publicUrl, 
-        fileName: file.name, 
-        fileType: file.type, 
-        batchId 
-      });
+      const requestPayload = {
+        fileUrl: publicUrl,
+        fileName: file.name,
+        fileType: file.type,
+        batchId
+      };
+      
+      console.log('🚀 Calling CV parser with payload:', JSON.stringify(requestPayload, null, 2));
       
       const { data, error } = await supabase.functions.invoke('cv-parser', {
-        body: {
-          fileUrl: publicUrl,
-          fileName: file.name,
-          fileType: file.type,
-          batchId
-        }
+        body: requestPayload
       });
 
       if (error) throw error;
