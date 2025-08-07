@@ -6692,6 +6692,79 @@ export type Database = {
         }
         Relationships: []
       }
+      cv_files: {
+        Row: {
+          batch_id: string | null
+          created_at: string | null
+          file_size_bytes: number | null
+          file_type: string
+          file_url: string
+          id: string
+          is_primary: boolean | null
+          original_filename: string
+          parsed_at: string | null
+          parsing_error: string | null
+          parsing_results: Json | null
+          parsing_status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          batch_id?: string | null
+          created_at?: string | null
+          file_size_bytes?: number | null
+          file_type: string
+          file_url: string
+          id?: string
+          is_primary?: boolean | null
+          original_filename: string
+          parsed_at?: string | null
+          parsing_error?: string | null
+          parsing_results?: Json | null
+          parsing_status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          batch_id?: string | null
+          created_at?: string | null
+          file_size_bytes?: number | null
+          file_type?: string
+          file_url?: string
+          id?: string
+          is_primary?: boolean | null
+          original_filename?: string
+          parsed_at?: string | null
+          parsing_error?: string | null
+          parsing_results?: Json | null
+          parsing_status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cv_files_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "bulk_upload_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cv_files_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "cv_files_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dashboard_widgets: {
         Row: {
           configuration: Json
@@ -9281,6 +9354,72 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      job_preferences: {
+        Row: {
+          availability_date: string | null
+          created_at: string | null
+          employment_types: string[] | null
+          experience_levels: string[] | null
+          id: string
+          is_active: boolean | null
+          preferred_industries: string[] | null
+          preferred_job_titles: string[] | null
+          preferred_locations: string[] | null
+          remote_work_preference: string | null
+          salary_max: number | null
+          salary_min: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          availability_date?: string | null
+          created_at?: string | null
+          employment_types?: string[] | null
+          experience_levels?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          preferred_industries?: string[] | null
+          preferred_job_titles?: string[] | null
+          preferred_locations?: string[] | null
+          remote_work_preference?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          availability_date?: string | null
+          created_at?: string | null
+          employment_types?: string[] | null
+          experience_levels?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          preferred_industries?: string[] | null
+          preferred_job_titles?: string[] | null
+          preferred_locations?: string[] | null
+          remote_work_preference?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "job_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       job_quality_scores: {
         Row: {
@@ -20765,6 +20904,10 @@ export type Database = {
       }
       increment_article_views: {
         Args: { article_id: string }
+        Returns: undefined
+      }
+      increment_batch_progress: {
+        Args: { batch_id: string; success?: boolean }
         Returns: undefined
       }
       increment_job_applications: {
