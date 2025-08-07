@@ -98,35 +98,45 @@ serve(async (req) => {
   }
 
   try {
-    // Since verify_jwt = true, the JWT is already validated by Supabase
-    // Extract user ID directly from the JWT token
+    console.log('=== BULK JOB UPLOAD REQUEST ===');
+    console.log(`Method: ${req.method}`);
+    console.log(`URL: ${req.url}`);
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    
+    // Get authorization header
     const authHeader = req.headers.get('Authorization');
+    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('No valid Authorization header provided');
       return new Response(
-        JSON.stringify({ error: 'No authorization header' }),
+        JSON.stringify({ error: 'Authorization required' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Extract JWT payload (token is already validated by Supabase)
-    const token = authHeader.replace('Bearer ', '');
-    let userId: string;
-    
-    try {
-      // Decode JWT payload to get user ID
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      userId = payload.sub;
-      
-      if (!userId) {
-        throw new Error('No user ID in token');
+    // Create Supabase client with the user's token for authentication
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: { Authorization: authHeader }
       }
-    } catch (jwtError) {
-      console.error('JWT decode error:', jwtError);
+    });
+
+    // Verify user authentication using Supabase
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      console.error('Authentication failed:', authError);
       return new Response(
-        JSON.stringify({ error: 'Invalid token format' }),
+        JSON.stringify({ error: 'Invalid or expired token' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    console.log('User authenticated:', user.email);
+    const userId = user.id;
 
     // Initialize Supabase client with SERVICE_ROLE_KEY for database operations
     const supabaseClient = createClient(
