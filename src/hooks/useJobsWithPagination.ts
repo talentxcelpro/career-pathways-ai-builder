@@ -46,7 +46,7 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
 
         if (!rpcError && rpcData) {
           console.log('✅ Using optimized RPC function');
-          const result = rpcData;
+          const result = rpcData as any;
           return {
             jobs: Array.isArray(result?.jobs) ? result.jobs : [],
             totalCount: result?.total_count || 0,

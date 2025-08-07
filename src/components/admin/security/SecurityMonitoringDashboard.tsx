@@ -32,7 +32,7 @@ interface SecurityEvent {
   created_at: string;
   metadata: any;
   user_id: string;
-  ip_address: string;
+  ip_address: string | null;
 }
 
 export const SecurityMonitoringDashboard = () => {
@@ -92,7 +92,7 @@ export const SecurityMonitoringDashboard = () => {
         .limit(50);
 
       if (error) throw error;
-      return data || [];
+      return (data as SecurityEvent[]) || [];
     },
     refetchInterval: 15000 // Refresh every 15 seconds
   });

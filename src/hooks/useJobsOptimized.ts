@@ -65,7 +65,7 @@ export const useJobsOptimized = (
       console.log('✅ RPC result:', data);
       
       // The RPC function returns a JSONB object directly, not an array
-      const result = data;
+      const result = data as any;
       
       return {
         jobs: Array.isArray(result?.jobs) ? result.jobs : [],
@@ -110,7 +110,7 @@ export const useJobsOptimized = (
       console.log('✅ RPC result:', data);
       
       // The RPC function returns a JSONB object directly, not an array
-      const result = data;
+      const result = data as any;
       
       return {
         jobs: Array.isArray(result?.jobs) ? result.jobs : [],
