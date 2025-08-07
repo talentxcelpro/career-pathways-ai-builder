@@ -30,6 +30,9 @@ export const useAdminStats = () => {
       ]);
 
       // Get additional analytics
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      
       const [
         { data: topCompanies },
         { data: recentActivity },
@@ -41,10 +44,10 @@ export const useAdminStats = () => {
           .limit(5),
         supabase.from('profiles')
           .select('created_at')
-          .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
+          .gte('created_at', sevenDaysAgo),
         supabase.from('job_applications')
-          .select('created_at')
-          .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+          .select('id, created_at')
+          .gte('created_at', thirtyDaysAgo)
       ]);
 
       return {
