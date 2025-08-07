@@ -1,0 +1,210 @@
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { FileText, Download, User, Calendar, ExternalLink } from 'lucide-react';
+import { format } from 'date-fns';
+
+export const CVFilesManager = () => {
+  const { data: cvFiles, isLoading, error } = useQuery({
+    queryKey: ['cv-files'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('cv_files')
+        .select(`
+          id,
+          user_id,
+          original_filename,
+          file_url,
+          file_type,
+          parsing_status,
+          parsing_results,
+          created_at,
+          profiles (
+            id,
+            full_name,
+            email,
+            location
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const openFile = (fileUrl: string) => {
+    window.open(fileUrl, '_blank');
+  };
+
+  const downloadFile = async (fileUrl: string, filename: string) => {
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="animate-pulse">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-muted rounded-lg"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-muted rounded w-1/3"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="border-destructive">
+        <CardContent className="p-6 text-center">
+          <p className="text-destructive">Failed to load CV files: {error.message}</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!cvFiles || cvFiles.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-6 text-center">
+          <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No CV Files Found</h3>
+          <p className="text-muted-foreground">
+            Upload some CVs using the Bulk Upload tab to see them here.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">
+          {cvFiles.length} CV File{cvFiles.length !== 1 ? 's' : ''} Uploaded
+        </h3>
+        <Badge variant="secondary">{cvFiles.filter(f => f.parsing_status === 'completed').length} Parsed</Badge>
+      </div>
+
+      <div className="grid gap-4">
+        {cvFiles.map((cvFile) => (
+          <Card key={cvFile.id} className="hover:shadow-md transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start space-x-4 flex-1">
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <FileText className="h-6 w-6 text-blue-600" />
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-foreground truncate">
+                      {cvFile.original_filename}
+                    </h4>
+                    
+                    <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-3 w-3" />
+                        <span>{format(new Date(cvFile.created_at), 'MMM dd, yyyy')}</span>
+                      </div>
+                      
+                      <Badge 
+                        variant={cvFile.parsing_status === 'completed' ? 'default' : 'secondary'}
+                        className="text-xs"
+                      >
+                        {cvFile.parsing_status}
+                      </Badge>
+                      
+                      {cvFile.file_type && (
+                        <Badge variant="outline" className="text-xs">
+                          {cvFile.file_type.split('/').pop()?.toUpperCase()}
+                        </Badge>
+                      )}
+                    </div>
+
+                    {cvFile.profiles && (
+                      <div className="flex items-center space-x-2 mt-3 p-3 bg-muted/50 rounded-lg">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm">{cvFile.profiles.full_name}</p>
+                          <p className="text-xs text-muted-foreground truncate">{cvFile.profiles.email}</p>
+                          {cvFile.profiles.location && (
+                            <p className="text-xs text-muted-foreground">{cvFile.profiles.location}</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {cvFile.parsing_results && typeof cvFile.parsing_results === 'object' && cvFile.parsing_results !== null && (
+                      <div className="mt-3 text-sm">
+                        <p className="text-muted-foreground">
+                          <strong>Skills:</strong> {
+                            Array.isArray((cvFile.parsing_results as any).skills) 
+                              ? (cvFile.parsing_results as any).skills.slice(0, 3).join(', ') 
+                              : 'N/A'
+                          }
+                          {Array.isArray((cvFile.parsing_results as any).skills) && (cvFile.parsing_results as any).skills.length > 3 && 
+                            ` +${(cvFile.parsing_results as any).skills.length - 3} more`}
+                        </p>
+                        {(cvFile.parsing_results as any).years_of_experience && (
+                          <p className="text-muted-foreground">
+                            <strong>Experience:</strong> {(cvFile.parsing_results as any).years_of_experience} years
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2 ml-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openFile(cvFile.file_url)}
+                    className="gap-2"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    View
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => downloadFile(cvFile.file_url, cvFile.original_filename)}
+                    className="gap-2"
+                  >
+                    <Download className="h-3 w-3" />
+                    Download
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};

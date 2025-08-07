@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileText, Users, Database, Search, Settings } from 'lucide-react';
+import { Upload, FileText, Users, Database, Search, Settings, File } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BulkUploadManager } from '@/components/talent-database/BulkUploadManager';
 import { TalentSearch } from '@/components/talent-database/TalentSearch';
@@ -9,6 +9,7 @@ import { ProfileGenerator } from '@/components/talent-database/ProfileGenerator'
 import { MatchingEngine } from '@/components/talent-database/MatchingEngine';
 import { TalentAnalytics } from '@/components/talent-database/TalentAnalytics';
 import { SetupGuide } from '@/components/talent-database/SetupGuide';
+import { CVFilesManager } from '@/components/talent-database/CVFilesManager';
 
 const TalentDatabase = () => {
   const [activeTab, setActiveTab] = useState('setup');
@@ -82,7 +83,7 @@ const TalentDatabase = () => {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="setup" className="gap-2">
             <Settings className="h-4 w-4" />
             Setup
@@ -90,6 +91,10 @@ const TalentDatabase = () => {
           <TabsTrigger value="upload" className="gap-2">
             <Upload className="h-4 w-4" />
             Bulk Upload
+          </TabsTrigger>
+          <TabsTrigger value="cvfiles" className="gap-2">
+            <File className="h-4 w-4" />
+            CV Files
           </TabsTrigger>
           <TabsTrigger value="search" className="gap-2">
             <Search className="h-4 w-4" />
@@ -123,6 +128,20 @@ const TalentDatabase = () => {
             </CardHeader>
             <CardContent>
               <BulkUploadManager />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="cvfiles" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Uploaded CV Files</CardTitle>
+              <CardDescription>
+                View and manage all uploaded CV files and their parsing results
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CVFilesManager />
             </CardContent>
           </Card>
         </TabsContent>
