@@ -148,3 +148,6 @@ verify_jwt = false
 
 [functions.simple-email-test]
 verify_jwt = false
+
+[functions.adzuna-job-importer]
+verify_jwt = true
