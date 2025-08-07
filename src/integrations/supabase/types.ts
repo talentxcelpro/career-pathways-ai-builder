@@ -9735,6 +9735,7 @@ export type Database = {
           detailed_description: string | null
           education_level: string | null
           education_notes: string | null
+          education_requirements: string | null
           educational_qualification: string | null
           employment_type: string | null
           employment_type_schema: string | null
@@ -9761,6 +9762,7 @@ export type Database = {
           is_urgent: boolean | null
           jd_flyer_url: string | null
           job_description: string | null
+          job_function: string | null
           job_status: string | null
           job_summary: string | null
           job_title: string
@@ -9860,6 +9862,7 @@ export type Database = {
           detailed_description?: string | null
           education_level?: string | null
           education_notes?: string | null
+          education_requirements?: string | null
           educational_qualification?: string | null
           employment_type?: string | null
           employment_type_schema?: string | null
@@ -9886,6 +9889,7 @@ export type Database = {
           is_urgent?: boolean | null
           jd_flyer_url?: string | null
           job_description?: string | null
+          job_function?: string | null
           job_status?: string | null
           job_summary?: string | null
           job_title?: string
@@ -9985,6 +9989,7 @@ export type Database = {
           detailed_description?: string | null
           education_level?: string | null
           education_notes?: string | null
+          education_requirements?: string | null
           educational_qualification?: string | null
           employment_type?: string | null
           employment_type_schema?: string | null
@@ -10011,6 +10016,7 @@ export type Database = {
           is_urgent?: boolean | null
           jd_flyer_url?: string | null
           job_description?: string | null
+          job_function?: string | null
           job_status?: string | null
           job_summary?: string | null
           job_title?: string
