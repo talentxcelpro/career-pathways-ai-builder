@@ -86,13 +86,17 @@ export const BulkJobUpload = () => {
       reader.onload = async (e) => {
         const csvData = e.target?.result as string;
         
+        // Get the current session first
+        const { data: session } = await supabase.auth.getSession();
+        if (!session.session?.access_token) {
+          toast.error('Authentication required. Please sign in again.');
+          return;
+        }
+        
         const { data, error } = await supabase.functions.invoke('bulk-job-upload', {
           body: {
             csvData,
             batchName: batchName.trim()
-          },
-          headers: {
-            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
           }
         });
 
