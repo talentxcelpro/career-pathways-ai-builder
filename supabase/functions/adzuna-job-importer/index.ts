@@ -111,7 +111,7 @@ serve(async (req) => {
           continue;
         }
 
-        // Map Adzuna job to our schema
+        // Map Adzuna job to our schema with only existing columns
         const mappedJob = {
           title: adzunaJob.title,
           company_name: adzunaJob.company.display_name,
@@ -125,15 +125,16 @@ serve(async (req) => {
           external_url: adzunaJob.redirect_url,
           source: 'adzuna.com',
           is_external: true,
-          status: 'active',
+          job_status: 'open',
+          is_active: true,
           employment_type: adzunaJob.contract_type || 'full_time',
           category: adzunaJob.category?.label || 'general',
           is_featured: false,
           is_government_job: false,
           views_count: 0,
           applications_count: 0,
-          posted_at: new Date(adzunaJob.created),
-          expiry_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+          posted_at: new Date(adzunaJob.created).toISOString(),
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         };
@@ -179,7 +180,6 @@ serve(async (req) => {
       .upsert({
         domain: 'adzuna.com',
         is_trusted: true,
-        verification_notes: 'Official Adzuna API integration',
         verified_by: 'system'
       }, { onConflict: 'domain' });
 
