@@ -3209,7 +3209,9 @@ export type Database = {
           failed_jobs: number | null
           id: string
           processed_jobs: number | null
+          processing_status: string | null
           status: string | null
+          total_files: number | null
           total_jobs: number | null
           upload_data: Json | null
           uploaded_by: string | null
@@ -3222,7 +3224,9 @@ export type Database = {
           failed_jobs?: number | null
           id?: string
           processed_jobs?: number | null
+          processing_status?: string | null
           status?: string | null
+          total_files?: number | null
           total_jobs?: number | null
           upload_data?: Json | null
           uploaded_by?: string | null
@@ -3235,7 +3239,9 @@ export type Database = {
           failed_jobs?: number | null
           id?: string
           processed_jobs?: number | null
+          processing_status?: string | null
           status?: string | null
+          total_files?: number | null
           total_jobs?: number | null
           upload_data?: Json | null
           uploaded_by?: string | null
