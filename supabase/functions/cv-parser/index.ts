@@ -21,13 +21,25 @@ serve(async (req) => {
   }
 
   try {
-    const requestBody = await req.json();
-    console.log('📨 Raw request body type:', typeof requestBody);
-    console.log('📨 Raw request body:', requestBody);
+    console.log('🔍 REQUEST DEBUG - Method:', req.method);
+    console.log('🔍 REQUEST DEBUG - Headers:', Object.fromEntries(req.headers.entries()));
+    
+    const rawText = await req.text();
+    console.log('🔍 REQUEST DEBUG - Raw text body:', rawText);
+    
+    let requestBody;
+    try {
+      requestBody = JSON.parse(rawText);
+    } catch (parseError) {
+      console.error('❌ JSON Parse Error:', parseError);
+      console.log('🔍 Raw body that failed to parse:', rawText);
+      throw new Error(`Invalid JSON: ${parseError.message}`);
+    }
+    
+    console.log('📨 Parsed request body type:', typeof requestBody);
+    console.log('📨 Parsed request body:', requestBody);
     console.log('📨 Request body keys:', Object.keys(requestBody || {}));
     
-    // When using supabase.functions.invoke(), the data is directly in the request body
-    // No need to check for nested body property
     const { fileUrl, fileName, fileType, batchId } = requestBody || {};
     
     console.log('📨 Extracted values:', {
