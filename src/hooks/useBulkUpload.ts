@@ -44,26 +44,48 @@ export const useBulkUpload = () => {
     }
   });
 
-  // Process individual CV file
   const processCVFile = useMutation({
     mutationFn: async ({ file, batchId }: ProcessCVParams) => {
+      console.log('📁 Starting file upload:', file.name, 'to batch:', batchId);
+      
       // Upload file to Supabase Storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
       const filePath = `cv-uploads/${batchId}/${fileName}`;
+      
+      console.log('📂 Uploading to path:', filePath);
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('documents')
         .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('❌ Upload error:', uploadError);
+        throw uploadError;
+      }
+      
+      console.log('✅ File uploaded successfully:', uploadData);
 
       // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('documents')
         .getPublicUrl(filePath);
+        
+      console.log('🔗 Generated public URL:', publicUrl);
+      
+      // Validate the URL
+      if (!publicUrl || publicUrl === 'undefined') {
+        throw new Error('Failed to generate valid public URL for uploaded file');
+      }
 
       // Call CV parsing edge function
+      console.log('🚀 Calling CV parser with:', { 
+        fileUrl: publicUrl, 
+        fileName: file.name, 
+        fileType: file.type, 
+        batchId 
+      });
+      
       const { data, error } = await supabase.functions.invoke('cv-parser', {
         body: {
           fileUrl: publicUrl,
