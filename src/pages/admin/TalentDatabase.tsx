@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileText, Users, Database, Search } from 'lucide-react';
+import { Upload, FileText, Users, Database, Search, Settings } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BulkUploadManager } from '@/components/talent-database/BulkUploadManager';
 import { TalentSearch } from '@/components/talent-database/TalentSearch';
 import { ProfileGenerator } from '@/components/talent-database/ProfileGenerator';
 import { MatchingEngine } from '@/components/talent-database/MatchingEngine';
 import { TalentAnalytics } from '@/components/talent-database/TalentAnalytics';
+import { SetupGuide } from '@/components/talent-database/SetupGuide';
 
 const TalentDatabase = () => {
-  const [activeTab, setActiveTab] = useState('upload');
+  const [activeTab, setActiveTab] = useState('setup');
 
   const features = [
     {
@@ -81,7 +82,11 @@ const TalentDatabase = () => {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="setup" className="gap-2">
+            <Settings className="h-4 w-4" />
+            Setup
+          </TabsTrigger>
           <TabsTrigger value="upload" className="gap-2">
             <Upload className="h-4 w-4" />
             Bulk Upload
@@ -103,6 +108,10 @@ const TalentDatabase = () => {
             Analytics
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="setup" className="space-y-6">
+          <SetupGuide />
+        </TabsContent>
 
         <TabsContent value="upload" className="space-y-6">
           <Card>
