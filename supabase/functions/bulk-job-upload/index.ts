@@ -98,27 +98,30 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client - auth is handled by Supabase automatically
+    // Initialize Supabase client
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get the authenticated user (automatically available since verify_jwt = true)
+    // Get user from JWT (automatically validated by Supabase when verify_jwt = true)
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: 'Authorization header is required' }),
+        JSON.stringify({ error: 'No authorization header' }),
         { status: 401, headers: corsHeaders }
       );
     }
 
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
-
-    if (authError || !user) {
+    
+    // Decode JWT to get user ID (token is already validated by Supabase)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const userId = payload.sub;
+    
+    if (!userId) {
       return new Response(
-        JSON.stringify({ error: 'Invalid authentication token' }),
+        JSON.stringify({ error: 'Invalid token payload' }),
         { status: 401, headers: corsHeaders }
       );
     }
@@ -127,7 +130,7 @@ serve(async (req) => {
     const { data: userRole } = await supabaseClient
       .from('user_roles')
       .select('role')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .eq('is_active', true)
       .in('role', ['super_admin', 'admin', 'staffing_partner'])
       .single();
@@ -170,7 +173,7 @@ serve(async (req) => {
     const { data: batch, error: batchError } = await supabaseClient
       .from('bulk_upload_batches')
       .insert({
-        uploaded_by: user.id,
+        uploaded_by: userId,
         batch_name: batchName,
         total_jobs: lines.length - 1,
         status: 'processing'
@@ -242,7 +245,7 @@ serve(async (req) => {
           seo_slug: slug,
           source_type: 'bulk_upload',
           bulk_upload_batch_id: batch.id,
-          posted_by: user.id,
+          posted_by: userId,
           posted_by_role: userRole.role,
           is_active: true,
           job_status: 'open',
