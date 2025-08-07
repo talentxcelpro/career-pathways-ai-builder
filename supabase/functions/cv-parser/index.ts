@@ -22,13 +22,31 @@ serve(async (req) => {
 
   try {
     const requestBody = await req.json();
-    console.log('📨 Received request:', JSON.stringify(requestBody, null, 2));
+    console.log('📨 Raw request body type:', typeof requestBody);
+    console.log('📨 Raw request body:', requestBody);
+    console.log('📨 Request body keys:', Object.keys(requestBody || {}));
     
-    const { fileUrl, fileName, fileType, batchId }: CVParsingRequest = requestBody;
+    // Handle case where the request body might be nested or malformed
+    let actualBody = requestBody;
+    if (requestBody && requestBody.body) {
+      actualBody = requestBody.body;
+      console.log('📨 Found nested body:', actualBody);
+    }
+    
+    const { fileUrl, fileName, fileType, batchId } = actualBody || {};
+    
+    console.log('📨 Extracted values:', {
+      fileUrl: fileUrl || 'UNDEFINED',
+      fileName: fileName || 'UNDEFINED', 
+      fileType: fileType || 'UNDEFINED',
+      batchId: batchId || 'UNDEFINED'
+    });
     
     // Validate required fields
     if (!fileUrl || !fileName || !fileType || !batchId) {
-      throw new Error(`Missing required fields: fileUrl=${!!fileUrl}, fileName=${!!fileName}, fileType=${!!fileType}, batchId=${!!batchId}`);
+      const errorMsg = `Missing required fields: fileUrl=${!!fileUrl}, fileName=${!!fileName}, fileType=${!!fileType}, batchId=${!!batchId}`;
+      console.error('❌ Validation failed:', errorMsg);
+      throw new Error(errorMsg);
     }
     
     console.log('🔄 Processing CV:', fileName);
