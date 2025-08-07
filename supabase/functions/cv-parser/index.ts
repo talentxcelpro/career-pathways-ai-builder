@@ -20,6 +20,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  let batchId: string | undefined; // Declare outside try block for error handling
+
   try {
     console.log('🔍 REQUEST DEBUG - Method:', req.method);
     console.log('🔍 REQUEST DEBUG - Headers:', Object.fromEntries(req.headers.entries()));
@@ -40,7 +42,8 @@ serve(async (req) => {
     console.log('📨 Parsed request body:', requestBody);
     console.log('📨 Request body keys:', Object.keys(requestBody || {}));
     
-    const { fileUrl, fileName, fileType, batchId } = requestBody || {};
+    const { fileUrl, fileName, fileType } = requestBody || {};
+    batchId = requestBody?.batchId; // Assign to outer scope variable
     
     console.log('📨 Extracted values:', {
       fileUrl: fileUrl || 'UNDEFINED',
