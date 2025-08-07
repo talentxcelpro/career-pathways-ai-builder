@@ -31,6 +31,7 @@ import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import UnifiedDashboard from './pages/UnifiedDashboard';
 import UserManagement from "@/pages/admin/UserManagement";
+import TalentDatabase from "@/pages/admin/TalentDatabase";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
 import { AdminScrapedJobApplications } from "@/components/admin/AdminScrapedJobApplications";
 import JobsByRole from "@/pages/JobsByRole";
@@ -130,6 +131,7 @@ const App = () => {
                       <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
                        <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
+                       <Route path="/admin/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
                        <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
                        <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
                       {/* <Route path="/employer/cv-database" element={<CVDatabase />} />

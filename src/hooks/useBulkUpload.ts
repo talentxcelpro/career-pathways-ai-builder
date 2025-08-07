@@ -127,27 +127,21 @@ export const useBulkUpload = () => {
     }
   });
 
-  // Get talent database stats
+  // Get talent database stats (simplified until types are updated)
   const getTalentStats = useQuery({
     queryKey: ['talent-stats'],
     queryFn: async () => {
-      const [
-        { count: totalProfiles },
-        { count: totalCVs },
-        { count: totalMatches },
-        { count: totalViews }
-      ] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.rpc('count_table_rows', { table_name: 'cv_files' }),
-        supabase.rpc('count_table_rows', { table_name: 'ai_job_matches_enhanced' }),
-        supabase.rpc('count_table_rows', { table_name: 'profile_views' })
-      ]);
+      // Simple profile count that we know works
+      const { count: totalProfiles } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
 
+      // Return zeros for new tables until types are regenerated
       return {
         totalProfiles: totalProfiles || 0,
-        totalCVs: totalCVs || 0,
-        totalMatches: totalMatches || 0,
-        totalViews: totalViews || 0
+        totalCVs: 0,
+        totalMatches: 0,
+        totalViews: 0
       };
     }
   });
