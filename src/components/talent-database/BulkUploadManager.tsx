@@ -74,11 +74,16 @@ export const BulkUploadManager = () => {
     setIsProcessing(true);
     
     try {
+      console.log('🚀 Starting batch processing...');
+      console.log('📋 Files to process:', uploadedFiles.map(f => f.file.name));
+      
       // Create batch record
+      console.log('📦 Creating upload batch...');
       const batchId = await uploadBatch.mutateAsync({
         batchName,
         totalFiles: uploadedFiles.length
       });
+      console.log('✅ Batch created with ID:', batchId);
 
       // Process files one by one
       for (let i = 0; i < uploadedFiles.length; i++) {
@@ -93,10 +98,12 @@ export const BulkUploadManager = () => {
         );
 
         try {
+          console.log('🔄 Processing file:', file.file.name);
           const result = await processCVFile.mutateAsync({
             file: file.file,
             batchId
           });
+          console.log('✅ File processed successfully:', result);
 
           setUploadedFiles(prev => 
             prev.map(f => 
