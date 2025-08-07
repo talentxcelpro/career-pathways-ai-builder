@@ -98,8 +98,13 @@ serve(async (req) => {
   }
 
   try {
-    // Extract user ID from the already-validated JWT token
-    // (JWT is validated by Supabase when verify_jwt = true in config.toml)
+    // Initialize Supabase client with SERVICE_ROLE_KEY for database operations
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    // Get user from the validated JWT (since verify_jwt = true)
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
@@ -108,24 +113,30 @@ serve(async (req) => {
       );
     }
 
-    const token = authHeader.replace('Bearer ', '');
+    // Get user info using the service role client and the auth header
+    const supabaseAuth = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: {
+            authorization: authHeader,
+          },
+        },
+      }
+    );
+
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
     
-    // Decode JWT to get user ID (token is already validated by Supabase)
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const userId = payload.sub;
-    
-    if (!userId) {
+    if (userError || !user) {
+      console.error('Authentication error:', userError);
       return new Response(
-        JSON.stringify({ error: 'Invalid token payload' }),
+        JSON.stringify({ error: 'Authentication failed' }),
         { status: 401, headers: corsHeaders }
       );
     }
 
-    // Initialize Supabase client with SERVICE_ROLE_KEY for database operations
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const userId = user.id;
 
     // Check if user has permission to upload jobs
     const { data: userRole } = await supabaseClient
