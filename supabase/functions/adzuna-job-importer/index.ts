@@ -178,6 +178,20 @@ serve(async (req) => {
           continue;
         }
 
+        // Map employment types from Adzuna to our schema
+        const mapEmploymentType = (adzunaType: string) => {
+          const typeMap: { [key: string]: string } = {
+            'permanent': 'full_time',
+            'contract': 'contract', 
+            'temporary': 'contract',
+            'part_time': 'part_time',
+            'full_time': 'full_time',
+            'freelance': 'freelance',
+            'internship': 'internship'
+          };
+          return typeMap[adzunaType?.toLowerCase()] || 'full_time';
+        };
+
         // Map Adzuna job to our schema with only existing columns
         const mappedJob = {
           title: adzunaJob.title,
@@ -194,7 +208,7 @@ serve(async (req) => {
           is_external: true,
           job_status: 'open',
           is_active: true,
-          employment_type: adzunaJob.contract_type || 'full_time',
+          employment_type: mapEmploymentType(adzunaJob.contract_type),
           category: adzunaJob.category?.label || 'general',
           is_featured: false,
           is_government_job: false,
@@ -241,13 +255,12 @@ serve(async (req) => {
       }
     }
 
-    // Update job source whitelist for Adzuna if not exists
+    // Update job source whitelist for Adzuna if not exists (removed verified_by)
     const { error: whitelistError } = await supabase
       .from('job_source_whitelist')
       .upsert({
         domain: 'adzuna.com',
-        is_trusted: true,
-        verified_by: 'system'
+        is_trusted: true
       }, { onConflict: 'domain' });
 
     if (whitelistError) {
