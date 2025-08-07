@@ -86,7 +86,19 @@ function validateJobData(job: Partial<JobData>): { valid: boolean; errors: strin
   if (!job.employment_type?.trim()) errors.push('Employment type is required');
   if (!job.description?.trim()) errors.push('Description is required');
   
-  // Validate salary values
+  // Validate experience level against allowed values
+  const validExperienceLevels = ['fresher', 'mid-level', 'senior-level', 'executive'];
+  if (job.experience_level && !validExperienceLevels.includes(job.experience_level)) {
+    errors.push(`Invalid experience level. Must be one of: ${validExperienceLevels.join(', ')}`);
+  }
+  
+  // Validate employment type against allowed values
+  const validEmploymentTypes = ['Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship', 'Temporary', 'Remote', 'Hybrid'];
+  if (job.employment_type && !validEmploymentTypes.includes(job.employment_type)) {
+    errors.push(`Invalid employment type. Must be one of: ${validEmploymentTypes.join(', ')}`);
+  }
+  
+  // Validate salary values (but don't require them)
   if (job.salary_min && (isNaN(job.salary_min) || job.salary_min < 0)) {
     errors.push('Invalid minimum salary');
   }
@@ -294,7 +306,25 @@ serve(async (req) => {
                 jobData.work_mode = value; // Map to work_mode as well
                 break;
               case 'employment_type':
-                jobData.employment_type = value;
+                // Map common employment type values to database constraints
+                const employmentTypeMap: { [key: string]: string } = {
+                  'full-time': 'Full-time',
+                  'fulltime': 'Full-time',
+                  'full time': 'Full-time',
+                  'part-time': 'Part-time',
+                  'parttime': 'Part-time',
+                  'part time': 'Part-time',
+                  'contract': 'Contract',
+                  'freelance': 'Freelance',
+                  'internship': 'Internship',
+                  'intern': 'Internship',
+                  'temporary': 'Temporary',
+                  'temp': 'Temporary',
+                  'remote': 'Remote',
+                  'hybrid': 'Hybrid'
+                };
+                const normalizedType = value.toLowerCase().replace(/\s+/g, '-');
+                jobData.employment_type = employmentTypeMap[normalizedType] || 'Full-time';
                 break;
               case 'industry':
                 jobData.industry_domain = value; // Map to industry_domain
@@ -308,7 +338,26 @@ serve(async (req) => {
                 jobData.minimum_education = value;
                 break;
               case 'experience_level':
-                jobData.experience_level = value;
+                // Map common experience level values to database constraints
+                const experienceLevelMap: { [key: string]: string } = {
+                  'entry': 'fresher',
+                  'entry-level': 'fresher',
+                  'junior': 'fresher',
+                  'fresher': 'fresher',
+                  'mid': 'mid-level',
+                  'mid-level': 'mid-level',
+                  'middle': 'mid-level',
+                  'intermediate': 'mid-level',
+                  'senior': 'senior-level',
+                  'senior-level': 'senior-level',
+                  'lead': 'senior-level',
+                  'principal': 'senior-level',
+                  'executive': 'executive',
+                  'director': 'executive',
+                  'manager': 'executive'
+                };
+                const normalizedLevel = value.toLowerCase().replace(/\s+/g, '-');
+                jobData.experience_level = experienceLevelMap[normalizedLevel] || 'fresher';
                 break;
               case 'salary_min':
                 jobData.salary_min = parseFloat(value) || undefined;
