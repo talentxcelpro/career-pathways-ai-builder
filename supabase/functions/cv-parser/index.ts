@@ -214,21 +214,15 @@ serve(async (req) => {
         userId = existingProfile.id;
         console.log('📝 Found existing profile for:', email);
       } else {
-        // Create new profile
-        console.log('👤 Creating new profile for:', email);
-        console.log('📋 Profile data being inserted:', {
-          email: email,
-          full_name: parsedCV.personal_info?.full_name || 'Unknown',
-          phone: parsedCV.personal_info?.phone,
-          location: parsedCV.personal_info?.location,
-          vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user'),
-          username: generateUsername(parsedCV.personal_info?.full_name || 'user')
-        });
+        // Create new profile - Generate UUID first
+        const newUserId = crypto.randomUUID();
+        console.log('👤 Creating new profile for:', email, 'with ID:', newUserId);
         
+        // First try to create a minimal profile to avoid trigger issues
         const { data: newProfile, error: profileError } = await supabase
           .from('profiles')
           .insert({
-            id: crypto.randomUUID(), // Generate a UUID for the profile
+            id: newUserId,
             email: email,
             full_name: parsedCV.personal_info?.full_name || 'Unknown',
             phone: parsedCV.personal_info?.phone,
@@ -240,10 +234,9 @@ serve(async (req) => {
             skills: parsedCV.skills || [],
             experience_years: parsedCV.years_of_experience || 0,
             is_profile_public: true,
-            vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user'),
+            vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user') + '-' + newUserId.slice(0, 8),
             username: generateUsername(parsedCV.personal_info?.full_name || 'user'),
             looking_for_job: true,
-            // Store additional data in preferences JSON field
             preferences: {
               certifications: parsedCV.certifications || [],
               languages: parsedCV.languages || [],
@@ -256,11 +249,40 @@ serve(async (req) => {
         if (profileError) {
           console.error('❌ Failed to create profile:', profileError);
           console.error('❌ Profile error details:', JSON.stringify(profileError, null, 2));
-          throw profileError;
+          
+          // Check if it's a unique constraint violation and try with different username/vanity_url
+          if (profileError.code === '23505') {
+            console.log('🔄 Unique constraint violation, retrying with different identifiers...');
+            const retryUserId = crypto.randomUUID();
+            const { data: retryProfile, error: retryError } = await supabase
+              .from('profiles')
+              .insert({
+                id: retryUserId,
+                email: email,
+                full_name: parsedCV.personal_info?.full_name || 'Unknown',
+                phone: parsedCV.personal_info?.phone,
+                location: parsedCV.personal_info?.location,
+                about: parsedCV.professional_summary,
+                vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user') + '-' + retryUserId.slice(0, 8),
+                username: generateUsername(parsedCV.personal_info?.full_name || 'user') + '-' + retryUserId.slice(0, 4),
+                looking_for_job: true
+              })
+              .select()
+              .single();
+              
+            if (retryError) {
+              console.error('❌ Retry also failed:', retryError);
+              throw retryError;
+            }
+            userId = retryProfile.id;
+          } else {
+            throw profileError;
+          }
+        } else {
+          userId = newProfile.id;
         }
-
-        userId = newProfile.id;
-        console.log('👤 Created new profile for:', email);
+        
+        console.log('✅ Successfully created profile with ID:', userId);
 
         // Add work experience - FIXED: using correct column names
         if (parsedCV.work_experience?.length > 0) {
