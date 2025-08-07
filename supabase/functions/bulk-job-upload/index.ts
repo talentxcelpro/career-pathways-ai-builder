@@ -98,22 +98,17 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client with SERVICE_ROLE_KEY for database operations
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    // Get user from the validated JWT (since verify_jwt = true)
+    // Since verify_jwt = true, the JWT is already validated by Supabase
+    // We can get the user from the Authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
         JSON.stringify({ error: 'No authorization header' }),
-        { status: 401, headers: corsHeaders }
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Get user info using the service role client and the auth header
+    // Create Supabase client for auth operations
     const supabaseAuth = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -126,15 +121,22 @@ serve(async (req) => {
       }
     );
 
-    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
     
-    if (userError || !user) {
-      console.error('Authentication error:', userError);
+    if (authError || !user) {
+      console.error('Authentication failed:', authError);
       return new Response(
         JSON.stringify({ error: 'Authentication failed' }),
-        { status: 401, headers: corsHeaders }
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Initialize Supabase client with SERVICE_ROLE_KEY for database operations
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
     const userId = user.id;
 

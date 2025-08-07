@@ -119,7 +119,15 @@ export const BulkJobUpload = () => {
             console.error('Error context:', error.context);
             console.error('Error name:', error.name);
             console.error('Error message:', error.message);
-            toast.error('Upload failed: ' + error.message);
+            
+            // More detailed error logging
+            if (error.context) {
+              console.error('Error context details:', JSON.stringify(error.context, null, 2));
+            }
+            
+            // Try to get more error information
+            const errorMessage = error.message || error.details || 'Failed to send a request to the Edge Function';
+            toast.error('Upload failed: ' + errorMessage);
             setIsUploading(false);
             return;
           }
