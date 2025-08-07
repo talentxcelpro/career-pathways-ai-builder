@@ -20200,6 +20200,14 @@ export type Database = {
         }
         Returns: Json
       }
+      assign_user_role_secure_v2: {
+        Args: {
+          _target_user_id: string
+          _new_role: Database["public"]["Enums"]["app_role"]
+          _reason?: string
+        }
+        Returns: Json
+      }
       backfill_admin_connections: {
         Args: Record<PropertyKey, never>
         Returns: number
