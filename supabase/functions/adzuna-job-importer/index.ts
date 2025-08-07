@@ -40,20 +40,37 @@ serve(async (req) => {
   console.log(`🚀 Edge function called: ${req.method} ${req.url}`);
 
   try {
-    // Parse request body with error handling
-    let requestBody;
-    try {
-      requestBody = await req.json();
-    } catch (parseError) {
-      console.error('❌ Failed to parse request body:', parseError);
-      return new Response(JSON.stringify({
-        success: false,
-        error: 'Invalid JSON in request body',
-        details: parseError.message
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    // Parse request body with better error handling for GET requests
+    let requestBody = {};
+    
+    if (req.method === 'POST') {
+      try {
+        const text = await req.text();
+        console.log('📝 Raw request body:', text);
+        
+        if (text) {
+          requestBody = JSON.parse(text);
+        }
+      } catch (parseError) {
+        console.error('❌ Failed to parse request body:', parseError);
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'Invalid JSON in request body',
+          details: parseError.message
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    } else if (req.method === 'GET') {
+      // For GET requests, use query parameters
+      const url = new URL(req.url);
+      requestBody = {
+        limit: parseInt(url.searchParams.get('limit') || '50'),
+        location: url.searchParams.get('location') || 'india',
+        keywords: url.searchParams.get('keywords') || '',
+        page: parseInt(url.searchParams.get('page') || '1')
+      };
     }
 
     const { 
