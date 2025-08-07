@@ -99,35 +99,31 @@ serve(async (req) => {
 
   try {
     // Since verify_jwt = true, the JWT is already validated by Supabase
-    // We can get the user from the Authorization header
+    // Extract user ID directly from the JWT token
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return new Response(
         JSON.stringify({ error: 'No authorization header' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Create Supabase client for auth operations
-    const supabaseAuth = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: {
-            authorization: authHeader,
-          },
-        },
-      }
-    );
-
-    // Get the authenticated user
-    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+    // Extract JWT payload (token is already validated by Supabase)
+    const token = authHeader.replace('Bearer ', '');
+    let userId: string;
     
-    if (authError || !user) {
-      console.error('Authentication failed:', authError);
+    try {
+      // Decode JWT payload to get user ID
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      userId = payload.sub;
+      
+      if (!userId) {
+        throw new Error('No user ID in token');
+      }
+    } catch (jwtError) {
+      console.error('JWT decode error:', jwtError);
       return new Response(
-        JSON.stringify({ error: 'Authentication failed' }),
+        JSON.stringify({ error: 'Invalid token format' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -137,8 +133,6 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
-
-    const userId = user.id;
 
     // Check if user has permission to upload jobs
     const { data: userRole } = await supabaseClient
