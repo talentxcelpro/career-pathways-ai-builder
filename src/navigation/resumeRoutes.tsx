@@ -3,13 +3,14 @@ import { FileText, Sparkles } from "lucide-react";
 import { EnhancedResumeBuilder } from "@/components/resume/enhanced/EnhancedResumeBuilder";
 import EditResume from "@/pages/resume/EditResume";
 import TalentXcelResumeBuilder from "@/pages/resume/TalentXcelResumeBuilder";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const resumeRoutes = [
   {
     title: "Resume Builder",
     to: "/resume/new",
     icon: <FileText className="h-4 w-4" />,
-    page: <EnhancedResumeBuilder />,
+    page: <ErrorBoundary><EnhancedResumeBuilder /></ErrorBoundary>,
     requiresAuth: true,
   },
   {
