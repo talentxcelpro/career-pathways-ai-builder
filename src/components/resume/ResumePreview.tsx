@@ -46,6 +46,34 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, tem
       honors: ed?.honors
     });
 
+    // Handle ATS normalized format first (from our normalizer)
+    if (input.ats) {
+      return {
+        personalInfo: {
+          fullName: input.ats.profile?.fullName || 'Your Name',
+          email: input.ats.profile?.email || '',
+          phone: input.ats.profile?.phone || '',
+          location: input.ats.profile?.location || '',
+          summary: input.ats.summary || ''
+        },
+        experience: Array.isArray(input.ats.experience) ? input.ats.experience.map(exp => ({
+          title: exp.jobTitle,
+          company: exp.company,
+          location: exp.location,
+          startDate: exp.startDate,
+          endDate: exp.endDate,
+          achievements: exp.bullets || []
+        })) : [],
+        education: Array.isArray(input.ats.education) ? input.ats.education.map(ed => ({
+          degree: ed.degree,
+          school: ed.institution,
+          endDate: ed.year || ed.endDate,
+          startDate: ed.startDate
+        })) : [],
+        skills: input.ats.skills || []
+      };
+    }
+
     // Already looks like preview/enhanced structure
     if (input.personalInfo || input.experience || input.education || input.skills) {
       return {
