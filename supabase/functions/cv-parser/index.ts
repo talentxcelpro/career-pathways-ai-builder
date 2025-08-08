@@ -133,29 +133,30 @@ serve(async (req) => {
       throw new Error('Unsupported file type');
     }
 
-    // For testing, let's use mock data instead of OpenAI to isolate the issue
-    console.log('🤖 Using mock CV data for testing...');
-    
+    // Build initial parsed data using filename heuristics and basic regex (no mocks)
+    const nameFromFile = extractNameFromFileName(fileName);
+    const contactFromText = extractContactInfo(extractedText || '');
+
     const parsedCV = {
       personal_info: {
-        full_name: `Test User ${Date.now()}`,
-        email: `test${Date.now()}@example.com`,
-        phone: '+1234567890',
-        location: 'Test City, Test State',
-        linkedin_url: 'https://linkedin.com/in/testuser',
+        full_name: contactFromText.name || nameFromFile || null,
+        email: contactFromText.email || null,
+        phone: contactFromText.phone || null,
+        location: contactFromText.location || null,
+        linkedin_url: contactFromText.linkedin || null,
         github_url: null,
         portfolio_url: null
       },
-      professional_summary: 'Experienced professional with strong background in technology.',
-      skills: ['JavaScript', 'React', 'Node.js', 'Python'],
+      professional_summary: null,
+      skills: contactFromText.skills || [],
       work_experience: [],
       education: [],
       certifications: [],
-      languages: ['English'],
-      years_of_experience: 3,
-      preferred_job_titles: ['Software Developer'],
-      availability_status: 'open_to_opportunities'
-    };
+      languages: [],
+      years_of_experience: null,
+      preferred_job_titles: [],
+      availability_status: null
+    } as any;
 
     /* TEMPORARILY DISABLED - OpenAI parsing
     // Use OpenAI to parse the CV content
@@ -223,205 +224,125 @@ serve(async (req) => {
       }),
     */
 
-    console.log('✅ CV parsed successfully with mock data:', parsedCV.personal_info?.full_name || 'Unknown');
+    console.log('✅ CV parsed successfully:', parsedCV.personal_info?.full_name || extractNameFromFileName(fileName) || 'Unknown');
 
-    // Create or find user profile
+    // Create or find user profile (avoid mocks; allow missing email by generating a unique upload address)
     let userId;
-    const email = parsedCV.personal_info?.email;
-    
-    if (email) {
-      // Check if user already exists
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .single();
+    const safeName = parsedCV.personal_info?.full_name || extractNameFromFileName(fileName) || 'Candidate';
+    const providedEmail = parsedCV.personal_info?.email || null;
+    const emailToUse = providedEmail || `${generateSlug(safeName)}.${crypto.randomUUID().slice(0,8)}@upload.local`;
 
-      if (existingProfile) {
-        userId = existingProfile.id;
-        console.log('📝 Found existing profile for:', email);
-      } else {
-        // Create new profile with a UUID that doesn't need to reference auth.users
-        const newUserId = crypto.randomUUID();
-        console.log('👤 About to create new profile for:', email, 'with ID:', newUserId);
-        console.log('📋 Profile will be standalone (not linked to auth.users)');
-        
-        try {
-          const { data: newProfile, error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-              id: newUserId,
-              email: email,
-              full_name: parsedCV.personal_info?.full_name || 'Unknown',
-              phone: parsedCV.personal_info?.phone,
-              location: parsedCV.personal_info?.location,
-              about: parsedCV.professional_summary,
-              linkedin_url: parsedCV.personal_info?.linkedin_url,
-              github_url: parsedCV.personal_info?.github_url,
-              portfolio_url: parsedCV.personal_info?.portfolio_url,
-              skills: parsedCV.skills || [],
-              experience_years: parsedCV.years_of_experience || 0,
-              is_profile_public: true,
-              vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user') + '-' + newUserId.slice(0, 8),
-              username: generateUsername(parsedCV.personal_info?.full_name || 'user'),
-              looking_for_job: true,
-              preferences: {
-                certifications: parsedCV.certifications || [],
-                languages: parsedCV.languages || [],
-                availability_status: parsedCV.availability_status || 'open_to_opportunities'
-              }
-            })
-            .select()
-            .single();
+    // Check if user already exists
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', emailToUse)
+      .single();
 
-          if (profileError) {
-            console.error('❌ Profile creation failed:', profileError);
-            console.error('❌ Profile error code:', profileError.code);
-            console.error('❌ Profile error details:', JSON.stringify(profileError, null, 2));
-            
-            // Check if it's a unique constraint violation
-            if (profileError.code === '23505') {
-              console.log('🔄 Unique constraint violation, retrying with different identifiers...');
-              const retryUserId = crypto.randomUUID();
-              const { data: retryProfile, error: retryError } = await supabase
-                .from('profiles')
-                .insert({
-                  id: retryUserId,
-                  email: email,
-                  full_name: parsedCV.personal_info?.full_name || 'Unknown',
-                  phone: parsedCV.personal_info?.phone,
-                  location: parsedCV.personal_info?.location,
-                  about: parsedCV.professional_summary,
-                  vanity_url: generateSlug(parsedCV.personal_info?.full_name || 'user') + '-' + retryUserId.slice(0, 8),
-                  username: generateUsername(parsedCV.personal_info?.full_name || 'user') + '-' + retryUserId.slice(0, 4),
-                  looking_for_job: true
-                })
-                .select()
-                .single();
-                
-              if (retryError) {
-                console.error('❌ Retry profile creation also failed:', retryError);
-                throw new Error(`Profile creation failed after retry: ${retryError.message}`);
-              }
-              
-              if (!retryProfile || !retryProfile.id) {
-                throw new Error('Profile creation succeeded but no profile data returned');
-              }
-              
-              userId = retryProfile.id;
-              console.log('✅ Profile created successfully on retry with ID:', userId);
-            } else {
-              throw new Error(`Profile creation failed: ${profileError.message}`);
-            }
-          } else {
-            if (!newProfile || !newProfile.id) {
-              throw new Error('Profile creation succeeded but no profile data returned');
-            }
-            userId = newProfile.id;
-            console.log('✅ Profile created successfully with ID:', userId);
-          }
-          
-          // Verify the profile actually exists before proceeding
-          console.log('🔍 Verifying profile exists in database...');
-          const { data: verifyProfile, error: verifyError } = await supabase
-            .from('profiles')
-            .select('id, email, full_name')
-            .eq('id', userId)
-            .single();
-            
-          if (verifyError || !verifyProfile) {
-            throw new Error(`Profile verification failed: ${verifyError?.message || 'Profile not found'}`);
-          }
-          
-          console.log('✅ Profile verified in database:', verifyProfile);
-          
-        } catch (profileCreationError) {
-          console.error('❌ Complete profile creation process failed:', profileCreationError);
-          throw profileCreationError;
-        }
-
-        // Add a small delay to ensure profile is fully committed before creating career passport
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        // Manually create career passport record since we disabled the trigger
-        try {
-          console.log('📋 Creating career passport for user:', userId);
-          
-          // First check if career passport already exists to avoid duplicates
-          const { data: existingPassport } = await supabase
-            .from('career_passport')
-            .select('id')
-            .eq('user_id', userId)
-            .single();
-            
-          if (!existingPassport) {
-            const { error: careerPassportError } = await supabase
-              .from('career_passport')
-              .insert({
-                user_id: userId,
-                completion_percentage: 25, // Basic completion for CV upload
-                career_readiness_score: 0
-              });
-              
-            if (careerPassportError) {
-              console.error('❌ Career passport creation failed:', careerPassportError);
-              console.error('❌ Career passport error details:', JSON.stringify(careerPassportError, null, 2));
-              // Don't throw here - profile creation succeeded, this is just supplementary
-            } else {
-              console.log('✅ Career passport created successfully');
-            }
-          } else {
-            console.log('📋 Career passport already exists for user');
-          }
-        } catch (careerError) {
-          console.error('❌ Career passport creation error:', careerError);
-          // Continue processing even if career passport fails
-        }
-
-        // Add work experience - FIXED: using correct column names
-        if (parsedCV.work_experience?.length > 0) {
-          const workExperience = parsedCV.work_experience.map((exp: any) => ({
-            user_id: userId,
-            company_name: exp.company,
-            job_title: exp.position,
-            start_date: exp.start_date ? `${exp.start_date}-01` : null,
-            end_date: exp.end_date && exp.end_date !== 'current' ? `${exp.end_date}-01` : null,
-            location: exp.location,
-            responsibilities: exp.responsibilities || [], // FIXED: using responsibilities instead of description
-            key_achievements: exp.key_achievements || [], // FIXED: using key_achievements instead of achievements
-            technologies_used: exp.technologies_used || []
-          }));
-
-          await supabase.from('work_experience').insert(workExperience);
-        }
-
-        // Add education - FIXED: using correct column names
-        if (parsedCV.education?.length > 0) {
-          const education = parsedCV.education.map((edu: any) => ({
-            user_id: userId,
-            institution: edu.institution, // FIXED: using institution instead of institution_name
-            degree: edu.degree,
-            graduation_date: edu.graduation_date ? edu.graduation_date : null, // FIXED: using graduation_date instead of start_year/end_year
-            gpa_honors: edu.gpa_honors,
-            relevant_coursework: edu.relevant_coursework || [],
-            academic_projects: edu.academic_projects || []
-          }));
-
-          await supabase.from('education').insert(education);
-        }
-
-        // Add job preferences
-        if (parsedCV.preferred_job_titles?.length > 0) {
-          await supabase.from('job_preferences').insert({
-            user_id: userId,
-            preferred_job_titles: parsedCV.preferred_job_titles,
-            employment_types: ['full_time'],
-            remote_work_preference: 'hybrid'
-          });
-        }
-      }
+    if (existingProfile) {
+      userId = existingProfile.id;
+      console.log('📝 Found existing profile for:', emailToUse);
     } else {
-      throw new Error('No email found in CV - cannot create profile');
+      const newUserId = crypto.randomUUID();
+      console.log('👤 Creating new profile for:', emailToUse, 'ID:', newUserId);
+
+      try {
+        const { data: newProfile, error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: newUserId,
+            email: emailToUse,
+            full_name: safeName,
+            phone: parsedCV.personal_info?.phone,
+            location: parsedCV.personal_info?.location,
+            about: parsedCV.professional_summary,
+            linkedin_url: parsedCV.personal_info?.linkedin_url,
+            github_url: parsedCV.personal_info?.github_url,
+            portfolio_url: parsedCV.personal_info?.portfolio_url,
+            skills: parsedCV.skills || [],
+            experience_years: parsedCV.years_of_experience || 0,
+            is_profile_public: true,
+            vanity_url: generateSlug(safeName) + '-' + newUserId.slice(0, 8),
+            username: generateUsername(safeName),
+            looking_for_job: true,
+            preferences: {
+              certifications: parsedCV.certifications || [],
+              languages: parsedCV.languages || [],
+              availability_status: parsedCV.availability_status || 'open_to_opportunities'
+            }
+          })
+          .select()
+          .single();
+
+        if (profileError) {
+          console.error('❌ Profile creation failed:', profileError);
+          throw profileError;
+        }
+        if (!newProfile?.id) throw new Error('Profile creation succeeded but no data returned');
+        userId = newProfile.id;
+        console.log('✅ Profile created with ID:', userId);
+      } catch (profileCreationError) {
+        console.error('❌ Complete profile creation process failed:', profileCreationError);
+        throw profileCreationError;
+      }
+
+      // Small delay to ensure commit
+      await new Promise(resolve => setTimeout(resolve, 80));
+
+      // Create career passport if missing
+      try {
+        const { data: existingPassport } = await supabase
+          .from('career_passport')
+          .select('id')
+          .eq('user_id', userId)
+          .single();
+        if (!existingPassport) {
+          const { error: cpErr } = await supabase
+            .from('career_passport')
+            .insert({ user_id: userId, completion_percentage: 15, career_readiness_score: 0 });
+          if (cpErr) console.warn('Career passport create warning:', cpErr);
+        }
+      } catch (cpCatch) {
+        console.warn('Career passport check failed:', cpCatch);
+      }
+
+      // Optional inserts if present
+      if (parsedCV.work_experience?.length > 0) {
+        const workExperience = parsedCV.work_experience.map((exp: any) => ({
+          user_id: userId,
+          company_name: exp.company,
+          job_title: exp.position,
+          start_date: exp.start_date ? `${exp.start_date}-01` : null,
+          end_date: exp.end_date && exp.end_date !== 'current' ? `${exp.end_date}-01` : null,
+          location: exp.location,
+          responsibilities: exp.responsibilities || [],
+          key_achievements: exp.key_achievements || [],
+          technologies_used: exp.technologies_used || []
+        }));
+        await supabase.from('work_experience').insert(workExperience);
+      }
+
+      if (parsedCV.education?.length > 0) {
+        const education = parsedCV.education.map((edu: any) => ({
+          user_id: userId,
+          institution: edu.institution,
+          degree: edu.degree,
+          graduation_date: edu.graduation_date ? edu.graduation_date : null,
+          gpa_honors: edu.gpa_honors,
+          relevant_coursework: edu.relevant_coursework || [],
+          academic_projects: edu.academic_projects || []
+        }));
+        await supabase.from('education').insert(education);
+      }
+
+      if (parsedCV.preferred_job_titles?.length > 0) {
+        await supabase.from('job_preferences').insert({
+          user_id: userId,
+          preferred_job_titles: parsedCV.preferred_job_titles,
+          employment_types: ['full_time'],
+          remote_work_preference: 'hybrid'
+        });
+      }
     }
 
     // Store CV file record
@@ -507,4 +428,32 @@ function generateUsername(name: string): string {
     .substring(0, 15);
   
   return base + Math.random().toString(36).substr(2, 5);
+}
+
+function extractNameFromFileName(fileName: string): string | null {
+  try {
+    const nameWithoutExt = fileName.replace(/\.[^/.]+$/, '');
+    const parts = nameWithoutExt.split(/[\s_\-]+/).filter(Boolean);
+    // Heuristic: take first 2-3 words that look like names
+    const filtered = parts
+      .filter(p => /^[A-Za-z][A-Za-z.'-]*$/.test(p))
+      .slice(0, 3)
+      .join(' ');
+    return filtered || null;
+  } catch {
+    return null;
+  }
+}
+
+function extractContactInfo(text: string): { email?: string; phone?: string; linkedin?: string; location?: string; name?: string; skills?: string[] } {
+  const emailMatch = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  const phoneMatch = text.match(/\+?[0-9][0-9\s().-]{7,}/);
+  const linkedinMatch = text.match(/https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-_/]+/i);
+  // Very light heuristics; real parsing will replace this
+  return {
+    email: emailMatch?.[0],
+    phone: phoneMatch?.[0],
+    linkedin: linkedinMatch?.[0],
+    skills: []
+  };
 }
