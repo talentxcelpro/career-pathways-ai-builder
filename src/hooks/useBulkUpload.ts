@@ -94,27 +94,43 @@ export const useBulkUpload = () => {
       
       console.log('🚀 About to call CV parser with payload:', JSON.stringify(requestPayload, null, 2));
       
-      // Call via Supabase SDK (passes user JWT and handles CORS)
-      const { data, error } = await supabase.functions.invoke('cv-parser', {
-        body: requestPayload,
-      });
-      
-      if (error) {
-        console.error('❌ Function invoke error:', error);
-        throw new Error(error.message || 'Failed to invoke cv-parser');
+      // Prefer Supabase SDK; fallback to direct fetch if it fails
+      try {
+        const { data, error } = await supabase.functions.invoke('cv-parser', {
+          body: requestPayload,
+        });
+        if (error) throw error;
+        console.log('✅ Function response data (invoke):', data);
+        return {
+          fileUrl: publicUrl,
+          extractedData: data,
+          fileName: file.name
+        };
+      } catch (invokeErr: any) {
+        console.warn('⚠️ invoke() failed, falling back to direct fetch:', invokeErr?.message || invokeErr);
+        const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/cv-parser`;
+        const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+        const response = await fetch(functionUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${anonKey}`,
+            'Content-Type': 'application/json',
+            'apikey': anonKey
+          },
+          body: JSON.stringify(requestPayload)
+        });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Function responded with ${response.status}: ${errorText}`);
+        }
+        const data = await response.json();
+        console.log('✅ Function response data (fetch fallback):', data);
+        return {
+          fileUrl: publicUrl,
+          extractedData: data,
+          fileName: file.name
+        };
       }
-      
-      console.log('✅ Function response data:', data);
-      
-      if (!data.success) {
-        throw new Error(data.error || 'CV parsing failed');
-      }
-
-      return {
-        fileUrl: publicUrl,
-        extractedData: data,
-        fileName: file.name
-      };
       } catch (error: any) {
         console.error('❌ Complete upload process failed:', error);
         throw error;
