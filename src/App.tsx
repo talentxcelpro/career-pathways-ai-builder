@@ -29,6 +29,8 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
+import ResumeNew from './pages/resume/ResumeNew';
+import { ResumeEditorPage as ResumeEdit } from './pages/resume/ResumeEditorPage';
 import UnifiedDashboard from './pages/UnifiedDashboard';
 import UserManagement from "@/pages/admin/UserManagement";
 import TalentDatabase from "@/pages/admin/TalentDatabase";
@@ -130,6 +132,8 @@ const App = () => {
                        })}
                       <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
+                      <Route path="/resume/new" element={<ResumeNew />} />
+                      <Route path="/resume/edit/:id" element={<ResumeEdit />} />
                        <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
                        <Route path="/admin/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
                        <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
