@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TemplateLibrary } from '../templates/TemplateLibrary';
 import { CustomizationEngine } from '../customization/CustomizationEngine';
 import { ExportSystem } from '../export/ExportSystem';
@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { getRecommendedTemplates, resumeTemplates } from '@/data/resumeTemplates';
 
 interface EnhancedTemplateSelectorProps {
   selectedTemplate: string;
@@ -30,6 +31,20 @@ export const EnhancedTemplateSelector: React.FC<EnhancedTemplateSelectorProps> =
   onBack
 }) => {
   const [activeTab, setActiveTab] = useState('templates');
+
+  // Auto-select a recommended modern ATS template and move to Customize when user asks to proceed
+  useEffect(() => {
+    if (!selectedTemplate) {
+      const rec = getRecommendedTemplates();
+      const modern = rec.find(t => t.category === 'Modern');
+      const fallback = rec[0] || [...resumeTemplates].sort((a, b) => b.atsScore - a.atsScore)[0];
+      const toSelect = modern || fallback;
+      if (toSelect) {
+        onTemplateSelect(toSelect.id);
+        setActiveTab('customize');
+      }
+    }
+  }, [selectedTemplate, onTemplateSelect]);
 
   const handlePreview = (templateId: string) => {
     console.log('Previewing template:', templateId);
