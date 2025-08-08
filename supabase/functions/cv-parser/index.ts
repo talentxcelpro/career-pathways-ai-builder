@@ -199,11 +199,25 @@ serve(async (req) => {
 
     console.log('✅ CV parsed successfully:', parsedCV.personal_info?.full_name || extractNameFromFileName(fileName) || 'Unknown');
 
-    // Create or find user profile (avoid mocks; allow missing email by generating a unique upload address)
+    // Create or find user profile (only create with real email addresses)
     let userId;
     const safeName = parsedCV.personal_info?.full_name || extractNameFromFileName(fileName) || 'Candidate';
     const providedEmail = parsedCV.personal_info?.email || null;
-    const emailToUse = providedEmail || `${generateSlug(safeName)}.${crypto.randomUUID().slice(0,8)}@upload.local`;
+    
+    if (!providedEmail) {
+      console.log('⚠️ No valid email found in CV, skipping profile creation for:', safeName);
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'No valid email address found in CV',
+        message: 'Please ensure the CV contains a valid email address',
+        extractedData: parsedCV
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    const emailToUse = providedEmail;
 
     // Check if user already exists
     const { data: existingProfile } = await supabase
@@ -419,14 +433,27 @@ function extractNameFromFileName(fileName: string): string | null {
 }
 
 function extractContactInfo(text: string): { email?: string; phone?: string; linkedin?: string; location?: string; name?: string; skills?: string[] } {
-  const emailMatch = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
-  const phoneMatch = text.match(/\+?[0-9][0-9\s().-]{7,}/);
+  // Enhanced email extraction with multiple patterns
+  const emailMatches = text.match(/[\w._%+-]+@[\w.-]+\.[A-Z]{2,}/gi) || [];
+  const validEmail = emailMatches.find(email => 
+    !email.includes('@upload.local') && 
+    !email.includes('@example.com') && 
+    !email.includes('@test.com') &&
+    email.includes('.') &&
+    email.length > 5
+  );
+  
+  const phoneMatch = text.match(/(\+\d{1,3}[-.\s]?)?\(?[0-9]{1,4}\)?[-.\s]?[0-9]{1,4}[-.\s]?[0-9]{1,9}/);
   const linkedinMatch = text.match(/https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-_/]+/i);
-  // Very light heuristics; real parsing will replace this
+  
+  // Extract name from text (look for name patterns at the beginning)
+  const nameMatch = text.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/m);
+  
   return {
-    email: emailMatch?.[0],
+    email: validEmail,
     phone: phoneMatch?.[0],
     linkedin: linkedinMatch?.[0],
+    name: nameMatch?.[1],
     skills: []
   };
 }
