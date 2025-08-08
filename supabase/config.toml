@@ -151,3 +151,6 @@ verify_jwt = false
 
 [functions.adzuna-job-importer]
 verify_jwt = false
+
+[functions.cv-parser]
+verify_jwt = true

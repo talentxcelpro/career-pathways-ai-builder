@@ -77,11 +77,8 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get OpenAI API key
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openaiApiKey) {
-      throw new Error('OpenAI API key not configured');
-    }
+    // Get OpenAI API key (optional for mock mode)
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY') || '';
 
     // Download the file content
     console.log('📥 Attempting to download file from:', fileUrl);
