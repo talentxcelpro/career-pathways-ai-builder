@@ -23,6 +23,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     resumeId,
     refreshData 
   } = useResumeData();
+  const [isTargetingOpen, setTargetingOpen] = useState(false);
 
   console.log('EnhancedResumeBuilder state:', {
     resumeData: !!resumeData,
@@ -98,7 +99,6 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   }
 
   const effectiveMode = isNewResume ? 'create' : mode;
-  const [isTargetingOpen, setTargetingOpen] = useState(false);
   return (
     <div className="min-h-screen bg-background relative">
       <UnifiedResumeInterface 
