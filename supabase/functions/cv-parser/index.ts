@@ -198,26 +198,58 @@ serve(async (req) => {
     }
 
     console.log('✅ CV parsed successfully:', parsedCV.personal_info?.full_name || extractNameFromFileName(fileName) || 'Unknown');
+    console.log('🔍 Extracted email from parsing:', parsedCV.personal_info?.email);
+    console.log('🔍 Raw text preview:', extractedText?.substring(0, 500));
 
     // Create or find user profile (only create with real email addresses)
     let userId;
     const safeName = parsedCV.personal_info?.full_name || extractNameFromFileName(fileName) || 'Candidate';
     const providedEmail = parsedCV.personal_info?.email || null;
     
-    if (!providedEmail) {
-      console.log('⚠️ No valid email found in CV, skipping profile creation for:', safeName);
-      return new Response(JSON.stringify({
-        success: false,
-        error: 'No valid email address found in CV',
-        message: 'Please ensure the CV contains a valid email address',
-        extractedData: parsedCV
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    // Check if email looks fake (contains upload.local, example.com, etc.)
+    const isFakeEmail = providedEmail && (
+      providedEmail.includes('@upload.local') || 
+      providedEmail.includes('@example.com') || 
+      providedEmail.includes('@test.com') ||
+      providedEmail.includes('[email') ||
+      providedEmail === 'user@example.com'
+    );
+    
+    if (!providedEmail || isFakeEmail) {
+      console.log('⚠️ No valid email found in CV (found:', providedEmail, '), trying manual extraction from text');
+      
+      // Try direct regex extraction from the raw text
+      const emailMatches = extractedText?.match(/[\w._%+-]+@[\w.-]+\.[A-Z]{2,}/gi) || [];
+      const realEmail = emailMatches.find(email => 
+        !email.includes('@upload.local') && 
+        !email.includes('@example.com') && 
+        !email.includes('@test.com') &&
+        !email.includes('[email') &&
+        email.includes('.') &&
+        email.length > 5 &&
+        email !== 'user@example.com'
+      );
+      
+      if (realEmail) {
+        console.log('✅ Found real email in text:', realEmail);
+        parsedCV.personal_info = parsedCV.personal_info || {};
+        parsedCV.personal_info.email = realEmail;
+      } else {
+        console.log('❌ No valid email found in CV text, skipping profile creation for:', safeName);
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'No valid email address found in CV',
+          message: 'Please ensure the CV contains a valid email address',
+          extractedData: parsedCV,
+          emailsFound: emailMatches
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
     }
     
-    const emailToUse = providedEmail;
+    const emailToUse = parsedCV.personal_info?.email;
 
     // Check if user already exists
     const { data: existingProfile } = await supabase
