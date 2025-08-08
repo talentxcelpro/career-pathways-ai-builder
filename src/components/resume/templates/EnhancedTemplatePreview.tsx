@@ -147,20 +147,20 @@ export const EnhancedTemplatePreview: React.FC<TemplatePreviewProps> = ({
   };
 
   const getAtsScoreColor = (score: number) => {
-    if (score >= 95) return 'bg-green-100 text-green-800';
-    if (score >= 85) return 'bg-blue-100 text-blue-800';
-    if (score >= 75) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+    if (score >= 95) return 'bg-success/10 text-success';
+    if (score >= 85) return 'bg-primary/10 text-primary';
+    if (score >= 75) return 'bg-orange/10 text-orange';
+    return 'bg-red/10 text-red';
   };
 
   return (
-    <Card className={`cursor-pointer transition-all hover:shadow-lg ${
+    <Card className={`cursor-pointer transition-smooth animate-fadeInScale hover:shadow-float ${
       isSelected ? 'ring-2 ring-primary shadow-lg' : ''
     }`}>
       <CardContent className="p-0">
         <div className="relative">
           {/* Template Preview Area */}
-          <div className="aspect-[3/4] bg-gray-50 rounded-t-lg overflow-hidden border">
+          <div className="aspect-[3/4] bg-card rounded-t-lg overflow-hidden border border-border">
             {renderTemplatePreview()}
           </div>
           

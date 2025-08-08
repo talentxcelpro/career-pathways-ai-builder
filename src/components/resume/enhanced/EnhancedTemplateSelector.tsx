@@ -6,6 +6,7 @@ import { ExportSystem } from '../export/ExportSystem';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 interface EnhancedTemplateSelectorProps {
   selectedTemplate: string;
@@ -60,7 +61,18 @@ export const EnhancedTemplateSelector: React.FC<EnhancedTemplateSelectorProps> =
   };
 
   return (
-    <div className="space-y-6">
+    <main className="space-y-6 animate-slideInUp">
+      <Helmet>
+        <title>Resume Templates & Customization | ATS-Optimized</title>
+        <meta name="description" content="Browse, customize, and export ATS-friendly resume templates designed for modern hiring." />
+        <link rel="canonical" href="https://talentxcel.in/resume/templates" />
+      </Helmet>
+
+      <header className="space-y-1">
+        <h1 className="text-2xl font-bold">Resume Templates & Customization</h1>
+        <p className="text-muted-foreground">Choose a template, fine-tune styles, and export your resume in one flow.</p>
+      </header>
+
       {/* Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
@@ -121,6 +133,6 @@ export const EnhancedTemplateSelector: React.FC<EnhancedTemplateSelectorProps> =
           </Button>
         </div>
       </div>
-    </div>
+    </main>
   );
 };

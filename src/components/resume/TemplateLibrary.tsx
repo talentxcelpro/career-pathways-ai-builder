@@ -57,18 +57,18 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   });
 
   const getAtsScoreColor = (score: number) => {
-    if (score >= 95) return 'text-green-600 bg-green-100';
-    if (score >= 85) return 'text-blue-600 bg-blue-100';
-    if (score >= 75) return 'text-yellow-600 bg-yellow-100';
-    return 'text-red-600 bg-red-100';
+    if (score >= 95) return 'bg-success/10 text-success';
+    if (score >= 85) return 'bg-primary/10 text-primary';
+    if (score >= 75) return 'bg-orange/10 text-orange';
+    return 'bg-red/10 text-red';
   };
 
   return (
-    <div className="space-y-6">
+    <section className="space-y-6 animate-slideInUp">
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search templates..."
             value={searchTerm}
@@ -113,8 +113,8 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
             {filteredTemplates.map((template) => (
               <Card 
                 key={template.id} 
-                className={`cursor-pointer transition-all hover:shadow-lg ${
-                  selectedTemplate === template.id ? 'ring-2 ring-blue-500 shadow-lg' : ''
+                className={`cursor-pointer transition-smooth animate-fadeInScale hover:shadow-float ${
+                  selectedTemplate === template.id ? 'ring-2 ring-primary shadow-lg' : ''
                 }`}
               >
                 <CardHeader className="pb-3">
@@ -132,9 +132,9 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                 
                 <CardContent className="space-y-4">
                   {/* Template Preview */}
-                  <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
-                    <div className="text-gray-500 text-sm">Template Preview</div>
-                  </div>
+            <div className="aspect-[3/4] rounded-lg gradient-card flex items-center justify-center">
+              <div className="text-muted-foreground text-sm">Template Preview</div>
+            </div>
 
                   {/* Features */}
                   <div className="space-y-2">
@@ -153,32 +153,32 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                     <h4 className="text-sm font-medium">Colors:</h4>
                     <div className="flex gap-1">
                       {template.colors.map((color, index) => (
-                        <div
-                          key={index}
-                          className="w-6 h-6 rounded-full border-2 border-gray-200"
-                          style={{ backgroundColor: color }}
-                        />
+                <div
+                  key={index}
+                  className="w-6 h-6 rounded-full border-2 border-border"
+                  style={{ backgroundColor: color }}
+                />
                       ))}
                     </div>
                   </div>
 
                   {/* Template Info */}
-                  <div className="flex items-center justify-between text-xs text-gray-600">
-                    <span>{template.multiPage ? 'Multi-page' : 'Single page'}</span>
-                    {template.industry && (
-                      <Badge variant="secondary" className="text-xs">
-                        {template.industry}
-                      </Badge>
-                    )}
-                  </div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{template.multiPage ? 'Multi-page' : 'Single page'}</span>
+              {template.industry && (
+                <Badge variant="secondary" className="text-xs">
+                  {template.industry}
+                </Badge>
+              )}
+            </div>
 
                   {/* Actions */}
                   <div className="flex gap-2 pt-2">
                     <Button
                       size="sm"
-                      onClick={() => onTemplateSelect(template.id)}
-                      className={selectedTemplate === template.id ? 'bg-blue-600' : ''}
-                    >
+              onClick={() => onTemplateSelect(template.id)}
+              className={selectedTemplate === template.id ? 'bg-primary' : ''}
+            >
                       {selectedTemplate === template.id ? 'Selected' : 'Select'}
                     </Button>
                     <Button
@@ -199,8 +199,8 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       </Tabs>
 
       {filteredTemplates.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+        <div className="text-center py-8 text-muted-foreground">
+          <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground/40" />
           <p>No templates found matching your criteria.</p>
           <Button 
             variant="outline" 
@@ -214,6 +214,6 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
           </Button>
         </div>
       )}
-    </div>
+    </section>
   );
 };

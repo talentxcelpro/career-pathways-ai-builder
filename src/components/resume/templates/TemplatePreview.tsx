@@ -28,7 +28,7 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
   onPreview
 }) => {
   return (
-    <Card className={`cursor-pointer transition-all hover:shadow-lg ${
+    <Card className={`cursor-pointer transition-smooth animate-fadeInScale hover:shadow-float ${
       isSelected ? 'ring-2 ring-primary shadow-lg' : ''
     }`}>
       <CardContent className="p-0">
@@ -36,8 +36,11 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
           <div className="aspect-[3/4] bg-muted rounded-t-lg overflow-hidden">
             <img
               src={template.preview}
-              alt={template.name}
+              alt={`${template.name} resume template preview - ${template.category} style, ATS-friendly`}
               className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>
           
@@ -49,7 +52,7 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
 
           {template.isRecommended && (
             <div className="absolute top-2 left-2">
-              <Badge className="bg-yellow-500 text-yellow-900">
+              <Badge variant="secondary" className="text-xs">
                 <Star className="h-3 w-3 mr-1" />
                 Recommended
               </Badge>
@@ -64,6 +67,7 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                 e.stopPropagation();
                 onPreview(template.id);
               }}
+              aria-label={`Preview ${template.name} template`}
             >
               <Eye className="h-3 w-3 mr-1" />
               Preview
