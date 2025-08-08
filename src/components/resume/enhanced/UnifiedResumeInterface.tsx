@@ -42,8 +42,35 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   initialData,
   onDataChange
 }) => {
+  const normalize = (d: any): EnhancedResumeData => ({
+    personalInfo: {
+      fullName: d?.personalInfo?.fullName || '',
+      email: d?.personalInfo?.email || '',
+      phone: d?.personalInfo?.phone || '',
+      location: d?.personalInfo?.location || '',
+      summary: d?.personalInfo?.summary || ''
+    },
+    professionalSummary: d?.professionalSummary || { content: '', keyHighlights: [] },
+    experience: Array.isArray(d?.experience) ? d.experience : [],
+    education: Array.isArray(d?.education) ? d.education : [],
+    skills: Array.isArray(d?.skills) ? d.skills : [],
+    projects: Array.isArray(d?.projects) ? d.projects : [],
+    certifications: Array.isArray(d?.certifications) ? d.certifications : [],
+    awards: Array.isArray(d?.awards) ? d.awards : [],
+    languages: Array.isArray(d?.languages) ? d.languages : [],
+    publications: Array.isArray(d?.publications) ? d.publications : [],
+    references: Array.isArray(d?.references) ? d.references : [],
+    volunteerWork: Array.isArray(d?.volunteerWork) ? d.volunteerWork : [],
+    trainings: Array.isArray(d?.trainings) ? d.trainings : [],
+    tools: d?.tools || { development: [], design: [], analytics: [], productivity: [], other: [] },
+    careerObjectives: d?.careerObjectives || { statement: '', goals: [] },
+    sectionOrder: d?.sectionOrder || ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
+    selectedTemplate: d?.selectedTemplate || 'modern',
+    customization: d?.customization || { colorScheme: 'blue', fontFamily: 'Inter', fontSize: 14, spacing: 'normal' }
+  });
+
   const [activeTab, setActiveTab] = useState('editor');
-  const [resumeData, setResumeData] = useState<EnhancedResumeData>(initialData);
+  const [resumeData, setResumeData] = useState<EnhancedResumeData>(normalize(initialData));
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [jobDescription, setJobDescription] = useState<string>('');
   
@@ -78,7 +105,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   } = useSmartSuggestions();
 
   useEffect(() => {
-    setResumeData(initialData);
+    setResumeData(normalize(initialData));
   }, [initialData]);
 
   useEffect(() => {
