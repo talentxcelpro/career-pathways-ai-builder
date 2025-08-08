@@ -616,6 +616,122 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
           </div>
         </Tabs>
       </div>
+
+      {/* Cover Letter Modal */}
+      <Dialog open={isCoverOpen} onOpenChange={setCoverOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Generate Cover Letter
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Job Description</label>
+              <Textarea
+                placeholder="Paste the job description here..."
+                value={coverJD}
+                onChange={(e) => setCoverJD(e.target.value)}
+                rows={6}
+                className="resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Tone</label>
+              <div className="flex gap-2">
+                {(['professional', 'bold', 'conservative'] as const).map((tone) => (
+                  <Button
+                    key={tone}
+                    variant={coverTone === tone ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCoverTone(tone)}
+                  >
+                    {tone.charAt(0).toUpperCase() + tone.slice(1)}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <Button 
+              onClick={generateCover} 
+              disabled={isGeneratingCover || !coverJD.trim()}
+              className="w-full"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              {isGeneratingCover ? 'Generating...' : 'Generate Cover Letter'}
+            </Button>
+
+            {coverLetter && (
+              <div className="space-y-3">
+                <div className="border rounded-lg p-4 bg-muted/50">
+                  <div className="text-sm font-medium mb-2">Generated Cover Letter</div>
+                  <div className="text-sm whitespace-pre-wrap leading-relaxed">
+                    {coverLetter}
+                  </div>
+                </div>
+
+                <div className="flex gap-2 flex-wrap">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(coverLetter);
+                      toast.success('Cover letter copied to clipboard');
+                    }}
+                  >
+                    <Download className="h-4 w-4 mr-1" />
+                    Copy
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const updated = {
+                        ...resumeData,
+                        personalInfo: {
+                          ...resumeData.personalInfo,
+                          summary: coverLetter
+                        }
+                      };
+                      setResumeData(updated);
+                      toast.success('Cover letter inserted into summary');
+                    }}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-1" />
+                    Insert into Summary
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const updated = {
+                        ...resumeData,
+                        coverLetter: { content: coverLetter, jobDescription: coverJD }
+                      };
+                      setResumeData(updated);
+                      toast.success('Cover letter saved as separate section');
+                    }}
+                  >
+                    <FileText className="h-4 w-4 mr-1" />
+                    Save as Cover Letter
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCoverOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
