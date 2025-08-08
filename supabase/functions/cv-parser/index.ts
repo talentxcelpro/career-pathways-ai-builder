@@ -318,11 +318,49 @@ console.log('🔍 Raw text preview:', extractedText?.substring(0, 500));
     const emailToUse = parsedCV.personal_info?.email;
 
     // Check if user already exists
-    const { data: existingProfile } = await supabase
-      .from('profiles')
-      .select('id, full_name, email, phone, location, about, headline, linkedin_url, github_url, portfolio_url')
-      .eq('email', emailToUse)
-      .maybeSingle();
+    let existingProfile: any = null;
+    const isTemp = isTempEmail(emailToUse || '');
+
+    if (!isTemp) {
+      // First try by real email
+      const { data: profileByEmail } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, phone, location, about, headline, linkedin_url, github_url, portfolio_url')
+        .eq('email', emailToUse)
+        .maybeSingle();
+      existingProfile = profileByEmail;
+
+      // If not found by email, try to upgrade a temp-email profile that matches the name
+      if (!existingProfile) {
+        const { data: tempNameProfile } = await supabase
+          .from('profiles')
+          .select('id, email')
+          .eq('full_name', safeName)
+          .ilike('email', '%.temp')
+          .maybeSingle();
+        if (tempNameProfile) {
+          userId = tempNameProfile.id;
+          const { error: updEmailErr } = await supabase
+            .from('profiles')
+            .update({ email: emailToUse, updated_at: new Date().toISOString() })
+            .eq('id', userId);
+          if (updEmailErr) {
+            console.warn('Failed to update temp email to real:', updEmailErr);
+          } else {
+            console.log('✅ Upgraded temp email to real for profile:', userId);
+          }
+          existingProfile = { id: userId, email: emailToUse };
+        }
+      }
+    } else {
+      // Temp email case: avoid duplicates by matching on name (and optionally location)
+      const { data: profileByName } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, location, phone, about, headline, linkedin_url, github_url, portfolio_url')
+        .eq('full_name', safeName)
+        .maybeSingle();
+      existingProfile = profileByName || null;
+    }
 
     if (existingProfile) {
       userId = existingProfile.id;
@@ -549,6 +587,11 @@ function generateUsername(name: string): string {
     .substring(0, 15);
   
   return base + Math.random().toString(36).substr(2, 5);
+}
+
+function isTempEmail(email: string): boolean {
+  if (!email) return false;
+  return /@(no-contact\.temp|contact-extracted\.temp)$/i.test(email) || email.endsWith('.temp');
 }
 
 function extractNameFromFileName(fileName: string): string | null {
