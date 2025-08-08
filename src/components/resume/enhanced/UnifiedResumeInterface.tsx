@@ -32,6 +32,11 @@ import { SmartSuggestionsPanel } from './SmartSuggestionsPanel';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { ATSOptimizationPanel } from '@/components/resume/ATSOptimizationPanel';
+import { useResumeDownloads } from '@/hooks/useResumeDownloads';
+import { exportResumeToDocx } from '@/utils/docxExport';
+import type { ResumeJSON } from '@/hooks/useResumeParser';
+import { RazorpayScript } from '@/components/RazorpayScript';
 
 interface UnifiedResumeInterfaceProps {
   mode: 'edit' | 'create';
@@ -253,8 +258,49 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
       setIsGeneratingCover(false);
     }
   };
+  const { handleDownload, processing } = useResumeDownloads(0);
+
+  const toResumeJSON = (d: EnhancedResumeData): ResumeJSON => ({
+    profile: {
+      name: d.personalInfo.fullName,
+      email: d.personalInfo.email,
+      phone: d.personalInfo.phone,
+      location: d.personalInfo.location
+    },
+    summary: d.personalInfo.summary || d.professionalSummary?.content || '',
+    experience: Array.isArray(d.experience)
+      ? d.experience.map((exp: any) => ({
+          title: exp.title || exp.position || '',
+          company: exp.company || exp.employer || '',
+          startDate: exp.startDate || '',
+          endDate: exp.endDate || '',
+          bullets: Array.isArray(exp.achievements)
+            ? exp.achievements.filter(Boolean)
+            : (exp.description ? [String(exp.description)] : [])
+        }))
+      : [],
+    education: Array.isArray(d.education)
+      ? d.education.map((ed: any) => ({
+          school: ed.institution || ed.school || '',
+          degree: ed.degree || '',
+          year: ed.year || ed.graduationYear || ''
+        }))
+      : [],
+    skills: (Array.isArray(d.skills) ? d.skills : [])
+      .map((s: any) => (typeof s === 'string' ? s : (s?.name || s?.title || s?.skill || s?.keyword)))
+      .filter(Boolean)
+  });
+
+  const startExport = async () => {
+    const resumeId = 'editor';
+    await handleDownload(resumeId, async () => {
+      await exportResumeToDocx(toResumeJSON(resumeData), 'resume.docx');
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <RazorpayScript />
       {/* Header */}
       <div className="border-b bg-card">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -322,9 +368,9 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                   <Zap className="h-4 w-4 mr-1" />
                   Smart Tips
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={startExport} disabled={processing}>
                   <Download className="h-4 w-4 mr-1" />
-                  Export
+                  {processing ? 'Preparing...' : 'Export'}
                 </Button>
                 <Button variant="outline" size="sm">
                   <Share2 className="h-4 w-4 mr-1" />
@@ -406,6 +452,9 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                 isAnalyzing={isRealTimeAnalyzing}
                 onOptimize={handleATSOptimization}
               />
+              <div className="mt-6">
+                <ATSOptimizationPanel resumeData={resumeData} />
+              </div>
             </TabsContent>
 
             <TabsContent value="suggestions" className="mt-0">
@@ -482,6 +531,53 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                             Improve ATS compatibility
                           </div>
                         </div>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Wand2 className="h-5 w-5" />
+                      Rewrite a Bullet
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <Textarea
+                        placeholder="Paste an existing bullet you want to improve..."
+                        value={bulletOriginal}
+                        onChange={(e) => setBulletOriginal(e.target.value)}
+                      />
+                      <div className="flex items-center gap-3">
+                        <Button size="sm" onClick={rewriteBullet} disabled={isRewritingBullet}>
+                          <Sparkles className="h-4 w-4 mr-1" />
+                          {isRewritingBullet ? 'Rewriting...' : 'Rewrite'}
+                        </Button>
+                      </div>
+                      {bulletImproved && (
+                        <div className="rounded-md border p-3">
+                          <div className="text-sm text-muted-foreground mb-1">Improved</div>
+                          <div className="text-sm whitespace-pre-wrap">{bulletImproved}</div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="h-5 w-5" />
+                      Generate Cover Letter
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center gap-3">
+                      <Button size="sm" variant="secondary" onClick={() => setCoverOpen(true)}>
+                        <FileText className="h-4 w-4 mr-1" />
+                        Open Cover Letter Builder
                       </Button>
                     </div>
                   </CardContent>
