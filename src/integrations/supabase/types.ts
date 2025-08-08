@@ -13995,6 +13995,63 @@ export type Database = {
           },
         ]
       }
+      resume_ai_logs: {
+        Row: {
+          action: string
+          after_text: string | null
+          before_text: string | null
+          created_at: string
+          id: string
+          model_used: string | null
+          prompt: string | null
+          resume_id: string
+          resume_version_id: string | null
+          section: string
+          usage: Json | null
+        }
+        Insert: {
+          action?: string
+          after_text?: string | null
+          before_text?: string | null
+          created_at?: string
+          id?: string
+          model_used?: string | null
+          prompt?: string | null
+          resume_id: string
+          resume_version_id?: string | null
+          section: string
+          usage?: Json | null
+        }
+        Update: {
+          action?: string
+          after_text?: string | null
+          before_text?: string | null
+          created_at?: string
+          id?: string
+          model_used?: string | null
+          prompt?: string | null
+          resume_id?: string
+          resume_version_id?: string | null
+          section?: string
+          usage?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_ai_logs_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "ai_resumes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resume_ai_logs_resume_version_id_fkey"
+            columns: ["resume_version_id"]
+            isOneToOne: false
+            referencedRelation: "resume_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_analytics: {
         Row: {
           created_at: string | null
