@@ -6,6 +6,8 @@ import { Eye, Download, FileText, ExternalLink } from 'lucide-react';
 
 interface ResumePreviewProps {
   data: any;
+  content?: any;
+  fullPage?: boolean;
 }
 
 const templates = [
@@ -18,6 +20,19 @@ const templates = [
 
 export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   const [selectedTemplate, setSelectedTemplate] = useState('original');
+
+  // Normalize incoming data shapes
+  const profile = data?.profile ?? data?.personalInfo ?? data?.personal ?? {};
+  const fullName: string = (profile?.fullName ?? profile?.name ?? data?.name ?? '') as string;
+  const email: string = (profile?.email ?? data?.email ?? '') as string;
+  const phone: string = (profile?.phone ?? data?.phone ?? '') as string;
+  const experiences: any[] = Array.isArray(data?.experience)
+    ? data.experience
+    : Array.isArray(data?.workExperience)
+    ? data.workExperience
+    : Array.isArray(data?.experiences)
+    ? data.experiences
+    : [];
 
   const handleEditWithTemplate = () => {
     // Navigate to resume builder with selected template
@@ -65,30 +80,40 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
           <div className="text-center space-y-4">
             <div className="w-12 h-12 bg-gray-200 rounded-full mx-auto flex items-center justify-center">
               <span className="text-lg font-bold text-gray-600">
-                {(data?.profile?.fullName || data?.name)?.charAt(0) || 'U'}
+                {fullName?.charAt(0) || 'U'}
               </span>
             </div>
             <div>
-              <h3 className="font-bold text-lg">{data?.profile?.fullName || data?.name || 'Your Name'}</h3>
-              <p className="text-gray-600">{data?.profile?.email || data?.email || 'email@example.com'}</p>
-              <p className="text-gray-600">{data?.profile?.phone || data?.phone || 'Phone Number'}</p>
+              <h3 className="font-bold text-lg">{fullName || 'Your Name'}</h3>
+              <p className="text-gray-600">{email || 'email@example.com'}</p>
+              <p className="text-gray-600">{phone || 'Phone Number'}</p>
             </div>
             
-            {data?.experience && data.experience.length > 0 && (
+            {experiences && experiences.length > 0 && (
               <div className="text-left space-y-2">
                 <h4 className="font-semibold border-b pb-1">Experience</h4>
-                {data.experience.slice(0, 2).map((exp: any, index: number) => (
-                  <div key={index} className="text-sm space-y-1">
-                    <div className="font-medium">{exp.title}</div>
-                    <div className="text-gray-600">{exp.company} • {exp.duration}</div>
-                    <div className="text-gray-700 text-xs line-clamp-2">
-                      {exp.description}
+                {experiences.slice(0, 2).map((exp: any, index: number) => {
+                  const title = exp.title || exp.role || exp.position || 'Role';
+                  const company = exp.company || exp.organization || exp.employer || '';
+                  const start = exp.startDate || exp.start || exp.from || '';
+                  const end = exp.endDate || exp.end || exp.to || 'Present';
+                  const duration = exp.duration || [start, end].filter(Boolean).join(' - ');
+                  const description = exp.description || exp.summary || '';
+                  return (
+                    <div key={index} className="text-sm space-y-1">
+                      <div className="font-medium">{title}</div>
+                      <div className="text-gray-600">{company} {duration ? `• ${duration}` : ''}</div>
+                      {description && (
+                        <div className="text-gray-700 text-xs line-clamp-2">
+                          {description}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
-                {data.experience.length > 2 && (
+                  );
+                })}
+                {experiences.length > 2 && (
                   <p className="text-xs text-gray-500 italic">
-                    And {data.experience.length - 2} more positions...
+                    And {experiences.length - 2} more positions...
                   </p>
                 )}
               </div>

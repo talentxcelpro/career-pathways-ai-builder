@@ -246,7 +246,7 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
         {showPreview && (
           <CardContent>
             <div className="max-h-96 overflow-y-auto border rounded-lg">
-              <ResumePreview data={resumeData} content={{ ats: atsJson }} fullPage={true} />
+              <ResumePreview data={resumeData} fullPage={true} />
             </div>
           </CardContent>
         )}
