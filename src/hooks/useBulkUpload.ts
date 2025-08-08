@@ -13,6 +13,40 @@ interface ProcessCVParams {
   batchId: string;
 }
 
+// Helper to extract text client-side for better parsing accuracy
+const extractTextFromFile = async (file: File): Promise<string> => {
+  const type = file.type || '';
+  try {
+    if (type.includes('word') || type.includes('doc')) {
+      const arrayBuffer = await file.arrayBuffer();
+      const { value } = await mammoth.extractRawText({ arrayBuffer });
+      return value || '';
+    }
+    if (type.includes('pdf')) {
+      // Lazy import to reduce bundle impact
+      const pdfjsLib: any = await import('pdfjs-dist');
+      if (pdfjsLib?.GlobalWorkerOptions) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      }
+      const data = await file.arrayBuffer();
+      const loadingTask = (pdfjsLib as any).getDocument({ data });
+      const pdf = await loadingTask.promise;
+      let text = '';
+      const maxPages = Math.min(pdf.numPages, 10); // cap for speed
+      for (let i = 1; i <= maxPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const strings = content.items.map((it: any) => it.str).join(' ');
+        text += '\n' + strings;
+      }
+      return text.trim();
+    }
+  } catch (e) {
+    console.warn('Client text extraction failed:', (e as any)?.message || e);
+  }
+  return '';
+};
+
 export const useBulkUpload = () => {
   const queryClient = useQueryClient();
 
@@ -85,12 +119,14 @@ export const useBulkUpload = () => {
         throw new Error('Failed to generate valid public URL for uploaded file');
       }
 
-      // Call CV parsing edge function
+      // Prepare payload with client-extracted text to improve parsing
+      const extractedText = await extractTextFromFile(file).catch(() => '');
       const requestPayload = {
         fileUrl: publicUrl,
         fileName: file.name,
         fileType: file.type,
-        batchId
+        batchId,
+        extractedText
       };
       
       console.log('🚀 About to call CV parser with payload:', JSON.stringify(requestPayload, null, 2));
