@@ -8,7 +8,7 @@ interface ResumePreviewProps {
 }
 
 export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, template, fullPage }) => {
-  // Use content if provided, otherwise use data
+  // Priority: content (ATS normalized) > data (raw)
   const resumeData = content || data;
   
   // Normalize incoming data (supports multiple shapes)
@@ -113,7 +113,9 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, tem
     return input; // fallback passthrough
   };
   
-  console.log('ResumePreview - raw data:', resumeData);
+  console.log('ResumePreview - raw data:', data);
+  console.log('ResumePreview - content (ATS):', content);
+  console.log('ResumePreview - final resumeData:', resumeData);
   const displayData = normalizeToPreview(resumeData);
   console.log('ResumePreview - displayData after normalize:', displayData);
   
