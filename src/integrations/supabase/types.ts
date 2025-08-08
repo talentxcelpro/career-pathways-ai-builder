@@ -14354,6 +14354,36 @@ export type Database = {
           },
         ]
       }
+      resume_downloads: {
+        Row: {
+          created_at: string
+          download_count: number
+          id: string
+          last_download_at: string
+          resume_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          download_count?: number
+          id?: string
+          last_download_at?: string
+          resume_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          download_count?: number
+          id?: string
+          last_download_at?: string
+          resume_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       resume_enhancements: {
         Row: {
           confidence_score: number | null
@@ -14649,6 +14679,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      resume_orders: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          metadata: Json
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          resume_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          resume_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          resume_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       resume_parsed: {
         Row: {
