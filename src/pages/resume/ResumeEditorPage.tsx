@@ -13,11 +13,71 @@ import { RazorpayScript } from '@/components/RazorpayScript';
 
 const defaultResume: ResumeJSON = { profile: {}, summary: '', experience: [], education: [], skills: [] };
 
-export const ResumeEditorPage: React.FC = () => {
+interface ResumeEditorPageProps { initialData?: any }
+
+const normalizeResume = (input: any): ResumeJSON => {
+  const safe = input?.enhancedContent ?? input;
+  if (!safe || typeof safe !== 'object') return { ...defaultResume };
+  const profileSrc: any = (safe as any).profile ?? (safe as any).personalInfo ?? {};
+  const normalized: ResumeJSON = {
+    profile: {
+      name: profileSrc.name ?? profileSrc.fullName ?? '',
+      email: profileSrc.email ?? '',
+      phone: profileSrc.phone ?? '',
+      location: profileSrc.location ?? ''
+    },
+    summary: (safe as any).summary ?? (safe as any).objective ?? (safe as any).professionalSummary ?? '',
+    experience: [],
+    education: [],
+    skills: []
+  };
+
+  const expSrc: any[] = (safe as any).experience ?? (safe as any).workExperience ?? (safe as any).work_experience ?? [];
+  if (Array.isArray(expSrc)) {
+    normalized.experience = expSrc.slice(0, 8).map((e: any) => {
+      const bullets = Array.isArray(e?.bullets)
+        ? e.bullets
+        : Array.isArray(e?.achievements)
+          ? e.achievements
+          : typeof e?.description === 'string'
+            ? e.description.split(/[\n•-]+/).map((s: string) => s.trim()).filter(Boolean)
+            : [];
+      return {
+        title: e?.title ?? e?.role ?? e?.position ?? '',
+        company: e?.company ?? e?.organization ?? '',
+        startDate: e?.startDate ?? e?.start_date ?? '',
+        endDate: e?.endDate ?? e?.end_date ?? '',
+        bullets: bullets.slice(0, 8)
+      };
+    });
+  }
+
+  const eduSrc: any[] = (safe as any).education ?? [];
+  if (Array.isArray(eduSrc)) {
+    normalized.education = eduSrc.slice(0, 6).map((ed: any) => ({
+      school: ed?.school ?? ed?.institution ?? '',
+      degree: ed?.degree ?? ed?.qualification ?? '',
+      year: ed?.year ?? ed?.endDate ?? ed?.end_date ?? ed?.graduationDate ?? ''
+    }));
+  }
+
+  const skillsSrc: any = (safe as any).skills ?? {};
+  if (Array.isArray(skillsSrc)) {
+    normalized.skills = skillsSrc.map((s: any) => (typeof s === 'string' ? s : s?.name ?? '')).filter(Boolean);
+  } else if (skillsSrc && typeof skillsSrc === 'object') {
+    normalized.skills = (Object.values(skillsSrc) as any[]).flat().map((s: any) => (typeof s === 'string' ? s : s?.name ?? '')).filter(Boolean);
+  }
+  normalized.skills = Array.from(new Set(normalized.skills)).slice(0, 50);
+
+  return normalized;
+};
+
+export const ResumeEditorPage: React.FC<ResumeEditorPageProps> = ({ initialData: propInitialData }) => {
   const { id } = useParams();
   const location = useLocation();
-  const initialData = (location.state as any)?.resumeData?.parsed as unknown as ResumeJSON | undefined;
-  const [resume, setResume] = useState<ResumeJSON>(initialData || defaultResume);
+  const stateInitial = (location.state as any)?.resumeData ?? (location.state as any)?.resumeData?.parsed;
+  const initial = normalizeResume(propInitialData ?? stateInitial);
+  const [resume, setResume] = useState<ResumeJSON>(initial);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const { handleDownload, processing } = useResumeDownloads(0);
@@ -27,7 +87,7 @@ export const ResumeEditorPage: React.FC = () => {
     const run = async () => {
       if (!id || id === 'new') return;
       const { data, error } = await supabase.from('ai_resumes').select('content').eq('id', id).maybeSingle();
-      if (!error && data?.content) setResume(data.content as ResumeJSON);
+      if (!error && data?.content) setResume(normalizeResume(data.content));
     };
     run();
   }, [id]);

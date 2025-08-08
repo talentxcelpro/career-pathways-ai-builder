@@ -16,7 +16,7 @@ const ResumeNew: React.FC = () => {
       {!data ? (
         <UploadWizard onComplete={setData} />
       ) : (
-        <ResumeEditorPage />
+        <ResumeEditorPage initialData={data} />
       )}
     </div>
   );
