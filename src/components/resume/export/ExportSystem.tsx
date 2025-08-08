@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -132,6 +132,47 @@ export const ExportSystem: React.FC<ExportSystemProps> = ({
 
   const selectedFormatData = exportFormats.find(f => f.id === selectedFormat);
 
+  // Keep template in sync with parent selection
+  useEffect(() => {
+    setExportSettings(prev => ({ ...prev, template: selectedTemplate }));
+  }, [selectedTemplate]);
+
+  // Presets
+  const applyPreset = async (preset: 'ats-pdf' | 'editable-docx') => {
+    const base = {
+      ...exportSettings,
+      template: selectedTemplate,
+      optimizeForATS: true,
+      customBranding: false,
+      pageMargins: 'normal',
+    } as ExportSettings;
+
+    if (preset === 'ats-pdf') {
+      const settings = {
+        ...base,
+        format: 'pdf',
+        fontFamily: 'inter',
+        fontSize: 11,
+        includePhoto: false,
+        colorScheme: 'professional-blue',
+      } as ExportSettings;
+      setSelectedFormat('pdf');
+      setExportSettings(settings);
+      await onExport('pdf', settings);
+    } else {
+      const settings = {
+        ...base,
+        format: 'docx',
+        fontFamily: 'times',
+        fontSize: 12,
+        includePhoto: true,
+        colorScheme: 'elegant-gray',
+      } as ExportSettings;
+      setSelectedFormat('docx');
+      setExportSettings(settings);
+      await onExport('docx', settings);
+    }
+  };
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -345,6 +386,43 @@ export const ExportSystem: React.FC<ExportSystemProps> = ({
               />
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* One‑click Presets */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Zap className="w-5 h-5" />
+            One‑click Presets
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <Button
+            size="lg"
+            className="justify-start h-auto p-4"
+            onClick={() => applyPreset('ats-pdf')}
+            disabled={isExporting}
+            aria-label="Export ATS-optimized PDF"
+          >
+            <div className="text-left">
+              <div className="font-medium">ATS‑Optimized PDF</div>
+              <div className="text-sm text-muted-foreground">Inter • 11pt • Normal margins • No photo</div>
+            </div>
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="justify-start h-auto p-4"
+            onClick={() => applyPreset('editable-docx')}
+            disabled={isExporting}
+            aria-label="Export editable DOCX"
+          >
+            <div className="text-left">
+              <div className="font-medium">Editable DOCX</div>
+              <div className="text-sm text-muted-foreground">Times • 12pt • Normal margins • With photo</div>
+            </div>
+          </Button>
         </CardContent>
       </Card>
 
