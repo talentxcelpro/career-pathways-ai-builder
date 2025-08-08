@@ -197,9 +197,62 @@ serve(async (req) => {
       }
     }
 
-    console.log('✅ CV parsed successfully:', parsedCV.personal_info?.full_name || extractNameFromFileName(fileName) || 'Unknown');
-    console.log('🔍 Extracted email from parsing:', parsedCV.personal_info?.email);
-    console.log('🔍 Raw text preview:', extractedText?.substring(0, 500));
+// Clean and normalize candidate name and derive headline for profile
+function cleanExtractedName(raw: string, fullText: string): string {
+  if (!raw) return '';
+  let name = raw.trim();
+  // Remove anything after common separators
+  name = name.replace(/\s*\|\s*.*$/, '');
+  // Stop at contact keywords that sometimes get appended
+  name = name.replace(/\b(email|e-mail|phone|contact|linkedin|github|portfolio|location)[:\s].*$/i, '').trim();
+  // Also handle cases like "Amit Gupta Email"
+  name = name.replace(/\b(email|e-mail)\b.*$/i, '').trim();
+  // Collapse extra spaces
+  name = name.replace(/\s{2,}/g, ' ').trim();
+  // If too many words, keep the first few that are likely the name
+  const words = name.split(' ').filter(Boolean);
+  if (words.length > 4) name = words.slice(0, 3).join(' ');
+  // Fallback: try to infer from first line of the text
+  if (name.length < 3 && fullText) {
+    const m = fullText.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/m);
+    if (m?.[1]) name = m[1].trim();
+  }
+  return name;
+}
+
+function getHeadlineFromParsed(data: any): string | null {
+  try {
+    if (data?.work_experience?.length) {
+      const first = data.work_experience[0];
+      if (first?.position) {
+        return first.company ? `${first.position} at ${first.company}` : first.position;
+      }
+    }
+    if (typeof data?.professional_summary === 'string' && data.professional_summary.length > 0) {
+      const firstLine = data.professional_summary.split(/\n|\. /)[0];
+      return firstLine.length > 120 ? firstLine.slice(0, 117) + '...' : firstLine;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+const nameCandidates = [parsedCV.personal_info?.full_name, contactFromText.name, nameFromFile].filter(Boolean) as string[];
+let normalizedName = '';
+for (const candidate of nameCandidates) {
+  normalizedName = cleanExtractedName(candidate, extractedText || '');
+  if (normalizedName) break;
+}
+if (!normalizedName) normalizedName = extractNameFromFileName(fileName) || 'Candidate';
+parsedCV.personal_info = parsedCV.personal_info || {};
+parsedCV.personal_info.full_name = normalizedName;
+
+const derivedHeadline = getHeadlineFromParsed(parsedCV);
+
+console.log('✅ CV parsed successfully:', normalizedName);
+console.log('🔍 Extracted email from parsing:', parsedCV.personal_info?.email);
+console.log('🔍 Raw text preview:', extractedText?.substring(0, 500));
 
     // Create or find user profile (only create with real email addresses)
     let userId;
@@ -267,13 +320,48 @@ serve(async (req) => {
     // Check if user already exists
     const { data: existingProfile } = await supabase
       .from('profiles')
-      .select('id')
+      .select('id, full_name, email, phone, location, about, headline, linkedin_url, github_url, portfolio_url')
       .eq('email', emailToUse)
-      .single();
+      .maybeSingle();
 
     if (existingProfile) {
       userId = existingProfile.id;
       console.log('📝 Found existing profile for:', emailToUse);
+      // Merge parsed data into existing profile without overwriting non-empty fields
+      const proposed = {
+        full_name: safeName,
+        phone: parsedCV.personal_info?.phone || null,
+        location: parsedCV.personal_info?.location || null,
+        about: parsedCV.professional_summary || null,
+        headline: derivedHeadline,
+        linkedin_url: parsedCV.personal_info?.linkedin_url || null,
+        github_url: parsedCV.personal_info?.github_url || null,
+        portfolio_url: parsedCV.personal_info?.portfolio_url || null,
+        updated_at: new Date().toISOString(),
+      } as Record<string, any>;
+
+      const updatePayload: Record<string, any> = {};
+      for (const [key, value] of Object.entries(proposed)) {
+        const current = (existingProfile as any)[key];
+        const isNameFixNeeded = key === 'full_name' && current && /email/i.test(String(current));
+        if (value && (isNameFixNeeded || !current || String(current).trim() === '')) {
+          updatePayload[key] = value;
+        }
+      }
+
+      if (Object.keys(updatePayload).length > 0) {
+        const { error: updateErr } = await supabase
+          .from('profiles')
+          .update(updatePayload)
+          .eq('id', userId);
+        if (updateErr) {
+          console.warn('Profile update warning:', updateErr);
+        } else {
+          console.log('🔄 Profile updated with fields:', Object.keys(updatePayload));
+        }
+      } else {
+        console.log('ℹ️ Existing profile already populated; no updates applied.');
+      }
     } else {
       const newUserId = crypto.randomUUID();
       console.log('👤 Creating new profile for:', emailToUse, 'ID:', newUserId);
@@ -288,6 +376,7 @@ serve(async (req) => {
             phone: parsedCV.personal_info?.phone,
             location: parsedCV.personal_info?.location,
             about: parsedCV.professional_summary,
+            headline: derivedHeadline,
             linkedin_url: parsedCV.personal_info?.linkedin_url,
             github_url: parsedCV.personal_info?.github_url,
             portfolio_url: parsedCV.personal_info?.portfolio_url,
