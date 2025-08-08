@@ -20,6 +20,23 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Health check and usage help
+  if (req.method === 'GET') {
+    return new Response(
+      JSON.stringify({
+        status: 'ok',
+        message: 'cv-parser is running',
+        expectedPayload: {
+          fileUrl: 'https://<project>.supabase.co/storage/v1/object/public/documents/cv-uploads/<batchId>/<file>.pdf',
+          fileName: 'John_Doe_Resume.pdf',
+          fileType: 'application/pdf',
+          batchId: 'uuid from uploadBatch response'
+        }
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   let batchId: string | undefined; // Declare outside try block for error handling
 
   try {
