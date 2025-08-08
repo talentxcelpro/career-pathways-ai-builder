@@ -6,7 +6,7 @@ import { CheckCircle, Download, Edit, Share2, BarChart3, Sparkles, Save, Wand2, 
 import { ResumePreview } from "../ResumePreview";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-
+import { normalizeResumeATS } from "@/utils/atsNormalizer";
 
 interface SuccessStepProps {
   onComplete: () => void;
@@ -19,7 +19,7 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
   const [isDownloading, setIsDownloading] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
   
-
+  const atsJson = normalizeResumeATS(resumeData);
   const handleSaveResume = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -242,7 +242,7 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
         {showPreview && (
           <CardContent>
             <div className="max-h-96 overflow-y-auto border rounded-lg">
-              <ResumePreview data={resumeData} fullPage={true} />
+              <ResumePreview data={atsJson} fullPage={true} />
             </div>
           </CardContent>
         )}

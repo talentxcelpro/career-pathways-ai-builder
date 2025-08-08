@@ -16,7 +16,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, tem
     if (!input) return null;
 
     const mapExp = (e: any) => ({
-      title: e?.title || e?.position,
+      title: e?.title || e?.jobTitle || e?.position,
       company: e?.company,
       location: e?.location,
       startDate: e?.startDate || e?.start || e?.from,
@@ -24,11 +24,13 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, tem
       description: e?.description,
       achievements: Array.isArray(e?.achievements)
         ? e.achievements
+        : Array.isArray(e?.responsibilities)
+        ? e.responsibilities
         : Array.isArray(e?.bullets)
         ? e.bullets
         : typeof e?.details === 'string'
         ? e.details
-            .split(/\n|•/)
+            .split(/\n|•|-/)
             .map((s: string) => s.trim())
             .filter(Boolean)
         : []
