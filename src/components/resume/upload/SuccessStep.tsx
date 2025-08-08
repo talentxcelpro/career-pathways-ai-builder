@@ -20,6 +20,8 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
   const [isEnhancing, setIsEnhancing] = useState(false);
   
   const atsJson = normalizeResumeATS(resumeData);
+  console.log('SuccessStep - Original resumeData:', resumeData);
+  console.log('SuccessStep - Normalized atsJson:', atsJson);
   const handleSaveResume = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {

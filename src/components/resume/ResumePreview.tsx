@@ -115,6 +115,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, tem
   
   console.log('ResumePreview - raw data:', resumeData);
   const displayData = normalizeToPreview(resumeData);
+  console.log('ResumePreview - displayData after normalize:', displayData);
   
   if (!displayData) {
     return (
