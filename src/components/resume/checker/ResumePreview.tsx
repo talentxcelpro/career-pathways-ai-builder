@@ -65,13 +65,13 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
           <div className="text-center space-y-4">
             <div className="w-12 h-12 bg-gray-200 rounded-full mx-auto flex items-center justify-center">
               <span className="text-lg font-bold text-gray-600">
-                {data?.name?.charAt(0) || 'U'}
+                {(data?.profile?.fullName || data?.name)?.charAt(0) || 'U'}
               </span>
             </div>
             <div>
-              <h3 className="font-bold text-lg">{data?.name || 'Your Name'}</h3>
-              <p className="text-gray-600">{data?.email || 'email@example.com'}</p>
-              <p className="text-gray-600">{data?.phone || 'Phone Number'}</p>
+              <h3 className="font-bold text-lg">{data?.profile?.fullName || data?.name || 'Your Name'}</h3>
+              <p className="text-gray-600">{data?.profile?.email || data?.email || 'email@example.com'}</p>
+              <p className="text-gray-600">{data?.profile?.phone || data?.phone || 'Phone Number'}</p>
             </div>
             
             {data?.experience && data.experience.length > 0 && (
