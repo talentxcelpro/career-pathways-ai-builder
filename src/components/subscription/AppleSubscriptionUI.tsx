@@ -61,11 +61,17 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         .order('price');
 
       if (tiersData) {
+        // Map DB tiers and override pricing with confirmed INR values
+        const PRICE_INR: Record<string, number> = {
+          'Pro Starter': 399,
+          'Pro Business': 499,
+          'Pro Elite': 599,
+        };
         const formattedTiers = tiersData.map(tier => ({
           id: tier.id,
           name: tier.name,
-          price_monthly: tier.price,
-          features: Array.isArray(tier.features) ? tier.features.map(f => String(f)) : [],
+          price_monthly: PRICE_INR[tier.name] ?? tier.price, // override if provided
+          features: Array.isArray(tier.features) ? tier.features.map((f: any) => String(f)) : [],
           max_services: 100,
           has_crm: tier.name !== 'Basic',
           has_analytics: tier.name !== 'Basic',
