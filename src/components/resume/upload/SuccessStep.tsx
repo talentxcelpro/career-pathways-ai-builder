@@ -204,7 +204,7 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
             <div className="text-2xl font-bold text-gray-900">
-              {resumeData?.experience?.length || 0}
+              {Array.isArray(resumeData?.experience) ? resumeData.experience.length : 0}
             </div>
             <div className="text-sm text-gray-600">Work Experiences</div>
           </CardContent>
@@ -216,7 +216,7 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
               <Sparkles className="h-6 w-6 text-purple-600" />
             </div>
             <div className="text-2xl font-bold text-gray-900">
-              {resumeData?.skills?.length || 0}
+              {Array.isArray(resumeData?.skills) ? resumeData.skills.length : 0}
             </div>
             <div className="text-sm text-gray-600">Skills Identified</div>
           </CardContent>

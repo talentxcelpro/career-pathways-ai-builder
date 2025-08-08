@@ -10,12 +10,45 @@ interface ResumePreviewProps {
 export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, template, fullPage }) => {
   // Use content if provided, otherwise use data
   const resumeData = content || data;
+  
+  console.log('ResumePreview - resumeData:', resumeData);
+  console.log('ResumePreview - data structure:', {
+    hasPersonalInfo: !!resumeData?.personalInfo,
+    hasExperience: !!resumeData?.experience,
+    experienceLength: resumeData?.experience?.length || 0,
+    hasSkills: !!resumeData?.skills,
+    skillsLength: resumeData?.skills?.length || 0,
+  });
+  
   if (!resumeData) {
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardContent className="p-8">
           <div className="text-center text-muted-foreground">
             No resume data available
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Show message if data is empty/invalid
+  const hasContent = resumeData?.personalInfo?.fullName || 
+                    resumeData?.experience?.length > 0 || 
+                    resumeData?.skills?.length > 0 ||
+                    resumeData?.personalInfo?.summary;
+
+  if (!hasContent) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardContent className="p-8">
+          <div className="text-center space-y-4">
+            <div className="text-muted-foreground">
+              Resume data appears to be empty or incomplete
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Try uploading your resume file again or manually enter your information
+            </div>
           </div>
         </CardContent>
       </Card>
