@@ -9,7 +9,7 @@ export const resumeRoutes = [
     title: "Resume Builder",
     to: "/resume/new",
     icon: <FileText className="h-4 w-4" />,
-    page: <SimpleResumeBuilder />,
+    page: <EnhancedResumeBuilder />,
     requiresAuth: true,
   },
   {
