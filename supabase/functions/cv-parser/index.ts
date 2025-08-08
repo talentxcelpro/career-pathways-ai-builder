@@ -59,13 +59,14 @@ serve(async (req) => {
     console.log('📨 Parsed request body:', requestBody);
     console.log('📨 Request body keys:', Object.keys(requestBody || {}));
     
-    const { fileUrl, fileName, fileType } = requestBody || {};
+    const { fileUrl, fileName, fileType, extractedText: providedText } = requestBody || {};
     batchId = requestBody?.batchId; // Assign to outer scope variable
     
     console.log('📨 Extracted values:', {
       fileUrl: fileUrl || 'UNDEFINED',
       fileName: fileName || 'UNDEFINED', 
       fileType: fileType || 'UNDEFINED',
+      providedTextLength: providedText?.length || 0,
       batchId: batchId || 'UNDEFINED'
     });
     
@@ -110,34 +111,32 @@ serve(async (req) => {
     // Get OpenAI API key (optional for mock mode)
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY') || '';
 
-    // Download the file content
-    console.log('📥 Attempting to download file from:', fileUrl);
-    const fileResponse = await fetch(fileUrl);
-    console.log('📥 File download response status:', fileResponse.status);
-    if (!fileResponse.ok) {
-      throw new Error(`Failed to download file: ${fileResponse.status} ${fileResponse.statusText}`);
-    }
+    // Prefer client-provided extracted text if present to avoid heavy server parsing
+    let extractedText: string = providedText || '';
 
-    // For now, we'll use a simplified text extraction approach
-    // In production, you'd want to use libraries like pdf-parse or mammoth
-    let extractedText = '';
-    
-    if (fileType.includes('pdf')) {
-      // For PDF files, we'll extract text using a simplified approach
-      // In production, integrate with pdf-parse or similar library
-      extractedText = `PDF content from ${fileName} - This is a placeholder for actual PDF text extraction`;
-    } else if (fileType.includes('word') || fileType.includes('doc')) {
-      // For Word files, we'll extract text using mammoth or similar
-      extractedText = `Word document content from ${fileName} - This is a placeholder for actual Word text extraction`;
-    } else {
-      throw new Error('Unsupported file type');
+    if (!extractedText) {
+      // Fallback: attempt to download for basic placeholder extraction
+      console.log('📥 Attempting to download file from:', fileUrl);
+      const fileResponse = await fetch(fileUrl);
+      console.log('📥 File download response status:', fileResponse.status);
+      if (!fileResponse.ok) {
+        throw new Error(`Failed to download file: ${fileResponse.status} ${fileResponse.statusText}`);
+      }
+
+      if (fileType.includes('pdf')) {
+        extractedText = `PDF from ${fileName} (client did not provide text)`;
+      } else if (fileType.includes('word') || fileType.includes('doc')) {
+        extractedText = `DOC/DOCX from ${fileName} (client did not provide text)`;
+      } else {
+        throw new Error('Unsupported file type');
+      }
     }
 
     // Build initial parsed data using filename heuristics and basic regex (no mocks)
     const nameFromFile = extractNameFromFileName(fileName);
     const contactFromText = extractContactInfo(extractedText || '');
 
-    const parsedCV = {
+    let parsedCV: any = {
       personal_info: {
         full_name: contactFromText.name || nameFromFile || null,
         email: contactFromText.email || null,
@@ -156,73 +155,47 @@ serve(async (req) => {
       years_of_experience: null,
       preferred_job_titles: [],
       availability_status: null
-    } as any;
+    };
 
-    /* TEMPORARILY DISABLED - OpenAI parsing
-    // Use OpenAI to parse the CV content
-    const parseResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a professional CV parser. Extract structured data from the CV text and return it as JSON with the following schema:
-            {
-              "personal_info": {
-                "full_name": "string",
-                "email": "string",
-                "phone": "string",
-                "location": "string",
-                "linkedin_url": "string",
-                "github_url": "string",
-                "portfolio_url": "string"
-              },
-              "professional_summary": "string",
-              "skills": ["array of skills"],
-              "work_experience": [
-                {
-                  "company": "string",
-                  "position": "string",
-                  "start_date": "YYYY-MM",
-                  "end_date": "YYYY-MM or current",
-                  "location": "string",
-                  "responsibilities": ["array of responsibilities"],
-                  "key_achievements": ["array of achievements"]
-                }
-              ],
-              "education": [
-                {
-                  "institution": "string",
-                  "degree": "string",
-                  "graduation_date": "YYYY-MM-DD",
-                  "gpa_honors": "string",
-                  "relevant_coursework": ["array of courses"],
-                  "academic_projects": ["array of projects"]
-                }
-              ],
-              "certifications": ["array of certifications"],
-              "languages": ["array of languages"],
-              "years_of_experience": "number",
-              "preferred_job_titles": ["array of job titles"],
-              "availability_status": "open_to_opportunities"
-            }
-            
-            Extract as much relevant information as possible. If information is not available, use null or appropriate defaults.`
+    // Use OpenAI to enhance parsing when available
+    if (openaiApiKey && extractedText && extractedText.length > 50) {
+      try {
+        const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openaiApiKey}`,
+            'Content-Type': 'application/json',
           },
-          {
-            role: 'user',
-            content: `Please parse this CV content:\n\n${extractedText}`
-          }
-        ],
-        temperature: 0.3,
-        max_tokens: 2000
-      }),
-    */
+          body: JSON.stringify({
+            model: 'gpt-4.1-2025-04-14',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a professional CV parser. Return ONLY valid JSON matching the schema.'
+              },
+              {
+                role: 'user',
+                content: `Parse this resume text and return JSON with the exact schema keys below.\n\nSchema:\n{\n  "personal_info": {\n    "full_name": "string|null", "email": "string|null", "phone": "string|null", "location": "string|null", "linkedin_url": "string|null", "github_url": "string|null", "portfolio_url": "string|null"\n  },\n  "professional_summary": "string|null",\n  "skills": ["string"],\n  "work_experience": [{"company":"string","position":"string","start_date":"YYYY-MM|null","end_date":"YYYY-MM|current|null","location":"string|null","responsibilities":["string"],"key_achievements":["string"]}],\n  "education": [{"institution":"string","degree":"string","graduation_date":"YYYY-MM-DD|null","gpa_honors":"string|null","relevant_coursework":["string"],"academic_projects":["string"]}],\n  "certifications": ["string"],\n  "languages": ["string"],\n  "years_of_experience": "number|null",\n  "preferred_job_titles": ["string"],\n  "availability_status": "string|null"\n}\n\nResume:\n${extractedText}`
+              }
+            ],
+            temperature: 0.1,
+            max_tokens: 1800
+          }),
+        });
+        const ai = await resp.json();
+        const content = ai.choices?.[0]?.message?.content || '';
+        const cleaned = content.replace(/^```json\s*|\s*```$/g, '').trim();
+        const aiParsed = JSON.parse(cleaned);
+        parsedCV = {
+          ...parsedCV,
+          ...aiParsed,
+          personal_info: { ...(parsedCV.personal_info || {}), ...(aiParsed.personal_info || {}) }
+        };
+        console.log('🤖 OpenAI parsing applied');
+      } catch (e) {
+        console.warn('OpenAI parsing failed, using heuristics:', (e as any)?.message || e);
+      }
+    }
 
     console.log('✅ CV parsed successfully:', parsedCV.personal_info?.full_name || extractNameFromFileName(fileName) || 'Unknown');
 
