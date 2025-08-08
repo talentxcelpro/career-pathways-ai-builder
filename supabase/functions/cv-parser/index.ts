@@ -218,9 +218,9 @@ serve(async (req) => {
     if (!providedEmail || isFakeEmail) {
       console.log('⚠️ No valid email found in CV (found:', providedEmail, '), trying manual extraction from text');
       
-      // Try direct regex extraction from the raw text
+      // Try direct regex extraction from the raw text with more patterns
       const emailMatches = extractedText?.match(/[\w._%+-]+@[\w.-]+\.[A-Z]{2,}/gi) || [];
-      const realEmail = emailMatches.find(email => 
+      let realEmail = emailMatches.find(email => 
         !email.includes('@upload.local') && 
         !email.includes('@example.com') && 
         !email.includes('@test.com') &&
@@ -230,22 +230,35 @@ serve(async (req) => {
         email !== 'user@example.com'
       );
       
+      // Try looking for masked/redacted emails
+      if (!realEmail) {
+        const maskedEmailPatterns = [
+          /\[email[\s\w]*\]/gi,
+          /email\s*address/gi,
+          /contact\s*email/gi
+        ];
+        
+        for (const pattern of maskedEmailPatterns) {
+          if (pattern.test(extractedText || '')) {
+            console.log('⚠️ Found masked/redacted email pattern, processing anyway');
+            // Generate a temporary email for processing
+            realEmail = `${generateSlug(safeName)}.${Date.now()}@contact-extracted.temp`;
+            break;
+          }
+        }
+      }
+      
       if (realEmail) {
-        console.log('✅ Found real email in text:', realEmail);
+        console.log('✅ Found/generated email for processing:', realEmail);
         parsedCV.personal_info = parsedCV.personal_info || {};
         parsedCV.personal_info.email = realEmail;
       } else {
-        console.log('❌ No valid email found in CV text, skipping profile creation for:', safeName);
-        return new Response(JSON.stringify({
-          success: false,
-          error: 'No valid email address found in CV',
-          message: 'Please ensure the CV contains a valid email address',
-          extractedData: parsedCV,
-          emailsFound: emailMatches
-        }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+        console.log('⚠️ No email found, but processing CV anyway with contact info warning');
+        // Generate a temporary unique email to allow processing
+        const tempEmail = `${generateSlug(safeName)}.${Date.now()}@no-contact.temp`;
+        parsedCV.personal_info = parsedCV.personal_info || {};
+        parsedCV.personal_info.email = tempEmail;
+        console.log('✅ Generated temporary email for processing:', tempEmail);
       }
     }
     
@@ -465,15 +478,40 @@ function extractNameFromFileName(fileName: string): string | null {
 }
 
 function extractContactInfo(text: string): { email?: string; phone?: string; linkedin?: string; location?: string; name?: string; skills?: string[] } {
-  // Enhanced email extraction with multiple patterns
+  // Multiple email extraction patterns to handle various formats
+  let validEmail = null;
+  
+  // Pattern 1: Standard email format
   const emailMatches = text.match(/[\w._%+-]+@[\w.-]+\.[A-Z]{2,}/gi) || [];
-  const validEmail = emailMatches.find(email => 
+  validEmail = emailMatches.find(email => 
     !email.includes('@upload.local') && 
     !email.includes('@example.com') && 
     !email.includes('@test.com') &&
     email.includes('.') &&
     email.length > 5
   );
+  
+  // Pattern 2: Email with labels (Email:, E-mail:, etc.)
+  if (!validEmail) {
+    const labeledEmailMatch = text.match(/(?:email|e-mail|mail)\s*[:|-]\s*([\w._%+-]+@[\w.-]+\.[A-Z]{2,})/gi);
+    if (labeledEmailMatch && labeledEmailMatch[0]) {
+      const extracted = labeledEmailMatch[0].replace(/^.*[:|-]\s*/, '');
+      if (extracted && !extracted.includes('@upload.local') && !extracted.includes('@example.com')) {
+        validEmail = extracted;
+      }
+    }
+  }
+  
+  // Pattern 3: Look for email addresses after contact info keywords
+  if (!validEmail) {
+    const contactSectionMatch = text.match(/(?:contact|reach|email)[\s\S]{0,200}?([\w._%+-]+@[\w.-]+\.[A-Z]{2,})/gi);
+    if (contactSectionMatch) {
+      const extracted = contactSectionMatch[0].match(/([\w._%+-]+@[\w.-]+\.[A-Z]{2,})/i);
+      if (extracted && extracted[1] && !extracted[1].includes('@upload.local')) {
+        validEmail = extracted[1];
+      }
+    }
+  }
   
   const phoneMatch = text.match(/(\+\d{1,3}[-.\s]?)?\(?[0-9]{1,4}\)?[-.\s]?[0-9]{1,4}[-.\s]?[0-9]{1,9}/);
   const linkedinMatch = text.match(/https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-_/]+/i);
