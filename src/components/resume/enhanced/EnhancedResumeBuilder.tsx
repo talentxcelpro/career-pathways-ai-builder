@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { UnifiedResumeInterface } from './UnifiedResumeInterface';
 import { useResumeData } from '@/hooks/useResumeData';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, RefreshCw } from 'lucide-react';
+import { JobTargetingPanel } from './JobTargetingPanel';
 
 interface EnhancedResumeBuilderProps {
   mode?: 'edit' | 'create';
@@ -97,13 +98,27 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   }
 
   const effectiveMode = isNewResume ? 'create' : mode;
-
+  const [isTargetingOpen, setTargetingOpen] = useState(false);
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
       <UnifiedResumeInterface 
         mode={effectiveMode}
         initialData={resumeData}
         onDataChange={setResumeData}
+      />
+
+      <Button 
+        onClick={() => setTargetingOpen(true)} 
+        className="fixed bottom-6 right-6 z-50"
+        aria-label="Open job targeting"
+      >
+        Target a Job
+      </Button>
+
+      <JobTargetingPanel 
+        isOpen={isTargetingOpen}
+        onClose={() => setTargetingOpen(false)}
+        resumeData={resumeData}
       />
     </div>
   );

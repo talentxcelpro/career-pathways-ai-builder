@@ -16,7 +16,7 @@ serve(async (req) => {
   }
 
   try {
-    const { sectionType, content, personalInfo, action, resumeData } = await req.json();
+    const { sectionType, content, personalInfo, action, resumeData, jobDescription } = await req.json();
 
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
@@ -26,6 +26,10 @@ serve(async (req) => {
 
     if (action === 'calculate_ats_score') {
       return await calculateATSScore(resumeData);
+    }
+
+    if (action === 'keyword_match') {
+      return await analyzeKeywordMatch(resumeData, jobDescription);
     }
 
     // Enhance resume section with AI
@@ -107,6 +111,63 @@ async function enhanceResumeSection(sectionType: string, content: any, personalI
       return { ...content, enhanced: enhancedText };
     }
   }
+}
+
+async function analyzeKeywordMatch(resumeData: any, jobDescription: string) {
+  if (!jobDescription || !resumeData) {
+    throw new Error('Missing jobDescription or resumeData');
+  }
+
+  const prompt = `You are an expert ATS optimizer. Extract the most important keywords and concepts from the given job description, then compare them against the provided resume data. Focus on hard skills, tools, certifications, soft skills, seniority, and domain knowledge.
+
+Return ONLY a compact JSON with exactly this structure:
+{
+  "matchScore": 0-100,
+  "jdKeywords": string[],
+  "resumeKeywords": string[],
+  "matched": string[],
+  "missing": string[],
+  "recommendations": string[],
+  "sectionsToUpdate": [
+    { "section": "summary" | "experience" | "skills" | "projects" | "education", "suggestions": string[] }
+  ]
+}
+
+JOB_DESCRIPTION:\n${jobDescription}\n\nRESUME_DATA:\n${JSON.stringify(resumeData, null, 2)}\n`;
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${openAIApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an ATS optimization assistant. Always return strict JSON matching the requested schema.'
+        },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.2,
+      max_tokens: 800,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`OpenAI API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const result = JSON.parse(data.choices[0].message.content);
+
+  return new Response(JSON.stringify({
+    success: true,
+    analysis: result
+  }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
 }
 
 async function calculateATSScore(resumeData: any) {
