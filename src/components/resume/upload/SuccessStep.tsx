@@ -7,6 +7,7 @@ import { ResumePreview } from "../ResumePreview";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeResumeATS } from "@/utils/atsNormalizer";
+import { toATSJson } from "@/utils/atsSchemaFormatter";
 
 interface SuccessStepProps {
   onComplete: () => void;
@@ -24,6 +25,8 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
   console.log('SuccessStep - Normalized atsJson:', atsJson);
   console.log('SuccessStep - atsJson.profile:', atsJson.profile);
   console.log('SuccessStep - atsJson.profile.fullName:', atsJson.profile.fullName);
+  const atsStrict = toATSJson(resumeData);
+  console.log('SuccessStep - ATS strict schema:', atsStrict);
   const handleSaveResume = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -246,7 +249,7 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
         {showPreview && (
           <CardContent>
             <div className="max-h-96 overflow-y-auto border rounded-lg">
-              <ResumePreview data={resumeData} fullPage={true} />
+              <ResumePreview data={resumeData} content={atsStrict} fullPage={true} />
             </div>
           </CardContent>
         )}
