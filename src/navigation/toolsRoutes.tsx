@@ -38,6 +38,7 @@ import MentorConnectTool from "../pages/tools/MentorConnectTool";
 import ResumeGapAnalyzer from "../pages/tools/ResumeGapAnalyzer";
 import AIResumeBuilder from "../pages/tools/AIResumeBuilder";
 import ResumeAnalysis from "../pages/tools/ResumeAnalysis";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const toolsRoutes = [
   {
@@ -251,7 +252,7 @@ export const toolsRoutes = [
     title: "Skill Gap Analyzer",
     to: "/tools/skill-gap-analyzer",
     icon: <Target className="h-4 w-4" />,
-    page: <SkillGapAnalyzer />,
+    page: <ErrorBoundary><SkillGapAnalyzer /></ErrorBoundary>,
   },
   {
     title: "Network Growth Tracker",
