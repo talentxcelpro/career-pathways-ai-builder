@@ -7,21 +7,19 @@ export const ContentSecurityPolicy = () => {
     meta.httpEquiv = 'Content-Security-Policy';
     meta.content = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://js.stripe.com https://checkout.razorpay.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com data:",
-      "img-src 'self' data: blob: https:",
-      "connect-src 'self' https://api.openai.com https://api.razorpay.com https://*.supabase.co wss://*.supabase.co https://accounts.google.com https://www.google-analytics.com",
-      "frame-src 'self' https://js.stripe.com https://checkout.razorpay.com https://accounts.google.com https://www.google.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http: data:",
+      "style-src 'self' 'unsafe-inline' https: http:",
+      "font-src 'self' https: http: data:",
+      "img-src 'self' data: blob: https: http:",
+      "connect-src 'self' https: http: wss: ws:",
+      "frame-src 'self' https: http:",
       "object-src 'none'",
       "base-uri 'self'",
-      "form-action 'self'",
-      "frame-ancestors 'none'",
-      "worker-src 'self' blob:",
-      "media-src 'self' data: blob:",
-      "manifest-src 'self'",
-      "upgrade-insecure-requests",
-      "block-all-mixed-content"
+      "form-action 'self' https: http:",
+      "frame-ancestors 'self'",
+      "worker-src 'self' blob: https: http:",
+      "media-src 'self' data: blob: https: http:",
+      "manifest-src 'self'"
     ].join('; ');
     
     document.head.appendChild(meta);
