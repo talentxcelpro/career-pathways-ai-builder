@@ -56,7 +56,20 @@ serve(async (req) => {
     if (!fileUrl || !fileName || !fileType || !batchId) {
       const errorMsg = `Missing required fields: fileUrl=${!!fileUrl}, fileName=${!!fileName}, fileType=${!!fileType}, batchId=${!!batchId}`;
       console.error('❌ Validation failed:', errorMsg);
-      throw new Error(errorMsg);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Invalid request body',
+          details: errorMsg,
+          expected: {
+            fileUrl: 'https://<project>.supabase.co/storage/v1/object/public/documents/cv-uploads/<batchId>/<file>.pdf',
+            fileName: 'John_Doe_Resume.pdf',
+            fileType: 'application/pdf',
+            batchId: 'uuid from uploadBatch response'
+          }
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
     
     console.log('🔄 Processing CV:', fileName);
