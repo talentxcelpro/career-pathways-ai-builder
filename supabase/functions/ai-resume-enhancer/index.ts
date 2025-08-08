@@ -16,7 +16,7 @@ serve(async (req) => {
   }
 
   try {
-    const { sectionType, content, personalInfo, action, resumeData, jobDescription } = await req.json();
+    const { sectionType, content, personalInfo, action, resumeData, jobDescription, tone } = await req.json();
 
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
@@ -30,6 +30,10 @@ serve(async (req) => {
 
     if (action === 'keyword_match') {
       return await analyzeKeywordMatch(resumeData, jobDescription);
+    }
+
+    if (action === 'cover_letter') {
+      return await generateCoverLetter(resumeData, jobDescription, tone || 'professional');
     }
 
     // Enhance resume section with AI
@@ -56,7 +60,7 @@ serve(async (req) => {
 
 async function enhanceResumeSection(sectionType: string, content: any, personalInfo: any) {
   const prompts = {
-    summary: `Enhance this professional summary to be more compelling and ATS-friendly. Make it concise, keyword-rich, and tailored for ${personalInfo.fullName}'s profile. Current summary: ${JSON.stringify(content)}`,
+    summary: `Enhance this professional summary to be more compelling and ATS-friendly. Make it concise, keyword-rich, and tailored for ${(personalInfo?.fullName || 'the candidate')}'s profile. Current summary: ${JSON.stringify(content)}`,
     
     experience: `Enhance this work experience entry with strong action verbs, quantified achievements, and relevant keywords. Structure: ${JSON.stringify(content)}`,
     
@@ -220,6 +224,53 @@ Return ONLY a JSON object with this structure:
     atsScore: result.atsScore,
     analysis: result
   }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
+async function generateCoverLetter(resumeData: any, jobDescription: string, tone: string) {
+  if (!resumeData || !jobDescription) {
+    throw new Error('Missing resumeData or jobDescription');
+  }
+
+  const role = jobDescription.slice(0, 100).replace(/\n/g, ' ');
+
+  const prompt = `Write a concise, professional cover letter (${tone} tone).
+Use the RESUME (JSON) and JOB DESCRIPTION below.
+- 3–5 short paragraphs max
+- Quantify impact where possible
+- Mirror key JD keywords naturally
+- End with a proactive closing
+
+Return ONLY the letter text, no markdown.
+
+RESUME:\n${JSON.stringify(resumeData, null, 2)}\n\nJOB DESCRIPTION:\n${jobDescription}\n`;
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${openAIApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: 'You are a senior career coach who writes crisp, high-conversion cover letters.' },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.6,
+      max_tokens: 900,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`OpenAI API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const letter = data.choices?.[0]?.message?.content || '';
+
+  return new Response(JSON.stringify({ success: true, coverLetter: letter }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
 }

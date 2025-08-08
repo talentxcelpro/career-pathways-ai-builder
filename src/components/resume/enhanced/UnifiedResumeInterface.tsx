@@ -27,9 +27,11 @@ import { useSmartSuggestions } from '@/hooks/useSmartSuggestions';
 import { toast } from 'sonner';
 import { ResumeEditor } from './ResumeEditor';
 import { AIInsightsPanel } from './AIInsightsPanel';
-import { ATSScoreCard } from './ATSScoreCard';
 import { RealTimeATSScore } from './RealTimeATSScore';
 import { SmartSuggestionsPanel } from './SmartSuggestionsPanel';
+import { supabase } from '@/integrations/supabase/client';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 interface UnifiedResumeInterfaceProps {
   mode: 'edit' | 'create';
@@ -180,6 +182,77 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
     return 'text-red-600';
   };
 
+  // AI credits gating
+  const [aiCreditsUsed, setAiCreditsUsed] = useState(0);
+  const freeAICalls = 3;
+  const ensureCredits = () => {
+    if (aiCreditsUsed >= freeAICalls) {
+      toast.error('Free AI limit reached. Upgrade to Pro to continue.');
+      return false;
+    }
+    return true;
+  };
+
+  // Bullet rewriter state
+  const [bulletOriginal, setBulletOriginal] = useState('');
+  const [bulletTone, setBulletTone] = useState<'conservative' | 'bold'>('conservative');
+  const [bulletImproved, setBulletImproved] = useState('');
+  const [isRewritingBullet, setIsRewritingBullet] = useState(false);
+
+  const rewriteBullet = async () => {
+    if (!ensureCredits() || !bulletOriginal.trim()) return;
+    setIsRewritingBullet(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-resume-enhancer', {
+        body: {
+          sectionType: 'experience',
+          content: { description: bulletOriginal },
+          personalInfo: resumeData.personalInfo,
+        }
+      });
+      if (error || !data?.success) throw new Error(data?.error || 'Rewrite failed');
+      const improved = data.enhancedContent?.description || data.enhancedContent?.enhanced || data.enhancedContent || '';
+      setBulletImproved(improved);
+      setAiCreditsUsed((c) => c + 1);
+      toast.success('Bullet rewritten');
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to rewrite bullet');
+    } finally {
+      setIsRewritingBullet(false);
+    }
+  };
+
+  // Cover letter state
+  const [isCoverOpen, setCoverOpen] = useState(false);
+  const [coverJD, setCoverJD] = useState('');
+  const [coverTone, setCoverTone] = useState<'professional' | 'bold' | 'conservative'>('professional');
+  const [coverLetter, setCoverLetter] = useState('');
+  const [isGeneratingCover, setIsGeneratingCover] = useState(false);
+
+  const generateCover = async () => {
+    if (!ensureCredits() || !coverJD.trim()) return;
+    setIsGeneratingCover(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-resume-enhancer', {
+        body: {
+          action: 'cover_letter',
+          resumeData,
+          jobDescription: coverJD,
+          tone: coverTone,
+        }
+      });
+      if (error || !data?.success) throw new Error(data?.error || 'Generation failed');
+      setCoverLetter(data.coverLetter || '');
+      setAiCreditsUsed((c) => c + 1);
+      toast.success('Cover letter generated');
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to generate cover letter');
+    } finally {
+      setIsGeneratingCover(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
