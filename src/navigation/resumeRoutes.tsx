@@ -1,6 +1,6 @@
 
 import { FileText, Sparkles } from "lucide-react";
-import SimpleResumeBuilder from "@/pages/resume/SimpleResumeBuilder";
+import { EnhancedResumeBuilder } from "@/components/resume/enhanced/EnhancedResumeBuilder";
 import EditResume from "@/pages/resume/EditResume";
 import TalentXcelResumeBuilder from "@/pages/resume/TalentXcelResumeBuilder";
 
