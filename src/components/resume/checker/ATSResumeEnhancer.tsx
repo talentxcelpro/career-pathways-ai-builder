@@ -1,42 +1,54 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wand2 } from 'lucide-react';
+import { Wand2, Save } from 'lucide-react';
 import { toast } from 'sonner';
-import { useAIService } from '@/hooks/useAIService';
+import { useSectionEnhancer } from '@/hooks/useSectionEnhancer';
 
 interface ATSResumeEnhancerProps {
   initialData: any;
   onChange?: (data: any) => void;
+  resumeId?: string; // Needed to save versions & logs
 }
 
-export const ATSResumeEnhancer: React.FC<ATSResumeEnhancerProps> = ({ initialData, onChange }) => {
+export const ATSResumeEnhancer: React.FC<ATSResumeEnhancerProps> = ({ initialData, onChange, resumeId }) => {
   const [resumeData, setResumeData] = useState<any>(initialData);
-  const { enhanceResume, isProcessing } = useAIService();
+  const [prevSummary, setPrevSummary] = useState<string | null>(null);
+  const { enhanceSection, commitEnhancement, isLoading } = useSectionEnhancer();
 
   const handleEnhance = async () => {
-    const current = resumeData;
-    const resp = await enhanceResume(current, { sectionType: 'summary', enhancementType: 'ats' });
-    if (!resp.success) {
-      toast.error(resp.error || 'Enhancement failed');
+    const current = resumeData?.ats?.summary || '';
+    setPrevSummary(current);
+
+    const enhanced = await enhanceSection({
+      resumeId,
+      section: 'summary',
+      text: current,
+      atsJson: resumeData,
+    });
+
+    const next = { ...resumeData, ats: { ...resumeData.ats, summary: enhanced } };
+    setResumeData(next);
+    onChange?.(next);
+    toast.success('Enhanced summary (not yet saved)');
+  };
+
+  const handleApplyAndSave = async () => {
+    if (!resumeId) {
+      toast.error('Missing resumeId to save version');
       return;
     }
-
-    let updated = resp.data as any;
-    try {
-      if (typeof updated === 'string') {
-        // If the AI returned plain text, treat it as enhanced summary only
-        updated = { ...current, ats: { ...current.ats, summary: updated } };
-      }
-      // If JSON, keep structure
-      if (typeof updated === 'object' && updated) {
-        setResumeData(updated);
-        onChange?.(updated);
-        toast.success('Summary enhanced for ATS');
-      }
-    } catch (e) {
-      console.error('Parsing enhanced data failed:', e);
-      toast.error('Could not apply AI changes');
+    const beforeText = prevSummary ?? '';
+    const afterText = resumeData?.ats?.summary || '';
+    const version = await commitEnhancement({
+      resumeId,
+      section: 'summary',
+      beforeText,
+      afterText,
+      content: resumeData,
+    });
+    if (version) {
+      setPrevSummary(null);
     }
   };
 
@@ -67,9 +79,12 @@ export const ATSResumeEnhancer: React.FC<ATSResumeEnhancerProps> = ({ initialDat
           />
         </div>
 
-        <div className="flex justify-end">
-          <Button onClick={handleEnhance} disabled={isProcessing} size="sm">
-            {isProcessing ? 'Enhancing…' : 'Enhance with AI'}
+        <div className="flex justify-end gap-2">
+          <Button onClick={handleEnhance} disabled={isLoading} size="sm">
+            {isLoading ? 'Enhancing…' : 'Enhance with AI'}
+          </Button>
+          <Button onClick={handleApplyAndSave} disabled={isLoading || !resumeId} size="sm" variant="secondary">
+            <Save className="mr-2 h-4 w-4" /> Apply & Save Version
           </Button>
         </div>
       </CardContent>
