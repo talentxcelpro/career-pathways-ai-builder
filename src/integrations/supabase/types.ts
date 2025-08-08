@@ -20605,6 +20605,15 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      clean_test_users_and_duplicates: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          deleted_profiles: number
+          deleted_cv_files: number
+          deleted_bulk_batches: number
+          cleanup_summary: string
+        }[]
+      }
       cleanup_expired_jobs: {
         Args: Record<PropertyKey, never>
         Returns: undefined
