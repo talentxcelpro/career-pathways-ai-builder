@@ -11,42 +11,80 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, tem
   // Use content if provided, otherwise use data
   const resumeData = content || data;
   
-  // Create mock data if none provided (temporary fix)
-  const mockResumeData = {
-    personalInfo: {
-      fullName: "Sample User",
-      email: "sample@example.com",
-      phone: "+1 (555) 123-4567",
-      location: "New York, NY",
-      summary: "Experienced professional with 5+ years in technology and leadership roles."
-    },
-    experience: [
-      {
-        title: "Software Engineer",
-        company: "Tech Corp",
-        startDate: "2022",
-        endDate: "Present",
-        achievements: ["Led development team", "Improved system performance by 30%"]
-      }
-    ],
-    skills: ["JavaScript", "React", "Node.js", "Python", "Project Management"],
-    education: [
-      {
-        institution: "University of Technology",
-        degree: "Bachelor of Computer Science",
-        year: "2021"
-      }
-    ]
+  // Normalize incoming data (supports multiple shapes)
+  const normalizeToPreview = (input: any) => {
+    if (!input) return null;
+
+    const mapExp = (e: any) => ({
+      title: e?.title || e?.position,
+      company: e?.company,
+      location: e?.location,
+      startDate: e?.startDate || e?.start || e?.from,
+      endDate: e?.endDate || e?.end || e?.to,
+      description: e?.description,
+      achievements: Array.isArray(e?.achievements)
+        ? e.achievements
+        : Array.isArray(e?.bullets)
+        ? e.bullets
+        : typeof e?.details === 'string'
+        ? e.details
+            .split(/\n|•/)
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+        : []
+    });
+
+    const mapEdu = (ed: any) => ({
+      degree: ed?.degree,
+      school: ed?.school || ed?.institution,
+      location: ed?.location,
+      startDate: ed?.startDate || ed?.start || ed?.from,
+      endDate: ed?.endDate || ed?.year || ed?.graduationDate || ed?.end || ed?.to,
+      gpa: ed?.gpa,
+      honors: ed?.honors
+    });
+
+    // Already looks like preview/enhanced structure
+    if (input.personalInfo || input.experience || input.education || input.skills) {
+      return {
+        ...input,
+        personalInfo: {
+          ...(input.personalInfo || {}),
+          fullName:
+            input.personalInfo?.fullName || input.profile?.name || input.profile?.fullName || input.name,
+          email: input.personalInfo?.email || input.profile?.email,
+          phone: input.personalInfo?.phone || input.profile?.phone,
+          location: input.personalInfo?.location || input.profile?.location,
+          summary: input.personalInfo?.summary || input.summary
+        },
+        experience: Array.isArray(input.experience) ? input.experience.map(mapExp) : [],
+        education: Array.isArray(input.education) ? input.education.map(mapEdu) : [],
+        skills: input.skills ?? []
+      };
+    }
+
+    // ResumeJSON shape (profile/summary/experience/education/skills)
+    if (input.profile || input.summary || input.experience || input.education || input.skills) {
+      const profile = input.profile || {};
+      return {
+        personalInfo: {
+          fullName: profile.name || profile.fullName || input.name,
+          email: profile.email,
+          phone: profile.phone,
+          location: profile.location,
+          summary: input.summary
+        },
+        experience: Array.isArray(input.experience) ? input.experience.map(mapExp) : [],
+        education: Array.isArray(input.education) ? input.education.map(mapEdu) : [],
+        skills: input.skills || []
+      };
+    }
+
+    return input; // fallback passthrough
   };
   
-  console.log('ResumePreview - resumeData:', resumeData);
-  
-  // Use mock data if no real data provided (fallback)
-  const displayData = resumeData && (
-    resumeData?.personalInfo?.fullName || 
-    resumeData?.experience?.length > 0 || 
-    resumeData?.skills?.length > 0
-  ) ? resumeData : mockResumeData;
+  console.log('ResumePreview - raw data:', resumeData);
+  const displayData = normalizeToPreview(resumeData);
   
   if (!displayData) {
     return (
@@ -156,7 +194,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, tem
   };
 
   const renderProjects = () => {
-    const { projects } = resumeData;
+    const { projects } = displayData;
     if (!projects || !Array.isArray(projects) || projects.length === 0) return null;
 
     return (
@@ -182,7 +220,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, tem
   };
 
   const renderCertifications = () => {
-    const { certifications } = resumeData;
+    const { certifications } = displayData;
     if (!certifications || !Array.isArray(certifications) || certifications.length === 0) return null;
 
     return (
@@ -206,7 +244,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, tem
   };
 
   const renderAwards = () => {
-    const { awards } = resumeData;
+    const { awards } = displayData;
     if (!awards || !Array.isArray(awards) || awards.length === 0) return null;
 
     return (
