@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, FileText } from "lucide-react";
 import { Link } from 'react-router-dom';
@@ -11,8 +12,14 @@ export const ProSubscription: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+      <Helmet>
+        <title>Pro Subscription | Razorpay Checkout</title>
+        <meta name="description" content="Upgrade to Pro securely via Razorpay. Access premium career tools and unlimited downloads." />
+        <link rel="canonical" href="https://talentxcel.in/pro/subscription" />
+      </Helmet>
       <RazorpayScript />
       <div className="container mx-auto px-4 py-4">
+        <h1 className="sr-only">Pro Subscription – Razorpay Payment</h1>
         {/* Compact Header */}
         <div className="flex items-center justify-between mb-6">
           <Button 
