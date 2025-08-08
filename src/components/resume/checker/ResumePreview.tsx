@@ -18,21 +18,34 @@ const templates = [
   { id: 'talentxcel-minimalist', name: 'TalentXcel Minimalist', color: 'bg-pink-100' }
 ];
 
-export const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
+export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content }) => {
   const [selectedTemplate, setSelectedTemplate] = useState('original');
 
-  // Normalize incoming data shapes
-  const profile = data?.profile ?? data?.personalInfo ?? data?.personal ?? {};
+  // Normalize incoming data shapes (prefer strict ATS content if provided)
+  const ats = content?.ats ? content.ats : null;
+  const profileFromData = data?.profile ?? data?.personalInfo ?? data?.personal ?? {};
+  const profile = ats?.profile ?? profileFromData;
   const fullName: string = (profile?.fullName ?? profile?.name ?? data?.name ?? '') as string;
   const email: string = (profile?.email ?? data?.email ?? '') as string;
   const phone: string = (profile?.phone ?? data?.phone ?? '') as string;
-  const experiences: any[] = Array.isArray(data?.experience)
+
+  const experiencesFromData: any[] = Array.isArray(data?.experience)
     ? data.experience
     : Array.isArray(data?.workExperience)
     ? data.workExperience
     : Array.isArray(data?.experiences)
     ? data.experiences
     : [];
+
+  const experiences: any[] = Array.isArray(ats?.experience) && ats!.experience.length > 0
+    ? ats!.experience.map((e: any) => ({
+        title: e.jobTitle || e.title,
+        company: e.companyName || e.company,
+        startDate: e.startDate,
+        endDate: e.endDate || (e.currentlyWorking ? 'Present' : ''),
+        description: e.description,
+      }))
+    : experiencesFromData;
 
   const handleEditWithTemplate = () => {
     // Navigate to resume builder with selected template

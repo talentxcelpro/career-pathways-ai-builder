@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeResumeATS } from "@/utils/atsNormalizer";
 import { toATSJson } from "@/utils/atsSchemaFormatter";
+import { ATSResumeEnhancer } from "../checker/ATSResumeEnhancer";
 
 interface SuccessStepProps {
   onComplete: () => void;
@@ -27,6 +28,7 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
   console.log('SuccessStep - atsJson.profile.fullName:', atsJson.profile.fullName);
   const atsStrict = toATSJson(resumeData);
   console.log('SuccessStep - ATS strict schema:', atsStrict);
+  const [atsData, setAtsData] = useState(atsStrict);
   const handleSaveResume = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -249,11 +251,13 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
         {showPreview && (
           <CardContent>
             <div className="max-h-96 overflow-y-auto border rounded-lg">
-              <ResumePreview data={resumeData} content={atsStrict} fullPage={true} />
+              <ResumePreview data={resumeData} content={atsData} fullPage={true} />
             </div>
           </CardContent>
         )}
       </Card>
+
+      <ATSResumeEnhancer initialData={atsData} onChange={setAtsData} />
 
       {/* Action Buttons */}
       <div className="space-y-4">
