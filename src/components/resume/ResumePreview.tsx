@@ -116,6 +116,34 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, tem
   console.log('ResumePreview - raw data:', data);
   console.log('ResumePreview - content (ATS):', content);
   console.log('ResumePreview - final resumeData:', resumeData);
+  
+  // Direct ATS data handling - if data already looks like ATS format
+  if (resumeData?.profile?.fullName) {
+    console.log('ResumePreview - Using direct ATS format');
+    const displayData = {
+      personalInfo: {
+        fullName: resumeData.profile.fullName,
+        email: resumeData.profile.email || '',
+        phone: resumeData.profile.phone || '',
+        location: resumeData.profile.location || '',
+        summary: resumeData.summary || ''
+      },
+      experience: Array.isArray(resumeData.experience) ? resumeData.experience.map(exp => ({
+        title: exp.jobTitle,
+        company: exp.company,
+        location: exp.location,
+        startDate: exp.startDate,
+        endDate: exp.endDate,
+        achievements: exp.bullets || exp.responsibilities || []
+      })) : [],
+      education: Array.isArray(resumeData.education) ? resumeData.education : [],
+      skills: Array.isArray(resumeData.skills) ? resumeData.skills : []
+    };
+    console.log('ResumePreview - Direct ATS displayData:', displayData);
+  } else {
+    console.log('ResumePreview - Need to normalize data');
+  }
+  
   const displayData = normalizeToPreview(resumeData);
   console.log('ResumePreview - displayData after normalize:', displayData);
   

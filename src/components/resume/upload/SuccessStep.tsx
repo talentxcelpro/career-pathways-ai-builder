@@ -22,6 +22,8 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
   const atsJson = normalizeResumeATS(resumeData);
   console.log('SuccessStep - Original resumeData:', resumeData);
   console.log('SuccessStep - Normalized atsJson:', atsJson);
+  console.log('SuccessStep - atsJson.profile:', atsJson.profile);
+  console.log('SuccessStep - atsJson.profile.fullName:', atsJson.profile.fullName);
   const handleSaveResume = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -244,7 +246,7 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
         {showPreview && (
           <CardContent>
             <div className="max-h-96 overflow-y-auto border rounded-lg">
-              <ResumePreview data={resumeData} content={{ ats: atsJson }} fullPage={true} />
+              <ResumePreview data={atsJson} fullPage={true} />
             </div>
           </CardContent>
         )}
