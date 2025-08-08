@@ -58,19 +58,24 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content, tem
         },
         experience: Array.isArray(input.ats.experience) ? input.ats.experience.map(exp => ({
           title: exp.jobTitle,
-          company: exp.company,
+          company: exp.companyName || exp.company,
           location: exp.location,
           startDate: exp.startDate,
           endDate: exp.endDate,
+          description: exp.description,
           achievements: exp.bullets || []
         })) : [],
         education: Array.isArray(input.ats.education) ? input.ats.education.map(ed => ({
           degree: ed.degree,
           school: ed.institution,
-          endDate: ed.year || ed.endDate,
-          startDate: ed.startDate
+          location: ed.location,
+          endDate: ed.endDate || ed.year,
+          startDate: ed.startDate,
+          gpa: ed.gpa,
         })) : [],
-        skills: input.ats.skills || []
+        skills: Array.isArray(input.ats.skills)
+          ? input.ats.skills.map((s: any) => (typeof s === 'string' ? s : s?.name)).filter(Boolean)
+          : []
       };
     }
 
