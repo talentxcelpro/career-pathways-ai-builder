@@ -6,8 +6,7 @@ import { CheckCircle, Download, Edit, Share2, BarChart3, Sparkles, Save, Wand2, 
 import { ResumePreview } from "../ResumePreview";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { normalizeResumeATS } from "@/utils/atsNormalizer";
-import { toATSJson } from "@/utils/atsSchemaFormatter";
+import { formatToAtsSchema } from "@/utils/atsSchemaFormatterV2";
 import { ATSResumeEnhancer } from "../checker/ATSResumeEnhancer";
 
 interface SuccessStepProps {
@@ -21,12 +20,8 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
   const [isDownloading, setIsDownloading] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
   
-  const atsJson = normalizeResumeATS(resumeData);
   console.log('SuccessStep - Original resumeData:', resumeData);
-  console.log('SuccessStep - Normalized atsJson:', atsJson);
-  console.log('SuccessStep - atsJson.profile:', atsJson.profile);
-  console.log('SuccessStep - atsJson.profile.fullName:', atsJson.profile.fullName);
-  const atsStrict = toATSJson(resumeData);
+  const atsStrict = formatToAtsSchema(resumeData);
   console.log('SuccessStep - ATS strict schema:', atsStrict);
   const [atsData, setAtsData] = useState(atsStrict);
   const handleSaveResume = async () => {

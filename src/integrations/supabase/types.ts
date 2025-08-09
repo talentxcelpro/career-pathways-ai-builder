@@ -2409,6 +2409,42 @@ export type Database = {
           },
         ]
       }
+      ats_resume_data: {
+        Row: {
+          ats_json: Json
+          created_at: string
+          id: string
+          is_latest: boolean
+          resume_id: string | null
+          target_role: string | null
+          updated_at: string
+          user_id: string | null
+          version_no: number
+        }
+        Insert: {
+          ats_json?: Json
+          created_at?: string
+          id?: string
+          is_latest?: boolean
+          resume_id?: string | null
+          target_role?: string | null
+          updated_at?: string
+          user_id?: string | null
+          version_no?: number
+        }
+        Update: {
+          ats_json?: Json
+          created_at?: string
+          id?: string
+          is_latest?: boolean
+          resume_id?: string | null
+          target_role?: string | null
+          updated_at?: string
+          user_id?: string | null
+          version_no?: number
+        }
+        Relationships: []
+      }
       awards: {
         Row: {
           award_date: string | null
@@ -15153,6 +15189,9 @@ export type Database = {
       }
       resume_versions: {
         Row: {
+          after_text: string | null
+          ats_json: Json
+          before_text: string | null
           content: Json
           content_snapshot: Json | null
           created_at: string | null
@@ -15160,10 +15199,16 @@ export type Database = {
           is_current: boolean | null
           notes: string | null
           resume_id: string
+          section: string
+          user_id: string | null
           version_name: string
+          version_no: number
           version_number: number | null
         }
         Insert: {
+          after_text?: string | null
+          ats_json?: Json
+          before_text?: string | null
           content?: Json
           content_snapshot?: Json | null
           created_at?: string | null
@@ -15171,10 +15216,16 @@ export type Database = {
           is_current?: boolean | null
           notes?: string | null
           resume_id: string
+          section?: string
+          user_id?: string | null
           version_name: string
+          version_no?: number
           version_number?: number | null
         }
         Update: {
+          after_text?: string | null
+          ats_json?: Json
+          before_text?: string | null
           content?: Json
           content_snapshot?: Json | null
           created_at?: string | null
@@ -15182,7 +15233,10 @@ export type Database = {
           is_current?: boolean | null
           notes?: string | null
           resume_id?: string
+          section?: string
+          user_id?: string | null
           version_name?: string
+          version_no?: number
           version_number?: number | null
         }
         Relationships: [
