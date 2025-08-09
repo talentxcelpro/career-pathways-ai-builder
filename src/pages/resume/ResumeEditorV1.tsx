@@ -10,6 +10,7 @@ import { useResumeExport, ExportSettings } from "@/hooks/useResumeExport";
 import { useSectionEnhancer } from "@/hooks/useSectionEnhancer";
 import { useJobTargeting } from "@/hooks/useJobTargeting";
 import { toast } from "sonner";
+import { Sparkles } from "lucide-react";
 
 // Simple Sortable item for sections list
 function SortableItem({ id, label, selected, onSelect }: { id: string; label: string; selected: boolean; onSelect: (id: string) => void }) {
@@ -283,7 +284,7 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <label className="text-sm">Summary</label>
-          <button onClick={enhance} className="text-xs rounded border px-2 py-1">Enhance</button>
+          <button onClick={enhance} className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"><Sparkles className="h-3 w-3" /> Enhance</button>
         </div>
         <textarea className="mt-1 w-full border rounded px-3 py-2 h-40" value={text}
           onChange={(e) => setLocal({ ...local, summary: e.target.value })} />
@@ -327,6 +328,21 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
                     next[i] = { ...next[i], end: e.target.value };
                     setLocal({ ...local, experience: next });
                   }} />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"
+                  onClick={async () => {
+                    try {
+                      const improved = await enhanceSection({ section: 'experience' as any, field: 'bullets[0]', text: item.bullets?.[0] || '', targetRole: undefined, atsJson: undefined });
+                      const next = [...exp];
+                      next[i] = { ...next[i], bullets: [improved] };
+                      setLocal({ ...local, experience: next });
+                    } catch {}
+                  }}
+                >
+                  <Sparkles className="h-3 w-3" /> Enhance bullet
+                </button>
               </div>
               <textarea placeholder="Top bullet/achievement" className="w-full border rounded px-3 py-2 h-24" value={item.bullets?.[0] || ''}
                 onChange={(e) => {
@@ -444,6 +460,21 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
                   next[i] = { ...next[i], date: e.target.value };
                   setLocal({ ...local, [key]: next });
                 }} />
+              <div className="flex justify-end">
+                <button
+                  className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"
+                  onClick={async () => {
+                    try {
+                      const improved = await enhanceSection({ section: key as any, field: 'description', text: item.description || '', targetRole: undefined, atsJson: undefined });
+                      const next = [...list];
+                      next[i] = { ...next[i], description: improved };
+                      setLocal({ ...local, [key]: next });
+                    } catch {}
+                  }}
+                >
+                  <Sparkles className="h-3 w-3" /> Enhance description
+                </button>
+              </div>
               <textarea placeholder="Description" className="w-full border rounded px-3 py-2 h-24" value={item.description || ''}
                 onChange={(e) => {
                   const next = [...list];
@@ -466,6 +497,17 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <label className="text-sm">Cover Letter</label>
+          <button
+            className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"
+            onClick={async () => {
+              try {
+                const improved = await enhanceSection({ section: 'coverLetter' as any, field: 'coverLetter', text: local.coverLetter || '', targetRole: undefined, atsJson: undefined });
+                setLocal({ ...local, coverLetter: improved });
+              } catch {}
+            }}
+          >
+            <Sparkles className="h-3 w-3" /> Enhance
+          </button>
         </div>
         <textarea className="mt-1 w-full border rounded px-3 py-2 h-80" value={local.coverLetter || ''}
           onChange={(e) => setLocal({ ...local, coverLetter: e.target.value })} />
@@ -490,6 +532,7 @@ const ResumeEditorV1: React.FC = () => {
   const [selectedSection, setSelectedSection] = useState<string>('summary');
   const [templates, setTemplates] = useState<ResumeTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>(undefined);
+  const [mode, setMode] = useState<'editor' | 'preview'>('editor');
 
   const { exportResume, isExporting } = useResumeExport();
   const { enhanceSection } = useSectionEnhancer();
@@ -618,35 +661,55 @@ const ResumeEditorV1: React.FC = () => {
       <main className="flex-1 px-6 py-5 overflow-auto">
         <header className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-semibold">Three‑Pane Resume Editor</h1>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <div className="inline-flex rounded border overflow-hidden">
+              <button
+                className={`px-3 py-2 text-sm ${mode === 'editor' ? 'bg-primary/10' : ''}`}
+                aria-pressed={mode === 'editor'}
+                onClick={() => setMode('editor')}
+              >
+                Editor
+              </button>
+              <button
+                className={`px-3 py-2 text-sm ${mode === 'preview' ? 'bg-primary/10' : ''}`}
+                aria-pressed={mode === 'preview'}
+                onClick={() => setMode('preview')}
+              >
+                Preview
+              </button>
+            </div>
             <button className="rounded border px-3 py-2" onClick={handleSave}>Save</button>
           </div>
         </header>
 
-        <div className="grid grid-cols-12 gap-6 h-[calc(100vh-100px)]">
-          <div className="col-span-4 border rounded p-3 overflow-auto">
-            <h2 className="text-sm font-medium mb-2">Sections (drag to reorder)</h2>
-            <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-              <SortableContext items={sections} strategy={verticalListSortingStrategy}>
-                {sections.map((s) => (
-                  <SortableItem key={s} id={s} label={SECTION_LABELS[s] || s} selected={selectedSection === s} onSelect={setSelectedSection} />
-                ))}
-              </SortableContext>
-            </DndContext>
-          </div>
+        {mode === 'editor' ? (
+          <div className="grid grid-cols-12 gap-6 h-[calc(100vh-100px)]">
+            <div className="col-span-4 border rounded p-3 overflow-auto">
+              <h2 className="text-sm font-medium mb-2">Sections (drag to reorder)</h2>
+              <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+                <SortableContext items={sections} strategy={verticalListSortingStrategy}>
+                  {sections.map((s) => (
+                    <SortableItem key={s} id={s} label={SECTION_LABELS[s] || s} selected={selectedSection === s} onSelect={setSelectedSection} />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            </div>
 
-          <div className="col-span-8 border rounded p-4 overflow-auto">
-            <h2 className="text-sm font-medium mb-3">Edit: {SECTION_LABELS[selectedSection] || selectedSection}</h2>
-            <SectionEditor
-              section={selectedSection}
-              data={resumeData}
-              onChange={(next) => setResumeData(next)}
-            />
+            <div className="col-span-8 border rounded p-4 overflow-auto">
+              <h2 className="text-sm font-medium mb-3">Edit: {SECTION_LABELS[selectedSection] || selectedSection}</h2>
+              <SectionEditor
+                section={selectedSection}
+                data={resumeData}
+                onChange={(next) => setResumeData(next)}
+              />
+            </div>
           </div>
-        </div>
+        ) : (
+          <Preview data={resumeData} templateId={selectedTemplateId} variant="full" />
+        )}
       </main>
 
-      <Preview data={resumeData} templateId={selectedTemplateId} />
+      {mode === 'editor' && <Preview data={resumeData} templateId={selectedTemplateId} />}
     </div>
   );
 };

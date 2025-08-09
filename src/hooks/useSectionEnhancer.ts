@@ -5,6 +5,7 @@ import { toast } from "sonner";
 interface EnhanceArgs {
   resumeId?: string;
   section: string;
+  field?: string;
   text: string;
   targetRole?: string;
   atsJson?: any;
@@ -38,7 +39,7 @@ export const useSectionEnhancer = () => {
     try {
       const { data, error } = await supabase.functions.invoke(
         "deepseek-enhance-section",
-        { body: { section: args.section, text: args.text, targetRole: args.targetRole, atsJson: args.atsJson } }
+        { body: { section: args.section, field: args.field, text: args.text, targetRole: args.targetRole, atsJson: args.atsJson } }
       );
       if (error || !data?.success) {
         return localEnhance(args.text);
