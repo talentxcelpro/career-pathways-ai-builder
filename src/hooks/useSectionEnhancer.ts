@@ -42,37 +42,50 @@ export const useSectionEnhancer = () => {
 
   const commitEnhancement = useCallback(async ({ resumeId, section, beforeText, afterText, content }: CommitArgs) => {
     try {
-      // 1) create a new version with updated content
-      const { data: versionRows, error: vErr } = await (supabase as any)
-        .from('resume_versions')
-        .insert([{ resume_id: resumeId, content, source: 'ai' }])
-        .select();
-      if (vErr) throw vErr;
-      const version = (versionRows?.[0] as any) || null;
+      if (!resumeId) {
+        toast.error('Missing resumeId to save enhancement');
+        return null;
+      }
 
-      // 2) log AI change
-      const { error: lErr } = await (supabase as any)
-        .from('resume_ai_logs')
+      // Ensure user is authenticated for RLS on ai_resumes
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth?.user) {
+        toast.error('Please sign in to save changes');
+        return null;
+      }
+
+      // 1) Update the AI resume content with the enhanced ATS JSON
+      const { data: updated, error: updateErr } = await supabase
+        .from('ai_resumes')
+        .update({ content })
+        .eq('id', resumeId)
+        .select()
+        .single();
+      if (updateErr) throw updateErr;
+
+      // 2) Log AI usage (non-blocking)
+      await supabase
+        .from('ai_usage_logs')
         .insert([
           {
-            resume_id: resumeId,
-            resume_version_id: version?.id,
-            section,
-            before_text: beforeText,
-            after_text: afterText,
-            model_used: 'deepseek-chat',
+            user_id: auth.user.id,
+            feature_type: 'resume_enhancement',
+            request_type: 'section_enhance',
+            tool_slug: 'deepseek-enhance-section',
+            request_data: { section, beforeText },
+            response_data: { afterText },
+            success: true,
           },
         ]);
-      if (lErr) throw lErr;
 
-      toast.success("Saved new version with AI enhancement");
-      return version;
+      toast.success('Saved enhanced version');
+      return updated;
     } catch (e: any) {
-      console.error("commitEnhancement failed", e);
-      toast.error(e?.message || "Failed to save version");
+      console.error('commitEnhancement failed', e);
+      toast.error(e?.message || 'Failed to save version');
       return null;
     }
   }, []);
 
   return { isLoading, enhanceSection, commitEnhancement };
-};
+}
