@@ -21,7 +21,7 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
   const [isEnhancing, setIsEnhancing] = useState(false);
   
   console.log('SuccessStep - Original resumeData:', resumeData);
-  const atsStrict = formatToAtsSchema(resumeData);
+  const atsStrict = formatToAtsSchema(resumeData?.enhancedContent || resumeData);
   console.log('SuccessStep - ATS strict schema:', atsStrict);
   const [atsData, setAtsData] = useState(atsStrict);
   const handleSaveResume = async () => {
