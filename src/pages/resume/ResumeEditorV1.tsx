@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { DndContext, closestCenter } from "@dnd-kit/core";
@@ -173,13 +173,19 @@ const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templat
   );
 };
 
-const SectionEditor = ({ section, data, onChange }: { section: string; data: any; onChange: (next: any) => void }) => {
+const SectionEditor = ({ section, data, onChange, onLiveChange }: { section: string; data: any; onChange: (next: any) => void; onLiveChange?: (next: any) => void }) => {
   const [local, setLocal] = useState<any>(data || {});
   const { enhanceSection } = useSectionEnhancer();
 
   useEffect(() => setLocal(data || {}), [data]);
 
   const save = () => onChange(local);
+  
+  // Real-time preview updates
+  const updateLive = (newData: any) => {
+    setLocal(newData);
+    onLiveChange?.(newData);
+  };
 
   if (section === 'header') {
     const p = local.personalInfo || local.profile || {};
@@ -191,7 +197,8 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.fullName || p.name || ''}
               onChange={(e) => {
                 const nextP = { ...p, fullName: e.target.value };
-                setLocal({ ...local, personalInfo: nextP });
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
               }} />
           </div>
           <div>
@@ -199,7 +206,8 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.title || ''}
               onChange={(e) => {
                 const nextP = { ...p, title: e.target.value };
-                setLocal({ ...local, personalInfo: nextP });
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
               }} />
           </div>
         </div>
@@ -207,30 +215,50 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
           <div>
             <label className="text-sm">Email</label>
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.email || ''}
-              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, email: e.target.value } })} />
+              onChange={(e) => {
+                const nextP = { ...p, email: e.target.value };
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
+              }} />
           </div>
           <div>
             <label className="text-sm">Phone</label>
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.phone || ''}
-              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, phone: e.target.value } })} />
+              onChange={(e) => {
+                const nextP = { ...p, phone: e.target.value };
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
+              }} />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-sm">Location</label>
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.location || ''}
-              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, location: e.target.value } })} />
+              onChange={(e) => {
+                const nextP = { ...p, location: e.target.value };
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
+              }} />
           </div>
           <div>
             <label className="text-sm">LinkedIn</label>
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.linkedin || ''}
-              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, linkedin: e.target.value } })} />
+              onChange={(e) => {
+                const nextP = { ...p, linkedin: e.target.value };
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
+              }} />
           </div>
         </div>
         <div>
           <label className="text-sm">Website/Portfolio</label>
           <input className="mt-1 w-full border rounded px-3 py-2" value={p.website || p.portfolio || ''}
-            onChange={(e) => setLocal({ ...local, personalInfo: { ...p, website: e.target.value, portfolio: e.target.value } })} />
+            onChange={(e) => {
+              const nextP = { ...p, website: e.target.value, portfolio: e.target.value };
+              const nextData = { ...local, personalInfo: nextP };
+              updateLive(nextData);
+            }} />
         </div>
         <button onClick={save} className="rounded border px-3 py-2">Save</button>
       </div>
@@ -242,7 +270,8 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
     const enhance = async () => {
       try {
         const improved = await enhanceSection({ section: 'summary' as any, text, targetRole: undefined, atsJson: undefined });
-        setLocal({ ...local, summary: improved });
+        const nextData = { ...local, summary: improved };
+        updateLive(nextData);
       } catch {}
     };
     return (
@@ -252,7 +281,10 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
           <button onClick={enhance} className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"><Sparkles className="h-3 w-3" /> Enhance</button>
         </div>
         <textarea className="mt-1 w-full border rounded px-3 py-2 h-40" value={text}
-          onChange={(e) => setLocal({ ...local, summary: e.target.value })} />
+          onChange={(e) => {
+            const nextData = { ...local, summary: e.target.value };
+            updateLive(nextData);
+          }} />
         <button onClick={save} className="rounded border px-3 py-2">Save</button>
       </div>
     );
@@ -540,10 +572,43 @@ const ResumeEditorV1: React.FC = () => {
   const [templates, setTemplates] = useState<ResumeTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>(undefined);
   const [mode, setMode] = useState<'editor' | 'preview'>('editor');
+  const [livePreviewData, setLivePreviewData] = useState<any>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const { exportResume, isExporting } = useResumeExport();
   const { enhanceSection } = useSectionEnhancer();
   const [isATSOpen, setIsATSOpen] = useState(false);
+
+  // Real-time preview data - updates immediately when editing
+  const previewData = livePreviewData || resumeData;
+  
+  // Debounced autosave
+  const autosaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const triggerAutosave = useCallback(async () => {
+    if (autosaveTimeoutRef.current) {
+      clearTimeout(autosaveTimeoutRef.current);
+    }
+    autosaveTimeoutRef.current = setTimeout(async () => {
+      if (hasUnsavedChanges && resumeData) {
+        try {
+          const { error } = await supabase.from('ai_resumes').update({ content: resumeData as any, updated_at: new Date().toISOString() }).eq('id', id as string);
+          if (error) throw error;
+          setHasUnsavedChanges(false);
+          toast.success('Auto-saved');
+        } catch (error) {
+          console.error('Autosave failed:', error);
+        }
+      }
+    }, 2000); // 2 second delay
+  }, [hasUnsavedChanges, resumeData, id]);
+  
+  // Real-time section update handler
+  const handleSectionLiveChange = useCallback((sectionData: any) => {
+    setLivePreviewData(sectionData);
+    setHasUnsavedChanges(true);
+    triggerAutosave();
+  }, [triggerAutosave]);
 
   // Resilient hydration: ensure resumeData is always set
   useEffect(() => {
@@ -761,11 +826,15 @@ const ResumeEditorV1: React.FC = () => {
             </div>
 
             <div className="col-span-8 border rounded p-4 overflow-auto">
-              <h2 className="text-sm font-medium mb-3">Edit: {SECTION_LABELS[selectedSection] || selectedSection}</h2>
+              <h2 className="text-sm font-medium mb-3">
+                Edit: {SECTION_LABELS[selectedSection] || selectedSection}
+                {hasUnsavedChanges && <span className="ml-2 text-xs text-orange-600">• Unsaved changes</span>}
+              </h2>
               <SectionEditor
                 section={selectedSection}
                 data={resumeData}
                 onChange={(next) => setResumeData(next)}
+                onLiveChange={handleSectionLiveChange}
               />
             </div>
           </div>
@@ -774,7 +843,7 @@ const ResumeEditorV1: React.FC = () => {
         )}
       </main>
 
-      {mode === 'editor' && <Preview data={resumeData} templateId={selectedTemplateId} />}
+      {mode === 'editor' && <Preview data={previewData} templateId={selectedTemplateId} />}
 
       <JobTargetingPanel isOpen={isATSOpen} onClose={() => setIsATSOpen(false)} resumeData={resumeData} />
     </div>
