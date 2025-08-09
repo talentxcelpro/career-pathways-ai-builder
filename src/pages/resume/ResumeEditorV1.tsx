@@ -34,10 +34,11 @@ const SECTION_LABELS: Record<string, string> = {
   experience: "Experience",
   education: "Education",
   skills: "Skills",
-  certifications: "Certifications",
-  achievements: "Achievements",
   projects: "Projects",
+  certifications: "Certifications",
+  awards: "Awards",
   languages: "Languages",
+  coverLetter: "Cover Letter",
 };
 
 // Template type
@@ -56,8 +57,10 @@ const DEFAULT_SECTIONS = [
   "experience",
   "education",
   "skills",
+  "projects",
   "certifications",
-  "achievements",
+  "awards",
+  "coverLetter",
 ];
 
 const Toolbar = ({
@@ -119,14 +122,19 @@ const Toolbar = ({
   );
 };
 
-const Preview = ({ data, templateId }: { data: any; templateId?: string }) => {
+const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templateId?: string; variant?: 'sidebar' | 'full' }) => {
   const p = data?.personalInfo || data?.profile || {};
   const summary = data?.summary || data?.profileSummary || '';
   const experience = Array.isArray(data?.experience) ? data.experience : [];
   const skills = Array.isArray(data?.skills) ? data.skills : [];
 
+  const Wrapper: React.ElementType = variant === 'sidebar' ? 'aside' : 'div';
+  const wrapperCls = variant === 'sidebar'
+    ? 'w-[38%] border-l px-5 py-5 overflow-auto'
+    : 'flex-1 px-6 py-6 overflow-auto';
+
   return (
-    <aside className="w-[38%] border-l px-5 py-5 overflow-auto">
+    <Wrapper className={wrapperCls}>
       <div className="max-w-3xl mx-auto bg-background shadow-sm rounded-md p-6">
         {templateId === 'two-col' ? (
           <div className="grid grid-cols-3 gap-6">
@@ -195,12 +203,13 @@ const Preview = ({ data, templateId }: { data: any; templateId?: string }) => {
           </div>
         )}
       </div>
-    </aside>
+    </Wrapper>
   );
 };
 
 const SectionEditor = ({ section, data, onChange }: { section: string; data: any; onChange: (next: any) => void }) => {
   const [local, setLocal] = useState<any>(data || {});
+  const { enhanceSection } = useSectionEnhancer();
 
   useEffect(() => setLocal(data || {}), [data]);
 
@@ -210,21 +219,52 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
     const p = local.personalInfo || local.profile || {};
     return (
       <div className="space-y-3">
-        <div>
-          <label className="text-sm">Full Name</label>
-          <input className="mt-1 w-full border rounded px-3 py-2" value={p.fullName || p.name || ''}
-            onChange={(e) => {
-              const nextP = { ...p, fullName: e.target.value };
-              setLocal({ ...local, personalInfo: nextP });
-            }} />
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm">Full Name</label>
+            <input className="mt-1 w-full border rounded px-3 py-2" value={p.fullName || p.name || ''}
+              onChange={(e) => {
+                const nextP = { ...p, fullName: e.target.value };
+                setLocal({ ...local, personalInfo: nextP });
+              }} />
+          </div>
+          <div>
+            <label className="text-sm">Title</label>
+            <input className="mt-1 w-full border rounded px-3 py-2" value={p.title || ''}
+              onChange={(e) => {
+                const nextP = { ...p, title: e.target.value };
+                setLocal({ ...local, personalInfo: nextP });
+              }} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm">Email</label>
+            <input className="mt-1 w-full border rounded px-3 py-2" value={p.email || ''}
+              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, email: e.target.value } })} />
+          </div>
+          <div>
+            <label className="text-sm">Phone</label>
+            <input className="mt-1 w-full border rounded px-3 py-2" value={p.phone || ''}
+              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, phone: e.target.value } })} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm">Location</label>
+            <input className="mt-1 w-full border rounded px-3 py-2" value={p.location || ''}
+              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, location: e.target.value } })} />
+          </div>
+          <div>
+            <label className="text-sm">LinkedIn</label>
+            <input className="mt-1 w-full border rounded px-3 py-2" value={p.linkedin || ''}
+              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, linkedin: e.target.value } })} />
+          </div>
         </div>
         <div>
-          <label className="text-sm">Title</label>
-          <input className="mt-1 w-full border rounded px-3 py-2" value={p.title || ''}
-            onChange={(e) => {
-              const nextP = { ...p, title: e.target.value };
-              setLocal({ ...local, personalInfo: nextP });
-            }} />
+          <label className="text-sm">Website/Portfolio</label>
+          <input className="mt-1 w-full border rounded px-3 py-2" value={p.website || p.portfolio || ''}
+            onChange={(e) => setLocal({ ...local, personalInfo: { ...p, website: e.target.value, portfolio: e.target.value } })} />
         </div>
         <button onClick={save} className="rounded border px-3 py-2">Save</button>
       </div>
@@ -232,10 +272,20 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
   }
 
   if (section === 'summary') {
+    const text = local.summary || '';
+    const enhance = async () => {
+      try {
+        const improved = await enhanceSection({ section: 'summary' as any, text, targetRole: undefined, atsJson: undefined });
+        setLocal({ ...local, summary: improved });
+      } catch {}
+    };
     return (
       <div className="space-y-3">
-        <label className="text-sm">Summary</label>
-        <textarea className="mt-1 w-full border rounded px-3 py-2 h-40" value={local.summary || ''}
+        <div className="flex items-center justify-between">
+          <label className="text-sm">Summary</label>
+          <button onClick={enhance} className="text-xs rounded border px-2 py-1">Enhance</button>
+        </div>
+        <textarea className="mt-1 w-full border rounded px-3 py-2 h-40" value={text}
           onChange={(e) => setLocal({ ...local, summary: e.target.value })} />
         <button onClick={save} className="rounded border px-3 py-2">Save</button>
       </div>
@@ -246,28 +296,47 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
     const exp = Array.isArray(local.experience) ? local.experience : [];
     return (
       <div className="space-y-3">
-        <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, experience: [...exp, { role: '', company: '', bullets: [''] }] })}>+ Add role</button>
+        <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, experience: [...exp, { role: '', company: '', start: '', end: '', bullets: [''] }] })}>+ Add role</button>
         <div className="space-y-3">
           {exp.map((item: any, i: number) => (
             <div key={i} className="border rounded p-3 space-y-2">
-              <input placeholder="Role" className="w-full border rounded px-3 py-2" value={item.role || ''}
-                onChange={(e) => {
-                  const next = [...exp];
-                  next[i] = { ...next[i], role: e.target.value };
-                  setLocal({ ...local, experience: next });
-                }} />
-              <input placeholder="Company" className="w-full border rounded px-3 py-2" value={item.company || ''}
-                onChange={(e) => {
-                  const next = [...exp];
-                  next[i] = { ...next[i], company: e.target.value };
-                  setLocal({ ...local, experience: next });
-                }} />
-              <textarea placeholder="Bullet" className="w-full border rounded px-3 py-2 h-24" value={item.bullets?.[0] || ''}
+              <div className="grid grid-cols-2 gap-2">
+                <input placeholder="Role" className="w-full border rounded px-3 py-2" value={item.role || ''}
+                  onChange={(e) => {
+                    const next = [...exp];
+                    next[i] = { ...next[i], role: e.target.value };
+                    setLocal({ ...local, experience: next });
+                  }} />
+                <input placeholder="Company" className="w-full border rounded px-3 py-2" value={item.company || ''}
+                  onChange={(e) => {
+                    const next = [...exp];
+                    next[i] = { ...next[i], company: e.target.value };
+                    setLocal({ ...local, experience: next });
+                  }} />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <input placeholder="Start (e.g., 2022-01)" className="w-full border rounded px-3 py-2" value={item.start || ''}
+                  onChange={(e) => {
+                    const next = [...exp];
+                    next[i] = { ...next[i], start: e.target.value };
+                    setLocal({ ...local, experience: next });
+                  }} />
+                <input placeholder="End (or Present)" className="w-full border rounded px-3 py-2" value={item.end || ''}
+                  onChange={(e) => {
+                    const next = [...exp];
+                    next[i] = { ...next[i], end: e.target.value };
+                    setLocal({ ...local, experience: next });
+                  }} />
+              </div>
+              <textarea placeholder="Top bullet/achievement" className="w-full border rounded px-3 py-2 h-24" value={item.bullets?.[0] || ''}
                 onChange={(e) => {
                   const next = [...exp];
                   next[i] = { ...next[i], bullets: [e.target.value] };
                   setLocal({ ...local, experience: next });
                 }} />
+              <div className="flex justify-end">
+                <button className="text-xs text-destructive" onClick={() => setLocal({ ...local, experience: exp.filter((_: any, idx: number) => idx !== i) })}>Remove</button>
+              </div>
             </div>
           ))}
         </div>
@@ -276,7 +345,136 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
     );
   }
 
-  // Basic editors for other sections
+  if (section === 'education') {
+    const list = Array.isArray(local.education) ? local.education : [];
+    return (
+      <div className="space-y-3">
+        <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, education: [...list, { degree: '', school: '', startDate: '', endDate: '', gpa: '' }] })}>+ Add education</button>
+        <div className="space-y-3">
+          {list.map((item: any, i: number) => (
+            <div key={i} className="border rounded p-3 space-y-2">
+              <input placeholder="Degree" className="w-full border rounded px-3 py-2" value={item.degree || ''}
+                onChange={(e) => {
+                  const next = [...list];
+                  next[i] = { ...next[i], degree: e.target.value };
+                  setLocal({ ...local, education: next });
+                }} />
+              <input placeholder="School" className="w-full border rounded px-3 py-2" value={item.school || ''}
+                onChange={(e) => {
+                  const next = [...list];
+                  next[i] = { ...next[i], school: e.target.value };
+                  setLocal({ ...local, education: next });
+                }} />
+              <div className="grid grid-cols-2 gap-2">
+                <input placeholder="Start" className="w-full border rounded px-3 py-2" value={item.startDate || ''}
+                  onChange={(e) => {
+                    const next = [...list];
+                    next[i] = { ...next[i], startDate: e.target.value };
+                    setLocal({ ...local, education: next });
+                  }} />
+                <input placeholder="End" className="w-full border rounded px-3 py-2" value={item.endDate || ''}
+                  onChange={(e) => {
+                    const next = [...list];
+                    next[i] = { ...next[i], endDate: e.target.value };
+                    setLocal({ ...local, education: next });
+                  }} />
+              </div>
+              <input placeholder="GPA (optional)" className="w-full border rounded px-3 py-2" value={item.gpa || ''}
+                onChange={(e) => {
+                  const next = [...list];
+                  next[i] = { ...next[i], gpa: e.target.value };
+                  setLocal({ ...local, education: next });
+                }} />
+              <div className="flex justify-end">
+                <button className="text-xs text-destructive" onClick={() => setLocal({ ...local, education: list.filter((_: any, idx: number) => idx !== i) })}>Remove</button>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button onClick={save} className="rounded border px-3 py-2">Save</button>
+      </div>
+    );
+  }
+
+  if (section === 'skills') {
+    const list = Array.isArray(local.skills) ? local.skills : [];
+    const asText = list.map((s: any) => (typeof s === 'string' ? s : s?.name)).filter(Boolean).join(', ');
+    return (
+      <div className="space-y-3">
+        <label className="text-sm">Skills (comma separated)</label>
+        <input className="mt-1 w-full border rounded px-3 py-2" defaultValue={asText}
+          onBlur={(e) => {
+            const names = e.target.value.split(',').map((x) => x.trim()).filter(Boolean);
+            setLocal({ ...local, skills: names });
+          }} />
+        <div className="flex flex-wrap gap-1">
+          {list.map((s: any, i: number) => (
+            <span key={i} className="text-xs border rounded px-2 py-1">{typeof s === 'string' ? s : (s?.name || '')}</span>
+          ))}
+        </div>
+        <button onClick={save} className="rounded border px-3 py-2">Save</button>
+      </div>
+    );
+  }
+
+  if (section === 'projects' || section === 'certifications' || section === 'awards') {
+    const key = section;
+    const list = Array.isArray(local[key]) ? local[key] : [];
+    return (
+      <div className="space-y-3">
+        <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, [key]: [...list, { title: '', org: '', date: '', description: '' }] })}>+ Add {SECTION_LABELS[key] || key}</button>
+        <div className="space-y-3">
+          {list.map((item: any, i: number) => (
+            <div key={i} className="border rounded p-3 space-y-2">
+              <input placeholder={section === 'certifications' ? 'Certification' : 'Title'} className="w-full border rounded px-3 py-2" value={item.title || item.name || ''}
+                onChange={(e) => {
+                  const next = [...list];
+                  next[i] = { ...next[i], title: e.target.value, name: e.target.value };
+                  setLocal({ ...local, [key]: next });
+                }} />
+              <input placeholder={section === 'awards' ? 'Issuer' : 'Organization'} className="w-full border rounded px-3 py-2" value={item.org || item.issuer || ''}
+                onChange={(e) => {
+                  const next = [...list];
+                  next[i] = { ...next[i], org: e.target.value, issuer: e.target.value };
+                  setLocal({ ...local, [key]: next });
+                }} />
+              <input placeholder="Date" className="w-full border rounded px-3 py-2" value={item.date || ''}
+                onChange={(e) => {
+                  const next = [...list];
+                  next[i] = { ...next[i], date: e.target.value };
+                  setLocal({ ...local, [key]: next });
+                }} />
+              <textarea placeholder="Description" className="w-full border rounded px-3 py-2 h-24" value={item.description || ''}
+                onChange={(e) => {
+                  const next = [...list];
+                  next[i] = { ...next[i], description: e.target.value };
+                  setLocal({ ...local, [key]: next });
+                }} />
+              <div className="flex justify-end">
+                <button className="text-xs text-destructive" onClick={() => setLocal({ ...local, [key]: list.filter((_: any, idx: number) => idx !== i) })}>Remove</button>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button onClick={save} className="rounded border px-3 py-2">Save</button>
+      </div>
+    );
+  }
+
+  if (section === 'coverLetter') {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="text-sm">Cover Letter</label>
+        </div>
+        <textarea className="mt-1 w-full border rounded px-3 py-2 h-80" value={local.coverLetter || ''}
+          onChange={(e) => setLocal({ ...local, coverLetter: e.target.value })} />
+        <button onClick={save} className="rounded border px-3 py-2">Save</button>
+      </div>
+    );
+  }
+
+  // Fallback
   return (
     <div className="space-y-3">
       <div className="opacity-70 text-sm">Editor coming soon for: {SECTION_LABELS[section] || section}</div>

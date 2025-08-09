@@ -27,4 +27,10 @@ export const resumeRoutes = [
     page: <EditResume />,
     requiresAuth: true,
   },
+  {
+    title: "Resume Editor V1",
+    to: "/resume/editor/:id",
+    page: <ErrorBoundary><ResumeEditorV1 /></ErrorBoundary>,
+    requiresAuth: true,
+  },
 ];
