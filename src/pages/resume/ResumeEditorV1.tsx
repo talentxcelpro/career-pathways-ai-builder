@@ -137,6 +137,13 @@ const Toolbar = ({
   );
 };
 
+const defaultCustomization = {
+  colors: {},
+  typography: {},
+  layout: {},
+  sections: { showPhoto: false, showSummary: true }
+};
+
 const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templateId?: string; variant?: 'sidebar' | 'full' }) => {
   const Wrapper: React.ElementType = variant === 'sidebar' ? 'aside' : 'div';
   const wrapperCls = variant === 'sidebar'
@@ -146,7 +153,7 @@ const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templat
   return (
     <Wrapper className={wrapperCls}>
       <div className="max-w-3xl mx-auto bg-background shadow-sm rounded-md p-6">
-        <TemplateRenderer id={templateId} data={data} />
+        <TemplateRenderer template={templateId || 'two-col'} resumeData={data} customization={defaultCustomization} />
       </div>
     </Wrapper>
   );

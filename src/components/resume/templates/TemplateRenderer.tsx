@@ -17,8 +17,9 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
   customization,
   className = ''
 }) => {
+  const { colors = {}, typography = {}, layout = {}, sections = {} } = customization ?? {};
+  
   const getStylesFromCustomization = () => {
-    const { colors, typography, layout } = customization;
     
     return {
       container: {
@@ -108,7 +109,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
             </div>
           </div>
           
-          {customization.sections?.showPhoto && personalInfo.photo && (
+          {sections?.showPhoto && personalInfo.photo && (
             <div className="ml-4">
               <img
                 src={personalInfo.photo}
@@ -125,7 +126,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
 
   const renderSummary = () => {
     const { personalInfo } = resumeData;
-    if (!personalInfo?.summary || !customization.sections?.showSummary) return null;
+    if (!personalInfo?.summary || !sections?.showSummary) return null;
 
     return (
       <div style={styles.section}>
