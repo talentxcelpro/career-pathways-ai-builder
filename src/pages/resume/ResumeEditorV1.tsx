@@ -64,6 +64,18 @@ const DEFAULT_SECTIONS = [
   "coverLetter",
 ];
 
+const getDefaultResumeJSON = () => ({
+  profile: { fullName: "", email: "", phone: "", location: "" },
+  summary: "",
+  experience: [],
+  education: [],
+  skills: [],
+  projects: [],
+  certifications: [],
+  awards: [],
+  coverLetter: ""
+});
+
 const Toolbar = ({
   onExport,
   onRunATS,
@@ -538,6 +550,42 @@ const ResumeEditorV1: React.FC = () => {
   const { enhanceSection } = useSectionEnhancer();
   const { analyze } = useJobTargeting(resumeData);
 
+  // Resilient hydration: ensure resumeData is always set
+  useEffect(() => {
+    const loadResume = async () => {
+      if (!id) {
+        console.error("Missing resume ID");
+        return;
+      }
+      if (resumeData) return;
+
+      const { data, error: fetchError } = await supabase
+        .from("ai_resumes")
+        .select("content")
+        .eq("id", id as string)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error("Error loading resume:", fetchError);
+        setResumeData(getDefaultResumeJSON() as any);
+        return;
+      }
+
+      try {
+        const content = (data as any)?.content;
+        const parsed = content && typeof content === "string" ? JSON.parse(content) : (content || getDefaultResumeJSON());
+        setResumeData(parsed as any);
+      } catch (parseErr) {
+        console.error("Invalid resume JSON:", parseErr);
+        setResumeData(getDefaultResumeJSON() as any);
+      }
+    };
+
+    loadResume();
+    // Only run on id or initial load; resumeData guard prevents overwriting user's edits
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
   // Load templates
   useEffect(() => {
     let mounted = true;
@@ -635,9 +683,6 @@ const ResumeEditorV1: React.FC = () => {
     );
   }
 
-  if (error) {
-    return <div className="p-8">Failed to load resume.</div>;
-  }
 
   return (
     <div className="flex h-screen">
@@ -682,6 +727,11 @@ const ResumeEditorV1: React.FC = () => {
           </div>
         </header>
 
+        {error && (
+          <div className="mb-3 rounded border px-3 py-2 text-sm">
+            We couldn't load your stored resume; starting with a blank template.
+          </div>
+        )}
         {mode === 'editor' ? (
           <div className="grid grid-cols-12 gap-6 h-[calc(100vh-100px)]">
             <div className="col-span-4 border rounded p-3 overflow-auto">
