@@ -145,6 +145,7 @@ const defaultCustomization = {
 };
 
 const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templateId?: string; variant?: 'sidebar' | 'full' }) => {
+  const [showJSON, setShowJSON] = useState(false);
   const Wrapper: React.ElementType = variant === 'sidebar' ? 'aside' : 'div';
   const wrapperCls = variant === 'sidebar'
     ? 'w-[38%] border-l px-5 py-5 overflow-auto'
@@ -153,7 +154,20 @@ const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templat
   return (
     <Wrapper className={wrapperCls}>
       <div className="max-w-3xl mx-auto bg-background shadow-sm rounded-md p-6">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-medium">Preview</h2>
+          <button className="text-xs rounded border px-2 py-1" onClick={() => setShowJSON(v => !v)}>
+            {showJSON ? 'Hide' : 'Show'} parsed JSON
+          </button>
+        </div>
         <TemplateRenderer template={templateId || 'two-col'} resumeData={data} customization={defaultCustomization} />
+        {showJSON && (
+          <div className="mt-4">
+            <pre className="text-xs max-h-64 overflow-auto border rounded p-2 bg-muted/30">
+              {JSON.stringify(data, null, 2)}
+            </pre>
+          </div>
+        )}
       </div>
     </Wrapper>
   );
