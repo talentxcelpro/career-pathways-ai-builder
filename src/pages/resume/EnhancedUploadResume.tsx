@@ -10,7 +10,7 @@ const EnhancedUploadResume = () => {
   const handleUploadComplete = (resumeData: any) => {
     console.log('Upload completed with data:', resumeData);
     // Navigate to resume builder with the processed data
-    navigate('/resume-builder/edit/new', { 
+    navigate('/resume/new', { 
       state: { resumeData } 
     });
   };
