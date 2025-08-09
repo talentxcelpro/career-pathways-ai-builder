@@ -176,6 +176,12 @@ const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templat
 const SectionEditor = ({ section, data, onChange, onLiveChange }: { section: string; data: any; onChange: (next: any) => void; onLiveChange?: (next: any) => void }) => {
   const [local, setLocal] = useState<any>(data || {});
   const { enhanceSection } = useSectionEnhancer();
+  // Cover letter generator UI state (used only when editing cover letter)
+  const [clCompany, setClCompany] = useState<string>('');
+  const [clRole, setClRole] = useState<string>('');
+  const [clTone, setClTone] = useState<'professional' | 'bold' | 'conservative'>('professional');
+  const [clJD, setClJD] = useState<string>('');
+  const [isGeneratingCL, setIsGeneratingCL] = useState<boolean>(false);
 
   useEffect(() => setLocal(data || {}), [data]);
 
@@ -541,15 +547,93 @@ const SectionEditor = ({ section, data, onChange, onLiveChange }: { section: str
             onClick={async () => {
               try {
                 const improved = await enhanceSection({ section: 'coverLetter' as any, field: 'coverLetter', text: local.coverLetter || '', targetRole: undefined, atsJson: undefined });
-                setLocal({ ...local, coverLetter: improved });
+                const nextData = { ...local, coverLetter: improved };
+                updateLive(nextData);
               } catch {}
             }}
           >
             <Sparkles className="h-3 w-3" /> Enhance
           </button>
         </div>
-        <textarea className="mt-1 w-full border rounded px-3 py-2 h-80" value={local.coverLetter || ''}
-          onChange={(e) => setLocal({ ...local, coverLetter: e.target.value })} />
+
+        {/* Generator controls */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded border p-3 bg-muted/10">
+          <input
+            placeholder="Company (optional)"
+            className="w-full border rounded px-3 py-2"
+            value={clCompany}
+            onChange={(e) => setClCompany(e.target.value)}
+          />
+          <input
+            placeholder="Role (optional)"
+            className="w-full border rounded px-3 py-2"
+            value={clRole}
+            onChange={(e) => setClRole(e.target.value)}
+          />
+          <div>
+            <label className="text-xs text-muted-foreground">Tone</label>
+            <select
+              className="mt-1 w-full border rounded px-3 py-2"
+              value={clTone}
+              onChange={(e) => setClTone(e.target.value as any)}
+            >
+              <option value="professional">Professional</option>
+              <option value="bold">Bold</option>
+              <option value="conservative">Conservative</option>
+            </select>
+          </div>
+          <div className="md:col-span-2">
+            <label className="text-xs text-muted-foreground">Paste Job Description (optional)</label>
+            <textarea
+              className="mt-1 w-full border rounded px-3 py-2 h-28"
+              placeholder="Paste the JD here to tailor the cover letter"
+              value={clJD}
+              onChange={(e) => setClJD(e.target.value)}
+            />
+          </div>
+          <div className="md:col-span-2 flex justify-end">
+            <button
+              className="text-xs rounded border px-3 py-2"
+              disabled={isGeneratingCL}
+              onClick={async () => {
+                try {
+                  setIsGeneratingCL(true);
+                  const { data, error } = await supabase.functions.invoke('ai-resume-enhancer', {
+                    body: {
+                      action: 'cover_letter',
+                      resumeData: local,
+                      jobDescription: clJD,
+                      tone: clTone,
+                      company: clCompany,
+                      role: clRole,
+                    },
+                  });
+                  if (error || !data?.success) throw error || new Error('Generation failed');
+                  const text = data.coverLetter || data.content || '';
+                  const nextData = { ...local, coverLetter: text };
+                  updateLive(nextData);
+                  toast.success('Cover letter generated');
+                } catch (e) {
+                  console.error(e);
+                  toast.error('Failed to generate cover letter');
+                } finally {
+                  setIsGeneratingCL(false);
+                }
+              }}
+            >
+              {isGeneratingCL ? 'Generating…' : 'Generate from JD'}
+            </button>
+          </div>
+        </div>
+
+        <textarea
+          className="mt-1 w-full border rounded px-3 py-2 h-80"
+          value={local.coverLetter || ''}
+          onChange={(e) => {
+            const nextData = { ...local, coverLetter: e.target.value };
+            updateLive(nextData);
+          }}
+        />
         <button onClick={save} className="rounded border px-3 py-2">Save</button>
       </div>
     );
