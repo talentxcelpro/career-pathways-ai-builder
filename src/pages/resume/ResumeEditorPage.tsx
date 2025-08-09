@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -75,6 +75,7 @@ const normalizeResume = (input: any): ResumeJSON => {
 export const ResumeEditorPage: React.FC<ResumeEditorPageProps> = ({ initialData: propInitialData }) => {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const stateInitial = (location.state as any)?.resumeData ?? (location.state as any)?.resumeData?.parsed;
   const initial = normalizeResume(propInitialData ?? stateInitial);
   const [resume, setResume] = useState<ResumeJSON>(initial);
@@ -105,10 +106,18 @@ export const ResumeEditorPage: React.FC<ResumeEditorPageProps> = ({ initialData:
           .eq('id', id);
         if (error) throw error;
       } else {
-        const { error } = await (supabase as any)
+        const { data: inserted, error } = await (supabase as any)
           .from('ai_resumes')
-          .insert({ user_id: user.id, title: 'My Resume', content: resume as any, is_primary: false });
+          .insert({ user_id: user.id, title: 'My Resume', content: resume as any, is_primary: false })
+          .select('id')
+          .single();
         if (error) throw error;
+        const newId = inserted?.id as string | undefined;
+        if (newId) {
+          toast({ title: 'Saved', description: 'Redirecting to advanced editor…' });
+          navigate(`/resume/editor/${newId}`);
+          return;
+        }
       }
       toast({ title: 'Saved', description: 'Your resume has been saved.' });
     } catch (e: any) {
