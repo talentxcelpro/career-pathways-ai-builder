@@ -330,7 +330,21 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
     const list = Array.isArray(local.education) ? local.education : [];
     return (
       <div className="space-y-3">
-        <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, education: [...list, { degree: '', school: '', startDate: '', endDate: '', gpa: '' }] })}>+ Add education</button>
+        <div className="flex items-center justify-between">
+          <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, education: [...list, { degree: '', school: '', startDate: '', endDate: '', gpa: '' }] })}>+ Add education</button>
+          <button
+            className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"
+            onClick={async () => {
+              try {
+                const educationText = list.map((item: any) => `${item.degree} at ${item.school}`).join(', ');
+                const improved = await enhanceSection({ section: 'education' as any, field: 'education', text: educationText, targetRole: undefined, atsJson: undefined });
+                toast.success('Education section enhanced');
+              } catch {}
+            }}
+          >
+            <Sparkles className="h-3 w-3" /> Enhance all
+          </button>
+        </div>
         <div className="space-y-3">
           {list.map((item: any, i: number) => (
             <div key={i} className="border rounded p-3 space-y-2">
@@ -382,7 +396,21 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
     const asText = list.map((s: any) => (typeof s === 'string' ? s : s?.name)).filter(Boolean).join(', ');
     return (
       <div className="space-y-3">
-        <label className="text-sm">Skills (comma separated)</label>
+        <div className="flex items-center justify-between">
+          <label className="text-sm">Skills (comma separated)</label>
+          <button
+            className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"
+            onClick={async () => {
+              try {
+                const improved = await enhanceSection({ section: 'skills' as any, field: 'skills', text: asText, targetRole: undefined, atsJson: undefined });
+                const names = improved.split(',').map((x: string) => x.trim()).filter(Boolean);
+                setLocal({ ...local, skills: names });
+              } catch {}
+            }}
+          >
+            <Sparkles className="h-3 w-3" /> Enhance skills
+          </button>
+        </div>
         <input className="mt-1 w-full border rounded px-3 py-2" defaultValue={asText}
           onBlur={(e) => {
             const names = e.target.value.split(',').map((x) => x.trim()).filter(Boolean);
@@ -403,7 +431,21 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
     const list = Array.isArray(local[key]) ? local[key] : [];
     return (
       <div className="space-y-3">
-        <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, [key]: [...list, { title: '', org: '', date: '', description: '' }] })}>+ Add {SECTION_LABELS[key] || key}</button>
+        <div className="flex items-center justify-between">
+          <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, [key]: [...list, { title: '', org: '', date: '', description: '' }] })}>+ Add {SECTION_LABELS[key] || key}</button>
+          <button
+            className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"
+            onClick={async () => {
+              try {
+                const sectionText = list.map((item: any) => `${item.title || item.name} - ${item.description || ''}`).join('\n');
+                const improved = await enhanceSection({ section: key as any, field: 'all', text: sectionText, targetRole: undefined, atsJson: undefined });
+                toast.success(`${SECTION_LABELS[key]} section enhanced`);
+              } catch {}
+            }}
+          >
+            <Sparkles className="h-3 w-3" /> Enhance all
+          </button>
+        </div>
         <div className="space-y-3">
           {list.map((item: any, i: number) => (
             <div key={i} className="border rounded p-3 space-y-2">
@@ -435,7 +477,7 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
                       next[i] = { ...next[i], description: improved };
                       setLocal({ ...local, [key]: next });
                     } catch {}
-                  }}
+                    }}
                 >
                   <Sparkles className="h-3 w-3" /> Enhance description
                 </button>
@@ -610,12 +652,34 @@ const ResumeEditorV1: React.FC = () => {
     setIsATSOpen(true);
   }, []);
 
-  const onDragEnd = (event: any) => {
+  const onDragEnd = async (event: any) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     const oldIndex = sections.indexOf(active.id);
     const newIndex = sections.indexOf(over.id);
-    setSections((items) => arrayMove(items, oldIndex, newIndex));
+    const newOrder = arrayMove(sections, oldIndex, newIndex);
+    setSections(newOrder);
+    
+    // Persist section order to database
+    try {
+      const updatedContent = {
+        ...(resumeData as any),
+        sectionOrder: newOrder
+      };
+      
+      const { error } = await supabase
+        .from('ai_resumes')
+        .update({ content: updatedContent as any })
+        .eq('id', id);
+      
+      if (error) throw error;
+      toast.success('Section order saved');
+    } catch (error) {
+      console.error('Failed to save section order:', error);
+      toast.error('Failed to save section order');
+      // Revert on failure
+      setSections(sections);
+    }
   };
 
   const pageTitle = useMemo(() => `Resume Editor | Modern 3‑Pane Builder`, []);
