@@ -8,9 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useResumeData } from "@/hooks/useResumeData";
 import { useResumeExport, ExportSettings } from "@/hooks/useResumeExport";
 import { useSectionEnhancer } from "@/hooks/useSectionEnhancer";
-import { useJobTargeting } from "@/hooks/useJobTargeting";
+// import { useJobTargeting } from "@/hooks/useJobTargeting";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
+import { JobTargetingPanel } from "@/components/resume/enhanced/JobTargetingPanel";
+import { TemplateRenderer } from "@/components/resume/templates/TemplateRenderer";
 
 // Simple Sortable item for sections list
 function SortableItem({ id, label, selected, onSelect }: { id: string; label: string; selected: boolean; onSelect: (id: string) => void }) {
@@ -136,11 +138,6 @@ const Toolbar = ({
 };
 
 const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templateId?: string; variant?: 'sidebar' | 'full' }) => {
-  const p = data?.personalInfo || data?.profile || {};
-  const summary = data?.summary || data?.profileSummary || '';
-  const experience = Array.isArray(data?.experience) ? data.experience : [];
-  const skills = Array.isArray(data?.skills) ? data.skills : [];
-
   const Wrapper: React.ElementType = variant === 'sidebar' ? 'aside' : 'div';
   const wrapperCls = variant === 'sidebar'
     ? 'w-[38%] border-l px-5 py-5 overflow-auto'
@@ -149,72 +146,7 @@ const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templat
   return (
     <Wrapper className={wrapperCls}>
       <div className="max-w-3xl mx-auto bg-background shadow-sm rounded-md p-6">
-        {templateId === 'two-col' ? (
-          <div className="grid grid-cols-3 gap-6">
-            <div className="col-span-2">
-              <h1 className="text-2xl font-bold">{p.fullName || p.name || 'Your Name'}</h1>
-              <div className="text-sm opacity-70">{p.title || 'Your Title'}</div>
-
-              <section className="mt-4">
-                <h3 className="font-semibold">Experience</h3>
-                <div className="mt-2 space-y-3">
-                  {experience.map((exp: any, i: number) => (
-                    <article key={i} className="">
-                      <div className="font-medium">{exp.role || exp.title} <span className="opacity-70">— {exp.company}</span></div>
-                      {Array.isArray(exp.bullets) && (
-                        <ul className="list-disc ml-5 text-sm mt-1">
-                          {exp.bullets.map((b: string, idx: number) => (<li key={idx}>{b}</li>))}
-                        </ul>
-                      )}
-                    </article>
-                  ))}
-                </div>
-              </section>
-            </div>
-
-            <div className="col-span-1">
-              <section>
-                <h3 className="font-semibold">Summary</h3>
-                <p className="text-sm mt-2 whitespace-pre-line">{summary}</p>
-              </section>
-
-              <section className="mt-4">
-                <h3 className="font-semibold">Skills</h3>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {skills.map((s: any, i: number) => (
-                    <span key={i} className="text-xs border rounded px-2 py-1">{typeof s === 'string' ? s : (s?.name || '')}</span>
-                  ))}
-                </div>
-              </section>
-            </div>
-          </div>
-        ) : (
-          <div>
-            <h1 className="text-2xl font-bold">{p.fullName || p.name || 'Your Name'}</h1>
-            <div className="text-sm opacity-70">{p.title || 'Your Title'}</div>
-
-            <section className="mt-4">
-              <h3 className="font-semibold">Summary</h3>
-              <p className="mt-2 whitespace-pre-line">{summary}</p>
-            </section>
-
-            <section className="mt-4">
-              <h3 className="font-semibold">Experience</h3>
-              <div className="mt-2 space-y-3">
-                {experience.map((exp: any, i: number) => (
-                  <article key={i}>
-                    <div className="font-medium">{exp.role || exp.title} <span className="opacity-70">— {exp.company}</span></div>
-                    {Array.isArray(exp.bullets) && (
-                      <ul className="list-disc ml-5 text-sm mt-1">
-                        {exp.bullets.map((b: string, idx: number) => (<li key={idx}>{b}</li>))}
-                      </ul>
-                    )}
-                  </article>
-                ))}
-              </div>
-            </section>
-          </div>
-        )}
+        <TemplateRenderer id={templateId} data={data} />
       </div>
     </Wrapper>
   );
@@ -548,7 +480,7 @@ const ResumeEditorV1: React.FC = () => {
 
   const { exportResume, isExporting } = useResumeExport();
   const { enhanceSection } = useSectionEnhancer();
-  const { analyze } = useJobTargeting(resumeData);
+  const [isATSOpen, setIsATSOpen] = useState(false);
 
   // Resilient hydration: ensure resumeData is always set
   useEffect(() => {
@@ -653,11 +585,9 @@ const ResumeEditorV1: React.FC = () => {
     }
   }, [resumeData, selectedSection, enhanceSection, setResumeData]);
 
-  const handleATS = useCallback(async () => {
-    const jd = prompt('Paste job description to analyze against your resume:');
-    if (!jd) return;
-    await analyze(jd);
-  }, [analyze]);
+  const handleATS = useCallback(() => {
+    setIsATSOpen(true);
+  }, []);
 
   const onDragEnd = (event: any) => {
     const { active, over } = event;
@@ -760,6 +690,8 @@ const ResumeEditorV1: React.FC = () => {
       </main>
 
       {mode === 'editor' && <Preview data={resumeData} templateId={selectedTemplateId} />}
+
+      <JobTargetingPanel isOpen={isATSOpen} onClose={() => setIsATSOpen(false)} resumeData={resumeData} />
     </div>
   );
 };
