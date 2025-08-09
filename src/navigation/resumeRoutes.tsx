@@ -3,6 +3,7 @@ import { FileText, Sparkles } from "lucide-react";
 import ResumeNew from "@/pages/resume/ResumeNew";
 import EditResume from "@/pages/resume/EditResume";
 import TalentXcelResumeBuilder from "@/pages/resume/TalentXcelResumeBuilder";
+import ResumeEditorV1 from "@/pages/resume/ResumeEditorV1";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const resumeRoutes = [

@@ -316,7 +316,7 @@ const ResumeEditorV1: React.FC = () => {
   const handleSave = useCallback(async () => {
     try {
       if (!id || !resumeData) return;
-      const { error } = await supabase.from('ai_resumes').update({ content: resumeData, updated_at: new Date().toISOString() }).eq('id', id as string);
+      const { error } = await supabase.from('ai_resumes').update({ content: resumeData as any, updated_at: new Date().toISOString() }).eq('id', id as string);
       if (error) throw error;
       toast.success('Resume saved');
     } catch (e) {
@@ -350,8 +350,8 @@ const ResumeEditorV1: React.FC = () => {
   const handleImprove = useCallback(async () => {
     if (!resumeData || !selectedSection) return;
     try {
-      const targetText = selectedSection === 'summary' ? (resumeData.summary || '') : '';
-      const improved = await enhanceSection({ section: selectedSection as any, beforeText: targetText, targetRole: undefined, atsJson: undefined });
+      const targetText = selectedSection === 'summary' ? (((resumeData as any)?.summary) ?? (resumeData as any)?.profileSummary ?? '') : '';
+      const improved = await enhanceSection({ resumeId: (id as string) || undefined, section: selectedSection as any, text: targetText, targetRole: undefined, atsJson: undefined });
       if (selectedSection === 'summary') {
         setResumeData((prev: any) => ({ ...(prev || {}), summary: improved }));
         toast.success('Summary improved');
