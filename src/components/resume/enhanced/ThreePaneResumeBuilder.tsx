@@ -14,6 +14,8 @@ import { LivePreview } from './three-pane/LivePreview';
 import { TopToolbar } from './three-pane/TopToolbar';
 import { TemplateSidebar } from './three-pane/TemplateSidebar';
 import { UploadResumeDialog } from './three-pane/UploadResumeDialog';
+import { ATSCheckDialog } from './three-pane/ATSCheckDialog';
+import { ImproveSectionDialog } from './three-pane/ImproveSectionDialog';
 import { useAutoSave } from '@/hooks/useAutoSave';
 
 interface ThreePaneResumeBuilderProps {
@@ -109,6 +111,8 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [paneOrder, setPaneOrder] = useState(['templates', 'sections', 'editor', 'preview']);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [atsOpen, setAtsOpen] = useState(false);
+  const [improveOpen, setImproveOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -239,12 +243,12 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
   }, [data, onChange]);
 
   const handleATSCheck = useCallback(() => {
-    console.log('Running ATS check...');
+    setAtsOpen(true);
   }, []);
 
   const handleImproveSection = useCallback(() => {
-    console.log('Improving section:', selectedSection);
-  }, [selectedSection]);
+    setImproveOpen(true);
+  }, []);
 
   const handleExport = useCallback((format: 'pdf' | 'docx') => {
     console.log('Exporting as:', format);
@@ -372,6 +376,27 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
         open={uploadDialogOpen}
         onOpenChange={setUploadDialogOpen}
         onResumeUploaded={handleResumeUploaded}
+      />
+
+      {/* ATS Check Dialog */}
+      <ATSCheckDialog
+        open={atsOpen}
+        onOpenChange={setAtsOpen}
+        resume={data}
+      />
+
+      {/* Improve Section Dialog */}
+      <ImproveSectionDialog
+        open={improveOpen}
+        onOpenChange={setImproveOpen}
+        resume={data}
+        selectedSection={
+          (selectedSection === 'experience' ? 'experience' :
+           selectedSection === 'skills' ? 'skills' :
+           selectedSection === 'projects' ? 'projects' : 'summary')
+        }
+        selectedItemIndex={selectedItemIndex}
+        onApply={onChange}
       />
     </div>
   );

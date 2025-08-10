@@ -10,7 +10,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { resumeTemplates, getTemplatesByCategory, ResumeTemplate } from '@/data/resumeTemplates';
 import { TemplatePreview } from './TemplatePreview';
-
+import { TemplatePreviewModal } from '@/components/resume/templates/TemplatePreviewModal';
 interface TemplateSidebarProps {
   selectedTemplate: string;
   onTemplateSelect: (templateId: string) => void;
@@ -114,9 +114,12 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
   const orderedRecommended = getOrderedTemplates(recommendedTemplates, recommendedOrder);
   const orderedAllTemplates = getOrderedTemplates(otherTemplates, allTemplatesOrder);
 
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
+
   const handlePreview = (templateId: string) => {
-    // TODO: Implement template preview functionality
-    console.log('Preview template:', templateId);
+    setPreviewTemplateId(templateId);
+    setIsPreviewOpen(true);
   };
 
   const handleDragStart = (event: any) => {
@@ -252,6 +255,18 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
           </DndContext>
         </Tabs>
       </CardContent>
+
+      {previewTemplateId && (
+        <TemplatePreviewModal
+          isOpen={isPreviewOpen}
+          onClose={() => setIsPreviewOpen(false)}
+          templateId={previewTemplateId}
+          onSelect={(id) => {
+            onTemplateSelect(id);
+            setIsPreviewOpen(false);
+          }}
+        />
+      )}
     </Card>
   );
 };
