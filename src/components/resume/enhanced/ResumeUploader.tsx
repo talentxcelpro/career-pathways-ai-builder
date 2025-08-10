@@ -106,7 +106,7 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
         .from('documents')
         .getPublicUrl(uploadData.path);
 
-      // Call cv-parser edge function
+      // Call cv-parser edge function with correct payload
       const { data: parsingResult, error: parsingError } = await supabase.functions.invoke('cv-parser', {
         body: {
           fileUrl: urlData.publicUrl,
@@ -120,11 +120,23 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
       setUploadProgress(90);
 
       if (parsingError) {
+        console.error('CV parsing error:', parsingError);
         throw new Error(`CV parsing failed: ${parsingError.message}`);
       }
 
+      if (!parsingResult || !parsingResult.success) {
+        console.error('CV parsing failed:', parsingResult);
+        throw new Error('CV parsing failed: Invalid response from parser');
+      }
+
       // Convert the parsed result to EditorResume format
-      const parsedCV = parsingResult.parsedData;
+      console.log('CV parsing result:', parsingResult);
+      const parsedCV = parsingResult.parsedData || parsingResult.data;
+      
+      if (!parsedCV) {
+        throw new Error('No parsed data received from CV parser');
+      }
+      
       const editorResume = convertParsedCVToEditor(parsedCV);
       
       setExtractedData(editorResume);
@@ -136,9 +148,9 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
         .from('documents')
         .remove([uploadData.path]);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Resume upload error:', error);
-      toast.error('Failed to parse resume. Please try again.');
+      toast.error(`Failed to parse resume: ${error.message || 'Please try again.'}`);
       setUploadProgress(0);
     } finally {
       setIsUploading(false);
