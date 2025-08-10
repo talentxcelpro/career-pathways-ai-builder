@@ -77,6 +77,8 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 
     setIsUploading(true);
     setUploadProgress(10);
+    
+    let uploadData: any = null;
 
     try {
       // Extract text content based on file type
@@ -91,13 +93,15 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 
       // Upload file to Supabase Storage
       const fileName = `${Date.now()}-${file.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const uploadResult = await supabase.storage
         .from('documents')
         .upload(`cv-uploads/temp/${fileName}`, file);
 
-      if (uploadError) {
-        throw new Error(`Upload failed: ${uploadError.message}`);
+      if (uploadResult.error) {
+        throw new Error(`Upload failed: ${uploadResult.error.message}`);
       }
+
+      uploadData = uploadResult.data;
 
       setUploadProgress(60);
 
@@ -107,26 +111,42 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
         .getPublicUrl(uploadData.path);
 
       // Call cv-parser edge function with correct payload
+      console.log('Calling cv-parser with payload:', {
+        fileUrl: urlData.publicUrl,
+        fileName: file.name,
+        fileType: file.type,
+        batchId: crypto.randomUUID(),
+        extractedText: extractedText.substring(0, 200) + '...' // Log first 200 chars
+      });
+
+      const batchId = crypto.randomUUID();
+      
       const { data: parsingResult, error: parsingError } = await supabase.functions.invoke('cv-parser', {
         body: {
           fileUrl: urlData.publicUrl,
           fileName: file.name,
           fileType: file.type,
-          batchId: crypto.randomUUID(),
+          batchId: batchId,
           extractedText: extractedText
         }
       });
 
       setUploadProgress(90);
 
+      console.log('CV Parser response:', { parsingResult, parsingError });
+
       if (parsingError) {
         console.error('CV parsing error:', parsingError);
-        throw new Error(`CV parsing failed: ${parsingError.message}`);
+        throw new Error(`CV parsing failed: ${parsingError.message || JSON.stringify(parsingError)}`);
       }
 
-      if (!parsingResult || !parsingResult.success) {
+      if (!parsingResult) {
+        throw new Error('CV parsing failed: No response from parser');
+      }
+
+      if (!parsingResult.success) {
         console.error('CV parsing failed:', parsingResult);
-        throw new Error('CV parsing failed: Invalid response from parser');
+        throw new Error(`CV parsing failed: ${parsingResult.error || 'Invalid response from parser'}`);
       }
 
       // Convert the parsed result to EditorResume format
@@ -138,19 +158,47 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
       }
       
       const editorResume = convertParsedCVToEditor(parsedCV);
-      
       setExtractedData(editorResume);
       setUploadProgress(100);
       toast.success('Resume parsed successfully!');
 
       // Clean up uploaded file
-      await supabase.storage
-        .from('documents')
-        .remove([uploadData.path]);
+      try {
+        await supabase.storage
+          .from('documents')
+          .remove([uploadData.path]);
+      } catch (cleanupError) {
+        console.warn('Failed to cleanup uploaded file:', cleanupError);
+        // Don't fail the main operation for cleanup issues
+      }
 
     } catch (error: any) {
       console.error('Resume upload error:', error);
-      toast.error(`Failed to parse resume: ${error.message || 'Please try again.'}`);
+      
+      // Clean up uploaded file on error
+      if (uploadData?.path) {
+        try {
+          await supabase.storage
+            .from('documents')
+            .remove([uploadData.path]);
+        } catch (cleanupError) {
+          console.warn('Failed to cleanup file after error:', cleanupError);
+        }
+      }
+      
+      let errorMessage = 'Failed to parse resume. Please try again.';
+      
+      if (error.message) {
+        if (error.message.includes('Failed to send a request to the Edge Function')) {
+          errorMessage = 'Resume parser service is temporarily unavailable. Please try again in a moment.';
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      toast.error(errorMessage);
       setUploadProgress(0);
     } finally {
       setIsUploading(false);
