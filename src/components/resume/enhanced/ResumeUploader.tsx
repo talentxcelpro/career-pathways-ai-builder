@@ -4,11 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
-import { useAIService } from '@/hooks/useAIService';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { aiDataToEditor } from '@/utils/aiParsingAdapters';
-import { EditorResume } from '@/types/editor-resume';
+import { supabase } from '@/integrations/supabase/client';
+import { EditorResume, createEmptyEditorResume } from '@/types/editor-resume';
+import * as pdfjsLib from 'pdfjs-dist';
+import mammoth from 'mammoth';
+
+// Set PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 interface ResumeUploaderProps {
   onResumeExtracted: (extractedData: EditorResume) => void;
@@ -22,7 +26,32 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [extractedData, setExtractedData] = useState<EditorResume | null>(null);
-  const { invokeAITool } = useAIService();
+
+  // Extract text from PDF
+  const extractTextFromPDF = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+    let text = '';
+    
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items
+        .filter((item: any) => 'str' in item)
+        .map((item: any) => item.str)
+        .join(' ');
+      text += pageText + '\n';
+    }
+    
+    return text;
+  };
+
+  // Extract text from DOCX
+  const extractTextFromDOCX = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
+  };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -50,38 +79,63 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
     setUploadProgress(10);
 
     try {
-      // Convert file to base64
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      setUploadProgress(30);
-
-      // Extract text content using AI service
-      const result = await invokeAITool({
-        toolSlug: 'resume-parser',
-        inputData: {
-          file: base64,
-          fileName: file.name,
-          fileType: file.type
-        },
-        category: 'resume'
-      });
-
-      setUploadProgress(70);
-
-      if (result.success && result.data) {
-        // Convert AI result to canonical EditorResume format
-        const editorResume = aiDataToEditor(result.data);
-        setExtractedData(editorResume);
-        setUploadProgress(100);
-        toast.success('Resume parsed successfully!');
-      } else {
-        throw new Error(result.error || 'Failed to parse resume');
+      // Extract text content based on file type
+      let extractedText = '';
+      if (file.type === 'application/pdf') {
+        extractedText = await extractTextFromPDF(file);
+      } else if (file.type.includes('word') || file.type.includes('doc')) {
+        extractedText = await extractTextFromDOCX(file);
       }
+
+      setUploadProgress(40);
+
+      // Upload file to Supabase Storage
+      const fileName = `${Date.now()}-${file.name}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(`cv-uploads/temp/${fileName}`, file);
+
+      if (uploadError) {
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
+
+      setUploadProgress(60);
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('documents')
+        .getPublicUrl(uploadData.path);
+
+      // Call cv-parser edge function
+      const { data: parsingResult, error: parsingError } = await supabase.functions.invoke('cv-parser', {
+        body: {
+          fileUrl: urlData.publicUrl,
+          fileName: file.name,
+          fileType: file.type,
+          batchId: crypto.randomUUID(),
+          extractedText: extractedText
+        }
+      });
+
+      setUploadProgress(90);
+
+      if (parsingError) {
+        throw new Error(`CV parsing failed: ${parsingError.message}`);
+      }
+
+      // Convert the parsed result to EditorResume format
+      const parsedCV = parsingResult.parsedData;
+      const editorResume = convertParsedCVToEditor(parsedCV);
+      
+      setExtractedData(editorResume);
+      setUploadProgress(100);
+      toast.success('Resume parsed successfully!');
+
+      // Clean up uploaded file
+      await supabase.storage
+        .from('documents')
+        .remove([uploadData.path]);
+
     } catch (error) {
       console.error('Resume upload error:', error);
       toast.error('Failed to parse resume. Please try again.');
@@ -89,7 +143,76 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
     } finally {
       setIsUploading(false);
     }
-  }, [invokeAITool]);
+  }, []);
+
+  // Convert parsed CV data to EditorResume format
+  const convertParsedCVToEditor = (parsedCV: any): EditorResume => {
+    const resume = createEmptyEditorResume();
+    
+    if (parsedCV?.personal_info) {
+      resume.personalInfo = {
+        fullName: parsedCV.personal_info.full_name || '',
+        professionalTitle: parsedCV.personal_info.professional_title || '',
+        email: parsedCV.personal_info.email || '',
+        phone: parsedCV.personal_info.phone || '',
+        location: parsedCV.personal_info.location || '',
+        linkedin: parsedCV.personal_info.linkedin_url || '',
+        github: parsedCV.personal_info.github_url || '',
+        website: parsedCV.personal_info.portfolio_url || '',
+        summary: parsedCV.professional_summary || '',
+      };
+    }
+
+    if (parsedCV?.work_experience) {
+      resume.experience = parsedCV.work_experience.map((exp: any, index: number) => ({
+        id: `exp-${index}`,
+        title: exp.position || '',
+        company: exp.company || '',
+        location: exp.location || '',
+        startDate: exp.start_date || '',
+        endDate: exp.end_date === 'current' ? '' : (exp.end_date || ''),
+        description: exp.responsibilities?.join('\n') || '',
+        achievements: exp.key_achievements || [],
+        technologies: [],
+      }));
+    }
+
+    if (parsedCV?.education) {
+      resume.education = parsedCV.education.map((edu: any, index: number) => ({
+        id: `edu-${index}`,
+        degree: edu.degree || '',
+        institution: edu.institution || '',
+        location: '',
+        startDate: '',
+        endDate: edu.graduation_date || '',
+        description: edu.relevant_coursework?.join(', ') || '',
+        achievements: edu.academic_projects || [],
+      }));
+    }
+
+    if (parsedCV?.skills) {
+      resume.skills = {
+        technical: Array.isArray(parsedCV.skills) ? parsedCV.skills : [],
+        soft: [],
+        languages: parsedCV.languages || [],
+        tools: [],
+      };
+    }
+
+    if (parsedCV?.certifications) {
+      resume.certifications = parsedCV.certifications.map((cert: string, index: number) => ({
+        id: `cert-${index}`,
+        name: cert,
+        issuer: '',
+        issueDate: '',
+        expiryDate: '',
+        credentialId: '',
+        credentialUrl: '',
+      }));
+    }
+
+    return resume;
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
