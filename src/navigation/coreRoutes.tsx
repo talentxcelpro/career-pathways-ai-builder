@@ -1,5 +1,6 @@
 import { HomeIcon, Settings, BarChart3 } from "lucide-react";
 import Index from "../pages/Index";
+import TalentXcelResumeBuilder from "../pages/resume/TalentXcelResumeBuilder";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import Help from "../pages/Help";
@@ -27,11 +28,12 @@ import MyApplications from "../pages/MyApplications";
 
 export const coreRoutes = [
   {
-    title: "Home",
+    title: "Resume Builder",
     to: "/",
     icon: <HomeIcon className="h-4 w-4" />,
-    page: <Index />,
+    page: <TalentXcelResumeBuilder />,
     exact: true,
+    requiresAuth: false,
   },
   {
     title: "Dashboard",
