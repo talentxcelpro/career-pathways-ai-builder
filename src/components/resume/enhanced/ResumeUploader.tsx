@@ -155,14 +155,14 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
       }
 
       // Convert the parsed result to EditorResume format
-      console.log('CV parsing result:', parsingResult);
-      const parsedCV = parsingResult.parsedData || parsingResult.data;
+      console.log('Resume parsing result:', parsingResult);
+      const parsedData = parsingResult.data;
       
-      if (!parsedCV) {
-        throw new Error('No parsed data received from CV parser');
+      if (!parsedData) {
+        throw new Error('No parsed data received from resume parser');
       }
       
-      const editorResume = convertParsedCVToEditor(parsedCV);
+      const editorResume = convertResumeParserToEditor(parsedData);
       setExtractedData(editorResume);
       setUploadProgress(100);
       toast.success('Resume parsed successfully!');
@@ -274,6 +274,63 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
         credentialId: '',
         credentialUrl: '',
       }));
+    }
+
+    return resume;
+  };
+
+  // Convert resume-parser data to EditorResume format  
+  const convertResumeParserToEditor = (parsedData: any): EditorResume => {
+    const resume = createEmptyEditorResume();
+    
+    if (parsedData?.personal) {
+      resume.personalInfo = {
+        fullName: parsedData.personal.fullName || '',
+        professionalTitle: '',
+        email: parsedData.personal.email || '',
+        phone: parsedData.personal.phone || '',
+        location: parsedData.personal.location || '',
+        linkedin: '',
+        github: '',
+        website: '',
+        summary: parsedData.summary || '',
+      };
+    }
+
+    if (parsedData?.experience) {
+      resume.experience = parsedData.experience.map((exp: any, index: number) => ({
+        id: `exp-${index}`,
+        title: exp.title || '',
+        company: exp.company || '',
+        location: exp.location || '',
+        startDate: exp.startDate || '',
+        endDate: exp.endDate === 'Present' ? '' : (exp.endDate || ''),
+        description: exp.description || '',
+        achievements: [],
+        technologies: [],
+      }));
+    }
+
+    if (parsedData?.education) {
+      resume.education = parsedData.education.map((edu: any, index: number) => ({
+        id: `edu-${index}`,
+        degree: edu.degree || '',
+        institution: edu.school || '',
+        location: edu.location || '',
+        startDate: edu.startDate || '',
+        endDate: edu.endDate || '',
+        description: '',
+        achievements: [],
+      }));
+    }
+
+    if (parsedData?.skills) {
+      resume.skills = {
+        technical: parsedData.skills.map((skill: any) => skill.name || skill).filter(Boolean),
+        soft: [],
+        languages: [],
+        tools: [],
+      };
     }
 
     return resume;
