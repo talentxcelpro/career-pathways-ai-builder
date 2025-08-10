@@ -1,30 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { EditorResume } from '@/types/editor-resume';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
+import { 
+  User, FileText, Briefcase, GraduationCap, Code, 
+  FolderOpen, Award, Trophy, Heart, Users, Wrench
+} from 'lucide-react';
+import { DndContext, closestCenter, DragEndEvent, DragOverlay, useSensor, useSensors, PointerSensor, KeyboardSensor } from '@dnd-kit/core';
+import { SortableContext, horizontalListSortingStrategy, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { 
-  GripVertical, 
-  Plus, 
-  FileText, 
-  Briefcase, 
-  GraduationCap, 
-  Wrench, 
-  FolderOpen, 
-  Award, 
-  Trophy,
-  User,
-  Bot,
-  Download,
-  Save,
-  Check
-} from 'lucide-react';
 import { SectionsList } from './three-pane/SectionsList';
 import { DynamicEditor } from './three-pane/DynamicEditor';
 import { LivePreview } from './three-pane/LivePreview';
@@ -60,6 +43,61 @@ export interface SectionInfo {
   hasMultipleItems: boolean;
 }
 
+interface SortablePaneProps {
+  id: string;
+  children: React.ReactNode;
+  className?: string;
+}
+
+const SortablePane: React.FC<SortablePaneProps> = ({ id, children, className = '' }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.7 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`${className} relative group`}
+    >
+      {/* Drag handle */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
+      >
+        <div className="bg-background/90 backdrop-blur-sm rounded p-2 shadow-md border">
+          <div className="w-4 h-4 text-muted-foreground">
+            <svg viewBox="0 0 20 20" className="w-full h-full">
+              <circle cx="5" cy="5" r="1" fill="currentColor"/>
+              <circle cx="10" cy="5" r="1" fill="currentColor"/>
+              <circle cx="15" cy="5" r="1" fill="currentColor"/>
+              <circle cx="5" cy="10" r="1" fill="currentColor"/>
+              <circle cx="10" cy="10" r="1" fill="currentColor"/>
+              <circle cx="15" cy="10" r="1" fill="currentColor"/>
+              <circle cx="5" cy="15" r="1" fill="currentColor"/>
+              <circle cx="10" cy="15" r="1" fill="currentColor"/>
+              <circle cx="15" cy="15" r="1" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      {children}
+    </div>
+  );
+};
+
 export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
   data,
   onChange,
@@ -69,6 +107,19 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
   const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0);
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [paneOrder, setPaneOrder] = useState(['templates', 'sections', 'editor', 'preview']);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const { saveStatus, lastSaved } = useAutoSave({
     data,
@@ -138,21 +189,21 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
       {
         id: 'volunteerExperience',
         name: 'Volunteer',
-        icon: <User className="h-4 w-4" />,
+        icon: <Heart className="h-4 w-4" />,
         itemCount: data.volunteerExperience.length,
         hasMultipleItems: true
       },
       {
         id: 'interests',
         name: 'Interests',
-        icon: <User className="h-4 w-4" />,
+        icon: <Users className="h-4 w-4" />,
         itemCount: data.interests.length,
         hasMultipleItems: false
       },
       {
         id: 'references',
         name: 'References',
-        icon: <User className="h-4 w-4" />,
+        icon: <Users className="h-4 w-4" />,
         itemCount: data.references.length,
         hasMultipleItems: true
       }
@@ -188,17 +239,14 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
   }, [data, onChange]);
 
   const handleATSCheck = useCallback(() => {
-    // TODO: Implement ATS check functionality
     console.log('Running ATS check...');
   }, []);
 
   const handleImproveSection = useCallback(() => {
-    // TODO: Implement AI improve section functionality
     console.log('Improving section:', selectedSection);
   }, [selectedSection]);
 
   const handleExport = useCallback((format: 'pdf' | 'docx') => {
-    // TODO: Implement export functionality
     console.log('Exporting as:', format);
   }, []);
 
@@ -210,7 +258,75 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
     onChange(uploadedData);
   }, [onChange]);
 
+  const handleDragStart = (event: any) => {
+    setActiveId(event.active.id);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = paneOrder.indexOf(active.id as string);
+    const newIndex = paneOrder.indexOf(over.id as string);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      setPaneOrder(arrayMove(paneOrder, oldIndex, newIndex));
+    }
+  };
+
   const sections = getSectionInfo(data);
+
+  const renderPane = (paneId: string) => {
+    switch (paneId) {
+      case 'templates':
+        return (
+          <SortablePane id="templates" className="w-80 border-r border-border bg-card">
+            <TemplateSidebar
+              selectedTemplate={selectedTemplate}
+              onTemplateSelect={handleTemplateChange}
+            />
+          </SortablePane>
+        );
+      case 'sections':
+        return (
+          <SortablePane id="sections" className="w-80 border-r border-border bg-card">
+            <SectionsList
+              sections={sections}
+              selectedSection={selectedSection}
+              onSectionSelect={handleSectionSelect}
+              onSectionReorder={handleSectionReorder}
+            />
+          </SortablePane>
+        );
+      case 'editor':
+        return (
+          <SortablePane id="editor" className="flex-1 border-r border-border bg-background overflow-auto">
+            <DynamicEditor
+              data={data}
+              onChange={onChange}
+              selectedSection={selectedSection}
+              selectedItemIndex={selectedItemIndex}
+              onItemIndexChange={setSelectedItemIndex}
+            />
+          </SortablePane>
+        );
+      case 'preview':
+        return (
+          <SortablePane id="preview" className="w-96 bg-muted/50 overflow-auto">
+            <LivePreview
+              data={data}
+              templateId={selectedTemplate}
+            />
+          </SortablePane>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -225,44 +341,31 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
         lastSaved={lastSaved}
       />
       
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Pane - Templates & Sections */}
-        <div className="w-80 border-r border-border bg-card flex flex-col">
-          <div className="h-1/2 border-b border-border">
-            <TemplateSidebar
-              selectedTemplate={selectedTemplate}
-              onTemplateSelect={handleTemplateChange}
-            />
-          </div>
-          <div className="h-1/2">
-            <SectionsList
-              sections={sections}
-              selectedSection={selectedSection}
-              onSectionSelect={handleSectionSelect}
-              onSectionReorder={handleSectionReorder}
-            />
-          </div>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex-1 flex overflow-hidden">
+          <SortableContext items={paneOrder} strategy={horizontalListSortingStrategy}>
+            {paneOrder.map(paneId => renderPane(paneId))}
+          </SortableContext>
         </div>
 
-        {/* Center Pane - Dynamic Editor */}
-        <div className="flex-1 border-r border-border bg-background overflow-auto">
-          <DynamicEditor
-            data={data}
-            onChange={onChange}
-            selectedSection={selectedSection}
-            selectedItemIndex={selectedItemIndex}
-            onItemIndexChange={setSelectedItemIndex}
-          />
-        </div>
-
-        {/* Right Pane - Live Preview */}
-        <div className="w-96 bg-muted/30 overflow-auto">
-          <LivePreview
-            data={data}
-            templateId={selectedTemplate}
-          />
-        </div>
-      </div>
+        <DragOverlay>
+          {activeId ? (
+            <div className="opacity-90 scale-105 shadow-2xl border-2 border-primary/50 rounded-lg overflow-hidden">
+              <div className="bg-background p-4 text-center font-medium">
+                {activeId === 'templates' && '📄 Templates'}
+                {activeId === 'sections' && '📝 Resume Sections'}
+                {activeId === 'editor' && '✏️ Editor'}
+                {activeId === 'preview' && '👁️ Live Preview'}
+              </div>
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
       {/* Upload Resume Dialog */}
       <UploadResumeDialog
