@@ -154,3 +154,6 @@ verify_jwt = false
 
 [functions.cv-parser]
 verify_jwt = false
+
+[functions.extract-resume]
+verify_jwt = false

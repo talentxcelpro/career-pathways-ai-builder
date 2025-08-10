@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { EditorResume, createEmptyEditorResume } from '@/types/editor-resume';
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
-
+import { aiDataToEditor } from '@/utils/aiParsingAdapters';
 // Set PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
@@ -91,11 +91,11 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 
       setUploadProgress(40);
 
-      // Upload file to Supabase Storage
-      const fileName = `${Date.now()}-${file.name}`;
+      // Upload file to Supabase Storage (smaller payload, more reliable)
+      const filePath = `uploads/${Date.now()}-${file.name}`;
       const uploadResult = await supabase.storage
-        .from('documents')
-        .upload(`cv-uploads/temp/${fileName}`, file);
+        .from('resumes')
+        .upload(filePath, file);
 
       if (uploadResult.error) {
         throw new Error(`Upload failed: ${uploadResult.error.message}`);
@@ -105,64 +105,47 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 
       setUploadProgress(60);
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('documents')
-        .getPublicUrl(uploadData.path);
-
-      // Use the existing resume-parser function which is more reliable
-      console.log('Calling resume-parser with payload:', {
+      // Invoke extract-resume Edge Function with storage path
+      const payload = {
+        filePath,
         fileName: file.name,
         fileType: file.type,
-        fileSize: file.size
-      });
+      };
 
-      // Convert file to base64 for the resume-parser function
-      const fileReader = new FileReader();
-      const base64File = await new Promise<string>((resolve, reject) => {
-        fileReader.onload = () => {
-          const result = fileReader.result as string;
-          resolve(result);
-        };
-        fileReader.onerror = reject;
-        fileReader.readAsDataURL(file);
-      });
-      
-      const { data: parsingResult, error: parsingError } = await supabase.functions.invoke('resume-parser', {
-        body: {
-          file: base64File,
-          fileName: file.name,
-          fileType: file.type
-        }
-      });
+      console.log('Invoking extract-resume with payload:', payload);
+
+      const invokeOnce = async () => supabase.functions.invoke('extract-resume', { body: payload });
+
+      let parsingResult: any = null;
+      let parsingError: any = null;
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        const { data, error } = await invokeOnce();
+        parsingResult = data;
+        parsingError = error;
+        if (!error) break;
+        console.warn(`extract-resume attempt ${attempt} failed:`, error?.message || error);
+        if (attempt < 2) await new Promise(r => setTimeout(r, 600));
+      }
 
       setUploadProgress(90);
 
-      console.log('CV Parser response:', { parsingResult, parsingError });
+      console.log('extract-resume response:', { parsingResult, parsingError });
 
       if (parsingError) {
-        console.error('CV parsing error:', parsingError);
-        throw new Error(`CV parsing failed: ${parsingError.message || JSON.stringify(parsingError)}`);
+        throw new Error(`Resume parsing failed: ${parsingError.message || JSON.stringify(parsingError)}`);
       }
 
       if (!parsingResult) {
-        throw new Error('CV parsing failed: No response from parser');
+        throw new Error('Resume parsing failed: No response from parser');
       }
 
-      if (!parsingResult.success) {
-        console.error('CV parsing failed:', parsingResult);
-        throw new Error(`CV parsing failed: ${parsingResult.error || 'Invalid response from parser'}`);
+      if (parsingResult.success === false && !parsingResult.resume) {
+        throw new Error(`Resume parsing failed: ${parsingResult.error || 'Invalid response from parser'}`);
       }
 
       // Convert the parsed result to EditorResume format
-      console.log('Resume parsing result:', parsingResult);
-      const parsedData = parsingResult.data;
-      
-      if (!parsedData) {
-        throw new Error('No parsed data received from resume parser');
-      }
-      
-      const editorResume = convertResumeParserToEditor(parsedData);
+      const aiParsed = parsingResult.resume || parsingResult.data || parsingResult;
+      const editorResume = aiDataToEditor ? aiDataToEditor(aiParsed) : convertResumeParserToEditor(aiParsed);
       setExtractedData(editorResume);
       setUploadProgress(100);
       toast.success('Resume parsed successfully!');
@@ -170,7 +153,7 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
       // Clean up uploaded file
       try {
         await supabase.storage
-          .from('documents')
+          .from('resumes')
           .remove([uploadData.path]);
       } catch (cleanupError) {
         console.warn('Failed to cleanup uploaded file:', cleanupError);
@@ -184,7 +167,7 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
       if (uploadData?.path) {
         try {
           await supabase.storage
-            .from('documents')
+            .from('resumes')
             .remove([uploadData.path]);
         } catch (cleanupError) {
           console.warn('Failed to cleanup file after error:', cleanupError);
