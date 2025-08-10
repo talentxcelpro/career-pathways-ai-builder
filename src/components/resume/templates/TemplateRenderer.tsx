@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { MapPin, Mail, Phone, Globe, Linkedin, Github } from 'lucide-react';
+import { createSafeHtml } from '@/utils/sanitize';
 
 interface TemplateRendererProps {
   template: any;
@@ -41,7 +42,6 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
         fontSize: `${(typography?.fontSize || 12) + 2}px`,
         fontWeight: 'bold',
         marginBottom: '0.5rem',
-        textTransform: 'uppercase' as const,
         letterSpacing: '0.5px'
       },
       section: {
@@ -70,7 +70,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
               {personalInfo.fullName}
             </h1>
             {personalInfo.professionalTitle && (
-              <h2 className="text-lg mb-3" style={styles.secondary}>
+              <h2 className="text-lg mb-3 text-muted-foreground">
                 {personalInfo.professionalTitle}
               </h2>
             )}
@@ -131,7 +131,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
     return (
       <div style={styles.section}>
         <h3 style={styles.sectionTitle}>Professional Summary</h3>
-        <p className="text-sm leading-relaxed">{personalInfo.summary}</p>
+        <div className="text-sm leading-relaxed" dangerouslySetInnerHTML={createSafeHtml(String(personalInfo.summary), { FORBID_ATTR: ['style'] })} />
       </div>
     );
   };
@@ -149,7 +149,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <h4 className="font-semibold">{exp.title}</h4>
-                  <p className="text-sm font-medium" style={styles.secondary}>
+                  <p className="text-sm font-medium text-muted-foreground">
                     {exp.company}
                   </p>
                   {exp.location && (
@@ -157,24 +157,24 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
                   )}
                 </div>
                 <div className="text-right">
-                  <p className="text-sm" style={styles.accent}>
+                  <p className="text-sm text-muted-foreground">
                     {exp.startDate} - {exp.endDate || 'Present'}
                   </p>
                 </div>
               </div>
               
               {exp.description && (
-                <p className="text-sm mb-2">{exp.description}</p>
+                <div className="text-sm mb-2" dangerouslySetInnerHTML={createSafeHtml(String(exp.description), { FORBID_ATTR: ['style'] })} />
               )}
               
               {exp.achievements && exp.achievements.length > 0 && (
                 <ul className="text-sm space-y-1">
-                  {exp.achievements.map((achievement: string, idx: number) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span style={styles.accent}>•</span>
-                      <span>{achievement}</span>
-                    </li>
-                  ))}
+                {exp.achievements.map((achievement: string, idx: number) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    <span dangerouslySetInnerHTML={createSafeHtml(String(achievement), { FORBID_ATTR: ['style'] })} />
+                  </li>
+                ))}
                 </ul>
               )}
               
@@ -207,7 +207,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
               <div className="flex justify-between items-start">
                 <div>
                   <h4 className="font-semibold">{edu.degree}</h4>
-                  <p className="text-sm" style={styles.secondary}>
+                  <p className="text-sm text-muted-foreground">
                     {edu.school}
                   </p>
                   {edu.location && (
@@ -215,7 +215,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
                   )}
                 </div>
                 <div className="text-right">
-                  <p className="text-sm" style={styles.accent}>
+                  <p className="text-sm text-muted-foreground">
                     {edu.endDate}
                   </p>
                   {edu.gpa && (
@@ -282,7 +282,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
           {projects.map((project: any, index: number) => (
             <div key={index}>
               <h4 className="font-semibold">{project.title}</h4>
-              <p className="text-sm mb-2">{project.description}</p>
+              <div className="text-sm mb-2" dangerouslySetInnerHTML={createSafeHtml(String(project.description), { FORBID_ATTR: ['style'] })} />
               
               {project.technologies && project.technologies.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-2">
@@ -298,8 +298,8 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
                 <ul className="text-sm space-y-1">
                   {project.achievements.map((achievement: string, idx: number) => (
                     <li key={idx} className="flex items-start gap-2">
-                      <span style={styles.accent}>•</span>
-                      <span>{achievement}</span>
+                      <span className="text-primary">•</span>
+                      <span dangerouslySetInnerHTML={createSafeHtml(String(achievement), { FORBID_ATTR: ['style'] })} />
                     </li>
                   ))}
                 </ul>
@@ -325,7 +325,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
                 <h4 className="font-semibold text-sm">{cert.name}</h4>
                 <p className="text-xs text-muted-foreground">{cert.issuer}</p>
               </div>
-              <p className="text-xs" style={styles.accent}>
+              <p className="text-xs text-muted-foreground">
                 {cert.date}
               </p>
             </div>

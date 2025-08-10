@@ -109,7 +109,13 @@ const Toolbar = ({
               <div className="text-xs font-medium line-clamp-1">{t.name}</div>
               {t.preview_url && (
                 <img src={t.preview_url} alt={`${t.name} resume template preview`} loading="lazy"
-                  className="mt-1 h-16 w-full object-cover rounded" />
+                  className="mt-1 h-16 w-full object-cover rounded"
+                  onError={(e) => {
+                    const img = e.currentTarget as HTMLImageElement;
+                    img.src = '/placeholder.svg';
+                    img.onerror = null;
+                  }}
+                />
               )}
             </button>
           ))}
