@@ -31,7 +31,7 @@ export const coreRoutes = [
     title: "Resume Builder",
     to: "/",
     icon: <HomeIcon className="h-4 w-4" />,
-    page: <TalentXcelResumeBuilder />,
+    page: <Index />,
     exact: true,
     requiresAuth: false,
   },
