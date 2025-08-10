@@ -3,8 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Filter } from 'lucide-react';
-import { resumeTemplates, getTemplatesByCategory } from '@/data/resumeTemplates';
+import { Search, Filter, GripVertical } from 'lucide-react';
+import { DndContext, closestCenter, DragEndEvent, DragOverlay, useSensor, useSensors, PointerSensor, KeyboardSensor } from '@dnd-kit/core';
+import { SortableContext, rectSortingStrategy, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { resumeTemplates, getTemplatesByCategory, ResumeTemplate } from '@/data/resumeTemplates';
 import { TemplatePreview } from './TemplatePreview';
 
 interface TemplateSidebarProps {
@@ -12,20 +16,76 @@ interface TemplateSidebarProps {
   onTemplateSelect: (templateId: string) => void;
 }
 
+interface SortableTemplateProps {
+  template: ResumeTemplate;
+  isSelected: boolean;
+  onSelect: (templateId: string) => void;
+  onPreview: (templateId: string) => void;
+}
+
+const SortableTemplate: React.FC<SortableTemplateProps> = ({ template, isSelected, onSelect, onPreview }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: template.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative group"
+    >
+      {/* Drag handle */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
+      >
+        <div className="bg-background/80 backdrop-blur-sm rounded p-1 shadow-sm">
+          <GripVertical className="h-3 w-3 text-muted-foreground" />
+        </div>
+      </div>
+      
+      <TemplatePreview
+        template={template}
+        isSelected={isSelected}
+        onSelect={onSelect}
+        onPreview={onPreview}
+      />
+    </div>
+  );
+};
+
 export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
   selectedTemplate,
   onTemplateSelect
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [recommendedOrder, setRecommendedOrder] = useState<string[]>([]);
+  const [allTemplatesOrder, setAllTemplatesOrder] = useState<string[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
-  const categories = [
-    { id: 'all', name: 'All Templates', count: resumeTemplates.length },
-    { id: 'Modern', name: 'Modern', count: getTemplatesByCategory('Modern').length },
-    { id: 'Classic', name: 'Classic', count: getTemplatesByCategory('Classic').length },
-    { id: 'Creative', name: 'Creative', count: getTemplatesByCategory('Creative').length },
-    { id: 'Executive', name: 'Executive', count: getTemplatesByCategory('Executive').length },
-  ];
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const filteredTemplates = resumeTemplates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -37,10 +97,57 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
   const recommendedTemplates = filteredTemplates.filter(t => t.isRecommended);
   const otherTemplates = filteredTemplates.filter(t => !t.isRecommended);
 
+  // Initialize order arrays if empty
+  const getOrderedTemplates = (templates: ResumeTemplate[], orderArray: string[]) => {
+    if (orderArray.length === 0) {
+      return templates;
+    }
+    
+    const ordered = orderArray
+      .map(id => templates.find(t => t.id === id))
+      .filter((t): t is ResumeTemplate => t !== undefined);
+    
+    const unordered = templates.filter(t => !orderArray.includes(t.id));
+    return [...ordered, ...unordered];
+  };
+
+  const orderedRecommended = getOrderedTemplates(recommendedTemplates, recommendedOrder);
+  const orderedAllTemplates = getOrderedTemplates(otherTemplates, allTemplatesOrder);
+
   const handlePreview = (templateId: string) => {
     // TODO: Implement template preview functionality
     console.log('Preview template:', templateId);
   };
+
+  const handleDragStart = (event: any) => {
+    setActiveId(event.active.id);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const activeTemplate = filteredTemplates.find(t => t.id === active.id);
+    if (!activeTemplate) return;
+
+    const isRecommended = activeTemplate.isRecommended;
+    const templates = isRecommended ? orderedRecommended : orderedAllTemplates;
+    const setOrder = isRecommended ? setRecommendedOrder : setAllTemplatesOrder;
+
+    const oldIndex = templates.findIndex(t => t.id === active.id);
+    const newIndex = templates.findIndex(t => t.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const newOrder = arrayMove(templates.map(t => t.id), oldIndex, newIndex);
+      setOrder(newOrder);
+    }
+  };
+
+  const activeTemplate = activeId ? filteredTemplates.find(t => t.id === activeId) : null;
 
   return (
     <Card className="h-full border-0 shadow-none">
@@ -57,66 +164,92 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
         </div>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="Modern">Modern</TabsTrigger>
           </TabsList>
           
-          <div className="mt-4 space-y-4">
-            {recommendedTemplates.length > 0 && (
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <h4 className="font-medium text-sm">Recommended</h4>
-                  <Badge variant="secondary" className="text-xs">
-                    {recommendedTemplates.length}
-                  </Badge>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="mt-6 space-y-6">
+              {orderedRecommended.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-medium text-sm">Recommended</h4>
+                    <Badge variant="secondary" className="text-xs">
+                      {orderedRecommended.length}
+                    </Badge>
+                  </div>
+                  
+                  <SortableContext items={orderedRecommended.map(t => t.id)} strategy={rectSortingStrategy}>
+                    <div className="grid grid-cols-1 gap-4">
+                      {orderedRecommended.map((template) => (
+                        <SortableTemplate
+                          key={template.id}
+                          template={template}
+                          isSelected={selectedTemplate === template.id}
+                          onSelect={onTemplateSelect}
+                          onPreview={handlePreview}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {recommendedTemplates.slice(0, 4).map((template) => (
-                    <TemplatePreview
-                      key={template.id}
-                      template={template}
-                      isSelected={selectedTemplate === template.id}
-                      onSelect={onTemplateSelect}
-                      onPreview={handlePreview}
-                    />
-                  ))}
+              )}
+              
+              {orderedAllTemplates.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-medium text-sm">All Templates</h4>
+                    <Badge variant="outline" className="text-xs">
+                      {orderedAllTemplates.length}
+                    </Badge>
+                  </div>
+                  
+                  <SortableContext items={orderedAllTemplates.map(t => t.id)} strategy={rectSortingStrategy}>
+                    <div className="grid grid-cols-1 gap-4">
+                      {orderedAllTemplates.map((template) => (
+                        <SortableTemplate
+                          key={template.id}
+                          template={template}
+                          isSelected={selectedTemplate === template.id}
+                          onSelect={onTemplateSelect}
+                          onPreview={handlePreview}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
                 </div>
-              </div>
-            )}
-            
-            {otherTemplates.length > 0 && (
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <h4 className="font-medium text-sm">All Templates</h4>
-                  <Badge variant="outline" className="text-xs">
-                    {otherTemplates.length}
-                  </Badge>
+              )}
+              
+              {filteredTemplates.length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground text-sm">
+                    No templates found matching your criteria.
+                  </p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {otherTemplates.slice(0, 6).map((template) => (
-                    <TemplatePreview
-                      key={template.id}
-                      template={template}
-                      isSelected={selectedTemplate === template.id}
-                      onSelect={onTemplateSelect}
-                      onPreview={handlePreview}
-                    />
-                  ))}
+              )}
+            </div>
+
+            <DragOverlay>
+              {activeTemplate ? (
+                <div className="opacity-90 scale-105 shadow-lg">
+                  <TemplatePreview
+                    template={activeTemplate}
+                    isSelected={selectedTemplate === activeTemplate.id}
+                    onSelect={() => {}}
+                    onPreview={() => {}}
+                  />
                 </div>
-              </div>
-            )}
-            
-            {filteredTemplates.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground text-sm">
-                  No templates found matching your criteria.
-                </p>
-              </div>
-            )}
-          </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
         </Tabs>
       </CardContent>
     </Card>
