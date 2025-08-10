@@ -40,11 +40,6 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
               className="w-full h-full object-cover"
               loading="lazy"
               decoding="async"
-              onError={(e) => {
-                const img = e.currentTarget as HTMLImageElement;
-                img.src = '/placeholder.svg';
-                img.onerror = null;
-              }}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>

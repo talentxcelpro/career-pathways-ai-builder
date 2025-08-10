@@ -77,7 +77,9 @@ serve(async (req) => {
       throw new Error('Missing Supabase configuration');
     }
 
-    const hasOpenAI = !!openAiApiKey;
+    if (!openAiApiKey) {
+      throw new Error('Missing OpenAI API key');
+    }
 
     // Parse request body
     let requestBody;
@@ -138,93 +140,83 @@ serve(async (req) => {
     console.log('Text extracted, length:', extractedText.length);
 
     if (!extractedText.trim()) {
-      console.warn('No text content found in the file, proceeding with fallback parsing.');
+      throw new Error('No text content found in the file');
     }
 
-    // Parse with OpenAI when available, otherwise fall back to lightweight parsing
-    let parsedResume: any = null;
-
-    const extractNameFromFileName = (name: string): string | null => {
-      try {
-        if (!name) return null;
-        const noExt = name.replace(/\.[^/.]+$/, '');
-        const resumePatterns = /resume|cv|curriculum/gi;
-        const parts = noExt.split(/[\s_\-]+/).filter(Boolean);
-        const filtered = parts.filter(p => !resumePatterns.test(p));
-        if (filtered.length >= 2) return filtered.join(' ');
-        if (filtered.length === 1) return filtered[0];
-        return noExt.length > 0 && noExt.length < 60 ? noExt : null;
-      } catch { return null; }
-    };
-
-    const buildFallbackResume = (fName: string, text: string) => ({
-      personalInfo: {
-        fullName: extractNameFromFileName(fName) || 'Candidate',
-        email: '',
-        phone: '',
-        location: ''
+    // Call OpenAI API to parse the resume
+    console.log('Calling OpenAI API...');
+    
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAiApiKey}`,
+        'Content-Type': 'application/json',
       },
-      summary: text && text.trim().length
-        ? 'Resume imported. Please review and complete details.'
-        : 'Resume imported. Add summary and details.',
-      experience: [],
-      education: [],
-      skills: [] as string[]
-    });
-
-    if (hasOpenAI && extractedText.trim().length > 0) {
-      try {
-        console.log('Calling OpenAI API...');
-        const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${openAiApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            messages: [
-              {
-                role: 'system',
-                content: `You are a resume parser. Extract structured information from the resume text and return it as JSON with this exact structure:\n{
-  "personalInfo": {"fullName": "string", "email": "string", "phone": "string", "location": "string"},
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a resume parser. Extract structured information from the resume text and return it as JSON with this exact structure:
+{
+  "personalInfo": {
+    "fullName": "string",
+    "email": "string", 
+    "phone": "string",
+    "location": "string"
+  },
   "summary": "string",
-  "experience": [{"title": "string", "company": "string", "location": "string", "startDate": "string", "endDate": "string", "description": "string"}],
-  "education": [{"degree": "string", "institution": "string", "year": "string"}],
+  "experience": [
+    {
+      "title": "string",
+      "company": "string", 
+      "location": "string",
+      "startDate": "string",
+      "endDate": "string",
+      "description": "string"
+    }
+  ],
+  "education": [
+    {
+      "degree": "string",
+      "institution": "string",
+      "year": "string"
+    }
+  ],
   "skills": ["string"]
 }`
-              },
-              { role: 'user', content: `Parse this resume text:\n\n${extractedText.substring(0, 4000)}` }
-            ],
-            temperature: 0.1,
-            max_tokens: 2000
-          }),
-        });
-
-        if (!openAIResponse.ok) {
-          const errorText = await openAIResponse.text();
-          console.error('OpenAI API error:', openAIResponse.status, errorText);
-          parsedResume = buildFallbackResume(fileName || 'Resume', extractedText);
-        } else {
-          const aiResult = await openAIResponse.json();
-          console.log('OpenAI response received');
-          const content = aiResult.choices?.[0]?.message?.content;
-          try {
-            parsedResume = content ? JSON.parse(content) : null;
-          } catch (e) {
-            console.error('Failed to parse AI JSON content, using fallback:', e);
-            parsedResume = buildFallbackResume(fileName || 'Resume', extractedText);
+          },
+          {
+            role: 'user',
+            content: `Parse this resume text:\n\n${extractedText.substring(0, 4000)}`
           }
-        }
-      } catch (e) {
-        console.error('OpenAI call failed, using fallback:', e);
-        parsedResume = buildFallbackResume(fileName || 'Resume', extractedText);
-      }
-    } else {
-      console.log('OPENAI key missing or no text content, using fallback parser');
-      parsedResume = buildFallbackResume(fileName || 'Resume', extractedText);
+        ],
+        temperature: 0.1,
+        max_tokens: 2000
+      }),
+    });
+
+    if (!openAIResponse.ok) {
+      const errorText = await openAIResponse.text();
+      console.error('OpenAI API error:', openAIResponse.status, errorText);
+      throw new Error(`OpenAI API error: ${openAIResponse.status}`);
     }
 
+    const aiResult = await openAIResponse.json();
+    console.log('OpenAI response received');
+
+    let parsedResume;
+    try {
+      const content = aiResult.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('No content in AI response');
+      }
+      
+      parsedResume = JSON.parse(content);
+    } catch (error) {
+      console.error('Failed to parse AI response:', error);
+      throw new Error('Failed to parse AI response as JSON');
+    }
 
     // Construct final response
     const result = {

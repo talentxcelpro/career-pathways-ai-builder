@@ -10,10 +10,6 @@ import { supabase } from '@/integrations/supabase/client';
 import type { ExtractionResult } from '@/types/resume';
 import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
-import { useAIService } from '@/hooks/useAIService';
-import { aiDataToEditor } from '@/utils/aiParsingAdapters';
-import { EditorResume } from '@/types/editor-resume';
-import { editorToEnhanced } from '@/utils/resumeAdapters';
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
@@ -31,8 +27,6 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
   const [lastFile, setLastFile] = useState<File | null>(null);
   const [extractionError, setExtractionError] = useState<string | null>(null);
   const [isTestingConnection, setIsTestingConnection] = useState(false);
-
-  const { invokeAITool } = useAIService();
 
   const testConnection = async () => {
     setIsTestingConnection(true);
@@ -101,151 +95,75 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
     setLastFile(file);
 
     try {
-      // Try AI parser first (same pipeline as bulk)
-      setProgress(10);
-      setStatus('Uploading to AI parser...');
+      console.log('🚀 Starting file processing for:', file.name);
+      setProgress(25);
+      setStatus('Extracting text from file...');
 
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+      let fileText = '';
+      
+      // Handle different file types with proper parsing
+      if (file.type === 'application/pdf') {
+        setStatus('Parsing PDF content...');
+        fileText = await parsePDF(file);
+      } else if (file.type.includes('word') || file.name.endsWith('.docx')) {
+        setStatus('Parsing DOCX content...');
+        fileText = await parseDOCX(file);
+      } else if (file.name.endsWith('.doc')) {
+        // For older DOC files, we'll provide manual input option
+        fileText = 'Please manually enter your information from the DOC file.';
+      } else if (file.type.includes('text') || file.name.endsWith('.txt')) {
+        setStatus('Reading text file...');
+        fileText = await file.text();
+      } else {
+        throw new Error('Unsupported file format. Please use PDF, DOCX, or TXT files.');
+      }
 
-      const aiRes = await invokeAITool({
-        toolSlug: 'resume-parser',
-        inputData: {
-          file: base64,
-          fileName: file.name,
-          fileType: file.type,
+      console.log('✅ File content extracted:', fileText.substring(0, 200) + '...');
+      
+      setProgress(50);
+      setStatus('Analyzing resume content...');
+      
+      // Extract information from the text
+      const extractedData = {
+        success: true,
+        resume: {
+          personalInfo: {
+            fullName: extractName(fileText) || '',
+            email: extractEmail(fileText) || '',
+            phone: extractPhone(fileText) || '',
+            location: extractLocation(fileText) || ''
+          },
+          summary: extractSummary(fileText) || '',
+          experience: extractExperience(fileText),
+          education: extractEducation(fileText),
+          skills: extractSkills(fileText).map((skill, index) => ({
+            id: `skill-${index}`,
+            name: skill,
+            level: 'intermediate' as const,
+            category: 'technical' as const
+          })),
+          selectedTemplate: 'modern-professional'
         },
-        category: 'resume',
-      });
+        confidence: fileText.length > 100 ? 0.7 : 0.3,
+        suggestions: [
+          'Resume content has been extracted',
+          'Please review and edit the extracted information',
+          'Some details may need manual adjustment'
+        ]
+      };
 
-      if (aiRes.success && aiRes.data) {
-        setProgress(90);
-        setStatus('Mapping parsed data...');
-        
-        // Convert AI result to canonical EditorResume format
-        const editorResume = aiDataToEditor(aiRes.data);
-        
-        // Convert to ExtractionResult with Enhanced format for compatibility
-        const enhanced = editorToEnhanced(editorResume);
-        
-        const mapped: ExtractionResult = {
-          success: true,
-          resume: {
-            personalInfo: enhanced.personalInfo,
-            summary: enhanced.personalInfo.summary,
-            experience: enhanced.experience.map(e => ({
-              id: e.id,
-              title: e.title,
-              company: e.company,
-              location: e.location,
-              startDate: e.startDate,
-              endDate: e.endDate,
-              current: e.current,
-              description: e.description,
-              achievements: e.achievements,
-            })),
-            education: enhanced.education.map(ed => ({
-              id: ed.id,
-              degree: ed.degree,
-              school: ed.school,
-              location: ed.location,
-              startDate: ed.startDate,
-              endDate: ed.endDate,
-              gpa: ed.gpa,
-            })),
-            skills: enhanced.skills.map(s => ({
-              id: s.id,
-              name: s.name,
-              category: s.category as any,
-              level: s.level as any,
-            })),
-            selectedTemplate: 'modern-professional',
-          },
-          confidence: 0.85,
-          suggestions: aiRes.data.suggestions || [],
-        };
+      setProgress(100);
+      setStatus('Complete!');
 
-        setProgress(100);
-        setStatus('Complete!');
-        toast.success('Resume parsed successfully!');
-        onExtractionComplete(mapped);
-        return;
-      }
+      console.log('✅ Basic extraction completed');
+      toast.success('Resume processed successfully!');
+      onExtractionComplete(extractedData);
 
-      // If AI did not succeed, fall through to local
-      throw new Error(aiRes.error || 'AI parsing failed');
-
-    } catch (e) {
-      console.warn('AI parsing failed, falling back to local parsing:', e);
-      try {
-        // Local parsing fallback (previous behavior)
-        setProgress(25);
-        setStatus('Extracting text from file...');
-
-        let fileText = '';
-
-        // Handle different file types with proper parsing
-        if (file.type === 'application/pdf') {
-          setStatus('Parsing PDF content...');
-          fileText = await parsePDF(file);
-        } else if (file.type.includes('word') || file.name.endsWith('.docx')) {
-          setStatus('Parsing DOCX content...');
-          fileText = await parseDOCX(file);
-        } else if (file.name.endsWith('.doc')) {
-          // For older DOC files, we'll provide manual input option
-          fileText = 'Please manually enter your information from the DOC file.';
-        } else if (file.type.includes('text') || file.name.endsWith('.txt')) {
-          setStatus('Reading text file...');
-          fileText = await file.text();
-        } else {
-          throw new Error('Unsupported file format. Please use PDF, DOCX, or TXT files.');
-        }
-
-        setProgress(50);
-        setStatus('Analyzing resume content...');
-
-        const extractedData: ExtractionResult = {
-          success: true,
-          resume: {
-            personalInfo: {
-              fullName: extractName(fileText) || '',
-              email: extractEmail(fileText) || '',
-              phone: extractPhone(fileText) || '',
-              location: extractLocation(fileText) || '',
-            },
-            summary: extractSummary(fileText) || '',
-            experience: extractExperience(fileText),
-            education: extractEducation(fileText),
-            skills: extractSkills(fileText).map((skill, index) => ({
-              id: `skill-${index}`,
-              name: skill,
-              level: 'intermediate' as const,
-              category: 'technical' as const,
-            })),
-            selectedTemplate: 'modern-professional',
-          },
-          confidence: fileText.length > 100 ? 0.7 : 0.3,
-          suggestions: [
-            'Resume content has been extracted',
-            'Please review and edit the extracted information',
-            'Some details may need manual adjustment',
-          ],
-        };
-
-        setProgress(100);
-        setStatus('Complete!');
-        toast.success('Resume processed locally.');
-        onExtractionComplete(extractedData);
-      } catch (error: any) {
-        console.error('Local parsing also failed:', error);
-        const errorMessage = error.message || 'Unknown error occurred';
-        setExtractionError(errorMessage);
-        toast.error('Failed to process resume: ' + errorMessage);
-      }
+    } catch (error: any) {
+      console.error('💥 Processing failed:', error);
+      const errorMessage = error.message || 'Unknown error occurred';
+      setExtractionError(errorMessage);
+      toast.error('Failed to process resume: ' + errorMessage);
     } finally {
       setIsExtracting(false);
     }

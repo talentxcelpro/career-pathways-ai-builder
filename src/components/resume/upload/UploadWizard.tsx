@@ -4,9 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Check, ArrowRight, ArrowLeft, User } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
-import { supabase } from "@/integrations/supabase/client";
-import { useToast, toast } from "@/hooks/use-toast";
 import { WelcomeStep } from './WelcomeStep';
 import { FileUploadStep } from './FileUploadStep';
 import { TemplateSelectionStep } from './TemplateSelectionStep';
@@ -22,7 +19,6 @@ export const UploadWizard: React.FC<UploadWizardProps> = ({ onComplete }) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [resumeData, setResumeData] = useState<any>(null);
-  const navigate = useNavigate();
 
   const steps = [
     { id: 'welcome', title: 'Welcome', component: WelcomeStep },
@@ -57,47 +53,9 @@ export const UploadWizard: React.FC<UploadWizardProps> = ({ onComplete }) => {
     handleNext();
   };
 
-  const handleProcessingComplete = async (data: any) => {
-    const content = (data && (data as any).enhancedContent) ? (data as any).enhancedContent : data;
-    try {
-      const { data: auth } = await supabase.auth.getUser();
-      if (auth?.user) {
-        const title = content?.personalInfo?.fullName
-          ? `${content.personalInfo.fullName}'s Resume`
-          : 'My Resume';
-
-        const { data: inserted, error } = await supabase
-          .from('ai_resumes')
-          .insert({
-            user_id: auth.user.id,
-            title,
-            content: content,
-            is_primary: false,
-            ats_score: typeof (data as any)?.enhancementScore?.atsCompatibility === 'number'
-              ? Math.round((data as any).enhancementScore.atsCompatibility)
-              : 0,
-          })
-          .select('id')
-          .single();
-
-        if (error) throw error;
-        const newId = (inserted as any)?.id as string | undefined;
-        if (newId) {
-          toast({ title: 'Resume ready', description: 'Opening advanced editor...' });
-          navigate(`/resume/editor/${newId}`);
-          return;
-        }
-      } else {
-        toast({ title: 'Start editing', description: 'Sign in to save your work.' });
-        navigate('/resume/new', { state: { resumeData: content } });
-        return;
-      }
-    } catch (e) {
-      console.error('Auto-save failed:', e);
-      toast({ title: 'Saved locally', description: 'Auto-save failed, continuing...' });
-      setResumeData(content);
-      handleNext();
-    }
+  const handleProcessingComplete = (data: any) => {
+    setResumeData(data);
+    handleNext();
   };
 
   const handleComplete = () => {

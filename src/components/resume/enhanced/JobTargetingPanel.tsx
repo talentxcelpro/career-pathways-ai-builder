@@ -33,7 +33,7 @@ export const JobTargetingPanel: React.FC<JobTargetingPanelProps> = ({ isOpen, on
         <header className="px-5 py-4 border-b flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-semibold">TalentXcel ATS</h2>
+            <h2 className="text-lg font-semibold">Job Description Targeting</h2>
           </div>
           <Button variant="ghost" size="icon" aria-label="Close" onClick={() => { onClose(); reset(); }}>
             <X className="w-5 h-5" />

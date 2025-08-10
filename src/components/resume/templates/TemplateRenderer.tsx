@@ -3,26 +3,22 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { MapPin, Mail, Phone, Globe, Linkedin, Github } from 'lucide-react';
-import { createSafeHtml } from '@/utils/sanitize';
 
 interface TemplateRendererProps {
   template: any;
   resumeData: any;
   customization: any;
   className?: string;
-  sectionOrder?: string[];
 }
 
 export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
   template,
   resumeData,
   customization,
-  className = '',
-  sectionOrder,
+  className = ''
 }) => {
-  const { colors = {}, typography = {}, layout = {}, sections = {} } = customization ?? {};
-  
   const getStylesFromCustomization = () => {
+    const { colors, typography, layout } = customization;
     
     return {
       container: {
@@ -44,6 +40,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
         fontSize: `${(typography?.fontSize || 12) + 2}px`,
         fontWeight: 'bold',
         marginBottom: '0.5rem',
+        textTransform: 'uppercase' as const,
         letterSpacing: '0.5px'
       },
       section: {
@@ -71,9 +68,9 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
             <h1 className="text-2xl font-bold mb-2" style={{ color: styles.container.color }}>
               {personalInfo.fullName}
             </h1>
-            {(personalInfo.professionalTitle || personalInfo.title) && (
-              <h2 className="text-lg mb-3 text-muted-foreground">
-                {personalInfo.professionalTitle || personalInfo.title}
+            {personalInfo.professionalTitle && (
+              <h2 className="text-lg mb-3" style={styles.secondary}>
+                {personalInfo.professionalTitle}
               </h2>
             )}
             
@@ -111,7 +108,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
             </div>
           </div>
           
-          {sections?.showPhoto && personalInfo.photo && (
+          {customization.sections?.showPhoto && personalInfo.photo && (
             <div className="ml-4">
               <img
                 src={personalInfo.photo}
@@ -128,12 +125,12 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
 
   const renderSummary = () => {
     const { personalInfo } = resumeData;
-    if (!personalInfo?.summary || !sections?.showSummary) return null;
+    if (!personalInfo?.summary || !customization.sections?.showSummary) return null;
 
     return (
       <div style={styles.section}>
         <h3 style={styles.sectionTitle}>Professional Summary</h3>
-        <div className="text-sm leading-relaxed" dangerouslySetInnerHTML={createSafeHtml(String(personalInfo.summary), { FORBID_ATTR: ['style'] })} />
+        <p className="text-sm leading-relaxed">{personalInfo.summary}</p>
       </div>
     );
   };
@@ -151,7 +148,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <h4 className="font-semibold">{exp.title}</h4>
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className="text-sm font-medium" style={styles.secondary}>
                     {exp.company}
                   </p>
                   {exp.location && (
@@ -159,24 +156,24 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
                   )}
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm" style={styles.accent}>
                     {exp.startDate} - {exp.endDate || 'Present'}
                   </p>
                 </div>
               </div>
               
               {exp.description && (
-                <div className="text-sm mb-2" dangerouslySetInnerHTML={createSafeHtml(String(exp.description), { FORBID_ATTR: ['style'] })} />
+                <p className="text-sm mb-2">{exp.description}</p>
               )}
               
               {exp.achievements && exp.achievements.length > 0 && (
                 <ul className="text-sm space-y-1">
-                {exp.achievements.map((achievement: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-primary">•</span>
-                    <span dangerouslySetInnerHTML={createSafeHtml(String(achievement), { FORBID_ATTR: ['style'] })} />
-                  </li>
-                ))}
+                  {exp.achievements.map((achievement: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span style={styles.accent}>•</span>
+                      <span>{achievement}</span>
+                    </li>
+                  ))}
                 </ul>
               )}
               
@@ -209,7 +206,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
               <div className="flex justify-between items-start">
                 <div>
                   <h4 className="font-semibold">{edu.degree}</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm" style={styles.secondary}>
                     {edu.school}
                   </p>
                   {edu.location && (
@@ -217,7 +214,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
                   )}
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm" style={styles.accent}>
                     {edu.endDate}
                   </p>
                   {edu.gpa && (
@@ -236,41 +233,33 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
   };
 
   const renderSkills = () => {
-    const rawSkills = (resumeData as any)?.skills;
-    if (!rawSkills) return null;
-
-    // Normalize skills to { technical: string[]; soft?: string[] }
-    const normalized = Array.isArray(rawSkills)
-      ? { technical: rawSkills }
-      : rawSkills;
-
-    const technical: any[] = normalized.technical || [];
-    const soft: any[] = normalized.soft || [];
-    if (technical.length === 0 && soft.length === 0) return null;
+    const { skills } = resumeData;
+    if (!skills || !skills.technical || skills.technical.length === 0) return null;
 
     return (
       <div style={styles.section}>
         <h3 style={styles.sectionTitle}>Skills</h3>
         <div className="grid grid-cols-2 gap-4">
-          {technical.length > 0 && (
+          {skills.technical && skills.technical.length > 0 && (
             <div>
               <h4 className="font-medium mb-2">Technical Skills</h4>
               <div className="flex flex-wrap gap-1">
-                {technical.map((skill: any, index: number) => (
+                {skills.technical.map((skill: any, index: number) => (
                   <Badge key={index} variant="outline" className="text-xs">
-                    {typeof skill === 'string' ? skill : skill?.name || skill?.skill}
+                    {typeof skill === 'string' ? skill : skill.skill}
                   </Badge>
                 ))}
               </div>
             </div>
           )}
-          {soft.length > 0 && (
+          
+          {skills.soft && skills.soft.length > 0 && (
             <div>
               <h4 className="font-medium mb-2">Soft Skills</h4>
               <div className="flex flex-wrap gap-1">
-                {soft.map((skill: any, index: number) => (
+                {skills.soft.map((skill: string, index: number) => (
                   <Badge key={index} variant="secondary" className="text-xs">
-                    {typeof skill === 'string' ? skill : skill?.name || skill?.skill}
+                    {skill}
                   </Badge>
                 ))}
               </div>
@@ -292,7 +281,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
           {projects.map((project: any, index: number) => (
             <div key={index}>
               <h4 className="font-semibold">{project.title}</h4>
-              <div className="text-sm mb-2" dangerouslySetInnerHTML={createSafeHtml(String(project.description), { FORBID_ATTR: ['style'] })} />
+              <p className="text-sm mb-2">{project.description}</p>
               
               {project.technologies && project.technologies.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-2">
@@ -308,8 +297,8 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
                 <ul className="text-sm space-y-1">
                   {project.achievements.map((achievement: string, idx: number) => (
                     <li key={idx} className="flex items-start gap-2">
-                      <span className="text-primary">•</span>
-                      <span dangerouslySetInnerHTML={createSafeHtml(String(achievement), { FORBID_ATTR: ['style'] })} />
+                      <span style={styles.accent}>•</span>
+                      <span>{achievement}</span>
                     </li>
                   ))}
                 </ul>
@@ -335,7 +324,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
                 <h4 className="font-semibold text-sm">{cert.name}</h4>
                 <p className="text-xs text-muted-foreground">{cert.issuer}</p>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs" style={styles.accent}>
                 {cert.date}
               </p>
             </div>
@@ -345,23 +334,16 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
     );
   };
 
-  const defaultOrder = ['header','summary','experience','education','skills','projects','certifications'];
-  const mapRender: Record<string, JSX.Element | null> = {
-    header: renderPersonalInfo(),
-    summary: renderSummary(),
-    experience: renderExperience(),
-    education: renderEducation(),
-    skills: renderSkills(),
-    projects: renderProjects(),
-    certifications: renderCertifications(),
-  };
-
-  const orderToUse = (sectionOrder && sectionOrder.length > 0) ? sectionOrder : defaultOrder;
-
   return (
     <div className={`bg-white shadow-lg ${className}`} style={styles.container}>
       <div className="max-w-4xl mx-auto">
-        {orderToUse.map((key) => mapRender[key]).filter(Boolean)}
+        {renderPersonalInfo()}
+        {renderSummary()}
+        {renderExperience()}
+        {renderEducation()}
+        {renderSkills()}
+        {renderProjects()}
+        {renderCertifications()}
       </div>
     </div>
   );

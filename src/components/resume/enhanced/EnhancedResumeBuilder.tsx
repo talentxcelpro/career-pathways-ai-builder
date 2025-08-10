@@ -1,12 +1,11 @@
 
 import React, { useState } from 'react';
-import { ThreePaneResumeBuilder } from './ThreePaneResumeBuilder';
+import { UnifiedResumeInterface } from './UnifiedResumeInterface';
 import { useResumeData } from '@/hooks/useResumeData';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { JobTargetingPanel } from './JobTargetingPanel';
-import { editorToEnhanced, enhancedToEditor } from '@/utils/resumeAdapters';
 
 interface EnhancedResumeBuilderProps {
   mode?: 'edit' | 'create';
@@ -102,9 +101,10 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   const effectiveMode = isNewResume ? 'create' : mode;
   return (
     <div className="min-h-screen bg-background relative">
-      <ThreePaneResumeBuilder
-        data={enhancedToEditor(resumeData)}
-        onChange={(editorData) => setResumeData(editorToEnhanced(editorData))}
+      <UnifiedResumeInterface 
+        mode={effectiveMode}
+        initialData={resumeData}
+        onDataChange={setResumeData}
       />
 
       <Button 

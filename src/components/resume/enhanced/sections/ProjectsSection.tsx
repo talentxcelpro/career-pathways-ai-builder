@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,163 +6,60 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Plus, FolderOpen, ExternalLink, X, GripVertical } from "lucide-react";
-import { EditorProjectsItem } from "@/types/editor-resume";
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { Trash2, Plus, FolderOpen, Calendar, ExternalLink, Github, Users, X } from "lucide-react";
+import { Project } from "@/types/enhanced-resume";
 
 interface ProjectsSectionProps {
-  data: EditorProjectsItem[];
-  onChange: (data: EditorProjectsItem[]) => void;
+  data: Project[];
+  onChange: (data: Project[]) => void;
 }
-
-interface SortableProjectItemProps {
-  project: EditorProjectsItem;
-  index: number;
-  onUpdate: (id: string, field: keyof EditorProjectsItem, value: any) => void;
-  onRemove: (id: string) => void;
-}
-
-const SortableProjectItem: React.FC<SortableProjectItemProps> = ({
-  project,
-  index,
-  onUpdate,
-  onRemove
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({ id: project.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <Card ref={setNodeRef} style={style} className="p-6 border-l-4 border-l-accent/20">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-          <div {...attributes} {...listeners} className="cursor-grab hover:cursor-grabbing">
-            <GripVertical className="h-4 w-4" />
-          </div>
-          <FolderOpen className="h-4 w-4" />
-          Project #{index + 1}
-        </div>
-        <Button
-          onClick={() => onRemove(project.id)}
-          size="sm"
-          variant="ghost"
-          className="text-destructive hover:text-destructive"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <Label htmlFor={`name-${project.id}`}>Project Name *</Label>
-          <Input
-            id={`name-${project.id}`}
-            value={project.name}
-            onChange={(e) => onUpdate(project.id, "name", e.target.value)}
-            placeholder="e.g., E-commerce Platform"
-          />
-        </div>
-        <div>
-          <Label htmlFor={`link-${project.id}`}>Project Link</Label>
-          <div className="relative">
-            <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              id={`link-${project.id}`}
-              value={project.link}
-              onChange={(e) => onUpdate(project.id, "link", e.target.value)}
-              placeholder="https://github.com/user/project"
-              className="pl-10"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <Label htmlFor={`description-${project.id}`}>Description</Label>
-        <Textarea
-          id={`description-${project.id}`}
-          value={project.description}
-          onChange={(e) => onUpdate(project.id, "description", e.target.value)}
-          placeholder="Describe the project, your role, and key achievements..."
-          rows={3}
-        />
-      </div>
-
-      <div>
-        <Label>Technologies Used</Label>
-        <div className="flex flex-wrap gap-2 mt-2">
-          {project.technologies.map((tech, techIndex) => (
-            <Badge key={techIndex} variant="secondary" className="flex items-center gap-1">
-              {tech}
-              <Button
-                onClick={() => {
-                  const newTech = project.technologies.filter((_, i) => i !== techIndex);
-                  onUpdate(project.id, "technologies", newTech);
-                }}
-                size="sm"
-                variant="ghost"
-                className="h-4 w-4 p-0 hover:bg-transparent"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </Badge>
-          ))}
-          <Input
-            className="w-32 h-6 text-xs"
-            placeholder="Add technology..."
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                const value = e.currentTarget.value.trim();
-                if (value && !project.technologies.includes(value)) {
-                  onUpdate(project.id, "technologies", [...project.technologies, value]);
-                  e.currentTarget.value = '';
-                }
-              }
-            }}
-          />
-        </div>
-      </div>
-    </Card>
-  );
-};
 
 export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   data,
   onChange,
 }) => {
   const addProject = () => {
-    const newProject: EditorProjectsItem = {
+    const newProject: Project = {
       id: crypto.randomUUID(),
-      name: "",
+      title: "",
       description: "",
       technologies: [],
-      link: "",
+      startDate: "",
+      endDate: "",
+      url: "",
+      githubUrl: "",
+      teamSize: undefined,
+      role: "",
     };
     onChange([...data, newProject]);
   };
 
-  const updateProject = (id: string, field: keyof EditorProjectsItem, value: any) => {
+  const updateProject = (id: string, field: keyof Project, value: any) => {
     onChange(
-      data.map((proj) =>
-        proj.id === id ? { ...proj, [field]: value } : proj
+      data.map((project) =>
+        project.id === id ? { ...project, [field]: value } : project
       )
     );
   };
 
   const removeProject = (id: string) => {
-    onChange(data.filter((proj) => proj.id !== id));
+    onChange(data.filter((project) => project.id !== id));
+  };
+
+  const addTechnology = (projectId: string, tech: string) => {
+    const project = data.find((proj) => proj.id === projectId);
+    if (project && tech.trim() && !project.technologies.includes(tech.trim())) {
+      const newTechnologies = [...project.technologies, tech.trim()];
+      updateProject(projectId, "technologies", newTechnologies);
+    }
+  };
+
+  const removeTechnology = (projectId: string, tech: string) => {
+    const project = data.find((proj) => proj.id === projectId);
+    if (project) {
+      const newTechnologies = project.technologies.filter(t => t !== tech);
+      updateProject(projectId, "technologies", newTechnologies);
+    }
   };
 
   return (
@@ -178,13 +76,150 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
       </CardHeader>
       <CardContent className="space-y-6">
         {data.map((project, index) => (
-          <SortableProjectItem
-            key={project.id}
-            project={project}
-            index={index}
-            onUpdate={updateProject}
-            onRemove={removeProject}
-          />
+          <Card key={project.id} className="p-6 border-l-4 border-l-accent/20">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+                Project #{index + 1}
+              </div>
+              <Button
+                onClick={() => removeProject(project.id)}
+                size="sm"
+                variant="ghost"
+                className="text-destructive hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <Label htmlFor={`title-${project.id}`}>Project Title *</Label>
+                <Input
+                  id={`title-${project.id}`}
+                  value={project.title}
+                  onChange={(e) => updateProject(project.id, "title", e.target.value)}
+                  placeholder="e.g., E-commerce Platform"
+                />
+              </div>
+              <div>
+                <Label htmlFor={`role-${project.id}`}>Your Role</Label>
+                <Input
+                  id={`role-${project.id}`}
+                  value={project.role || ""}
+                  onChange={(e) => updateProject(project.id, "role", e.target.value)}
+                  placeholder="e.g., Lead Developer, Team Lead"
+                />
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <Label htmlFor={`description-${project.id}`}>Project Description *</Label>
+              <Textarea
+                id={`description-${project.id}`}
+                value={project.description}
+                onChange={(e) => updateProject(project.id, "description", e.target.value)}
+                placeholder="Describe the project, your contributions, and the impact..."
+                rows={4}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <Label htmlFor={`start-date-${project.id}`}>Start Date</Label>
+                <Input
+                  id={`start-date-${project.id}`}
+                  type="month"
+                  value={project.startDate || ""}
+                  onChange={(e) => updateProject(project.id, "startDate", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor={`end-date-${project.id}`}>End Date</Label>
+                <Input
+                  id={`end-date-${project.id}`}
+                  type="month"
+                  value={project.endDate || ""}
+                  onChange={(e) => updateProject(project.id, "endDate", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor={`team-size-${project.id}`}>Team Size</Label>
+                <div className="relative">
+                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id={`team-size-${project.id}`}
+                    type="number"
+                    min="1"
+                    value={project.teamSize || ""}
+                    onChange={(e) => updateProject(project.id, "teamSize", parseInt(e.target.value) || undefined)}
+                    placeholder="e.g., 5"
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <Label htmlFor={`url-${project.id}`}>Live Demo URL</Label>
+                <div className="relative">
+                  <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id={`url-${project.id}`}
+                    value={project.url || ""}
+                    onChange={(e) => updateProject(project.id, "url", e.target.value)}
+                    placeholder="https://your-project.com"
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor={`github-${project.id}`}>GitHub Repository</Label>
+                <div className="relative">
+                  <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id={`github-${project.id}`}
+                    value={project.githubUrl || ""}
+                    onChange={(e) => updateProject(project.id, "githubUrl", e.target.value)}
+                    placeholder="https://github.com/username/repo"
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <Label>Technologies Used</Label>
+              <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                {project.technologies.map((tech, techIndex) => (
+                  <Badge key={techIndex} variant="secondary" className="flex items-center gap-1">
+                    {tech}
+                    <Button
+                      onClick={() => removeTechnology(project.id, tech)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-4 w-4 p-0 hover:bg-transparent"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
+              </div>
+              <Input
+                placeholder="Add technology and press Enter..."
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    const value = e.currentTarget.value.trim();
+                    if (value) {
+                      addTechnology(project.id, value);
+                      e.currentTarget.value = '';
+                    }
+                  }
+                }}
+              />
+            </div>
+          </Card>
         ))}
 
         {data.length === 0 && (

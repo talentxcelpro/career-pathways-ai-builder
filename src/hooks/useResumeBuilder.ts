@@ -4,7 +4,6 @@ import { EnhancedResumeData } from '@/types/enhanced-resume';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { enhancedToEditor } from '@/utils/resumeAdapters';
 
 export const useResumeBuilder = (initialData?: EnhancedResumeData) => {
   const { user } = useAuth();
@@ -31,7 +30,7 @@ export const useResumeBuilder = (initialData?: EnhancedResumeData) => {
         .upsert({
           user_id: user.id,
           title: resumeData.personalInfo.fullName || 'Untitled Resume',
-          content: enhancedToEditor(resumeData as EnhancedResumeData) as any,
+          content: resumeData as any,
           ats_score: 0, // Will be calculated by the system
           updated_at: new Date().toISOString()
         });
