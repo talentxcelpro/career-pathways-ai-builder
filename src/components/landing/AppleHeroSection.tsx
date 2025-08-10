@@ -20,14 +20,14 @@ export const AppleHeroSection = () => {
           <div className="space-y-8 text-center lg:text-left">
             <div className="space-y-6">
               <h1 className="text-5xl lg:text-7xl font-light tracking-tight text-slate-900 leading-[1.1]">
-                🌍 Powering Global
+                AI‑Powered
                 <span className="block font-medium bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Career Growth
+                  Career Pathways
                 </span>
               </h1>
               
               <p className="text-xl lg:text-2xl text-slate-600 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Your all-in-one platform for networking, skill-building, and discovering career opportunities tailored to your unique journey.
+                Map skills, projects, and roles—guided by AI—to land your dream job faster.
               </p>
             </div>
 
