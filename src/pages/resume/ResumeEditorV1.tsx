@@ -150,12 +150,68 @@ const defaultCustomization = {
   sections: { showPhoto: false, showSummary: true }
 };
 
-const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templateId?: string; variant?: 'sidebar' | 'full' }) => {
+const Preview = ({ data, templateId, variant = 'sidebar', sectionOrder }: { data: any; templateId?: string; variant?: 'sidebar' | 'full'; sectionOrder?: string[] }) => {
   const [showJSON, setShowJSON] = useState(false);
   const Wrapper: React.ElementType = variant === 'sidebar' ? 'aside' : 'div';
   const wrapperCls = variant === 'sidebar'
     ? 'w-[38%] border-l px-5 py-5 overflow-auto'
     : 'flex-1 px-6 py-6 overflow-auto';
+
+  const buildRendererData = useCallback((source: any) => {
+    if (!source) return {};
+
+    const personal = source.personalInfo || source.profile || {};
+    const experience = Array.isArray(source.experience) ? source.experience.map((it: any) => ({
+      title: it.title || it.role || '',
+      company: it.company || '',
+      location: it.location || '',
+      startDate: it.startDate || it.start || '',
+      endDate: it.endDate || it.end || '',
+      description: it.description || '',
+      achievements: it.achievements || it.bullets || [],
+      technologies: it.technologies || [],
+    })) : [];
+
+    const education = Array.isArray(source.education) ? source.education.map((it: any) => ({
+      degree: it.degree || '',
+      school: it.school || it.institution || '',
+      location: it.location || '',
+      startDate: it.startDate || '',
+      endDate: it.endDate || it.dates || '',
+      gpa: it.gpa || '',
+      honors: it.honors || '',
+    })) : [];
+
+    const rawSkills = source.skills;
+    const skills = Array.isArray(rawSkills)
+      ? { technical: rawSkills }
+      : (rawSkills || { technical: [] });
+
+    const certifications = Array.isArray(source.certifications)
+      ? source.certifications.map((c: any) => (typeof c === 'string' ? { name: c } : c))
+      : [];
+
+    return {
+      personalInfo: {
+        fullName: personal.fullName || personal.name || '',
+        email: personal.email || '',
+        phone: personal.phone || '',
+        location: personal.location || '',
+        linkedin: personal.linkedin || '',
+        github: personal.github || '',
+        website: personal.website || personal.portfolio || '',
+        professionalTitle: personal.professionalTitle || personal.title || '',
+        summary: source.summary || personal.summary || '',
+      },
+      experience,
+      education,
+      skills,
+      projects: Array.isArray(source.projects) ? source.projects : [],
+      certifications,
+    };
+  }, []);
+
+  const rendererData = useMemo(() => buildRendererData(data), [buildRendererData, data]);
 
   return (
     <Wrapper className={wrapperCls}>
@@ -166,11 +222,11 @@ const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templat
             {showJSON ? 'Hide' : 'Show'} parsed JSON
           </button>
         </div>
-        <TemplateRenderer template={templateId || 'two-col'} resumeData={data} customization={defaultCustomization} />
+        <TemplateRenderer template={templateId || 'two-col'} resumeData={rendererData} customization={defaultCustomization} sectionOrder={sectionOrder} />
         {showJSON && (
           <div className="mt-4">
             <pre className="text-xs max-h-64 overflow-auto border rounded p-2 bg-muted/30">
-              {JSON.stringify(data, null, 2)}
+              {JSON.stringify(rendererData, null, 2)}
             </pre>
           </div>
         )}
@@ -744,8 +800,12 @@ const ResumeEditorV1: React.FC = () => {
       if (error) {
         console.error('Failed to load templates', error);
       } else if (mounted) {
-        setTemplates(data as any);
-        setSelectedTemplateId((data?.[0]?.id as string) || 'two-col');
+        const mapped = (data as any[] || []).map((t) => ({
+          ...t,
+          preview_url: t.preview_image_url || t.preview_url || '/placeholder.svg',
+        }));
+        setTemplates(mapped as any);
+        setSelectedTemplateId((mapped?.[0]?.id as string) || 'two-col');
       }
     })();
     return () => { mounted = false; };
@@ -894,6 +954,63 @@ const ResumeEditorV1: React.FC = () => {
               </button>
             </div>
             <button className="rounded border px-3 py-2" onClick={handleSave}>Save</button>
+            <button className="rounded border px-3 py-2" onClick={() => {
+              const input = window.prompt('Paste resume JSON');
+              if (!input) return;
+              try {
+                const parsed = JSON.parse(input);
+                // Transform section-array JSON into editor-friendly object if needed
+                const toEditorShape = (arr: any[]): any => {
+                  const obj: any = {};
+                  for (const s of arr) {
+                    const t = (s.type || '').toLowerCase();
+                    if (t === 'header') {
+                      obj.personalInfo = {
+                        fullName: s.data?.name || '',
+                        title: s.data?.title || '',
+                        email: s.data?.email || '',
+                        phone: s.data?.phone || '',
+                        location: s.data?.location || '',
+                        linkedin: s.data?.linkedin || '',
+                      };
+                    } else if (t === 'summary') {
+                      obj.summary = s.data?.text || '';
+                    } else if (t === 'experience') {
+                      obj.experience = Array.isArray(s.data) ? s.data.map((it: any) => ({
+                        role: it.role || '',
+                        company: it.company || '',
+                        location: it.location || '',
+                        start: it.start || it.startDate || '',
+                        end: it.end || it.endDate || '',
+                        bullets: it.bullets || it.achievements || [],
+                      })) : [];
+                    } else if (t === 'education') {
+                      obj.education = Array.isArray(s.data) ? s.data.map((it: any) => ({
+                        degree: it.degree || '',
+                        school: it.institution || it.school || '',
+                        startDate: '',
+                        endDate: it.dates || '',
+                      })) : [];
+                    } else if (t === 'skills') {
+                      obj.skills = Array.isArray(s.data) ? s.data : [];
+                    } else if (t === 'certifications') {
+                      obj.certifications = Array.isArray(s.data) ? s.data : [];
+                    } else if (t === 'awards') {
+                      obj.awards = Array.isArray(s.data) ? s.data : [];
+                    } else if (t === 'cover_letter') {
+                      obj.coverLetter = s.data?.text || '';
+                    }
+                  }
+                  return obj;
+                };
+                const next = Array.isArray(parsed) ? toEditorShape(parsed) : parsed;
+                setResumeData(next);
+                toast.success('Imported JSON');
+              } catch (e) {
+                console.error(e);
+                toast.error('Invalid JSON');
+              }
+            }}>Import JSON</button>
           </div>
         </header>
 
@@ -929,11 +1046,11 @@ const ResumeEditorV1: React.FC = () => {
             </div>
           </div>
         ) : (
-          <Preview data={resumeData} templateId={selectedTemplateId} variant="full" />
+          <Preview data={resumeData} templateId={selectedTemplateId} variant="full" sectionOrder={sections} />
         )}
       </main>
 
-      {mode === 'editor' && <Preview data={previewData} templateId={selectedTemplateId} />}
+      {mode === 'editor' && <Preview data={previewData} templateId={selectedTemplateId} sectionOrder={sections} />}
 
       <JobTargetingPanel isOpen={isATSOpen} onClose={() => setIsATSOpen(false)} resumeData={resumeData} />
     </div>

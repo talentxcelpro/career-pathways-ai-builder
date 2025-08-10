@@ -10,13 +10,15 @@ interface TemplateRendererProps {
   resumeData: any;
   customization: any;
   className?: string;
+  sectionOrder?: string[];
 }
 
 export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
   template,
   resumeData,
   customization,
-  className = ''
+  className = '',
+  sectionOrder,
 }) => {
   const { colors = {}, typography = {}, layout = {}, sections = {} } = customization ?? {};
   
@@ -69,9 +71,9 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
             <h1 className="text-2xl font-bold mb-2" style={{ color: styles.container.color }}>
               {personalInfo.fullName}
             </h1>
-            {personalInfo.professionalTitle && (
+            {(personalInfo.professionalTitle || personalInfo.title) && (
               <h2 className="text-lg mb-3 text-muted-foreground">
-                {personalInfo.professionalTitle}
+                {personalInfo.professionalTitle || personalInfo.title}
               </h2>
             )}
             
@@ -234,33 +236,41 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
   };
 
   const renderSkills = () => {
-    const { skills } = resumeData;
-    if (!skills || !skills.technical || skills.technical.length === 0) return null;
+    const rawSkills = (resumeData as any)?.skills;
+    if (!rawSkills) return null;
+
+    // Normalize skills to { technical: string[]; soft?: string[] }
+    const normalized = Array.isArray(rawSkills)
+      ? { technical: rawSkills }
+      : rawSkills;
+
+    const technical: any[] = normalized.technical || [];
+    const soft: any[] = normalized.soft || [];
+    if (technical.length === 0 && soft.length === 0) return null;
 
     return (
       <div style={styles.section}>
         <h3 style={styles.sectionTitle}>Skills</h3>
         <div className="grid grid-cols-2 gap-4">
-          {skills.technical && skills.technical.length > 0 && (
+          {technical.length > 0 && (
             <div>
               <h4 className="font-medium mb-2">Technical Skills</h4>
               <div className="flex flex-wrap gap-1">
-                {skills.technical.map((skill: any, index: number) => (
+                {technical.map((skill: any, index: number) => (
                   <Badge key={index} variant="outline" className="text-xs">
-                    {typeof skill === 'string' ? skill : skill.skill}
+                    {typeof skill === 'string' ? skill : skill?.name || skill?.skill}
                   </Badge>
                 ))}
               </div>
             </div>
           )}
-          
-          {skills.soft && skills.soft.length > 0 && (
+          {soft.length > 0 && (
             <div>
               <h4 className="font-medium mb-2">Soft Skills</h4>
               <div className="flex flex-wrap gap-1">
-                {skills.soft.map((skill: string, index: number) => (
+                {soft.map((skill: any, index: number) => (
                   <Badge key={index} variant="secondary" className="text-xs">
-                    {skill}
+                    {typeof skill === 'string' ? skill : skill?.name || skill?.skill}
                   </Badge>
                 ))}
               </div>
@@ -335,16 +345,23 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
     );
   };
 
+  const defaultOrder = ['header','summary','experience','education','skills','projects','certifications'];
+  const mapRender: Record<string, JSX.Element | null> = {
+    header: renderPersonalInfo(),
+    summary: renderSummary(),
+    experience: renderExperience(),
+    education: renderEducation(),
+    skills: renderSkills(),
+    projects: renderProjects(),
+    certifications: renderCertifications(),
+  };
+
+  const orderToUse = (sectionOrder && sectionOrder.length > 0) ? sectionOrder : defaultOrder;
+
   return (
     <div className={`bg-white shadow-lg ${className}`} style={styles.container}>
       <div className="max-w-4xl mx-auto">
-        {renderPersonalInfo()}
-        {renderSummary()}
-        {renderExperience()}
-        {renderEducation()}
-        {renderSkills()}
-        {renderProjects()}
-        {renderCertifications()}
+        {orderToUse.map((key) => mapRender[key]).filter(Boolean)}
       </div>
     </div>
   );
