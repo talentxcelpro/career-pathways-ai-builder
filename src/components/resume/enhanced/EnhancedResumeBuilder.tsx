@@ -6,6 +6,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { JobTargetingPanel } from './JobTargetingPanel';
+import { editorToEnhanced, enhancedToEditor } from '@/utils/resumeAdapters';
 
 interface EnhancedResumeBuilderProps {
   mode?: 'edit' | 'create';
@@ -103,8 +104,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     <div className="min-h-screen bg-background relative">
       <UnifiedResumeInterface 
         mode={effectiveMode}
-        initialData={resumeData}
-        onDataChange={setResumeData}
+        initialData={enhancedToEditor(resumeData)}
+        onDataChange={(editorData) => setResumeData(editorToEnhanced(editorData))}
       />
 
       <Button 

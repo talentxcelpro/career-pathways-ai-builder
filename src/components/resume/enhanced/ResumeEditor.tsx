@@ -11,6 +11,9 @@ import { PersonalInfoSection } from './sections/PersonalInfoSection';
 import { ExperienceSection } from './sections/ExperienceSection';
 import { EducationSection } from './sections/EducationSection';
 import { SkillsSection } from './sections/SkillsSection';
+import { ProjectsSection } from './sections/ProjectsSection';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 interface ResumeEditorProps {
   data: EditorResume;
@@ -64,10 +67,37 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({
           onChange={updatePersonalInfo}
         />
 
-        {/* Experience and other sections temporarily disabled until types are fixed */}
-        <div className="text-center py-8 text-muted-foreground">
-          <p>Resume sections are being updated to the new format...</p>
-        </div>
+        <DndContext collisionDetection={closestCenter}>
+          <SortableContext items={data.experience.map(exp => exp.id)} strategy={verticalListSortingStrategy}>
+            <ExperienceSection
+              data={data.experience}
+              onChange={updateExperience}
+            />
+          </SortableContext>
+        </DndContext>
+
+        <DndContext collisionDetection={closestCenter}>
+          <SortableContext items={data.education.map(edu => edu.id)} strategy={verticalListSortingStrategy}>
+            <EducationSection
+              data={data.education}
+              onChange={updateEducation}
+            />
+          </SortableContext>
+        </DndContext>
+
+        <SkillsSection
+          data={data.skills}
+          onChange={updateSkills}
+        />
+
+        <DndContext collisionDetection={closestCenter}>
+          <SortableContext items={data.projects.map(proj => proj.id)} strategy={verticalListSortingStrategy}>
+            <ProjectsSection
+              data={data.projects}
+              onChange={(projects) => onChange({ ...data, projects })}
+            />
+          </SortableContext>
+        </DndContext>
       </div>
 
     </div>

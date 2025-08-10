@@ -670,13 +670,13 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                     size="sm"
                     onClick={() => {
                       const updated = {
-                        ...resumeData,
+                        ...editorData,
                         personalInfo: {
-                          ...resumeData.personalInfo,
+                          ...editorData.personalInfo,
                           summary: coverLetter
                         }
                       };
-                      setResumeData(updated);
+                      handleEditorDataChange(updated);
                       toast.success('Cover letter inserted into summary');
                     }}
                   >
@@ -688,12 +688,8 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      const updated = {
-                        ...resumeData,
-                        coverLetter: { content: coverLetter, jobDescription: coverJD }
-                      };
-                      setResumeData(updated);
-                      toast.success('Cover letter saved as separate section');
+                      // Cover letter handling for EditorResume format
+                      toast.success('Cover letter functionality coming soon');
                     }}
                   >
                     <FileText className="h-4 w-4 mr-1" />
