@@ -18,7 +18,7 @@ import {
   TrendingUp,
   Zap
 } from 'lucide-react';
-import { EnhancedResumeData } from '@/types/enhanced-resume';
+import { EditorResume } from '@/types/editor-resume';
 import { useResumeAnalytics } from '@/hooks/useResumeAnalytics';
 import { useAdvancedAIFeatures } from '@/hooks/useAdvancedAIFeatures';
 import { useAIService } from '@/hooks/useAIService';
@@ -37,11 +37,12 @@ import { useResumeDownloads } from '@/hooks/useResumeDownloads';
 import { exportResumeToDocx } from '@/utils/docxExport';
 import type { ResumeJSON } from '@/hooks/useResumeParser';
 import { RazorpayScript } from '@/components/RazorpayScript';
+import { editorToEnhanced, enhancedToEditor } from '@/utils/resumeAdapters';
 
 interface UnifiedResumeInterfaceProps {
   mode: 'edit' | 'create';
-  initialData: EnhancedResumeData;
-  onDataChange: (data: EnhancedResumeData) => void;
+  initialData: EditorResume;
+  onDataChange: (data: EditorResume) => void;
 }
 
 export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
@@ -49,35 +50,11 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   initialData,
   onDataChange
 }) => {
-  const normalize = (d: any): EnhancedResumeData => ({
-    personalInfo: {
-      fullName: d?.personalInfo?.fullName || '',
-      email: d?.personalInfo?.email || '',
-      phone: d?.personalInfo?.phone || '',
-      location: d?.personalInfo?.location || '',
-      summary: d?.personalInfo?.summary || ''
-    },
-    professionalSummary: d?.professionalSummary || { content: '', keyHighlights: [] },
-    experience: Array.isArray(d?.experience) ? d.experience : [],
-    education: Array.isArray(d?.education) ? d.education : [],
-    skills: Array.isArray(d?.skills) ? d.skills : [],
-    projects: Array.isArray(d?.projects) ? d.projects : [],
-    certifications: Array.isArray(d?.certifications) ? d.certifications : [],
-    awards: Array.isArray(d?.awards) ? d.awards : [],
-    languages: Array.isArray(d?.languages) ? d.languages : [],
-    publications: Array.isArray(d?.publications) ? d.publications : [],
-    references: Array.isArray(d?.references) ? d.references : [],
-    volunteerWork: Array.isArray(d?.volunteerWork) ? d.volunteerWork : [],
-    trainings: Array.isArray(d?.trainings) ? d.trainings : [],
-    tools: d?.tools || { development: [], design: [], analytics: [], productivity: [], other: [] },
-    careerObjectives: d?.careerObjectives || { statement: '', goals: [] },
-    sectionOrder: d?.sectionOrder || ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
-    selectedTemplate: d?.selectedTemplate || 'modern',
-    customization: d?.customization || { colorScheme: 'blue', fontFamily: 'Inter', fontSize: 14, spacing: 'normal' }
-  });
-
   const [activeTab, setActiveTab] = useState('editor');
-  const [resumeData, setResumeData] = useState<EnhancedResumeData>(normalize(initialData));
+  const [editorData, setEditorData] = useState<EditorResume>(initialData);
+  
+  // Convert to enhanced format for legacy components that still need it
+  const enhancedData = editorToEnhanced(editorData);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [jobDescription, setJobDescription] = useState<string>('');
   
@@ -86,7 +63,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
     atsScore, 
     suggestions, 
     refreshAnalysis 
-  } = useResumeAnalytics(resumeData);
+  } = useResumeAnalytics(enhancedData);
   
   const {
     performAdvancedATSAnalysis,
@@ -101,7 +78,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
     atsAnalysis, 
     jobAnalysis, 
     isAnalyzing: isRealTimeAnalyzing 
-  } = useRealTimeATS(resumeData, jobDescription);
+  } = useRealTimeATS(enhancedData, jobDescription);
   
   // Smart suggestions
   const {
@@ -112,32 +89,33 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   } = useSmartSuggestions();
 
   useEffect(() => {
-    setResumeData(normalize(initialData));
+    setEditorData(initialData);
   }, [initialData]);
 
   useEffect(() => {
-    onDataChange(resumeData);
-  }, [resumeData, onDataChange]);
+    onDataChange(editorData);
+  }, [editorData, onDataChange]);
 
   useEffect(() => {
     refreshAnalysis();
-  }, [resumeData, refreshAnalysis]);
+  }, [enhancedData, refreshAnalysis]);
 
-  const handleDataChange = (newData: EnhancedResumeData) => {
-    setResumeData(newData);
+  const handleEditorDataChange = (newData: EditorResume) => {
+    setEditorData(newData);
   };
 
   const handleAIEnhancement = async (sectionType?: string) => {
     try {
       setIsOptimizing(true);
-      const result = await enhanceResume(resumeData, {
+      const result = await enhanceResume(enhancedData, {
         sectionType: sectionType as any,
         enhancementType: 'professional'
       });
 
       if (result.success) {
-        const enhancedData = { ...resumeData, ...result.data };
-        setResumeData(enhancedData);
+        const updatedEnhanced = { ...enhancedData, ...result.data };
+        const updatedEditor = enhancedToEditor(updatedEnhanced);
+        setEditorData(updatedEditor);
         toast.success(`${sectionType ? sectionType.charAt(0).toUpperCase() + sectionType.slice(1) : 'Resume'} enhanced successfully!`);
       }
     } catch (error) {
@@ -150,7 +128,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
 
   const handleATSOptimization = async () => {
     try {
-      const analysis = await performAdvancedATSAnalysis(resumeData);
+      const analysis = await performAdvancedATSAnalysis(enhancedData);
       if (analysis) {
         toast.success('ATS analysis completed! Check the insights panel for recommendations.');
         setActiveTab('insights');
@@ -163,7 +141,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
 
   const handleGenerateSmartSuggestions = async () => {
     try {
-      await getComprehensiveSuggestions(resumeData, {
+      await getComprehensiveSuggestions(enhancedData, {
         targetRole: jobAnalysis?.role,
         industry: jobAnalysis?.industry,
         jobDescription
@@ -177,8 +155,9 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   };
 
   const handleApplySmartSuggestion = (suggestion: any) => {
-    const updatedData = applySuggestion(suggestion, resumeData);
-    setResumeData(updatedData);
+    const updatedEnhanced = applySuggestion(suggestion, enhancedData);
+    const updatedEditor = enhancedToEditor(updatedEnhanced);
+    setEditorData(updatedEditor);
   };
 
   const getScoreColor = (score: number) => {
@@ -212,7 +191,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
         body: {
           sectionType: 'experience',
           content: { description: bulletOriginal },
-          personalInfo: resumeData.personalInfo,
+          personalInfo: enhancedData.personalInfo,
         }
       });
       if (error || !data?.success) throw new Error(data?.error || 'Rewrite failed');
@@ -242,7 +221,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
       const { data, error } = await supabase.functions.invoke('ai-resume-enhancer', {
         body: {
           action: 'cover_letter',
-          resumeData,
+          resumeData: enhancedData,
           jobDescription: coverJD,
           tone: coverTone,
         }
@@ -260,7 +239,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   };
   const { handleDownload, processing } = useResumeDownloads(0);
 
-  const toResumeJSON = (d: EnhancedResumeData): ResumeJSON => ({
+  const toResumeJSON = (d: any): ResumeJSON => ({
     profile: {
       name: d.personalInfo.fullName,
       email: d.personalInfo.email,
@@ -294,7 +273,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   const startExport = async () => {
     const resumeId = 'editor';
     await handleDownload(resumeId, async () => {
-      await exportResumeToDocx(toResumeJSON(resumeData), 'resume.docx');
+      await exportResumeToDocx(toResumeJSON(enhancedData), 'resume.docx');
     });
   };
 
@@ -428,8 +407,8 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
           <div className="mt-6">
             <TabsContent value="editor" className="mt-0">
               <ResumeEditor
-                data={resumeData}
-                onChange={handleDataChange}
+                data={editorData}
+                onChange={handleEditorDataChange}
                 onEnhanceSection={handleAIEnhancement}
                 isEnhancing={isOptimizing || isProcessing}
               />
@@ -438,7 +417,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
             <TabsContent value="insights" className="mt-0">
               <AIInsightsPanel
                 suggestions={suggestions}
-                resumeData={resumeData}
+                resumeData={enhancedData}
                 onApplySuggestion={(suggestion) => {
                   // Handle applying suggestions
                   toast.success('Suggestion applied!');
@@ -453,7 +432,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                 onOptimize={handleATSOptimization}
               />
               <div className="mt-6">
-                <ATSOptimizationPanel resumeData={resumeData} />
+                <ATSOptimizationPanel resumeData={enhancedData} />
               </div>
             </TabsContent>
 
