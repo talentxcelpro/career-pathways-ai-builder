@@ -204,7 +204,14 @@ const TalentXcelResumeBuilder: React.FC = () => {
         { id: '2', type: 'summary', title: 'Professional Summary', content: {}, order: 2, isVisible: true },
         { id: '3', type: 'experience', title: 'Work Experience', content: { items: [] }, order: 3, isVisible: true },
         { id: '4', type: 'education', title: 'Education', content: { items: [] }, order: 4, isVisible: true },
-        { id: '5', type: 'skills', title: 'Skills', content: { items: [] }, order: 5, isVisible: true }
+        { id: '5', type: 'skills', title: 'Skills', content: { items: [] }, order: 5, isVisible: true },
+        { id: '6', type: 'projects', title: 'Projects', content: { items: [] }, order: 6, isVisible: true },
+        { id: '7', type: 'certifications', title: 'Certifications', content: { items: [] }, order: 7, isVisible: true },
+        { id: '8', type: 'awards', title: 'Awards & Achievements', content: { items: [] }, order: 8, isVisible: true },
+        { id: '9', type: 'languages', title: 'Languages', content: { items: [] }, order: 9, isVisible: true },
+        { id: '10', type: 'volunteer', title: 'Volunteer Experience', content: { items: [] }, order: 10, isVisible: true },
+        { id: '11', type: 'interests', title: 'Interests & Hobbies', content: { items: [] }, order: 11, isVisible: true },
+        { id: '12', type: 'references', title: 'References', content: { items: [] }, order: 12, isVisible: true }
       ]);
     }
   }, [resumeData, id]);
@@ -269,7 +276,9 @@ const TalentXcelResumeBuilder: React.FC = () => {
       certifications: 'Certifications',
       awards: 'Awards & Achievements',
       languages: 'Languages',
-      interests: 'Interests'
+      volunteer: 'Volunteer Experience',
+      interests: 'Interests & Hobbies',
+      references: 'References'
     };
     return titles[type] || type;
   };
@@ -285,44 +294,87 @@ const TalentXcelResumeBuilder: React.FC = () => {
       certifications: <Award className="h-4 w-4" />,
       awards: <Award className="h-4 w-4" />,
       languages: <Globe className="h-4 w-4" />,
-      interests: <Target className="h-4 w-4" />
+      volunteer: <User className="h-4 w-4" />,
+      interests: <Target className="h-4 w-4" />,
+      references: <User className="h-4 w-4" />
     };
     return icons[type] || <FileText className="h-4 w-4" />;
   };
 
   const handleResumeExtracted = (extractedData: any) => {
-    // Apply extracted data to sections
+    // Apply extracted data to sections; create missing ones if needed
+    const ensureSection = (type: string) => {
+      let s = sections.find(sec => sec.type === type);
+      if (!s) {
+        s = { id: Date.now().toString() + '-' + type, type, title: getSectionTitle(type), content: type === 'personal' || type === 'summary' ? {} : { items: [] }, order: sections.length + 1, isVisible: true } as any;
+        sections.push(s);
+      }
+      return s;
+    };
+
     const newSections = [...sections];
-    
+
     if (extractedData.personal) {
-      const personalSection = newSections.find(s => s.type === 'personal');
-      if (personalSection) {
-        personalSection.content = extractedData.personal;
-      }
+      const personalSection = ensureSection('personal');
+      personalSection.content = extractedData.personal;
     }
-    
+
     if (extractedData.summary) {
-      const summarySection = newSections.find(s => s.type === 'summary');
-      if (summarySection) {
-        summarySection.content = { text: extractedData.summary };
-      }
+      const summarySection = ensureSection('summary');
+      summarySection.content = { text: extractedData.summary };
     }
-    
-    if (extractedData.experience && Array.isArray(extractedData.experience)) {
-      const experienceSection = newSections.find(s => s.type === 'experience');
-      if (experienceSection) {
-        experienceSection.content = { items: extractedData.experience };
-      }
+
+    if (Array.isArray(extractedData.experience)) {
+      const experienceSection = ensureSection('experience');
+      experienceSection.content = { items: extractedData.experience };
     }
-    
-    if (extractedData.skills && Array.isArray(extractedData.skills)) {
-      const skillsSection = newSections.find(s => s.type === 'skills');
-      if (skillsSection) {
-        skillsSection.content = { items: extractedData.skills };
-      }
+
+    if (Array.isArray(extractedData.education)) {
+      const educationSection = ensureSection('education');
+      educationSection.content = { items: extractedData.education };
     }
-    
-    setSections(newSections);
+
+    if (Array.isArray(extractedData.skills)) {
+      const skillsSection = ensureSection('skills');
+      skillsSection.content = { items: extractedData.skills };
+    }
+
+    if (Array.isArray(extractedData.projects)) {
+      const projectsSection = ensureSection('projects');
+      projectsSection.content = { items: extractedData.projects };
+    }
+
+    if (Array.isArray(extractedData.certifications)) {
+      const certsSection = ensureSection('certifications');
+      certsSection.content = { items: extractedData.certifications };
+    }
+
+    if (Array.isArray(extractedData.awards)) {
+      const awardsSection = ensureSection('awards');
+      awardsSection.content = { items: extractedData.awards };
+    }
+
+    if (Array.isArray(extractedData.languages)) {
+      const languagesSection = ensureSection('languages');
+      languagesSection.content = { items: extractedData.languages };
+    }
+
+    if (Array.isArray(extractedData.volunteer)) {
+      const volSection = ensureSection('volunteer');
+      volSection.content = { items: extractedData.volunteer };
+    }
+
+    if (Array.isArray(extractedData.interests)) {
+      const interestsSection = ensureSection('interests');
+      interestsSection.content = { items: extractedData.interests };
+    }
+
+    if (Array.isArray(extractedData.references)) {
+      const refsSection = ensureSection('references');
+      refsSection.content = { items: extractedData.references };
+    }
+
+    setSections([...newSections]);
   };
 
   const handleATSScoreUpdate = (score: number, feedback: any) => {

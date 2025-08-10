@@ -55,13 +55,19 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ section, onUpdate 
       case 'skills':
         return { ...baseItem, name: '', level: 'intermediate', category: 'Technical' };
       case 'projects':
-        return { ...baseItem, title: '', description: '', technologies: [], url: '' };
+        return { ...baseItem, title: '', description: '', technologies: '', url: '' };
       case 'certifications':
         return { ...baseItem, name: '', issuer: '', date: '', url: '' };
       case 'awards':
         return { ...baseItem, name: '', issuer: '', date: '', description: '' };
       case 'languages':
         return { ...baseItem, name: '', proficiency: 'conversational' };
+      case 'volunteer':
+        return { ...baseItem, role: '', organization: '', startDate: '', endDate: '', description: '' };
+      case 'references':
+        return { ...baseItem, name: '', contact: '', relationship: '' };
+      case 'interests':
+        return { ...baseItem, name: '' };
       default:
         return baseItem;
     }
@@ -298,6 +304,223 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ section, onUpdate 
             </div>
           </div>
         );
+      case 'languages':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Language</Label>
+              <Input
+                value={item.name || ''}
+                onChange={(e) => updateItem(index, 'name', e.target.value)}
+                placeholder="English"
+              />
+            </div>
+            <div>
+              <Label>Proficiency</Label>
+              <select
+                className="w-full p-2 border rounded"
+                value={item.proficiency || 'conversational'}
+                onChange={(e) => updateItem(index, 'proficiency', e.target.value)}
+              >
+                <option value="basic">Basic</option>
+                <option value="conversational">Conversational</option>
+                <option value="fluent">Fluent</option>
+                <option value="native">Native</option>
+              </select>
+            </div>
+          </div>
+        );
+      case 'projects':
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label>Project Title</Label>
+              <Input
+                value={item.title || ''}
+                onChange={(e) => updateItem(index, 'title', e.target.value)}
+                placeholder="Data Pipeline Migration"
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                value={item.description || ''}
+                onChange={(e) => updateItem(index, 'description', e.target.value)}
+                rows={3}
+              />
+            </div>
+            <div>
+              <Label>Technologies (comma separated)</Label>
+              <Input
+                value={item.technologies || ''}
+                onChange={(e) => updateItem(index, 'technologies', e.target.value)}
+                placeholder="Azure, Databricks, Kafka"
+              />
+            </div>
+            <div>
+              <Label>Link</Label>
+              <Input
+                value={item.url || ''}
+                onChange={(e) => updateItem(index, 'url', e.target.value)}
+                placeholder="https://github.com/..."
+              />
+            </div>
+          </div>
+        );
+      case 'certifications':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Certification Name</Label>
+              <Input
+                value={item.name || ''}
+                onChange={(e) => updateItem(index, 'name', e.target.value)}
+                placeholder="AWS Certified Solutions Architect"
+              />
+            </div>
+            <div>
+              <Label>Issuing Organization</Label>
+              <Input
+                value={item.issuer || ''}
+                onChange={(e) => updateItem(index, 'issuer', e.target.value)}
+                placeholder="Amazon Web Services"
+              />
+            </div>
+            <div>
+              <Label>Issue Date</Label>
+              <Input
+                type="month"
+                value={item.date || ''}
+                onChange={(e) => updateItem(index, 'date', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Credential URL</Label>
+              <Input
+                value={item.url || ''}
+                onChange={(e) => updateItem(index, 'url', e.target.value)}
+              />
+            </div>
+          </div>
+        );
+      case 'awards':
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label>Award Name</Label>
+              <Input
+                value={item.name || ''}
+                onChange={(e) => updateItem(index, 'name', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Issuing Organization</Label>
+              <Input
+                value={item.issuer || ''}
+                onChange={(e) => updateItem(index, 'issuer', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Date</Label>
+              <Input
+                type="month"
+                value={item.date || ''}
+                onChange={(e) => updateItem(index, 'date', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                value={item.description || ''}
+                onChange={(e) => updateItem(index, 'description', e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+        );
+      case 'volunteer':
+        return (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label>Role</Label>
+                <Input
+                  value={item.role || ''}
+                  onChange={(e) => updateItem(index, 'role', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Organization</Label>
+                <Input
+                  value={item.organization || ''}
+                  onChange={(e) => updateItem(index, 'organization', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Start Date</Label>
+                <Input
+                  type="month"
+                  value={item.startDate || ''}
+                  onChange={(e) => updateItem(index, 'startDate', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>End Date</Label>
+                <Input
+                  type="month"
+                  value={item.endDate || ''}
+                  onChange={(e) => updateItem(index, 'endDate', e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                value={item.description || ''}
+                onChange={(e) => updateItem(index, 'description', e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+        );
+      case 'references':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Name</Label>
+              <Input
+                value={item.name || ''}
+                onChange={(e) => updateItem(index, 'name', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Relationship</Label>
+              <Input
+                value={item.relationship || ''}
+                onChange={(e) => updateItem(index, 'relationship', e.target.value)}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Contact Information</Label>
+              <Input
+                value={item.contact || ''}
+                onChange={(e) => updateItem(index, 'contact', e.target.value)}
+                placeholder="email or phone"
+              />
+            </div>
+          </div>
+        );
+      case 'interests':
+        return (
+          <div>
+            <Label>Interest</Label>
+            <Input
+              value={item.name || ''}
+              onChange={(e) => updateItem(index, 'name', e.target.value)}
+              placeholder="e.g., Volleyball"
+            />
+          </div>
+        );
       default:
         return (
           <div>
@@ -329,7 +552,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ section, onUpdate 
 
       {section.type === 'personal' && renderPersonalSection()}
       {section.type === 'summary' && renderSummarySection()}
-      {['experience', 'education', 'skills', 'projects', 'certifications', 'awards', 'languages'].includes(section.type) && renderItemsSection()}
+      {['experience', 'education', 'skills', 'projects', 'certifications', 'awards', 'languages', 'volunteer', 'references', 'interests'].includes(section.type) && renderItemsSection()}
     </div>
   );
 };
