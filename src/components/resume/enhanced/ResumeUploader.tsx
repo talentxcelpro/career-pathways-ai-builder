@@ -110,24 +110,29 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
         .from('documents')
         .getPublicUrl(uploadData.path);
 
-      // Call cv-parser edge function with correct payload
-      console.log('Calling cv-parser with payload:', {
-        fileUrl: urlData.publicUrl,
+      // Use the existing resume-parser function which is more reliable
+      console.log('Calling resume-parser with payload:', {
         fileName: file.name,
         fileType: file.type,
-        batchId: crypto.randomUUID(),
-        extractedText: extractedText.substring(0, 200) + '...' // Log first 200 chars
+        fileSize: file.size
       });
 
-      const batchId = crypto.randomUUID();
+      // Convert file to base64 for the resume-parser function
+      const fileReader = new FileReader();
+      const base64File = await new Promise<string>((resolve, reject) => {
+        fileReader.onload = () => {
+          const result = fileReader.result as string;
+          resolve(result);
+        };
+        fileReader.onerror = reject;
+        fileReader.readAsDataURL(file);
+      });
       
-      const { data: parsingResult, error: parsingError } = await supabase.functions.invoke('cv-parser', {
+      const { data: parsingResult, error: parsingError } = await supabase.functions.invoke('resume-parser', {
         body: {
-          fileUrl: urlData.publicUrl,
+          file: base64File,
           fileName: file.name,
-          fileType: file.type,
-          batchId: batchId,
-          extractedText: extractedText
+          fileType: file.type
         }
       });
 
