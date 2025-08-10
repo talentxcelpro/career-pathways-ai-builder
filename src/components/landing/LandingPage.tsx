@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { HeroSection } from './HeroSection';
+import { AppleHeroSection } from './AppleHeroSection';
 import { WhyTalentXcel } from './WhyTalentXcel';
 import { CTABanner } from './CTABanner';
 import { SEOInternalLinks } from '@/components/seo/SEOInternalLinks';
@@ -10,7 +10,7 @@ import { AppleFooter } from './AppleFooter';
 export const LandingPage = () => {
   return (
     <div className="min-h-screen">
-      <HeroSection />
+      <AppleHeroSection />
       <WhyTalentXcel />
       <SEOInternalLinks />
       <CTABanner />
