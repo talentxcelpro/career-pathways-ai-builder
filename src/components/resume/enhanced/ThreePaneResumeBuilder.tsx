@@ -30,6 +30,7 @@ import { DynamicEditor } from './three-pane/DynamicEditor';
 import { LivePreview } from './three-pane/LivePreview';
 import { TopToolbar } from './three-pane/TopToolbar';
 import { TemplateSidebar } from './three-pane/TemplateSidebar';
+import { UploadResumeDialog } from './three-pane/UploadResumeDialog';
 import { useAutoSave } from '@/hooks/useAutoSave';
 
 interface ThreePaneResumeBuilderProps {
@@ -67,6 +68,7 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
   const [selectedSection, setSelectedSection] = useState<SectionType>('personalInfo');
   const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0);
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
   const { saveStatus, lastSaved } = useAutoSave({
     data,
@@ -200,6 +202,14 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
     console.log('Exporting as:', format);
   }, []);
 
+  const handleUploadResume = useCallback(() => {
+    setUploadDialogOpen(true);
+  }, []);
+
+  const handleResumeUploaded = useCallback((uploadedData: EditorResume) => {
+    onChange(uploadedData);
+  }, [onChange]);
+
   const sections = getSectionInfo(data);
 
   return (
@@ -210,6 +220,7 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
         onATSCheck={handleATSCheck}
         onImproveSection={handleImproveSection}
         onExport={handleExport}
+        onUploadResume={handleUploadResume}
         saveStatus={saveStatus}
         lastSaved={lastSaved}
       />
@@ -252,6 +263,13 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
           />
         </div>
       </div>
+
+      {/* Upload Resume Dialog */}
+      <UploadResumeDialog
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+        onResumeUploaded={handleResumeUploaded}
+      />
     </div>
   );
 };

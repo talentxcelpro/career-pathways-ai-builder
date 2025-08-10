@@ -10,7 +10,8 @@ import {
   Check, 
   ChevronDown,
   Sparkles,
-  FileCheck
+  FileCheck,
+  Upload
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -26,6 +27,7 @@ interface TopToolbarProps {
   onATSCheck: () => void;
   onImproveSection: () => void;
   onExport: (format: 'pdf' | 'docx') => void;
+  onUploadResume: () => void;
   saveStatus: 'idle' | 'saving' | 'saved' | 'error';
   lastSaved: Date;
 }
@@ -41,6 +43,7 @@ export const TopToolbar: React.FC<TopToolbarProps> = ({
   onATSCheck,
   onImproveSection,
   onExport,
+  onUploadResume,
   saveStatus,
   lastSaved
 }) => {
@@ -84,6 +87,16 @@ export const TopToolbar: React.FC<TopToolbarProps> = ({
 
           {/* AI Tools */}
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onUploadResume}
+              className="gap-2"
+            >
+              <Upload className="h-4 w-4" />
+              Upload Resume
+            </Button>
+            
             <Button
               variant="outline"
               size="sm"
