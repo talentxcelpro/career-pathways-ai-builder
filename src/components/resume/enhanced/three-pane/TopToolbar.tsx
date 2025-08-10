@@ -92,9 +92,12 @@ export const TopToolbar: React.FC<TopToolbarProps> = ({
               size="sm"
               onClick={onUploadResume}
               className="gap-2"
+              disabled
+              title="Coming soon"
+              aria-disabled="true"
             >
               <Upload className="h-4 w-4" />
-              Upload Resume
+              Upload Resume (Coming Soon)
             </Button>
             
             <Button
