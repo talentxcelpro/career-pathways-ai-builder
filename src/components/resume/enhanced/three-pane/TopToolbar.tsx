@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { resumeTemplates } from '@/data/resumeTemplates';
 
 interface TopToolbarProps {
   selectedTemplate: string;
@@ -29,13 +30,10 @@ interface TopToolbarProps {
   lastSaved: Date;
 }
 
-const templates = [
-  { id: 'modern', name: 'Modern' },
-  { id: 'classic', name: 'Classic' },
-  { id: 'minimal', name: 'Minimal' },
-  { id: 'creative', name: 'Creative' },
-  { id: 'professional', name: 'Professional' }
-];
+const templates = resumeTemplates.slice(0, 8).map(t => ({
+  id: t.id,
+  name: t.name
+}));
 
 export const TopToolbar: React.FC<TopToolbarProps> = ({
   selectedTemplate,

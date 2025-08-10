@@ -29,6 +29,7 @@ import { SectionsList } from './three-pane/SectionsList';
 import { DynamicEditor } from './three-pane/DynamicEditor';
 import { LivePreview } from './three-pane/LivePreview';
 import { TopToolbar } from './three-pane/TopToolbar';
+import { TemplateSidebar } from './three-pane/TemplateSidebar';
 import { useAutoSave } from '@/hooks/useAutoSave';
 
 interface ThreePaneResumeBuilderProps {
@@ -214,14 +215,22 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
       />
       
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Pane - Sections List */}
-        <div className="w-80 border-r border-border bg-card">
-          <SectionsList
-            sections={sections}
-            selectedSection={selectedSection}
-            onSectionSelect={handleSectionSelect}
-            onSectionReorder={handleSectionReorder}
-          />
+        {/* Left Pane - Templates & Sections */}
+        <div className="w-80 border-r border-border bg-card flex flex-col">
+          <div className="h-1/2 border-b border-border">
+            <TemplateSidebar
+              selectedTemplate={selectedTemplate}
+              onTemplateSelect={handleTemplateChange}
+            />
+          </div>
+          <div className="h-1/2">
+            <SectionsList
+              sections={sections}
+              selectedSection={selectedSection}
+              onSectionSelect={handleSectionSelect}
+              onSectionReorder={handleSectionReorder}
+            />
+          </div>
         </div>
 
         {/* Center Pane - Dynamic Editor */}

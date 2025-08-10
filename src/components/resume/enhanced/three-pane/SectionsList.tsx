@@ -69,12 +69,23 @@ const SortableSectionItem: React.FC<SortableSectionItemProps> = ({
         <h3 className="font-medium text-sm truncate">{section.name}</h3>
       </div>
       
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 flex items-center gap-2">
         {section.itemCount > 0 && (
           <Badge variant={isSelected ? 'default' : 'secondary'} className="text-xs">
             {section.itemCount}
           </Badge>
         )}
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect(section.id);
+          }}
+        >
+          <span className="text-xs">Edit</span>
+        </Button>
       </div>
     </div>
   );

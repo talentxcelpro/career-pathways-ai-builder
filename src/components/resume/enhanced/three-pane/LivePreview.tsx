@@ -319,6 +319,140 @@ export const LivePreview: React.FC<LivePreviewProps> = ({ data, templateId }) =>
               </div>
             </div>
           )}
+
+          {/* Certifications */}
+          {data.certifications.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 border-b-2 border-gray-200 pb-1">
+                Certifications
+              </h2>
+              <div className="space-y-3">
+                {data.certifications.map((cert, index) => (
+                  <div key={cert.id || index}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {cert.name}
+                        </h3>
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Award className="h-4 w-4" />
+                          <span className="font-medium">{cert.issuer}</span>
+                        </div>
+                      </div>
+                      <div className="text-gray-600 text-right text-sm">
+                        {cert.issueDate && (
+                          <div>Issued: {formatDate(cert.issueDate)}</div>
+                        )}
+                        {cert.expiryDate && (
+                          <div>Expires: {formatDate(cert.expiryDate)}</div>
+                        )}
+                      </div>
+                    </div>
+                    {cert.credentialUrl && (
+                      <div className="mt-2">
+                        <span className="text-blue-600 text-sm">View Credential</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Awards */}
+          {data.awards.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 border-b-2 border-gray-200 pb-1">
+                Awards & Achievements
+              </h2>
+              <div className="space-y-3">
+                {data.awards.map((award, index) => (
+                  <div key={award.id || index}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {award.name}
+                        </h3>
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Award className="h-4 w-4" />
+                          <span className="font-medium">{award.issuer}</span>
+                        </div>
+                      </div>
+                      <div className="text-gray-600 text-sm">
+                        {award.date && formatDate(award.date)}
+                      </div>
+                    </div>
+                    {award.description && (
+                      <p className="text-gray-700 mt-2">{award.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Volunteer Experience */}
+          {data.volunteerExperience.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 border-b-2 border-gray-200 pb-1">
+                Volunteer Experience
+              </h2>
+              <div className="space-y-4">
+                {data.volunteerExperience.map((vol, index) => (
+                  <div key={vol.id || index}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {vol.role}
+                        </h3>
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Building className="h-4 w-4" />
+                          <span className="font-medium">{vol.organization}</span>
+                        </div>
+                      </div>
+                      <div className="text-gray-600 text-sm">
+                        {formatDateRange(vol.startDate, vol.endDate)}
+                      </div>
+                    </div>
+                    {vol.description && (
+                      <p className="text-gray-700 mt-2">{vol.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* References */}
+          {data.references.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 border-b-2 border-gray-200 pb-1">
+                References
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {data.references.map((ref, index) => (
+                  <div key={ref.id || index} className="border rounded-lg p-4">
+                    <h3 className="font-semibold text-gray-900">{ref.name}</h3>
+                    <p className="text-gray-600">{ref.relationship}</p>
+                    <div className="mt-2 space-y-1">
+                      {ref.email && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Mail className="h-3 w-3" />
+                          {ref.email}
+                        </div>
+                      )}
+                      {ref.phone && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Phone className="h-3 w-3" />
+                          {ref.phone}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
