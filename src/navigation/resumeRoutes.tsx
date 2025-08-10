@@ -11,7 +11,7 @@ export const resumeRoutes = [
     title: "Resume Builder",
     to: "/resume/new",
     icon: <FileText className="h-4 w-4" />,
-    page: <ErrorBoundary><TalentXcelResumeBuilder /></ErrorBoundary>,
+    page: <ErrorBoundary><ResumeNew /></ErrorBoundary>,
     requiresAuth: false,
   },
   {
